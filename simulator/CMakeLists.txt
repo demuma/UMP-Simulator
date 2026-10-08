@@ -47,21 +47,3 @@ target_compile_options(Simulator PRIVATE -O3)
 # target_compile_definitions(Simulator PRIVATE STATS)
 # target_compile_definitions(Simulator PRIVATE ERROR)
 # target_compile_definitions(Simulator PRIVATE TIMING)
-
-include(CTest)
-if(BUILD_TESTING)
-    add_executable(AgentBasedSensorTests
-        tests/AgentBasedSensorTests.cpp
-        src/AgentBasedSensor.cpp
-        src/Sensor.cpp
-        src/Agent.cpp
-        src/PerlinNoise.cpp
-        src/Utilities.cpp
-    )
-    target_compile_features(AgentBasedSensorTests PRIVATE cxx_std_17)
-    target_link_libraries(AgentBasedSensorTests PRIVATE
-        SFML::Graphics SFML::Window SFML::System yaml-cpp::yaml-cpp
-        mongo::mongocxx_shared mongo::bsoncxx_shared
-    )
-    add_test(NAME AgentBasedSensorRegression COMMAND AgentBasedSensorTests)
-endif()

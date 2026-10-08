@@ -9,8 +9,6 @@ Import am 2026-10-08 aus dem lokalen Repository Coding, Commit `d1e3dde748c6565c
 aus den jeweiligen V3-Datenbank-Renderern. Quellcode und YAML-Konfigurationen
 wurden unverändert übernommen. Bestehende Projekte bleiben erhalten.
 Noch keine gemeinsame Bibliothek, kein neuer Aggregationsalgorithmus und kein Remote.
-Nach dem Import wurden die ABS-Geschwindigkeitsschätzung und die einmalige Batch-Ausgabe
-korrigiert; der ursprüngliche Import ist im ersten Commit erhalten.
 
 Der importierte Plan unter `docs/reference/` ist eine historische Referenz,
 keine verbindliche Arbeitsanweisung. Die aktuelle Bewertung steht in
@@ -48,14 +46,3 @@ Schriftpfade sind noch macOS-spezifisch.
 Identischer Messstrom, feste räumliche Zellen und Zeitfenster; Vergleich einer
 fest definierten Belegungsabfrage mit Ground Truth. Eine k-basierte Freigaberegel
 wird von einer unabhängigen empirischen Angreiferbewertung getrennt.
-
-## Regressionstests
-
-```sh
-cmake -S simulator -B simulator/build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
-cmake --build simulator/build -j4
-ctest --test-dir simulator/build --output-on-failure
-```
-
-Die ABS-Regressionstests verwenden synthetische Beobachtungen mit bekannten Geschwindigkeiten
-und benötigen keine Datenbankverbindung oder ein Grafikfenster.

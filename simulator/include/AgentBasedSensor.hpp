@@ -38,11 +38,7 @@ public:
     sf::Vector2f position = sf::Vector2f(detectionArea.position.x, detectionArea.position.y);
 
     void update(std::vector<Agent>& agents, float timeStep, std::chrono::system_clock::time_point timestamp) override;
-    // Seed the first observation without publishing a placeholder velocity.
-    void initializeObservations(const std::vector<Agent>& agents, std::chrono::system_clock::time_point timestamp);
     void captureAgentData(std::vector<Agent>& agents);
-    // Consume a measurement batch once (also usable by non-database outputs).
-    std::vector<AgentData> takeMeasurements();
     void postData() override;
     void postMetadata() override;
     void printData() override;
@@ -52,13 +48,11 @@ private:
     mongocxx::database db;
     mongocxx::collection collection;
 
-    struct Observation {
-        sf::Vector2f position;
-        std::chrono::system_clock::time_point timestamp;
-    };
-    std::unordered_map<std::string, Observation> previousObservations;
+    // Mapping of agent ID to estimated velocity
+    std::unordered_map<std::string, sf::Vector2f> estimatedVelocities;
 
     // Data storage structure
+    std::vector<AgentData> agentData;
     SharedBuffer<sensorBufferFrameType>& sensorBuffer;
     std::pair<std::chrono::system_clock::time_point, std::vector<AgentData>> dataStorage;
 };
