@@ -33,6 +33,8 @@ weil `config.yaml` relativ geladen wird.
 
 ## Laufzeitstatus
 
+Simulator und alle vier Renderer wurden als Release-Build erfolgreich gebaut.
+101 übernommene Dateien wurden byteweise mit den Originalen verglichen.
 Noch keine Laufzeitvalidierung des Imports. Die Simulator-Konfiguration enthält
 `clear_database: true`; ein unveränderter Start löscht die konfigurierten Collections.
 Daher vor einem Lauf eine eigene Experimentdatenbank konfigurieren.
