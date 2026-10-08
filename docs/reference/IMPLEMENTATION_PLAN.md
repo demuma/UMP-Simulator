@@ -1,108 +1,103 @@
-# Implementierungsplan – Adaptive Privacy-Preserving Urban Mobility Data Aggregation
+# Implementation Plan — Adaptive Privacy-Preserving Urban Mobility Data Aggregation
 
-**Projekt:** Dissertation – Adaptive, Metric-Based and Privacy-Preserving Urban Mobility Data Sharing  
-**Technologie:** C++17, SFML, OpenGL, MongoDB  
-**Architektur:** Agent-Based Simulation mit sensorlokaler Aggregation  
-**Ziel:** Wissenschaftlich evaluierbares Framework für adaptive räumliche und zeitliche Datenaggregation unter regionalen Privacy- und Utility-Constraints.
+> **Reference translation, 2026-10-08:** This is the English version of the historical
+> plan supplied from `/Users/maxdemu/Library/Mobile Documents/com~apple~CloudDocs/Downloads/IMPLEMENTATION_PLAN.md`.
+> The external original remains unchanged. Phases, priorities, examples and the embedded
+> project prompt below are reference material, not current instructions to execute.
+> Use [README](../../README.md) for actual status and [TO-DO](../../TO-DO.md) for priorities.
+> Claims about novelty and architectural choices in this plan remain proposals requiring validation.
 
-> **Leitprinzip:** Ein maximal aufgelöster interner Datenbestand, aus dem unter Privacy-, Utility- und Anwendungsconstraints dynamisch zulässige räumlich-zeitliche Veröffentlichungen erzeugt werden.
+**Project:** Dissertation — Adaptive, Metric-Based and Privacy-Preserving Urban Mobility Data Sharing
+**Technology:** C++17, SFML, OpenGL, MongoDB
+**Architecture:** Agent-based simulation with sensor-local aggregation
+**Objective:** A scientifically evaluable framework for adaptive spatial and temporal aggregation
+under regional privacy and utility constraints.
+
+> **Guiding principle:** Maintain a maximally resolved internal dataset and dynamically
+> derive permissible spatial/temporal publications under privacy, utility and application constraints.
 >
-> **Wichtige Abgrenzung:** Detektion und Klassifizierung sind nicht Forschungsgegenstand. Ground Truth bleibt erhalten; Messunsicherheit kann als eigene Sensorschicht modelliert werden. Die zentrale Herausforderung ist die korrekte zeitliche Historie bei variabler räumlicher Aggregation.
+> **Scope:** Detection/classification are not the research subject. Preserve ground truth;
+> model measurement uncertainty in a separate sensor layer if needed. The key challenge
+> is correct temporal history under changing spatial aggregation.
 
-## Prioritäten
+## Priorities
 
-| Priorität | Bedeutung |
+| Priority | Meaning |
 |---|---|
-| **P0** | Notwendige Kernfunktionalität |
-| **P1** | Wichtig für Evaluation und Dissertation |
-| **P2** | Erweiterung, die die Kernimplementierung nicht blockieren darf |
-| **P3** | Zukunftsperspektive außerhalb des aktuellen Forschungsumfangs |
+| P0 | Essential core functionality |
+| P1 | Important for evaluation and dissertation |
+| P2 | Extension that must not block the core |
+| P3 | Future work outside the current research scope |
 
----
+# 1. Fundamental target architecture
 
-# 1. Grundlegende Zielarchitektur
+## 1.1 Overall structure
 
-## 1.1 Gesamtstruktur
-
-Die bestehende Simulation besitzt einen internen Agentenvektor sowie einen Vektor verschiedener Sensorinstanzen. Die Sensoren verarbeiten die Agentenzustände und erzeugen unterschiedliche Datendarstellungen. **Diese Grundstruktur erhalten.**
+The existing simulation owns an agent vector and sensor instances. Sensors process agent
+states and generate different representations. Preserve that overall organization.
 
 ```text
-                         SIMULATION
-                   ┌───────────────────┐
-                   │ Agent Management  │
-                   │ Ground Truth      │
-                   │ Trajectories      │
-                   └─────────┬─────────┘
-                             │
-                     std::vector<Agent>
-                             │
-               ┌─────────────┼─────────────┐
-               │             │             │
-               ▼             ▼             ▼
-          AgentBased     GridBased    AdaptiveGridBased
-            Sensor         Sensor          Sensor
-               │             │             │
-               │             │             ▼
-               │             │        Sensor Model
-               │             │             │
-               │             │             ▼
-               │             │        Max-Quadtree
-               │             │             │
-               │             │             ▼
-               │             │       Temporal Storage
-               │             │             │
-               │             │             ▼
-               │             │       AggregationManager
-               │             │             │
-               │             │             ▼
-               │             │       Policy Evaluation
-               │             │             │
-               │             │             ▼
-               │             │       Published Cells
-               │             │             │
-               └─────────────┼─────────────┘
-                             ▼
-                   Sensor Output / MongoDB
-                             │
-                             ▼
-                        SharedBuffer
-                             │
-                             ▼
-                          Renderer
+SIMULATION
+  Agent Management / Ground Truth / Trajectories
+                       │
+                std::vector<Agent>
+                       │
+          ┌────────────┼─────────────────────┐
+          ▼            ▼                     ▼
+     AgentBased     GridBased         AdaptiveGridBased
+       Sensor        Sensor               Sensor
+          │            │                     │
+          │            │               Sensor Model
+          │            │                     │
+          │            │               Max-Quadtree
+          │            │                     │
+          │            │              Temporal Storage
+          │            │                     │
+          │            │            AggregationManager
+          │            │                     │
+          │            │              Policy Evaluation
+          │            │                     │
+          │            │               Published Cells
+          └────────────┴─────────────────────┤
+                                             ▼
+                                    Sensor Output / MongoDB
+                                             │
+                                        SharedBuffer
+                                             │
+                                          Renderer
 ```
 
-**Architekturentscheidung:** Der `AggregationManager` ist eine Komponente der Pipeline des jeweiligen `AdaptiveGridBasedSensor`, **keine globale Instanz**. Jeder adaptive Sensor besitzt grundsätzlich eigenen Erfassungsbereich, Quadtree, temporären Messbestand, AggregationManager, Policies/Policy-Zuordnungen und Veröffentlichungsschnittstelle. Zentrale Multi-Sensor-Fusion bleibt eine spätere Option.
+**Proposed architecture decision:** AggregationManager belongs to each AdaptiveGridBasedSensor
+pipeline, rather than being global. Each adaptive sensor owns its detection area, quadtree,
+temporary observations, manager, policies/mapping and publication interface. Central
+multi-sensor fusion remains a later option.
 
-## 1.2 Verantwortlichkeiten
+## 1.2 Responsibilities
 
-| Komponente | Verantwortung |
+| Component | Responsibility |
 |---|---|
-| `Simulation` | Agenten erzeugen, bewegen und aktualisieren |
-| `Sensor` | Sensorpipeline koordinieren und Ergebnisse veröffentlichen |
-| `AgentBasedSensor` | Agentenbasierte Referenzdaten |
-| `GridBasedSensor` | Statisches Grid als Benchmark |
-| `AdaptiveGridBasedSensor` | Adaptive räumlich-zeitliche Aggregation |
-| `SensorModel` | Abstrakte Messunsicherheit und Sensorparameter |
-| `Quadtree` | Räumliche Hierarchie und Zellgeometrie |
-| `TemporalStorage` | Messhistorie und zeitliche Datenfenster |
-| `AggregationManager` | Aggregationsentscheidungen und Ausgabeplanung |
-| `PolicyManager` | Regionale Regeln und Constraints |
-| `MetricEvaluator` | Privacy-, Utility- und Systemmetriken |
-| `SharedBuffer` | Threadübergreifender Datenaustausch |
-| `Renderer` | Visualisierung |
-| MongoDB-Adapter | Persistenz/Übertragung der Sensorergebnisse |
+| Simulation | Create, move and update agents |
+| Sensor | Coordinate the sensor pipeline and publish results |
+| AgentBasedSensor | Agent-based reference data |
+| GridBasedSensor | Fixed-grid benchmark |
+| AdaptiveGridBasedSensor | Adaptive spatial/temporal aggregation |
+| SensorModel | Abstract uncertainty and sensor parameters |
+| Quadtree | Spatial hierarchy and cell geometry |
+| TemporalStorage | Observation history and time windows |
+| AggregationManager | Aggregation decisions and output scheduling |
+| PolicyManager | Regional rules and constraints |
+| MetricEvaluator | Privacy, utility and system metrics |
+| SharedBuffer | Exchange across thread boundaries |
+| Renderer | Visualization |
+| MongoDB adapter | Persistence/transport of sensor results |
 
-**Grundregel:** Jedes Modul übernimmt nur seine klar definierte Verantwortung.
+Each module has a clearly defined responsibility.
 
----
+# 2. Phase 0 — Code audit and inventory
 
-# 2. Phase 0 – Code-Audit und Bestandsaufnahme
+**Priority: P0.** Read actual code before changes; do not immediately rewrite large classes.
 
-**Priorität: P0**
-
-Vor jeder Änderung den tatsächlichen Code lesen. Nicht direkt große Klassen umschreiben.
-
-## Vorhandene Dateien
+## Existing files
 
 ```text
 Main.cpp
@@ -118,87 +113,66 @@ AggregationManager.hpp / AggregationManager.cpp
 SharedBuffer.hpp / SharedBuffer.tpp
 ```
 
-Weitere Repository-Dateien/Abhängigkeiten berücksichtigen.
+Include other repository files and dependencies.
 
-### 2.1 Datenflüsse analysieren
+### 2.1 Trace data flow
 
-- Agentenerzeugung und -aktualisierung.
-- Verwaltung von Sensorinstanzen.
-- Zuordnung der Messdaten zu Quadtree-Zellen.
-- Derzeitiges Splitting, Merging und maximale Tiefe.
-- Cell-ID-Konvention und Zellrekonstruktion.
-- MongoDB-Publishing je Sensor.
-- SharedBuffer zwischen Simulation und Renderer.
+Agent creation/update; sensor ownership; observation-to-cell assignment; current splits,
+merges and maximum depth; cell-ID convention and reconstruction; MongoDB publishing for
+each sensor; SharedBuffer between simulation and renderer.
 
-### 2.2 Ownership und Threading dokumentieren
+### 2.2 Document ownership and threading
 
-- Wer besitzt Quadtree, Sensoren und SharedBuffers?
-- Wo werden Daten kopiert, wo Referenzen/Pointer verwendet?
-- Welche Komponenten laufen in welchen Threads?
-- Wie werden Simulations- und Renderzeit synchronisiert?
+Identify owners of trees, sensors and buffers; copies versus references/pointers;
+thread assignments; simulation/render timing and synchronization.
 
-### 2.3 Referenzzustand bewahren
+### 2.3 Preserve a reference
 
-Vor Refactoring reproduzierbaren Referenzlauf und Tests sichern. Bestehende Sensorvarianten und Visualisierung funktionsfähig halten.
+Secure a reproducible reference run and relevant checks before refactoring. Keep existing
+sensor variants and visualization functional.
 
-**Ergebnis:** Dokumentierter Ist-Zustand mit Klassenhierarchie, Datenfluss, Architekturproblemen, Änderungsliste pro Datei, Test-/Migrationsstrategie.
+**Deliverable:** documented hierarchy, data flow, architectural issues, changes per file
+and verification/migration strategy.
 
----
+# 3. Phase 1 — Revise quadtree architecture
 
-# 3. Phase 1 – Quadtree-Architektur überarbeiten
+**Priority: P0.**
 
-**Priorität: P0**
+## 3.1 Fully resolved static quadtree
 
-## 3.1 Vollständig aufgelöster, statischer Quadtree
-
-**Bisher:** Dynamische Splits anhand eingehender Agentenpositionen; leere Bereiche bleiben teils ungesplittet.  
-**Zukünftig:** Die räumliche Topologie wird **einmal bei der Initialisierung** bis zur maximalen Tiefe aufgebaut und danach nicht verändert.
+Current behavior: split dynamically from agent positions; empty regions may remain unsplit.
+Proposed behavior: build topology to maximum depth once at initialization, then keep it fixed.
 
 ```text
-Quadtree initialization
-    → Build full tree
-    → Fixed spatial hierarchy
-    → Measurement assignment
-    → Aggregation and policy evaluation
-    → Dynamic publication view
+Initialize full spatial hierarchy
+    → fixed topology
+    → assign observations
+    → aggregation and policy evaluation
+    → dynamic publication view
 ```
 
-- Keine strukturellen Splits oder Merges im regulären Betrieb.
-- Alle Parent-/Child-Knoten bleiben bestehen.
-- Ein räumlicher Merge erzeugt eine **aggregierte Parent-Repräsentation**, verändert aber nicht die Topologie.
-- Renderer erhält nur veröffentlichte Cell-IDs und rekonstruiert Geometrie daraus; leere Max-Depth-Zellen müssen nicht gezeichnet werden.
+No structural runtime splits/merges. Parent/child nodes remain present. A spatial merge
+creates an aggregated parent representation without changing topology. Renderer receives
+published IDs and reconstructs geometry; it need not draw empty maximum-depth cells.
 
-## 3.2 Maximale Tiefe konfigurierbar machen
+## 3.2 Configurable maximum depth
 
-Parameter:
+Parameters: simulation_width, simulation_height, maximum_tree_depth, minimum_cell_size.
+For a square root of side L:
 
 ```text
-simulation_width
-simulation_height
-maximum_tree_depth
-minimum_cell_size
+s(d) = L / 2^d
+For cell size at most s_target:
+d = ceil(log2(L / s_target))
 ```
 
-Für quadratische Wurzelzelle der Kantenlänge `L`:
+A physical minimum cell size requires a different bound; do not confuse maximum permitted
+size with a minimum that must not be crossed.
 
-\[
-s(d)=\frac{L}{2^d}
-\]
+## 3.3 Stable cell identities
 
-Für die Anforderung „Zellgröße **höchstens** `s_target`“:
-
-\[
-d=\left\lceil \log_2\left(\frac{L}{s_{target}}\right)\right\rceil
-\]
-
-Soll eine physikalische **Mindestgröße nicht unterschritten** werden, muss die Tiefe anders begrenzt werden. Anforderungen unterscheiden und im Code nicht verwechseln.
-
-## 3.3 Cell-IDs stabil halten
-
-- Jede Zelle: eindeutige ID und Tiefe.
-- Parent-ID und Child-IDs effizient bestimmbar.
-- Bounds aus ID ableitbar.
-- Vorhandene Konvention beibehalten:
+Every cell has a unique ID/depth; parents/children are efficiently derivable; bounds can
+be reconstructed. Preserve quadrant indices:
 
 ```text
 0 = North-West
@@ -207,27 +181,26 @@ Soll eine physikalische **Mindestgröße nicht unterschritten** werden, muss die
 3 = South-East
 ```
 
-Cell-IDs sind die Schnittstelle für Aggregation, Speicherung, Renderer, MongoDB, Metriken und Policy-Zuordnung.
+IDs connect aggregation, storage, rendering, MongoDB, metrics and policy mapping.
 
-## 3.4 Speicherbedarf und Datenstrukturen
+## 3.4 Memory and structures
 
-Vollständiger Quadtree mit maximaler Tiefe `D`:
+Complete single-root quadtree with maximum depth D:
 
-\[
-N_{nodes}=\frac{4^{D+1}-1}{3}
-\]
+```text
+N_nodes = (4^(D+1) - 1) / 3
+```
 
-| Maximale Tiefe | Gesamte Knoten |
+| Maximum depth | Nodes |
 |---|---:|
-| 5 | 1.365 |
-| 7 | 21.845 |
-| 8 | 87.381 |
-| 10 | 1.398.101 |
-| 12 | 22.369.621 |
+| 5 | 1,365 |
+| 7 | 21,845 |
+| 8 | 87,381 |
+| 10 | 1,398,101 |
+| 12 | 22,369,621 |
 
-**Empfehlung:** Statische räumliche **Topologie** und **zeitliche Messdaten** voneinander trennen. Die Topologie kann voll materialisiert sein; temporäre Daten werden nur für relevante Zellen angelegt.
-
-Beispielhafte Struktur (an Bestandscode anpassen):
+Separate topology from temporal observations. Topology may be materialized fully; allocate
+observation history only for relevant cells. Adapt examples to the actual cell convention.
 
 ```cpp
 struct QuadtreeNode {
@@ -239,126 +212,98 @@ struct QuadtreeNode {
 };
 ```
 
-## 3.5 Bottom-up-Aggregation
+## 3.5 Bottom-up aggregation
 
 ```text
-Leaf 0: 2 Agents
-Leaf 1: 3 Agents
-Leaf 2: 1 Agent
-Leaf 3: 4 Agents
-→ Parent: 10 Messbeiträge
+Leaf contributions: 2 + 3 + 1 + 4
+Parent: 10 observation contributions
 ```
 
-Aggregierbare Informationen: Counts, Klassenhäufigkeiten, Geschwindigkeiten, Zeitintervalle und ggf. Agentenidentitäten für die interne Privacy-Prüfung. **Counts sind additiv; Mengen unterschiedlicher Personen nicht zwangsläufig.** Bei mehrfachen Beobachtungen eines Agenten korrekt deduplizieren.
+Aggregatable fields include counts, class frequencies, velocities, intervals and possibly
+internal identities for privacy evaluation. Counts are additive; distinct-person sets
+are not necessarily additive. Deduplicate repeated observations correctly.
 
-**Abnahmekriterien:** Topologie unverändert; Position-to-Leaf korrekt; Parent-Aggregation korrekt; stabile IDs; keine doppelte Zählung; dokumentierter Speicherbedarf.
+**Acceptance:** invariant topology, correct position mapping and parent aggregation,
+stable IDs, no unintended double counting and documented storage cost.
 
----
+# 4. Phase 2 — Temporal storage
 
-# 4. Phase 2 – Temporale Datenhaltung entwickeln
+**Priority: P0.** Temporal aggregation is independent of spatial topology; this contains
+major design decisions.
 
-**Priorität: P0**
+## 4.1 Concept history
 
-Die zeitliche Aggregation soll von der räumlichen Struktur unabhängig sein. Hier liegen die wichtigsten Designentscheidungen.
+Previous concept: active and buffer buckets for normal/preemptive aggregation. New proposal:
+retrospectively reconstruct permitted parent windows from maximally resolved observations.
+Determine whether two physical buckets suffice or general temporal storage is preferable.
 
-## 4.1 Konzeptgeschichte
+## 4.2 Requirements
 
-Bisher: `active bucket` und `buffer bucket` für normale und *pre-emptive aggregation*. Neu: Retrospektive Rekonstruktion beliebiger zulässiger Parent-Fenster aus maximal aufgelösten Messdaten. Prüfen, ob zwei physische Buckets hierfür ausreichen oder ein allgemeinerer zeitlicher Speicher sinnvoller ist.
+1. Ingest timestamped observations.
+2. Support variable windows.
+3. Extend windows.
+4. Reconstruct spatial parent windows retrospectively.
+5. Bound retention and clean up safely.
+6. Support cell-specific windows.
+7. Record publication time.
 
-## 4.2 Anforderungen
+**Invariant:** every permitted window's parent aggregate is reconstructable from relevant
+child/leaf observations.
 
-1. Zeitgestempelte Messungen aufnehmen.
-2. Variable Aggregationsfenster erlauben.
-3. Fenster verlängern.
-4. Räumliche Parent-Fenster rückwirkend rekonstruieren.
-5. Historie begrenzt halten und sicher aufräumen.
-6. Zellindividuelle Fenster erlauben.
-7. Veröffentlichungszeitpunkt erfassen.
-
-**Invariante:** Für jedes erlaubte Zeitfenster muss die zugehörige Parent-Aggregation aus relevanten Child-/Leaf-Daten rekonstruierbar sein.
-
-## 4.3 Zeitbins / Ringbuffer
-
-Beispiel:
+## 4.3 Time bins / ring buffer
 
 ```text
-Leaf Cell 104
-0ms     100ms     200ms     300ms     400ms
+Leaf 104:
+0 ms    100 ms    200 ms    300 ms    400 ms
 [B0]────[B1]──────[B2]──────[B3]──────[B4]
-
-100 ms → [B0]
-300 ms → [B0+B1+B2]
-500 ms → [B0+B1+B2+B3+B4]
+100-ms window → B0
+300-ms window → B0+B1+B2
+500-ms window → B0+B1+B2+B3+B4
 ```
 
-Zeitlich geordnete Bins bzw. begrenzter Ringbuffer sind eine zu prüfende Grundlage, keine ungeprüft festgeschriebene Implementierung.
+Ordered bins or bounded ring buffers are candidate foundations, not a final untested choice.
 
-## 4.4 Active und Buffer Buckets
+## 4.4 Active and buffer buckets
 
-- **Active:** Daten des aktuell offenen Fensters.
-- **Buffer:** Vorbereitung des nächsten Fensters oder klar definierte Preemptive-Strategie.
-- **Historische Bins:** retrospektive zeitliche und räumliche Aggregation.
+Active covers the current open window. Buffer prepares the next window or a clearly defined
+preemptive strategy. Historical bins support retrospective spatial/temporal aggregation.
+Evaluate logical window states over shared storage rather than redundant per-node copies.
 
-Prüfen, ob Active/Buffer als **logische Fensterzustände** über einem gemeinsamen Zeitdatenspeicher geführt werden können, statt Daten redundant pro Node zu duplizieren.
+## 4.5 Window management
 
-## 4.5 Fenstermanagement
-
-Muss für jeden relevanten Bereich definieren: Beginn, Ende, Verlängerung, Abschluss, Veröffentlichung, Verwerfung.
-
-```text
-Cell A: 100 ms
-Cell B: 300 ms
-Cell C: 700 ms
-Cell D: 1000 ms
-```
-
-Bei Merge benachbarter Zellen muss eine kompatible zeitliche Grundlage sichergestellt werden. Keine Beiträge außerhalb des gewählten Fensters und keine doppelte Zählung über überlappende oder bereits veröffentlichte Intervalle.
+Define start, end, extension, closure, publication and rejection for every relevant area.
+Example cell windows: A 100 ms, B 300 ms, C 700 ms, D 1000 ms.
+Merging cells requires compatible temporal coverage. No contributions outside the selected
+window, and no unintentional reuse across overlapping/already published windows.
 
 ## 4.6 Retention
 
-Konfiguration:
+Parameters: history_retention_ms, minimum_aggregation_window_ms,
+maximum_aggregation_window_ms, time_bin_size_ms.
+Remove observations only when no permitted open aggregation needs them.
 
-```text
-history_retention_ms
-minimum_aggregation_window_ms
-maximum_aggregation_window_ms
-time_bin_size_ms
-```
+**Acceptance:** variable windows, retrospective parent reconstruction, no duplicate
+contributions, bounded storage and cell-specific schedules.
 
-Messungen erst endgültig entfernen, wenn keine erlaubte offene Aggregation sie benötigt.
+# 5. Phase 3 — Policy system
 
-**Abnahmekriterien:** Dynamische Fenster, retrospektive Parents, keine doppelten Beiträge, begrenzter Speicher, zellindividuelle Fenster.
+**Priority: P0.** Application rules constrain release granularity and privacy requirements.
 
----
+## 5.1 Profiles / use cases
 
-# 5. Phase 3 – Policy-System implementieren
-
-**Priorität: P0**
-
-Regionale Anwendungsregeln begrenzen die erlaubte Veröffentlichungsgranularität und Datenschutzanforderungen.
-
-## 5.1 Profile / Anwendungsfälle
-
-| Anwendung | Beispielhafte Anforderungen |
+| Application | Example requirements |
 |---|---|
-| Verkehrsflussanalyse | Gute zeitliche, ggf. grobere räumliche Auflösung |
-| Stadtplanung | Gröbere räumliche/zeitliche Aggregation |
-| Einzelhandelsanalyse | Regionale Besuchsstatistiken |
-| Behördliche Auswertung | Zweckgebundene Granularität |
-| Polizeiliche Suche | Separat zu definierende Zugriffs-/Datenschutzregeln |
+| Traffic-flow analysis | Fine temporal, possibly coarser spatial resolution |
+| Urban planning | Coarser spatial/temporal aggregation |
+| Retail analysis | Regional visit statistics |
+| Administrative analysis | Purpose-specific granularity |
+| Police search | Separately defined access/privacy rules |
 
-Es handelt sich um **Forschungsszenarien**, nicht um Behauptungen zu rechtlichen Zugriffsberechtigungen.
+These are research scenarios, not assertions of legal access permissions.
 
-## 5.2 Datenmodell
+## 5.2 Model
 
-```text
-PolicyManager
-Policy
-PolicyRegion
-PolicyConstraints
-```
-
-Beispiel:
+PolicyManager, Policy, PolicyRegion and PolicyConstraints.
 
 ```cpp
 struct PolicyConstraints {
@@ -371,133 +316,111 @@ struct PolicyConstraints {
 };
 ```
 
-Modulare Erweiterung um weitere Privacy-/Utility-Kriterien.
+Extend modularly with privacy/utility criteria.
 
-## 5.3 Regionale Zuordnung
+## 5.3 Regional mapping
 
-Mögliche Formen: AABBs, Polygone, unabhängiger Policy-Overlay-Tree. **Policy-Tree und Daten-Quadtree konzeptionell unabhängig halten.** Änderungen an Policies sollen keine Rekonstruktion der Sensortopologie verlangen.
+Options: rectangles, polygons or an independent policy overlay tree. Keep policy hierarchy
+conceptually separate from data quadtree. Policy changes should not require rebuilding topology.
 
-## 5.4 Überlappungen und Konflikte
+## 5.4 Overlaps and conflicts
 
-- Globale Defaults und regionale Overrides.
-- Überlappende Policy-Regionen.
-- Zellen über mehrere Regionen.
-- Widersprüchliche Anforderungen.
-- Merges über Policy-Grenzen hinweg.
+Handle global defaults, regional overrides, overlapping regions, cells spanning regions,
+contradictory constraints and merges across boundaries. Explicitly reject conflicts or
+resolve them by a documented rule. Never silently weaken requirements through a merge.
 
-Konflikte entweder explizit zurückweisen oder über dokumentierte Regel auflösen. **Niemals durch Merge stillschweigend schwächere Anforderungen anwenden.**
+## 5.5 Runtime updates — P1
 
-## 5.5 Änderungen zur Laufzeit — P1
+New policies can affect future aggregation. Already published data cannot be recalled.
 
-Neue Regeln dürfen zukünftige Aggregationen beeinflussen; bereits veröffentlichte Daten sind nicht rückholbar.
+**Acceptance:** global/regional policies, deterministic conflict handling, complete checks
+before release and independence from data topology.
 
-**Abnahmekriterien:** Globale/regionale Policies, deterministische Konfliktbehandlung, vollständige Constraint-Erfüllung vor Veröffentlichung, unabhängig vom Quadtree.
+# 6. Phase 4 — Complete AggregationManager
 
----
+**Priority: P0; highest functional importance in the proposed full system.** Connect spatial
+hierarchy, history, privacy/utility, policies and strategies.
 
-# 6. Phase 4 – AggregationManager vollständig implementieren
+## 6.1 Responsibilities
 
-**Priorität: P0 – höchste fachliche Bedeutung**
-
-Verknüpft Quadtree, Historie, Privacy/Utility, Policies und Aggregationsstrategien.
-
-## 6.1 Aufgaben
-
-1. Eingangsmessungen bewerten.
-2. Kandidaten für räumliche/zeitliche Aggregation bilden.
-3. Privacy- und Utility-Constraints prüfen.
-4. Räumliche und zeitliche Aggregation ausführen.
-5. Konfigurierte Strategie anwenden.
-6. Freigeben, zurückhalten oder endgültig unterdrücken.
-7. Evaluierungsmetriken aktualisieren.
+Evaluate input, generate candidates, check constraints, perform aggregation, apply strategy,
+release/withhold/suppress and update evaluation metrics.
 
 ## 6.2 Spatial First
 
 ```text
-Constraint violated
-    → Merge spatial cells
-    → Reevaluate
-    → If needed: extend temporal window
+Violation → merge spatial cells → reevaluate
+          → extend temporal window if still necessary
 ```
 
-Ziel: Frische Daten bevorzugen, räumlich vergröbern.
+Favor freshness at the expense of spatial detail.
 
 ## 6.3 Temporal First
 
 ```text
-Constraint violated
-    → Extend temporal window
-    → Reevaluate
-    → If needed: merge spatial cells
+Violation → extend temporal window → reevaluate
+          → merge spatial cells if still necessary
 ```
 
-Ziel: Räumliche Details nach Möglichkeit behalten.
+Favor spatial detail when possible.
 
-## 6.4 Metric-Based Adaptive — P1
+## 6.4 Metric-based adaptation — P1
 
-Mehrere Kandidaten vergleichen, nur zulässige Kombinationen berücksichtigen.
-
-\[
-U=f(U_{spatial},U_{temporal},U_{latency},U_{fidelity})
-\]
-
-Unter geeigneten Privacy- und Utility-Nebenbedingungen. Konfigurierbare Zielfunktion/Priorisierung; keine stillschweigende Annahme, dass immer eine zulässige Lösung existiert.
-
-## 6.5 Veröffentlichung
+Compare permissible candidates using a configurable objective:
 
 ```text
-Input Measurements
-    → Temporal Storage
-    → Generate Candidates
-    → Evaluate Constraints
-         ├─ Valid   → Publish
-         └─ Invalid → Spatial/Temporal Adaptation
-                         → Reevaluate
-                              ├─ Valid → Publish
-                              └─ Invalid → More aggregation possible?
-                                             ├─ Yes → Repeat
-                                             └─ No  → Suppress
+U = f(U_spatial, U_temporal, U_latency, U_fidelity)
 ```
 
-## 6.6 Keine redundanten Veröffentlichungen
+Apply privacy and utility constraints. Do not assume a feasible solution always exists.
 
-Vermeide gleichzeitige widersprüchliche Parent-/Child-Veröffentlichungen im selben Ausgabeintervall, die Beiträge doppelt zählen oder Rückschlüsse durch Differenzbildung ermöglichen. Berücksichtige auch wiederholte Releases und überlappende Zeitfenster als Privacy-Risiko.
+## 6.5 Release process
 
-## 6.7 Policy-spezifische Views — P1
+```text
+Observations → temporal storage → candidate generation → constraint evaluation
+  Valid → publish
+  Invalid → adapt spatially/temporally → reevaluate
+    Valid → publish
+    Invalid → further adaptation possible?
+      Yes → repeat
+      No → suppress
+```
 
-Perspektivisch: gemeinsamer interner Messbestand, aber getrennte Policy-Auswertung und Veröffentlichungszustände. Zunächst **eine aktive Veröffentlichungspolicy pro Sensor**, alternative Policies in separaten, identisch gespeisten Experimenten.
+## 6.6 Avoid redundant releases
 
-**Abnahmekriterien:** Spatial First, Temporal First, korrekte Unterdrückung, keine ungültigen Releases oder unbeabsichtigte Doppelveröffentlichung, reproduzierbare Entscheidungen.
+Avoid contradictory parent/child releases in the same output interval, double counting and
+possible differencing attacks. Account for repeated releases and overlapping windows.
 
----
+## 6.7 Policy-specific views — P1
 
-# 7. Phase 5 – Privacy-Metriken
+Later: shared internal observations with independent policy evaluation and release states.
+Initially use one active policy per sensor; compare policies in identically fed separate runs.
 
-**Priorität: P0/P1**
+**Acceptance:** Spatial First, Temporal First, correct suppression, no invalid/unintended
+double publications and reproducible decisions.
 
-Unabhängig austauschbare Evaluatoren.
+# 7. Phase 5 — Privacy metrics
 
-## 7.1 k-Anonymity / k-basierte Mindestanzahl — P0
+**Priority: P0/P1.** Interchangeable evaluators.
 
-\[
-k(c,W)=\left|\{\text{distinct agents in }(c,W)\}\right|
-\]
+## 7.1 k-anonymity / k-based minimum count — P0
 
-Mehrfachbeobachtungen derselben Person nicht mehrfach zählen. **Wissenschaftlich sauber abgrenzen:** Eine Mindestanzahl eindeutiger Agenten ist zunächst eine operative k-basierte Freigaberegel; für formale k-Anonymität müssen Angreifermodell, Quasi-Identifikatoren und Verknüpfbarkeit mehrerer Veröffentlichungen spezifiziert werden.
+```text
+k(c,W) = number of distinct agents observed in cell c during window W
+```
 
-## 7.2 l-Diversity — P1
+Do not count repeated observations as new people. A distinct-contributor threshold is
+initially an operational k-based rule. Formal k-anonymity also requires specified adversary,
+quasi-identifiers and linkability of repeated publications.
 
-Verschiedene relevante Merkmalsausprägungen im Aggregat; Agententypen sind nicht automatisch geeignete sensitive Attribute. Semantik explizit definieren.
+## 7.2 l-diversity — P1
 
-## 7.3 Weitere Metriken — P2
+Count relevant sensitive-attribute values. Agent classes are not automatically sensitive
+attributes; define the semantics explicitly.
 
-- t-Closeness
-- δ-Presence
-- Entropy
-- KL-Divergence
-- Mutual Information
+## 7.3 Further metrics — P2
 
-Modularer Aufbau:
+Candidates: t-closeness, delta-presence, entropy, KL divergence and mutual information.
 
 ```text
 PrivacyMetricEvaluator
@@ -508,145 +431,129 @@ PrivacyMetricEvaluator
   └── InformationMetrics
 ```
 
-Nicht alle Metriken sind aus bloßen Klassen-Counts rekonstruierbar. Benötigte Informationen je Metrik dokumentieren.
+Class counts cannot reconstruct every metric. Document required data for each evaluator.
 
----
+# 8. Phase 6 — Utility and system metrics
 
-# 8. Phase 6 – Utility- und Systemmetriken
+**Priority: P0/P1.**
 
-**Priorität: P0/P1**
+## 8.1 Spatial resolution — P0
 
-## 8.1 Spatial Resolution — P0
+Record published cell side/area/depth and, if appropriate, average effective spatial granularity.
 
-Veröffentlichte Zellkante, Zellfläche, Tiefe und ggf. mittlere effektive räumliche Granularität.
-
-## 8.2 Temporal Resolution — P0
-
-\[
-\Delta t=t_{end}-t_{start}
-\]
-
-Pro veröffentlichtem Aggregat.
-
-## 8.3 Temporal Lag / Data Staleness — P0
-
-\[
-L=t_{publication}-t_{latestMeasurement}
-\]
-
-**Nur Zeitpunkte gleicher Zeitbasis subtrahieren.** Getrennt erheben: Simulationszeit-basiertes Datenalter und Wall-Clock-Verarbeitungslatenz.
-
-## 8.4 Processing Time — P0
-
-\[
-T_{processing}=t_{end}-t_{start}
-\]
-
-- Global je Update/Batch.
-- Pro Zelle je Aggregationsentscheidung.
-- Bei überlappenden Berechnungen inklusive/exklusive Laufzeiten unterscheiden.
-- Zusätzliche Zähler: geprüfte Zellen, Merges, Fensterverlängerungen, Constraint-Checks.
-
-## 8.5 Data Fidelity / Suppression Rate — P0
-
-\[
-F=1-\frac{N_{suppressed}}{N_{input}}
-\]
-
-**Vergleiche Messbeiträge, nicht bloß die Anzahl aggregierter MongoDB-Records.** Erfassen: `InputMeasurements`, `PublishedContributions`, `SuppressedContributions`, `SuppressionReasons`. Ein veröffentlichter Record kann viele Input-Messungen repräsentieren.
-
-## 8.6 Localization Accuracy — P1
-
-Vergleich GT vs. gemessener Position und separat vs. veröffentlichter Zellrepräsentation (z. B. Mittelpunkt). Sensorfehler und Aggregationsfehler getrennt ausweisen.
-
-## 8.7 Classification Accuracy — P1
-
-Nur aussagekräftig bei aktivem Klassifikationsfehlermodell. Direkt aus Ground Truth übernommene Labels haben definitionsgemäß 100 % simulierte Genauigkeit und sind kein eigenständiges Forschungsergebnis.
-
-## 8.8 Weitere Metriken — P1/P2
-
-- Velocity Error
-- OD-Flows / Flow Preservation
-- Class Distribution Error
-- Aggregation Overhead
-- Memory Consumption
-- CPU Utilization
-- Publication Rate
-
----
-
-# 9. Phase 7 – Sensor-Modell und Messunsicherheit
-
-**Priorität: P1**
-
-Detektion/Klassifikation selbst gehören nicht zur Arbeit. **Keinen vollständigen Kamera-/LiDAR-Simulator entwickeln.**
-
-## 9.1 Ground Truth getrennt halten
+## 8.2 Temporal resolution — P0
 
 ```text
-Ground Truth Position
-    → Sensor Measurement Model
-    → Measured Position
-    → Quadtree
+Delta t = windowEnd - windowStart
 ```
 
-Ground Truth niemals durch Sensorrauschen überschreiben.
+Record per publication.
 
-## 9.2 LiDAR-orientiertes Modell
-
-Parameter:
+## 8.3 Lag / staleness — P0
 
 ```text
-sensor_position
-sensor_orientation
-horizontal_fov
-vertical_fov
-maximum_range
-beam_divergence
-angular_sampling_resolution
-range_noise_sigma
-angular_noise_sigma
+L = publicationTime - latestMeasurementTime
 ```
 
-**Beam Divergence ≠ Winkelabstand der Messstrahlen ≠ Winkelrauschen.** Nicht unmittelbar aus Divergenz auf Standardabweichung schließen.
+Subtract times on the same clock only. Report simulation-based data age separately from
+wall-clock processing latency.
 
-Beispiel im Polarkoordinatensystem:
-
-\[
-r_m=r_{GT}+\epsilon_r,\qquad \theta_m=\theta_{GT}+\epsilon_\theta
-\]
-
-Dann Rücktransformation nach kartesisch; dadurch distanz- und richtungsabhängiger Fehler.
-
-## 9.3 Kamera-Klassifikation — P1
-
-Zunächst GT-Klasse als Label. Optional Confusion Matrix, klassenspezifische Fehlerraten und Detektionswahrscheinlichkeit. Keine echten CNNs nötig.
-
-## 9.4 Sensorfusion — P2
-
-Konzeptionelle Erweiterungen: LiDAR + Monokamera, Stereo oder LiDAR + Stereo. Vollständige Fusion für Kernalgorithmus nicht erforderlich.
-
-## 9.5 Distanzabhängige Auflösung — P1
-
-Trennen: Sensorauflösung, Lokalisierungsunsicherheit, Anwendungsanforderung, maximale Quadtree-Tiefe. Sensorbedingte Mindestgranularität ggf. **über Policies/Utility-Constraints** berücksichtigen, statt die statische Topologie je Entfernung umzubauen.
-
----
-
-# 10. Phase 8 – SharedBuffer und Threading
-
-**Priorität: P0**
-
-## 10.1 Interne Container vs. Threadgrenzen
-
-`Simulation` hält den Agentenvektor und die Sensorinstanzen. Sensoren lesen diese Zustände im selben Ausführungskontext direkt. **SharedBuffers sind für Austausch zwischen Threads**, nicht für jeden internen Methodenaufruf.
-
-## 10.2 Sim → Renderer
+## 8.4 Processing time — P0
 
 ```text
-Simulation Thread → SharedBuffer → Renderer Thread
+T_processing = endTime - startTime
 ```
 
-Renderer braucht agentenbasierte Debug-Ansicht und aggregierte Sensoransichten. Keine unsynchronisierten Mutationen über Threadgrenzen.
+Measure per update/batch and cell decision. Distinguish inclusive/exclusive overlapping costs.
+Count evaluated cells, merges, window extensions and constraint checks.
+
+## 8.5 Data fidelity / suppression rate — P0
+
+Historical proposed contribution-retention measure:
+
+```text
+F = 1 - N_suppressed / N_input
+```
+
+Compare observation contributions, not merely MongoDB record counts. Record InputMeasurements,
+PublishedContributions, SuppressedContributions and SuppressionReasons. One publication can
+represent many inputs. The current roadmap distinguishes retention from broader fidelity.
+
+## 8.6 Localization accuracy — P1
+
+Compare GT with measured positions and, separately, with a release representation such as
+cell center. Report sensor and aggregation errors separately.
+
+## 8.7 Classification accuracy — P1
+
+Meaningful only with an active classification-error model. GT labels copied directly imply
+100% simulated accuracy by construction, not a separate research result.
+
+## 8.8 Additional metrics — P1/P2
+
+Velocity error, OD flows/flow preservation, class-distribution error, aggregation overhead,
+memory, CPU usage and publication rate.
+
+# 9. Phase 7 — Sensor model and uncertainty
+
+**Priority: P1.** Detection/classification are not the research subject. Do not build a
+complete camera/LiDAR simulator for this core aggregation task.
+
+## 9.1 Preserve GT
+
+```text
+GT position → measurement model → measured position → quadtree
+```
+
+Do not overwrite GT with noise.
+
+## 9.2 LiDAR-oriented abstraction
+
+Parameters: sensor_position, sensor_orientation, horizontal_fov, vertical_fov, maximum_range,
+beam_divergence, angular_sampling_resolution, range_noise_sigma, angular_noise_sigma.
+
+Beam divergence, angular spacing and angular noise are different. Do not directly infer a
+standard deviation from divergence. Example polar noise:
+
+```text
+r_measured = r_GT + epsilon_r
+theta_measured = theta_GT + epsilon_theta
+```
+
+Cartesian conversion gives distance/direction-dependent error.
+
+## 9.3 Camera classification — P1
+
+Initially use GT class labels. Optionally add a confusion matrix, class-specific error rates
+and detection probabilities; real CNNs are unnecessary.
+
+## 9.4 Sensor fusion — P2
+
+Possible extensions: LiDAR + monocular camera, stereo or LiDAR + stereo. Complete fusion
+is not required by the core algorithm.
+
+## 9.5 Distance-dependent resolution — P1
+
+Separate sensor resolution, localization uncertainty, application requirements and max tree
+depth. Express sensor-induced minimum granularity through policies/utility where appropriate,
+rather than rebuilding static topology for distance.
+
+# 10. Phase 8 — SharedBuffer and threading
+
+**Priority: P0.**
+
+## 10.1 Internal containers versus thread boundaries
+
+Simulation owns agents/sensors; sensors can read agent states directly in the same execution
+context. SharedBuffers serve thread boundaries, not every internal method call.
+
+## 10.2 Simulation to renderer
+
+```text
+Simulation thread → SharedBuffer → renderer thread
+```
+
+Renderer needs agent debug data and sensor views. Do not share unsynchronized mutable state.
 
 ## 10.3 CombinedFrame — P1
 
@@ -658,39 +565,40 @@ struct CombinedFrame {
 };
 ```
 
-Bestehende Implementierung möglichst über unveränderliche Snapshots adaptieren. Sensoren publizieren nicht zwangsläufig pro Simulationstick: pro Sensor Erfassungszeit, Fenster, Publikationszeit, Sequenznummer erfassen.
+Prefer adapting existing code with immutable snapshots. Sensors need not publish every
+simulation tick. Capture time, window, publication time and sequence number are per-sensor data.
 
-## 10.4 Immutable Snapshots — P1
+## 10.4 Immutable snapshots — P1
 
-Prüfen, ob bestehende `SharedBuffer` sinnvoll mit `std::shared_ptr<const T>` arbeitet: geringe Kopierlast, klare Ownership, konsistente Snapshots, keine Data Races.
+Evaluate shared_ptr<const T> for lower copy cost, explicit ownership and consistent snapshots.
+Transport still needs synchronization; pointer lifetime alone does not prevent all data races.
 
-## 10.5 Eigener Aggregator-Thread — P2
+## 10.5 Separate aggregation thread — P2
 
-Zunächst Sensorpipeline/Aggregation im Simulationsthread. Separaten Thread erst nach Performance-Messung erwägen, ggf. immutable Measurement-Batches über Queue.
+Initially run sensor aggregation in the simulation thread. Consider another thread only
+after measurement, potentially with immutable measurement batches in a queue.
 
-## 10.6 Unix Domain Socket — P3
+## 10.6 Unix domain socket — P3
 
-Nur optional für getrennte Prozesse und Crash-Isolation bzw. austauschbare Pipelines. Nicht für den aktuellen In-Process-Fall erforderlich.
+Optional for process separation, crash isolation or interchangeable pipelines; not required
+for current in-process operation.
 
----
+# 11. Phase 9 — MongoDB and sensor output
 
-# 11. Phase 9 – MongoDB und Sensor-Output
-
-**Priorität: P0/P1**
-
-**Der Sensor ist Eigentümer der Veröffentlichungslogik und MongoDB-Kommunikation.** Der AggregationManager selbst kennt MongoDB nicht.
+**Priority: P0/P1.** The sensor owns publication and DB communication. The manager does not
+know MongoDB.
 
 ```text
 AdaptiveGridBasedSensor
     → AggregationManager
     → Aggregated Cells
     → Sensor Output Interface
-         ├── MongoDB
-         ├── SharedBuffer
-         └── Optional File Export
+        ├── MongoDB
+        ├── SharedBuffer
+        └── optional file export
 ```
 
-## 11.1 Datensätze
+## 11.1 Records
 
 ```cpp
 struct AggregatedCell {
@@ -702,90 +610,89 @@ struct AggregatedCell {
 };
 ```
 
-Weitere Felder: `sensor_id`, `policy_id`, `publication_timestamp`, `aggregation_strategy`, `spatial_depth`. Interne Agentenidentitäten **nicht** mit veröffentlichen. Evaluierungsdaten gegebenenfalls getrennt speichern.
+Additional fields: sensor_id, policy_id, publication_timestamp, aggregation_strategy and
+spatial_depth. Do not publish internal identities. Keep evaluation data separate when needed.
 
-## 11.2 Output-Interface — P1
+## 11.2 Output interface — P1
 
 ```text
 ISensorOutput
-   ├── MongoOutput
-   ├── FileOutput
-   └── NullOutput
+  ├── MongoOutput
+  ├── FileOutput
+  └── NullOutput
 ```
 
-Damit Benchmarks ohne externe Datenbank ausführbar sind.
+Allows benchmarks without an external database.
 
-## 11.3 Asynchrones Publishing — P1
+## 11.3 Asynchronous publishing — P1
 
-Gegebenenfalls begrenzte Queue, sodass DB-I/O Aggregation nicht blockiert. Zeitpunkte getrennt messen: Aggregationsabschluss, Queue-Übergabe, erfolgreiche Persistenz.
+Consider a bounded queue to decouple DB I/O. Measure aggregation completion, queue handoff
+and successful persistence separately.
 
----
+# 12. Phase 10 — Improve simulation and agent distributions
 
-# 12. Phase 10 – Simulation und Agentenverteilung verbessern
+**Priority: P1.**
 
-**Priorität: P1**
+## 12.1 Retain uniform distribution
 
-## 12.1 Homogene Verteilung als Benchmark erhalten
+Useful for debugging, scaling and reproducible reference checks.
 
-Uniform Distribution ist nützlich für Debugging, Skalierung, reproduzierbare Referenztests.
+## 12.2 Heterogeneous scenarios
 
-## 12.2 Heterogene Szenarien
+Configurable Dense, Medium, Sparse and Empty regions; spawning rate, target density,
+class distribution and bounds.
 
-Konfigurierbare Bereiche: `Dense`, `Medium`, `Sparse`, `Empty`. Parameter: Spawn Rate, Target Density, Class Distribution, Region Bounds.
+## 12.3 Spawn areas — P1
 
-## 12.3 Spawn Areas — P1
+Optional building entrances, streets, sidewalks, stops and plazas rather than purely random starts.
 
-Statt rein zufälliger Startpositionen optional Gebäudeeingänge, Straßen, Fußwege, Haltestellen, Plätze.
+## 12.4 Target areas — P1
 
-## 12.4 Target Areas — P1
+Entrances, exits, stops, junctions and target corridors to create plausible flows.
 
-Gebäudeeingänge, Ausgänge, Haltestellen, Kreuzungen, Zielkorridore; erzeugt plausiblere Bewegungsflüsse.
+## 12.5 Path planning — P2
 
-## 12.5 Path Planning — P2
+Waypoints, routes, obstacle avoidance, class-specific speeds and possibly ORCA. Must not
+block the aggregation core.
 
-Wegpunkte, Routen, Hindernisvermeidung, agentenspezifische Geschwindigkeiten, ggf. ORCA. Darf den Kernaggregator nicht blockieren.
+## 12.6 Agent classes — P1
 
-## 12.6 Agentenklassen — P1
+Preserve existing types; optionally add pedestrian, cyclist, scooter, wheelchair user and
+other vulnerable road users. Later separate base group, modality and mobility restrictions.
 
-Bestehende Typen erhalten und bei Bedarf erweitern: Pedestrian, Cyclist, Scooter, Wheelchair User, andere VRUs. Später differenzierte Taxonomie mit Basisgruppe, Modalität und Mobilitätseinschränkungen.
+# 13. Phase 11 — Revise rendering
 
----
+**Priority: P1.**
 
-# 13. Phase 11 – Renderer überarbeiten
+## 13.1 Cell reconstruction
 
-**Priorität: P1**
+Render published IDs and values; reconstruct bounds. Do not draw every internal max-depth cell.
 
-## 13.1 Zellrekonstruktion
+## 13.2 Preserve views
 
-Renderer erhält **nur veröffentlichte Cell-IDs und zugehörige Aggregationswerte**, rekonstruiert Bounds und zeichnet diese. Vollständig gesplitteter interner Baum muss **nicht** gezeichnet werden.
+GT/trajectory agent view, static-grid benchmark view and adaptive published-cell view.
 
-## 13.2 Ansichten erhalten
+## 13.3 Aggregation visualization — P1
 
-- Agent View: Ground Truth und Trajektorien.
-- Static Grid View: Benchmark.
-- Adaptive Grid View: tatsächliche veröffentlichte Cells.
+Show cell size, merges, temporal windows, compliance, suppression and regional rules.
+Optional overlays for depth, window length and privacy status.
 
-## 13.3 Aggregationsvisualisierung — P1
+## 13.4 Policy overlay — P1
 
-Zellgrößen, räumliche Merges, temporale Fenster, Privacy-Konformität, Suppression, regionale Policy-Constraints; ggf. Overlays für räumliche Tiefe, Zeitfenster und Privacy-Status.
+Draw transparent policy regions over the map to inspect local adaptation.
 
-## 13.4 Policy-Overlay — P1
+## 13.5 OpenGL/3D rendering — P2
 
-Policy-Regionen transparent über Karte legen und regionale Adaptivität prüfen.
+Improve SFML/OpenGL separately; the historical plan notes macOS OpenGL 4.1 Core support.
+That is not equivalent to SFML Graphics support for that profile. The research core remains
+usable with 2D rendering. Native Metal is a separate current discussion in README.
 
-## 13.5 OpenGL-/3D-Renderer — P2
+# 14. Phase 12 — Evaluation framework
 
-SFML/OpenGL separat verbessern (macOS-Grenze: OpenGL 4.1 Core Profile). Kernsystem bleibt mit 2D-Renderer vollständig nutzbar.
+**Priority: P1 in this historical plan.** Integrate evaluation rather than relying only
+on manual MongoDB dump processing. The current task list moves essential evaluation earlier.
 
----
-
-# 14. Phase 12 – Evaluation Framework
-
-**Priorität: P1**
-
-Evaluation direkt in Architektur integrieren, statt ausschließlich Mongo-Dumps manuell auszuwerten.
-
-## 14.1 Reproduzierbare Konfiguration
+## 14.1 Reproducible configuration
 
 ```yaml
 simulation:
@@ -795,69 +702,46 @@ simulation:
   timestep: 0.05
   agents: 100
   random_seed: 42
-
 quadtree:
   max_depth: 5
-
 aggregation:
   strategy: spatial_first
   min_window_ms: 100
   max_window_ms: 1000
-
 privacy:
   k: 5
-
 sensor:
   noise_enabled: false
 ```
 
-Beispielwerte, keine final festgelegten experimentellen Parameter. `0.05 s` Zeitschritt entspricht **20 Updates/s**.
+Example parameters, not final scientific choices. A 0.05-s step gives 20 updates/s.
 
-## 14.2 Szenarien
+## 14.2 Scenarios
 
-| Szenario | Zweck |
+| Scenario | Purpose |
 |---|---|
-| Uniform Density | Referenz/Skalierung |
-| Dense Region | Hohe Dichte |
-| Sparse Region | Privacy in dünn belegten Räumen |
-| Mixed Density | Heterogene Bedingungen |
-| Dynamic Density | Zeitlich veränderliche Verteilung |
-| Regional Policies | Unterschiedliche Constraints |
-| Strict Privacy | Hoher Aggregationsdruck |
-| Sensor Noise | Unsicherheitsauswirkung |
+| Uniform density | Reference and scaling |
+| Dense region | High density |
+| Sparse region | Privacy under low density |
+| Mixed density | Heterogeneous conditions |
+| Dynamic density | Changing distribution |
+| Regional policies | Different local requirements |
+| Strict privacy | Strong aggregation pressure |
+| Sensor noise | Uncertainty effects |
 
 ## 14.3 Baselines
 
-1. Agent-Based Reference.
-2. Static Grid Aggregation.
-3. Spatial-Only Aggregation.
-4. Temporal-Only Aggregation.
-5. Spatial-First.
-6. Temporal-First.
-7. Metric-Based Adaptive.
+Agent-based reference, fixed grid, spatial-only, temporal-only, Spatial First, Temporal
+First and metric-based adaptation. Implement missing baselines or justify their exclusion.
 
-Fehlende Baselines implementieren oder begründet ausklammern.
+## 14.4 Metrics
 
-## 14.4 Metriken
+Privacy compliance, spatial/temporal resolution, staleness, processing time, fidelity,
+localization/velocity error, publication/suppression rates, memory and CPU usage.
 
-```text
-Privacy Compliance
-Spatial Resolution
-Temporal Resolution
-Data Staleness
-Processing Time
-Data Fidelity
-Localization Error
-Velocity Error
-Publication Rate
-Suppression Rate
-Memory Usage
-CPU Usage
-```
+## 14.5 Headless experiment runner
 
-## 14.5 Headless Experiment-Runner
-
-Konfiguration laden, deterministischen Lauf starten, Metriken/exportierte Daten speichern:
+Load configuration, run deterministic input and save observations/results:
 
 ```text
 experiment_001/
@@ -867,186 +751,181 @@ experiment_001/
   publications.csv
 ```
 
-## 14.6 Statistik
+## 14.6 Statistics
 
-Mehrere Random Seeds; Mittelwert, Median, Standardabweichung, Quantile und ggf. Konfidenzintervalle. Keine wissenschaftlichen Schlussfolgerungen aus einem einzelnen Run.
+Multiple seeds; mean, median, standard deviation, quantiles and appropriate confidence
+intervals. Do not base scientific conclusions on one run.
 
----
+# 15. Phase 13 — Tests and scientific correctness
 
-# 15. Phase 13 – Tests und wissenschaftliche Korrektheit
-
-**Priorität: P0/P1**
+**Priority: P0/P1.**
 
 ## 15.1 Quadtree
 
-IDs, Parent/Child, Bounds, vollständige Initialisierung, Mapping, unveränderliche Topologie.
+IDs, parent/child relations, bounds, initialization, mapping and invariant topology.
 
-## 15.2 Temporal Storage
+## 15.2 Temporal storage
 
-Fensterstart, -verlängerung, -abschluss; Rückwärtsaggregation; Cleanup; Überlappungen; wiederholt beobachtete Agenten.
+Window start/extension/closure, retrospective aggregation, cleanup, overlaps and repeated identities.
 
 ## 15.3 Privacy
 
 ```text
-Cell distinct agents = 3, k = 5 → no publication
-Parent distinct agents = 8, k = 5 → publication permitted,
-                                  sofern alle anderen Constraints erfüllt
+Distinct agents = 3, k = 5 → no publication
+Parent distinct agents = 8, k = 5 → permitted only if all other constraints also hold
 ```
 
 ## 15.4 Policy
 
-Zwei Regionen; Überschneidungen; Konflikte; Merge über Regionsgrenzen; unerfüllbare Anforderungen.
+Two regions, overlap, conflict, cross-boundary merge and impossible requirements.
 
 ## 15.5 Aggregation
 
-Spatial First, Temporal First, Suppression, keine doppelte Zählung, korrekte Parent-Statistik, dokumentierte Verlustursachen.
+Spatial First, Temporal First, suppression, no double counting, correct parent statistics
+and documented loss reasons.
 
-## 15.6 Reproduzierbarkeit
+## 15.6 Reproducibility
 
-Identischer Seed + Konfiguration → fachlich identische Entscheidungen. Wall-Clock-Performance muss nicht bitgenau reproduzierbar sein.
+Equal seed/configuration gives equal scientific decisions. Wall-clock runtime need not be identical.
 
----
+# 16. Phase 14 — Performance and scalability
 
-# 16. Phase 14 – Performance und Skalierbarkeit
-
-**Priorität: P1**
-
-**Erst Korrektheit, dann Optimierung.**
+**Priority: P1. Correctness before optimization.**
 
 ## 16.1 Profiling
 
-Quadtree-Zugriff, Leaf-Mapping, temporale Datenhaltung, Parent-Aggregation, Policy-Lookup, Metrics, Publishing.
+Measure quadtree access/mapping, history, parent aggregation, policy lookup, metrics and output.
 
-## 16.2 Optimierungen prüfen
+## 16.2 Candidate optimizations
 
-- Zusammenhängender Node-Speicher.
-- Indizes statt Pointer-Chasing.
-- Vorberechnete Parent-/Child-Verbindungen.
-- Listen aktiver Zellen.
-- Inkrementelle Statistiken.
-- Begrenzte Ringbuffer.
+Contiguous node storage, indices rather than pointer chasing, precomputed hierarchy links,
+active-cell lists, incremental statistics and bounded ring buffers.
 
-## 16.3 Nur aktive Bereiche verarbeiten
+## 16.3 Process active areas
 
-Vollständige statische Topologie muss nicht bei jedem Tick vollständig traversiert werden; ggf. aktive Leaves und ihre Vorfahren nutzen.
+A static hierarchy does not require traversing all nodes every tick. Active leaves and
+ancestors may suffice.
 
-## 16.4 Speicher separat bilanzieren
+## 16.4 Separate memory accounting
 
-Topologie, Historie, Privacy-Hilfszustände, Queue, SharedBuffers.
+Topology, history, privacy helper states, queues and shared buffers.
 
-## 16.5 Laufzeitkosten aufschlüsseln
+## 16.5 Separate runtime costs
 
-Simulation, Sensor, Aggregation, Policy-Evaluation, Veröffentlichung, Datenbanktransfer. Keine ungemessenen Performance-Versprechen.
+Simulation, sensor processing, aggregation, policy evaluation, publication and DB transfer.
+Do not promise unmeasured speedups.
 
----
+# 17. Phase 15 — Extensions outside the critical path
 
-# 17. Phase 15 – Erweiterungen außerhalb des kritischen Pfads
+**Priority: P2/P3.**
 
-**Priorität: P2/P3**
-
-| Feature | Priorität | Beschreibung |
+| Feature | Priority | Purpose |
 |---|---|---|
-| LiDAR-/Kamera-Fusion | P2 | Weitergehende Sensorunsicherheit |
-| Vollständige Stereo-Simulation | P3 | Kamera-Tiefenrekonstruktion mit Baseline |
-| ORCA Collision Avoidance | P2 | Realistische Bewegungen |
-| OSM-/CityGML-Import | P2 | Stadtgeometrie |
-| Gebäude-/Eingangsmodell | P2 | Semantische Start-/Zielbereiche |
-| 3D-Renderer | P2 | Zusätzliche Visualisierung |
-| Multi-Sensor-Fusion | P3 | Gemeinsame Messbasis |
-| Zentraler AggregationManager | P3 | Mehrere Sensoren |
-| Unix Domain Socket | P3 | Prozessübergreifende Kommunikation |
-| GPU-Beschleunigung | P3 | Performance |
-| Distributed Processing | P3 | Verteilte Architektur |
-| Erweiterte Privacy-Metriken | P2 | Weitere formale Kriterien |
+| LiDAR/camera fusion | P2 | Further measurement uncertainty |
+| Complete stereo simulation | P3 | Camera depth using baseline |
+| ORCA collision avoidance | P2 | Realistic movement |
+| OSM/CityGML import | P2 | City geometry |
+| Buildings/entrances | P2 | Semantic start/target areas |
+| 3D renderer | P2 | Additional visualization |
+| Multi-sensor fusion | P3 | Shared observation basis |
+| Central aggregation manager | P3 | Multiple sensors |
+| Unix domain socket | P3 | Process communication |
+| GPU acceleration | P3 | Performance |
+| Distributed processing | P3 | Distributed architecture |
+| Further privacy metrics | P2 | Additional formal criteria |
 
----
+# 18. Proposed implementation order in the historical plan
 
-# 18. Konkrete Implementierungsreihenfolge
+This sequence is preserved as reference; current TO-DO priorities differ.
 
-| Schritt | Aufgabe | Priorität | Voraussetzung |
+| Step | Task | Priority | Requires |
 |---|---|---|---|
-| 1 | Code-Audit und Architektur dokumentieren | P0 | Keine |
-| 2 | Tests und Referenzläufe sichern | P0 | 1 |
-| 3 | Topologie von Messdaten trennen | P0 | 2 |
-| 4 | Statischen Max-Quadtree implementieren | P0 | 3 |
-| 5 | Cell-ID-/Parent-Aggregation testen | P0 | 4 |
-| 6 | Temporale Datenhaltung implementieren | P0 | 5 |
-| 7 | Retrospektive Aggregation ermöglichen | P0 | 6 |
-| 8 | Policy-Datenmodell implementieren | P0 | 4 |
-| 9 | Policy-Overlay und regionale Zuordnung | P0 | 8 |
-| 10 | k-basierte Privacy-Prüfung | P0 | 6, 8 |
-| 11 | AggregationManager: Spatial First | P0 | 7–10 |
-| 12 | AggregationManager: Temporal First | P0 | 11 |
-| 13 | Veröffentlichung und Suppression | P0 | 12 |
-| 14 | Sensorpipeline vollständig integrieren | P0 | 13 |
-| 15 | MongoDB-Output erhalten und entkoppeln | P0/P1 | 14 |
-| 16 | SharedBuffer und Renderer integrieren | P0 | 14 |
-| 17 | Basis-Utility-Metriken implementieren | P0 | 13 |
-| 18 | End-to-End-Tests | P0 | 14–17 |
-| 19 | Heterogene Agentenverteilungen | P1 | 18 |
-| 20 | Sensorrauschen | P1 | 18 |
-| 21 | Metric-Based Adaptive Strategy | P1 | 17–20 |
-| 22 | Erweiterte Privacy-/Utility-Metriken | P1/P2 | 21 |
-| 23 | Evaluation Framework und Benchmarks | P1 | 18–22 |
-| 24 | Performanceoptimierung | P1 | 23 |
-| 25 | Erweiterte Bewegung | P2 | Unabhängig |
-| 26 | 3D-/erweiterter Renderer | P2 | Unabhängig |
+| 1 | Audit and architecture documentation | P0 | None |
+| 2 | Reference checks and runs | P0 | 1 |
+| 3 | Separate topology from observations | P0 | 2 |
+| 4 | Static max-depth quadtree | P0 | 3 |
+| 5 | IDs and parent aggregation checks | P0 | 4 |
+| 6 | Temporal storage | P0 | 5 |
+| 7 | Retrospective aggregation | P0 | 6 |
+| 8 | Policy data model | P0 | 4 |
+| 9 | Policy overlay and regional mapping | P0 | 8 |
+| 10 | k-based checks | P0 | 6, 8 |
+| 11 | Spatial First manager | P0 | 7–10 |
+| 12 | Temporal First manager | P0 | 11 |
+| 13 | Publication and suppression | P0 | 12 |
+| 14 | Complete sensor integration | P0 | 13 |
+| 15 | Preserve/decouple MongoDB output | P0/P1 | 14 |
+| 16 | SharedBuffer and renderer integration | P0 | 14 |
+| 17 | Basic utility metrics | P0 | 13 |
+| 18 | End-to-end checks | P0 | 14–17 |
+| 19 | Heterogeneous distributions | P1 | 18 |
+| 20 | Sensor noise | P1 | 18 |
+| 21 | Metric-based adaptation | P1 | 17–20 |
+| 22 | Further privacy/utility metrics | P1/P2 | 21 |
+| 23 | Evaluation framework/benchmarks | P1 | 18–22 |
+| 24 | Performance optimization | P1 | 23 |
+| 25 | Richer movement | P2 | Independent |
+| 26 | 3D/extended rendering | P2 | Independent |
 
----
+# 19. Definition of done for the proposed full framework
 
-# 19. Definition of Done
+1. Generate GT agent states.
+2. Supply current states to sensors.
+3. Produce measurements through the sensor model.
+4. Assign them to maximum-depth leaves.
+5. Retain needed temporal history.
+6. Evaluate aggregation candidates.
+7. Apply regional policies.
+8. Evaluate privacy and utility constraints.
+9. Perform spatial/temporal aggregation.
+10. Reject invalid candidates.
+11. Release valid cells.
+12. Publish through the sensor.
+13. Visualize the published cells.
+14. Record evaluation metrics.
+15. Produce reproducible comparisons against baselines.
 
-```text
-1. Simulation generates ground-truth agent states.
-2. Sensor receives current agent states.
-3. Sensor model produces measurements.
-4. Measurements are assigned to max-depth quadtree leaves.
-5. Temporal storage retains the required measurement history.
-6. AggregationManager evaluates candidate aggregations.
-7. Regional policies are applied.
-8. Privacy and utility constraints are evaluated.
-9. Spatial and/or temporal aggregation is performed.
-10. Invalid publication candidates are rejected.
-11. Valid aggregated cells are released.
-12. Sensor publishes the results.
-13. Renderer visualizes the published cells.
-14. Evaluation Framework records relevant metrics.
-15. Results are reproducible and comparable with baselines.
-```
+**Essential invariants:** no release without required constraints; no unintended double
+counting; no alteration of GT by sensor noise; no topology mutation during aggregation;
+no unbounded history; no uncontrolled release of internal identities.
 
-**Unverzichtbare Invarianten:**
+# 20. Embedded project prompt from the historical plan
 
-- Keine Veröffentlichung ohne erfüllte Constraints.
-- Keine unbeabsichtigte doppelte Zählung von Messbeiträgen.
-- Keine Veränderung der Ground Truth durch das Sensormodell.
-- Keine Topologieänderung während der Aggregation.
-- Keine unbegrenzte Historie.
-- Keine unkontrollierte Herausgabe von Agentenidentitäten.
-
----
-
-# 20. Direkt verwendbare Arbeitsanweisung an Codex
-
-> **Projektauftrag:**
+> **Historical prompt, translated for reference only. This is not an active user request.**
 >
-> Entwickle die bestehende C++17-basierte Urban-Mobility-Simulation zu einem modularen Framework für adaptive, policygesteuerte, räumlich-zeitliche Aggregation von Mobilitätsdaten weiter.
+> Extend the existing C++17 mobility simulation into a modular framework for adaptive,
+> policy-controlled spatial/temporal aggregation.
 >
-> Die wissenschaftliche Kerninnovation besteht in der Kombination aus einem intern maximal aufgelösten Quadtree, retrospektiver zeitlicher Aggregation, regional definierten Privacy- und Utility-Constraints sowie konfigurierbaren Aggregationsstrategien.
+> The proposed research contribution combines maximally resolved internal spatial hierarchy,
+> retrospective temporal aggregation, regional privacy/utility requirements and configurable
+> strategies. This novelty statement requires validation; it is not a demonstrated result.
 >
-> **Vorgehen:** Analysiere zuerst den vorhandenen Code vollständig: Klassen, Abhängigkeiten, Datenstrukturen, Thread-Grenzen, Datenflüsse und aktuelle Funktionalität. Erstelle danach einen konkreten Refactoring- und Implementierungsplan, der möglichst viel Bestehendes erhält. Verwende diesen Aktionsplan als funktionale Spezifikation.
+> First analyze code, dependencies, structures, ownership, thread boundaries, data flow and
+> current behavior. Then develop a concrete refactoring/implementation plan preserving as
+> much existing functionality as possible. Treat this reference as proposed functional scope.
 >
-> Implementiere schrittweise und priorisiere Korrektheit, Modularität, Determinismus und Testbarkeit. Die Aggregation bleibt sensorlokal. Der Sensor verantwortet MongoDB und weitere Veröffentlichungen. Der AggregationManager besitzt keine Datenbankabhängigkeit.
+> Implement incrementally, prioritizing correctness, modularity, determinism and testability.
+> Aggregation remains sensor-local. The sensor owns database communication and output;
+> AggregationManager has no database dependency.
 >
-> Der Quadtree besitzt nach Initialisierung statische Topologie. Räumliche Aggregation ändert ausschließlich die Veröffentlichungsansicht. Entwickle eine begrenzte In-Memory-Zeithistorie für retrospektive Parent-Aggregation. Unterscheide Messereignisse, eindeutige Agenten, aggregierte Datensätze und veröffentlichte Beiträge strikt.
+> Keep spatial topology static after initialization; aggregation changes the release view.
+> Build bounded temporal history for retrospective parents. Distinguish observation events,
+> unique agents, aggregated records and published contributions.
 >
-> Sämtliche Privacy-/Utility-Constraints müssen anhand definierter Metriken prüfbar sein. Bestehende Simulation, Sensorhierarchie, Renderer und Datenbankkommunikation funktionsfähig halten. Multi-Sensor-Fusion, 3D-Rendering, komplexes Path Planning und UDS nicht als erste Schritte beginnen.
+> Make selected privacy/utility constraints testable through defined metrics. Preserve
+> simulation, sensors, rendering and database functionality. Do not begin with multi-sensor
+> fusion, 3D rendering, complex routing or Unix domain sockets.
 >
-> **Nicht alles auf einmal implementieren.** Beginne ausschließlich mit **Phase 0: Bestandsaufnahme**. Dokumentiere Architekturentscheidungen, identifiziere konkrete Änderungen pro Datei und ergänze für jede neue Kernfunktion automatisierte Tests. Starte größere Refactorings erst auf Grundlage des auditierten Ist-Zustands.
+> Do not implement everything at once. Start with Phase 0 only: inventory actual code,
+> document decisions and required changes, and define checks for new core functionality.
+> Larger refactoring follows the audited baseline.
 
----
+## Final technical priority of the historical plan
 
-## Abschließende technische Priorität
+The static quadtree is not considered the largest risk in this proposal. Correct temporal
+history under changing spatial aggregation is the critical path for compatible windows,
+retrospective parents, privacy checks, contribution accounting and reproducible evaluation.
 
-Der statische Quadtree ist nicht das größte Risiko. **Die richtige temporale Datenhaltung bei variabler räumlicher Aggregation ist der kritische Pfad.** Sie bestimmt, ob `spatial_first`, `temporal_first`, retrospektive Parents, Privacy-Checks, Data Fidelity und reproduzierbare Evaluation überhaupt konsistent zusammenarbeiten.
-
-**Unmittelbarer nächster Schritt für Codex:** Phase 0 durchführen und die tatsächliche Zielarchitektur auf Grundlage des vorliegenden Repository-Codes erstellen. Noch keine großflächigen Änderungen.
+The plan's immediate next action was Phase 0: establish actual architecture from repository
+code without broad changes. The current README and TO-DO specify what has since been audited,
+reverted and left pending.

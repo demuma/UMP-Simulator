@@ -1,362 +1,354 @@
 # TO-DO — UrbanMobilityPrivacy
 
-**Stand: 08.10.2026. Arbeitsmodus: Dokumentation und Planung vor weiterer Implementierung.**
-
-Dieses Dokument ist die zentrale Aufgabenliste. README.md erklärt den aktuellen Stand;
-hier stehen die ausstehenden Änderungen. Der alte IMPLEMENTATION_PLAN bleibt Referenz.
-Eine dort formulierte Aufgabe wird nicht allein durch ihre Aufnahme zur sofortigen Implementierung.
+**Status: 2026-10-08. Work mode: documentation and planning before further implementation.**
 
-## 1. Status und Prioritäten
+This is the central task backlog. README describes current behavior; this file tracks
+pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
+to begin every listed phase. All project documentation is maintained in English.
 
-- `[x]` erledigt und mit konkretem Nachweis abgeschlossen.
-- `[ ]` offen; noch nicht implementiert oder fachlich noch zu entscheiden.
-- **P0:** für korrekte Daten oder den nächsten kleinen Vergleich nötig.
-- **P1:** für adaptive Aggregation, belastbare Evaluation oder Dissertation nötig.
-- **P2:** Erweiterung; beginnt bei nachgewiesenem Bedarf.
-
-Bei jeder Implementierung festhalten: betroffene Dateien, fachliche Wirkung,
-Verifikationsverfahren, Ergebnis und verbliebene Grenzen. Keine Aufgabe nur deshalb
-abhaken, weil eine Klasse oder Konfigurationsoption existiert.
-
-## 2. Bereits erledigt: Ordnung und Bestandsaufnahme
-
-- [x] Eigenes lokales Repo UrbanMobilityPrivacy eingerichtet; kein Remote.
-- [x] Aggregation_Manager als Simulatorbasis und vier getrennte V3-Renderer importiert.
-- [x] Import-Commit als Ausgangsbasis erhalten: `96fae5b`.
-- [x] Simulator und vier Renderer im unveränderten Import erfolgreich gebaut.
-- [x] 101 Komponenten-Dateien byteweise gegen die Originalprojekte geprüft.
-- [x] Alten Implementierungsplan als historische Referenz unter docs/reference abgelegt.
-- [x] Aktuelle Klassen-/Datenflussbefunde und zentrale Risiken dokumentiert.
-- [x] Lokale MongoDB-Verbindung und Collections lesend geprüft.
-- [x] Beispielagent auf GT-/ABS-Zuordnung, Duplikate und Geschwindigkeit geprüft.
-- [x] Zwischenzeitlichen ABS-Fix einschließlich Testtarget zurückgenommen: `db2bdbb`.
-- [x] README und TO-DO als zentrale Projektübersicht angelegt/überarbeitet.
-- [x] UAM-Simulator-Modern als Dokumentationsvorbild gelesen; Metal-Zuordnung präzisiert.
-
-**Nicht erledigt:** ABS-Fix im aktiven Code, umfassende Datenvalidierung,
-reproduzierbarer Experiment-Runner, echte Adaption, Metrikdefinition und Privacy-Nachweis.
-Die zurückgenommenen Änderungen sind als Historie vorhanden, nicht als aktive Funktion.
+## 1. Status and priorities
 
-## 3. Nächster kleiner Arbeitsabschnitt
-
-Noch keine vollständige Aggregator-Neuimplementierung starten. Empfohlene Reihenfolge:
+- `[x]` completed with a concrete verification result.
+- `[ ]` open: not implemented or not yet decided.
+- **P0:** required for correct data or the next small comparison.
+- **P1:** required for adaptive aggregation, robust evaluation or the dissertation.
+- **P2:** extension to start when its need is established.
 
-1. **D01/D02:** Beobachtungs- und Ausgabesemantik für ABS festlegen.
-2. **F01/F02:** Zwei belegte ABS-Fehler minimal korrigieren.
-3. **V01:** IDs, Zeitstempel, Positionen, Geschwindigkeit und Duplikate kontrolliert prüfen.
-4. **R01/R02:** Referenzmessstrom unabhängig von Zufallslauf und Verarbeitungslaufzeit sichern.
-5. **E01/E02:** Eine Anwendungsabfrage und ein Angreiferszenario festlegen.
-6. **B01:** Feste räumliche/zeitliche Aggregationen auf identischem Messstrom vergleichen.
+For every implementation, record affected files, behavioral effect, verification,
+results and remaining limits. A class or configuration field alone does not complete a task.
 
-Ein kleiner, nachvollziehbarer Vergleich ist das Ziel; mehr Infrastruktur wird nur gebaut,
-wenn eine dieser Aufgaben sie tatsächlich braucht. Folgende Reihenfolge ist ein Vorschlag,
-keine Zusage, alle Punkte bis Dienstag/Mittwoch fertigzustellen.
+## 2. Completed organization and audit work
 
-## 4. Daten- und Beobachtungssemantik
-
-### D01 — Geschwindigkeit und fehlende Beobachtungen festlegen — P0
+- [x] Create the local UrbanMobilityPrivacy repository; no remote.
+- [x] Import Aggregation_Manager and four separate V3 database renderers.
+- [x] Preserve import commit 96fae5b as the baseline.
+- [x] Build the unmodified simulator and all four renderers successfully.
+- [x] Compare 101 imported component files byte for byte with the originals.
+- [x] Archive the historical implementation plan under docs/reference.
+- [x] Document classes, data flow and major source-level risks.
+- [x] Inspect the local MongoDB connection and collections read only.
+- [x] Check the example agent's GT/ABS matches, duplicates and velocity intervals.
+- [x] Revert the temporary ABS fix and its test target with db2bdbb.
+- [x] Establish detailed README and TO-DO files as the central project overview.
+- [x] Read UAM-Simulator-Modern documentation and identify its native Metal backend.
+- [x] Translate all repository documentation into English, including the reference plan.
+- [x] Record the exact duplicate-write sequence and prototype-aggregator non-involvement.
+- [x] Record SFML/Metal trade-offs and available history of the graphics test project.
 
-- [ ] Zwischen momentaner GT-Geschwindigkeit und mittlerer ABS-Geschwindigkeit unterscheiden.
-- [ ] Verhalten bei neuem Agenten ohne previousPositions festlegen.
-- [ ] Verhalten bei Austritt, Wiedereintritt und Beobachtungslücken festlegen.
-- [ ] Initiale GT-Position als erste interne Beobachtung zeitlich eindeutig beschreiben.
+**Still open:** active ABS correction, full data validation, reproducible experiment runner,
+actual adaptation, metric definitions and evidence of improved privacy. Reverted work
+exists in Git history, not in active behavior.
 
-**Befund:** estimateVelocities prüft die Schnittmenge aus previousPositions und
-currentPositions. Das ist richtig. Die MongoDB-Ausgabe nutzt aber den separat in
-captureAgentData erzeugten AgentData-Wert. Unbekannte Agenten werden aktuell trotzdem
-als Record gespeichert und erhalten den Standardvektor `(0,0)`, ohne Gültigkeitskennzeichen.
-
-**Schlanker Vorschlag:** erste Beobachtung intern merken; vollständigen ABS-Record erst
-nach einer zweiten zeitlich passenden Beobachtung ausgeben. Alternativ positionsbasierte
-Records mit explizit fehlender Geschwindigkeit zulassen. Die Alternative ist noch nicht
-entschieden; ein null/valid-Feld darf nicht stillschweigend zur Vorgabe werden.
+## 3. Next small work package
 
-**Abnahme:** Ein neuer, ein bewegter bekannter und ein ruhender bekannter Agent lassen
-sich fachlich unterscheiden. Die gewählte Regel ist in README und Datenbeschreibung erklärt.
+Do not start a complete aggregator rewrite yet. Proposed order:
 
-### D02 — Zeit- und Messsemantik festlegen — P0
+1. **D01/D02:** define ABS observation and publication semantics.
+2. **F01/F02:** minimally fix the two evidenced ABS defects.
+3. **V01:** verify identity, time, position, interval velocity and duplicate counts.
+4. **R01/R02:** ensure comparable input independent of random runs and processing speed.
+5. **E01/E02:** define one application query and one attacker scenario.
+6. **B01:** compare fixed spatial/temporal aggregation on identical observations.
 
-- [ ] Timestamp als Zeitpunkt des Positionszustands festhalten.
-- [ ] Zeitpunkt einer Geschwindigkeitsmessung und ihr zurückliegendes Intervall beschreiben.
-- [ ] Simulationszeit, Datenzeit, Veröffentlichungszeit und Wall-Clock-Verarbeitung trennen.
-- [ ] Verhalten bei nicht passenden Sensorfrequenzen/Simulationsticks festlegen.
-- [ ] Darstellung von absolutem Datum/UTC prüfen; generateISOTimestamp verwendet mktime.
+Aim for a small defensible comparison. Add infrastructure only when one of these tasks
+requires it. This order is a proposal, not a promise to finish every task by Tuesday/Wednesday.
 
-**Befund:** Kein allgemeiner GT-/ABS-Timestamp-Shift im Aggregation_Manager-Import.
-Die Sensoren lesen denselben Zustand mit demselben Timestamp wie GT. Intern wird
-simulationTime früher erhöht als das Timestamp-Feld; diese Reihenfolge muss verständlich bleiben.
+## 4. Observation and data semantics
 
-**Abnahme:** Eine kurze Tabelle erklärt einen vollständigen Tick und zwei Sensorbeobachtungen.
-Keine Korrektur darf nur zur optischen Synchronisierung Timestamps künstlich verschieben.
+### D01 — Define velocity and missing observations — P0
 
-### D03 — Aggregat-Counts und Fenster definieren — P0 vor Zeitaggregation
+- [ ] Distinguish instantaneous GT velocity from interval-based ABS velocity.
+- [ ] Decide behavior for a new identity without previousPositions.
+- [ ] Define exit, reentry and observation-gap behavior.
+- [ ] Specify the initial GT position as a time-stamped internal observation.
 
-- [ ] Messbeiträge, eindeutige Personen, momentane Belegung und mittlere Belegung unterscheiden.
-- [ ] Klassen-Counts und totalAgents/totalCount eindeutig benennen.
-- [ ] Fenstergrenzen definieren, bevorzugt halb offen `[start,end)`.
-- [ ] Empty, Suppressed und Unavailable auseinanderhalten.
-- [ ] Interne IDs und veröffentlichtes Datenmodell trennen.
+**Finding:** estimateVelocities correctly checks previous/current position overlap. MongoDB
+output uses the separate value produced in captureAgentData. Unknown agents still receive
+records with the default vector (0,0), without a validity marker.
 
-**Abnahme:** Mehrfach beobachtete Person zählt beim Distinct-Count einmal, beim
-Messbeitrags-Count mehrfach. Einfache Beispieldaten demonstrieren die festgelegte Semantik.
+**Lean proposal:** retain the first observation internally and publish a complete velocity
+record after the second suitable observation. Alternatively publish positions with explicitly
+missing velocity. The alternative remains undecided; a null/valid field is not implicitly required.
 
-## 5. Konkrete ABS-Korrekturen: gefunden, derzeit offen
+**Acceptance:** a new agent, a moving known agent and a stationary known agent have clearly
+different semantics. The chosen rule is documented in README and the data description.
 
-### F01 — Tatsächlichen Beobachtungsabstand für Geschwindigkeit verwenden — P0
+### D02 — Define time and sampling semantics — P0
 
-- [ ] Frühere Position und zugehörigen Beobachtungszeitpunkt gemeinsam vorhalten.
-- [ ] Geschwindigkeit aus `DeltaPosition / DeltaTime` berechnen.
-- [ ] Zero-/negative-DeltaTime behandeln.
-- [ ] Doppelberechnung über captureAgentData und estimateVelocities konsolidieren.
-- [ ] Gewünschte Regel für unbekannte Agenten aus D01 umsetzen.
+- [ ] Identify timestamp as the time of the position state.
+- [ ] Describe the preceding interval represented by a velocity estimate.
+- [ ] Separate simulation time, data time, publication time and wall-clock processing time.
+- [ ] Define behavior when sensor periods do not align with simulation ticks.
+- [ ] Review absolute-date/UTC handling; generateISOTimestamp uses mktime.
 
-**Betroffene Stellen:**
-`simulator/src/AgentBasedSensor.cpp`: update, captureAgentData, ggf. postData;
-`simulator/src/Sensor.cpp`: estimateVelocities;
-`simulator/src/Simulation.cpp`: initializeSensors;
-passende Header nur soweit nötig.
+**Finding:** no universal GT/ABS time shift in the Aggregation_Manager import. Sensors observe
+the same state/time as GT. simulationTime is increased before the timestamp field, which
+makes the sequence harder to read but does not by itself make the records inconsistent.
 
-**Belegter Fehler:** Initialposition bei t=0 bekannt; erste ABS-Messung im Beispiel
-bei t=50 ms. Positionsdifferenz × frameRate nimmt bei 10 Hz jedoch 100 ms an.
-Das halbiert die erste Geschwindigkeit. Eine bekannte ID löst diesen Zeitfehler nicht.
+**Acceptance:** a short timeline explains one complete tick and two sensor observations.
+Do not shift timestamps merely to make records appear synchronized.
 
-**Minimaler Änderungsumfang:** Zwei Beobachtungen mit Zeitinformation sauber zuordnen.
-Keine neue Transportarchitektur, kein extra Thread, kein allgemeines Trackingframework.
-Eine gemeinsame vorherige Samplezeit genügt ggf. für synchron beobachtete Agenten;
-agentenspezifische Zeitpunkte nur verwenden, wenn Eintritts-/Ausfallsemantik sie benötigt.
-Die konkrete Datenstruktur wird nach D01/D02 gewählt.
+### D03 — Define aggregate counts and windows — P0 before temporal aggregation
 
-**Abnahme:** Bekannte konstante Bewegung liefert beim ersten 50-ms-Intervall und späteren
-100-ms-Intervallen dieselbe korrekte Geschwindigkeit. Abweichende Intervalle bleiben korrekt.
-Position, agent_id und Timestamp passen weiterhin zum GT. Unbekannte Agenten erfüllen D01.
+- [ ] Distinguish observation contributions, distinct people, occupancy and average occupancy.
+- [ ] Name class counts and totalAgents/totalCount unambiguously.
+- [ ] Define window boundaries, preferably half-open [start,end).
+- [ ] Distinguish Empty, Suppressed and Unavailable.
+- [ ] Separate internal identities from publication fields.
 
-**Status:** Frühere Lösung in `0ce473f` zurückgenommen. Sie ist ein überprüfbarer Entwurf,
-aber weder verbindliche Zielarchitektur noch im aktuellen Code aktiv.
+**Acceptance:** repeated observations of one person count once for distinct people but
+multiple times for contributions. Small example data demonstrates every chosen definition.
 
-### F02 — ABS-Messbatch nur einmal ausgeben — P0
+## 5. ABS corrections: located and currently open
 
-- [ ] Ausgabebatch von Arbeitscontainer unterscheiden.
-- [ ] Nicht-Messticks dürfen keinen alten Batch erneut ausgeben.
-- [ ] Nach erfolgreicher Ausgabe Batch eindeutig abschließen/verbrauchbar machen.
-- [ ] Verhalten bei DB-Fehler und partieller insert_many-Ausführung dokumentieren.
+### F01 — Use actual elapsed observation time for velocity — P0
 
-**Befund:** update leert agentData; postData liest den weiter bestehenden dataStorage-Batch.
-postData wird jeden Simulationstick aufgerufen. Daraus entstehen wiederholte Inserts.
+- [ ] Retain earlier position and its observation time together.
+- [ ] Calculate velocity as DeltaPosition / DeltaTime.
+- [ ] Handle zero/negative elapsed time.
+- [ ] Consolidate duplicate calculations in captureAgentData and estimateVelocities.
+- [ ] Implement the unknown-agent rule selected in D01.
 
-**Beleg:** Beispielagent hat 199 ABS-Records für 100 Zeitpunkte, davon 99 zusätzliche
-identische Records. GT-Positionen und Timestamps sind dennoch korrekt.
+**Affected code:** simulator/src/AgentBasedSensor.cpp (update, captureAgentData, possibly
+postData), simulator/src/Sensor.cpp (estimateVelocities), simulator/src/Simulation.cpp
+(initializeSensors); adjust headers only as needed.
 
-**Minimaler Änderungsumfang:** eindeutige Batch-Lebensdauer oder Kennzeichen für neue Messung.
-Noch kein generisches ISensorOutput nötig. Ein Unique-Index allein ersetzt die Ursache nicht.
-Keine Bereinigung der bestehenden Datenbank als Teil der Codekorrektur.
+**Evidenced defect:** initial position at t=0; first ABS capture at t=50 ms. Multiplication
+by 10 Hz assumes 100 ms and halves the first value. Recognizing the identity does not
+solve the time-interval error.
 
-**Abnahme:** Auf eine Messung folgt genau eine Ausgabe; wiederholter postData-Aufruf
-und ein Nicht-Messtick erzeugen keine Wiederholung. Fehlerstrategie ist benannt.
-Nicht pauschal eine Exactly-once-Garantie für Netzwerk/Persistenz behaupten.
+**Minimum scope:** associate two observations with time correctly. No new transport layer,
+extra thread or generic tracking framework. A previous sample timestamp might suffice for
+synchronously observed agents; use per-agent timestamps only if entry/dropout rules need them.
+Choose the data structure after D01/D02.
 
-### V01 — Referenzdaten und spätere Korrektur prüfen — P0
+**Acceptance:** known constant motion produces the same correct velocity over the first
+50-ms interval and later 100-ms intervals. Different spacing remains correct. Identity,
+position and timestamp still match GT. Unknown agents follow D01.
 
-- [ ] Bestehenden Beispielagenten als nachvollziehbaren Prüfbericht erhalten.
-- [ ] Prüfung optional auf alle Agenten und Sensor-IDs ausweiten.
-- [ ] Kontrollierten separaten Datenbestand für spätere Testläufe festlegen.
-- [ ] Geeignete kleine Regressionstests erst zusammen mit der gewählten Korrektur ergänzen.
+**Status:** the earlier implementation in 0ce473f was reverted. It is a reviewable draft,
+not a binding architecture or active feature.
 
-**Bereits gemessen:** ID `C0B64FE1-740C-486C-A2D1-00E030269E71`; GT 200 Records,
-ABS 199 Records, 100 Sensorzeitpunkte; kein fehlender GT-Join und keine Positionsabweichung;
-99 doppelte Schlüssel; erste Geschwindigkeit halbiert; 99 Folgemessungen stimmen mit
-Positionsdifferenzen über je 100 ms überein.
+### F02 — Publish each ABS measurement batch once — P0
 
-**Abnahme:** Dokumentierter Vorher-/Nachher-Vergleich für Positionen, Zeitstempel,
-ID-Zuordnung, Duplikate und Intervallgeschwindigkeit. Bestehende Referenzdaten unverändert.
-Keine Aussage über sämtliche Runs aus einem einzigen geprüften Agenten ableiten.
+- [ ] Distinguish output batch from working vector.
+- [ ] Ensure non-capture ticks cannot publish an old batch again.
+- [ ] Define batch completion/consumption after publication.
+- [ ] Document DB failure and partial insert_many behavior.
 
-## 6. Reproduzierbarkeit und schlanker Experimentbetrieb
+**Finding:** update clears agentData; postData reads the retained dataStorage batch.
+postData is called once per sensor per simulation tick, not once per sensor capture.
+At 20 simulation ticks/s and 10 ABS captures/s, intervening calls reuse old data.
 
-### R01 — Messstrom reproduzierbar erzeugen oder wiederverwenden — P0
+**Timeline:** t=0.050 captures and inserts a batch stamped 0.050; t=0.100 performs no
+capture but inserts that same batch; t=0.150 replaces it with a fresh batch. ABS never
+calls the prototype aggregator, so this defect is independent of aggregation logic.
 
-- [ ] Zufallsquellen inventarisieren: Spawn, Ziele, Geschwindigkeit, Noise, IDs.
-- [ ] Zentralen konfigurierbaren Seed und stabile fachliche IDs prüfen.
-- [ ] Identischen Messstrom für mehrere Aggregationsvarianten wiederverwenden.
-- [ ] Parameter, Zeitbasis und Run-Zuordnung dokumentieren.
+**Evidence:** 199 ABS records for 100 timestamps, including 99 extra identical records.
+GT position/time matching remains correct.
 
-**Befund:** Mehrere random_device-/mt19937-Initialisierungen; kein gemeinsamer Seed.
-**Abnahme:** Gleicher Seed/Konfiguration ergibt dieselben fachlichen Zustände oder ein
-fest gespeicherter Referenzstrom speist alle verglichenen Varianten identisch.
-Wall-Clock-Performance muss nicht bitgenau reproduzierbar sein.
+**Minimum scope:** explicit batch lifetime or a new-measurement marker. A general
+ISensorOutput abstraction is not yet required. A unique DB index does not replace fixing
+the cause. Do not clean up the existing database as part of the source correction.
 
-### R02 — Wall-Clock-Einfluss auf Bewegung entfernen — P0
+**Acceptance:** one capture leads to one publication; repeated postData calls and non-capture
+ticks do not reproduce the batch. State the failure policy. Do not claim exactly-once
+network/persistence guarantees without implementing them.
 
-- [ ] Aufruf updateVelocity mit simulationRealTime überprüfen und gezielt korrigieren.
-- [ ] Fachliche Bewegungszeit von Profiling-/Playback-Zeit trennen.
+### V01 — Verify reference data and the later correction — P0
 
-**Befund:** Agent::updateVelocity verwendet den übergebenen Zeitwert im Noise;
-Simulation übergibt derzeit gemessene reale Laufzeit. DB-/CPU-/Renderkosten beeinflussen
-so den simulierten Bewegungsverlauf.
-**Abnahme:** Identische fachliche Eingaben bleiben bei anderer Verarbeitungs-/Rendergeschwindigkeit gleich.
+- [ ] Preserve the example-agent inspection as a reproducible report.
+- [ ] Optionally extend matching/duplicate checks to all agents and sensor identities.
+- [ ] Select a separate controlled dataset for subsequent test runs.
+- [ ] Add suitable small regression tests with the chosen correction.
 
-### R03 — Sicherer Referenzlauf und Ausgabe ohne dauernde DB-Abhängigkeit — P0/P1
+**Existing result:** agent C0B64FE1-740C-486C-A2D1-00E030269E71: GT 200 records, ABS 199,
+100 sensor timestamps; no missing GT joins or position differences; 99 duplicate keys;
+first velocity halved; the next 99 estimates match displacement over 100-ms intervals.
 
-- [ ] Experimentdatenbank wählen, bevor der Simulator erneut gestartet wird.
-- [ ] clear_database-Verhalten sichtbar dokumentieren und experimentgerecht konfigurieren.
-- [ ] Headless von Snapshot-Produktion und DB-I/O entkoppeln, soweit nötig.
-- [ ] Minimalen File-/Null-Ausgabepfad oder Offline-Auswertung vorhandener Messungen prüfen.
+**Acceptance:** documented before/after identity, position, timestamp, duplicate and interval
+velocity comparisons. Keep reference data unchanged. One checked agent does not validate all runs.
 
-**Abnahme:** Ein kleiner Vergleich läuft ohne GUI, erzeugt kontrollierte Artefakte und
-überschreibt keine Referenzdaten. Ein großes Output-Interface wird nur eingeführt,
-wenn mehrere Ausgabepfade es tatsächlich benötigen.
+## 6. Reproducibility and lean experiment operation
 
-## 7. Simulation und Transport: bekannte technische Prüfaufgaben
+### R01 — Generate or reuse a reproducible measurement stream — P0
 
-### S01 — SharedBuffer-Shutdown und Verbrauch — P0 vor umfangreichen Läufen
+- [ ] Inventory random sources: spawning, targets, velocity, noise and identities.
+- [ ] Evaluate one configurable seed and stable scientific identities.
+- [ ] Feed identical observations to all compared aggregation variants.
+- [ ] Record parameters, time basis and run identity.
 
-- [ ] Wait-Prädikat auf finished/stop und Datenverfügbarkeit prüfen.
-- [ ] Ende bei leerer Queue, letztem Frame und früh geschlossenem Renderer prüfen.
-- [ ] Unbegrenztes Wachstum bei fehlendem/langsamem Leser messen bzw. begrenzen.
-- [ ] Synchronisierung von Agenten-/Sensorsnapshots verschiedener Frequenzen beschreiben.
+**Finding:** multiple random_device/mt19937 initializations; no shared seed.
+**Acceptance:** equal configuration/seed produces equal scientific states, or a fixed saved
+stream feeds all variants. Wall-clock performance need not be bit-identical.
 
-**Befund:** end benachrichtigt, aber das Wait-Prädikat von read prüft nur eine nichtleere Queue.
-Headless produziert weiterhin Snapshots. Ein Zugriffscount von drei ersetzt weder Broadcast
-noch Backpressure. Der bestehende read-Aufruf entfernt einen Frame.
+### R02 — Remove wall-clock influence from movement — P0
 
-**Vorschlag:** Aggregation zunächst im Simulationsthread belassen. Renderer darf ggf.
-Frames überspringen; Auswertung muss eventuell alle Batches erhalten. Erst Anforderungen
-festlegen, dann Queue/Snapshot-Lösung wählen.
-**Abnahme:** Kein Hängen beim Ende und begrenzter Speicher im gewählten Betriebsmodus.
+- [ ] Review updateVelocity receiving simulationRealTime and correct it narrowly.
+- [ ] Separate movement time from profiling/playback time.
 
-### S02 — Kollisionsgrid und Pointer-Lebensdauer prüfen — P1, vor realistischeren Szenarien
+**Finding:** Agent::updateVelocity uses its time argument in noise, while Simulation passes
+measured runtime. DB/CPU/render costs can therefore alter the movement stream.
+**Acceptance:** identical scientific input stays identical at different processing/playback speeds.
 
-- [ ] width/height initialisieren und Nachbarprüfung validieren.
-- [ ] Doppelte Paarprüfung in benachbarten Zellen untersuchen.
-- [ ] vector::erase und gespeicherte Agent*-Pointer entkoppeln.
-- [ ] Grid-Zuordnung vor/nach Bewegung konsistent festlegen.
+### R03 — Safe reference run and output without constant DB dependency — P0/P1
 
-**Befund:** Grid-Konstruktor setzt width/height nicht, Nachbarprüfung liest sie;
-Löschungen im Agentenvektor können zuvor gespeicherte Pointer invalidieren.
-**Abnahme:** Bekannte Nachbarschaften und Agentenaustritte funktionieren ohne ungültige Pointer.
-Kein kompletter Kollisionsalgorithmus-Austausch nur zur Behebung dieser Fehler.
+- [ ] Choose an experiment database before rerunning the simulator.
+- [ ] Make clear_database behavior explicit and configure it for experiments.
+- [ ] Decouple headless operation from snapshot production and DB I/O as needed.
+- [ ] Evaluate minimal file/null output or offline processing of saved observations.
 
-### S03 — Quadtree-Speicher und IDs prüfen — P1
+**Acceptance:** a small comparison runs without GUI, creates controlled artifacts and does
+not overwrite references. Add a broad output interface only if multiple outputs justify it.
 
-- [ ] reset/clear/Destruktor hinsichtlich verlorener Child-Pointer prüfen.
-- [ ] Konvention der vier Basiszellen, Depth und Morton-ID dokumentieren.
-- [ ] Bounds, Position-to-Cell und Renderer-Rekonstruktion prüfen.
+## 7. Simulation and transport checks
 
-**Befund:** reset setzt Child-Pointer ohne Freigabe auf nullptr. Generische Vollbaumformeln
-müssen an die vorhandene Basiszell-Konvention angepasst werden.
-**Abnahme:** Nachvollziehbare Ownership und unveränderte gültige IDs; keine neue räumliche
-Datenstruktur ohne vorher festgelegte Anforderungen.
+### S01 — SharedBuffer shutdown and consumption — P0 before larger runs
 
-## 8. Forschungsfrage, Metriken und Baselines
+- [ ] Include finished/stop and data availability in the wait condition.
+- [ ] Check empty-queue shutdown, final frames and early renderer closure.
+- [ ] Measure/bound growth with absent or slow consumers.
+- [ ] Describe synchronization of snapshots at different sensor frequencies.
 
-### E01 — Konkrete Utility-Anwendung festlegen — P0
+**Finding:** end notifies, but read's wait predicate only checks queue non-emptiness.
+Headless operation still produces snapshots. An access count of three implements neither
+broadcast nor backpressure; existing read removes a frame.
 
-- [ ] Eine erste Abfrage wählen, etwa zeitlich gemittelte Belegung/Dichte.
-- [ ] Referenzraster, Referenzzeitpunkte und Umgang mit unterdrückten/fehlenden Daten festlegen.
-- [ ] Fehlermaß gegen GT bestimmen; gleiche Abfrage für alle Varianten verwenden.
-- [ ] Auflösung, Datenalter, Coverage und numerischen Fehler getrennt erfassen.
+**Proposal:** keep aggregation in the simulation thread initially. Rendering may skip frames;
+evaluation may require every batch. Define requirements before choosing queue/snapshot transport.
+**Acceptance:** no shutdown hangs and bounded memory for the selected operation mode.
 
-**Abnahme:** Eine feste Frage und ihre GT-Antwort sind definiert. Eine gröbere Ausgabe
-bekommt nicht allein durch Anpassung des Referenzrasters automatisch Fehler null.
-Record-Retention wird nicht ohne Begründung als Data Fidelity bezeichnet.
+### S02 — Collision grid and pointer lifetime — P1 before more realistic scenarios
 
-### E02 — Angreifer und Privacy-Bewertung festlegen — P0
+- [ ] Initialize width/height and validate adjacent-cell checks.
+- [ ] Examine double checks of neighboring agent pairs.
+- [ ] Separate vector::erase from retained Agent* pointers.
+- [ ] Define grid assignment consistently before/after movement.
 
-- [ ] Angriffsziel, Zusatzwissen und sichtbare Veröffentlichungen definieren.
-- [ ] Beispiel: Membership Inference anhand aggregierter Belegung; Eignung begründen.
-- [ ] Vergleich mit Prior-/No-output-Baseline und einem klaren Erfolgsmaß festlegen.
-- [ ] Wiederholte Releases, überlappende Fenster und mögliche Differenzangriffe berücksichtigen.
-- [ ] k-Schwelle als Regel von tatsächlich gemessenem Risiko trennen.
+**Finding:** constructor leaves grid dimensions unset while neighbor checks read them;
+vector erasure can invalidate previously retained pointers.
+**Acceptance:** known neighborhoods and exiting agents work without invalid pointers.
+Do not replace the whole collision algorithm merely to fix these defects.
 
-**Abnahme:** Ein reproduzierbarer Angreifer mit nachvollziehbarem Wissen und Baseline.
-Keine pauschale Anonymitätsbehauptung aus einer Distinct-Agent-Anzahl.
+### S03 — Quadtree memory and identities — P1
 
-### B01 — Feste Raum-/Zeit-Baselines vergleichen — P0
+- [ ] Review reset/clear/destructor for lost child pointers.
+- [ ] Document four base cells, depth and Morton-ID convention.
+- [ ] Verify bounds, position mapping and renderer reconstruction.
 
-- [ ] Kleine Auswahl fester Zellgrößen und Zeitfenster festlegen.
-- [ ] Gleiche Beobachtungen, Erfassungsbereiche und Abfragen für alle Varianten.
-- [ ] Counts und Zeitfenster entsprechend D03 verarbeiten.
-- [ ] Utility-Fehler, empirisches Privacy-Maß, Coverage, Datenalter und Laufzeit ausgeben.
+**Finding:** reset nulls child pointers without freeing them. Generic complete-tree formulas
+must be adapted to the actual base-cell convention.
+**Acceptance:** clear ownership and valid unchanged identities. Do not replace the spatial
+structure before defining requirements.
 
-**Abnahme:** Reproduzierbare Tabelle/Grafik mit Konfiguration und klaren Grenzen.
-Ein erster Vergleich benötigt noch keinen vollständigen Policy-Tree oder realen Stadtplan.
+## 8. Research questions, metrics and baselines
 
-### E03 — Weitere Metriken fachlich auswählen — P1/P2
+### E01 — Define one utility application — P0
 
-- [ ] k-/l-/t-/delta-/Entropie-Metriken auf konkrete Daten und Angriffsszenarien prüfen.
-- [ ] Sensitive Attribute und Bedeutung von Agentenklassen klären.
-- [ ] Mehrere Seeds/Szenarien und sinnvolle statistische Auswertung festlegen.
+- [ ] Select a first query, such as mean occupancy/density over a time interval.
+- [ ] Fix reference grid, reference times and missing/suppressed-data treatment.
+- [ ] Define error against GT and use the same query for every variant.
+- [ ] Measure resolution, staleness, coverage and numerical error separately.
 
-**Abnahme:** Jede verwendete Metrik hat eine begründete Bedeutung und benötigte interne Daten.
-Nicht alle Metriken lassen sich aus Klassen-Counts rekonstruieren.
+**Acceptance:** a fixed question and its GT answer are defined. Coarsening the reference
+must not automatically eliminate error. Do not label record retention as data fidelity without justification.
 
-## 9. Adaptive Aggregation: nächste Entwicklungsstufe
+### E02 — Define attacker and privacy evaluation — P0
 
-### A01 — Zielzustände und AggregatedCell festlegen — P1
+- [ ] Specify attack goal, auxiliary information and visible publications.
+- [ ] Consider aggregate-occupancy membership inference and justify its relevance.
+- [ ] Define a prior/no-output baseline and clear attack-success measure.
+- [ ] Include repeated releases, overlapping windows and possible differencing attacks.
+- [ ] Distinguish k-threshold compliance from measured risk.
 
-- [ ] Geometrie, Historie, Freigaberegeln und Releases getrennt beschreiben.
-- [ ] Sensorlokale Ownership festlegen; Manager ohne MongoDB-Zugriff bevorzugen.
-- [ ] Bedeutung aller Count-/Zeit-/Policy-Felder definieren.
-- [ ] update(now, tree) gegenüber gebundener Baumreferenz anhand tatsächlicher Anforderungen wählen.
+**Acceptance:** reproducible attacker knowledge and baseline. No general anonymity claim
+based only on a distinct-contributor count.
 
-**Abnahme:** Kleine Schnittstelle mit nachvollziehbarer Datenaufnahme und Ausgabe;
-keine leere Abstraktionshierarchie als Selbstzweck.
+### B01 — Compare fixed space/time baselines — P0
 
-### A02 — Begrenzte Historie und aktive/preemptive Fenster — P1
+- [ ] Select a small set of fixed cell sizes and temporal windows.
+- [ ] Use identical observations, detection areas and application queries.
+- [ ] Process counts/windows according to D03.
+- [ ] Export utility error, empirical privacy measure, coverage, staleness and runtime.
 
-- [ ] Retrospektive Parent-Aggregation aus internen Messungen spezifizieren.
-- [ ] Active/Preemptive-Buckets als Datencontainer oder logische Fensterzustände vergleichen.
-- [ ] Aufbewahrungsdauer, offene Fenster und Cleanup definieren.
-- [ ] Unterschiedliche Zellfenster und kompatible Merge-Zeitbereiche behandeln.
+**Acceptance:** reproducible table/figure with configuration and explicit limits. A complete
+policy tree or real city map is not required for this first comparison.
 
-**Abnahme:** Kein Double Counting, begrenzter Speicher und rekonstruierbare erlaubte Fenster.
-Das Löschen eines MongoDB-Records macht eine bereits externe Veröffentlichung nicht rückgängig.
+### E03 — Select additional metrics scientifically — P1/P2
 
-### A03 — Zunächst einfache adaptive Strategien — P1
+- [ ] Evaluate k/l/t/delta/entropy metrics for actual data and attack scenarios.
+- [ ] Clarify sensitive attributes and the meaning of agent classes.
+- [ ] Define multiple seeds/scenarios and suitable statistical summaries.
 
-- [ ] Spatial First und Temporal First mit einer globalen Policy spezifizieren.
-- [ ] Sibling-/Parent-/Child-Bedingungen, Merge, Split und Unterdrückung festlegen.
-- [ ] Unerfüllbare Constraint-Kombinationen explizit behandeln.
-- [ ] Gegen feste Baselines aus B01 vergleichen.
+**Acceptance:** each metric has a justified meaning and specified internal inputs.
+Class counts alone cannot reconstruct every privacy metric.
 
-**Abnahme:** Adaptionsentscheidungen sind nachvollziehbar; erlaubte Fenster und Zellansichten
-passen zusammen. Ein besserer Privacy/Utility-Trade-off wird gemessen, nicht vorausgesetzt.
+## 9. Adaptive aggregation: subsequent development stage
 
-### A04 — Regionale Policy-Trees / Applikationsebene — P1
+### A01 — Define states and AggregatedCell — P1
 
-- [ ] Default-, regionale und anwendungsspezifische Constraints definieren.
-- [ ] Policy-Tree unabhängig von Datenhierarchie halten.
-- [ ] Überschneidungen, Zellen an Grenzen und widersprüchliche Anforderungen behandeln.
-- [ ] Mehrere Policy-Views erst nach korrekter einzelner Release-Pipeline prüfen.
+- [ ] Describe geometry, history, release rules and publications separately.
+- [ ] Specify sensor-local ownership; favor a manager without MongoDB coupling.
+- [ ] Define every count/time/policy field.
+- [ ] Choose update(now, tree) versus a bound reference from actual requirements.
 
-**Abnahme:** Keine stillschweigende Abschwächung regionaler Regeln durch räumlichen Merge;
-Policy-Konflikte haben eine explizite Auflösung oder Ablehnung.
+**Acceptance:** small interfaces with clear ingestion and output; no empty abstraction hierarchy.
 
-## 10. Erweiterungen: sichtbar, aber noch nicht im nächsten Arbeitsschritt
+### A02 — Bounded history and active/preemptive windows — P1
 
-- [ ] **X01 — Taxonomie (P1/P2):** Identität/Klasse, Verhalten, Verteilung und Darstellung
-  konzeptionell trennen; YAML-Kompatibilität vor Umbau festlegen.
-- [ ] **X02 — Heterogene Szenarien (P1):** dichte, dünne, leere und dynamische Bereiche
-  reproduzierbar erzeugen; Uniform als Debug-Benchmark erhalten.
-- [ ] **X03 — Wege/Trajektorien (P2):** Korridore, Spawn-/Zielbereiche, Wegpunkte;
-  reales Routing nur bei Bedarf für Forschungsfrage/Angreiferwissen.
-- [ ] **X04 — Karten/Gebäude/Eingänge (P2):** Datenquelle, Koordinaten und notwendige
-  Semantik festlegen; UAM-Simulator-Modern als mögliche technische Referenz prüfen.
-- [ ] **X05 — Kollisionsmodell (P2):** nach S02 belastbar beurteilen; ORCA o. Ä. nicht
-  automatisch als Voraussetzung des Aggregators übernehmen.
-- [ ] **X06 — Sensorunsicherheit (P2):** GT unverändert halten, Messfehler separat;
-  kein vollständiger Kamera-/LiDAR-Simulator ohne konkreten Bedarf.
-- [ ] **X07 — Metal / 3D / GPU (P2):** UAM-Simulator-Modern besitzt den nativen Backend;
-  Übernahme erst nach Engpassmessung oder begründetem Visualisierungsbedarf.
-- [ ] **X08 — Gemeinsame Bibliotheken/Build (P1/P2):** Duplikate in Simulator/Renderern
-  gezielt abbauen; funktionierende getrennte Builds als Referenz bewahren.
-- [ ] **X09 — Packaging/Remote (P2):** Repositoryname beibehalten; Remote, Lizenz,
-  Veröffentlichung und Daten-/Asset-Auswahl separat festlegen.
+- [ ] Specify retrospective parent aggregation from internal observations.
+- [ ] Compare physical active/preemptive containers with logical windows over shared history.
+- [ ] Define retention, open windows and cleanup.
+- [ ] Handle cell-specific windows and compatible temporal merge coverage.
 
-## 11. Arbeitsregel für die nächsten Änderungen
+**Acceptance:** no double counting, bounded storage and reconstructable permitted windows.
+Deleting a DB record cannot retract an already externally visible publication.
 
-Vor dem nächsten Codeeingriff den gewählten TO-DO-Punkt, die Datenregel und den kleinen
-Änderungsumfang benennen. Nach dem Eingriff Status, Verifikation und Grenzen aktualisieren.
+### A03 — Start with simple adaptive strategies — P1
 
-Aktuell wird ausschließlich dokumentiert. Als nächster Kandidat bietet sich D01/D02
-mit anschließendem F01/F02 an. Der Simulator soll dabei schlank bleiben: bestehende
-Sensorpipeline korrigieren, statt für die zwei ABS-Fehler das gesamte System umzubauen.
+- [ ] Specify Spatial First and Temporal First under one global policy.
+- [ ] Define sibling/parent/child checks, merge, split and suppression.
+- [ ] Handle impossible constraint combinations explicitly.
+- [ ] Compare against B01 baselines.
+
+**Acceptance:** decisions are explainable and spatial/temporal releases agree. Measure a
+better privacy/utility trade-off rather than assuming it.
+
+### A04 — Regional policy trees / application layer — P1
+
+- [ ] Define default, regional and application-specific constraints.
+- [ ] Keep policy hierarchy independent of data hierarchy.
+- [ ] Handle overlaps, boundary-crossing cells and conflicting requirements.
+- [ ] Add multiple views only after a correct single release pipeline.
+
+**Acceptance:** spatial merges cannot silently weaken regional rules; conflicts have
+explicit resolution or rejection.
+
+## 10. Extensions outside the next work package
+
+- [ ] **X01 — Taxonomy (P1/P2):** separate identity/class, behavior, distribution and appearance;
+  define YAML compatibility before redesign.
+- [ ] **X02 — Heterogeneous scenarios (P1):** reproducible dense, sparse, empty and dynamic areas;
+  retain uniform distribution for debugging.
+- [ ] **X03 — Paths/trajectories (P2):** corridors, spawn/target areas and waypoints;
+  add real routing when the research/attacker scenario needs it.
+- [ ] **X04 — Maps/buildings/entrances (P2):** define sources, coordinates and required semantics;
+  evaluate UAM-Simulator-Modern as a technical reference.
+- [ ] **X05 — Collision model (P2):** assess after S02; do not automatically require ORCA
+  or a replacement model for aggregation development.
+- [ ] **X06 — Sensor uncertainty (P2):** preserve GT and model errors separately;
+  avoid a full camera/LiDAR simulator without specific need.
+- [ ] **X07 — Metal/3D/GPU (P2):** Modern has a native backend. Keep SFML initially;
+  revisit migration after separate rendering/CPU/DB measurements or a defined 3D need.
+  Record that Metal-Simulator was introduced as a Metal-oriented test environment but its
+  retained application code uses OpenGL. Renderer migration does not move CPU aggregation to GPU.
+- [ ] **X08 — Shared libraries/build (P1/P2):** reduce duplication selectively;
+  preserve working independent builds as references.
+- [ ] **X09 — Packaging/remote (P2):** retain repository name; decide remote, license,
+  publication and data/asset selection separately.
+
+## 11. Process for subsequent changes
+
+Before editing source, name the selected task, data rule and small scope. Afterwards update
+status, verification and remaining limits. Current work is documentation only. D01/D02 followed
+by F01/F02 is the next candidate. Keep the simulator lean by correcting its existing pipeline.

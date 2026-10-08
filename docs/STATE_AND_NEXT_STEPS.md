@@ -1,235 +1,228 @@
-# Technische Bestandsaufnahme — 2026-10-08
+# Technical audit — 2026-10-08
 
-## Einordnung und aktueller Status
+## Role and current status
 
-Diese Datei dokumentiert die Befunde zum unveränderten Import. Die zentralen aktuellen
-Dokumente sind [README](../README.md) und [TO-DO](../TO-DO.md). Ausführung und Priorisierung
-stehen in TO-DO.md; diese Bestandsaufnahme ist kein zweiter Implementierungsauftrag.
+This file records evidence about the unmodified import. [README](../README.md) and
+[TO-DO](../TO-DO.md) are the maintained overview and implementation backlog. This audit
+is not a second implementation instruction. All repository documentation is in English.
 
-Der zwischenzeitliche ABS-Fix `0ce473f` einschließlich Tests wurde durch `db2bdbb`
-zurückgenommen. Aktiver Quellcode und CMake entsprechen wieder dem Import `96fae5b`.
-Die bekannten Fehler sind deshalb weiterhin offen. Historische Testresultate des Fixes
-sind kein Nachweis für den aktuellen Stand. Weitere Implementierung ist derzeit nicht begonnen.
+Temporary ABS correction 0ce473f and its tests were reverted by db2bdbb. Active source and
+CMake match import 96fae5b. The defects therefore remain open. Historical test results
+for the reverted change do not validate the active version. No further implementation
+has begun during documentation work.
 
-## Umfang
+## Scope and baseline
 
-Quellcodeprüfung von Aggregation_Manager und SimulatorV3 sowie Grafik-Backend-Prüfung
-von Metal-Simulator und UAM-Simulator. Die vier V3-Datenbank-Renderer sind unverändert
-in das neue lokale Repository übernommen. Der alte IMPLEMENTATION_PLAN ist eine
-Referenz, keine vom Nutzer erteilte Implementierungsanweisung.
+Source review covered Aggregation_Manager, SimulatorV3, Metal-Simulator and UAM-Simulator.
+The four V3 database renderers were imported unchanged. Later review also covered Modern's
+README, TO-DO, CMake and available history. The old IMPLEMENTATION_PLAN is a historical
+reference, not an instruction issued by the user to execute its embedded project prompt.
 
-## Arbeitsbasis
+Aggregation_Manager is the better baseline because it has explicit timestamped agent/sensor
+snapshots and a sensor-local aggregation scaffold. It does not have a working aggregation
+algorithm: postDataTest inserts only a timestamp, Bucket::flush is empty, the update pipeline
+does not invoke aggregation and the bucket constructor does not initialize its cellId field.
 
-Aggregation_Manager ist die sinnvollere Basis: explizit zeitgestempelte Agenten- und
-Sensorsnapshots und ein bereits sensorlokal angelegter Aggregator. Das ist noch kein
-funktionsfähiger Aggregationsalgorithmus. AggregationManager::postDataTest schreibt
-nur einen Timestamp, Bucket::flush ist leer und die Update-Pipeline ruft den Aggregator
-nicht auf. Der Bucket-Konstruktor übernimmt cellId nicht in das gleichnamige Feld.
+The simulator is useful as a synthetic data generator, but is not yet a validated urban
+mobility model or a reproducible experiment. It contains sensor variants, configurable classes
+and regions, a collision grid, visualization and MongoDB output. Real routes/city geometry
+and scientifically evaluated aggregation are missing.
 
-Die vorhandene Simulation ist als synthetischer Datengenerator brauchbar, aber noch
-kein validiertes Modell urbaner Mobilität und noch kein reproduzierbares Experiment.
-Es gibt Sensorvarianten, konfigurierbare Regionen und Klassen, Kollisionsgrid,
-Visualisierung und MongoDB-Persistenz. Komplexere Trajektorien und Stadtgeometrie fehlen.
+## Graphics backends and historical evidence
 
-## Grafik und Apple-Frameworks
+Aggregation_Manager and SimulatorV3 use SFML Graphics. Metal-Simulator requests an OpenGL
+2.1 context and invokes gl* functions. It checks color clearing, immediate-mode triangles,
+VBO rendering and GL errors. UAM-Simulator also uses OpenGL. No direct Metal/MetalKit/
+Accelerate integration was found in those Coding projects.
 
-Aggregation_Manager und SimulatorV3 verwenden SFML Graphics. Metal-Simulator heißt
-zwar so, baut aber einen OpenGL-2.1-Kontext und verwendet gl*-Aufrufe. UAM-Simulator
-verwendet ebenfalls OpenGL. In diesen im Coding-Ordner geprüften Quellen wurde keine direkte Metal-,
-MetalKit- oder Accelerate-Anbindung gefunden. Das später ebenfalls gelesene separate
-Projekt `/Users/maxdemu/Developer/UAM-Simulator-Modern` verwendet dagegen Cocoa, Metal,
-MetalKit und QuartzCore direkt; dies ist die gesuchte native Apple-Variante. README und
-TO-DO dieses Projekts dienen als Dokumentationsvorbild, nicht als Implementierungsauftrag. Ein neuer Renderer ist für den ersten
-Privacy/Utility-Vergleich nicht erforderlich; eine Beschleunigung ist noch nicht gemessen.
+Coding commit 438fe33, 2025-10-25, introduced Metal-Simulator with the message “added test
+environment for a metal-based simulator”. An early graphics/system test in a Metal-oriented
+exploration is a reasonable interpretation. The retained code is not a native Metal test.
+The available history does not establish direct code ancestry to Modern.
 
-## Zeitstempel: präzisierter Befund
+/Users/maxdemu/Developer/UAM-Simulator-Modern directly links Cocoa, Metal, MetalKit and
+QuartzCore and uses Objective-C++. Its visible retained local history begins on 2026-06-28;
+that does not establish its true creation date. Its documentation is the organizational
+reference for this project. No Modern source has been imported.
 
-Eine erste mündliche Einschätzung eines GT-/Sensor-Versatzes war zu pauschal.
-In Aggregation_Manager besteht folgende Reihenfolge:
+A new renderer is not required for the first privacy/utility comparison. No performance
+advantage has been measured here. SFML is a higher-level windowing/multimedia library;
+Metal is a graphics/compute API, so migration includes platform/window/input/resource work.
+Modern may reduce that effort for a future Apple-specific 3D view. CPU simulation and
+aggregation need dedicated compute changes to benefit from GPU execution.
 
-1. Zustand X(t) und Timestamp t als Agentensnapshot und GT speichern.
-2. simulationTime erhöhen; das Timestamp-Feld bleibt zunächst t.
-3. Sensoren lesen X(t) mit Timestamp t.
-4. Timestamp auf t+dt setzen und Agenten zu X(t+dt) bewegen.
-5. Nächste Schleifeniteration speichert GT für t+dt.
+## Timestamp sequence: corrected finding
 
-GT und Sensorpositionen sind auf diesem Pfad zeitlich konsistent. ABS übernimmt die
-Agenten-ID direkt; eine Zuordnung über (agent_id, timestamp) ist grundsätzlich möglich.
-Sensorfrequenz und Erfassungsbereich bestimmen die Teilmenge. Unterschiedliche
-Sensorfrequenzen müssen nicht identische Timestamp-Mengen erzeugen.
+An initial general claim of a GT/sensor time shift was too broad. Aggregation_Manager runs:
 
-Auch SimulatorV3 speichert GT vor der Bewegung, verwendet dabei aber agent.timestamp
-statt der bereits erhöhten simulationTime. ABS misst nach der Bewegung. Der zugehörige
-GT-Zustand wird im nächsten Durchlauf gespeichert. Daraus folgt kein genereller
-Timestamp-Shift; ein letzter Sensorzustand kann jedoch ohne nachfolgenden GT-Write bleiben.
+1. Store state X(t), timestamp t as agent snapshot and GT.
+2. Increase simulationTime; the timestamp field initially remains t.
+3. Sensors observe X(t) with timestamp t.
+4. Set timestamp to t+dt and move agents to X(t+dt).
+5. The next iteration stores GT for t+dt.
 
-### ABS-Geschwindigkeit und doppelte Releases
+GT and sensor positions therefore agree in time on this path. ABS copies agent identity,
+so matching on agent_id and timestamp is meaningful within its detection area and schedule.
+Different frequencies do not require identical timestamp sets.
 
-Im importierten Aggregation_Manager sind konkrete separate Probleme erkennbar:
+SimulatorV3 also stores GT before movement, but uses agent.timestamp rather than the already
+increased simulationTime. ABS observes after movement; matching GT is stored on the next
+iteration. This is not a universal timestamp shift, though a final sensor state may lack a
+subsequent GT write. Do not combine conclusions from the two versions without checking their paths.
 
-- previousPositions wird bei Initialisierung aus X(0) vorbesetzt.
-- timeSinceLastUpdate wird schon beim Sensoraufruf für X(0) um dt erhöht.
-- Geschwindigkeit wird als Positionsdifferenz * frameRate berechnet, nicht über
-  gespeicherte Beobachtungszeitpunkte.
-- Bei dt=0.05 s und 10 Hz wird die erste Messung für t=0.05 s freigegeben, der Nenner
-  entspricht aber 0.10 s. Bei konstanter Bewegung wird der erste Wert halbiert.
-  Bei einer Messung direkt für t=0 ergibt sich eine Null-Differenz ohne vergangenes Intervall.
-- Neu eintretende Agenten ohne vorherige Beobachtung werden trotzdem als Datensatz angelegt;
-  es gibt keinen ausdrücklichen Status, der eine fehlende Geschwindigkeitsmessung kennzeichnet.
-  sf::Vector2f initialisiert seine Komponenten in der lokalen SFML-3.0.2-Version mit null;
-  deshalb wird für unbekannte Agenten ein Standardwert (0,0) statt einer gültigen Schätzung gespeichert.
-- update leert agentData, nicht den zuletzt gefüllten dataStorage-Batch. Da Simulation
-  postData bei jedem Tick aufruft, wird derselbe ABS-Batch an Nicht-Messticks erneut eingefügt.
-  Im Beispiel: Messung bei 0.05 s, erneuter Write dieses Batches im Tick 0.10 s.
-- Eine zweite Geschwindigkeitsberechnung im Sensor-Basistyp füllt eine Map, ist aber nicht
-  die Quelle des BSON-Felds estimated_velocity.
+## ABS velocity and publication findings
 
-Vorschlag: erste Beobachtung intern speichern, erst mit zweiter Beobachtung für dieselbe
-ID einen ABS-Record mit Geschwindigkeit ausgeben. Geschwindigkeit aus tatsächlichem
-Delta-t berechnen; erster Messzeitpunkt muss explizit festgelegt sein. Messbatch einmalig
-publizieren. Kein Timestamp künstlich verschieben. Noch keine Codeänderung vorgenommen.
+The unmodified Aggregation_Manager contains these separate issues:
 
-Für die spätere Prüfung: ABS mit GT über ID+Timestamp verbinden, Positionen vergleichen,
-fehlende Zuordnungen und doppelte Schlüssel zählen. Geschwindigkeitsvergleich muss die
-mittlere GT-Bewegung über dasselbe Intervall verwenden; momentane GT-Geschwindigkeit
-und Intervallgeschwindigkeit sind unterschiedliche Größen. Die konkrete DB-Prüfung dieses Agenten ist unten dokumentiert; eine Gesamtprüfung aller Runs fehlt.
+- previousPositions is seeded from X(0) during initialization.
+- timeSinceLastUpdate increases already during the call for X(0).
+- Velocity uses displacement * frameRate rather than stored observation times.
+- At dt=0.05 s and 10 Hz, the first publication is for t=0.05 s but assumes a 0.10-s
+  denominator; the first estimate is halved. Sampling immediately at t=0 would instead
+  produce a zero displacement without a positive elapsed interval.
+- Unknown identities still receive records. Local SFML 3.0.2 initializes Vector2 components
+  to zero, so their velocity is a default (0,0), not a valid stationary-agent estimate.
+- update clears agentData rather than the populated dataStorage batch.
+- Simulation calls each sensor's postData every tick; non-capture ticks can reinsert old data.
+- The second velocity calculation in Sensor populates a map that does not feed the BSON field.
 
-## Weitere Probleme vor größeren Experimenten
+Proposed next rule: retain an initial observation internally; publish velocity after another
+suitable observation; calculate actual elapsed time and publish a batch once. Missing-velocity
+output versus delayed full records remains a decision, not an implemented schema change.
 
-- Zufallszahlen werden an mehreren Stellen mit random_device initialisiert. Ein einzelner
-  konfigurierbarer Seed fehlt; UUIDs und Iterationsreihenfolgen separat berücksichtigen.
-- updateVelocity erhält simulationRealTime statt simulationTime. CPU-/DB-/Renderlaufzeit
-  beeinflusst somit den Bewegungsnoise und die fachlichen Ergebnisse.
-- SharedBuffer::read wartet nur auf nichtleere Queue. end setzt finished und benachrichtigt,
-  aber das Wait-Prädikat berücksichtigt finished nicht; ein wartender Leser kann hängenbleiben.
-- Queues sind unbegrenzt. Headless deaktiviert nur Renderer, nicht Snapshot-Produktion.
-- CollisionGrid::width und height werden im Konstruktor nicht initialisiert, aber zur
-  Prüfung der Nachbarzellen gelesen. Nachbarpaare werden beidseitig geprüft.
-- Agentenpointer werden während einer Schleife gespeichert, die auch vector::erase
-  verwendet; spätere Löschungen können vorher gespeicherte Pointer invalidieren.
-- Quadtree::reset setzt Child-Pointer ohne delete auf nullptr; die getrennten Knoten werden
-  damit nicht mehr vom Baumdestruktor erreicht.
-- Sensoren mit niedrigerer Frequenz setzen ihren Timer auf null statt Restzeit zu erhalten.
-  Nichtganzzahlige Frequenzverhältnisse können die tatsächliche Abtastrate verändern.
+### Why estimateVelocities does not protect output
 
-Diese Befunde stammen aus Codeprüfung, nicht aus Profiling oder Laufzeitvalidierung.
+Sensor::estimateVelocities iterates previousPositions and checks currentPositions. Unknown
+agents are correctly excluded from that calculation. AgentBasedSensor::update calls it after
+captureAgentData, which already calculated AgentData.estimatedVelocity separately and moved
+records into dataStorage. postData writes those records, not the estimatedVelocities map.
 
-## Aggregator-Schnittstelle
+Three independent questions matter:
 
-Ein AggregatedCell als Veröffentlichungsdatensatz ist sinnvoll. Vorher die Count-Semantik
-festlegen: Messbeiträge, eindeutige Personen oder zeitlich gemittelte Belegung. Ein einziges
-Feld totalAgents kann diese drei Größen nicht austauschbar repräsentieren.
+1. Are two observations of the same identity available?
+2. How much time actually elapsed between them?
+3. Which calculation is published?
 
-Sensorlokaler Manager; keine MongoDB-Abhängigkeit. Konstruktor erhält langlebige,
-obligatorische Abhängigkeiten als Referenz, beispielsweise const SpatialHierarchy&,
-TemporalStore& und PolicySet. Ein nullable Quadtree* bringt ohne optionale Baumzuordnung
-keinen Vorteil. ingest(MeasurementBatch) und advance(SimTime) trennen Aufnahme von Planung.
-Ein update(now, tree) ist als kleine Übergangsschnittstelle ebenfalls möglich, braucht
-aber zusätzlich die Messhistorie; Geometrie allein reicht für Zeitaggregation nicht.
+The first known estimate has both positions but only 50 ms elapsed. Recognition of the
+identity cannot fix the wrong denominator. See D01/D02 and F01/F02 in TO-DO.
 
-Zeitwerte als Simulations-Ticks oder integer chrono-Dauer, nicht float. Halb offene Fenster
-[start,end) festlegen. Output-Batches besitzen sensor/policy ID, Release-ID und Releasezeit.
-Agenten-IDs bleiben intern. Metriken/Unterdrückungsentscheidungen separat als Evaluationsdaten
-führen. getOutput als const Referenz ist nur für direkten synchronen Zugriff geeignet;
-Threadübergabe braucht unveränderliche Snapshots. takeOutput/drain verhindert wiederholtes
-Publizieren desselben Batches.
+### Why one call site still duplicates output
 
-## SharedBuffer
+At 20 simulation ticks/s and 10 captures/s, the same postData call site runs after every
+sensor update, including updates that captured nothing. The working vector and retained
+publication vector are different containers after std::move.
 
-Keinen festen Zugriffscount 3 einsetzen. Schreiben erzeugt Daten; der Zähler muss weder
-Schreibvorgänge mitzählen noch sagt eine Pointer-Referenzzahl, dass ein Leser fertig ist.
-Im Bestand entfernt read einen Frame aus einer Queue: zwei Leser bekämen verschiedene Frames.
+| Simulation state time | Capture | Retained batch | Publication |
+|---|---|---|---|
+| 0.000 s | None | Empty | None |
+| 0.050 s | New | Timestamp 0.050 s | Insert |
+| 0.100 s | None | Timestamp 0.050 s | Repeat insertion |
+| 0.150 s | New | Timestamp 0.150 s | Insert |
+| 0.200 s | None | Timestamp 0.150 s | Repeat insertion |
 
-Zunächst Aggregation im Simulationsthread; kein zweiter interner Leser des SharedBuffers.
-Für Renderer ein geschützter latest-snapshot-Kanal mit shared_ptr<const Frame>; Überspringen
-von Frames zulässig. Vollständige Mess-/Release-Streams für Aggregator, Persistenz und
-Evaluation benötigen begrenzte Queues mit expliziter Überlastregel. Mehrere verlustfreie
-Leser benötigen eigene Queues oder individuelle Lesecursor. Snapshot-Lebensdauer und
-Verarbeitungsvollständigkeit getrennt behandeln. Bestehende shared_ptr-Snapshots sind ein
-brauchbarer Ansatz, aber Transport, Shutdown und Synchronisierung benötigen Überarbeitung.
+ABS does not invoke AggregationManager. AGBS constructs an aggregator object but has no
+active aggregation call in its update path. No active postDataTest call was found.
+Simulation::postData(agents) is GT output, not an additional ABS writer.
 
-## Bewertung des alten Plans
+## Other source-level issues
 
-Weiterhin gut: sensorlokale Aggregation, Trennung von Topologie und Historie,
-regionale Constraints, kein MongoDB im Manager, begrenzte Historie, klare Messsemantik,
-separate Veröffentlichungsansicht und Referenzdaten.
+- Random generators use random_device in multiple places; a shared configurable seed is missing.
+  UUID generation and iteration order also need explicit treatment for reproducibility.
+- updateVelocity receives simulationRealTime, influencing movement noise with CPU/DB/render cost.
+- SharedBuffer::read waits only for data. end sets finished and notifies, but the predicate
+  ignores finished; a waiting reader may never exit.
+- Queues are unbounded. Headless operation disables the renderer, not snapshot generation.
+- CollisionGrid width/height are not initialized by its constructor but are read by
+  adjacent-cell checks. Neighbor pairs can be processed in both directions.
+- Agent pointers are retained while vector::erase may invalidate earlier pointers.
+- Quadtree::reset nulls child pointers without freeing their nodes, losing destructor reachability.
+- Sensor timers reset to zero rather than preserving residual time; non-aligned frequencies
+  can change actual sample spacing.
 
-Anpassungen:
+These are source-level findings. Runtime impact and performance have not been measured for
+all of them. The example-agent data check is the separate empirical evidence below.
 
-1. Reproduzierbarkeit, Experiment-Runner, Ausgabe ohne MongoDB und Baselines zuerst.
-2. Messbare Anwendungs-Utility und unabhängigen empirischen Angreifer früh definieren;
-   Constraint-Compliance und Zellauflösung allein beantworten die Forschungsfrage nicht.
-3. k-Mindestanzahl bleibt Freigaberegel; daraus folgt keine formale Anonymitätsgarantie.
-4. Statische Hierarchie bedeutet nicht zwingend voll materialisierter Baum. Implizite
-   Morton-Hierarchie/sparse Messspeicher prüfen. Der vorhandene Baum beginnt mit vier
-   Basiszellen bei depth=1; Knotenformeln und IDs müssen diese Konvention berücksichtigen.
-5. Spatial/Temporal First zunächst mit einer globalen Policy; regionale Konflikte danach.
-6. Retrospektive Rekonstruktion betrifft interne Rohmessungen. Ein DB-Delete widerruft
-   keine bereits extern zugängliche Veröffentlichung. Überlappung und Differenzangriffe
-   müssen anhand des gesamten Release-Streams geprüft werden.
-7. Einbehaltene Messbeiträge sind Coverage/Retention, nicht allein Data Fidelity.
-8. Karten, ORCA, Sensorrauschen und Taxonomie-Umbau nur bei konkretem experimentellem Bedarf.
-9. Die im Plan behauptete Kerninnovation bleibt Forschungshypothese, kein Nachweis.
+## Aggregation interface discussion
 
-## Nächster Arbeitsschritt
+AggregatedCell is a plausible release record, but count semantics must come first:
+contributions, distinct people and mean occupancy are different values.
 
-Die priorisierte Aufgabenliste steht ausschließlich in [TO-DO.md](../TO-DO.md).
-D01/D02 klären Beobachtungs-/Ausgabesemantik; F01/F02 beschreiben die minimalen ABS-Fixes.
-Diese Schritte sind offen. Keine weitere Implementierung im Rahmen der Dokumentationsarbeit.
+Prefer a sensor-local manager without MongoDB dependency. Mandatory long-lived dependencies
+can be references, for example a spatial hierarchy, temporal storage and policies. A nullable
+Quadtree* adds no benefit without actual optionality. ingest(batch) and advance(time) could
+separate ingestion from planning; update(now, tree) could be a small transition interface,
+but needs history in addition to geometry. These are proposals, not new classes.
 
-## Validierung des lokalen Imports
+Use explicit simulation ticks/integer durations for future windows, define [start,end),
+and identify releases by sensor, policy, release ID and publication time. Keep internal
+agent identities separate from releases. A const output reference suits synchronous callers;
+thread transport needs immutable snapshots. Consumption/draining can prevent repeated output.
 
-Simulator und ABS/GBS/AGBS/GT-Renderer jeweils separat mit CMake als Release gebaut:
-alle fünf Builds erfolgreich. Build-Artefakte unter /private/tmp/diss-review/import-build.
-101 übernommene Komponenten-Dateien byteweise gegen die Originale geprüft: identisch.
-Zur Importvalidierung keine Simulatorausführung oder Datenbankzugriffe. Später erfolgten
-ausschließlich lesende DB-Abfragen für die unten dokumentierte Prüfung; keine Datenänderung.
-Der neue Git-Verlauf beginnt mit dem unveränderten Import; kein Remote eingerichtet.
+## SharedBuffer discussion
 
-## Nachweis aus der bestehenden MongoDB — 2026-10-08
+Do not use a fixed access count of three. Reference counts track lifetime, not completion.
+Existing read pops a frame, so independent readers consume different frames.
 
-Datenbank localhost:27017/Simulation, Agent
-`C0B64FE1-740C-486C-A2D1-00E030269E71`, Sensor
-`40F5B238-1457-499C-A2CF-499BD5BF8AF6`.
-Abfragen waren ausschließlich lesend; keine Löschung, Indexänderung oder neue Simulation.
+Keep aggregation in the simulation thread initially. A protected latest-snapshot channel
+could serve rendering when skipped frames are permitted. Lossless measurement/release
+consumers need bounded queues and overload rules. Multiple such consumers need their own
+queues or read cursors. Distinguish snapshot lifetime from delivery completeness.
 
-| Prüfung | Ergebnis |
+## Review of the historical plan
+
+Useful principles: sensor-local aggregation, separate topology/history, regional constraints,
+DB-free manager, bounded retention, clear count semantics, release view and GT separation.
+
+Adjustments proposed for the actual roadmap:
+
+1. Put reproducibility, experiment output and fixed baselines early.
+2. Define application utility and independent empirical attacker evaluation early.
+3. Treat k-threshold compliance as a release rule, not a complete anonymity proof.
+4. Static hierarchy does not require full materialization. Consider implicit Morton structure
+   and sparse measurement storage; account for four base cells at depth 1.
+5. Start Spatial/Temporal First with one global policy before regional conflicts.
+6. Retrospective reconstruction applies internally. Deleting a DB record cannot retract an
+   externally observed release; assess overlap and differencing across the whole stream.
+7. Retained contribution fraction is coverage/retention, not a complete fidelity measure.
+8. Add maps, ORCA, sensor noise and taxonomy redesign when experiments need them.
+9. Treat the plan's novelty claim as a hypothesis requiring literature and empirical evidence.
+
+## Import verification and read-only database evidence
+
+The simulator and ABS/GBS/AGBS/GT renderers each built successfully in Release mode.
+Builds were placed under /private/tmp/diss-review/import-build. 101 component files matched
+the originals byte for byte. Import validation did not run the simulator. Subsequent DB
+queries were read only; no records, indexes or collections were changed.
+
+Database: localhost:27017/Simulation. Agent:
+C0B64FE1-740C-486C-A2D1-00E030269E71. Sensor:
+40F5B238-1457-499C-A2CF-499BD5BF8AF6.
+
+| Check | Result |
 |---|---:|
-| GT-Records / eindeutige GT-Timestamps | 200 / 200 |
-| ABS-Records / eindeutige Sensor-Timestamps | 199 / 100 |
-| Fehlende GT-Zuordnungen über Agenten-ID + Timestamp | 0 |
-| Positionsabweichungen gegenüber zugeordnetem GT | 0 |
-| Typabweichungen | 0 |
-| Doppelte ABS-Schlüssel / zusätzliche Records | 99 / 99 |
-| Abweichender Inhalt innerhalb der Duplikate | 0 |
-| Folgeintervalle zwischen eindeutigen ABS-Messungen | 99 × 100 ms |
+| GT records / distinct GT timestamps | 200 / 200 |
+| ABS records / distinct sensor timestamps | 199 / 100 |
+| Missing GT matches on agent identity + timestamp | 0 |
+| Position mismatches | 0 |
+| Type mismatches | 0 |
+| Duplicate ABS keys / extra records | 99 / 99 |
+| Conflicting duplicate contents | 0 |
+| Subsequent distinct ABS observation intervals | 99 × 100 ms |
 
-GT-Zeitbereich: 2025-04-09T09:30:00.000Z bis 09:30:09.950Z.
-ABS-Zeitbereich: 09:30:00.050Z bis 09:30:09.950Z.
+GT range: 2025-04-09T09:30:00.000Z to 09:30:09.950Z.
+ABS range: 09:30:00.050Z to 09:30:09.950Z.
 
-Die erste Positionsdifferenz über 50 ms ergibt (5.1058959961, 1.2913703918) m/s;
-gespeichert wurden (2.5529479980, 0.6456851959) m/s. Der erste Wert ist exakt halbiert.
-Die folgenden 99 eindeutigen Werte stimmen mit den Positionsdifferenzen über 100 ms
-überein. GT enthält 183 Intervalle mit Positionsänderung; die Prüfung war somit nicht
-auf einen ausschließlich unbewegten Agenten beschränkt. Die Anfangsbeispiele enthalten
-allerdings auch Stillstand.
+First displacement over 50 ms implies (5.1058959961, 1.2913703918) m/s;
+stored velocity is (2.5529479980, 0.6456851959) m/s, exactly halved. All subsequent
+99 estimates match displacement/100 ms. GT contains 183 position-changing intervals;
+this was not an exclusively stationary-agent check. Some early examples include stops.
 
-Dieser Nachweis bestätigt Timestamp-/Positionsgleichheit und die beiden ABS-Probleme
-für diesen Datenbestand. Er beweist keine universelle Richtigkeit aller Sensoren/Runs.
+This evidence confirms matching time/position and two ABS issues for this agent/dataset,
+not universal correctness of every sensor or run. Compare interval velocity against movement
+over the same interval, not instantaneous GT velocity at its endpoint.
 
-## Warum estimateVelocities den Ausgabefehler nicht verhindert
+## Next step
 
-Sensor::estimateVelocities läuft über previousPositions und prüft currentPositions;
-Agenten ohne alte Position sind dort korrekt ausgeschlossen. AgentBasedSensor::update
-ruft diese Methode aber erst nach captureAgentData auf. captureAgentData berechnet
-AgentData.estimatedVelocity separat und verschiebt die Records bereits in dataStorage.
-postData schreibt diese Records, nicht die separate estimatedVelocities-Map.
-
-Daher sind drei Fragen getrennt zu beantworten:
-
-1. Existieren zwei Positionsbeobachtungen derselben ID? Für unbekannte Agenten zunächst nein.
-2. Welches tatsächliche Zeitintervall liegt zwischen ihnen? Beim ersten bekannten Wert 50 ms.
-3. Welche Berechnung wird veröffentlicht? Aktuell diejenige in captureAgentData.
-
-Die geplante Konsolidierung und Datenregel stehen als offene Aufgaben D01/D02 und F01/F02
-in TO-DO.md. Der Simulationsapparat soll dafür schlank bleiben.
+Priorities are maintained only in [TO-DO.md](../TO-DO.md). D01/D02 define data rules;
+F01/F02 specify the small ABS corrections. All remain open. Documentation changes do not
+reintroduce the reverted implementation or start a backend migration.
