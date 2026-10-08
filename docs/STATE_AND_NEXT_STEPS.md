@@ -1,4 +1,15 @@
-# Bestandsaufnahme und nächste Schritte — 2026-10-08
+# Technische Bestandsaufnahme — 2026-10-08
+
+## Einordnung und aktueller Status
+
+Diese Datei dokumentiert die Befunde zum unveränderten Import. Die zentralen aktuellen
+Dokumente sind [README](../README.md) und [TO-DO](../TO-DO.md). Ausführung und Priorisierung
+stehen in TO-DO.md; diese Bestandsaufnahme ist kein zweiter Implementierungsauftrag.
+
+Der zwischenzeitliche ABS-Fix `0ce473f` einschließlich Tests wurde durch `db2bdbb`
+zurückgenommen. Aktiver Quellcode und CMake entsprechen wieder dem Import `96fae5b`.
+Die bekannten Fehler sind deshalb weiterhin offen. Historische Testresultate des Fixes
+sind kein Nachweis für den aktuellen Stand. Weitere Implementierung ist derzeit nicht begonnen.
 
 ## Umfang
 
@@ -24,8 +35,11 @@ Visualisierung und MongoDB-Persistenz. Komplexere Trajektorien und Stadtgeometri
 
 Aggregation_Manager und SimulatorV3 verwenden SFML Graphics. Metal-Simulator heißt
 zwar so, baut aber einen OpenGL-2.1-Kontext und verwendet gl*-Aufrufe. UAM-Simulator
-verwendet ebenfalls OpenGL. In den geprüften Quellen wurde keine direkte Metal-,
-MetalKit- oder Accelerate-Anbindung gefunden. Ein neuer Renderer ist für den ersten
+verwendet ebenfalls OpenGL. In diesen im Coding-Ordner geprüften Quellen wurde keine direkte Metal-,
+MetalKit- oder Accelerate-Anbindung gefunden. Das später ebenfalls gelesene separate
+Projekt `/Users/maxdemu/Developer/UAM-Simulator-Modern` verwendet dagegen Cocoa, Metal,
+MetalKit und QuartzCore direkt; dies ist die gesuchte native Apple-Variante. README und
+TO-DO dieses Projekts dienen als Dokumentationsvorbild, nicht als Implementierungsauftrag. Ein neuer Renderer ist für den ersten
 Privacy/Utility-Vergleich nicht erforderlich; eine Beschleunigung ist noch nicht gemessen.
 
 ## Zeitstempel: präzisierter Befund
@@ -62,6 +76,8 @@ Im importierten Aggregation_Manager sind konkrete separate Probleme erkennbar:
   Bei einer Messung direkt für t=0 ergibt sich eine Null-Differenz ohne vergangenes Intervall.
 - Neu eintretende Agenten ohne vorherige Beobachtung werden trotzdem als Datensatz angelegt;
   es gibt keinen ausdrücklichen Status, der eine fehlende Geschwindigkeitsmessung kennzeichnet.
+  sf::Vector2f initialisiert seine Komponenten in der lokalen SFML-3.0.2-Version mit null;
+  deshalb wird für unbekannte Agenten ein Standardwert (0,0) statt einer gültigen Schätzung gespeichert.
 - update leert agentData, nicht den zuletzt gefüllten dataStorage-Batch. Da Simulation
   postData bei jedem Tick aufruft, wird derselbe ABS-Batch an Nicht-Messticks erneut eingefügt.
   Im Beispiel: Messung bei 0.05 s, erneuter Write dieses Batches im Tick 0.10 s.
@@ -76,7 +92,7 @@ publizieren. Kein Timestamp künstlich verschieben. Noch keine Codeänderung vor
 Für die spätere Prüfung: ABS mit GT über ID+Timestamp verbinden, Positionen vergleichen,
 fehlende Zuordnungen und doppelte Schlüssel zählen. Geschwindigkeitsvergleich muss die
 mittlere GT-Bewegung über dasselbe Intervall verwenden; momentane GT-Geschwindigkeit
-und Intervallgeschwindigkeit sind unterschiedliche Größen. Noch keine DB-Auswertung.
+und Intervallgeschwindigkeit sind unterschiedliche Größen. Die konkrete DB-Prüfung dieses Agenten ist unten dokumentiert; eine Gesamtprüfung aller Runs fehlt.
 
 ## Weitere Probleme vor größeren Experimenten
 
@@ -155,24 +171,65 @@ Anpassungen:
 8. Karten, ORCA, Sensorrauschen und Taxonomie-Umbau nur bei konkretem experimentellem Bedarf.
 9. Die im Plan behauptete Kerninnovation bleibt Forschungshypothese, kein Nachweis.
 
-## Nächster kleiner Arbeitsabschnitt
+## Nächster Arbeitsschritt
 
-- Kontrollierter Referenzlauf ohne DB-Schreibzugriff und ohne Renderabhängigkeit.
-- Beobachtungszeit, Messfrequenz und einmalige ABS-Publikation korrigieren und prüfen.
-- Gemeinsamen Seed, Simulationszeit für Noise, deterministische fachliche Agenten-IDs.
-- Gespeicherten Messstrom für alle verglichenen Aggregationsvarianten wiederverwenden.
-- Feste Raum-/Zeit-Baselines; Belegungsabfrage auf unverändertem Referenzraster und
-  Referenzzeitplan gegen GT messen. Empty/Suppressed/Unavailable unterscheiden.
-- Einfachen Membership-Angreifer mit definiertem Zusatzwissen und Prior-Baseline evaluieren.
-- Erst danach adaptiven Manager, temporale Historie und regionale Policy-Vergleiche erweitern.
-
-Ziel für Dienstag/Mittwoch: ein reproduzierbarer erster Vergleich mit transparenten
-Grenzen. Keine Zusage eines bereits belegten Privacy-Gewinns oder des vollständigen Systems.
+Die priorisierte Aufgabenliste steht ausschließlich in [TO-DO.md](../TO-DO.md).
+D01/D02 klären Beobachtungs-/Ausgabesemantik; F01/F02 beschreiben die minimalen ABS-Fixes.
+Diese Schritte sind offen. Keine weitere Implementierung im Rahmen der Dokumentationsarbeit.
 
 ## Validierung des lokalen Imports
 
 Simulator und ABS/GBS/AGBS/GT-Renderer jeweils separat mit CMake als Release gebaut:
 alle fünf Builds erfolgreich. Build-Artefakte unter /private/tmp/diss-review/import-build.
 101 übernommene Komponenten-Dateien byteweise gegen die Originale geprüft: identisch.
-Keine Simulatorausführung und keine Datenbankabfrage oder -änderung.
+Zur Importvalidierung keine Simulatorausführung oder Datenbankzugriffe. Später erfolgten
+ausschließlich lesende DB-Abfragen für die unten dokumentierte Prüfung; keine Datenänderung.
 Der neue Git-Verlauf beginnt mit dem unveränderten Import; kein Remote eingerichtet.
+
+## Nachweis aus der bestehenden MongoDB — 2026-10-08
+
+Datenbank localhost:27017/Simulation, Agent
+`C0B64FE1-740C-486C-A2D1-00E030269E71`, Sensor
+`40F5B238-1457-499C-A2CF-499BD5BF8AF6`.
+Abfragen waren ausschließlich lesend; keine Löschung, Indexänderung oder neue Simulation.
+
+| Prüfung | Ergebnis |
+|---|---:|
+| GT-Records / eindeutige GT-Timestamps | 200 / 200 |
+| ABS-Records / eindeutige Sensor-Timestamps | 199 / 100 |
+| Fehlende GT-Zuordnungen über Agenten-ID + Timestamp | 0 |
+| Positionsabweichungen gegenüber zugeordnetem GT | 0 |
+| Typabweichungen | 0 |
+| Doppelte ABS-Schlüssel / zusätzliche Records | 99 / 99 |
+| Abweichender Inhalt innerhalb der Duplikate | 0 |
+| Folgeintervalle zwischen eindeutigen ABS-Messungen | 99 × 100 ms |
+
+GT-Zeitbereich: 2025-04-09T09:30:00.000Z bis 09:30:09.950Z.
+ABS-Zeitbereich: 09:30:00.050Z bis 09:30:09.950Z.
+
+Die erste Positionsdifferenz über 50 ms ergibt (5.1058959961, 1.2913703918) m/s;
+gespeichert wurden (2.5529479980, 0.6456851959) m/s. Der erste Wert ist exakt halbiert.
+Die folgenden 99 eindeutigen Werte stimmen mit den Positionsdifferenzen über 100 ms
+überein. GT enthält 183 Intervalle mit Positionsänderung; die Prüfung war somit nicht
+auf einen ausschließlich unbewegten Agenten beschränkt. Die Anfangsbeispiele enthalten
+allerdings auch Stillstand.
+
+Dieser Nachweis bestätigt Timestamp-/Positionsgleichheit und die beiden ABS-Probleme
+für diesen Datenbestand. Er beweist keine universelle Richtigkeit aller Sensoren/Runs.
+
+## Warum estimateVelocities den Ausgabefehler nicht verhindert
+
+Sensor::estimateVelocities läuft über previousPositions und prüft currentPositions;
+Agenten ohne alte Position sind dort korrekt ausgeschlossen. AgentBasedSensor::update
+ruft diese Methode aber erst nach captureAgentData auf. captureAgentData berechnet
+AgentData.estimatedVelocity separat und verschiebt die Records bereits in dataStorage.
+postData schreibt diese Records, nicht die separate estimatedVelocities-Map.
+
+Daher sind drei Fragen getrennt zu beantworten:
+
+1. Existieren zwei Positionsbeobachtungen derselben ID? Für unbekannte Agenten zunächst nein.
+2. Welches tatsächliche Zeitintervall liegt zwischen ihnen? Beim ersten bekannten Wert 50 ms.
+3. Welche Berechnung wird veröffentlicht? Aktuell diejenige in captureAgentData.
+
+Die geplante Konsolidierung und Datenregel stehen als offene Aufgaben D01/D02 und F01/F02
+in TO-DO.md. Der Simulationsapparat soll dafür schlank bleiben.
