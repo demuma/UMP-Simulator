@@ -68,7 +68,7 @@ Im importierten Aggregation_Manager sind konkrete separate Probleme erkennbar:
 - Eine zweite Geschwindigkeitsberechnung im Sensor-Basistyp füllt eine Map, ist aber nicht
   die Quelle des BSON-Felds estimated_velocity.
 
-Vorschlag: erste Beobachtung intern speichern, erst mit zweiter Beobachtung für dieselbe
+Zum Audit-Zeitpunkt vorgeschlagen: erste Beobachtung intern speichern, erst mit zweiter Beobachtung für dieselbe
 ID einen ABS-Record mit Geschwindigkeit ausgeben. Geschwindigkeit aus tatsächlichem
 Delta-t berechnen; erster Messzeitpunkt muss explizit festgelegt sein. Messbatch einmalig
 publizieren. Kein Timestamp künstlich verschieben. Noch keine Codeänderung vorgenommen.
@@ -176,3 +176,25 @@ alle fünf Builds erfolgreich. Build-Artefakte unter /private/tmp/diss-review/im
 101 übernommene Komponenten-Dateien byteweise gegen die Originale geprüft: identisch.
 Keine Simulatorausführung und keine Datenbankabfrage oder -änderung.
 Der neue Git-Verlauf beginnt mit dem unveränderten Import; kein Remote eingerichtet.
+
+## ABS-Korrektur — 2026-10-08
+
+Die Prüfung des Beispielagenten in der bestehenden DB bestätigte: 200 GT-Records,
+199 ABS-Records für 100 verschiedene Sensorzeitpunkte, 99 identische doppelte Records.
+Alle ABS-Positionen und -Zeitstempel passen zum GT. Die erste Geschwindigkeitsmessung
+war exakt halbiert; die folgenden 99 passen zur mittleren Bewegung über 100 ms.
+
+Im neuen Repo korrigiert:
+
+- initializeObservations speichert Position und Timestamp der initialen GT-Beobachtung.
+- Geschwindigkeit verwendet das tatsächliche positive Delta-t der Beobachtungen.
+- Agenten ohne vorherige Beobachtung erhalten keinen Platzhalter-Record.
+- Nicht-Messticks leeren den alten Batch. takeMeasurements konsumiert einen neuen Batch
+  einmalig und wird von postData verwendet. Kein automatischer Retry nach DB-Fehlern;
+  dies ist keine Garantie gegen externe Duplikate oder für verlustfreie Persistenz.
+- GT-Zeitstempel, Sensorfrequenz und die Simulations-/Bewegungsreihenfolge bleiben erhalten.
+
+Simulator-Release-Build erfolgreich; CTest AgentBasedSensorRegression mit fünf Szenarien
+bestanden: erstes 50-ms-Intervall, einmaliger Konsum/stale Batch, abweichende Intervalle,
+Neueintritt/Wiedereintritt und Nullzeitintervall. Tests benötigen weder MongoDB-Verbindung
+noch Grafikfenster. Der Simulator wurde nicht gestartet, bestehende DB-Daten nicht geändert.

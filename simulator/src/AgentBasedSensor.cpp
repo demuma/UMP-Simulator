@@ -4,6 +4,7 @@
 #include <mongocxx/uri.hpp>
 #include <bsoncxx/json.hpp>
 #include <iostream>
+#include <utility>
 
 #include "../include/AgentBasedSensor.hpp"
 
@@ -45,7 +46,7 @@ void AgentBasedSensor::update(std::vector<Agent>& agents, float timeStep, std::c
     this->timestamp = timestamp;
 
     // Clear the data storage
-    agentData.clear();
+    dataStorage.second.clear();
 
     // Update the time since the last update
     timeSinceLastUpdate += timeStep;
@@ -57,24 +58,49 @@ void AgentBasedSensor::update(std::vector<Agent>& agents, float timeStep, std::c
         // Capture agent data
         captureAgentData(agents);
 
-        // Estimate the velocities of the agents
-        estimateVelocities(estimatedVelocities);
-
-        // Reset for next update
-        previousPositions = currentPositions;
-        currentPositions.clear();
         timeSinceLastUpdate = 0.0f;
+    }
+}
+
+void AgentBasedSensor::initializeObservations(
+    const std::vector<Agent>& agents,
+    std::chrono::system_clock::time_point timestamp
+) {
+    this->timestamp = timestamp;
+    timeSinceLastUpdate = 0.0f;
+    previousObservations.clear();
+    dataStorage = {timestamp, {}};
+    for (const auto& agent : agents) {
+        if (detectionArea.contains(agent.position)) {
+            previousObservations.emplace(agent.agentId, Observation{agent.position, timestamp});
+        }
     }
 }
 
 // Make a snapshot of the agents in the detection area
 void AgentBasedSensor::captureAgentData(std::vector<Agent>& agents) {
 
+    dataStorage = {timestamp, {}};
+    std::unordered_map<std::string, Observation> observations;
+
     // Capture the current positions of the agents
     for (Agent& agent : agents) {
 
         // Check if the agent is within the detection area
         if (detectionArea.contains(agent.position)) {
+
+            observations.emplace(agent.agentId, Observation{agent.position, timestamp});
+            const auto previous = previousObservations.find(agent.agentId);
+            // A new or re-entering agent needs two observations before publication.
+            if (previous == previousObservations.end()) {
+                continue;
+            }
+            const double elapsedSeconds = std::chrono::duration<double>(
+                timestamp - previous->second.timestamp
+            ).count();
+            if (elapsedSeconds <= 0.0) {
+                continue;
+            }
 
             // Prepare SensorData object for the agent
             AgentData agentDataPoint;
@@ -84,21 +110,21 @@ void AgentBasedSensor::captureAgentData(std::vector<Agent>& agents) {
             agentDataPoint.type = agent.type;
             agentDataPoint.position = agent.position;
 
-            // Estimate and store the velocity of the agent TODO: Only save with velocity
-            if (previousPositions.find(agent.agentId) != previousPositions.end()) {
-                sf::Vector2f prevPos = previousPositions[agent.agentId];
-                agentDataPoint.estimatedVelocity = (agent.position - previousPositions[agent.agentId]) * frameRate;
-            }
+            const auto displacement = agent.position - previous->second.position;
+            agentDataPoint.estimatedVelocity = {
+                static_cast<float>(displacement.x / elapsedSeconds),
+                static_cast<float>(displacement.y / elapsedSeconds)
+            };
 
             // Store the agent data
-            agentData.emplace_back(agentDataPoint);
-            
-            // Store the current position of a specific agent using its UUID 
-            currentPositions[agent.agentId] = agent.position;
+            dataStorage.second.emplace_back(std::move(agentDataPoint));
         }
     }
-    // Store the timestamped data in the data storage
-    dataStorage = {timestamp, std::move(agentData)};
+    previousObservations = std::move(observations);
+}
+
+std::vector<AgentBasedSensor::AgentData> AgentBasedSensor::takeMeasurements() {
+    return std::exchange(dataStorage.second, std::vector<AgentData>{});
 }
 
 // Post metadata method for agent-based sensor (position, detection area, frame rate)
@@ -136,8 +162,8 @@ void AgentBasedSensor::postMetadata() {
 void AgentBasedSensor::postData() {
 
     // Get the agent data from the data storage
-    const auto& timestamp = dataStorage.first;
-    const auto& agentData = dataStorage.second;
+    const auto timestamp = dataStorage.first;
+    const auto agentData = takeMeasurements();
 
     // Check if there is data to post
     if (!agentData.empty()) {
@@ -187,7 +213,7 @@ void AgentBasedSensor::postData() {
 void AgentBasedSensor::printData() {
 
     // Print the stored data
-    for (const AgentData& agentDataPoint : agentData) {
+    for (const AgentData& agentDataPoint : dataStorage.second) {
 
         std::cout << "  Timestamp: " << generateISOTimestampString(agentDataPoint.timestamp) << std::endl;
         std::cout << "  Sensor ID: " << agentDataPoint.sensorId << std::endl;
