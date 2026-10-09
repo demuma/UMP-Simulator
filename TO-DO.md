@@ -1,4 +1,4 @@
-# TO-DO — UrbanMobilityPrivacy
+# TO-DO — UMP-Simulator
 
 **Status: 2026-10-09. Work mode: documentation and planning before further implementation.**
 
@@ -19,7 +19,9 @@ results and remaining limits. A class or configuration field alone does not comp
 
 ## 2. Completed organization and audit work
 
-- [x] Create the local UrbanMobilityPrivacy repository; no remote.
+- [x] Create the local repository, initially named UrbanMobilityPrivacy; no remote.
+- [x] Move it outside Coding to ~/Developer/UMP-Simulator on 2026-10-09, preserving Git history.
+- [x] Adopt the name Urban Mobility Privacy Simulator and update location/workspace documentation.
 - [x] Import Aggregation_Manager and four separate V3 database renderers.
 - [x] Preserve import commit 96fae5b as the baseline.
 - [x] Build the unmodified simulator and all four renderers successfully.
@@ -393,7 +395,7 @@ explicit resolution or rejection.
   retained application code uses OpenGL. Renderer migration does not move CPU aggregation to GPU.
 - [ ] **X08 — Shared libraries/build (P1/P2):** reduce duplication selectively;
   preserve working independent builds as references.
-- [ ] **X09 — Packaging/remote (P2):** retain repository name; decide remote, license,
+- [ ] **X09 — Packaging/remote (P2):** retain the UMP-Simulator name; decide remote, license,
   publication and data/asset selection separately.
 
 ## 11. Process for subsequent changes

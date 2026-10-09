@@ -1,9 +1,9 @@
-# UrbanMobilityPrivacy
+# UMP-Simulator — Urban Mobility Privacy Simulator
 
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
-**Status: 2026-10-08. Current phase: document the baseline, clarify data semantics and
+**Status: 2026-10-09. Current phase: document the baseline, clarify data semantics and
 plan changes. The first ABS implementation has been reverted. Active source code,
 configuration and build files match the original import.**
 
@@ -49,12 +49,20 @@ result. This is a work target, not a promise of an already demonstrated privacy 
 
 ## 3. Origin and repository layout
 
-Local repository: `/Users/maxdemu/Developer/Coding/UrbanMobilityPrivacy`.
+Local repository: `/Users/maxdemu/Developer/UMP-Simulator`.
+
+Moved on 2026-10-09 from `Coding/UrbanMobilityPrivacy` into the user-created
+`UMP-Simulator` directory. The repository name is **Urban Mobility Privacy Simulator**.
+Git history was preserved; simulation source, configuration and behavior were unchanged.
+The original simulator and renderer projects remain in Coding as references.
+
+Open this directory as the VS Code workspace. The included
+[UMP-Simulator.code-workspace](UMP-Simulator.code-workspace) opens the repository root.
 Imported on 2026-10-08 from the local `Coding` repository at commit
 `d1e3dde748c6565ca4a44514d5e9e86016b67de3`.
 
 ```text
-UrbanMobilityPrivacy/
+UMP-Simulator/
 ├── README.md
 ├── TO-DO.md
 ├── .gitignore
