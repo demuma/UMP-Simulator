@@ -1,6 +1,6 @@
 # TO-DO — UrbanMobilityPrivacy
 
-**Status: 2026-10-08. Work mode: documentation and planning before further implementation.**
+**Status: 2026-10-09. Work mode: documentation and planning before further implementation.**
 
 This is the central task backlog. README describes current behavior; this file tracks
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
@@ -44,7 +44,8 @@ exists in Git history, not in active behavior.
 Do not start a complete aggregator rewrite yet. Proposed order:
 
 1. **D01/D02:** define ABS observation and publication semantics.
-2. **F01/F02:** minimally fix the two evidenced ABS defects.
+2. **F00/F02:** correct sampling initialization and duplicate batch publication.
+   **F01:** then make velocity estimation robust to actual observation intervals.
 3. **V01:** verify identity, time, position, interval velocity and duplicate counts.
 4. **R01/R02:** ensure comparable input independent of random runs and processing speed.
 5. **E01/E02:** define one application query and one attacker scenario.
@@ -101,6 +102,42 @@ multiple times for contributions. Small example data demonstrates every chosen d
 
 ## 5. ABS corrections: located and currently open
 
+### F00 — Fix the initial ABS sampling interval — P0
+
+- [ ] Do not count a completed simulation step when observing the initial state at t=0.
+- [ ] Anchor the sampling schedule to the initial observation time.
+- [ ] At 10 Hz, capture the first subsequent observation at 100 ms, then 200 ms, 300 ms, etc.
+- [ ] Preserve the initial GT position as an internal reference observation, without a
+  placeholder velocity publication at t=0.
+- [ ] Keep GT and sensor timestamps attached to the observed position state.
+
+**Finding:** this is an implementation error in initialization of the discrete-time
+sampling schedule, not a property of a 10-Hz sensor. Such initialization/off-by-one errors
+are a familiar class of programming mistake, but the intended behavior must be corrected.
+
+The simulator first calls ABS for X(0), yet update immediately adds timeStep (50 ms).
+The next call observes X(50 ms), adds another 50 ms, and triggers the 100-ms timer threshold.
+Because previousPositions was seeded from X(0), the first velocity spans only 50 ms.
+Later captures at 150, 250, 350 ms are 100 ms apart: the problem is the initial interval
+and phase, not a sustained 20-Hz sampling rate.
+
+**Affected code:** simulator/src/AgentBasedSensor.cpp, update and sampling state;
+simulator/src/Simulation.cpp, initializeSensors, only if explicit initial-time setup is needed.
+Adjust the header only as required by the chosen small correction.
+
+**Proposed scope:** base elapsed sampling time on observation timestamps or explicitly
+exclude the initial call from elapsed-step accounting. Define the initial time before
+choosing the implementation. Do not reorder the entire simulation or shift record timestamps.
+
+**Acceptance:** with a 50-ms simulation step and 10-Hz ABS, no new capture at 0 or 50 ms;
+first capture at 100 ms and subsequent captures at 200, 300 ms. The initial position at
+0 ms remains the velocity reference. Constant known motion gives the correct first velocity,
+and every published position still matches GT at the same identity/timestamp. Verify an
+initial time other than the clock epoch as well. Non-aligned periods are covered by D02/F01.
+
+**Status:** added explicitly on 2026-10-09; not implemented. F00 fixes the schedule;
+F01 handles actual intervals and consolidates the velocity calculation.
+
 ### F01 — Use actual elapsed observation time for velocity — P0
 
 - [ ] Retain earlier position and its observation time together.
@@ -122,8 +159,9 @@ extra thread or generic tracking framework. A previous sample timestamp might su
 synchronously observed agents; use per-agent timestamps only if entry/dropout rules need them.
 Choose the data structure after D01/D02.
 
-**Acceptance:** known constant motion produces the same correct velocity over the first
-50-ms interval and later 100-ms intervals. Different spacing remains correct. Identity,
+**Acceptance:** after F00, known constant motion produces the correct first velocity
+over 0–100 ms and subsequent 100-ms intervals. A separate deliberately supplied 50-ms
+observation interval must also be calculated using its actual duration. Different spacing remains correct. Identity,
 position and timestamp still match GT. Unknown agents follow D01.
 
 **Status:** the earlier implementation in 0ce473f was reverted. It is a reviewable draft,
@@ -140,9 +178,18 @@ not a binding architecture or active feature.
 postData is called once per sensor per simulation tick, not once per sensor capture.
 At 20 simulation ticks/s and 10 ABS captures/s, intervening calls reuse old data.
 
-**Timeline:** t=0.050 captures and inserts a batch stamped 0.050; t=0.100 performs no
-capture but inserts that same batch; t=0.150 replaces it with a fresh batch. ABS never
+**Baseline timeline:** t=0.050 captures and inserts a batch stamped 0.050; t=0.100 performs
+no capture but inserts that same batch; t=0.150 replaces it with a fresh batch. ABS never
 calls the prototype aggregator, so this defect is independent of aggregation logic.
+
+The single call site is executed repeatedly by the simulation loop. Clearing agentData
+only clears the working vector; after the move into dataStorage, the output vector is a
+separate retained container. postData reads that output vector on every call. The GT
+postData(agents) method is a separate writer to a different collection.
+
+**Interaction with F00:** fixing the sampling schedule alone does not fix duplication.
+After F00, a batch captured at 100 ms would still be reinserted at the 150-ms non-capture
+tick unless its lifetime is corrected independently.
 
 **Evidence:** 199 ABS records for 100 timestamps, including 99 extra identical records.
 GT position/time matching remains correct.
@@ -152,7 +199,9 @@ ISensorOutput abstraction is not yet required. A unique DB index does not replac
 the cause. Do not clean up the existing database as part of the source correction.
 
 **Acceptance:** one capture leads to one publication; repeated postData calls and non-capture
-ticks do not reproduce the batch. State the failure policy. Do not claim exactly-once
+ticks do not reproduce the batch. For the corrected 10-Hz schedule, a capture at 100 ms
+is inserted once, the 150-ms tick inserts nothing, and the 200-ms capture inserts a new batch.
+Cover an empty capture and the final batch as well. State the failure policy. Do not claim exactly-once
 network/persistence guarantees without implementing them.
 
 ### V01 — Verify reference data and the later correction — P0
@@ -351,4 +400,4 @@ explicit resolution or rejection.
 
 Before editing source, name the selected task, data rule and small scope. Afterwards update
 status, verification and remaining limits. Current work is documentation only. D01/D02 followed
-by F01/F02 is the next candidate. Keep the simulator lean by correcting its existing pipeline.
+by F00/F02 and the interval-robustness work in F01 is the next candidate. Keep the simulator lean by correcting its existing pipeline.
