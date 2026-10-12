@@ -70,11 +70,8 @@ void AdaptiveGridBasedSensor::update(std::vector<Agent>& agents, float timeStep,
     // // Get the current timestamp as a string
     // auto currentTime = timestamp;
 
-    // Update the time since the last update
-    timeSinceLastUpdate += timeStep;
-
-    // Update the estimated velocities at the specified frame rate
-    if (timeSinceLastUpdate >= 1.0f / frameRate) {
+    // The shared gate handles initialization and resets the timer even for empty areas.
+    if (isSamplingDue(timeStep)) {
 
         // Clear the grid data
         // adaptiveGridData.clear();
@@ -118,9 +115,6 @@ void AdaptiveGridBasedSensor::update(std::vector<Agent>& agents, float timeStep,
             
             // Write the current cell ids to the sensor buffer
             sensorBuffer.write(currentCellIdsPtr);
-
-            // Reset the time since the last update
-            timeSinceLastUpdate = 0.0f;
 
             // Push timestamped adaptive grid data to the data storage
             dataStorage.push_back({this->timestamp, adaptiveGridData});

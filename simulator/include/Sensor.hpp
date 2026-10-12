@@ -59,5 +59,7 @@ protected:
     SharedBuffer<sensorBufferFrameType>& sensorBuffer;
     float timeSinceLastUpdate = 0.0f;
 
-    void estimateVelocities(std::unordered_map<std::string, sf::Vector2f>& estimatedVelocities);
+    // The first update observes the initial state; no simulation step has elapsed yet.
+    bool samplingInitialized = false;
+    bool isSamplingDue(float timeStep);
 };

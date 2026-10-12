@@ -6,10 +6,10 @@ This file records evidence about the unmodified import. [README](../README.md) a
 [TO-DO](../TO-DO.md) are the maintained overview and implementation backlog. This audit
 is not a second implementation instruction. All repository documentation is in English.
 
-Temporary ABS correction 0ce473f and its tests were reverted by db2bdbb. Active source and
-CMake match import 96fae5b. The defects therefore remain open. Historical test results
-for the reverted change do not validate the active version. No further implementation
-has begun during documentation work.
+Temporary ABS correction 0ce473f and its tests were reverted by db2bdbb. The findings
+below describe that original import and the existing reference data. On 2026-10-12 a new,
+smaller sensor correction was implemented and tested; see the implementation record at
+the end of this file. Historical findings are not statements that the current fix is absent.
 
 ## Scope and baseline
 
@@ -224,5 +224,49 @@ over the same interval, not instantaneous GT velocity at its endpoint.
 ## Next step
 
 Priorities are maintained only in [TO-DO.md](../TO-DO.md). D01/D02 define data rules;
-F01/F02 specify the small ABS corrections. All remain open. Documentation changes do not
-reintroduce the reverted implementation or start a backend migration.
+F00/F02 are implemented as recorded below. F01 actual-interval velocity handling and
+full-run validation remain open. No graphics backend migration has been started.
+
+## Cross-sensor baseline sampling review — 2026-10-12
+
+Timer advancement precedes the sampling threshold in ABS line 51, GBS line 66 and AGBS
+line 74. Each receives the current state/timestamp before agent movement. With the current
+configuration, populated areas first capture at t=50 ms, the second simulation timestamp.
+The initial timestamp at t=0 does not emit a sensor batch at 10 Hz.
+
+ABS alone uses the seeded t=0 position for velocity. GBS/AGBS counts remain instantaneous
+observations at their actual timestamp. GBS clears dataStorage at line 63 and AGBS at
+line 67, preventing the specific ABS stale-batch reinsert path. Both reset the sampling
+timer only for hasAgents, which makes empty-area sampling processing a further cadence case.
+The current F00 task covers all sensors and empty/repopulated areas. This review changed
+only documentation, not source code or database data.
+
+## Sensor correction implementation — 2026-10-12
+
+Authorized scope: correct startup and repeated successful ABS writes, clarify working/output
+storage, and keep the nominal sampling-rate velocity approach for the current aligned setup.
+
+- Added one protected Sensor::isSamplingDue helper. Its first call initializes without
+  adding elapsed time; later calls advance the timer. Each due sample resets it even if empty.
+- ABS retains initial positions on its first update. Removed Simulation's dynamic-cast
+  initialization of previousPositions; sensor observation history now belongs to ABS.
+- Replaced the class agentData working vector with captureAgentData's local observations.
+  postData calls its local output reference pendingObservations. printData reads that batch.
+- Successful ABS insert_many consumes dataStorage.second. Exceptions keep the vector
+  pending only until another attempt or the next capture; no durable retry/idempotency promise.
+- Removed the unused base estimateVelocities calculation and the separate ABS velocity map.
+- Unknown/reentering identities are kept internally until two consecutive observations.
+  Absent identities drop out at scheduled observations. Counts may include identities not yet
+  present in the complete ABS stream. Nominal-rate estimation remains limited to aligned ticks.
+
+Verification: simulator and opt-in SensorRegressionTests built in Release. CTest passed
+against localhost MongoDB in a new UMP_sensor_regression_<UUID> database. The test exercised
+19 simulation states from 0 to 900 ms, an absolute non-epoch initial timestamp, known motion,
+three ABS postData calls per tick, new entry, empty samples, reentry, grid occupancy and
+AGBS renderer timestamp/cadence. ABS emitted seven complete records with unique keys;
+grid observations matched expected occupancy at each scheduled timestamp. The first
+velocity was (2,1) m/s over 0–100 ms. The test database was removed on exit.
+
+Existing Simulation data/configuration was unchanged; the full simulator was not run.
+Variable steps, non-aligned periods, failure injection and full-run reproducibility remain
+unverified. Current rules and build/test commands are maintained in README and TO-DO.

@@ -62,11 +62,8 @@ void GridBasedSensor::update(std::vector<Agent>& agents, float timeStep, std::ch
     // Clear data storage
     dataStorage.clear();
 
-    // Update the time since the last update
-    timeSinceLastUpdate += timeStep;
-
-    // Update the estimated velocities at the specified frame rate
-    if (timeSinceLastUpdate >= 1.0f / frameRate) {
+    // The shared gate handles initialization and resets the timer even for empty areas.
+    if (isSamplingDue(timeStep)) {
 
         // Clear the grid data
         gridData.clear();
@@ -100,10 +97,9 @@ void GridBasedSensor::update(std::vector<Agent>& agents, float timeStep, std::ch
             }
         }
 
-        // Clear the previous positions and reset the time since the last update
+        // Retain the existing output policy: no DB records for an empty area.
         if(hasAgents) {
 
-            timeSinceLastUpdate = 0.0f;
             dataStorage.push_back({timestamp, gridData}); // Pushing exactly one entry to dataStorage
         }
     }

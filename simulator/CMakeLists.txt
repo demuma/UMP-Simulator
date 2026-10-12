@@ -47,3 +47,29 @@ target_compile_options(Simulator PRIVATE -O3)
 # target_compile_definitions(Simulator PRIVATE STATS)
 # target_compile_definitions(Simulator PRIVATE ERROR)
 # target_compile_definitions(Simulator PRIVATE TIMING)
+
+# Opt-in integration test: creates and removes only a UUID-named test database.
+option(UMP_BUILD_SENSOR_REGRESSION_TESTS "Build sensor regression tests (requires localhost MongoDB)" OFF)
+if(UMP_BUILD_SENSOR_REGRESSION_TESTS)
+    enable_testing()
+    add_executable(SensorRegressionTests
+        tests/SensorRegressionTests.cpp
+        src/Sensor.cpp
+        src/AgentBasedSensor.cpp
+        src/GridBasedSensor.cpp
+        src/AdaptiveGridBasedSensor.cpp
+        src/Agent.cpp
+        src/PerlinNoise.cpp
+        src/Quadtree.cpp
+        src/CollisionGrid.cpp
+        src/CollisionAvoidance.cpp
+        src/AggregationManager.cpp
+        src/Utilities.cpp
+    )
+    target_compile_features(SensorRegressionTests PRIVATE cxx_std_17)
+    target_link_libraries(SensorRegressionTests PRIVATE
+        SFML::Graphics SFML::Window SFML::System
+        mongo::mongocxx_shared mongo::bsoncxx_shared)
+    add_test(NAME sensor_regression COMMAND SensorRegressionTests)
+    set_tests_properties(sensor_regression PROPERTIES LABELS "integration;mongodb" TIMEOUT 30)
+endif()

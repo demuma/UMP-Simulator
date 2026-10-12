@@ -1,6 +1,6 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-09. Work mode: documentation and planning before further implementation.**
+**Status: 2026-10-12. Work mode: the first sensor correction is implemented; keep subsequent changes small and verified.**
 
 This is the central task backlog. README describes current behavior; this file tracks
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
@@ -37,17 +37,22 @@ results and remaining limits. A class or configuration field alone does not comp
 - [x] Record the exact duplicate-write sequence and prototype-aggregator non-involvement.
 - [x] Record SFML/Metal trade-offs and available history of the graphics test project.
 
-**Still open:** active ABS correction, full data validation, reproducible experiment runner,
-actual adaptation, metric definitions and evidence of improved privacy. Reverted work
-exists in Git history, not in active behavior.
+- [x] Correct shared ABS/GBS/AGBS sampling initialization and empty-area timer reset.
+- [x] Consume successful ABS batches and replace class working state with local observations.
+- [x] Remove the unused second velocity calculation; define delayed full records for new/reentering agents.
+- [x] Build the corrected simulator and pass the isolated MongoDB sensor regression test.
+
+**Still open:** actual-interval velocity handling, full-run validation, reproducible experiments,
+actual adaptation, metric definitions and evidence of improved privacy. Historical reverted
+work remains in Git; the 2026-10-12 correction is a new implementation.
 
 ## 3. Next small work package
 
 Do not start a complete aggregator rewrite yet. Proposed order:
 
 1. **D01/D02:** define ABS observation and publication semantics.
-2. **F00/F02:** correct sampling initialization and duplicate batch publication.
-   **F01:** then make velocity estimation robust to actual observation intervals.
+2. **F00/F02:** implemented and tested for the current fixed setup.
+   **F01:** next, define and handle non-aligned or irregular observation intervals.
 3. **V01:** verify identity, time, position, interval velocity and duplicate counts.
 4. **R01/R02:** ensure comparable input independent of random runs and processing speed.
 5. **E01/E02:** define one application query and one attacker scenario.
@@ -60,26 +65,22 @@ requires it. This order is a proposal, not a promise to finish every task by Tue
 
 ### D01 — Define velocity and missing observations — P0
 
-- [ ] Distinguish instantaneous GT velocity from interval-based ABS velocity.
-- [ ] Decide behavior for a new identity without previousPositions.
-- [ ] Define exit, reentry and observation-gap behavior.
-- [ ] Specify the initial GT position as a time-stamped internal observation.
+- [x] Distinguish instantaneous GT velocity from interval-based ABS velocity.
+- [x] Define a first unknown observation as internal only; publish after the next consecutive sample.
+- [x] Drop previous identities absent at a scheduled sample; require two observations after reentry.
+- [x] Define the initial state as the internal t=0 reference, without a placeholder publication.
 
-**Finding:** estimateVelocities correctly checks previous/current position overlap. MongoDB
-output uses the separate value produced in captureAgentData. Unknown agents still receive
-records with the default vector (0,0), without a validity marker.
+**Implemented rule, 2026-10-12:** ABS emits complete records only. A valid stationary estimate
+means equal consecutive positions; an unknown agent is not encoded as zero velocity.
+GBS/AGBS still count each currently observed agent, including an ABS identity not yet emitted.
+Actual observation timestamps for interval robustness remain F01.
 
-**Lean proposal:** retain the first observation internally and publish a complete velocity
-record after the second suitable observation. Alternatively publish positions with explicitly
-missing velocity. The alternative remains undecided; a null/valid field is not implicitly required.
-
-**Acceptance:** a new agent, a moving known agent and a stationary known agent have clearly
-different semantics. The chosen rule is documented in README and the data description.
+**Verification:** regression covers initial motion, new identities, absence and reentry.
 
 ### D02 — Define time and sampling semantics — P0
 
-- [ ] Identify timestamp as the time of the position state.
-- [ ] Describe the preceding interval represented by a velocity estimate.
+- [x] Identify timestamp as the time of the position state.
+- [x] Describe the preceding interval represented by a velocity estimate.
 - [ ] Separate simulation time, data time, publication time and wall-clock processing time.
 - [ ] Define behavior when sensor periods do not align with simulation ticks.
 - [ ] Review absolute-date/UTC handling; generateISOTimestamp uses mktime.
@@ -102,57 +103,44 @@ Do not shift timestamps merely to make records appear synchronized.
 **Acceptance:** repeated observations of one person count once for distinct people but
 multiple times for contributions. Small example data demonstrates every chosen definition.
 
-## 5. ABS corrections: located and currently open
+## 5. Sensor corrections: implemented scope and remaining work
 
-### F00 — Fix the initial ABS sampling interval — P0
+### F00 — Fix initial sampling across ABS, GBS and AGBS — P0 — implemented
 
-- [ ] Do not count a completed simulation step when observing the initial state at t=0.
-- [ ] Anchor the sampling schedule to the initial observation time.
-- [ ] At 10 Hz, capture the first subsequent observation at 100 ms, then 200 ms, 300 ms, etc.
-- [ ] Preserve the initial GT position as an internal reference observation, without a
-  placeholder velocity publication at t=0.
-- [ ] Keep GT and sensor timestamps attached to the observed position state.
+- [x] Exclude the initial call from completed-step accounting.
+- [x] Use one shared sampling gate for ABS, GBS and AGBS.
+- [x] At 10 Hz / 50-ms ticks, capture at 100 ms, then 200 ms, 300 ms, etc.
+- [x] Retain the initial ABS position internally; preserve matching state timestamps.
+- [x] Reset the sampling timer even when the detection area is empty.
+- [x] Verify startup, counts, empty renderer snapshots and repopulation.
 
-**Finding:** this is an implementation error in initialization of the discrete-time
-sampling schedule, not a property of a 10-Hz sensor. Such initialization/off-by-one errors
-are a familiar class of programming mistake, but the intended behavior must be corrected.
+**Baseline finding:** all three sensors added 50 ms while observing X(0), then captured
+X(50 ms) at the next call. ABS used X(0) as its reference but assumed a 100-ms interval,
+halving the first estimate. GBS/AGBS reset only when populated, altering empty-area cadence.
 
-The simulator first calls ABS for X(0), yet update immediately adds timeStep (50 ms).
-The next call observes X(50 ms), adds another 50 ms, and triggers the 100-ms timer threshold.
-Because previousPositions was seeded from X(0), the first velocity spans only 50 ms.
-Later captures at 150, 250, 350 ms are 100 ms apart: the problem is the initial interval
-and phase, not a sustained 20-Hz sampling rate.
+**Implementation, 2026-10-12:** Sensor::isSamplingDue initializes once without adding time,
+then advances by simulation steps and resets at every due sample, independent of occupancy.
+ABS owns the initial-position observation; Simulation no longer seeds its map externally.
+GBS/AGBS still omit empty DB count batches. AGBS emits empty renderer snapshots on schedule.
 
-**Affected code:** simulator/src/AgentBasedSensor.cpp, update and sampling state;
-simulator/src/Simulation.cpp, initializeSensors, only if explicit initial-time setup is needed.
-Adjust the header only as required by the chosen small correction.
-
-**Proposed scope:** base elapsed sampling time on observation timestamps or explicitly
-exclude the initial call from elapsed-step accounting. Define the initial time before
-choosing the implementation. Do not reorder the entire simulation or shift record timestamps.
-
-**Acceptance:** with a 50-ms simulation step and 10-Hz ABS, no new capture at 0 or 50 ms;
-first capture at 100 ms and subsequent captures at 200, 300 ms. The initial position at
-0 ms remains the velocity reference. Constant known motion gives the correct first velocity,
-and every published position still matches GT at the same identity/timestamp. Verify an
-initial time other than the clock epoch as well. Non-aligned periods are covered by D02/F01.
-
-**Status:** added explicitly on 2026-10-09; not implemented. F00 fixes the schedule;
-F01 handles actual intervals and consolidates the velocity calculation.
+**Affected files:** Sensor.hpp/.cpp, all three sensor update methods and Simulation.cpp.
+**Verification:** Release build and isolated MongoDB regression passed, including non-epoch
+initial time, first correct known velocity and state/time matching at 100 ms.
+**Limits:** fixed aligned intervals only. Non-aligned/fractional scheduling remains D02/F01.
 
 ### F01 — Use actual elapsed observation time for velocity — P0
 
 - [ ] Retain earlier position and its observation time together.
 - [ ] Calculate velocity as DeltaPosition / DeltaTime.
 - [ ] Handle zero/negative elapsed time.
-- [ ] Consolidate duplicate calculations in captureAgentData and estimateVelocities.
-- [ ] Implement the unknown-agent rule selected in D01.
+- [x] Consolidate duplicate calculations; remove unused estimateVelocities and its ABS map.
+- [x] Implement delayed complete records for unknown/reentering agents as selected in D01.
 
-**Affected code:** simulator/src/AgentBasedSensor.cpp (update, captureAgentData, possibly
-postData), simulator/src/Sensor.cpp (estimateVelocities), simulator/src/Simulation.cpp
-(initializeSensors); adjust headers only as needed.
+**Affected code:** simulator/src/AgentBasedSensor.cpp (observation history and capture),
+simulator/src/Sensor.cpp (sampling gate), and their headers. estimateVelocities was removed
+by the 2026-10-12 consolidation; initial observations now belong to ABS, not Simulation.
 
-**Evidenced defect:** initial position at t=0; first ABS capture at t=50 ms. Multiplication
+**Historical defect (now fixed by F00):** initial position at t=0; first ABS capture at t=50 ms. Multiplication
 by 10 Hz assumes 100 ms and halves the first value. Recognizing the identity does not
 solve the time-interval error.
 
@@ -166,56 +154,52 @@ over 0–100 ms and subsequent 100-ms intervals. A separate deliberately supplie
 observation interval must also be calculated using its actual duration. Different spacing remains correct. Identity,
 position and timestamp still match GT. Unknown agents follow D01.
 
-**Status:** the earlier implementation in 0ce473f was reverted. It is a reviewable draft,
-not a binding architecture or active feature.
+**Status:** actual elapsed-time calculation remains open. The 2026-10-12 correction
+fixes aligned startup, consolidates calculation and implements D01; it deliberately retains
+nominal frameRate estimation. The older 0ce473f implementation remains reverted.
 
-### F02 — Publish each ABS measurement batch once — P0
+### F02 — Publish each ABS measurement batch once — P0 — implemented for successful writes
 
-- [ ] Distinguish output batch from working vector.
-- [ ] Ensure non-capture ticks cannot publish an old batch again.
-- [ ] Define batch completion/consumption after publication.
-- [ ] Document DB failure and partial insert_many behavior.
+- [x] Assemble a local observations vector; remove the class member agentData.
+- [x] Name the output reference pendingObservations to eliminate shadowing.
+- [x] Consume dataStorage.second after a successful insert_many.
+- [x] Verify repeated postData calls, non-capture ticks, empty samples and final output.
+- [x] Document the failure policy and partial-write limitations.
 
-**Finding:** update clears agentData; postData reads the retained dataStorage batch.
-postData is called once per sensor per simulation tick, not once per sensor capture.
-At 20 simulation ticks/s and 10 ABS captures/s, intervening calls reuse old data.
+**Baseline finding:** update cleared the working vector while postData read a different,
+retained vector in dataStorage. Repeated loop calls reinserted a successful batch. The
+reference agent had 199 rows for 100 observation timestamps and 99 extra identical rows.
+The prototype aggregator was not involved.
 
-**Baseline timeline:** t=0.050 captures and inserts a batch stamped 0.050; t=0.100 performs
-no capture but inserts that same batch; t=0.150 replaces it with a fresh batch. ABS never
-calls the prototype aggregator, so this defect is independent of aggregation logic.
+**Implementation:** the local observations vector is moved into the timestamped output pair.
+postData checks pendingObservations and clears the pair's vector after success. printData
+reads the pending batch before publication. The pair itself has no clear()/empty() method.
 
-The single call site is executed repeatedly by the simulation loop. Clearing agentData
-only clears the working vector; after the move into dataStorage, the output vector is a
-separate retained container. postData reads that output vector on every call. The GT
-postData(agents) method is a separate writer to a different collection.
+**Verification, 2026-10-12:** regression calls ABS postData three times per tick and verifies
+unique sensor measurement identities/timestamps, correct position/time and final publication.
 
-**Interaction with F00:** fixing the sampling schedule alone does not fix duplication.
-After F00, a batch captured at 100 ms would still be reinserted at the 150-ms non-capture
-tick unless its lifetime is corrected independently.
+**Failure policy:** an exception leaves the pending vector available until another attempt
+or the next capture, which replaces it. This is not a durable retry queue. Partial/ambiguous
+DB failures can cause duplicates on retry; exactly-once persistence is not guaranteed.
+- [ ] Design/test failure recovery and idempotent writes if required by experiments.
 
-**Evidence:** 199 ABS records for 100 timestamps, including 99 extra identical records.
-GT position/time matching remains correct.
-
-**Minimum scope:** explicit batch lifetime or a new-measurement marker. A general
-ISensorOutput abstraction is not yet required. A unique DB index does not replace fixing
-the cause. Do not clean up the existing database as part of the source correction.
-
-**Acceptance:** one capture leads to one publication; repeated postData calls and non-capture
-ticks do not reproduce the batch. For the corrected 10-Hz schedule, a capture at 100 ms
-is inserted once, the 150-ms tick inserts nothing, and the 200-ms capture inserts a new batch.
-Cover an empty capture and the final batch as well. State the failure policy. Do not claim exactly-once
-network/persistence guarantees without implementing them.
+**Existing data:** no reference database cleanup or replacement was performed.
 
 ### V01 — Verify reference data and the later correction — P0
 
 - [ ] Preserve the example-agent inspection as a reproducible report.
 - [ ] Optionally extend matching/duplicate checks to all agents and sensor identities.
-- [ ] Select a separate controlled dataset for subsequent test runs.
-- [ ] Add suitable small regression tests with the chosen correction.
+- [x] Select a separate controlled dataset for the sensor regression test.
+- [x] Add and pass a sensor regression test with the chosen correction.
+- [ ] Validate a complete new simulator run against GT across all agents/sensors.
 
 **Existing result:** agent C0B64FE1-740C-486C-A2D1-00E030269E71: GT 200 records, ABS 199,
 100 sensor timestamps; no missing GT joins or position differences; 99 duplicate keys;
 first velocity halved; the next 99 estimates match displacement over 100-ms intervals.
+
+**Correction verification, 2026-10-12:** known synthetic observations in an isolated MongoDB
+database pass startup, interval velocity, unique keys, entry/reentry, counts and empty-area
+cadence checks. This is direct sensor-pipeline validation, not a complete simulator run.
 
 **Acceptance:** documented before/after identity, position, timestamp, duplicate and interval
 velocity comparisons. Keep reference data unchanged. One checked agent does not validate all runs.
@@ -401,5 +385,5 @@ explicit resolution or rejection.
 ## 11. Process for subsequent changes
 
 Before editing source, name the selected task, data rule and small scope. Afterwards update
-status, verification and remaining limits. Current work is documentation only. D01/D02 followed
-by F00/F02 and the interval-robustness work in F01 is the next candidate. Keep the simulator lean by correcting its existing pipeline.
+status, verification and remaining limits. F00/F02 and the initial D01 rules are implemented and regression-tested. F01/D02
+interval robustness and V01 full-run validation remain the next candidates. Keep the simulator lean by correcting its existing pipeline.

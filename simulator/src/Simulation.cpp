@@ -401,24 +401,7 @@ void Simulation::initializeSensors() {
             // Post metadata to the database
             sensors.back()->postMetadata();
 
-            // Set initial positions for agents in the detection area
-            for(const auto& agent : agents) {
-
-                // Check if the agent is within the detection area
-                if(sensors.back()->detectionArea.contains(agent.position)) {
-
-                    // Get raw pointer from unique_ptr
-                    Sensor* sensor = sensors.back().get();
-
-                    // Try to cast to AgentBasedSensor*
-                    auto agentBasedSensor = dynamic_cast<AgentBasedSensor*>(sensor); 
-
-                    // Check if cast succeeded
-                    if (agentBasedSensor != nullptr) { 
-                        agentBasedSensor->previousPositions[agent.agentId] = agent.position;
-                    }
-                }
-            }
+            // ABS retains its initial observations during its first update.
         }
 
         // Create the grid-based sensor

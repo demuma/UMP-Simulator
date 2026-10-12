@@ -31,21 +31,19 @@ Sensor::Sensor(
     sensorBuffer(sensorBuffer) 
 {}
 
-// Base Sensor velocity estimation
-void Sensor::estimateVelocities(std::unordered_map<std::string, sf::Vector2f>& estimatedVelocities) {
-
-    // Estimate the velocities of the agents
-    for (const auto& kvp : previousPositions) {
-
-        const std::string& agentUUID = kvp.first;
-        const sf::Vector2f& previousPosition = kvp.second;
-
-        // If the agent is still in the detection area
-        if (currentPositions.find(agentUUID) != currentPositions.end()) {
-
-            const sf::Vector2f& currentPosition = currentPositions[agentUUID];
-            sf::Vector2f estimatedVelocity = (currentPosition - previousPosition) * frameRate;
-            estimatedVelocities[agentUUID] = estimatedVelocity;
-        }
+// Shared fixed-step sampling gate for ABS, GBS and AGBS.
+bool Sensor::isSamplingDue(float timeStep) {
+    if (!samplingInitialized) {
+        samplingInitialized = true;
+        return false;
     }
+
+    timeSinceLastUpdate += timeStep;
+    if (timeSinceLastUpdate < 1.0f / frameRate) {
+        return false;
+    }
+
+    // Reset even for an empty detection area so occupancy cannot change the cadence.
+    timeSinceLastUpdate = 0.0f;
+    return true;
 }

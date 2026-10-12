@@ -3,9 +3,10 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
-**Status: 2026-10-09. Current phase: document the baseline, clarify data semantics and
-plan changes. The first ABS implementation has been reverted. Active source code,
-configuration and build files match the original import.**
+**Status: 2026-10-12. The first authorized sensor correction is implemented and verified:
+shared sampling initialization, single-use ABS batches and local observation assembly.
+The earlier temporary fix remains reverted; this is a new, smaller implementation.
+Actual-interval velocity handling and reproducible research experiments remain open.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -106,7 +107,7 @@ and open until the next implementation step is selected.
 |---|---|---|
 | Simulation | Agents, class attributes, movement, regions and configurable timestep | No central seed; movement noise partly depends on wall-clock time |
 | Ground truth | Agent identity, position, velocity and timestamp stored in MongoDB | Completeness across all runs and boundary cases not systematically validated |
-| ABS | Position, type, identity and position-based velocity estimation | Wrong first interval; duplicate writes; no explicit missing-velocity semantics |
+| ABS | Position, type, identity and velocity from consecutive observations; first complete output at 100 ms for the current 10-Hz setup | Nominal-period velocity requires aligned fixed intervals; publication after DB errors is not guaranteed |
 | GBS | Fixed cells, class counts and total count per observation | No full temporal aggregation or privacy-based release decision |
 | AGBS | Quadtree, position mapping, counts and cell IDs | Splitting follows positions/max depth, not metrics or policies |
 | AggregationManager | Sensor-local class scaffold, bucket structure and DB test method | No usable algorithm; empty flush; no effective pipeline integration |
@@ -142,96 +143,102 @@ frequencies may produce different observation timestamp sets; ABS need not publi
 The initial broad claim of a universal GT/sensor time shift was corrected. Matching positions
 and timestamps were also verified for the example agent in the existing database.
 
-### 5.2 What does estimateVelocities check?
+### 5.2 Current sampling and initial observations
 
-In simulator/src/Sensor.cpp, estimateVelocities iterates previousPositions and checks
-whether each identity also exists in currentPositions. Only agents with both observations
-are considered. **The underlying intersection check is correct.**
+All three sensors use Sensor::isSamplingDue(timeStep). The first update observes the
+initial state and initializes the schedule without adding elapsed time. Later updates
+add the completed simulation step. A due observation resets the timer regardless of
+whether any agents are in the area.
 
-Its calculation is:
+| State time, relative to initial observation | ABS | GBS / AGBS |
+|---|---|---|
+| 0 ms | Retain initial positions internally; no output | Initialize schedule; no output |
+| 50 ms | No capture | No capture |
+| 100 ms | Capture; estimate over 0–100 ms | Count current occupancy |
+| 150 ms | No capture | No capture |
+| 200 ms | Capture; estimate over 100–200 ms | Count current occupancy |
 
-```text
-estimatedVelocity = (currentPosition - previousPosition) * frameRate
+This table assumes the current 50-ms simulation step and 10-Hz sensor configuration.
+Time zero means the first state seen by that sensor, not the system clock epoch.
+ABS owns its initial-position capture in its first update; Simulation no longer seeds
+previousPositions by accessing the derived sensor's state during construction.
+
+GBS/AGBS keep their existing DB output policy: an entirely empty area writes no count
+documents. AGBS emits an empty renderer snapshot on the scheduled observation instead
+of every simulation tick. A newly populated area is counted on the next scheduled sample.
+Representing explicit zero counts or distinguishing Empty/Suppressed/Unavailable remains D03.
+
+### 5.3 One velocity calculation and the new-agent rule
+
+captureAgentData checks each observed identity against previousPositions, records the
+current position for the next observation, and publishes only identities with both positions.
+The velocity calculation is:
+
+```cpp
+observation.estimatedVelocity = (agent.position - previous->second) * frameRate;
 ```
 
-This assumes the observation interval is exactly `1 / frameRate`. Knowing an old position
-does not establish when it was observed. The actual elapsed time matters as well.
+This is an interval average, not the instantaneous GT velocity at the endpoint. It is
+correct when consecutive samples are exactly 1/frameRate apart. The initial schedule
+now satisfies that condition for 50-ms ticks and 10-Hz sensors. No agent timestamps are
+read to calculate this velocity. Non-aligned periods, varying steps and irregular
+observations still require the actual-interval work in F01/D02; the timer currently resets
+to zero at a due sample and does not implement fractional-period scheduling.
 
-### 5.3 Which calculation is actually stored in MongoDB?
+An unknown identity's first position is retained internally; its first complete ABS record
+appears on the next consecutive sensor observation. An agent absent at a scheduled
+observation is removed from the previous-position set. Reentry then requires two observations
+again. A valid zero velocity means the observed position did not change over that interval.
+Agents entering and leaving between samples may be unobserved. GBS/AGBS count a newly observed
+agent immediately, so their counts need not equal the number of complete ABS records.
 
-The active ABS path performs a second calculation:
+The unused Sensor::estimateVelocities method and ABS estimatedVelocities map were removed.
+There is now one calculation feeding the BSON field instead of two independent calculations.
 
-```text
-AgentBasedSensor::update()
-    → captureAgentData()
-        → calculate AgentData.estimatedVelocity directly
-        → move AgentData records into dataStorage
-    → estimateVelocities(estimatedVelocities)
-        → populate a separate map
-    → update previousPositions
+### 5.4 Local assembly and retained output
 
-AgentBasedSensor::postData()
-    → read dataStorage
-    → store AgentData.estimatedVelocity as estimated_velocity
-```
+The former class member agentData was unnecessary shared working state. captureAgentData
+now assembles a local vector called observations, then moves it into dataStorage.
+postData reads that output vector through a local reference called pendingObservations.
+These names no longer conceal a class member with the same name.
 
-The separate estimateVelocities map is not copied back into AgentData in this BSON output
-path. Its intersection check therefore does not automatically protect the published records.
+ABS dataStorage remains a pair of timestamp and observation vector, not a vector of batches.
+The pair itself has no clear()/empty() methods. The applicable operations are
+dataStorage.second.clear() and dataStorage.second.empty(). GBS/AGBS use vectors of
+batches, which explains their different clear()/empty() syntax.
 
-captureAgentData also checks previousPositions, but still creates a record when the identity
-was previously unknown. In that case the sf::Vector2f field retains its default `(0, 0)`.
-**This means a missing estimate, not an observed stationary agent.** The current schema
-cannot distinguish those two cases. The intended behavior remains an open decision.
+printData reads the pending output batch. Call it before postData if the records should
+be printed; successful publication consumes that batch.
 
-### 5.4 Why is the first known agent's velocity wrong?
+### 5.5 Successful ABS publication consumes the batch
 
-Simulation seeds previousPositions from initial GT positions. The sampling timer is already
-incremented during the sensor call for t=0. With 50-ms simulation ticks and 10-Hz ABS,
-the first publication occurs at t=50 ms, while its previous position comes from t=0.
+Simulation still calls postData after every sensor update. ABS now clears dataStorage.second
+immediately after insert_many returns successfully. Non-capture ticks and additional
+postData calls therefore cannot reinsert that successful batch.
 
-```text
-Actual observation interval: 50 ms
-Assumed interval in the formula: 1 / 10 Hz = 100 ms
-Result: the first velocity is halved
-```
+| State time | New ABS capture? | Effect of postData after a successful preceding write |
+|---|---|---|
+| 0 / 50 ms | No | No agent records |
+| 100 ms | Yes | Insert, then clear output vector |
+| 150 ms | No | Output vector empty; no insert |
+| 200 ms | Yes | Insert new batch, then clear |
 
-Later observations in this example are 100 ms apart, so multiplication by 10 works for
-those intervals. Non-aligned frequencies or changed observation spacing need separate checks.
+On a MongoDB exception the vector remains available for another attempt before the next
+capture. The next capture replaces the pending batch, so this is not a durable retry queue.
+An ambiguous/partial insert_many failure can already have persisted some records; retrying
+may duplicate them. No idempotent-write or exactly-once guarantee is implemented. These
+failure cases were documented, not injected in the current regression test.
 
-### 5.5 Why does a single postData call site create duplicates?
-
-There is one call per sensor in Simulation::update, but that method runs every simulation
-tick. With a 0.05-s timestep, each sensor receives 20 update/postData calls per simulated
-second. The configured ABS frequency is 10 Hz, so only every second tick captures a new batch.
-
-AgentBasedSensor::update clears the working vector agentData. It does not clear the last
-published dataStorage batch. postData reads dataStorage even on a tick without a new capture.
-
-| State timestamp | New ABS capture? | Batch in dataStorage | Effect of postData |
-|---|---|---|---|
-| 0.000 s | No | Empty | No agent records |
-| 0.050 s | Yes | Batch stamped 0.050 s | First insertion of that batch |
-| 0.100 s | No | Previous batch, still stamped 0.050 s | Same batch inserted again |
-| 0.150 s | Yes | New batch stamped 0.150 s | First insertion of the new batch |
-| 0.200 s | No | Previous batch, still stamped 0.150 s | Same batch inserted again |
-
-The variable names make the distinction important: the vector cleared by update is not
-the vector retained in dataStorage after std::move. Clearing the former does not clear the latter.
-
-The last batch has no following non-capture tick before the run ends, explaining the observed
-199 records for 100 captures: 99 batches twice plus one batch once.
+The baseline bug had cleared only the working vector and retained the already-written
+output vector. The historical database check below records that old behavior; existing
+Simulation data has not been repaired or replaced.
 
 **The prototype aggregator is not involved.** ABS does not invoke AggregationManager.
-AGBS owns an AggregationManager object, but its active update path does not call an aggregation
-routine; postDataTest is only a timestamp insertion test method, with no active call found.
-The similar name Simulation::postData(agents) belongs to GT storage, a different collection.
+AGBS owns its scaffold but does not call an aggregation routine in the active update path.
 
-This is a batch lifetime/publication issue, not a timestamp shift. Fixing it needs neither
-an extra aggregation thread nor a broad simulator rewrite.
+### 5.6 Historical baseline database check
 
-### 5.6 Recorded database check
-
-Read-only inspection of localhost:27017, database Simulation, agent
+The pre-fix read-only inspection of localhost:27017, database Simulation, agent
 `C0B64FE1-740C-486C-A2D1-00E030269E71`:
 
 | Check | Result |
@@ -376,6 +383,22 @@ cmake --build renderers/abs/build -j4
 Replace abs with gbs, agbs or gt for the other applications. Each target is named Visualizer,
 so the renderers remain separate CMake projects for now.
 
+### Run the sensor regression test
+
+The opt-in test requires MongoDB on localhost:27017. It creates a fresh
+UMP_sensor_regression_<UUID> database and removes only that database on normal exit.
+It does not load simulator/config.yaml or use the existing Simulation database.
+
+```sh
+cmake -S simulator -B simulator/build -DCMAKE_BUILD_TYPE=Release -DUMP_BUILD_SENSOR_REGRESSION_TESTS=ON
+cmake --build simulator/build -j4
+ctest --test-dir simulator/build --output-on-failure
+```
+
+The test checks known motion, first capture, repeated ABS publication, new identities,
+reentry, empty areas, grid counts and renderer snapshot timestamps. Normal builds leave
+the test target disabled. A force-killed test may leave its isolated database for cleanup.
+
 ### Configuration and startup
 
 Applications load config.yaml relative to their working directory. Run each from its
@@ -413,15 +436,22 @@ Pausing playback does not necessarily pause the simulation thread.
 
 ## 9. Verification and limitations
 
-The unmodified simulator and all four renderers built successfully in Release mode.
-101 imported component files were compared byte for byte with the originals. MongoDB was
-read only for collection information and the example-agent check. No new simulation run
-was started and no existing document was modified.
+The unmodified simulator and all four renderers previously built successfully in Release
+mode; 101 imported component files matched their originals. The historical MongoDB
+inspection was read only and establishes the baseline findings for the example agent.
 
-After rollback there is no new CTest regression suite in the active project. Other open
-source-level findings include missing shared seeds, wall-clock noise, SharedBuffer shutdown,
-unbounded queues, collision-grid bounds/pointers and quadtree ownership. Runtime impact
-and priority still require validation. See the audit and task list.
+On 2026-10-12 the corrected simulator and SensorRegressionTests built in Release mode.
+CTest passed its MongoDB integration test with a non-epoch initial timestamp, constant
+known movement, repeated postData calls, empty scheduled observations and entry/reentry.
+It verified ABS identity/position/time, interval velocity and unique measurement keys,
+GBS/AGBS per-time occupancy, and AGBS renderer cadence. The isolated test database was
+removed. The full simulator was not run; existing Simulation data and configuration
+were not modified. This test is not full-run or all-configuration validation.
+
+Actual-interval velocities, non-aligned scheduling and DB failure recovery remain open.
+Other findings include missing shared seeds, wall-clock noise, SharedBuffer shutdown,
+unbounded queues, collision-grid bounds/pointers and quadtree ownership. See the audit
+and task list for priorities and remaining verification.
 
 ## 10. Working process
 

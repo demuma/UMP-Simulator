@@ -48,11 +48,7 @@ private:
     mongocxx::database db;
     mongocxx::collection collection;
 
-    // Mapping of agent ID to estimated velocity
-    std::unordered_map<std::string, sf::Vector2f> estimatedVelocities;
-
-    // Data storage structure
-    std::vector<AgentData> agentData;
+    // Pending output batch; observations are assembled locally in captureAgentData().
     SharedBuffer<sensorBufferFrameType>& sensorBuffer;
     std::pair<std::chrono::system_clock::time_point, std::vector<AgentData>> dataStorage;
 };
