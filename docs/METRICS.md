@@ -97,6 +97,48 @@ overall utility. Equal-weight query scoring and the reference stay fixed across 
 The GT query/reconstruction experiment and attacker evaluation remain unimplemented.
 Online diagnostics deliberately return `offline_reference_required` for occupancy_mae.
 
+## Presentation metric review
+
+Reviewed on 2026-10-13 against the supplied AutSys 2025 presentation, PDF pages 6–8
+(printed slides 5–7), including the displayed formulas. This is a scoped assessment of
+that source, not a completed comparison with all paper tables or a decision to implement
+every metric. The registry currently computes descriptive statistics and constraint
+inputs. It has no empirical privacy-risk score and does not yet calculate GT utility error.
+
+| Presentation metric | Usefulness and required change | Current implementation |
+|---|---|---|
+| k-anonymity | A possible structural criterion after specifying the released record, protected entity, quasi-identifiers and equivalence classes. Distinct agents in a cell/window are only an observed support proxy. Repeated releases and published type subdivisions can invalidate a naive anonymity interpretation. | Distinct contributor support only; no k-anonymity claim. |
+| l-diversity | Relevant when a meaningful sensitive attribute and corresponding equivalence groups exist. The slide shows distinct-value diversity; more types alone do not establish protection. Agent type must not silently serve as both a fixed quasi-identifier and a varying sensitive attribute within the same group. | Not implemented. Type contribution counts alone are not a distinct-person sensitive-value distribution. |
+| t-closeness | Potentially useful for attribute inference once the sensitive attribute, reference population/time range and distribution distance are fixed. Ordinary region-to-global traffic-mix differences are not automatically a privacy defect. | Not implemented; no sensitive-attribute/reference contract. |
+| delta-presence | Presence inference is relevant to mobility. A formal delta-presence calculation needs a specified population, released information and attacker knowledge; a local agent count cannot supply a membership probability. | Not implemented. E02 will define an empirical presence/membership attack separately. |
+| Classification accuracy | Useful for an actual classification task with predictions and truth. Copying agent types from GT makes an agent-type classification test trivial. A future congestion classifier would be a different application task. | Not implemented. |
+| Temporal granularity | Keep sampling period, aggregation duration and freshness separate. The displayed S + A adds scans/time to accumulated data points and is not dimensionally consistent. | Actual window duration, age at evaluation and post-window delay; sensor period is a separate input. |
+| Data Fidelity Accuracy | The displayed lost counts / cell count is average loss per cell, not normalized accuracy. Retain the motivation through fixed-query error and answered-query coverage; specify units, weighting and missing-output handling. | Occupancy MAE contract only; online value is unavailable. Input sample coverage is measured, but is not answered-query coverage. |
+| Overall Localization Accuracy | Useful as spatial reconstruction error when locations matter to the application. The displayed sum is unaveraged and normalized by changing cell size; it need not track physical detail loss across runs. Specify the estimator (e.g. cell center), report mean/quantiles in metres with fixed observation weighting and report suppressed coverage separately. | Cell dimensions only; no GT position-error calculation. |
+| Latency | Essential for timely applications. Measure processing time and observation-to-release delay separately, including waiting/queues. The displayed linear expression is a model requiring fitted coefficients and validation. | Simulation-time age at candidate evaluation and post-window delay only; neither is measured processing latency nor public release latency. |
+
+The equivalence-class and sensitive-attribute prerequisites follow the original
+[l-diversity paper](https://www.cs.cornell.edu/johannes/papers/2006/2006-icde-publishing.pdf)
+and [t-closeness paper](https://www.cs.purdue.edu/homes/ninghui/papers/t_closeness_icde07.pdf).
+The original [delta-presence paper](https://www.cerias.purdue.edu/assets/pdf/bibtex_archive/p665-nergiz.pdf)
+addresses disclosure of dataset membership under an explicit data/knowledge model.
+The applicability decisions and utility-formula critiques above are our assessment of
+the simulator and supplied slides, not claims of those papers.
+
+Recommended first evaluation scope: fixed-query occupancy MAE plus answered-query coverage,
+resolution and freshness on the utility side; a declared membership/presence attack
+against the same visible outputs on the privacy side, compared with a prior/no-output
+baseline. Membership inference on aggregate mobility time series is an established
+experimental concern; see [Pyrgelis et al., Knock Knock, Who's There?](https://arxiv.org/abs/1708.06145).
+Retain contributor support as a cheap online requirement, then test whether changing its
+threshold actually reduces attack success for the chosen scenario. This experiment
+does not by itself establish formal delta-presence or protection against other attacks.
+
+Example motivation: a window containing ten different agents over ten instants can
+still contain only one agent at each instant. The union count ten says nothing by
+itself about whether an attacker can identify a target's contribution using time-specific
+auxiliary knowledge. The release contents and attacker knowledge decide that question.
+
 ## Configuration and diagnostic output
 
 Existing aggregation-enabled runs receive metric values without implicit thresholds.

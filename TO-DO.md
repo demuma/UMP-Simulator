@@ -47,7 +47,7 @@ sensor provides every metric input or supports arbitrary spatial refinement.
 | 8 — later | Map extraction, routes and collision avoidance | X04, X03, X05 | Controlled scenarios and realism/performance evidence |
 | 9 — as justified | Further metrics, uncertainty, graphics and infrastructure | E03, X06–X09 | Research or measured engineering need |
 
-F01 and S01–S04 are corrections alongside the active stage when its correctness
+F01 and S01–S05 are corrections alongside the active stage when its correctness
 or execution depends on them. **S04 and the S01 transport correction are implemented and
 regression-tested; manual live inspection remains pending.** Bucket contract work continues. F03 covers
 persistence recovery beyond successful writes.
@@ -381,6 +381,10 @@ based only on a distinct-contributor count.
 - [x] Integrate actual metrics/assessments into v2 internal diagnostics, outside the serializer.
 - [x] Test worked examples, inclusive limits, missing data, unavailable references, per-cell
   support, truncated windows and a complete YAML-to-JSONL simulation path.
+- [x] Review supplied presentation PDF pages 6–8 against the implemented registry;
+  record useful candidates, formula corrections and prerequisites in
+  [METRICS.md](docs/METRICS.md#presentation-metric-review). This is a review, not implementation
+  or final scientific selection of the presentation metrics.
 - [ ] Reconcile presentation metrics with paper Tables 3–5, including definitions and
   reference populations. Do not transfer example thresholds as universally safe defaults.
 - [x] Reuse A01 incremental counts/unions; measure fixed candidates only at closure. Re-evaluate
@@ -776,6 +780,42 @@ cell bounds. ABS/GBS heatmaps and policy-driven aggregation visualization remain
 The native UI tool could not bind the standalone Simulator executable for visual inspection;
 the manual visual/interaction check above therefore remains open.
 
+### S05 — Audit renderer frame-rate and playback control — P1 before timing claims
+
+Requested 2026-10-13. Inspect the existing controller and correct verified defects;
+this task is open and does not claim a measured frame-rate failure. Bring it forward
+if unstable playback blocks the live demo. Keep it separate from S04 frame matching
+and X10's later configuration redesign.
+
+**Code-review starting point:** Renderer::calculateSleepTime derives its target from
+playbackSpeed / timeStep, then may overwrite playbackSpeed using currentSimulationTimeStep.
+Despite its name, that atomic value becomes the measured wall-clock duration of a
+simulation iteration, including potentially blocking render-buffer writes. Investigate
+feedback from renderer backpressure into the requested playback speed. Renderer::run
+also restarts its frame clock after empty-buffer retries; reported rendererRealTime
+does not include those retries or paused time. Decide which statistics include each
+state before labeling them wall time, FPS or speedup.
+
+- [ ] Separate simulation timestamp progression, sensor sampling, consumed agent frames,
+  redraw/display FPS, requested playback speed and achieved playback speed.
+- [ ] Audit Renderer::run, calculateSleepTime, FPS averaging, speed keyboard controls,
+  empty-buffer handling, pause/resume and any SFML/VSync or additional pacing mechanism.
+- [ ] Check zero/negative/non-finite playback values and time steps, startup samples,
+  sleep precision/drift and behavior when rendering or simulation is slower than target.
+- [ ] Measure queue wait/backpressure separately from simulation work; preserve the user's
+  requested speed when reporting throughput limits rather than silently ratcheting it down.
+- [ ] Define one coherent pacing rule and explicit overload behavior. Preserve timestamp
+  matching and sample semantics; do not drop scientific observations to satisfy display FPS.
+- [ ] Verify a fixed saved input at 0.5x, 1x and 2x, with fast and slow producers, full/empty
+  queues, pause/resume and early close. Record effective speed and jitter after warmup.
+
+**Acceptance:** with 50-ms agent steps and sufficient throughput, consumption targets
+are 10/20/40 agent frames per wall-clock second at 0.5x/1x/2x; display redraw rate may
+be independent. Define a measured tolerance before validation. Limited throughput is
+reported without corrupting requested speed or timestamps; pause is responsive and
+resume causes no unintended catch-up burst. Compare the same saved input, because
+R02's wall-clock-dependent movement can otherwise confound the experiment.
+
 ### S02 — Collision grid and pointer lifetime — P1 before more realistic scenarios
 
 - [ ] Initialize width/height and validate adjacent-cell checks.
@@ -838,6 +878,8 @@ Brainstorm and define acceptance criteria before selecting libraries or algorith
 renderer, movement and metric code. Choose the model after the brainstorming session.
 
 ### X10 — Simplify the real-time renderer settings — P2
+
+Frame pacing correctness is tracked separately in S05 and may be brought forward.
 
 - [ ] Inventory settings and controls, including overlap with database playback renderers.
 - [ ] Separate scenario, sensor/policy, rendering and playback configuration responsibilities.
