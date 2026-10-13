@@ -38,8 +38,8 @@ sensor provides every metric input or supports arbitrary spatial refinement.
 | 2 | Metric definitions and required statistics | E01, E02, E04 | Defined inputs, calculated values and evaluation references |
 | 3 | Policy tree using existing Regions | A04 | Effective regional requirements, inheritance and conflicts |
 | 4 | Active/preemptive buckets and history | A02 | Hand-worked windows, lifecycle and retention rules |
-| 5 | Publication coordination, AGBS decisions and inspection | A05, A03, A06 | Fixed release/suppress path, then tested merge/split/time extension and debug view |
-| 6 | Complete-run checks and comparative evaluation | V01, B01, R01–R03, X02 | Saved equal input, verified releases and result figures |
+| 5 | Publication coordination, AGBS decisions and inspection | A05, A03, A07, A06 | Fixed release/suppress path, then merge/split, partial suppression, time extension and debug view |
+| 6 | Complete-run checks and comparative evaluation | V01, B01, R01–R03, X02, E05 | Saved equal input, verified releases, result figures and preparation-cost study |
 | 7 — later | Taxonomy brainstorming, renderer settings and control GUI | X01, X10, X11 | Separate design proposals and measured implementation scope |
 | 8 — later | Map extraction, routes and collision avoidance | X04, X03, X05 | Controlled scenarios and realism/performance evidence |
 | 9 — as justified | Further metrics, uncertainty, graphics and infrastructure | E03, X06–X09 | Research or measured engineering need |
@@ -369,6 +369,8 @@ The metric evaluator requires no renderer or live database access.
 - [ ] Keep policy hierarchy independent of data hierarchy.
 - [ ] Compile inherited effective policies at initialization for reachable cells and
   cross-region parents; share identical policies and measure full-tree versus sparse cost.
+- [ ] Distinguish inherited configured defaults from constraints derived for a candidate
+  footprint. Do not propagate a cross-region parent's combined bounds back into unrelated children.
 - [ ] Apply strict compatible hard bounds: max of lower bounds, min of upper bounds,
   all mandatory metrics and intersections of allowed actions. Reject contradictions.
 - [ ] Define min/max cell side in metres and coarsest allowed depth unambiguously;
@@ -393,6 +395,10 @@ explicit resolution or rejection.
 - [ ] Store owned fine time-bin history and reference it from sparse bucket records keyed
   by stream/application, cell/depth, window start and generation. No Agent*/Node* lifetimes.
 - [ ] Treat leaf flags as work hints; verify full sibling coverage including known-empty cells.
+- [ ] Separate legal merge extent, reserved unpublished extent and precomputation extent.
+  Specify ancestor lookahead levels, finite temporal candidates and cache/memory budgets.
+- [ ] Start with on-demand reconstruction; add one/two-level, full and selective preparation
+  as E05 variants. An uncached candidate remains available when complete history permits it.
 - [ ] Use exact contributor unions/reference counts and appropriate time weights; do not
   sum unique child counts or treat repeated observations as different people.
 - [ ] Define COLLECTING/WAITING, READY, SEALED/PENDING_OUTPUT, COMMITTED, SUPERSEDED
@@ -425,8 +431,10 @@ Deleting a DB record cannot retract an already externally visible publication.
   committed or pending-output support. Future adaptation uses a common handover boundary.
 - [ ] Seal immutable output with a stable release ID; preserve reservations on sink failure.
   Coordinate retry/idempotency and bounded pending output with F03.
-- [ ] Suppress/retire infeasible support with internal reasons; separate this from raw
-  history cleanup. Do not delete visible records as a purported privacy repair.
+- [ ] Settle any A07 descendant fallback before retiring support; suppress only the final
+  unreleasable remainder. Whole-candidate suppression remains the initial baseline.
+- [ ] Keep internal reasons separate from raw history cleanup. Do not delete visible
+  records as a purported privacy repair, or publish totals that reconstruct suppressed parts.
 
 **Acceptance:** demonstrate the additive-count subtraction counterexample, a rejected
 merge over a published child, and an allowed future transition. Pending writes cannot
@@ -446,13 +454,35 @@ reopen coverage for a competing candidate. Disjoint release coverage is not a pr
   coordination pass. Temporal exhaustion permits only remaining legal actions.
 - [ ] Bound retries/search; wait for new evidence or a deadline rather than polling
   unchanged candidates. Preserve original start time through every merge.
-- [ ] Initially split only at future common boundaries with a complete checked child cut;
+- [ ] Apply changes to an already published spatial selection at future common boundaries.
+  Distinguish those transitions from A07 selecting unpublished descendants as final fallback;
   prevent split/merge oscillation within one unresolved window.
 - [ ] Handle impossible constraint combinations explicitly.
 - [ ] Compare against B01 baselines.
 
 **Acceptance:** decisions are explainable and spatial/temporal releases agree. Measure a
 better privacy/utility trade-off rather than assuming it.
+
+### A07 — Selective suppression after permitted adaptation is exhausted — P1
+
+- [ ] Check remaining temporal options when the coarsest spatial cell fails; never reset
+  window start/deadline. Define final fallback before marking the whole region suppressed.
+- [ ] Select valid whole descendant cells over the same unpublished interval; recheck their
+  policies, metric inputs, completeness, fine-resolution bounds and publication history.
+- [ ] Suppress only the unreleasable remainder; mark abandoned parents SUPERSEDED. Do not
+  remove observations from a parent while retaining its original full-area semantics.
+- [ ] Define deterministic selection/ties and the coverage/detail objective. Do not claim
+  globally minimal suppression from a greedy traversal without a supporting argument.
+- [ ] Prune only with valid metric-specific bounds: under a uniform support threshold,
+  a parent with too few distinct people implies its descendants also fail for that interval.
+- [ ] Test heterogeneous regional thresholds where the parent fails but some children pass;
+  require no overlapping totals that reveal the suppressed part.
+- [ ] Evaluate missing coverage separately from zero occupancy, selection bias, utility error
+  and disclosure through the visible suppression/geometry pattern.
+
+**Acceptance:** uniform-threshold failure suppresses the infeasible subtree; the documented
+10/2/2/2 threshold example preserves eligible children; no output silently changes support.
+Keep whole-candidate suppression as a correct simpler baseline until this fallback is tested.
 
 ### A06 — Live aggregation state overlay — P1, after S04
 
@@ -535,6 +565,32 @@ not overwrite references. Add a broad output interface only if multiple outputs 
 - [ ] Prepare reproducible sparse, dense, empty and changing-density cases.
 - [ ] Use identical observations/areas across compared variants; retain simple scenarios
   with hand-checkable outcomes before increasing movement realism.
+
+### E05 — Study full versus selective preemptive preparation — P1, after lifecycle correctness
+
+- [ ] Define "all": the finite set of eligible spatial candidates and temporal windows.
+  Distinguish internal preparation from always publishing the coarsest aggregate.
+- [ ] Compare on-demand reconstruction, fixed one/two-level lookahead, full preparation
+  and a budgeted selective heuristic; include selector/maintenance/expiry/eviction cost.
+- [ ] Hold input replay, policies, legal depth, reservations, history, candidate decisions,
+  metric definitions, fallback and tie rules constant. First verify equivalent outputs
+  without processing deadlines; do not attribute changed privacy to a caching optimization.
+- [ ] Use sparse/dense/mixed inputs, moving hotspots and abrupt changes; vary request rate,
+  depth, window set/duration, contributor movement and metric cost in a small initial matrix.
+- [ ] Measure total CPU cost, p50/p95/p99 update/request latency, peak memory, throughput,
+  candidate count, hit rate, unused preparation, reconstruction and deadline misses.
+- [ ] Separate setup/warmup/steady operation and use repeated paired runs with identical
+  DB/renderer conditions. Count history/cache/ledger memory in the budget.
+- [ ] Then apply explicit real-time arrival/processing budgets and measure coverage, delay,
+  application error and empirical privacy; distinguish compute misses from metric failures.
+- [ ] Compare several permitted merge extents as a separate policy experiment, not an
+  unnoticed change of candidate universe between cache variants.
+- [ ] Review materialized-view selection and streaming aggregation literature before claiming
+  novelty; document the mobility/policy/deadline-specific question and measured crossover.
+
+**Acceptance:** equivalent scientific outputs for the unconstrained execution comparison,
+reproducible cost/memory curves and a stated workload range where each strategy wins or loses.
+No assumed winner; this study does not block the first aggregation demo.
 
 ## 10. Conditional corrections supporting the active stage
 

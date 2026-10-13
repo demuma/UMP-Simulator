@@ -158,7 +158,9 @@ flowchart TD
     A -->|Temporal| T[Extend same window within original bounds]
     T --> W
     A -->|None now; future observation can help| W
-    A -->|Exhausted or hard deadline reached| S[Suppress and retire support]
+    A -->|Extensions exhausted or hard deadline reached| F[Select eligible descendant cells]
+    F -->|Valid non-overlapping selection| R
+    F -->|Unreleasable remainder| S[Suppress and retire remainder]
     W -->|Observation or deadline| E
 ```
 
@@ -185,7 +187,9 @@ boundaries, with a minimum dwell rule if later measurements show oscillation.
 Early completion is possible at an observation/decision boundary when all hard requirements
 and release coordination pass. Minimum duration/cadence and utility bounds still apply.
 Temporal exhaustion alone is neither success nor a requirement to merge: merge if an
-allowed candidate exists, otherwise suppress. A parent inherits the original window start;
+allowed candidate exists, otherwise resolve the final descendant fallback and suppress
+the unreleasable remainder. The initial fixed-cell baseline may suppress the whole candidate.
+A parent inherits the original window start;
 merging does not reset its duration or release deadline. A newly intersected stricter
 policy can make that parent immediately infeasible.
 
@@ -246,11 +250,161 @@ chosen access/publication boundary, not just collection names. Existing research
 GBS/AGBS collections must not silently be treated as privacy-controlled output. Public
 failure traces, suppressed counts or debug overlays would also be disclosures.
 
-Suppression retires the selected support in the first design; do not repeatedly resurrect
+Suppression retires the final suppressed support; a failed parent can first be replaced
+by a valid descendant selection as described below. Do not repeatedly resurrect
 the same failed interval under new windows. Internal candidates may be discarded earlier,
 but shared history is reclaimed only once no allowed pending operation needs it. Old fine
 publications remain old publications; change future release geometry instead of deleting
 them as a supposed privacy repair.
+
+### 6.1. Final fallback: valid subregions and selective suppression
+
+Reaching the coarsest permitted cell alone does not exhaust adaptation: temporal extension
+may still be legal. Conversely, changing geometry must not reset the original window start,
+release deadline or retention budget. Once the selected search has no remaining permitted
+extension, distinguish a failed candidate from an entirely unreleasable coordination domain.
+
+Recommended extension after the basic whole-candidate suppression path: choose an eligible
+non-overlapping set of descendant cells over the same unpublished interval, and suppress
+only its uncovered remainder. Search the tree for valid release candidates, not for one
+presumed "guilty" leaf. Group-level failure may have no single causal leaf.
+
+Evaluate child/parent alternatives using complete history and their own effective policies.
+Cached leaf results can be combined bottom-up into a candidate partition, but every selected
+output still needs current metric checks and the joint publication check. A search from a
+failed ancestor downwards is also possible; choose traversal for clear bounded behavior.
+Hard minimum cell size or unsupported fine inputs can prohibit descending further.
+
+Initial fallback rules:
+
+1. Preserve already reserved interval/support while choosing the final set; publish nothing
+   from that decision until the set and suppressed remainder are settled.
+2. Release only whole cells that satisfy their own hard constraints, data completeness and
+   publication-history requirements. Suppress an unresolved branch at its allowed fine bound.
+3. If an ancestor is selected, select none of its descendants for the same interval. Its
+   observations still represent its entire stated area, including any sensitive subregion.
+4. Do not drop a failing leaf's agents and keep the original parent label/count semantics.
+   An aggregate with a hole would need explicit support geometry, denominators, metric
+   definitions and disclosure evaluation; exclude that representation from the first version.
+5. Mark suppression as missing/unreleased support, never as zero occupancy. Retire only the
+   final suppressed remainder; mark abandoned parent candidates SUPERSEDED instead of
+   prematurely retiring all descendant support.
+6. Do not publish a parent total or another overlapping view from which suppressed children
+   can be recovered. Include suppression patterns and selection geometry in attack evaluation.
+
+This is a pre-publication alternative over retained data, not a retroactive split of a
+committed parent. Earlier non-overlapping release rules remain in force. Without an explicit
+objective, call the result a valid partial release, not the optimal/minimal suppression set.
+Initially use a deterministic traversal and tie rule; coverage versus detail preferences
+must be specified before claiming that one feasible partition is better than another.
+
+Two counterexamples define when this fallback helps:
+
+- **Uniform support rule:** the coarsest cell contains four distinct contributors; every
+  candidate requires at least five. Each descendant's contributor set is a subset, so no
+  descendant can pass for that same interval. Prune the entire subtree for this reason.
+  Such pruning needs a proven bound for the actual metric/policy; it is not valid in general.
+- **Heterogeneous regional rules:** four aligned leaves contain 1, 2, 2 and 2 distinct,
+  mutually disjoint contributors. Leaf A requires support 10; B/C/D require support 2.
+  The parent inherits support 10 and has only 7, so it fails. B/C/D can be candidate
+  releases while A is suppressed, provided no parent total/conflicting publication or
+  other hard requirement prevents it. These values illustrate mechanics, not justified
+  anonymity thresholds. A region's rule continues to apply to every output covering it.
+
+Distinguish inherited configured defaults from effective requirements derived for one
+candidate footprint. The parent in this example requires 10 because it covers region A;
+that derived requirement is not a new global default propagated back into B/C/D. If 10
+were an actual inherited default for the whole area, those children would also need 10
+and this example would not permit their release.
+
+### 6.2. Three different limits: allowed merging, reservation and preparation
+
+| Limit | Purpose | Owner |
+|---|---|---|
+| Allowed merge extent | Coarsest permitted geometry and largest permitted temporal support | Effective policy plus representable source geometry |
+| Reserved extent | Unpublished cell/interval support still available for coordinated alternatives | Release protocol and ledger |
+| Precomputation extent | Which eligible candidate statistics are prepared in advance | Execution strategy and compute/memory budget |
+
+The Policy Tree limits what may be released. It need not require every permitted ancestor
+to be continuously calculated. An unprepared candidate can still be reconstructed on
+demand if complete retained history and uncommitted support are available. Conversely,
+having a cached candidate never authorizes a merge over committed support.
+
+Use separate parameters such as coarsest allowed cell size/depth, coordination-domain
+root, and `precompute_ancestor_levels`. The last counts steps above the current candidate;
+it is not the absolute quadtree depth. Preparation never expands the legal release range.
+Temporal preparation must likewise have an explicit finite set of window boundaries or
+durations. "All" must mean all candidates in this declared universe, not unbounded windows.
+
+Implementation starting point: retain sufficient bounded fine history and compute missing
+ancestors on demand. Once correct, evaluate preparing the immediate parent (one level),
+then two levels, then all eligible ancestors as controlled variants. These are experiment
+settings, not an assertion that one or two levels are optimal. Do not keep every parent
+copy of full records merely because it is a possible candidate.
+
+A selective strategy can use recent request frequency, remaining threshold margin,
+observed density changes and upcoming deadlines to decide where to spend a cache budget.
+These are candidate heuristics to validate. Include selection/update/eviction costs and
+ensure a heuristic miss does not make a policy-permitted candidate logically unavailable.
+Data-dependent preparation decisions remain internal; public output still follows the
+same decision procedure in the first comparison.
+
+### 6.3. Study: full versus selective precomputation
+
+Research question: under which spatial/temporal workloads does selective preparation reduce
+total cost or memory while preserving release decisions and meeting the latency target?
+Here "aggregate everything" means maintain internal candidate statistics. Always publishing
+the coarsest aggregate would be a different release strategy and a separate comparison.
+
+| Variant | Work performed before a candidate is requested |
+|---|---|
+| On demand | Fine history/basic statistics only; construct alternatives when requested |
+| Fixed lookahead | Prepare all eligible ancestors within one or two levels |
+| Full preparation | Maintain every eligible candidate in the declared spatial/window set |
+| Selective preparation | Maintain a budgeted subset chosen by a declared heuristic |
+
+Keep release policies, merge cap, reservation protocol, input history, candidate search,
+suppression fallback, metric definitions and deterministic tie rules identical. In an
+offline run without processing deadlines, compare canonical output geometry, intervals,
+counts, reasons and simulation release times (with justified numerical tolerances).
+Outputs should agree; otherwise the implementations are not merely different caches.
+Wall-clock execution time is expected to differ. A later constrained-memory experiment
+may vary retention deliberately, but must be identified as a different comparison.
+
+Use saved observation replay because current movement still has wall-clock influences.
+Start with sparse/dense uniform inputs and spatial mixtures, then add moving hotspots,
+policy boundaries and abrupt density changes. Vary active leaf count, agent count/movement,
+merge-request rate, legal depth, retained duration, selected window set and metric cost.
+Crossing identities and expiry matter for exact distinct sets; counting only integer
+occupancy updates would not represent their cost. Keep the first matrix small and expand
+only where a crossover appears.
+
+Record total processing time, per-update and candidate-request latency (p50/p95/p99),
+throughput, peak memory including history/caches/ledger, constructed candidates, cache
+hits, unused preparation, eviction/reconstruction and deadline misses. Separate setup,
+warmup and steady operation; use repeated paired runs on the same inputs/hardware with
+fixed DB/renderer settings and a documented memory budget.
+
+Run a second experiment with an explicit wall-clock arrival rate and processing budget.
+Report deadline misses, extra delay, missing/suppressed coverage and application error.
+A performance shortfall never permits an unchecked release; distinguish computational
+unavailability from a metric-based rejection. Assess empirical privacy on all observable
+outputs rather than interpreting lower CPU cost as improved privacy.
+
+Working hypotheses, not results: on-demand/selective work may win when few alternatives
+are requested; maintaining all candidates may amortize when the same alternatives are
+frequently used and inexpensive to update. Selective selection/eviction can itself cost
+more than maintaining a small set of simple counters. Exact identity sets and many temporal
+alternatives can shift the crossover substantially. Measure maintenance plus query cost,
+not just the time of the final merge operation.
+
+Selecting precomputed aggregates has established related work in materialized views; see
+[Ullman, Efficient Implementation of Data Cubes Via Materialized Views, KDD 1996](https://cdn.aaai.org/KDD/1996/KDD96-074.pdf).
+This is background for the cost/space trade-off, not evidence that its static model or
+optimality results transfer to our stream. The study's specific contribution to investigate
+is bounded preparation under regional policies, evolving mobility and release deadlines;
+novelty requires a targeted literature review before a research claim.
+
 
 ## 7. Hand-worked cases before code
 
@@ -264,10 +418,14 @@ them as a supposed privacy repair.
 | One required child interval already public | Reject historical parent under first release rule; consider a future transition |
 | Allowed parent also fails | Try its parent only with complete available sibling support and allowed bounds |
 | Maximum duration reached; parent passes | Release parent if its stricter policy and release age still permit it |
-| Maximum duration and coarsening exhausted | Suppress with an internal reason; never reset start time to obtain more budget |
+| Maximum duration and coarsening exhausted | Resolve eligible descendant selection, suppress the remainder; never reset start time |
+| Uniform minimum support 5, largest cell has 4 distinct people | No descendant passes for the same interval; prune by this proven bound |
+| Regional support requirements 10/2/2/2, leaf counts 1/2/2/2 | Parent fails; B/C/D can pass while A is suppressed, subject to all other checks |
+| Failed leaf removed from a parent count but original geometry retained | Reject: output no longer describes its stated support |
+| On-demand and full preparation on identical replay without deadlines | Equivalent release decisions; compare execution cost and memory |
 | All hard checks pass early | Seal only after minimum bounds and group coordination; invalidate competing candidates |
 | Strict and permissive regions intersect | Apply compatible hard constraint intersection; contradictory bounds are infeasible |
-| Parent splits at a future boundary | Validate complete child cut; no partial child publication before fallback choice is settled |
+| Parent splits at a future boundary | Settle a valid child selection plus explicit suppressed remainder before any publication |
 | No observations until deadline/end of run | Time advance terminates pending work with defined partial-window/suppression behavior |
 | Ambiguous sink failure after sealing | Keep coverage reserved; retry same release idempotently or stop with explicit error |
 
@@ -322,10 +480,13 @@ only. Renderer controls observe the manager and do not decide aggregation.
 2. E04/A04: metric definitions, typed hard constraints, compiled aligned policy lookup.
 3. A02: bounded history, exact statistics, active/preemptive roles and lifecycle tests.
 4. A05: reservations, non-overlapping release ledger, sink boundary and fixed-window output.
-5. A03: small-domain spatial merge/split, then bounded temporal extension and preferences.
+5. A03/A07: small-domain spatial merge/split and descendant fallback, then bounded
+   temporal extension and preferences; first baseline can suppress the whole failed candidate.
 6. S04/S01 and A06: correct frame matching before trusting live aggregation overlays.
 7. V01/B01/E01/E02: replay comparisons, runtime/memory, application error and joint-release
    attack evaluation; do not infer empirical privacy improvement from rule compliance.
+8. E05: compare preparation strategies with equal outputs first, then under real-time
+   budgets. Keep this study after the working lifecycle; do not block the first demo on it.
 
 Run meaningful correctness cases per slice. S04 is P0 for a trustworthy live demo, but
 can proceed independently of bucket design. No production simulator run, database cleanup,

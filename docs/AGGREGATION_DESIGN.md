@@ -8,7 +8,9 @@ every item in an old implementation plan.
 The [bucket lifecycle and release protocol](BUCKET_LIFECYCLE.md) expands the October 13
 discussion into a state diagram, data/storage contract, policy compilation rules,
 sibling reservations, irreversible publication behavior and renderer acceptance cases.
-It is the detailed proposal for these topics; implementation remains pending.
+Its Sections 6.1–6.3 also define selective suppression, separate allowed/reserved/prepared
+extent, and the controlled full-versus-selective preparation study. It is the detailed
+proposal for these topics; implementation remains pending.
 
 ## 1. Sources and verified baseline
 
@@ -236,7 +238,8 @@ Retain that protocol and make its preconditions precise:
   either a bounded coordination domain or early release that closes conflicting historical
   merges. Merely flagging a failing leaf is too late if its siblings were already published.
 - Preserve original window start/deadline through merges. Reaching the maximum duration
-  permits a remaining legal spatial candidate or suppression; it does not reset time.
+  permits remaining legal spatial candidates or the final descendant fallback before
+  suppressing unreleasable support; it does not reset time.
 - A pending request must have a wake-up trigger/deadline; otherwise heterogeneous windows
   can cause repeated polling or indefinite waits.
 
