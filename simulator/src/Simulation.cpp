@@ -492,7 +492,8 @@ void Simulation::run() {
         // Update timestamp
         timestamp = generateISOTimestamp(simulationTime, datetime);
         
-        // Publish the agent state only after its complete sensor frame exists.
+        // Sensor updates and any measurement-frame writes for t are complete.
+        // Receiving this agent frame confirms that no sensor contribution for t is still in flight.
         if (renderEnabled) {
             sensorBuffer.swap();
             agentBuffer.write(currentFramePtr);
@@ -543,9 +544,12 @@ void Simulation::update() {
         sensor->postData();
         // sensor->postAggregatedData();
     }
-    // Includes an empty map on non-sampling steps: completion is explicit.
-    if (config["renderer"]["show_renderer"].as<bool>())
-        sensorBuffer.write(std::move(frame).finish());
+    // Send only actual measurements, including identified measured-empty payloads.
+    // The agent frame published after update() confirms completion on no-sample steps.
+    if (config["renderer"]["show_renderer"].as<bool>()) {
+        if (auto measurements = std::move(frame).finish())
+            sensorBuffer.write(measurements);
+    }
 
     // Update timestamp
     timestamp = generateISOTimestamp(simulationTime, datetime);

@@ -1,6 +1,7 @@
 # Complete sensor frames and renderer synchronization
 
-Implemented on 2026-10-13 for S04 and the renderer-related part of S01.
+Implemented on 2026-10-13 for S04 and the renderer-related part of S01. Updated to
+send frames only on measurement steps, using agent-frame arrival to confirm step completion.
 This document describes the current implementation. Aggregation policies, buckets and
 privacy decisions remain separate work; this frame is an internal measurement/debug object.
 
@@ -20,14 +21,15 @@ Cell counts describe one observation, not unique people accumulated over time. A
 payload can contain no complete records despite detecting newly entering people; consult
 detectedAgents before interpreting that as an empty detection area.
 
-Simulation builds exactly one complete sensor frame for each rendered simulation step:
+Simulation sends one combined sensor frame only when at least one sensor measured in
+a rendered simulation step. The frame contains all actual contributions for that timestamp:
 
 ```text
-step time   AGBS-A (10 Hz)   AGBS-B (5 Hz)   complete sensor map
-0 ms        initialize      initialize     {}
-50 ms       not due         not due        {}
+step time   AGBS-A (10 Hz)   AGBS-B (5 Hz)   sensor frame sent
+0 ms        initialize      initialize     none
+50 ms       not due         not due        none
 100 ms      sample          not due        {A: sample}
-150 ms      not due         not due        {}
+150 ms      not due         not due        none
 200 ms      sample          sample         {A: sample, B: sample}
 ```
 
@@ -37,9 +39,13 @@ another sensor. Non-aligned sampling remains D02/F01.
 
 - Missing ID: this sensor has no sample at this step.
 - Present empty grid payload: the sensor measured an empty area.
-- Empty frame map: the step is complete and no sensor sampled.
-- Empty transport queue: the next frame may still be in flight; it is not evidence of
-  an empty measurement. End/stop plus drained queues is explicit end of stream.
+- No sensor sampled: no sensor frame is allocated or enqueued. Builder::finish returns
+  a null handle, which Simulation does not write to the queue.
+- Empty transport queue after receiving agent frame t: no measurement for t is pending,
+  because the producer finished all sensor work for t before exposing that agent frame.
+- Empty transport queue before receiving the agent frame: completion is not yet known.
+  End/stop plus drained queues is explicit end of stream, not required to resolve a
+  no-sample step whose agent frame has already arrived.
 
 The builder rejects duplicate IDs and contributions with another timestamp. Main assigns
 missing IDs once in the in-memory YAML configuration, then shares those IDs with simulation
@@ -56,10 +62,17 @@ existing schema and publication behavior. The handoff currently copies the captu
 once into the sample; it does not retain whole Agent objects or quadtree pointers.
 
 Simulation collects the contributions while all sensors still observe X(t), before movement.
-It publishes the complete sensor frame before exposing the corresponding agent snapshot.
-The agent snapshot was copied from the same X(t). Two queues remain, but completion is
-explicit and ordering is guaranteed by the single simulation producer. Headless runs skip
-both render queues and use an independent completed-step counter.
+It enqueues any resulting measurement frame before exposing the corresponding agent snapshot.
+The agent snapshot was copied from the same X(t). Receiving this agent frame therefore
+confirms that all sensor work through t is complete, including steps without measurements.
+There is no separate empty frame or completion message. "Publish" here means queue handoff
+to the internal renderer, not public release of anonymized data or a MongoDB write.
+
+This ordering is guaranteed by the single simulation producer and synchronous sensor updates.
+The renderer is the sole consumer of each queue. Moving sensors to independent threads or
+adding consumers requires an explicit completion protocol; selectCompletedStep must not be
+called before the corresponding agent frame arrives. Headless runs skip both render queues
+and use an independent completed-step counter.
 
 An aggregation manager can receive owned observation batches directly in the simulation
 thread. It must not consume the renderer queue: reads remove frames, and a second reader
@@ -74,10 +87,13 @@ match once, and retains at most one future entry. Matching an already selected t
 supports pause/redraw without consuming another frame. Duplicate or out-of-order incoming
 timestamps, or backwards target times, are rejected; replay/rewind needs a fresh cursor.
 
-The renderer holds at most one pending agent frame while a genuine sensor frame is in
-flight. Reads use tryRead and return to event polling rather than blocking on a missing
-measurement. A completed step with no matching measurement clears the current measurement
-view. A paused repaint retains its matched view. There is no implicit last-known display.
+After reading an agent frame, the renderer calls selectCompletedStep. It uses tryRead
+and resolves a missing measurement immediately, including while the producer is still running
+and during long gaps or a run with no sensor measurements. There is no pending-agent wait
+state and no need to wait for a future sensor frame or EOF. A new step without a matching
+measurement clears the current measurement view. A paused repaint retains its matched view.
+There is no implicit last-known display. Waiting for the next agent frame remains nonblocking
+so event handling can continue.
 
 Each AGBS render instance looks up its own ID and checks the payload type. Its geometry is
 rebuilt once when the agent frame advances, using Quadtree::clear to delete old child nodes,
@@ -98,12 +114,15 @@ frames; window close requests cancellation on both queues. No access-count schem
 
 ## Verification and remaining work
 
-- FrameRegressionTests: complete/empty steps; two AGBS IDs plus ABS/GBS types; old/exact/
-  future selection; pending vs EOF; pause; malformed frame order; bounded queues; concurrent
-  FIFO order; final-frame drain; blocked reader/writer shutdown. No MongoDB or window needed.
+- FrameRegressionTests: no allocation on unsampled steps; measured-empty identity; two AGBS
+  IDs plus ABS/GBS types; old/exact/future selection; immediate no-match while producer is live;
+  pause; malformed frame order; bounded queues; concurrent sparse two-queue production with
+  long gaps and with no measurements at all; final-frame drain; reader/writer shutdown.
+  No MongoDB or window needed.
 - SensorRegressionTests: actual ABS, GBS and two AGBS at 10/5 Hz; entry/reentry, empty areas,
-  counts, timestamp identity, single-use sample handoff, existing ABS velocity/DB-duplicate
-  checks. Uses only a fresh UUID-named database and removes it on exit.
+  counts, timestamp identity, single-use sample handoff, exactly 9 combined measurement
+  frames for 19 simulation steps, and existing ABS velocity/DB-duplicate checks. Uses only a
+  fresh UUID-named database and removes it on exit.
 - Full executable smoke check: isolated headless configuration, 20 steps, four sensors,
   generated distinct IDs and agreement between metadata and measurement IDs.
 - Manual visual interaction, long-run performance and the wider S02/S03 simulator issues

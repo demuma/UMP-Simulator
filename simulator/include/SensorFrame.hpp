@@ -47,7 +47,8 @@ using sensorFrame = std::unordered_map<std::string, SensorSample>;
 using sensorFrameType = std::pair<SensorTime, sensorFrame>;
 using sensorBufferFrameType = std::shared_ptr<const sensorFrameType>;
 
-// One builder per simulation step. Finish only after every due sensor has contributed.
+// One builder per simulation step. Finish after all due sensors have contributed.
+// A step without observations returns no frame; a measured-empty payload retains its ID.
 class SensorFrameBuilder {
 public:
     explicit SensorFrameBuilder(SensorTime timestamp) : timestamp(timestamp) {}
@@ -58,6 +59,7 @@ public:
             throw std::invalid_argument("Duplicate sensor contribution for one step");
     }
     sensorBufferFrameType finish() && {
+        if (samples.empty()) return {};
         return std::make_shared<const sensorFrameType>(timestamp, std::move(samples));
     }
 private:

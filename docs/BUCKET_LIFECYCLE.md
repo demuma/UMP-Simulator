@@ -654,10 +654,11 @@ These are proposed acceptance cases, not tests that have already passed.
 
 **Implementation update, 2026-10-13:** S04 and the renderer transport part of S01 are
 implemented; [Sensor frames](SENSOR_FRAMES.md) is the maintained contract and validation record.
-Simulation emits one complete immutable typed sensor frame per rendered step before exposing
-the matching agent snapshot. Missing IDs mean not due; present empty payloads mean measured
-empty. A non-sampling step still has an empty completion frame. No sensor waits for another
-sensor's later sample.
+Simulation emits one combined immutable typed sensor frame on steps with measurements,
+before exposing the matching agent snapshot. Missing IDs mean not due; present empty
+payloads mean measured empty. Non-sampling steps emit no sensor frame. Receiving the agent
+snapshot confirms that all sensor work for its timestamp is complete; the renderer can
+resolve absence immediately. No sensor waits for another sensor's later sample.
 
 The renderer consumes exact timestamps once, discards older frames, retains at most one
 future frame and keeps a matching view for pause/redraw. Reads are nonblocking; frame queues

@@ -141,7 +141,7 @@ reverted test results do not establish correctness of the current implementation
 | AggregationManager | Sensor-local class scaffold, bucket structure and DB test method | No usable algorithm; empty flush; no effective pipeline integration |
 | Regional rules | YAML/Region fields for granularities and k/l thresholds | No active policy evaluation, conflict handling or policy trees |
 | Temporal history | Short-lived sensor data containers | No bounded reconstructable history or variable aggregation windows |
-| Rendering | Complete typed per-step sensor frames, stable per-sensor routing, nonblocking pairing and bounded queues; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
+| Rendering | Combined typed frames on measurement steps, stable per-sensor routing, nonblocking pairing and bounded queues; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
 | Evaluation | Earlier experiments in Data_analysis outside this import | Metric semantics, independent attacker evaluation and fair baselines missing |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |
@@ -160,9 +160,9 @@ State X(t), timestamp t
     → store GT and copy the agent snapshot
     → increment simulationTime internally; timestamp still remains t
     → sensors observe X(t) with timestamp t; assemble the complete sensor frame
-    → publish the complete sensor frame (empty map when no sensor samples)
+    → publish a combined sensor frame only if at least one sensor measured
     → set timestamp to t + dt and move agents to the next state
-    → expose the copied agent snapshot for t to the renderer
+    → expose the copied agent snapshot for t; this confirms sensor processing is complete
 ```
 
 On this path, matching timestamps describe the same position state. Requiring a second
@@ -194,8 +194,9 @@ previousPositions by accessing the derived sensor's state during construction.
 
 GBS/AGBS keep their existing DB output policy: an entirely empty area writes no count
 documents. The combined frame now contains an identified empty payload for a due empty
-measurement, and an empty map when no sensor is due. A newly populated area is counted on
-the next scheduled sample. Public Empty/Suppressed/Unavailable semantics remain D03;
+measurement. When no sensor is due, no sensor frame is sent; the subsequent agent frame
+confirms that sensor processing is complete. A newly populated area is counted on the next
+scheduled sample. Public Empty/Suppressed/Unavailable semantics remain D03;
 the internal frame states are defined in [Sensor frames](docs/SENSOR_FRAMES.md).
 
 ### 5.3 One velocity calculation and the new-agent rule
@@ -421,9 +422,11 @@ FrameRegressionTests is enabled by default and needs neither MongoDB nor a windo
 ctest --test-dir simulator/build -R frame_regression --output-on-failure
 ```
 
-It verifies pairing, multi-ID routing, empty steps, pause, chronological validation,
-bounded concurrent FIFO consumption and shutdown. Disable it with UMP_BUILD_FRAME_TESTS=OFF
-only when a build without the test executable is specifically needed.
+It verifies pairing, multi-ID routing, no-sample steps without placeholder frames, pause,
+chronological validation, bounded concurrent FIFO consumption and shutdown. Sparse two-queue
+runs cover long gaps and an entirely unsampled run without waiting for a sensor frame.
+Disable it with UMP_BUILD_FRAME_TESTS=OFF only when a build without the test executable
+is specifically needed.
 
 The sensor integration test remains opt-in:
 

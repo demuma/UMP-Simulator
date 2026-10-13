@@ -297,3 +297,26 @@ network access passed. Existing Simulation data and the user's YAML were not cha
 Manual GUI inspection and long-run performance are not covered. AGBS counts still cannot
 establish distinct contributors across time. Actual buckets, metrics and policy trees remain
 open. See [Sensor frames](SENSOR_FRAMES.md) and the chronological TO-DO for the next slice.
+
+
+### S04 follow-up: omit frames on non-sampling steps
+
+The initial 4b769dc implementation used empty sensor frames as completion markers. The
+agreed follow-up removes that redundancy: synchronous sensor processing and any sensor-queue
+writes happen before the corresponding agent frame becomes available. Its arrival is the
+completion guarantee. Builder::finish now returns no frame when there are no sensor
+contributions; due measurements with empty results retain their IDs and are still sent.
+
+SensorFrameCursor::selectCompletedStep requires that the agent frame has been received.
+It resolves an empty sensor queue immediately without waiting for a future measurement or
+end of stream. The renderer no longer retains a pending agent while polling sensor arrival.
+The ordering requirement applies to renderer queues; it does not change measurement times
+or introduce a public data-release decision.
+
+Updated verification covers completely unsampled bounded two-queue runs, long measurement
+gaps and no-sample tails while the producer remains live. The mixed-rate sensor fixture
+expects 9 combined sensor frames for 19 simulation steps, including measured-empty samples.
+The current maintained contract is docs/SENSOR_FRAMES.md.
+
+Release builds and both updated CTest regressions passed. The normal simulator/build/Simulator
+was rebuilt; manual visual inspection remains a separate open check.

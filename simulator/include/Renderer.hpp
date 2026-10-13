@@ -163,7 +163,6 @@ private:
     // SharedBuffer<std::vector<Agent>>& agentBuffer;
     SharedBuffer<agentBufferFrameType>& agentBuffer;
     SharedBuffer<sensorBufferFrameType>& sensorBuffer;
-    agentBufferFrameType pendingAgentFrame;
     SensorFrameCursor sensorFrames;
 
     // Sensors

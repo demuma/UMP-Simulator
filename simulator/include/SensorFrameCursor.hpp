@@ -2,26 +2,24 @@
 #include "SensorFrame.hpp"
 #include "SharedBuffer.hpp"
 
-// The producer writes complete frames in chronological order. Keep at most one
-// future frame locally; never drain the stream just to search for the current time.
+// The single producer publishes all measurements for t before the agent frame for t.
+// After reading that agent frame, the consumer can resolve a missing sensor frame
+// immediately. Keep at most one future frame and consume each exact match once.
 class SensorFrameCursor {
 public:
-    bool select(SensorTime timestamp, SharedBuffer<sensorBufferFrameType>& buffer) {
+    // Precondition: the corresponding agent frame has been received, confirming that
+    // sensor production through timestamp is complete. This is not an asynchronous
+    // sensor-arrival poll; an empty queue now means no measurement for this step.
+    void selectCompletedStep(SensorTime timestamp, SharedBuffer<sensorBufferFrameType>& buffer) {
         if (selectedTime && timestamp < *selectedTime)
             throw std::invalid_argument("Renderer timestamps must not move backwards");
-        if (selectedTime && *selectedTime == timestamp && resolved) return true;
-        if (!selectedTime || *selectedTime != timestamp) {
-            current.reset();
-            selectedTime = timestamp;
-            resolved = false;
-        }
+        if (selectedTime && *selectedTime == timestamp) return; // Pause/redraw.
+        current.reset();
+        selectedTime = timestamp;
         while (true) {
             if (!future) {
                 auto next = buffer.tryRead();
-                if (!next) {
-                    resolved = buffer.isDrained();
-                    return resolved; // Pending producer, or a confirmed missing frame at EOF.
-                }
+                if (!next) return;
                 future = std::move(*next);
                 if (!future) continue;
                 if (lastReceived && future->first <= *lastReceived)
@@ -30,9 +28,7 @@ public:
             }
             if (future->first < timestamp) { future.reset(); continue; }
             if (future->first == timestamp) current = std::exchange(future, {});
-            // A future timestamp proves this timestamp is missing in an ordered stream.
-            resolved = true;
-            return true;
+            return; // An exact match is consumed; a future frame stays buffered.
         }
     }
     const sensorBufferFrameType& frame() const { return current; }
@@ -41,5 +37,4 @@ private:
     sensorBufferFrameType current;
     std::optional<SensorTime> selectedTime;
     std::optional<SensorTime> lastReceived;
-    bool resolved = false;
 };

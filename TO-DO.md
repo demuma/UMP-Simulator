@@ -709,16 +709,19 @@ thread and receives values directly; no additional shared-buffer consumer is int
 read the queue before local matching and processed only the first sensor ID. Aggregation_Manager
 had the same code; SimulatorV3 did not have an active sensor-frame matching path.
 
-- [x] Assemble one immutable timestamped sensor-ID map per rendered step in Simulation.
+- [x] Assemble one immutable timestamped sensor-ID map per rendered step with actual measurements.
 - [x] Carry distinct ABS/GBS/AGBS payloads; non-due sensors contribute nothing.
-- [x] Preserve IDs for due empty measurements; use an empty map for a completed no-sample step.
-- [x] Publish the complete sensor frame before exposing its matching agent snapshot.
+- [x] Preserve IDs for due empty measurements; allocate/send no frame when no sensor sampled.
+- [x] Finish sensor work and enqueue any measurement frame before exposing the agent snapshot;
+  agent-frame arrival confirms completion, so no empty completion frame or sensor wait is needed.
 - [x] Consume exact matches once, discard older frames and retain at most one future frame.
 - [x] Clear the measurement view on an unmatched new step; preserve pause/redraw of a matched step.
 - [x] Reject duplicate/out-of-order stream timestamps and mismatched/duplicate builder contributions.
 - [x] Assign run-stable sensor IDs once and route each AGBS to its own typed payload.
 - [x] Use nonblocking renderer reads; cancel both queues on close and drain on normal end.
-- [x] Test old/exact/future/pending/end cases, several IDs, mixed 10/5-Hz sensors and measured-empty input.
+- [x] Test old/exact/future/end cases, several IDs, mixed 10/5-Hz sensors and measured-empty input.
+- [x] Test bounded two-queue runs with long measurement gaps or no measurements at all;
+  distinguish no frame from measured empty, including a no-sample tail before EOF.
 - [ ] Perform a manual visual check of two AGBS, pause/resume and early close before the live demo.
 
 **Contract and evidence:** [Sensor frames](docs/SENSOR_FRAMES.md). Frame and isolated MongoDB

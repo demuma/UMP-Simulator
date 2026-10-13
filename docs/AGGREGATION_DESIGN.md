@@ -59,8 +59,9 @@ must be explicit before policy validation is enabled.
 - Simulation owns sensors and calls their updates synchronously before moving agents.
 - The agent buffer contains timestamped agent-state snapshots for rendering/debugging.
 - Updated 2026-10-13: the sensor buffer carries complete timestamped sensor-ID -> typed
-  ABS/GBS/AGBS payloads, including counts. See [Sensor frames](SENSOR_FRAMES.md). GBS/AGBS
-  still lack contributor identities and aggregation history; do not infer temporal distinct
+  ABS/GBS/AGBS payloads, including counts, only on measurement steps. The subsequent agent
+  frame confirms that sensor work for its time is complete. See [Sensor frames](SENSOR_FRAMES.md).
+  GBS/AGBS still lack contributor identities and aggregation history; do not infer temporal distinct
   people from these counts. The manager receives values directly, not via this render queue.
 - SharedBuffer::read takes the front queue item and pops it. It is consumptive, not broadcast.
 - AggregationManager owns a MongoDB collection reference and a bucket scaffold. Its only

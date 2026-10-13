@@ -670,7 +670,7 @@ void Renderer::run() {
 
             // Process the buffer frames
             if (!readNextFrame()) {
-                if (agentBuffer.isDrained() && !pendingAgentFrame) break;
+                if (agentBuffer.isDrained()) break;
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 continue;
             }
@@ -758,20 +758,16 @@ sf::Time Renderer::calculateSleepTime() {
     return std::max(remainingTime, sf::Time::Zero);
 }
 
-// Select a complete pair without blocking event processing.
+// The received agent frame confirms that all sensor work for this timestamp is complete.
 bool Renderer::readNextFrame() {
-    if (!pendingAgentFrame) {
-        auto next = agentBuffer.tryRead();
-        if (!next) return false;
-        pendingAgentFrame = std::move(*next);
-        if (!pendingAgentFrame) return false;
-    }
-    if (!sensorFrames.select(pendingAgentFrame->first, sensorBuffer)) return false;
-    currentAgentFrame = std::shared_ptr<const agentFrame>(pendingAgentFrame, &pendingAgentFrame->second);
+    auto next = agentBuffer.tryRead();
+    if (!next || !*next) return false;
+    const auto& received = *next;
+    sensorFrames.selectCompletedStep(received->first, sensorBuffer);
+    currentAgentFrame = std::shared_ptr<const agentFrame>(received, &received->second);
     const auto& selected = sensorFrames.frame();
     currentSensorFrame = selected
         ? std::shared_ptr<const sensorFrame>(selected, &selected->second) : nullptr;
-    pendingAgentFrame.reset();
 
     // Each sensor owns its geometry; route only its own typed payload.
     for (auto& sensor : sensors) {

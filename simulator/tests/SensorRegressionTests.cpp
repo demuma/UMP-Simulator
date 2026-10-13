@@ -68,6 +68,7 @@ int main() {
         std::vector<Agent> agents;
         Agent::AgentTypeAttributes attributes{};
 
+        std::size_t frameCount = 0;
         // Known interval velocity (2, 1) m/s; enter, leave, then reenter the area.
         for (int ms = 0; ms <= 900; ms += 50) {
             agents.clear();
@@ -97,9 +98,11 @@ int main() {
             abs.postData();
             const bool due = ms > 0 && ms % 100 == 0;
             auto snapshot = std::move(frame).finish();
-            require(snapshot->first == timestamp, "Frame timestamp mismatch");
-            require(snapshot->second.size() == (due ? (ms % 200 == 0 ? 4u : 3u) : 0u), "Common frame cadence/IDs mismatch");
-            if (due) {
+            require(static_cast<bool>(snapshot) == due, "Frame emitted without a measurement or due frame missing");
+            if (snapshot) {
+                ++frameCount;
+                require(snapshot->first == timestamp, "Frame timestamp mismatch");
+                require(snapshot->second.size() == (ms % 200 == 0 ? 4u : 3u), "Common frame cadence/IDs mismatch");
                 const auto* sample = findSensorSample<AdaptiveGridSensorSample>(snapshot->second, agbs.sensorId);
                 require(sample && sample->cells.empty() == (ms == 600 || ms == 700),
                         "Measured-empty AGBS payload lost its identity");
@@ -115,6 +118,7 @@ int main() {
             }
         }
 
+        require(frameCount == 9, "Expected 9 measured frames for 19 simulation steps");
         const Counts gridCounts{{100,1}, {200,1}, {300,1}, {400,2}, {500,2}, {800,1}, {900,1}};
         verifyGrid(fixture.db["gbs"], origin, gridCounts);
         verifyGrid(fixture.db["agbs"], origin, gridCounts);
