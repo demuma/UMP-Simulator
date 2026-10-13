@@ -39,7 +39,7 @@ sensor provides every metric input or supports arbitrary spatial refinement.
 | 3 | Policy tree using existing Regions | A04 | Effective regional requirements, inheritance and conflicts |
 | 4 | Active/preemptive buckets and history | A02 | Hand-worked windows, lifecycle and retention rules |
 | 5 | Publication coordination, AGBS decisions and inspection | A05, A03, A07, A06 | Fixed release/suppress path, then merge/split, partial suppression, time extension and debug view |
-| 6 | Complete-run checks and comparative evaluation | V01, B01, R01–R03, X02, E05 | Saved equal input, verified releases, result figures and preparation-cost study |
+| 6 | Complete-run checks and comparative evaluation | V01, B01, R01–R03, X02, E05, E06 | Equal input, verified releases, publication/priority comparisons and preparation-cost study |
 | 7 — later | Taxonomy brainstorming, renderer settings and control GUI | X01, X10, X11 | Separate design proposals and measured implementation scope |
 | 8 — later | Map extraction, routes and collision avoidance | X04, X03, X05 | Controlled scenarios and realism/performance evidence |
 | 9 — as justified | Further metrics, uncertainty, graphics and infrastructure | E03, X06–X09 | Research or measured engineering need |
@@ -378,8 +378,13 @@ The metric evaluator requires no renderer or live database access.
   all mandatory metrics and intersections of allowed actions. Reject contradictions.
 - [ ] Define min/max cell side in metres and coarsest allowed depth unambiguously;
   validate metric units, parameters and reference definitions before combining thresholds.
-- [ ] Resolve Spatial First/Temporal First as preferences with explicit priority/ties;
-  preferences never weaken hard constraints.
+- [ ] Use the adopted preservation-priority labels: Temporal First -> spatial aggregation
+  before temporal extension; Spatial First -> temporal aggregation before spatial coarsening.
+- [ ] Resolve competing preservation priorities explicitly; preferences never weaken hard bounds.
+- [ ] Add an application/stream publication-model choice separate from preservation priority
+  and hard bounds. Expose only implemented/tested modes; validate capabilities/combinations.
+- [ ] Resolve conflicting inherited model choices or reject them; models are not ordered
+  by one numeric strictness rule. Keep model fixed per initial run and preserve release history.
 - [ ] Handle overlaps, boundary-crossing cells and conflicting requirements.
 - [ ] Fix policies during initial runs; specify policy versions/cache invalidation
   and open-window behavior before permitting live policy changes.
@@ -429,8 +434,12 @@ Deleting a DB record cannot retract an already externally visible publication.
 
 ### A05 — Publication coordination and irreversible output — P0
 
-- [ ] Compare private final-snapshot, immediate approved, bounded-hold and recipient-visible
-  revision models. The user left this choice open; include traffic freshness/latency needs.
+- [ ] Implement publication models as independently testable policy-selected behaviors:
+  private final-snapshot, immediate approved, bounded-hold and recipient-visible revisions.
+  Start with one supported model; each additional mode needs actual lifecycle/sink semantics,
+  visibility/deadline handling and tests. No stub mode or silent substitution.
+- [ ] Compare these models under E06/RQ-PUB; the preferred application mode remains open,
+  including traffic freshness/latency needs.
 - [ ] Define private observation/GT/checkpoint storage versus externally visible releases;
   keep the publication sink outside the manager and enforce the selected access boundary.
 - [ ] Permit retrospective changes to private working data with reproducible provenance;
@@ -463,8 +472,11 @@ reopen coverage for a competing candidate. Disjoint release coverage is not a pr
 ### A03 — Start with simple adaptive strategies — P0
 
 - [ ] Integrate fixed candidate release/suppress with the initial regional policy tree.
-- [ ] Specify and implement one first adaptive decision order; compare Spatial First and
-  Temporal First only after the initial path is correct.
+- [ ] Implement Temporal First by trying spatial aggregation before temporal extension,
+  and Spatial First by trying temporal aggregation before spatial coarsening. Start with
+  one verified strategy, then compare both under E06/RQ-ORDER.
+- [ ] Test label-to-action mapping with a failing candidate for which both actions are legal;
+  record the preservation priority and chosen action in experiment/decision metadata.
 - [ ] Extend in declared bin increments and recheck on relevant events; permit early
   eligible release. Always waiting for the maximum window is a separate baseline.
 - [ ] Define sibling/parent/child checks, merge, split and suppression using A05 reservations.
@@ -615,6 +627,27 @@ not overwrite references. Add a broad output interface only if multiple outputs 
 **Acceptance:** equivalent scientific outputs for the unconstrained execution comparison,
 reproducible cost/memory curves and a stated workload range where each strategy wins or loses.
 No assumed winner; this study does not block the first aggregation demo.
+
+### E06 — Dissertation study: publication models and preservation priorities — P1
+
+- [ ] RQ-PUB: measure privacy, application utility, coverage and freshness across private
+  final-snapshot, immediate approved, bounded-hold and recipient-visible revision models.
+- [ ] RQ-ORDER: compare Temporal First (spatial aggregation first) with Spatial First
+  (temporal aggregation first); the label names the dimension being preserved.
+- [ ] RQ-BOUNDS: vary regional duration, release-age and spatial bounds; examine sibling
+  coordination, infeasible requirements and partial suppression across density scenarios.
+- [ ] Implement and validate each selected model/strategy through A03/A04/A05 before evaluating
+  it. Verify that policy selection changes execution, not merely an output label.
+- [ ] Specify each observer's access: final approved snapshot versus all visible versions,
+  timing and geometry. Include combined application views when the threat model permits it.
+- [ ] Hold saved observations, query and comparable hard constraints constant; vary one axis
+  first, then selected model-by-priority interactions. Keep E05's cache comparison separate.
+- [ ] Report attack outcomes, application error, released coverage, spatial/temporal detail,
+  latency distribution, infeasibility and compute/memory cost, with explicit limitations.
+
+**Acceptance:** reproducible model/strategy comparisons with verified implementations,
+explicit observer assumptions and the adopted terminology in every figure/configuration.
+The research questions are recorded; results, a preferred model and novelty remain open.
 
 ## 10. Conditional corrections supporting the active stage
 

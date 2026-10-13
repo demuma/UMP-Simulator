@@ -6,6 +6,13 @@
 > project prompt below are reference material, not current instructions to execute.
 > Use [README](../../README.md) for actual status and [TO-DO](../../TO-DO.md) for priorities.
 > Claims about novelty and architectural choices in this plan remain proposals requiring validation.
+>
+> **Terminology notice, 2026-10-13:** This historical text names strategies by the first
+> aggregation operation. Current project terminology names the dimension to preserve:
+> historical Spatial First = current Temporal First; historical Temporal First = current
+> Spatial First. This applies to its section titles, examples, YAML value and phase table.
+> Use the current [strategy definition](../BUCKET_LIFECYCLE.md#project-terminology-decision-2026-10-13)
+> when implementing or reporting results; the archived strategy strings are not current config.
 
 **Project:** Dissertation — Adaptive, Metric-Based and Privacy-Preserving Urban Mobility Data Sharing
 **Technology:** C++17, SFML, OpenGL, MongoDB
@@ -348,6 +355,8 @@ release/withhold/suppress and update evaluation metrics.
 
 ## 6.2 Spatial First
 
+Historical operation-order label; called **Temporal First** in the current project.
+
 ```text
 Violation → merge spatial cells → reevaluate
           → extend temporal window if still necessary
@@ -356,6 +365,8 @@ Violation → merge spatial cells → reevaluate
 Favor freshness at the expense of spatial detail.
 
 ## 6.3 Temporal First
+
+Historical operation-order label; called **Spatial First** in the current project.
 
 ```text
 Violation → extend temporal window → reevaluate
@@ -705,7 +716,7 @@ simulation:
 quadtree:
   max_depth: 5
 aggregation:
-  strategy: spatial_first
+  strategy: spatial_first  # Historical action-order label; current project calls this Temporal First.
   min_window_ms: 100
   max_window_ms: 1000
 privacy:

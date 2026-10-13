@@ -40,6 +40,17 @@ The dissertation addresses two related questions:
 2. Can local constraints and adaptive spatial/temporal windows achieve a better trade-off
    than fixed aggregation under comparable conditions?
 
+The planned dissertation comparisons now include publication models (final-snapshot,
+immediate approved release, bounded hold and visible revisions), preservation priorities,
+regional feasibility bounds, and full versus selective precomputation. E06 tracks model/
+priority comparisons; E05 tracks preparation cost. Publication models may be selected by
+application policy once their behavior is implemented and tested.
+
+**Adopted strategy terminology:** Temporal First prioritizes temporal detail/freshness and
+tries spatial aggregation first. Spatial First prioritizes spatial detail and tries temporal
+aggregation first. The name identifies the dimension to preserve. Hard bounds still apply;
+these are specified strategies, not completed implementations.
+
 The attacker model, auxiliary knowledge, application query and evaluation metrics still
 need binding definitions. A minimum number of contributors per publication is initially
 an operational release rule. It does not by itself establish formal k-anonymity or a

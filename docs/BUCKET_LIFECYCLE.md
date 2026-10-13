@@ -4,6 +4,24 @@ Status: 2026-10-13. Detailed design proposal, not implemented behavior. This doc
 refines [Aggregation design review](AGGREGATION_DESIGN.md); [TO-DO](../TO-DO.md)
 remains the execution queue. Examples and numerical thresholds are illustrative.
 
+## Project terminology decision (2026-10-13)
+
+The user defines First by the dimension to preserve/prioritize, rather than by the first
+aggregation operation. This definition governs current design, policy labels and results:
+
+| Strategy label | Priority to preserve | First permitted adaptation | Subsequent alternative |
+|---|---|---|---|
+| Temporal First | Temporal resolution/freshness | Spatial aggregation | Temporal extension if still needed and allowed |
+| Spatial First | Spatial resolution/detail | Temporal aggregation | Spatial coarsening if still needed and allowed |
+
+Both strategies still enforce every hard constraint and may finish early. A priority is
+not a guarantee of latency or resolution. Keep the selected preservation priority and its
+derived action order explicit in configuration/output metadata; do not permit contradictory
+independent settings. Possible internal identifiers are `preserve_temporal` and
+`preserve_spatial`; final C++/YAML names remain an implementation decision.
+The archived implementation plan uses the opposite, operation-order naming and is annotated
+as historical. No implementation or migration of a running strategy is implied here.
+
 ## 1. Assessment and proposed first scope
 
 Collecting fine observations in bounded leaf history and constructing coarser candidates
@@ -118,7 +136,7 @@ Interpret "stricter wins" as intersection of compatible hard requirements:
 | Maximum risk/error, window duration, release age or cell side length | Minimum of upper bounds |
 | Several independent mandatory metrics | Require every applicable metric |
 | Allowed actions/categories | Intersection of allowed sets |
-| Spatial-first versus temporal-first | Preference, with explicit priority/tie resolution |
+| Temporal First versus Spatial First | Preservation priority, with explicit priority/tie resolution |
 
 Metrics must share definition, units, parameters and reference population before their
 thresholds can be numerically combined. Incompatible definitions need separate checks
@@ -164,8 +182,9 @@ flowchart TD
     W -->|Observation or deadline| E
 ```
 
-The preference orders *permitted* actions. Spatial-first considers allowed ancestors
-before waiting longer; temporal-first waits while allowed and then considers coarsening.
+The preservation preference orders *permitted* actions. Temporal First considers allowed
+ancestors before waiting longer to preserve temporal detail. Spatial First extends time
+while allowed before coarsening to preserve spatial detail.
 Hard regional bounds always constrain both. Try available retained history immediately;
 future observations require waiting, not an immediate loop over identical data.
 
@@ -509,12 +528,49 @@ data at release t_release-s, post-window delay t_release-e, optional output cade
 wall-clock processing latency. Decide which are hard bounds versus preferences. A low
 maximum release age may favor earlier permitted spatial coarsening, but utility constraints
 can prohibit coarsening across relevant traffic features. This is a strategy to compare,
-not an assumption that spatial-first always suits traffic better.
+not an assumption that Temporal First always suits traffic better.
 
 Evaluate application query error, coverage, freshness and attack outcomes together for
 each publication model. Keep this release-model comparison separate from E05's first
 cache-only comparison. If several applications receive different views, the attacker model
 must include all views available to the same recipient.
+
+#### Publication models as implemented policy choices
+
+The user requests these models as dissertation research questions and potential selectable
+parts of application policy. Preserve the distinction between deciding to support selection
+and having implemented each model. Initially select one supported model per application
+release stream; regional constraints inherit within its explicit visibility contract.
+
+Separate publication model (when/what recipients may observe), preservation priority
+(Temporal First or Spatial First), and hard bounds. A policy selects implemented behavior;
+an enum/string alone does not create reservations, deadlines, revisions or access separation.
+Provide capability validation and reject unsupported models/combinations without silent
+fallback. Define each model's state transitions, sink behavior, revision/visibility rules,
+termination and tests before marking it supported. Keep the first prototype narrow, then
+add the other models as controlled experiment variants.
+
+Publication models are not numerically ordered by strictness. Resolve incompatible inherited
+mode requests explicitly or reject them. Changing a mode mid-run must not hide previous
+releases or reset the observer history; initially keep it fixed for each run. Several
+application streams require the joint-observer analysis already described above.
+
+#### Recorded dissertation research questions
+
+| Question | Controlled comparison | Evidence |
+|---|---|---|
+| RQ-PUB: How does the publication model change the privacy/utility/freshness trade-off? | Final-snapshot, immediate approved, bounded-hold and visible-revision modes | Attack outcomes under explicit observers, application error, coverage, delay and resource cost |
+| RQ-ORDER: When does preserving temporal versus spatial detail perform better? | Temporal First versus Spatial First with identical input and hard constraints | Spatial/temporal resolution, application error, release age, suppression and attack outcomes |
+| RQ-BOUNDS: Which regional bounds make useful releases feasible or infeasible? | Vary latency/window/geometry bounds and sibling coordination under heterogeneous density | Feasibility, waiting, partial suppression and coverage/detail effects |
+| RQ-PREP: When is full preparation worth its maintenance cost? | On-demand, fixed lookahead, full and selective preparation over the same legal candidates | Equivalent outputs without processing deadlines; CPU, memory and deadline costs (E05) |
+
+These are recorded questions, not demonstrated findings or novelty claims. E06 plans the
+publication/priority experiments after A03/A04/A05 exist; E05 isolates computation strategy.
+Use saved replay and fixed query/threat definitions. Vary one axis first, then deliberately
+test model-by-priority interactions instead of mixing all differences in one comparison.
+For final-snapshot mode the observer sees only approved final output; for online/revision
+modes the observer sees every allowed version, geometry and timing event. Report these
+different access assumptions explicitly rather than claiming equal attacker information.
 
 ### 6.6. Incremental windows and the meaning of precompute depth three
 
@@ -525,9 +581,9 @@ At 10-Hz observations, illustrative aligned candidates can have lengths 100, 200
 and so on; actual start/capture alignment follows D02/D03. Checks can occur on new data,
 changed requirements and deadlines rather than on every unchanged simulation frame.
 
-Temporal-first preserves spatial detail while allowed temporal extensions remain useful;
-it can finish early when all release conditions pass. Spatial-first tries permitted
-coarsening at the current interval before waiting longer. Fixed maximum-size windows are
+Spatial First preserves spatial detail while allowed temporal extensions remain useful;
+it can finish early when all release conditions pass. Temporal First tries permitted
+spatial coarsening at the current interval before waiting longer to preserve temporal detail. Fixed maximum-size windows are
 a separate baseline. Coordination may delay an otherwise passing candidate, but that
 delay must respect its own bound and be measured separately from window duration.
 
@@ -650,6 +706,8 @@ only. Renderer controls observe the manager and do not decide aggregation.
    attack evaluation; do not infer empirical privacy improvement from rule compliance.
 8. E05: compare preparation strategies with equal outputs first, then under real-time
    budgets. Keep this study after the working lifecycle; do not block the first demo on it.
+9. E06: implement/validate the selected publication-model variants and compare them with
+   Temporal First/Spatial First using the adopted preservation-priority terminology.
 
 Run meaningful correctness cases per slice. S04 is P0 for a trustworthy live demo, but
 can proceed independently of bucket design. No production simulator run, database cleanup,

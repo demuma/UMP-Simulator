@@ -180,7 +180,10 @@ Adjustments proposed for the actual roadmap:
 3. Treat k-threshold compliance as a release rule, not a complete anonymity proof.
 4. Static hierarchy does not require full materialization. Consider implicit Morton structure
    and sparse measurement storage; account for four base cells at depth 1.
-5. Start Spatial/Temporal First with one global policy before regional conflicts.
+5. Historical recommendation: start the alternative action orders with one global policy.
+   The current roadmap includes initial regional policies. Current terminology (October 13):
+   Temporal First preserves time via spatial aggregation; Spatial First preserves space
+   via temporal aggregation. Follow TO-DO for the active scope and these updated labels.
 6. Retrospective reconstruction applies internally. Deleting a DB record cannot retract an
    externally observed release; assess overlap and differencing across the whole stream.
 7. Retained contribution fraction is coverage/retention, not a complete fidelity measure.

@@ -12,7 +12,9 @@ Its Sections 6.1–6.3 also define selective suppression, separate allowed/reser
 extent, and the controlled full-versus-selective preparation study. It is the detailed
 proposal for these topics; implementation remains pending. Sections 6.4–6.6 address
 asynchronous sibling windows, the unresolved publication boundary and relative ancestor
-depth. The user explicitly wants publication models compared before choosing one.
+depth. Publication models are recorded as potential application-policy selections with
+implemented/tested behavior required for every supported choice. E06 records the
+dissertation comparisons; no preferred model or empirical result has been selected.
 
 ## 1. Sources and verified baseline
 
@@ -284,8 +286,10 @@ bounds use the strongest lower bound, for upper bounds the tightest upper bound;
 an empty feasible interval. Class/metric semantics and priorities still need explicit
 definitions, so this numeric rule is not a universal conflict resolver. The October 13
 requirement is strict inheritance: regional children may tighten compatible hard rules,
-but must not silently relax them. Spatial-first/temporal-first are preferences with
-explicit priority/tie rules, not numerically comparable privacy bounds. Start with aligned non-overlapping
+but must not silently relax them. Temporal First preserves temporal detail by trying
+spatial aggregation first; Spatial First preserves spatial detail by trying temporal
+aggregation first (user terminology, October 13). These are preservation preferences
+with explicit priority/tie rules, not numerically comparable privacy bounds. Start with aligned non-overlapping
 regions, then test overlapping and cross-boundary cells before enabling them.
 
 Missing region type references should be configuration errors. Current map indexing in
