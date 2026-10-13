@@ -3,7 +3,7 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
-**Status: 2026-10-12. The first authorized sensor correction is implemented and verified:
+**Status: 2026-10-13. The first authorized sensor correction is implemented and verified:
 shared sampling initialization, single-use ABS batches and local observation assembly.
 The earlier temporary fix remains reverted; this is a new, smaller implementation.
 Actual-interval velocity handling and reproducible research experiments remain open.**
@@ -39,14 +39,17 @@ need binding definitions. A minimum number of contributors per publication is in
 an operational release rule. It does not by itself establish formal k-anonymity or a
 reduction in empirical attack success.
 
-**Next small milestone:** understand an existing measurement stream, define the required
-corrections, then compare fixed spatial/temporal baselines reproducibly. A complete adaptive
-aggregator is not a prerequisite. Keep the simulator lean as a source of measurements.
+**Next milestone: October 14 supervisor meeting.** Prepare a reliable demo, preserve one
+identifiable run, validate the complete sensor output against GT, and report implemented,
+verified and still-proposed parts explicitly. The user confirmed simulator startup works;
+full-run data validation remains open.
 
-User-provided deadlines: presentation submission on October 18, talk on October 25,
-paper in mid-November and dissertation at year-end. A possible supervisor meeting on
-Tuesday, October 13, or Wednesday, October 14, calls for a clearly evidenced intermediate
-result. This is a work target, not a promise of an already demonstrated privacy improvement.
+The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) is the maintained
+schedule: a fixed spatial/temporal evaluation for the October 18 presentation submission,
+then a small tested adaptive comparison as the October 25 conference target. The full
+dissertation narrative remains in the presentation. Improved empirical privacy is an
+experimental question, not a promised outcome. Paper submission remains due in mid-November
+and the dissertation at year-end.
 
 ## 3. Origin and repository layout
 
@@ -97,9 +100,10 @@ superproject has been introduced. No remote has been configured.
 | `db2bdbb` | Revert of that correction, preserving history |
 | `9f8fde1` | Detailed project documentation and task backlog before translation |
 
-The temporary test source and target are absent from the active project. Their historical
-results do not validate the current unmodified implementation. Defects remain documented
-and open until the next implementation step is selected.
+The earlier temporary fix remains reverted. A new sensor correction and opt-in regression
+test were committed as d520daf on October 12; startup error reporting followed in 93c5ec3
+on October 13. Their verified scope and remaining limits are described below. The old
+reverted test results do not establish correctness of the current implementation.
 
 ## 4. Actual capabilities
 

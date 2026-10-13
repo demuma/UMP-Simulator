@@ -1,6 +1,6 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-12. Work mode: the first sensor correction is implemented; keep subsequent changes small and verified.**
+**Status: 2026-10-13. Current priority: a validated demo for the October 14 meeting, first evaluation results for October 18, and a tested adaptive comparison for October 25.**
 
 This is the central task backlog. README describes current behavior; this file tracks
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
@@ -47,20 +47,156 @@ results and remaining limits. A class or configuration field alone does not comp
 actual adaptation, metric definitions and evidence of improved privacy. Historical reverted
 work remains in Git; the 2026-10-12 correction is a new implementation.
 
-## 3. Next small work package
+## 3. Delivery plan: October 14, 18 and 25
 
-Do not start a complete aggregator rewrite yet. Proposed order:
+This section orders the existing backlog by the user's confirmed dates. Checkboxes describe
+deliverables, not promises that an experiment will show improved privacy. The presentation
+continues to cover the complete dissertation concept in a defence-style narrative. Each
+feature and result must be identifiable as implemented, tested, experimentally evaluated,
+or proposed. A current quadtree visualization is not evidence of metric-driven adaptation.
 
-1. **D01/D02:** define ABS observation and publication semantics.
-2. **F00/F02:** implemented and tested for the current fixed setup.
-   **F01:** next, define and handle non-aligned or irregular observation intervals.
-3. **V01:** verify identity, time, position, interval velocity and duplicate counts.
-4. **R01/R02:** ensure comparable input independent of random runs and processing speed.
-5. **E01/E02:** define one application query and one attacker scenario.
-6. **B01:** compare fixed spatial/temporal aggregation on identical observations.
+| Date | Deliverable | Evidence required |
+|---|---|---|
+| October 14: supervisor meeting | Reliable demo, current-status summary, complete-run data validation, next experiment specification | Saved run/configuration, validation report, rehearsed demo and fallback |
+| October 18: presentation submission | Complete presentation with an initial fixed spatial/temporal comparison | Reproducible table/plots, stated utility query and privacy interpretation, limitations |
+| October 25: conference | Rehearsed full presentation, stable demo and a small adaptive-versus-fixed comparison if verified | Identical evaluation inputs, explicit decisions/constraints, measured outcomes and failure cases |
 
-Aim for a small defensible comparison. Add infrastructure only when one of these tasks
-requires it. This order is a proposal, not a promise to finish every task by Tuesday/Wednesday.
+### M1 — Ready for the October 14 meeting
+
+**Minimum deliverable:** demonstrate the working measurement pipeline and show what has
+been verified. Full-run validation is still open; the existing regression test alone does
+not establish it. A new research result is a stretch goal for this meeting.
+
+- [ ] **M1.1 — Preserve one identifiable demo dataset (R03/R01).** Use a dedicated run
+  database for GT and every sensor, record its name, actual configuration, source revision
+  and any local source changes. Keep a saved copy/export available for playback and analysis.
+  Verify which dataset the user just generated before treating it as the reference.
+- [ ] **M1.2 — Validate the complete run (V01/D01/D02).** Check ABS uniqueness by
+  sensor/agent/timestamp, GT joins, positions and displacement over consecutive sensor
+  observations. Check GBS/AGBS counts against GT within each sensor's actual area and cell
+  geometry. Explain expected omissions for first observations, exits and empty areas.
+  Report discrepancies and tolerances; do not silently discard failing records.
+- [ ] **M1.3 — Rehearse the demo (S01/R03).** Check startup, normal completion, playback,
+  early window closure and restart. Fix a reproducible shutdown/crash issue before adding
+  features. Test database renderer startup against the saved run if it is part of the demo.
+  Use the current supported 50-ms simulation step and 10-Hz sensor settings.
+- [ ] **M1.4 — Prepare a short fallback.** Save screenshots or a short screen recording of
+  the same verified run and keep a clear start command/configuration at hand. Target a
+  3–5-minute demonstration; adjust to the actual meeting format.
+- [ ] **M1.5 — Prepare the discussion material.** One status page or slide with working
+  components, corrected defects, validation findings and remaining scientific questions.
+  Include one timeline/count figure when the validated data supports it. These are data
+  correctness results; an empirical privacy improvement has not yet been established.
+- [ ] **M1.6 — Specify the first experiment (E01/E02/D03/B01).** Draft one application
+  query, one attack question, the publication fields, and a small parameter matrix for
+  supervisor discussion. Identify what will count as success, failure or an inconclusive result.
+
+**Today, October 13 — execution order:**
+
+1. Inspect the just-generated run and preserve/configure one identifiable dataset (M1.1).
+2. Implement a reusable read-only validation report and inspect any failures (M1.2).
+3. Repair only defects that invalidate that report or disrupt the selected demo (M1.3).
+4. Rehearse and save the fallback, then write the status summary (M1.4/M1.5).
+5. Specify the first experiment. If the demo and report are ready, attempt a small fixed
+   aggregation pilot using the same saved observations (M1.6; B01 stretch).
+
+**Stop rule for tonight:** secure the dataset, report and demo before starting an aggregator
+feature. A tiny correct comparison is preferable to promising an untested adaptive system.
+If a validation check fails, report the exact remaining issue and use the verified subset
+only when its selection and limitations are explicit. Do not relabel a failed run as validated.
+
+**Meeting decisions to seek:** application query, relevant attacker knowledge, interpretation
+of regional constraints, and which evidence is sufficient for the October 18 submission.
+
+### M2 — Presentation ready for October 18
+
+**Required result:** a small, reproducible fixed space/time comparison plus an explicit
+evaluation definition. Submission does not depend on completing policy trees or buckets.
+
+- [ ] **M2.1 — Freeze experiment semantics (E01/E02/D03).** Select a fixed application
+  query, e.g. occupancy in fixed application zones at specified query times. Define the GT
+  reference, how coarse/delayed releases answer the query, missing/suppressed values and
+  publication timing. Keep the reference query fixed across variants. Define occupancy
+  separately from distinct contributing identities and accumulated observation counts.
+- [ ] **M2.2 — Reuse identical inputs (R01/B01).** Evaluate every configuration over the
+  same saved observations and detection area. The live ABS/GBS/AGBS regions currently differ;
+  comparing their raw errors as if they saw the same population would be invalid. A frozen
+  input stream is sufficient for this first comparison; central RNG seeding can follow.
+- [ ] **M2.3 — Implement the fixed aggregation baseline (B01).** Start with a small
+  configurable matrix, provisionally 3 spatial sizes x 2 temporal windows. Select concrete
+  values after inspecting density and duration. Define half-open windows, incomplete final
+  windows, empty cells and release times. Use aligned periods for the first pilot.
+- [ ] **M2.4 — Produce the first results (E01/B01).** Export a configuration/result table
+  and 1–2 readable figures: application error versus resolution/window, alongside coverage
+  and delay. Record input identity, sample support and measurement method. Do not claim
+  generality from one run or mix repeated observations with independent replicates.
+- [ ] **M2.5 — Make the privacy evaluation precise (E02).** Choose an attack goal,
+  auxiliary knowledge, visible releases and a prior/no-release baseline. Implement a small
+  pilot attack if the model is sufficiently clear. If only distinct-contributor counts or
+  threshold compliance are available, label them as structural indicators, not measured
+  anonymity or proven privacy gain. Carry an unvalidated attack as an open experiment.
+- [ ] **M2.6 — Prepare and submit the full presentation.** Retain motivation, threat model,
+  taxonomy/policy concept, architecture, adaptation concept and evaluation. Add verified
+  results and clearly distinguish planned functionality. Rehearse the full narrative and
+  retain the stable M1 demo/fallback. Prepare the submission version on October 17.
+
+**Suggested sequence:** October 14 after the meeting: incorporate decisions and freeze
+the evaluation specification. October 15: fixed aggregation and reference query.
+October 16: parameter sweep, checks and result plots. October 17: interpretation, slides
+and rehearsal. October 18: final checks and submission; later revisions remain possible.
+
+**Technical scope control:** F01/D02 actual-interval handling becomes required if an
+experiment introduces non-aligned/variable sampling. Otherwise retain and state the tested
+fixed setup for this milestone. Address R02 before claiming reproducible new simulation
+runs; replaying saved input already ensures equal input for aggregation comparisons.
+
+### M3 — Conference ready for October 25
+
+**Implementation target:** one small adaptive release pipeline compared with the M2 fixed
+baselines. The paper's full architecture remains the research direction; only tested parts
+are presented as running functionality.
+
+- [ ] **M3.1 — Specify one adaptive policy (A01/A03).** Choose one decision order, such
+  as spatial-first with bounded temporal extension, and one initial global policy. State
+  input/output fields, minimum support rule, spatial/temporal bounds and behavior when no
+  permitted release is possible. Support counts are release rules, not a privacy guarantee.
+- [ ] **M3.2 — Implement one complete adaptive path (A01/A02/A03).** Ingest observations,
+  maintain the history required by that policy, decide, and emit a timestamped aggregate.
+  Verify distinct contributors, compatible merge intervals, no double counting, splits,
+  retention bounds and suppression. For a first offline experiment, shared bounded history
+  can support logical windows; full active/preemptive container infrastructure is not a gate.
+- [ ] **M3.3 — Compare adaptive and fixed variants (B01/A03/E02).** Use equal observations,
+  release information, reference query and attacker assumptions. Include sparse/dense and
+  changing-density conditions with sufficient samples. Report error, coverage, delay, rule
+  violations and cost; add attack outcomes only for a validated attack implementation.
+  An adaptive approach may lose to a fixed baseline; report that outcome and its conditions.
+- [ ] **M3.4 — Extend evidence rather than scope.** Repeat comparisons over additional
+  frozen scenarios/runs and summarize variation appropriately. Distinguish a one-run pilot
+  from replicated evidence. If real-time performance is claimed, measure processing latency
+  and throughput separately from simulated time and playback speed.
+- [ ] **M3.5 — Regional policy example (stretch, A04).** After the global policy passes,
+  demonstrate two regions with different rules, including a boundary-crossing case. Specify
+  overlap/conflict resolution first. A simple region lookup can precede the full policy tree.
+- [ ] **M3.6 — Freeze and rehearse.** Prepare final results by October 23; use October 24
+  for full rehearsal, playback checks and backup material. Avoid feature work on October 25.
+
+**Suggested sequence:** October 19: adaptive contract and hand-worked examples.
+October 20–21: implement and verify the single policy. October 22: comparative experiments
+and attack pilot, if ready. October 23: repetitions, interpretation and updated slides.
+October 24: freeze and rehearsal. October 25: presentation.
+
+**Fallback if adaptation is not validated by October 23:** present the verified fixed
+comparison, explicit adaptive design and documented remaining experiment. Keep the demo
+on the stable implementation. Do not represent the current fixed-depth AGBS as a working
+privacy/utility optimizer. Regional trees and full buckets remain open if not completed.
+
+### Work deferred unless a milestone requires it
+
+Full taxonomy redesign, native Metal migration, real city maps/doors/roads, realistic route
+generation, broad collision-model replacement, multiple application policy trees and the
+complete active/preemptive bucket architecture are outside today's delivery scope.
+Existing correctness defects become urgent when they affect the chosen run or experiment.
+Keep these items in the backlog and connect each future implementation to an evaluation need.
 
 ## 4. Observation and data semantics
 
@@ -386,5 +522,6 @@ explicit resolution or rejection.
 ## 11. Process for subsequent changes
 
 Before editing source, name the selected task, data rule and small scope. Afterwards update
-status, verification and remaining limits. F00/F02 and the initial D01 rules are implemented and regression-tested. F01/D02
-interval robustness and V01 full-run validation remain the next candidates. Keep the simulator lean by correcting its existing pipeline.
+status, verification and remaining limits. Follow Section 3 for the current delivery order.
+F00/F02 and initial D01 rules are implemented; M1/V01 complete-run validation and demo
+readiness come next. Keep the simulator lean by correcting its existing pipeline.
