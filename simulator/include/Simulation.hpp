@@ -114,8 +114,9 @@ private:
     std::string dbUri;
     std::string databaseName;
     std::string collectionName;
-    std::shared_ptr<mongocxx::client> client;
+    // Declared first, destroyed last: the driver must outlive every MongoDB object.
     mongocxx::instance instance;
+    std::shared_ptr<mongocxx::client> client;
     mongocxx::collection collection; // For agent data storage
     std::vector<std::vector<bsoncxx::document::value>> documentBuffer;
     bool clearDatabase = false;

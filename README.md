@@ -145,7 +145,7 @@ reverted test results do not establish correctness of the current implementation
 | AggregationManager | Optional AGBS ingestion, fixed windows, distinct contributor unions, sample occupancy and separate JSONL candidates | No policy checks, approved releases, merges or temporal extension |
 | Regional rules | YAML/Region fields for granularities and k/l thresholds | No active policy evaluation, conflict handling or policy trees |
 | Temporal history | Bounded active-window identity sets and counts | No reconstructable history, preemptive buckets or variable aggregation windows |
-| Rendering | Combined typed frames on measurement steps, stable per-sensor routing, nonblocking pairing and bounded queues; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
+| Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry between samples; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
 | Evaluation | Earlier experiments in Data_analysis outside this import | Metric semantics, independent attacker evaluation and fair baselines missing |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |
@@ -448,6 +448,9 @@ ctest --test-dir simulator/build -R frame_regression --output-on-failure
 It verifies pairing, multi-ID routing, no-sample steps without placeholder frames, pause,
 chronological validation, bounded concurrent FIFO consumption and shutdown. Sparse two-queue
 runs cover long gaps and an entirely unsampled run without waiting for a sensor frame.
+Grid-display checks verify initial waiting, geometry retention on non-sampling ticks,
+separate sensor ages, measured-empty clearing and no accumulation of obsolete cell IDs.
+Exact-step measurement selection still clears missing samples; only dated geometry persists.
 Disable it with UMP_BUILD_FRAME_TESTS=OFF only when a build without the test executable
 is specifically needed.
 
@@ -467,7 +470,15 @@ The test checks known motion, first capture, repeated ABS publication, new ident
 reentry, empty areas, grid counts, combined frame timestamps and two AGBS at different rates.
 Both AGBS now also feed independent fixed-window managers; the test verifies their candidate
 contributions, distinct IDs, empty-sample completeness and final partial interval.
+Actual quadtree reconstruction is checked against the captured cell bounds; intermediate
+ticks preserve subdivisions and measured-empty samples restore the four base cells.
 Normal builds leave the MongoDB integration target disabled. A force-killed test may leave its isolated database for cleanup.
+
+The live AGBS overlay shows the latest measured geometry with a sample-age label. Before
+the first observation it shows the base grid and a waiting label. The current 10-Hz sensor
+first observes at 100 ms, then refines only observed branches. A non-sampling 50-ms agent
+tick does not clear that geometry. An actual empty measurement clears its subdivisions.
+This display policy does not invent measurements or feed held values into aggregation.
 
 Optional transport settings: sensors[].id provides a stable configured identity; otherwise
 Main generates a UUID once per run. renderer.buffer_capacity defaults to 128 frames per
@@ -553,6 +564,12 @@ AGBS contributions per window and cell; no contributor IDs appeared in JSONL. Th
 used equal 80-m sensor areas in a temporary config. Test databases were removed. The existing
 Simulation database and maintained config were not modified. This is functional validation,
 not a performance benchmark, manual GUI check or empirical privacy result.
+
+The subsequent grid-flicker correction passed all three CTest suites. A windowed test
+additionally exposed an existing MongoDB instance/client destruction-order defect, now
+corrected so the driver outlives the client. Isolated full runs with and without a window
+then exited successfully without stderr. The UI tool could not select the standalone
+Simulator window, so direct visual/pause/resume inspection remains open.
 
 ## 10. Working process
 

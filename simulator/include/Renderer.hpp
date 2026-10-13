@@ -18,6 +18,7 @@
 #include "Utilities.hpp"
 #include "Sensor.hpp"
 #include "SensorFrameCursor.hpp"
+#include "AdaptiveGridDisplayState.hpp"
 
 /************************************/
 /********** RENDERER CLASS **********/
@@ -164,6 +165,7 @@ private:
     SharedBuffer<agentBufferFrameType>& agentBuffer;
     SharedBuffer<sensorBufferFrameType>& sensorBuffer;
     SensorFrameCursor sensorFrames;
+    std::unordered_map<std::string, AdaptiveGridDisplayState> adaptiveGridDisplays;
 
     // Sensors
     std::vector<std::unique_ptr<Sensor>> sensors;

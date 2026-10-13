@@ -730,7 +730,11 @@ had the same code; SimulatorV3 did not have an active sensor-frame matching path
 - [x] Finish sensor work and enqueue any measurement frame before exposing the agent snapshot;
   agent-frame arrival confirms completion, so no empty completion frame or sensor wait is needed.
 - [x] Consume exact matches once, discard older frames and retain at most one future frame.
-- [x] Clear the measurement view on an unmatched new step; preserve pause/redraw of a matched step.
+- [x] Clear the exact-step measurement view on an unmatched new step; preserve pause/redraw.
+- [x] Fix grid flicker: retain separate latest-measurement geometry per AGBS between
+  samples, display its original sample age and clear subdivisions on a measured-empty sample.
+- [x] Rebuild display geometry only when the measured cell-ID set changes; initialize
+  with base cells and a waiting label, without inventing a t=0 sample.
 - [x] Reject duplicate/out-of-order stream timestamps and mismatched/duplicate builder contributions.
 - [x] Assign run-stable sensor IDs once and route each AGBS to its own typed payload.
 - [x] Use nonblocking renderer reads; cancel both queues on close and drain on normal end.
@@ -740,9 +744,12 @@ had the same code; SimulatorV3 did not have an active sensor-frame matching path
 - [ ] Perform a manual visual check of two AGBS, pause/resume and early close before the live demo.
 
 **Contract and evidence:** [Sensor frames](docs/SENSOR_FRAMES.md). Frame and isolated MongoDB
-regressions pass. The renderer clears/reconstructs each AGBS only on frame advance; ABS/GBS
-payload transport does not imply new heatmaps or agent-observation overlays. Last-known
-display and policy-driven aggregation visualization remain separate work.
+regressions pass. User observation exposed flicker from clearing geometry at 20 Hz while
+the sensor measures at 10 Hz. Geometry now persists with its sample time, independently of
+exact-step data matching. Tests cover mixed IDs, empty captures, startup and real quadtree
+cell bounds. ABS/GBS heatmaps and policy-driven aggregation visualization remain separate.
+The native UI tool could not bind the standalone Simulator executable for visual inspection;
+the manual visual/interaction check above therefore remains open.
 
 ### S02 — Collision grid and pointer lifetime — P1 before more realistic scenarios
 
@@ -766,6 +773,19 @@ Do not replace the whole collision algorithm merely to fix these defects.
 must be adapted to the actual base-cell convention.
 **Acceptance:** clear ownership and valid unchanged identities. Do not replace the spatial
 structure before defining requirements.
+
+### F04 — MongoDB driver lifetime — corrected during renderer validation
+
+- [x] Declare mongocxx::instance before the client so reverse member destruction destroys
+  sensors, collections and the final client before shutting down the driver.
+- [x] Verify normal full-executable completion both with a window and headless using only
+  disposable UUID-named databases.
+
+**Finding:** a windowed regression attempt aborted in the MongoDB C driver's handshake
+mutex. Simulation declared client before instance, causing the instance to die first.
+This violated the lifetime requirement documented in the installed instance.hpp. After
+reordering, isolated windowed and headless runs both exited 0 without stderr. This fixes
+object lifetime; it does not establish recovery from network or partial-write failures.
 
 ### F03 — Persistence failure recovery — P1 when required
 

@@ -1,4 +1,5 @@
 #include "SensorFrameCursor.hpp"
+#include "AdaptiveGridDisplayState.hpp"
 #include <future>
 #include <iostream>
 #include <thread>
@@ -105,6 +106,63 @@ void completedStepSequence() {
         require(agents.isDrained() && sensors.isDrained(), "Sparse run did not drain");
     }
 }
+void gridDisplay() {
+    SharedBuffer<sensorBufferFrameType> buffer("grid display");
+    SensorFrameCursor cursor;
+    AdaptiveGridDisplayState first, second;
+    cursor.selectCompletedStep(at(0), buffer);
+    require(!first.update(cursor.frame(), "agbs-a") && !first.measurementTime() && first.cellIds().empty(),
+            "Initial display invented an observation");
+    buffer.write(frame(100, true));
+    cursor.selectCompletedStep(at(50), buffer);
+    require(!first.update(cursor.frame(), "agbs-a") && !first.measurementTime(),
+            "Future measurement displayed before its agent state");
+    cursor.selectCompletedStep(at(100), buffer);
+    require(first.update(cursor.frame(), "agbs-a") && second.update(cursor.frame(), "agbs-b"),
+            "First measured geometry did not trigger reconstruction");
+    require(first.cellIds() == std::unordered_set<int>{12} && second.cellIds() == std::unordered_set<int>{15},
+            "Display geometry mixed sensor IDs");
+    require(!first.update(cursor.frame(), "agbs-a"), "Paused display rebuilt identical geometry");
+
+    cursor.selectCompletedStep(at(150), buffer);
+    require(!cursor.frame(), "Display retention contaminated exact-step measurement matching");
+    require(!first.update(cursor.frame(), "agbs-a") && first.cellIds().count(12)
+            && first.measurementTime() == at(100), "Intermediate step erased geometry or relabelled its time");
+
+    SensorFrameBuilder onlyFirst(at(200));
+    AdaptiveGridSensorSample sameCells;
+    sameCells.cells[12].totalAgents = 99; // Counts change, geometry does not.
+    onlyFirst.add("agbs-a", at(200), std::move(sameCells));
+    buffer.write(std::move(onlyFirst).finish());
+    cursor.selectCompletedStep(at(200), buffer);
+    require(!first.update(cursor.frame(), "agbs-a") && first.measurementTime() == at(200),
+            "Identical cell set rebuilt the tree or failed to refresh measurement time");
+    require(!second.update(cursor.frame(), "agbs-b") && second.measurementTime() == at(100)
+            && second.cellIds().count(15), "Slower sensor was cleared/refreshed by another sensor");
+
+    SensorFrameBuilder emptied(at(300));
+    emptied.add("agbs-a", at(300), AdaptiveGridSensorSample{});
+    buffer.write(std::move(emptied).finish());
+    cursor.selectCompletedStep(at(300), buffer);
+    require(first.update(cursor.frame(), "agbs-a") && first.cellIds().empty()
+            && first.measurementTime() == at(300), "Measured empty retained old subdivisions");
+    require(!second.update(cursor.frame(), "agbs-b") && second.cellIds().count(15),
+            "One empty sensor removed another sensor's display");
+
+    SensorFrameBuilder repopulated(at(400));
+    AdaptiveGridSensorSample moved;
+    moved.cells[13].totalAgents = 1;
+    repopulated.add("agbs-a", at(400), std::move(moved));
+    buffer.write(std::move(repopulated).finish());
+    cursor.selectCompletedStep(at(400), buffer);
+    require(first.update(cursor.frame(), "agbs-a") && first.cellIds() == std::unordered_set<int>{13},
+            "New measurement accumulated old cell IDs");
+    buffer.end();
+    cursor.selectCompletedStep(at(450), buffer);
+    require(!first.update(cursor.frame(), "agbs-a") && first.measurementTime() == at(400),
+            "Run tail relabelled or erased the last dated geometry");
+}
+
 void contract() {
     SensorFrameBuilder noMeasurement(at(0));
     require(!std::move(noMeasurement).finish(), "No-sample step allocated an empty sensor frame");
@@ -161,9 +219,9 @@ void transport() {
 }
 int main() {
     try {
-        contract(); pairing(); completedStepSequence(); transport();
+        contract(); pairing(); completedStepSequence(); gridDisplay(); transport();
         std::cout << "PASS: complete frames, identity/type routing, old/exact/future selection, "
-                     "pause, sparse completed steps, bounded FIFO, concurrent drain and shutdown.\n";
+                     "pause, sparse completed steps, dated grid display, bounded FIFO, concurrent drain and shutdown.\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "FAIL: " << error.what() << '\n';

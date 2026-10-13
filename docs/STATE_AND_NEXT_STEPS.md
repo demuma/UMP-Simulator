@@ -353,3 +353,35 @@ trees, public release, merge/split, preemptive buckets or reconstructable histor
 claim or empirical privacy improvement follows from these functional checks. The next
 research contract is E01/E02: one fixed utility query/reference and justified initial
 constraint metrics, followed by A04's minimal regional policy tree.
+
+
+## Renderer correction — 2026-10-13: persistent dated grid geometry
+
+The user reported blinking and partially absent startup grids. Source inspection confirmed
+that Renderer::readNextFrame cleared the AGBS tree at every 50-ms agent tick, whereas the
+current sensor delivers a measurement only every 100 ms. Every intervening tick therefore
+removed subdivisions. This was an unintended display consequence of the S04 exact-match fix.
+
+Exact-step matching remains unchanged. AdaptiveGridDisplayState now keeps only each sensor's
+latest cell-ID set and original measurement time, separately from currentSensorFrame.
+No sample leaves geometry intact; a measured-empty payload clears subdivisions. A new
+measurement refreshes its time, and only changed cell sets rebuild the renderer tree.
+The overlay explicitly labels sample age. Initial base cells are visible before the first
+100-ms measurement; subsequent subdivision follows observed branches, not a pre-expanded
+full-depth grid. This explains expected coarse/unvisited areas but is not evidence that
+every reported startup visual artifact has been reproduced.
+
+Verification: all three CTest suites passed, including new display-state regression cases
+and an actual sensor-to-render-quadtree bounds check. Existing exact-step no-match tests
+still pass. A separate visual test was launched with two AGBS and a disposable test database,
+but the native UI tool could not select the standalone Simulator executable by path or
+name. Manual screenshot/pause/resume verification therefore remains open. No existing
+Simulation data, production config, sampling cadence or aggregation semantics were changed.
+
+The first windowed attempt also exposed a MongoDB C-driver handshake-mutex assertion.
+Simulation declared its client before mongocxx::instance, so reverse member destruction
+shut down the driver before destroying the final client. The installed instance.hpp
+explicitly requires the instance to outlive every other driver object. Moving the instance
+declaration before the client corrects that lifetime. Subsequent one-second, two-AGBS
+full-executable runs with a window and headless both exited 0 with empty stderr; their
+isolated databases were removed. This execution check does not replace visual inspection.

@@ -76,9 +76,8 @@ and use an independent completed-step counter.
 
 An aggregation manager can receive owned observation batches directly in the simulation
 thread. It must not consume the renderer queue: reads remove frames, and a second reader
-would compete with rendering. AGBS contributor-aware input is still needed before distinct
-support metrics can be computed. The combined count payload is not that missing identity
-stream and does not complete A01.
+would compete with rendering. A01 now provides a separate contributor-aware AGBS adapter
+for fixed-window statistics. The combined count payload is not that identity-bearing input.
 
 ## Renderer behavior
 
@@ -92,13 +91,26 @@ and resolves a missing measurement immediately, including while the producer is 
 and during long gaps or a run with no sensor measurements. There is no pending-agent wait
 state and no need to wait for a future sensor frame or EOF. A new step without a matching
 measurement clears the current measurement view. A paused repaint retains its matched view.
-There is no implicit last-known display. Waiting for the next agent frame remains nonblocking
-so event handling can continue.
+Waiting for the next agent frame remains nonblocking so event handling can continue.
+
+The AGBS grid is a separate, explicit **latest-measurement geometry display**. Clearing it
+on every unmatched agent step caused visible flicker with 20-Hz agent frames and 10-Hz
+measurements. AdaptiveGridDisplayState now retains only the latest cell IDs and their
+original measurement time per sensor. Absence of a new sample keeps that geometry; a due
+measured-empty sample removes its subdivisions. Exact-step measurement matching, counts,
+aggregation and database data are unchanged. Held geometry never becomes a new sample.
 
 Each AGBS render instance looks up its own ID and checks the payload type. Its geometry is
-rebuilt once when the agent frame advances, using Quadtree::clear to delete old child nodes,
-not on paused repaints. No sensor ID is overwritten during drawing. ABS/GBS payloads travel
-in the frame, but new measured-agent/count heatmap displays are separate renderer work.
+rebuilt with Quadtree::clear only when a new measurement changes the cell-ID set, not on
+intermediate agent steps, repeated identical cell sets or paused repaints. The grid label
+shows the age of its latest measurement in simulation milliseconds. Before the first
+measurement, it says it is waiting; only the four base cells and area boundary exist.
+The current 10-Hz schedule first measures at 100 ms. Subsequent subdivisions follow
+observed cells; empty/unvisited regions are not pre-expanded to maximum depth. At run end,
+any retained geometry remains explicitly dated rather than claimed to be current.
+
+No sensor ID is overwritten during drawing. ABS/GBS payloads travel in the frame, but new
+measured-agent/count heatmap displays are separate renderer work.
 
 ## Buffer bounds and shutdown
 
@@ -118,11 +130,15 @@ frames; window close requests cancellation on both queues. No access-count schem
   IDs plus ABS/GBS types; old/exact/future selection; immediate no-match while producer is live;
   pause; malformed frame order; bounded queues; concurrent sparse two-queue production with
   long gaps and with no measurements at all; final-frame drain; reader/writer shutdown.
+  Display-state coverage adds initial waiting, retained geometry with unchanged original
+  time, mixed-rate IDs, unchanged cell sets, measured-empty clearing and repopulation.
   No MongoDB or window needed.
 - SensorRegressionTests: actual ABS, GBS and two AGBS at 10/5 Hz; entry/reentry, empty areas,
   counts, timestamp identity, single-use sample handoff, exactly 9 combined measurement
   frames for 19 simulation steps, and existing ABS velocity/DB-duplicate checks. Uses only a
-  fresh UUID-named database and removes it on exit.
+  fresh UUID-named database and removes it on exit. The render-only quadtree is also
+  reconstructed from captured IDs and checked against the sensor's cell bounds; no-sample
+  steps retain subdivisions and empty measurements remove them.
 - Full executable smoke check: isolated headless configuration, 20 steps, four sensors,
   generated distinct IDs and agreement between metadata and measurement IDs.
 - Manual visual interaction, long-run performance and the wider S02/S03 simulator issues

@@ -1,6 +1,7 @@
 #include "AgentBasedSensor.hpp"
 #include "GridBasedSensor.hpp"
 #include "AdaptiveGridBasedSensor.hpp"
+#include "AdaptiveGridDisplayState.hpp"
 #include <bsoncxx/builder/stream/document.hpp>
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
@@ -77,6 +78,9 @@ int main() {
         Agent::AgentTypeAttributes attributes{};
 
         std::size_t frameCount = 0;
+        AdaptiveGridDisplayState display;
+        std::size_t previousDisplayNodes = renderOnly.adaptiveGrid.nodeMap.size();
+        require(previousDisplayNodes == 4, "Startup grid should contain the four base cells");
         // Known interval velocity (2, 1) m/s; enter, leave, then reenter the area.
         for (int ms = 0; ms <= 900; ms += 50) {
             agents.clear();
@@ -107,6 +111,23 @@ int main() {
             const bool due = ms > 0 && ms % 100 == 0;
             auto snapshot = std::move(frame).finish();
             require(static_cast<bool>(snapshot) == due, "Frame emitted without a measurement or due frame missing");
+            if (display.update(snapshot, agbs.sensorId)) {
+                renderOnly.adaptiveGrid.clear();
+                renderOnly.adaptiveGrid.splitFromCellIds(display.cellIds());
+            }
+            if (!due) require(renderOnly.adaptiveGrid.nodeMap.size() == previousDisplayNodes,
+                "Non-sampling tick erased visible subdivisions");
+            for (int cellId : display.cellIds()) {
+                const auto* rendered = renderOnly.adaptiveGrid.getNodeById(cellId);
+                const auto* captured = agbs.adaptiveGrid.getNodeById(cellId);
+                require(rendered && captured && rendered->bounds == captured->bounds,
+                    "Grid display failed to reconstruct a measured cell at its real location");
+            }
+            if (ms == 100) require(renderOnly.adaptiveGrid.nodeMap.size() > 4,
+                "First scheduled measurement did not subdivide the grid");
+            if (ms == 600 || ms == 650 || ms == 700)
+                require(renderOnly.adaptiveGrid.nodeMap.size() == 4, "Measured-empty interval kept old subdivisions");
+            previousDisplayNodes = renderOnly.adaptiveGrid.nodeMap.size();
             if (snapshot) {
                 ++frameCount;
                 require(snapshot->first == timestamp, "Frame timestamp mismatch");

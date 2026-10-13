@@ -763,6 +763,7 @@ bool Renderer::readNextFrame() {
     auto next = agentBuffer.tryRead();
     if (!next || !*next) return false;
     const auto& received = *next;
+    timestamp = received->first;
     sensorFrames.selectCompletedStep(received->first, sensorBuffer);
     currentAgentFrame = std::shared_ptr<const agentFrame>(received, &received->second);
     const auto& selected = sensorFrames.frame();
@@ -773,13 +774,10 @@ bool Renderer::readNextFrame() {
     for (auto& sensor : sensors) {
         auto* agbs = dynamic_cast<AdaptiveGridBasedSensor*>(sensor.get());
         if (!agbs) continue;
-        agbs->adaptiveGrid.clear();
-        const auto* sample = currentSensorFrame
-            ? findSensorSample<AdaptiveGridSensorSample>(*currentSensorFrame, agbs->sensorId) : nullptr;
-        if (sample) {
-            std::unordered_set<int> cells;
-            for (const auto& [id, counts] : sample->cells) cells.insert(id);
-            agbs->adaptiveGrid.splitFromCellIds(cells);
+        auto& display = adaptiveGridDisplays[agbs->sensorId];
+        if (display.update(selected, agbs->sensorId)) {
+            agbs->adaptiveGrid.clear();
+            agbs->adaptiveGrid.splitFromCellIds(display.cellIds());
         }
     }
     return true;
@@ -910,6 +908,24 @@ void Renderer::render() {  // Input: meters, Output: pixels
                         // Draw the adaptive grid with scaling and offset
                         adaptiveGridBasedSensor->adaptiveGrid.showCellId = showText;
                         adaptiveGridBasedSensor->adaptiveGrid.draw(window, font, scale, offset);
+
+                        // A persistent geometry display must retain its measurement age.
+                        const auto& display = adaptiveGridDisplays.at(adaptiveGridBasedSensor->sensorId);
+                        std::string status = "Grid: waiting for first sample";
+                        if (const auto measuredAt = display.measurementTime()) {
+                            const auto ageMs = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - *measuredAt).count();
+                            status = "Grid: latest sample (" + std::to_string(ageMs) + " ms old)";
+                        }
+                        sf::Text gridStatus(font, status, 12);
+                        gridStatus.setFillColor(sf::Color::Black);
+                        const sf::Vector2f labelPosition = gridBoundaries.getPosition() + sf::Vector2f{5.f, 4.f};
+                        gridStatus.setPosition(labelPosition);
+                        const auto labelBounds = gridStatus.getLocalBounds();
+                        sf::RectangleShape labelBackground({labelBounds.size.x + 8.f, labelBounds.size.y + 8.f});
+                        labelBackground.setPosition(labelPosition + labelBounds.position - sf::Vector2f{4.f, 4.f});
+                        labelBackground.setFillColor(sf::Color(255, 255, 255, 230));
+                        window.draw(labelBackground);
+                        window.draw(gridStatus);
 
                         // adaptiveGridBasedSensor->adaptiveGrid.printChildren(12);
                         // adaptiveGridBasedSensor->adaptiveGrid.printChildren(13);
