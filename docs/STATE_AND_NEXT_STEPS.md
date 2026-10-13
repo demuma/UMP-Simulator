@@ -420,3 +420,30 @@ Next: A04 root/regional inheritance and conflicts using Region geometry. The cur
 uniform policy does not activate Region thresholds, adaptive search, release/suppress,
 publication-history checks or empirical privacy/utility evaluation. Performance benchmarking
 and presentation-metric reconciliation also remain open.
+
+## Implementation record — 2026-10-13: S05 renderer pacing
+
+Replaced calculateSleepTime and removed the producer-runtime feedback atomic shared by
+Main/Simulation/Renderer. The old measurement included blocked queue writes and could
+therefore feed renderer-induced delay back into a permanent requested-speed reduction.
+PlaybackClock now paces consumption with monotonic deadlines, preserves the requested
+speed under load, includes producer gaps in interval-based FPS, and separately accounts
+active and paused wall time. Resume/speed changes reset timing rather than catching up.
+Keyboard speed reduction cannot reach zero. Invalid rendered-run settings fail before DB
+initialization. Short waits preserve event handling; redraws do not consume observations.
+
+UI labels distinguish requested/measured speed and Agent FPS. Simulation elapsed time is
+derived from received timestamps; interaction redraws retain the same frame and sensor time.
+Quadtree rendering remains separate from pacing. The legacy QuadtreeSnapshot node type has
+no active producer/consumer; immutable typed frames already transport the required cell data.
+Detailed contract and limits: [RENDERER_TIMING.md](RENDERER_TIMING.md).
+
+Verification: all five CTest suites passed; the standalone playback test also compiles with
+-Wall -Wextra -Werror and no SFML/MongoDB dependencies. Deterministic time covers cadence,
+overload, starvation, pause/resume, settings and weighted FPS. Identical-frame bounded replay
+covers 0.5x/1x/2x with a real clock. Three full windowed 40-frame runs, 30 agents and queue
+capacity two achieved 9.970/19.900/39.010 agent FPS without rewriting requested speeds.
+Zero/negative/NaN configurations failed explicitly. Test databases were UUID-named and removed.
+Manual/native interaction and larger performance studies remain open; app inventory did not
+expose the standalone simulator for automated native UI selection. The maintained YAML and
+existing Simulation data were untouched. A04 regional policies remain the next core feature.

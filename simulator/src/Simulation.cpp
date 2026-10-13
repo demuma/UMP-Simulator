@@ -10,8 +10,8 @@
 Simulation::Simulation(
     SharedBuffer<agentBufferFrameType>& agentBuffer,
     SharedBuffer<sensorBufferFrameType>& sensorBuffer,
-    std::atomic<float>& currentSimulationTimeStep, const YAML::Node& config)
-: agentBuffer(agentBuffer), sensorBuffer(sensorBuffer), currentSimulationTimeStep(currentSimulationTimeStep), config(config), collisionGrid(0, sf::FloatRect({0.0f, 0.0f}, {0.0f, 0.0f})), instance {} {
+    const YAML::Node& config)
+: agentBuffer(agentBuffer), sensorBuffer(sensorBuffer), config(config), collisionGrid(0, sf::FloatRect({0.0f, 0.0f}, {0.0f, 0.0f})), instance {} {
     
     // Set the initial write agentBuffer (second queue agentBuffer) -> TODO: Make SharedBuffer class and move this logic there
     DEBUG_MSG("Simulation: " << agentBuffer.name << " write buffer " << agentBuffer.writeBufferIndex);
@@ -44,6 +44,8 @@ void Simulation::loadConfiguration() {
 
     // Load simulation parameters
     timeStep = config["simulation"]["time_step"].as<float>();
+    if (!std::isfinite(timeStep) || timeStep <= 0)
+        throw std::invalid_argument("simulation.time_step must be positive and finite");
 
     // Set the maximum number of frames if the duration is specified
     if(config["simulation"]["duration_seconds"]) {
@@ -512,8 +514,6 @@ void Simulation::run() {
     sf::Time simulationUpdateTime = sf::Time::Zero;
     sf::Time simulationStepTime = sf::Time::Zero;
 
-    // Set the initial time step
-    currentSimulationTimeStep = timeStep;
     simulationRealTime += simulationClock.getElapsedTime();
 
     const bool renderEnabled = config["renderer"]["show_renderer"].as<bool>();
@@ -558,7 +558,6 @@ void Simulation::run() {
         
         // Calculate the time step for the simulation
         simulationStepTime = simulationClock.getElapsedTime();
-        currentSimulationTimeStep = simulationStepTime.asSeconds();
         
         // Calculate the simulation time
         simulationRealTime += simulationStepTime;

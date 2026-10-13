@@ -7,9 +7,9 @@
 Renderer::Renderer(
     SharedBuffer<agentBufferFrameType>& agentBuffer,
     SharedBuffer<sensorBufferFrameType>& sensorBuffer,
-    std::atomic<float>& currentSimulationTimeStep, const YAML::Node& config)
+    const YAML::Node& config)
 :   agentBuffer(agentBuffer), sensorBuffer(sensorBuffer),
-    currentSimulationTimeStep(currentSimulationTimeStep), config(config), // Reserve VRAM for the vertex arrays depending on the number of agents
+    config(config), // Reserve VRAM for the vertex arrays depending on the number of agents
     bufferZonesVertexArray(sf::PrimitiveType::Points), 
     agentBodyVertexArray(sf::PrimitiveType::Triangles, 6), // Note: SFML 2.6.2 or prior -> (Quads, 4)
     agentArrowHeadVertexArray(sf::PrimitiveType::Triangles, 3), 
@@ -45,7 +45,8 @@ void Renderer::loadConfiguration() {
 
     // Renderer parameters
     timeStep = config["simulation"]["time_step"].as<float>();
-    playbackSpeed = config["simulation"]["playback_speed"].as<float>();
+    playbackSpeed = config["simulation"]["playback_speed"].as<double>();
+    playbackClock.emplace(timeStep, playbackSpeed);
     numAgents = config["agents"]["num_agents"].as<int>();
     currentNumAgents = numAgents;
     
@@ -79,9 +80,6 @@ void Renderer::loadConfiguration() {
     if (!font.openFromFile("/Library/Fonts/Arial Unicode.ttf")) {
         ERROR_MSG("Error loading font\n");
     }
-
-    // Set the frame rate agentBuffer size
-    frameRateBufferSize = 1.0f / timeStep;
 
     // Resize vertex arrays
     bufferZonesVertexArray.resize(numAgents * 300);
@@ -315,7 +313,6 @@ void Renderer::updateAgentCountText() {
 void Renderer::updateTimeText() {
 
     // Convert seconds to HH:MM:SS for totalElapsedTime
-    // auto totalElapsedTime = rendererClock.getElapsedTime();
     auto totalElapsedTime = renderSimulationTime;
     int elapsedHours = static_cast<int>(totalElapsedTime.asSeconds()) / 3600;
     int elapsedMinutes = (static_cast<int>(totalElapsedTime.asSeconds()) % 3600) / 60;
@@ -352,47 +349,32 @@ void Renderer::updateTimeText() {
     timeText.setPosition({static_cast<float>(window.getSize().x) - 10, 10}); 
 }
 
-// Function to calculate the moving average frame rate and update the text after warmup
+// Count newly consumed agent frames, excluding pause redraws. Producer waits remain
+// part of elapsed frame intervals; use frames / elapsed time, not mean(1 / interval).
 void Renderer::updateFrameRateText() {
-
-    // Wait for the warmup frames to pass
-    if(agentBuffer.currentReadFrameIndex < warmupFrames) {
-        return;
-    }
-    
-    // Wait for frame agentBuffer to fill up
-    if(frameRates.size() != frameRateBufferSize) {
-        frameRates.push_back(frameRate);
-        
-    } else {
-
-        // Calculate the moving average frame rate
-        float sum = std::accumulate(frameRates.begin(), frameRates.end(), 0.0f);
-        movingAverageFrameRate = sum / frameRates.size();
-        
-        // Update the frame rate text
-        frameRateText.setString("FPS: " + std::to_string(static_cast<int>(movingAverageFrameRate)));
-        sf::FloatRect textRect = frameRateText.getLocalBounds();
-        frameRateText.setOrigin({textRect.size.x, 0}); // Right-align the text
-        frameRateText.setPosition({static_cast<float>(window.getSize().x) - 10, 70}); // Position with padding
-
-        // Update the frame rate agentBuffer
-        frameRates.pop_front();
-        frameRates.push_back(frameRate);
-    }
+    std::ostringstream text;
+    text << std::fixed << std::setprecision(1) << "Agent FPS: ";
+    if (paused) text << "paused";
+    else if (const auto fps = playbackClock->measuredFps()) text << *fps;
+    else text << "--";
+    text << " / target " << playbackClock->targetFps();
+    if (waitingForFrame) text << " (waiting for input)";
+    frameRateText.setString(text.str());
+    const auto bounds = frameRateText.getLocalBounds();
+    frameRateText.setOrigin({bounds.size.x, 0});
+    frameRateText.setPosition({static_cast<float>(window.getSize().x) - 10, 70});
 }
 
-// Function to update the text that displays the current frame count
 void Renderer::updatePlayBackSpeedText() {
-
-    std::ostringstream playbackSpeedStream;
-    playbackSpeedStream << std::fixed << std::setprecision(1) << "Playback Speed: " << playbackSpeed << std::setw(2) << "x";
-
-    // playbackSpeedText.setString("Playback Speed: " + std::to_string(playbackSpeed));
-    playbackSpeedText.setString(playbackSpeedStream.str());
-    sf::FloatRect textRect = playbackSpeedText.getLocalBounds();
-    playbackSpeedText.setOrigin({textRect.size.x, 0}); // Right-align the text
-    playbackSpeedText.setPosition({static_cast<float>(window.getSize().x) - 6, 130}); // Position with padding
+    std::ostringstream text;
+    text << std::fixed << std::setprecision(2) << "Playback: " << playbackSpeed << "x requested";
+    if (paused) text << " | paused";
+    else if (const auto speed = playbackClock->measuredSpeed()) text << " | " << *speed << "x measured";
+    else text << " | measuring";
+    playbackSpeedText.setString(text.str());
+    const auto bounds = playbackSpeedText.getLocalBounds();
+    playbackSpeedText.setOrigin({bounds.size.x, 0});
+    playbackSpeedText.setPosition({static_cast<float>(window.getSize().x) - 6, 130});
 }
 
 // Function to handle events
@@ -400,6 +382,7 @@ void Renderer::handleEvents() {
 
     // Lambda to handle window close events.
     const auto onClose = [this](const sf::Event::Closed&) {
+        redrawRequested = true;
         window.close();
         agentBuffer.requestStop();
         sensorBuffer.requestStop();
@@ -407,6 +390,7 @@ void Renderer::handleEvents() {
 
     // Lambda to handle window resize events.
     const auto onResized = [this](const sf::Event::Resized& resized) {
+        redrawRequested = true;
         sf::FloatRect visibleArea({0, 0}, {static_cast<float>(resized.size.x), static_cast<float>(resized.size.y)});
         window.setView(sf::View(visibleArea));
         initializeGUI(); // Reinitialize UI elements
@@ -420,14 +404,12 @@ void Renderer::handleEvents() {
 
     // Lambda to handle key pressed events.
     const auto onKeyPressed = [this](const sf::Event::KeyPressed& keyPressed) {
+        redrawRequested = true;
         // Toggle pause with Space.
         if (keyPressed.scancode == sf::Keyboard::Scancode::Space) {
             paused = !paused;
             pauseButtonText.setString(paused ? "  Play" : "Pause");
             pauseButton.setFillColor(paused ? sf::Color::Red : sf::Color::Green);
-            window.draw(pauseButton);
-            window.draw(pauseButtonText);
-            window.display();
         }
         // Set modifier flags.
         else if (keyPressed.scancode == sf::Keyboard::Scancode::LShift ||
@@ -440,11 +422,11 @@ void Renderer::handleEvents() {
         }
         // Adjust playback speed.
         else if (keyPressed.scancode == sf::Keyboard::Scancode::Left) {
-            playbackSpeed -= 0.1f;
+            if (playbackSpeed > 0.1) playbackSpeed = std::max(0.1, playbackSpeed - 0.1);
             DEBUG_MSG("Playback speed decreased to: " << playbackSpeed);
         }
         else if (keyPressed.scancode == sf::Keyboard::Scancode::Right) {
-            playbackSpeed += 0.1f;
+            playbackSpeed = std::min(static_cast<double>(timeStep) / 1e-6, playbackSpeed + 0.1);
             DEBUG_MSG("Playback speed increaased to: " << playbackSpeed);
         }
         
@@ -506,6 +488,7 @@ void Renderer::handleEvents() {
 
     // Lambda to handle key released events.
     const auto onKeyReleased = [this](const sf::Event::KeyReleased& keyReleased) {
+        redrawRequested = true;
         if (keyReleased.scancode == sf::Keyboard::Scancode::LShift ||
             keyReleased.scancode == sf::Keyboard::Scancode::RShift) {
             isShiftPressed = false;
@@ -518,6 +501,7 @@ void Renderer::handleEvents() {
 
     // Lambda to handle mouse button pressed events.
     const auto onMouseButtonPressed = [this](const sf::Event::MouseButtonPressed& mouseButton) {
+        redrawRequested = true;
         if (mouseButton.button == sf::Mouse::Button::Left) {
             // Get mouse position relative to the window.
             sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
@@ -532,9 +516,6 @@ void Renderer::handleEvents() {
                     paused = !paused;
                     pauseButtonText.setString(paused ? "  Play" : "Pause");
                     pauseButton.setFillColor(paused ? sf::Color::Red : sf::Color::Green);
-                    window.draw(pauseButton);
-                    window.draw(pauseButtonText);
-                    window.display();
                 }
                 else if (resetButton.getGlobalBounds().contains({static_cast<float>(mousePosition.x),
                                                                 static_cast<float>(mousePosition.y)})) {
@@ -546,12 +527,14 @@ void Renderer::handleEvents() {
 
     // Mouse released
     const auto onMouseButtonReleased = [this](const sf::Event::MouseButtonReleased& mouseButton) {
+        redrawRequested = true;
         if (mouseButton.button == sf::Mouse::Button::Left) {
             isPanning = false; // Stop dragging
         }
     };
 
     const auto onMouseMoved = [this](const sf::Event::MouseMoved& mouseMoved) {
+        redrawRequested = true;
         if (isPanning) {
             // Current mouse position
             sf::Vector2f currentPosition(static_cast<float>(mouseMoved.position.x), static_cast<float>(mouseMoved.position.y));
@@ -569,6 +552,7 @@ void Renderer::handleEvents() {
 
     // Lambda to handle mouse wheel scroll events.
     const auto onMouseWheelScrolled = [this](const sf::Event::MouseWheelScrolled& scroll) {
+        redrawRequested = true;
         if (isShiftPressed) {
             if (scroll.delta > 0) {
                 offset.x -= 20;
@@ -611,151 +595,71 @@ void Renderer::handleEvents() {
                         onMouseWheelScrolled);
 }
 
-// Main rendering loop
+// One pacing owner for scientific-frame consumption. UI redraws never consume data.
 void Renderer::run() {
-
-    // Set the target frame rate
-    targetFrameRate = playbackSpeed * (1.0f / timeStep);
-    targetFrameTime = sf::seconds(1.0f / targetFrameRate);
-
-    // Initialize the event
-    // sf::Event event;
-
-    // Timing variables
-    sf::Clock rendererFrameClock;
-    
-    // Start the clock
-    rendererClock.restart();
-    rendererRealTime = sf::Time::Zero;
+    using Clock = std::chrono::steady_clock;
+    const auto origin = Clock::now();
+    const auto nowSeconds = [&] {
+        return std::chrono::duration<double>(Clock::now() - origin).count();
+    };
+    std::optional<std::chrono::system_clock::time_point> firstFrameTimestamp;
+    double nextRedraw = 0;
+    std::size_t redraws = 0;
     renderSimulationTime = sf::Time::Zero;
-    sf::Time timeStepTime = sf::seconds(timeStep);
-    sf::Time rendererTotalFrameTime; // Total time taken to render the frame
 
-    // Frame rate calculation variables
-    sf::Clock frameTimeClock;
-    float rendererFrameRate;
-
-    // Statistics
-    float writeBufferTime = 0.f;
-    float readBufferTime = 0.f;
-    float eventHandlingTime = 0.f;
-
-    // Add the setup time to the frame rate agentBuffer
-    rendererRealTime += rendererClock.restart();
-
-    // Main rendering loop
     while (window.isOpen()) {
-
-        // Reset the frame time clock
-        rendererFrameClock.restart();
-
-        // Handle events
         handleEvents();
         if (!window.isOpen()) break;
-
-        // Polling mouse position for panning when dragging mouse
-        if (isPanning){
-            sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-            sf::Vector2f currentMousePosition(static_cast<float>(mousePosition.x), static_cast<float>(mousePosition.y));
-            sf::Vector2f delta = currentMousePosition - lastMousePosition;
-            offset += delta;
-            lastMousePosition = currentMousePosition;
-        }
-
-        // Get the time taken to handle events
-        eventHandlingTime = rendererFrameClock.getElapsedTime().asSeconds();
-
-        // Run the renderer if not paused
-        if(!paused) {
-
-            // Process the buffer frames
-            if (!readNextFrame()) {
-                if (agentBuffer.isDrained()) break;
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-                continue;
+        const double now = nowSeconds();
+        playbackClock->update(now, playbackSpeed, paused);
+        bool received = false;
+        const bool wasWaiting = waitingForFrame;
+        if (paused) waitingForFrame = false;
+        else {
+            if (agentBuffer.isDrained()) break;
+            if (playbackClock->due(now)) {
+                received = readNextFrame();
+                waitingForFrame = !received;
+                if (received) {
+                    playbackClock->consumed(now);
+                    if (!firstFrameTimestamp) firstFrameTimestamp = timestamp;
+                    renderSimulationTime = sf::microseconds(
+                        std::chrono::duration_cast<std::chrono::microseconds>(timestamp - *firstFrameTimestamp).count());
+                }
             }
-            
-            // Update the pause frame pointer
-            pauseAgentFrame = currentAgentFrame;
-
-            // Get the time taken to read the agentBuffer
-            readBufferTime += rendererFrameClock.getElapsedTime().asSeconds() - eventHandlingTime;
-
-            // Get the current simulation time step
-            currentSimulationFrameTime = sf::seconds(currentSimulationTimeStep.load());
-
-            // Update the text elements
+        }
+        redrawRequested |= wasWaiting != waitingForFrame;
+        // Redraw on new data or interaction. Idle interaction is capped at 30 Hz;
+        // repeated drawing does not count as a new observation or advance the clock.
+        if (currentAgentFrame && (received || (redrawRequested && now >= nextRedraw))) {
+            currentNumAgents = static_cast<int>(currentAgentFrame->size());
             updateAgentCountText();
             updateFrameCountText();
             updateTimeText();
             updateFrameRateText();
             updatePlayBackSpeedText();
-
-            // Render
             render();
-
-            // Get the time taken to render the frame
-            rendererFrameTime = rendererFrameClock.getElapsedTime();
-
-            // Calculate the sleep time
-            auto sleepTime = calculateSleepTime();
-            std::this_thread::sleep_for(std::chrono::duration<float>(sleepTime.asSeconds()));
-
-            // Get the total time taken to render the frame
-            rendererTotalFrameTime = rendererFrameClock.getElapsedTime();
-            rendererFrameRate = 1.0f / rendererTotalFrameTime.asSeconds();
-            frameRate = rendererFrameRate;
-
-            // Update the render time
-            rendererRealTime += rendererTotalFrameTime;
-            renderSimulationTime += timeStepTime;
+            ++redraws;
+            redrawRequested = false;
+            nextRedraw = nowSeconds() + 1.0 / 30.0;
         }
 
-        else {
-
-            // Replay last frame and sleep time in paused state
-            currentAgentFrame = pauseAgentFrame;
-            if (currentAgentFrame) render();
-            std::this_thread::sleep_for(std::chrono::duration<float>(std::max(0.001f, pauseSleepTime.asSeconds())));
-        }
+        // Short waits keep close/pause/speed controls responsive even at low playback
+        // rates. The deadline survives empty-buffer retries and drawing overhead.
+        const double afterDraw = nowSeconds();
+        double sleep = paused ? .005 : std::min(.005, playbackClock->remaining(afterDraw));
+        if (!paused && waitingForFrame && sleep == 0) sleep = .001;
+        if (sleep > 0) std::this_thread::sleep_for(std::chrono::duration<double>(sleep));
     }
-    STATS_MSG("Total render wall time: " << rendererRealTime.asSeconds() << " seconds for " << agentBuffer.currentReadFrameIndex << " frames");
-    STATS_MSG("Total render time: " << targetRenderTime << " seconds" << " for " << numAgents << " agents");
-    STATS_MSG("Render speedup: " << targetRenderTime / rendererRealTime.asSeconds());
-    STATS_MSG("Average frame rate: " << 1/(rendererRealTime.asSeconds() / (agentBuffer.currentReadFrameIndex + 1)));
-    STATS_MSG("Average render frame time: " << rendererRealTime.asSeconds() / (agentBuffer.currentReadFrameIndex + 1));
-    STATS_MSG("Average read buffer time: " << readBufferTime / (agentBuffer.currentReadFrameIndex + 1));
-}
-
-// Function to calculate the sleep time for each frame
-sf::Time Renderer::calculateSleepTime() {
-
-    // Calculate the target frame rate based on the playback speed
-    targetFrameRate = playbackSpeed * (1.0f / timeStep);
-    targetFrameTime = sf::seconds(1.0f / targetFrameRate);
-
-    // Check whether target frame time with the current playback speed is greater than the current frame time
-    if(targetFrameTime < currentSimulationFrameTime){
-        targetFrameTime = currentSimulationFrameTime;
-        playbackSpeed = timeStep / currentSimulationFrameTime.asSeconds();
-        DEBUG_MSG("Playback speed adjusted to: " << playbackSpeed);  
+    playbackClock->update(nowSeconds(), playbackSpeed, paused);
+    if (config["renderer"]["log_playback_timing"].as<bool>(false)) {
+        std::cout << "Renderer playback: requested=" << playbackClock->requested()
+            << " frames=" << playbackClock->consumedFrames() << " redraws=" << redraws
+            << " active_s=" << playbackClock->activeSeconds()
+            << " paused_s=" << playbackClock->pausedSeconds();
+        if (const auto fps = playbackClock->measuredFps()) std::cout << " measured_fps=" << *fps;
+        std::cout << '\n';
     }
-
-    if (rendererFrameTime >= targetFrameTime) {
-        // The rendering frame time is already slower than the target frame rate; do not sleep.
-        return sf::Time::Zero;
-    }
-
-    if (currentSimulationFrameTime >= targetFrameTime) {
-        // Simulation frame time is greater than or equal to target rendering time.
-        return sf::Time::Zero;  // No sleep needed, as we can't render faster than the simulation allows.
-    }
-
-    // Calculate the remaining time to meet the target rendering frame time
-    sf::Time remainingTime = targetFrameTime - rendererFrameTime;
-
-    // Ensure the sleep time is non-negative
-    return std::max(remainingTime, sf::Time::Zero);
 }
 
 // The received agent frame confirms that all sensor work for this timestamp is complete.
@@ -793,12 +697,6 @@ void Renderer::render() {  // Input: meters, Output: pixels
     // currentNumAgents = currentFrame.size();
     // currentNumAgents = currentFrame ? static_cast<int>(currentFrame->size()) : 0;
     currentNumAgents = static_cast<int>(currentAgentFrame->size());
-
-    // Check if the frame is empty
-    if (currentNumAgents == 0) {
-            ++frameEmptyCount;
-            ERROR_MSG("Frame is empty: " << frameEmptyCount);
-    }
 
     // Loop through all agents and render them
     if (currentNumAgents != 0 || agentBuffer.currentReadFrameIndex != maxFrames) {

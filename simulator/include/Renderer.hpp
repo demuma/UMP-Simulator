@@ -19,6 +19,7 @@
 #include "Sensor.hpp"
 #include "SensorFrameCursor.hpp"
 #include "AdaptiveGridDisplayState.hpp"
+#include "PlaybackClock.hpp"
 
 /************************************/
 /********** RENDERER CLASS **********/
@@ -30,7 +31,7 @@ public:
     Renderer(
         SharedBuffer<agentBufferFrameType>& agentBuffer,
         SharedBuffer<sensorBufferFrameType>& sensorBuffer,
-        std::atomic<float>& currentSimulationTimeStep, const YAML::Node& config);
+        const YAML::Node& config);
     void run();
     void loadConfiguration();
     void loadAgentsAttributes();
@@ -45,7 +46,6 @@ public:
     void updatePlayBackSpeedText();
     // void handleEvents(sf::Event& event); // Note: SFML 2.6.2 or prior
     void handleEvents();
-    sf::Time calculateSleepTime();
     bool readNextFrame();
 
 private:
@@ -105,8 +105,10 @@ private:
 
     // Renderer parameters
     float timeStep;
-    float playbackSpeed;
-    float previousPlaybackSpeed;
+    double playbackSpeed;
+    std::optional<ump::PlaybackClock> playbackClock;
+    bool waitingForFrame = false;
+    bool redrawRequested = true;
     bool paused = false;
     bool live_mode;
     int numAgents;
@@ -131,34 +133,11 @@ private:
     sf::VertexArray agentArrowHeadVertexArray;
     sf::VertexArray agentArrowBodyVertexArray;
 
-    // Frame rate calculation
-    std::deque<float> frameRates;
-    size_t frameRateBufferSize;
-    float frameRate;
-    float movingAverageFrameRate;
+    // Playback timing is independent of producer runtime and sensor sampling.
     int maxFrames = 0;
-    sf::Clock clock;
-    static const int warmupFrames = 10;
-
-    // Timing
-    float targetFrameRate;
     float targetRenderTime;
-    sf::Clock rendererClock;
-    sf::Time rendererRealTime;
     sf::Time renderSimulationTime;
-    sf::Time rendererFrameTime;
-    sf::Time targetFrameTime;
-    sf::Time currentSimulationFrameTime;
     std::chrono::system_clock::time_point timestamp;
-    std::atomic<float>& currentSimulationTimeStep;
-    
-
-    // Temporary agent frame
-    std::shared_ptr<const agentFrame> pauseAgentFrame;
-    sf::Time pauseSleepTime;
-
-    // Helper
-    int frameEmptyCount = 0;
 
     // Shared buffers
     // SharedBuffer<std::vector<Agent>>& agentBuffer;

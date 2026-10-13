@@ -36,13 +36,12 @@
 class Simulation {
 public:
 
-    // Simulation(std::queue<std::vector<Agent>> (&agentBuffer)[2], std::mutex &queueMutex, std::condition_variable &queueCond, std::atomic<float>& currentSimulationTimeStep, std::atomic<bool>& stop, std::atomic<int>& currentNumAgents, const YAML::Node& config, std::atomic<std::queue<std::vector<Agent>>*>& currentReadBuffer);
     Simulation(
         // SharedBuffer<std::vector<Agent>>& agentBuffer, 
         SharedBuffer<agentBufferFrameType>& agentBuffer,
         SharedBuffer<sensorBufferFrameType>& sensorBuffer,
         // std::unordered_map<std::string, std::shared_ptr<SharedBuffer<std::shared_ptr<QuadtreeSnapshot::Node>>>> sensorBuffers,
-        std::atomic<float>& currentSimulationTimeStep, const YAML::Node& config);
+        const YAML::Node& config);
     ~Simulation();
     void run();
     void update();
@@ -64,7 +63,6 @@ private:
     void postData(const std::vector<Agent>& agents);
      // Simulation parameters
     // ThreadPool threadPool;
-    std::atomic<float>& currentSimulationTimeStep;
     const YAML::Node& config;
     int numThreads;
 

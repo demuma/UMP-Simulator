@@ -780,41 +780,38 @@ cell bounds. ABS/GBS heatmaps and policy-driven aggregation visualization remain
 The native UI tool could not bind the standalone Simulator executable for visual inspection;
 the manual visual/interaction check above therefore remains open.
 
-### S05 — Audit renderer frame-rate and playback control — P1 before timing claims
+### S05 — Audit renderer frame-rate and playback control — initial correction implemented
 
-Requested 2026-10-13. Inspect the existing controller and correct verified defects;
-this task is open and does not claim a measured frame-rate failure. Bring it forward
-if unstable playback blocks the live demo. Keep it separate from S04 frame matching
-and X10's later configuration redesign.
+Requested and implemented 2026-10-13. [RENDERER_TIMING.md](docs/RENDERER_TIMING.md) records
+the defect, pacing contract, Quadtree/QuadtreeSnapshot roles and verification. Remaining
+interaction/load validation is P1 before live-demo or performance claims. S04 frame matching
+and X10's broader settings redesign remain separate.
 
-**Code-review starting point:** Renderer::calculateSleepTime derives its target from
-playbackSpeed / timeStep, then may overwrite playbackSpeed using currentSimulationTimeStep.
-Despite its name, that atomic value becomes the measured wall-clock duration of a
-simulation iteration, including potentially blocking render-buffer writes. Investigate
-feedback from renderer backpressure into the requested playback speed. Renderer::run
-also restarts its frame clock after empty-buffer retries; reported rendererRealTime
-does not include those retries or paused time. Decide which statistics include each
-state before labeling them wall time, FPS or speedup.
+- [x] Separate simulation step/sensor sampling, consumed agent FPS, redraws and requested/
+  measured speed; retain the request under producer/render overload.
+- [x] Remove the producer-runtime feedback channel, including its backpressure feedback.
+- [x] Introduce one monotonic consumption scheduler; include rendering cost and producer
+  gaps, avoid catch-up bursts after overload/resume, and preserve every queued observation.
+- [x] Validate playback settings before database initialization; prevent nonpositive keyboard
+  speed settings. Retain event handling during short waits and redraw only on data/interaction.
+- [x] Replace arithmetic mean FPS with frames/elapsed intervals. Report active/paused wall
+  time separately and derive displayed simulation time from received timestamps.
+- [x] Test exact cadence, pause/resume, speed changes, slow producers/rendering and gaps with
+  a controlled clock. Replay identical frames through capacity-two queues at 0.5x/1x/2x.
+- [x] Run full windowed simulations at all three rates with 30 agents and capacity-two
+  queues: all 40 frames consumed, measured 9.970/19.900/39.010 FPS, requested speeds unchanged.
+  Reject zero/negative/NaN startup settings; remove only the UUID test databases.
+- [ ] Manually verify keyboard/button controls, pause/resume, panning, very slow playback,
+  visible FPS labels, empty scenes and early close; automated clock/queue tests are not UI tests.
+- [ ] Profile representative long runs: producer compute versus queue/DB wait, rendering
+  cost, jitter distribution and achieved speed at different agent counts/depths. Use saved
+  input for comparisons; R02's wall-clock-dependent movement otherwise confounds results.
 
-- [ ] Separate simulation timestamp progression, sensor sampling, consumed agent frames,
-  redraw/display FPS, requested playback speed and achieved playback speed.
-- [ ] Audit Renderer::run, calculateSleepTime, FPS averaging, speed keyboard controls,
-  empty-buffer handling, pause/resume and any SFML/VSync or additional pacing mechanism.
-- [ ] Check zero/negative/non-finite playback values and time steps, startup samples,
-  sleep precision/drift and behavior when rendering or simulation is slower than target.
-- [ ] Measure queue wait/backpressure separately from simulation work; preserve the user's
-  requested speed when reporting throughput limits rather than silently ratcheting it down.
-- [ ] Define one coherent pacing rule and explicit overload behavior. Preserve timestamp
-  matching and sample semantics; do not drop scientific observations to satisfy display FPS.
-- [ ] Verify a fixed saved input at 0.5x, 1x and 2x, with fast and slow producers, full/empty
-  queues, pause/resume and early close. Record effective speed and jitter after warmup.
-
-**Acceptance:** with 50-ms agent steps and sufficient throughput, consumption targets
-are 10/20/40 agent frames per wall-clock second at 0.5x/1x/2x; display redraw rate may
-be independent. Define a measured tolerance before validation. Limited throughput is
-reported without corrupting requested speed or timestamps; pause is responsive and
-resume causes no unintended catch-up burst. Compare the same saved input, because
-R02's wall-clock-dependent movement can otherwise confound the experiment.
+**Acceptance for the implemented slice:** with 50-ms steps and sufficient throughput,
+0.5x/1x/2x target 10/20/40 consumed agent FPS. Real-clock bounded replay is no faster than
+target and within 10% + 5 ms of expected first-to-last duration; exact fake-clock cases
+verify logic separately. Every frame remains ordered and the requested speed is unchanged.
+Long-run performance and native UI acceptance remain open rather than inferred from this test.
 
 ### S02 — Collision grid and pointer lifetime — P1 before more realistic scenarios
 

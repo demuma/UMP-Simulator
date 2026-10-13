@@ -56,17 +56,16 @@ int main() {
     SharedBuffer<sensorBufferFrameType> sensorBuffer("Sensors", bufferCapacity);
 
     // Load global configuration data
-    float timeStep = config["simulation"]["time_step"].as<float>();
     bool enableRendering = config["renderer"]["show_renderer"].as<bool>();
 
-    // Shared variabes
-    std::atomic<float> currentSimulationTimeStep{timeStep};
-
     try {
-        Simulation simulation(agentBuffer, sensorBuffer, currentSimulationTimeStep, config);
+        // Reject invalid playback settings before constructing Simulation and its DB sink.
+        if (enableRendering) ump::PlaybackClock::period(config["simulation"]["time_step"].as<float>(),
+            config["simulation"]["playback_speed"].as<double>());
+        Simulation simulation(agentBuffer, sensorBuffer, config);
         if (enableRendering) {
             // Construct the window before starting a producer that may wait on a full queue.
-            Renderer renderer(agentBuffer, sensorBuffer, currentSimulationTimeStep, config);
+            Renderer renderer(agentBuffer, sensorBuffer, config);
             std::exception_ptr simulationError;
             std::thread simulationThread([&] {
                 try { simulation.run(); }

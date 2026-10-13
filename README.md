@@ -7,7 +7,8 @@ mobility data and adapting spatial and temporal aggregation under regional const
 metric evaluation and regional policy trees, starting with AGBS. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
-bounded, nonblocking renderer consumption are implemented (S04/S01). The first A01 slice
+bounded, nonblocking renderer consumption are implemented (S04/S01). S05 now paces
+agent-frame consumption independently of producer runtime and displays requested/measured speed. The first A01 slice
 now adds optional identity-bearing AGBS input, a dependency-free fixed-window core and
 internal JSONL candidates. E04 now adds measured cell metrics, explicit unavailable values
 and optional uniform, versioned threshold checks. Regional policy trees, adaptive buckets
@@ -26,6 +27,7 @@ its original external file remains unchanged.
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
 | [Candidate metrics](docs/METRICS.md) | Implemented online metric registry, threshold assessment, configuration and first fixed utility-query contract |
 | [Fixed aggregation contract](docs/FIXED_AGGREGATION.md) | Implemented A01 input, count/window semantics, coverage, memory bounds and opt-in configuration |
+| [Renderer timing](docs/RENDERER_TIMING.md) | Implemented pacing, requested/measured speed, timing checks and tree/snapshot roles |
 | [Sensor frame contract](docs/SENSOR_FRAMES.md) | Implemented typed payloads, step completion, identity routing, queue bounds and validation |
 | [Technical audit](docs/STATE_AND_NEXT_STEPS.md) | Source-level findings and the recorded database check |
 | [Aggregation design review](docs/AGGREGATION_DESIGN.md) | Configuration/presentation review, bucket semantics, transport, policy trees and metric scheduling before implementation |
@@ -150,7 +152,7 @@ reverted test results do not establish correctness of the current implementation
 | AggregationManager | Optional AGBS ingestion, fixed windows, contributor unions and JSONL candidates evaluated by a separate metric component | No regional policies, approved releases, merges or temporal extension |
 | Regional rules | YAML/Region fields for granularities and k/l thresholds | No active policy evaluation, conflict handling or policy trees |
 | Temporal history | Bounded active-window identity sets and counts | No reconstructable history, preemptive buckets or variable aggregation windows |
-| Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry between samples; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
+| Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry and independent playback pacing; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
 | Evaluation | Online metric registry, uniform threshold assessments and a defined first occupancy-query baseline | GT utility experiment, independent attacker evaluation and comparative baselines remain open |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |
@@ -348,6 +350,19 @@ A static spatial hierarchy with a dynamic release view is a plausible design. A 
 materialized maximum-depth tree is not yet a requirement. The existing tree starts with
 four base cells and has its own cell-ID/depth conventions.
 
+### Renderer pacing and quadtree display
+
+The live renderer uses a monotonic playback clock. At the current 50-ms simulation step,
+1x requests 20 new agent frames per second; the 10-Hz sensor cadence remains separate.
+Producer delays and expensive drawing lower measured speed without rewriting the requested
+speed. Pause, source gaps and overload do not cause catch-up bursts or dropped observations.
+The overlay distinguishes Agent FPS from redraws and requested from measured playback speed.
+See [RENDERER_TIMING.md](docs/RENDERER_TIMING.md) for controls, optional timing logs and limits.
+
+The simulation AGBS and renderer own separate Quadtree instances. Timestamped sensor cell
+data travels through the queue; the renderer reconstructs geometry only when its cell-ID
+set changes. QuadtreeSnapshot is an unused legacy node type, not an active tree-copy path.
+
 ### SharedBuffer
 
 read removes one frame from a queue. Two independent readers would consume different
@@ -436,6 +451,13 @@ Replace abs with gbs, agbs or gt for the other applications. Each target is name
 so the renderers remain separate CMake projects for now.
 
 ### Run metric, aggregation, frame and sensor regression tests
+
+PlaybackRegressionTests is enabled by default (UMP_BUILD_PLAYBACK_TESTS). It checks
+monotonic pacing and identical frame replay through bounded queues without a window or DB:
+
+```sh
+ctest --test-dir simulator/build -R playback_regression --output-on-failure
+```
 
 MetricRegressionTests is enabled by default (UMP_BUILD_METRIC_TESTS) and uses standard C++
 only. It verifies hand-computed values, units, inclusive/invalid bounds, unavailable inputs,
@@ -610,3 +632,8 @@ Simulation data was changed. Regional inheritance and GT/attacker evaluation rem
 Keep baseline behavior, findings, proposals and implemented behavior distinct. Maps,
 complex routing, broad taxonomy redesign and GPU optimization remain visible in the
 backlog but do not block the first defensible data comparison.
+
+The S05 playback correction passed all five CTest suites and three full windowed runs
+at 0.5x/1x/2x. Small-fixture measured FPS was 9.970/19.900/39.010 for 10/20/40 targets,
+with all frames consumed and requested speeds preserved. Native interaction and long-run
+load verification remain open; these results do not establish general real-time capacity.
