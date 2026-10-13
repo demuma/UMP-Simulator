@@ -24,9 +24,10 @@ crashes or corrupt input are blockers, not reasons to begin an unrelated redesig
 
 ## 2. Chronological execution order
 
-**Current position: initial Stage 2 online metrics implemented; next is A04's minimal
-regional policy tree. E01's fixed occupancy-query contract is documented; the GT experiment
-and E02 attacker definition remain open. S04/S01, A01 and E04 have regression coverage.** The detailed
+**Current position: initial Stage 3 regional policy tree implemented and integrated with
+E04 metrics. Next is A02's bounded history and active/preemptive window contract.
+E01's fixed occupancy-query contract is documented; the GT experiment and E02 attacker
+definition remain open. S04/S01, S05, A01, E04 and the A04 numeric-policy slice have regression coverage.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
 proposals, flow diagram, storage model and hand-worked cases. The
 [fixed aggregation contract](docs/FIXED_AGGREGATION.md) records actual A01 behavior;
@@ -39,8 +40,8 @@ sensor provides every metric input or supports arbitrary spatial refinement.
 |---|---|---|---|
 | 1 — foundation implemented | Common evaluation area; input, count and output semantics | D01–D03, A01 | Concrete AGBS batch/aggregate examples and chosen units |
 | 2 — online slice implemented | Metric definitions and required statistics | E01, E02, E04 | Defined inputs, calculated values and evaluation references |
-| 3 — next | Policy tree using existing Regions | A04 | Effective regional requirements, inheritance and conflicts |
-| 4 | Active/preemptive buckets and history | A02 | Hand-worked windows, lifecycle and retention rules |
+| 3 — initial numeric slice implemented | Policy tree using existing Regions | A04 | Effective regional requirements, inheritance and conflicts |
+| 4 — next | Active/preemptive buckets and history | A02 | Hand-worked windows, lifecycle and retention rules |
 | 5 | Publication coordination, AGBS decisions and inspection | A05, A03, A07, A06 | Fixed release/suppress path, then merge/split, partial suppression, time extension and debug view |
 | 6 | Complete-run checks and comparative evaluation | V01, B01, R01–R03, X02, E05, E06 | Equal input, verified releases, publication/priority comparisons and preparation-cost study |
 | 7 — later | Taxonomy brainstorming, renderer settings and control GUI | X01, X10, X11 | Separate design proposals and measured implementation scope |
@@ -79,8 +80,9 @@ made for this review.
 - [x] Specify the internal observation batch; do not treat renderer cell-ID snapshots as input data (A01 fixed input).
 - [ ] Resolve active/preemptive interval ownership, publication states and bounded retention.
 - [ ] Define sibling time alignment and already-published-data behavior for merge/split.
-- [ ] Integrate existing Region instances into one application policy tree, with cached lookup
-  and explicit inheritance/boundary rules; no full tree per individual metric.
+- [x] Integrate existing Region instances into one application policy tree, with cached lookup
+  and explicit inheritance/boundary rules; no full tree per individual metric (initial aligned,
+  non-overlapping rectangle scope; see A04).
 - [ ] Define metric inputs/units and update triggers; distinguish per-observation statistics,
   deadline-based checks and offline evaluation. Correct the slide's ambiguous utility formulas.
 - [ ] Establish a small performance baseline before adding a thread or changing data transport.
@@ -95,8 +97,9 @@ contract implementation-ready.
 The existing quadtree is the spatial foundation. Source review confirms that makeCell and
 getSplitSequence use maxDepth, while AGBS splits from current positions and writes counts.
 AggregationManager now ingests identity-bearing batches and emits bounded fixed-window
-candidates through a separate sink. Region attributes exist, but no active policy tree
-evaluates them. Decision/release logic and adaptive history remain missing components,
+candidates through a separate sink. A04 compiles explicit root/type/Region requirements
+into a sparse policy tree and E04 evaluates them for each candidate. Legacy k/l fields
+remain inactive. Decision/release logic and adaptive history remain missing components,
 not configuration adjustments to a functioning adaptive aggregator.
 
 **Proposed flow:** sensor observation -> bounded history -> candidate cell/window aggregate
@@ -125,12 +128,12 @@ Database writing and rendering consume the resulting release rather than decidin
   a separate research measurement. Unavailable metrics must be reported, not invented.
   The E04 online registry/checks and E01 query contract are implemented/documented; the
   GT reconstruction experiment and independent attacker model remain pending.
-- [ ] **P4 — Minimal actual policy tree (A04).** Implement a default/root policy with
-  inherited regional child policies for one application. Keep policy content/resolution
-  separate from the data quadtree even if they share geometry or cell identifiers. Start
-  with two aligned, non-overlapping regions. Define effective constraints for a candidate
-  cell and interval. Reject unsupported overlap/boundary cases initially rather than
-  silently applying a weaker rule. Mark thresholds as demonstration parameters until justified.
+- [x] **P4 — Minimal actual policy tree (A04).** Implemented a separate immutable tree with
+  root/type/Region inheritance and a runnable two-region example. Compatible numeric hard
+  bounds intersect; cross-region parent conflicts do not contaminate child requirements.
+  Unsupported overlaps/unaligned boundaries and contradictory inherited rules fail explicitly.
+  Tests cover geometry, inheritance, context and startup before DB writes. Thresholds are
+  demonstration parameters; priorities, publication models and live policy changes remain open.
 - [ ] **P5 — Decision and publication (A03).** Evaluate a candidate with P3/P4 and record
   the decision and reason. First implement release/suppress on fixed candidates; then
   add parent/child selection and temporal extension. A maximum quadtree depth may remain
@@ -181,7 +184,7 @@ explicitly incomplete until demonstrated. This is an ambitious one-day target.
 - [ ] One saved identifiable input and chosen input semantics.
 - [ ] Concrete contracts and expected-result examples.
 - [ ] An actual aggregation -> metrics -> policy -> output path.
-- [ ] One application policy tree with a default and two regional children.
+- [x] One application policy tree with a default and two regional children (A04 example/tests).
 - [ ] Checks for contributor counting, policy inheritance and release/suppression.
 - [ ] Rehearsed demo/fallback and explicit current limitations.
 
@@ -401,30 +404,37 @@ The metric evaluator requires no renderer or live database access.
 
 ### A04 — Regional policy trees / application layer — P0
 
-**Next implementation:** root plus two aligned regional policies from existing Region
-geometry. Feed inherited/intersected requirements into E04's evaluator. The currently
-implemented `aggregation.metric_policy` is a uniform stream policy, not a spatial tree.
-Legacy k/l field names must not be silently mapped to the observed-support proxy.
+**Initial implementation complete:** [POLICY_TREE.md](docs/POLICY_TREE.md) records the
+contract, example and evidence. `aggregation.policy_tree` compiles root/type/Region numeric
+requirements for one application stream and feeds E04's evaluator. It is an alternative
+to the existing uniform `aggregation.metric_policy`. Legacy k/l and granularity fields
+are not mapped implicitly. Adaptive decisions and the remaining policy features below
+are not completed by this slice.
 
-- [ ] Define default, regional and application-specific constraints.
+- [x] Define explicit default, regional and application-scoped numeric constraints.
 - [ ] Distinguish maximum window duration, age at release, post-window delay, optional
   output cadence and processing time; specify hard bounds versus preferences for traffic
   and other applications. Never interpret a short window as a guarantee of low latency.
-- [ ] Reuse Region instances and region_taxonomy as policy inputs; validate type references.
-- [ ] Store metric requirements/parameters and allowed bounds in the policy tree; calculate
-  actual metric values in an evaluator from bucket statistics.
+- [x] Reuse Region instances and region_taxonomy as policy inputs; validate IDs/type references.
+- [x] Store registered metric requirements and inclusive bounds in the policy tree; calculate
+  actual metric values in an evaluator from candidate statistics.
+- [ ] Add richer metric parameters/reference selections only with implemented evaluators.
 - [ ] Separate hard constraints, preferences/objectives, and measured candidate values.
   Maximum aggregation duration is a bound; current window duration is its measured value.
 - [ ] Update the presentation architecture: Regions/application settings -> Policy Tree ->
   effective requirements; bucket statistics -> Metric Evaluator -> observed values;
   the AggregationManager consumes both and decides.
-- [ ] Keep policy hierarchy independent of data hierarchy.
-- [ ] Compile inherited effective policies at initialization for reachable cells and
-  cross-region parents; share identical policies and measure full-tree versus sparse cost.
-- [ ] Distinguish inherited configured defaults from constraints derived for a candidate
+- [x] Keep policy hierarchy independent of data hierarchy.
+- [x] Compile inherited effective policies at initialization for reachable cells and
+  cross-region parents; share identical bounds/provenance, stop homogeneous subtrees and
+  enforce a node budget. Depth-14 single-leaf-region regression requires only 57 nodes.
+- [ ] Measure full-tree versus sparse construction, memory and lookup cost.
+- [x] Distinguish inherited configured defaults from constraints derived for a candidate
   footprint. Do not propagate a cross-region parent's combined bounds back into unrelated children.
-- [ ] Apply strict compatible hard bounds: max of lower bounds, min of upper bounds,
-  all mandatory metrics and intersections of allowed actions. Reject contradictions.
+- [x] Apply strict numeric hard bounds: max of lower bounds, min of upper bounds and all
+  mandatory metrics. Reject inherited contradictions at startup; mark contradictory
+  cross-region candidate footprints infeasible with an explicit check reason.
+- [ ] Define/intersect allowed actions when the corresponding decisions are implemented.
 - [ ] Define min/max cell side in metres and coarsest allowed depth unambiguously;
   validate metric units, parameters and reference definitions before combining thresholds.
 - [ ] Use the adopted preservation-priority labels: Temporal First -> spatial aggregation
@@ -434,13 +444,25 @@ Legacy k/l field names must not be silently mapped to the observed-support proxy
   and hard bounds. Expose only implemented/tested modes; validate capabilities/combinations.
 - [ ] Resolve conflicting inherited model choices or reject them; models are not ordered
   by one numeric strictness rule. Keep model fixed per initial run and preserve release history.
-- [ ] Handle overlaps, boundary-crossing cells and conflicting requirements.
-- [ ] Fix policies during initial runs; specify policy versions/cache invalidation
-  and open-window behavior before permitting live policy changes.
+- [x] Handle cells crossing aligned region boundaries by intersecting all affected
+  requirements, even over unoccupied portions. Keep finer feasible children usable.
+- [ ] Extend beyond non-overlapping rectangular regions; specify nesting/overlap semantics.
+- [x] Fix policies during initial runs; retain tree ID/version and per-cell effective ID,
+  sources and structural feasibility in v3 internal diagnostics.
+- [ ] Specify cache invalidation and open-window behavior before permitting live changes.
 - [ ] Add multiple views only after a correct single release pipeline.
 
-**Acceptance:** spatial merges cannot silently weaken regional rules; conflicts have
-explicit resolution or rejection.
+**Verification:** all seven CTest suites passed. New core/adapter suites cover inherited
+bounds, independent application contexts, valid children under infeasible parents,
+unsupported geometry/options, provenance and sparse depth-14 compilation. The core also
+builds with standard C++17 and strict warnings. A full run verified five regional windows
+and 308 cell assessments; nine startup errors preserved a disposable database sentinel.
+Twelve additional uniform/no-policy windows retained existing assessment behavior in v3.
+Normal `simulator/build/Simulator` was rebuilt; maintained config and existing data were untouched.
+
+**Acceptance:** candidate lookup cannot silently weaken regional rules; conflicts have
+explicit resolution or rejection. Applying this contract to actual spatial merge/release
+decisions remains A02/A03/A05 work.
 
 ## 7. Stage 4 — Active/preemptive buckets and bounded history
 

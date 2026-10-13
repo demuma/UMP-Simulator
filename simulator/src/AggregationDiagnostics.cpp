@@ -61,7 +61,7 @@ bsoncxx::array::value checkArray(const std::vector<ump::MetricCheck>& checks) {
 
 bsoncxx::document::value assessmentDocument(const ump::WindowMetricAssessment& assessment) {
     bsoncxx::builder::basic::document row;
-    row.append(kvp("kind", "configured_thresholds_only"),
+    row.append(kvp("kind", "configured_thresholds_only"), kvp("policy_mode", assessment.policyMode),
         kvp("evaluated_at_ms", assessment.evaluatedAtMs),
         kvp("status", std::string(ump::assessmentStatusName(assessment.status))),
         kvp("coverage_gate", make_document(
@@ -92,17 +92,24 @@ AggregationDiagnosticsSink makeAggregationDiagnosticsSink(const std::string& dir
             const auto& evaluated = assessment.cells[index];
             if (evaluated.cellId != cell.cell.id)
                 throw std::invalid_argument("Metric assessment cell order differs from candidate");
+            bsoncxx::builder::basic::document appliedPolicy;
+            if (evaluated.effectivePolicyId) {
+                bsoncxx::builder::basic::array sources;
+                for (const auto& source : evaluated.policySources) sources.append(source);
+                appliedPolicy.append(kvp("effective_id", *evaluated.effectivePolicyId),
+                    kvp("sources", sources), kvp("feasible", evaluated.policyFeasible));
+            }
             const auto& g = cell.cell;
             cells.append(make_document(kvp("cell_id", g.id), kvp("depth", g.depth),
                 kvp("x", g.x), kvp("y", g.y), kvp("width", g.width), kvp("height", g.height),
-                kvp("counts", countDocument(cell.counts)),
+                kvp("counts", countDocument(cell.counts)), kvp("policy", appliedPolicy),
                 kvp("metrics", metricDocument(evaluated.metrics)),
                 kvp("threshold_status", std::string(ump::assessmentStatusName(evaluated.status))),
                 kvp("checks", checkArray(evaluated.checks))));
         }
         const char* coverage = candidate.coverage == ump::WindowCoverage::Complete ? "complete"
             : candidate.coverage == ump::WindowCoverage::Incomplete ? "incomplete" : "no_scheduled_samples";
-        auto row = make_document(kvp("schema", "ump.fixed-candidate.v2"),
+        auto row = make_document(kvp("schema", "ump.fixed-candidate.v3"),
             kvp("data_role", "internal_research_candidate"),
             kvp("simulation_origin", bsoncxx::types::b_date{simulationOrigin}),
             kvp("run_id", candidate.runId), kvp("sensor_id", candidate.sensorId),

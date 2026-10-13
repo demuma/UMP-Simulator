@@ -4,7 +4,9 @@ Status: 2026-10-13. A01 implementation contract. This is the first fixed-window
 foundation, not the adaptive release protocol in [BUCKET_LIFECYCLE.md](BUCKET_LIFECYCLE.md).
 Implementation and verification status is recorded in TO-DO and README. The subsequent
 [metric contract](METRICS.md) adds a separate evaluator and versioned threshold assessments
-to v2 diagnostics; the fixed-window core and its count semantics are unchanged.
+to diagnostics. A04's [regional tree](POLICY_TREE.md) now supplies inherited requirements
+and per-cell policy provenance in schema v3; the fixed-window core and its count semantics
+are unchanged. Neither extension adds adaptive history or public release decisions.
 
 ## Scope and ownership
 

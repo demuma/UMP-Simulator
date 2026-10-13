@@ -55,6 +55,7 @@ public:
     void initializeDatabase();
     void initializeAgents();
     void initializeRegions();
+    void initializeMetricPolicies();
     void initializeSensors();
 
 private:
@@ -87,6 +88,7 @@ private:
     int numRegionTypes;
     int numRegions;
     std::vector<Region> regions;
+    std::unordered_map<std::string, ump::MetricEvaluator> metricEvaluators;
     std::vector<Agent> agents;
     float waypointDistance;
     std::unordered_map<std::string, Agent::AgentTypeAttributes> agentTypeAttributes;

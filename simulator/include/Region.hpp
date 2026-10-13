@@ -7,13 +7,14 @@
 #include <cmath>
 
 #include "Logging.hpp"
-#include "Utilities.hpp"
+#include "CandidateMetrics.hpp"
 
 class Region {
 public:
 
     // Structs
     struct RegionTypeAttributes {
+        std::vector<ump::MetricRequirement> metricRequirements;
         std::string color;
         float alpha;
         struct granularities {
@@ -40,7 +41,8 @@ public:
     ~Region();
 
     RegionTypeAttributes attributes;
-    std::string type;
+    std::string id, type;
+    std::vector<ump::MetricRequirement> metricRequirements;
     sf::FloatRect area;
     sf::Color colorAlpha;  // sf::Color colorAlpha = sf::Color(color.r, color.g, color.b, alpha * 255);
 };

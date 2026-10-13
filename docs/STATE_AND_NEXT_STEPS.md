@@ -447,3 +447,38 @@ Zero/negative/NaN configurations failed explicitly. Test databases were UUID-nam
 Manual/native interaction and larger performance studies remain open; app inventory did not
 expose the standalone simulator for automated native UI selection. The maintained YAML and
 existing Simulation data were untouched. A04 regional policies remain the next core feature.
+
+
+## Implementation record — 2026-10-13: A04 regional numeric policy trees
+
+Added a separate immutable PolicyTree with application-scoped root requirements and explicit
+region_taxonomy/Region instance metric_requirements. The adapter reuses Region geometry,
+adds stable configured IDs, validates type references and compiles before database setup.
+Legacy k/l and granularity fields are not mapped to registered metrics. The existing uniform
+metric_policy remains supported as an alternative to policy_tree.
+
+Compatible bounds intersect: maximum minima, minimum maxima, union of required metrics.
+Contradictory inheritance is a startup error. Cross-region candidate footprints intersect
+all affected rules, including unoccupied portions; an incompatible parent is marked infeasible
+without changing its children's effective requirements. Sparse compilation stops homogeneous
+subtrees, interns bounds/provenance, enforces a node budget and avoids per-tick Region scans.
+There is no new thread, SharedBuffer reader or dependency on mutable sensor Quadtrees.
+
+CandidateMetrics evaluates the resolved requirements and AggregationDiagnostics emits schema
+v3 with mode, effective ID, rule sources and feasibility. The complete regional-policy example
+is headless by default, uses its own named demo database with clearing disabled, and demonstrates
+root/west/northeast outcomes. Documentation and the chronological backlog now point to A02
+bounded history and active/preemptive windows as the next core stage.
+
+Verification: Release build, all seven CTest suites and strict standard-C++ core compilation
+passed. Five complete regional windows had 308 independently checked cell assessments
+(172 pass, 136 fail). Nine invalid configurations left a disposable database sentinel intact
+and wrote no metadata. Twelve further windows checked uniform and absent-policy compatibility.
+Test databases were UUID-named and removed; normal simulator/build was rebuilt. Existing
+Simulation data, maintained config, workspace settings and the user's ABS whitespace edit
+were untouched. Details and commands: [POLICY_TREE.md](POLICY_TREE.md).
+
+Initial scope is aligned, non-overlapping rectangles and numeric registered metric bounds.
+Nested/overlapping regions, live policy changes, preservation priorities, publication models,
+release/suppress, adaptive history and merge/split remain open. No formal anonymity claim,
+empirical privacy improvement, utility result or performance benchmark follows from these checks.

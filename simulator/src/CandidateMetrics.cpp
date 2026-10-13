@@ -1,4 +1,5 @@
 #include "CandidateMetrics.hpp"
+#include "PolicyTree.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -48,10 +49,19 @@ const char* assessmentStatusName(AssessmentStatus status) {
 
 MetricEvaluator::MetricEvaluator(std::optional<MetricPolicy> configured) : policy(std::move(configured)) {
     if (!policy) return;
-    if (policy->id.empty() || policy->version.empty() || policy->requirements.empty())
-        throw std::invalid_argument("Metric policy requires ID, version and nonempty requirements");
+    if (policy->id.empty() || policy->version.empty())
+        throw std::invalid_argument("Metric policy requires ID and version");
+    validateMetricRequirements(policy->requirements);
+}
+
+MetricEvaluator::MetricEvaluator(std::shared_ptr<const PolicyTree> compiled) : tree(std::move(compiled)) {
+    if (!tree) throw std::invalid_argument("Regional metric evaluator requires a policy tree");
+}
+
+void validateMetricRequirements(const std::vector<MetricRequirement>& requirements, bool allowEmpty) {
+    if (requirements.empty() && !allowEmpty) throw std::invalid_argument("Metric requirements must not be empty");
     std::unordered_set<int> seen;
-    for (const auto& requirement : policy->requirements) {
+    for (const auto& requirement : requirements) {
         const auto& definition = metricDefinition(requirement.id);
         if (!seen.insert(static_cast<int>(requirement.id)).second)
             throw std::invalid_argument("Duplicate metric requirement: " + std::string(definition.name));
@@ -147,21 +157,40 @@ std::vector<MetricValue> measure(const AggregationCandidate& candidate, const Ag
 
 WindowMetricAssessment MetricEvaluator::evaluate(const AggregationCandidate& candidate, AggregationTime now) const {
     validateCandidate(candidate, now);
+    if (tree) tree->validateContext(candidate.grid, candidate.applicationId);
+    const bool configured = policy.has_value() || static_cast<bool>(tree);
     const bool complete = candidate.coverage == WindowCoverage::Complete;
     WindowMetricAssessment output{now, {}, {}, complete ? AssessmentStatus::Pass : AssessmentStatus::Unavailable,
         complete ? "complete_observation_coverage" : candidate.expectedSamples ? "incomplete_observation_coverage" : "no_scheduled_samples",
         AssessmentStatus::NotConfigured, {}};
-    if (policy) { output.policyId = policy->id; output.policyVersion = policy->version; }
+    if (policy) { output.policyId = policy->id; output.policyVersion = policy->version; output.policyMode = "uniform"; }
+    if (tree) { output.policyId = tree->id(); output.policyVersion = tree->version(); output.policyMode = "regional_tree"; }
     output.cells.reserve(candidate.cells.size());
     bool anyFailed = false, anyUnavailable = false;
     for (const auto& cell : candidate.cells) {
         CellMetricAssessment result{cell.cell.id, AssessmentStatus::NotConfigured, measure(candidate, cell, now), {}};
         bool failed = false, unavailable = false;
-        if (policy) {
-            for (const auto& required : policy->requirements) {
+        if (configured) {
+            const std::vector<MetricRequirement>* requirements = nullptr;
+            if (tree) {
+                const auto& effective = tree->resolve(cell.cell);
+                requirements = &effective.requirements;
+                result.effectivePolicyId = effective.id;
+                result.policySources = effective.sources;
+                result.policyFeasible = effective.feasible;
+            } else {
+                requirements = &policy->requirements;
+                result.effectivePolicyId = policy->id;
+                result.policySources = {"uniform:" + policy->id};
+            }
+            for (const auto& required : *requirements) {
                 const auto& metric = result.metrics.at(static_cast<std::size_t>(required.id));
                 MetricCheck check{required, metric.value, AssessmentStatus::Pass, "within_bounds"};
-                if (!metric.value) {
+                if (required.min && required.max && *required.min > *required.max) {
+                    failed = true;
+                    check.status = AssessmentStatus::Fail;
+                    check.reason = "contradictory_policy_bounds";
+                } else if (!metric.value) {
                     unavailable = true;
                     check.status = AssessmentStatus::Unavailable;
                     check.reason = metric.unavailableReason;
@@ -179,7 +208,7 @@ WindowMetricAssessment MetricEvaluator::evaluate(const AggregationCandidate& can
         anyUnavailable |= unavailable;
         output.cells.push_back(std::move(result));
     }
-    if (policy) output.status = !complete ? AssessmentStatus::Unavailable
+    if (configured) output.status = !complete ? AssessmentStatus::Unavailable
         : output.cells.empty() ? AssessmentStatus::NoCandidates : anyFailed ? AssessmentStatus::Fail
         : anyUnavailable ? AssessmentStatus::Unavailable : AssessmentStatus::Pass;
     return output;

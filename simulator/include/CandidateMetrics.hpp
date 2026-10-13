@@ -3,6 +3,7 @@
 #include "AggregationInput.hpp"
 #include <array>
 #include <string_view>
+#include <memory>
 
 namespace ump {
 
@@ -41,6 +42,18 @@ struct MetricPolicy {
     std::vector<MetricRequirement> requirements;
 };
 
+void validateMetricRequirements(const std::vector<MetricRequirement>& requirements, bool allowEmpty = false);
+
+// Compiled requirements may be infeasible for a cross-region footprint. Keep the
+// contradictory bounds visible so assessment can fail explicitly without losing children.
+struct EffectiveMetricPolicy {
+    std::string id;
+    std::vector<MetricRequirement> requirements;
+    std::vector<std::string> sources;
+    bool feasible = true;
+};
+class PolicyTree;
+
 enum class AssessmentStatus { NotConfigured, NoCandidates, Pass, Fail, Unavailable };
 const char* assessmentStatusName(AssessmentStatus status);
 
@@ -56,6 +69,9 @@ struct CellMetricAssessment {
     AssessmentStatus status;
     std::vector<MetricValue> metrics;
     std::vector<MetricCheck> checks;
+    std::optional<std::string> effectivePolicyId = std::nullopt;
+    std::vector<std::string> policySources = {};
+    bool policyFeasible = true;
 };
 
 struct WindowMetricAssessment {
@@ -65,17 +81,20 @@ struct WindowMetricAssessment {
     std::string coverageReason;
     AssessmentStatus status;
     std::vector<CellMetricAssessment> cells;
+    std::string policyMode = "none";
 };
 
 // Stateless candidate evaluation apart from immutable, validated requirements.
-// A policy tree can supply an effective policy later; this initial policy is uniform.
+// Uniform requirements or an immutable regional tree supply the cell-specific bounds.
 class MetricEvaluator {
 public:
     explicit MetricEvaluator(std::optional<MetricPolicy> policy = std::nullopt);
+    explicit MetricEvaluator(std::shared_ptr<const PolicyTree> tree);
     WindowMetricAssessment evaluate(const AggregationCandidate& candidate, AggregationTime evaluatedAtMs) const;
 
 private:
     std::optional<MetricPolicy> policy;
+    std::shared_ptr<const PolicyTree> tree;
 };
 
 } // namespace ump

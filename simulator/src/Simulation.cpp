@@ -5,6 +5,7 @@
 #include "../include/AdaptiveGridBasedSensor.hpp"
 #include "../include/Region.hpp"
 #include "../include/AggregationDiagnostics.hpp"
+#include "../include/PolicyConfiguration.hpp"
 
 // Simulation constructor
 Simulation::Simulation(
@@ -19,11 +20,12 @@ Simulation::Simulation(
     loadConfiguration();
     loadAgentsAttributes();
     loadRegionsAttributes();
+    initializeRegions();
+    initializeMetricPolicies(); // Validate/compile before initializing any database sink.
     loadObstacles();
     initializeDatabase();
     initializeGrid();
     initializeAgents();
-    initializeRegions();
     initializeSensors();
 }
 
@@ -139,6 +141,9 @@ void Simulation::loadRegionsAttributes() {
         for (const auto& regionType : config["region_taxonomy"]) {
             Region::RegionTypeAttributes attributes;
             std::string type = regionType["type"].as<std::string>();
+            if (type.empty() || regionTypeAttributes.count(type))
+                throw std::invalid_argument("Region types must be nonempty and unique: " + type);
+            attributes.metricRequirements = readMetricRequirements(regionType["metric_requirements"], true);
 
             // General attributes
             attributes.color = regionType["color"].as<std::string>();
@@ -312,15 +317,27 @@ void Simulation::initializeRegions() {
 
     // Load regions from the configuration file
     if(config["regions"]) {
+        if (!config["regions"].IsSequence()) throw std::invalid_argument("regions must be a sequence");
+        std::unordered_set<std::string> ids;
         for (const auto& regionType: config["regions"]) {
-
-            Region region = Region(regionTypeAttributes[regionType["type"].as<std::string>()]);
-
-            region.type = regionType["type"].as<std::string>();
+            const auto type = regionType["type"].as<std::string>();
+            const auto attributes = regionTypeAttributes.find(type);
+            if (attributes == regionTypeAttributes.end()) throw std::invalid_argument("Unknown region type: " + type);
+            Region region(attributes->second);
+            region.type = type;
+            region.id = regionType["id"].as<std::string>("region-" + std::to_string(regions.size()));
+            if (region.id.empty() || !ids.insert(region.id).second)
+                throw std::invalid_argument("Region IDs must be nonempty and unique: " + region.id);
+            region.metricRequirements = readMetricRequirements(regionType["metric_requirements"], true);
             sf::FloatRect area(
                 {regionType["area"]["x"].as<float>(), regionType["area"]["y"].as<float>()},
                 {regionType["area"]["width"].as<float>(), regionType["area"]["height"].as<float>()}
             );
+            if (!std::isfinite(area.position.x) || !std::isfinite(area.position.y)
+                || !std::isfinite(area.size.x) || !std::isfinite(area.size.y)
+                || area.size.x <= 0 || area.size.y <= 0
+                || !std::isfinite(area.position.x + area.size.x) || !std::isfinite(area.position.y + area.size.y))
+                throw std::invalid_argument("Region geometry must be finite with positive dimensions: " + region.id);
             region.area = area;
             region.colorAlpha = sf::Color(
                 stringToColor(region.attributes.color).r,
@@ -333,6 +350,22 @@ void Simulation::initializeRegions() {
             regions.push_back(region);
             DEBUG_MSG("New " << region.type << " region created at (" << region.area.position.x << ", " << region.area.position.y << ") with area (" << region.area.size.x << ", " << region.area.size.y << ")");
         }
+    }
+}
+
+// Compile each enabled stream's immutable policy view without DB or sensor instances.
+void Simulation::initializeMetricPolicies() {
+    for (const auto& sensor : config["sensors"]) {
+        const auto aggregation = sensor["aggregation"];
+        if (!aggregation || !aggregation["enabled"].as<bool>(false)) continue;
+        if (sensor["type"].as<std::string>() != "adaptive-grid-based")
+            throw std::invalid_argument("Aggregation/policy integration currently requires an AGBS stream");
+        const auto area = sensor["detection_area"];
+        const ump::GridCoverage coverage{area["x"].as<float>(), area["y"].as<float>(),
+            area["width"].as<float>(), area["height"].as<float>(), sensor["grid"]["max_depth"].as<int>()};
+        const auto applicationId = aggregation["application_id"].as<std::string>("fixed-baseline");
+        metricEvaluators.emplace(sensor["id"].as<std::string>(),
+            makeMetricEvaluator(aggregation, coverage, applicationId, regions));
     }
 }
 
@@ -448,35 +481,7 @@ void Simulation::initializeSensors() {
                     {detectionArea.position.x, detectionArea.position.y, detectionArea.size.x, detectionArea.size.y, maxDepth},
                     static_cast<ump::AggregationTime>(std::llround(1000.0 / frameRate)),
                     aggregation["window_ms"].as<ump::AggregationTime>(), static_cast<std::uint64_t>(budget)};
-                std::optional<ump::MetricPolicy> metricPolicy;
-                if (const auto policy = aggregation["metric_policy"]) {
-                    if (!policy.IsMap()) throw std::invalid_argument("aggregation.metric_policy must be a map");
-                    for (const auto& item : policy) {
-                        const auto key = item.first.as<std::string>();
-                        if (key != "id" && key != "version" && key != "requirements")
-                            throw std::invalid_argument("Unknown metric_policy setting: " + key);
-                    }
-                    metricPolicy.emplace(ump::MetricPolicy{policy["id"].as<std::string>(), policy["version"].as<std::string>(), {}});
-                    const auto requirements = policy["requirements"];
-                    if (!requirements.IsMap()) throw std::invalid_argument("Metric requirements must be a map");
-                    for (const auto& item : requirements) {
-                        ump::MetricRequirement requirement{ump::metricIdFromName(item.first.as<std::string>()), {}, {}};
-                        if (!item.second.IsMap()) throw std::invalid_argument("Metric bounds must be a min/max map");
-                        for (const auto& bound : item.second) {
-                            const auto key = bound.first.as<std::string>();
-                            if (key == "min") {
-                                if (requirement.min) throw std::invalid_argument("Duplicate minimum metric bound");
-                                requirement.min = bound.second.as<double>();
-                            } else if (key == "max") {
-                                if (requirement.max) throw std::invalid_argument("Duplicate maximum metric bound");
-                                requirement.max = bound.second.as<double>();
-                            }
-                            else throw std::invalid_argument("Unknown metric bound: " + key);
-                        }
-                        metricPolicy->requirements.push_back(requirement);
-                    }
-                }
-                ump::MetricEvaluator evaluator(std::move(metricPolicy));
+                auto evaluator = std::move(metricEvaluators.at(sensor->sensorId));
                 auto diagnostics = makeAggregationDiagnosticsSink(
                     aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp);
                 sensor->enableAggregation(settings, timeStep, timestamp,

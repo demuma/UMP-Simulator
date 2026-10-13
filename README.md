@@ -11,7 +11,8 @@ bounded, nonblocking renderer consumption are implemented (S04/S01). S05 now pac
 agent-frame consumption independently of producer runtime and displays requested/measured speed. The first A01 slice
 now adds optional identity-bearing AGBS input, a dependency-free fixed-window core and
 internal JSONL candidates. E04 now adds measured cell metrics, explicit unavailable values
-and optional uniform, versioned threshold checks. Regional policy trees, adaptive buckets
+and versioned threshold checks. A04 now compiles immutable regional policy trees from
+existing Regions, with strict numeric inheritance and per-cell provenance. Adaptive buckets
 and privacy release decisions remain open, as do actual-interval velocities and reproducible
 research experiments.**
 
@@ -25,6 +26,7 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
+| [Regional policy tree](docs/POLICY_TREE.md) | Implemented root/type/region inheritance, sparse compilation, conflict semantics and runnable example |
 | [Candidate metrics](docs/METRICS.md) | Implemented online metric registry, threshold assessment, configuration and first fixed utility-query contract |
 | [Fixed aggregation contract](docs/FIXED_AGGREGATION.md) | Implemented A01 input, count/window semantics, coverage, memory bounds and opt-in configuration |
 | [Renderer timing](docs/RENDERER_TIMING.md) | Implemented pacing, requested/measured speed, timing checks and tree/snapshot roles |
@@ -72,8 +74,9 @@ reduction in empirical attack success.
 complete aggregation path: observations, cell/window aggregation, initial metrics, effective
 regional policy lookup through a minimal policy tree, and release/suppress decisions.
 Input checks and demo preparation accompany this work. Simulator startup works and sensor
-regression tests passed. The fixed-window aggregation foundation is implemented; metric-driven
-release decisions and the regional policy tree are the next missing components.
+regression tests passed. Fixed-window aggregation, initial metrics and the minimal regional
+policy tree are implemented. Next are reconstructable history (A02) and coordinated
+metric-driven release decisions (A05/A03).
 
 The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) now prioritizes
 that foundation immediately, dynamic spatial release selection and initial comparisons by
@@ -149,11 +152,11 @@ reverted test results do not establish correctness of the current implementation
 | ABS | Position, type, identity and velocity from consecutive observations; first complete output at 100 ms for the current 10-Hz setup | Nominal-period velocity requires aligned fixed intervals; publication after DB errors is not guaranteed |
 | GBS | Fixed cells, class counts and total count per observation | No full temporal aggregation or privacy-based release decision |
 | AGBS | Quadtree, position mapping, counts and cell IDs | Splitting follows positions/max depth, not metrics or policies |
-| AggregationManager | Optional AGBS ingestion, fixed windows, contributor unions and JSONL candidates evaluated by a separate metric component | No regional policies, approved releases, merges or temporal extension |
-| Regional rules | YAML/Region fields for granularities and k/l thresholds | No active policy evaluation, conflict handling or policy trees |
+| AggregationManager | Optional AGBS ingestion, fixed windows, contributor unions and JSONL candidates assessed against uniform or regional requirements | No approved releases, merges or temporal extension |
+| Regional rules | Immutable sparse PolicyTree; explicit root/type/region metric requirements, strict numeric inheritance and footprint conflicts | Aligned, non-overlapping rectangles only; legacy granularity/k/l fields inactive; no action/model selection or live updates |
 | Temporal history | Bounded active-window identity sets and counts | No reconstructable history, preemptive buckets or variable aggregation windows |
 | Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry and independent playback pacing; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
-| Evaluation | Online metric registry, uniform threshold assessments and a defined first occupancy-query baseline | GT utility experiment, independent attacker evaluation and comparative baselines remain open |
+| Evaluation | Online metric registry, uniform/regional threshold assessments and a defined first occupancy-query baseline | GT utility experiment, independent attacker evaluation and comparative baselines remain open |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |
 
@@ -336,13 +339,15 @@ retained state. Output contains no individual IDs; it is still internal research
 
 The metric evaluator now computes per-cell support, contribution counts, sample occupancy,
 geometry, duration, age, post-window delay and sample coverage. An optional versioned uniform
-policy requests min/max checks. Missing reference-dependent metrics are explicitly unavailable;
+policy or regional PolicyTree supplies min/max requirements. Root, region type and Region
+instance constraints intersect; a regional child cannot weaken its inherited rules.
+Missing reference-dependent metrics are explicitly unavailable;
 incomplete coverage prevents a successful overall assessment. The writer only serializes
 the candidate and assessment. See [METRICS.md](docs/METRICS.md) for meanings and units.
 
 This first mode uses configured leaf depth and a fixed time window. Its threshold assessments
-do not implement empirical privacy measurement, suppression, release approval, regional
-policies, merges/splits or preemptive history. Its identity sets are discarded when a window closes; A02 must add reconstructable
+do not implement empirical privacy measurement, suppression, release approval,
+merges/splits or preemptive history. Its identity sets are discarded when a window closes; A02 must add reconstructable
 history before adaptive candidates can reuse those observations. Geometry, history,
 policy evaluation and public release state remain separate responsibilities.
 
@@ -450,7 +455,16 @@ cmake --build renderers/abs/build -j4
 Replace abs with gbs, agbs or gt for the other applications. Each target is named Visualizer,
 so the renderers remain separate CMake projects for now.
 
-### Run metric, aggregation, frame and sensor regression tests
+### Run policy, metric, playback, aggregation, frame and sensor regression tests
+
+PolicyRegressionTests and PolicyConfigurationTests are enabled by default
+(UMP_BUILD_POLICY_TESTS). The former uses standard C++ only; the latter links YAML and
+Region/SFML types. Both run without a window or MongoDB and check inheritance, footprint
+conflicts, sparse compilation, input validation and compatibility:
+
+```sh
+ctest --test-dir simulator/build -R 'policy_' --output-on-failure
+```
 
 PlaybackRegressionTests is enabled by default (UMP_BUILD_PLAYBACK_TESTS). It checks
 monotonic pacing and identical frame replay through bounded queues without a window or DB:
@@ -536,12 +550,34 @@ Aggregation is opt-in; the maintained config.yaml is unchanged. Add the document
 80-m square area and 40-m base-cell size satisfy the adapter's coverage requirement.
 
 Each enabled stream prints the path to a new `results/aggregation/candidates-<UUID>.jsonl`
-file. Schema `ump.fixed-candidate.v2` adds per-cell metric values/units, a coverage gate
-and individual threshold checks to the original windows/counts. Omitting `metric_policy`
-produces `not_configured`; optional checks use the block in [METRICS.md](docs/METRICS.md#configuration-and-diagnostic-output).
+file. Schema `ump.fixed-candidate.v3` records per-cell metric values/units, a coverage gate,
+individual threshold checks, policy mode, effective policy IDs and contributing rule sources.
+Omitting both `metric_policy` and `policy_tree` produces `not_configured`; choose at most one.
+Uniform checks use the block in [METRICS.md](docs/METRICS.md#configuration-and-diagnostic-output);
+regional configuration and conflict behavior are in [POLICY_TREE.md](docs/POLICY_TREE.md).
 The results can be inspected immediately but are not public releases or evidence of privacy
 improvement. Normal raw MongoDB output continues separately. The original sensor areas
 remain adjacent: align them in an evaluation configuration before comparing sensor types.
+
+### Run the regional policy example
+
+After building, run the complete [example configuration](simulator/examples/regional-policy/config.yaml):
+
+```bash
+cd /Users/maxdemu/Developer/UMP-Simulator/simulator/examples/regional-policy
+../../build/Simulator
+```
+
+This runs a two-second headless AGBS demonstration with a default/root policy and two
+regional policies, using MongoDB database `UMP_PolicyTree_Demo` with clearing disabled.
+Each invocation appends raw data and creates a separate candidate JSONL file under that
+directory's `results/aggregation`. It does not use the maintained `Simulation` database.
+The west region requires at least five contributors; the northeast permits at most 200-ms
+windows, deliberately failing the configured fixed 400-ms candidates. Inspect each cell's
+`policy`, `checks` and `threshold_status`. These demonstrate assessment, not adaptive correction.
+Set `renderer.show_renderer: true` in the example to show the ordinary sensor grid; policy
+decisions have no rendering overlay yet. The example has no shared random seed and is not
+a comparative research experiment.
 
 ### Configuration and startup
 
@@ -619,7 +655,18 @@ The E04 metric slice subsequently passed all four CTest suites and a full isolat
 headless run. Four AGBS policies produced twelve windows exercising pass, fail, unavailable
 reference and no-policy outcomes; numeric metrics/checks matched their candidate data.
 Unknown YAML metrics fail explicitly at initialization. No maintained YAML or existing
-Simulation data was changed. Regional inheritance and GT/attacker evaluation remain open.
+Simulation data was changed. This E04 verification preceded the regional implementation below;
+GT/attacker evaluation remains open.
+
+A04 subsequently passed all seven CTest suites, including the two new policy suites and
+the existing MongoDB sensor regression. The standard-C++ policy core also built with
+`-Wall -Wextra -Werror`. A full regional run checked five windows and 308 cell assessments
+against independently derived regional bounds and provenance. Nine invalid configurations
+failed before database clearing or metadata writes, verified with a disposable sentinel.
+A further four-stream run checked twelve v3 windows for uniform and absent-policy compatibility.
+Only UUID-named test databases were used and removed. The normal simulator build was updated.
+These are functional checks; regional policy runtime/memory benchmarks and empirical privacy
+or utility improvements have not been measured. See [POLICY_TREE.md](docs/POLICY_TREE.md).
 
 ## 10. Working process
 

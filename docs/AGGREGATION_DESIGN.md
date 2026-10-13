@@ -52,9 +52,10 @@ user's current YAML. Preserve the separate-area configuration for demonstrations
 `regions` currently instantiates only one common rectangle: x=[0,80), y=[0,80). It therefore
 does not intersect the current AGBS area. Its spatial limits are 10-100 m, temporal limits
 0-10 s, and configured k/l minima are both 1. Those fields are loaded into Region instances,
-but no policy lookup or enforcement consumes the regions in the active aggregation path.
-The meaning of spatial bounds (side length versus area) and zero temporal lower bounds
-must be explicit before policy validation is enabled.
+but those legacy fields are not active metric requirements. A04 now optionally consumes
+explicit metric_requirements through selected Regions; the maintained config has no such
+tree and is unchanged. The separate regional example uses an 80-m AGBS area with two aligned
+regions. Spatial and temporal metric bounds have explicit registry units.
 
 ### Existing transport and aggregation
 
@@ -268,6 +269,12 @@ is compatible with a changing release selection.
 
 ## 5. Region and policy-tree integration
 
+Initial numeric scope implemented in A04: see [POLICY_TREE.md](POLICY_TREE.md) for actual
+configuration, tests and limitations. The broader preferences/publication proposals below
+remain future work. The current tree supports aligned, non-overlapping rectangles and
+cross-boundary candidates; it rejects contradictory inheritance, while marking an
+infeasible combined footprint without discarding its valid children.
+
 Retain Region as the configured spatial object and reuse current YAML loading. The
 present struct combines spatial region metadata, appearance and constraints; extract or
 reference typed constraints incrementally rather than rewriting the whole taxonomy.
@@ -296,19 +303,20 @@ requirement is strict inheritance: regional children may tighten compatible hard
 but must not silently relax them. Temporal First preserves temporal detail by trying
 spatial aggregation first; Spatial First preserves spatial detail by trying temporal
 aggregation first (user terminology, October 13). These are preservation preferences
-with explicit priority/tie rules, not numerically comparable privacy bounds. Start with aligned non-overlapping
-regions, then test overlapping and cross-boundary cells before enabling them.
+with explicit priority/tie rules, not numerically comparable privacy bounds. A04 supports aligned,
+non-overlapping regions and tested cross-boundary candidates; overlapping regions remain future work.
 
-Missing region type references should be configuration errors. Current map indexing in
-initializeRegions can default-insert unknown types; validate these lookups during policy
-integration instead of silently obtaining unintended constraints.
+A04 replaced initializeRegions' default-inserting type lookup with explicit validation.
+Unknown types, duplicate IDs/types and malformed Region geometry fail before DB setup;
+selected-region alignment, overlap and inherited bounds are validated during tree compilation.
 
 ### Metric requirements versus measured values
 
 Implemented E04 baseline: [METRICS.md](METRICS.md) defines the online registry, a uniform
 versioned MetricPolicy and per-cell checks in the real fixed-window path. An offline
-reference-dependent metric is unavailable online. The spatial policy tree, inheritance
-and release coordination below remain planned; threshold compliance is not release approval.
+reference-dependent metric is unavailable online. A04 adds the spatial policy tree and
+numeric inheritance to this path. Release coordination remains planned; threshold compliance
+is not release approval.
 
 The policy tree is the source of effective *requirements*. It can select which metrics
 matter, their parameters/reference definitions, thresholds, and preferences. It does not

@@ -1,8 +1,9 @@
 # Candidate metrics and threshold assessment
 
 Status: 2026-10-13. Initial E04 implementation and E01 baseline query contract. This extends the
-[fixed aggregation contract](FIXED_AGGREGATION.md). It does not implement a regional
-policy tree, adaptive search, a publication protocol or an empirical privacy claim.
+[fixed aggregation contract](FIXED_AGGREGATION.md). A04 now supplies regional requirements
+through [POLICY_TREE.md](POLICY_TREE.md). Adaptive search, a publication protocol and
+empirical privacy evaluation remain unimplemented.
 
 ## Separation of responsibilities
 
@@ -14,10 +15,11 @@ renderer queue consumer, database lookup or per-tick full metric scan.
 
 Metric definitions specify quantities and units. A versioned MetricPolicy specifies
 inclusive min/max requirements. The evaluator computes values from actual candidate
-statistics and reports individual checks. A future regional PolicyTree will supply
-effective policies to this same evaluator; it must not manufacture measured values.
-The first policy applies uniformly to one configured sensor/application stream. No Region
-or legacy `k_anonymity`/`l_diversity` setting is silently reinterpreted in this slice.
+statistics and reports individual checks. An immutable regional PolicyTree can instead
+supply effective requirements to this same evaluator; it does not manufacture values.
+Choose one uniform policy or one regional tree per sensor/application stream. Explicit
+Region metric_requirements are used only when selected by that tree. Legacy granularity
+and `k_anonymity`/`l_diversity` settings are not reinterpreted as registered metrics.
 
 ## Initial metric registry
 
@@ -44,6 +46,9 @@ Requirements use the registry's units; count and millisecond thresholds are nonn
 integers, and sample-fraction bounds lie in [0,1]. Invalid/unknown/duplicate requirements,
 non-finite bounds, empty ranges and min > max are configuration errors. Comparison is
 inclusive. Policies are immutable for the initial run and carry an ID and version in output.
+Contradictory inherited root/type/instance requirements are configuration errors. A coarse
+footprint combining individually valid regions can instead be infeasible; its conflicting
+check reports `contradictory_policy_bounds`, without invalidating those regions' children.
 
 ## Assessment semantics
 
@@ -155,12 +160,16 @@ metric_policy:
     age_at_evaluation_ms: {max: 1500}
 ```
 
-This is a uniform demonstration policy, not the regional tree. Omitting the block gives
-`not_configured`; an empty requirements map is rejected. No maintained production YAML
-is altered automatically. The JSONL schema is versioned to `ump.fixed-candidate.v2` and
-includes policy ID/version, evaluation time, quality gate, each metric's value/unit or
-unavailable reason, each bound/check and the threshold summary. It remains internal
-research output, including failed candidates and their counts; it is not a public dataset.
+This is a uniform demonstration policy. For the regional alternative use `policy_tree`
+as described in [POLICY_TREE.md](POLICY_TREE.md); selecting both is an error. Omitting both
+gives `not_configured`; an empty uniform/root requirements map is rejected. No maintained
+production YAML is altered automatically. Current JSONL schema `ump.fixed-candidate.v3`
+retains the v2 metric/check fields and adds `assessment.policy_mode` (`none`, `uniform`,
+`regional_tree`) and each cell's `policy` object with `effective_id`, `sources`, `feasible`.
+Without a policy, the per-cell policy object is empty and assessment policy ID/version are null.
+Evaluation time, quality gate, values/units, unavailable reasons, bounds/checks and threshold
+summary remain visible. This is internal research output, including failed candidates and
+their counts; it is not a public dataset. Consumers must check the schema version.
 
 
 ## Verification
@@ -170,9 +179,14 @@ evaluation, complete truncated intervals, absent/invalid policies, count/coverag
 consistency, mandatory coverage, non-square support, unavailable GT references and per-cell
 rather than stream-wide support. The metric core builds without SFML or MongoDB.
 
-The full Release build and all four CTest suites passed. An isolated one-second headless
+The original E04 Release build and all four then-existing CTest suites passed. An isolated one-second headless
 fixture used four AGBS streams with passing, failing, unavailable-reference and absent
 policies. All twelve JSONL windows and per-cell metrics/checks matched the expected outcomes;
 an unknown YAML metric produced an explicit nonzero startup failure. Only a UUID-named
 test database was used and removed. This is functional validation, not an attacker study,
 utility benchmark, regional-policy test or performance result.
+
+A04 subsequently passed all seven suites and exercised this evaluator with root/type/Region
+requirements. The four-stream fixture was rerun against schema v3, verifying uniform and
+absent-policy modes and provenance along with all twelve windows' existing numeric checks.
+Separate regional/conflict and startup-validation evidence is in POLICY_TREE.md.
