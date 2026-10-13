@@ -6,8 +6,9 @@
 #include <condition_variable>
 #include <atomic>
 #include <iostream>
+#include <optional>
+#include <utility>
 
-#include "Agent.hpp"
 #include "Logging.hpp"
 
 /*****************************************/
@@ -28,9 +29,12 @@ Template class for different types:
 template<typename T>
 class SharedBuffer {
 public:
-    SharedBuffer(std::string name);
+    SharedBuffer(std::string name, std::size_t capacity = 0);
     void write(const T& frame);
     T read();
+    std::optional<T> tryRead();
+    bool isDrained();
+    void requestStop();
     void swap();
     void end();
     std::atomic<std::queue<T>*> currentReadBuffer;
@@ -46,7 +50,9 @@ private:
     std::queue<T> buffers[2];
     std::mutex queueMutex;
     std::condition_variable queueCond;
-    T currentFrame;
+    std::size_t capacity;
+    void promoteLocked();
+    std::optional<T> popLocked();
     std::atomic<bool> finished = false;
 };
 

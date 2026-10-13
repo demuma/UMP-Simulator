@@ -58,11 +58,12 @@ int main() {
             "mongodb://localhost:27017/?serverSelectionTimeoutMS=3000"});
         const std::string name = "UMP_sensor_regression_" + generateUUID();
         TestDatabase fixture{client->database(name)};
-        SharedBuffer<sensorBufferFrameType> buffer("Sensor regression");
         const sf::FloatRect area({0.f, 0.f}, {20.f, 20.f});
-        AgentBasedSensor abs(10.f, area, name, "abs", client, buffer);
-        GridBasedSensor gbs(10.f, area, 5.f, name, "gbs", client, buffer);
-        AdaptiveGridBasedSensor agbs(10.f, area, 20.f, 2, name, "agbs", client, buffer);
+        AgentBasedSensor abs(10.f, area, name, "abs", client);
+        GridBasedSensor gbs(10.f, area, 5.f, name, "gbs", client);
+        AdaptiveGridBasedSensor agbs(10.f, area, 20.f, 2, name, "agbs", client, "agbs-fast");
+        AdaptiveGridBasedSensor slow(5.f, area, 20.f, 2, name, "agbs_slow", client, "agbs-slow");
+        require(agbs.sensorId == "agbs-fast" && slow.sensorId == "agbs-slow", "Explicit sensor IDs lost");
         const auto origin = TimePoint{std::chrono::milliseconds{1744191000000LL}};
         std::vector<Agent> agents;
         Agent::AgentTypeAttributes attributes{};
@@ -83,28 +84,41 @@ int main() {
                 agents.back().position = {6.f + 2.f * ms / 1000.f, 3.f + ms / 1000.f};
             }
             const auto timestamp = origin + std::chrono::milliseconds{ms};
-            const auto before = buffer.currentWriteFrameIndex.load();
-            for (Sensor* sensor : {static_cast<Sensor*>(&abs), static_cast<Sensor*>(&gbs), static_cast<Sensor*>(&agbs)}) {
+            SensorFrameBuilder frame(timestamp);
+            for (Sensor* sensor : {static_cast<Sensor*>(&abs), static_cast<Sensor*>(&gbs), static_cast<Sensor*>(&agbs), static_cast<Sensor*>(&slow)}) {
                 sensor->update(agents, 0.05f, timestamp);
+                if (auto sample = sensor->takeSample())
+                    frame.add(sensor->sensorId, sensor->timestamp, std::move(*sample));
+                require(!sensor->takeSample(), "Sensor sample was consumed twice");
                 sensor->postData();
             }
             // Repeated writes, including non-capture ticks, must never resend ABS output.
             abs.postData();
             abs.postData();
             const bool due = ms > 0 && ms % 100 == 0;
-            require(buffer.currentWriteFrameIndex.load() - before == (due ? 1u : 0u),
-                    "AGBS renderer cadence changed with initialization or empty occupancy");
+            auto snapshot = std::move(frame).finish();
+            require(snapshot->first == timestamp, "Frame timestamp mismatch");
+            require(snapshot->second.size() == (due ? (ms % 200 == 0 ? 4u : 3u) : 0u), "Common frame cadence/IDs mismatch");
             if (due) {
-                const auto snapshot = buffer.currentWriteBuffer.load()->back();
-                require(snapshot->first == timestamp, "Renderer snapshot has wrong timestamp");
-                require(snapshot->second.empty() == (ms == 600 || ms == 700),
-                        "Empty renderer snapshot does not match empty area");
+                const auto* sample = findSensorSample<AdaptiveGridSensorSample>(snapshot->second, agbs.sensorId);
+                require(sample && sample->cells.empty() == (ms == 600 || ms == 700),
+                        "Measured-empty AGBS payload lost its identity");
+                const auto* slowSample = findSensorSample<AdaptiveGridSensorSample>(snapshot->second, slow.sensorId);
+                require((slowSample != nullptr) == (ms % 200 == 0), "Slow sensor delayed or contaminated the common frame");
+                const auto* agentSample = findSensorSample<AgentSensorSample>(snapshot->second, abs.sensorId);
+                require(agentSample && agentSample->detectedAgents == agents.size(), "ABS observation count lost");
+                const auto* gridSample = findSensorSample<GridSensorSample>(snapshot->second, gbs.sensorId);
+                require(gridSample != nullptr, "GBS payload missing");
+                int total = 0;
+                for (const auto& cell : gridSample->cells) total += cell.counts.totalAgents;
+                require(total == static_cast<int>(agents.size()), "GBS frame counts differ from capture");
             }
         }
 
         const Counts gridCounts{{100,1}, {200,1}, {300,1}, {400,2}, {500,2}, {800,1}, {900,1}};
         verifyGrid(fixture.db["gbs"], origin, gridCounts);
         verifyGrid(fixture.db["agbs"], origin, gridCounts);
+        verifyGrid(fixture.db["agbs_slow"], origin, Counts{{200,1}, {400,2}, {800,1}});
         Counts absCounts;
         std::set<std::pair<int64_t, std::string>> absKeys;
         for (auto row : fixture.db["abs"].find({})) {

@@ -8,10 +8,7 @@ class GridBasedSensor : public Sensor {
 public:
 
     // Grid cell data with counts per agent type and a total agents
-    typedef struct GridDataPoint {
-        std::unordered_map<std::string, int> agentTypeCount;
-        int totalAgents;
-    } GridDataPoint;
+    using GridDataPoint = CellCounts;
 
     // Every grid data stored with the cell id as key
     typedef std::unordered_map<sf::Vector2i, GridDataPoint, Vector2iHash> GridData;
@@ -24,7 +21,7 @@ public:
         const std::string& databaseName, 
         const std::string& collectionName, 
         std::shared_ptr<mongocxx::client> client,
-        SharedBuffer<sensorBufferFrameType>& sensorBuffer
+        std::string id = generateUUID()
     );
 
     // Alternative constructor for rendering
@@ -32,8 +29,7 @@ public:
         sf::FloatRect detectionArea, 
         sf::Color detectionAreaColor, 
         float cellSize, 
-        bool showGrid,
-        SharedBuffer<sensorBufferFrameType>& sensorBuffer
+        bool showGrid
     );
 
     ~GridBasedSensor();
@@ -55,7 +51,6 @@ private:
     mongocxx::database db;
     mongocxx::collection collection;
     GridData gridData;
-    SharedBuffer<sensorBufferFrameType>& sensorBuffer;
     std::vector<std::pair<std::chrono::system_clock::time_point, GridData>> dataStorage;
     
     sf::Vector2i getCellIndex(const sf::Vector2f& position) const;

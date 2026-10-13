@@ -10,10 +10,7 @@ class AdaptiveGridBasedSensor : public Sensor {
 public:
 
     // Adaptive grid cell data with counts per agent type and a total agents
-    typedef struct AdaptiveGridDataPoint {
-        std::unordered_map<std::string, int> agentTypeCount;
-        int totalAgents;
-    } AdaptiveGridDataPoint;
+    using AdaptiveGridDataPoint = CellCounts;
 
     // Every adaptive grid data stored with the cell id as key
     typedef std::unordered_map<int, AdaptiveGridDataPoint> AdaptiveGridData;
@@ -27,7 +24,7 @@ public:
         const std::string& databaseName, 
         const std::string& collectionName, 
         std::shared_ptr<mongocxx::client> client,
-        SharedBuffer<sensorBufferFrameType>& sensorBuffer
+        std::string id = generateUUID()
     );
 
     // Alternative constructor for rendering
@@ -36,8 +33,7 @@ public:
         sf::Color detectionAreaColor, 
         float cellSize,
         int maxDepth,
-        bool showGrid,
-        SharedBuffer<sensorBufferFrameType>& sensorBuffer
+        bool showGrid
     );
 
     ~AdaptiveGridBasedSensor();
@@ -60,7 +56,5 @@ private:
     mongocxx::collection collection;
     AggregationManager aggregationManager;
     AdaptiveGridData adaptiveGridData;
-    SharedBuffer<sensorBufferFrameType>& sensorBuffer;
-    sensorFrame currentCellIds;
     std::vector<std::pair<std::chrono::system_clock::time_point, AdaptiveGridData>> dataStorage; // Data Storage: timestamp, map(cell id, map(agent type, count)
 };

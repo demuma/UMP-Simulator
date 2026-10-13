@@ -14,15 +14,11 @@
 #include "Agent.hpp"
 #include "Utilities.hpp"
 #include "SharedBuffer.hpp"
+#include "SensorFrame.hpp"
 
-// using agentFrameType = const std::vector<Agent>; // only for renderer
-// using sensorFrameType = const std::unordered_map<std::string, std::unordered_set<int>>; // only for renderer
 using agentFrame = std::vector<Agent>;
-using sensorFrame = std::unordered_map<std::string, std::unordered_set<int>>;
-using agentFrameType = std::pair<std::chrono::system_clock::time_point, const agentFrame>; // only for renderer
-using sensorFrameType = std::pair<std::chrono::system_clock::time_point, const sensorFrame>;
-using agentBufferFrameType = std::shared_ptr<agentFrameType>;
-using sensorBufferFrameType = std::shared_ptr<sensorFrameType>;
+using agentFrameType = std::pair<SensorTime, const agentFrame>;
+using agentBufferFrameType = std::shared_ptr<const agentFrameType>;
 
 class Sensor {
 public:
@@ -30,12 +26,11 @@ public:
         float frameRate, 
         sf::FloatRect detectionArea, 
         std::shared_ptr<mongocxx::client> client,
-        SharedBuffer<sensorBufferFrameType>& sensorBuffer
+        std::string id = generateUUID()
     );
     Sensor(
         const sf::FloatRect& detectionArea, 
-        const sf::Color& detectionAreaColor,
-        SharedBuffer<sensorBufferFrameType>& sensorBuffer
+        const sf::Color& detectionAreaColor
     );
     // virtual void update(std::vector<Agent>& agents, float timeStep, sf::Time simulationTime, std::string datetime) = 0;
     virtual void update(std::vector<Agent>& agents, float timeStep, std::chrono::system_clock::time_point timestamp) = 0;
@@ -44,6 +39,7 @@ public:
     virtual void postMetadata() = 0;
     virtual void clearDatabase() = 0;
     virtual ~Sensor() = default;
+    std::optional<SensorSample> takeSample() { return std::exchange(pendingSample, std::nullopt); }
 
     sf::Color detectionAreaColor;
     sf::FloatRect detectionArea;
@@ -56,7 +52,7 @@ public:
 
 protected:
     std::shared_ptr<mongocxx::client> client;
-    SharedBuffer<sensorBufferFrameType>& sensorBuffer;
+    std::optional<SensorSample> pendingSample;
     float timeSinceLastUpdate = 0.0f;
 
     // The first update observes the initial state; no simulation step has elapsed yet.

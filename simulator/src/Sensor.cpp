@@ -13,22 +13,19 @@ Sensor::Sensor(
     float frameRate,
     sf::FloatRect detectionArea,
     std::shared_ptr<mongocxx::client> client,
-    SharedBuffer<sensorBufferFrameType>& sensorBuffer
+    std::string id
 ) : frameRate(frameRate),
     timeSinceLastUpdate(0.0f),
     client(std::move(client)),
-    sensorId(generateUUID()),
-    sensorBuffer(sensorBuffer)
+    sensorId(std::move(id))
 {}
 
 // Base Sensor constructor for rendering
 Sensor::Sensor(
     const sf::FloatRect& detectionArea, 
-    const sf::Color& detectionAreaColor,
-    SharedBuffer<sensorBufferFrameType>& sensorBuffer
+    const sf::Color& detectionAreaColor
 ):  detectionArea(detectionArea), 
-    detectionAreaColor(detectionAreaColor), 
-    sensorBuffer(sensorBuffer) 
+    detectionAreaColor(detectionAreaColor)
 {}
 
 // Shared fixed-step sampling gate for ABS, GBS and AGBS.

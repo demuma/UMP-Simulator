@@ -15,12 +15,11 @@ GridBasedSensor::GridBasedSensor(
     const std::string& databaseName,
     const std::string& collectionName,
     std::shared_ptr<mongocxx::client> client,
-    SharedBuffer<sensorBufferFrameType>& sensorBuffer
-) : Sensor(frameRate, detectionArea, client, sensorBuffer),
+    std::string id
+) : Sensor(frameRate, detectionArea, client, std::move(id)),
     cellSize(cellSize),
     db(client->database(databaseName)),
     collection(db[collectionName]),
-    sensorBuffer(sensorBuffer),
     currentGrid(cellSize, detectionArea),
     previousGrid(cellSize, detectionArea)
 {
@@ -32,11 +31,9 @@ GridBasedSensor::GridBasedSensor(
     sf::FloatRect detectionArea, 
     sf::Color detectionAreaColor, 
     float cellSize, 
-    bool showGrid,
-    SharedBuffer<sensorBufferFrameType>& sensorBuffer
-) : Sensor(detectionArea, detectionAreaColor, sensorBuffer), 
-    cellSize(cellSize), currentGrid(cellSize, detectionArea), 
-    sensorBuffer(sensorBuffer),
+    bool showGrid
+) : Sensor(detectionArea, detectionAreaColor),
+    cellSize(cellSize), currentGrid(cellSize, detectionArea),
     previousGrid(cellSize, detectionArea) {
         this->detectionArea = detectionArea;
         this->detectionAreaColor = detectionAreaColor;
@@ -61,6 +58,7 @@ void GridBasedSensor::update(std::vector<Agent>& agents, float timeStep, std::ch
 
     // Clear data storage
     dataStorage.clear();
+    pendingSample.reset();
 
     // The shared gate handles initialization and resets the timer even for empty areas.
     if (isSamplingDue(timeStep)) {
@@ -96,6 +94,11 @@ void GridBasedSensor::update(std::vector<Agent>& agents, float timeStep, std::ch
                 gridData[cellIndex].totalAgents++;
             }
         }
+
+        GridSensorSample sample;
+        sample.cells.reserve(gridData.size());
+        for (const auto& [index, counts] : gridData) sample.cells.push_back({index, counts});
+        pendingSample = std::move(sample);
 
         // Retain the existing output policy: no DB records for an empty area.
         if(hasAgents) {

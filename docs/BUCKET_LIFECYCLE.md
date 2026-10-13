@@ -652,44 +652,28 @@ These are proposed acceptance cases, not tests that have already passed.
 
 ## 8. Renderer synchronization and aggregation overlay
 
-Source review confirms `readLocalSensorBufferFrame` returns a match without removing it
-and does not clear `currentSensorFrame` when no match exists. `readSensorBufferFrame`
-performs a blocking queue read before local matching. The AGBS drawing loop also has a
-`break` after the first map entry and assigns that entry's ID to the current render sensor.
-Removing only the break would route every entry into every AGBS instance; stable producer
-sensor-ID to renderer-instance mapping is required. S04 tracks the correction with S01.
+**Implementation update, 2026-10-13:** S04 and the renderer transport part of S01 are
+implemented; [Sensor frames](SENSOR_FRAMES.md) is the maintained contract and validation record.
+Simulation emits one complete immutable typed sensor frame per rendered step before exposing
+the matching agent snapshot. Missing IDs mean not due; present empty payloads mean measured
+empty. A non-sampling step still has an empty completion frame. No sensor waits for another
+sensor's later sample.
 
-Contract: after all sensor update calls for simulation step t, combine the contributions
-actually measured at t into one immutable frame. Non-due sensors contribute nothing and
-do not wait for a later sample to complete t. A due sensor with an empty measurement can
-have an empty cell set under its own sensor ID. Do not synthesize a measurement at t from
-its older sample. Multiple actual samples within one step, if later supported, retain their
-own observation times and need a separate contract; do not collapse them silently.
+The renderer consumes exact timestamps once, discards older frames, retains at most one
+future frame and keeps a matching view for pause/redraw. Reads are nonblocking; frame queues
+are bounded and end/stop wakes both readers and writers. Sensor IDs are assigned once and
+each AGBS uses only its own payload. Duplicate/out-of-order frames are rejected. Multiple
+samples per sensor within one step remain unsupported; preserve their real timestamps if
+that capability is later introduced.
 
-The renderer needs step-completeness information as well as a FIFO. An empty queue means
-"not available yet" or "no frame exists"; `tryRead` alone cannot distinguish them. Proposed
-contract: finalize agent/sensor rendering data together after capture, using one step packet
-with an optional/empty sensor map. If separate queues are retained, attach a guaranteed
-presence/completion marker to the step or use a watermark. Publish that metadata only after
-the producer knows all contributions for that step. The current loop exposes the agent
-frame before sensor capture, so this ordering must be addressed explicitly.
-
-For chronological complete sensor frames: clear the current measurement view, discard
-frames older than the agent time, pop one exact match once, and retain future frames.
-Keep the matching view while redrawing/pausing the same agent frame. Perform matching
-when the agent frame advances, not on every repaint. A future FIFO head can prove absence
-at an earlier timestamp only if ordered, complete production is guaranteed. Reject or
-explicitly handle duplicate/out-of-order frames; bound buffering when the renderer skips.
-
-For steps known to have no measurement, show no current measurement. An optional last-known
-display must explicitly retain its original observation time/age; it is not a new reading.
-The UI/event loop must remain responsive while waiting for genuine in-flight work, and
-shutdown must drain or terminate without the current empty-queue wait defect.
+These changes fix the imported stale/local-frame/first-entry defects. They do not implement
+aggregation state or publication rules. Transport/unit and sensor integration tests pass;
+manual visual checks and long-run performance remain explicit validation tasks.
 
 Proposed developer overlay: collecting cells, tentative parent outline, ready candidates,
 committed releases and suppressed intervals, with interval/policy/reason on selection.
 Keep measurement time, candidate interval and release time distinct. The current sensor
-cell-ID set cannot encode this; use a separate read-only aggregation debug snapshot.
+measurement payload cannot encode this; use a separate read-only aggregation debug snapshot.
 Label the trusted GT/internal view separately from an application view that sees releases
 only. Renderer controls observe the manager and do not decide aggregation.
 
@@ -701,7 +685,8 @@ only. Renderer controls observe the manager and do not decide aggregation.
 4. A05: reservations, non-overlapping release ledger, sink boundary and fixed-window output.
 5. A03/A07: small-domain spatial merge/split and descendant fallback, then bounded
    temporal extension and preferences; first baseline can suppress the whole failed candidate.
-6. S04/S01 and A06: correct frame matching before trusting live aggregation overlays.
+6. A06: use the implemented S04/S01 transport for aggregation overlays; perform the
+   remaining manual live checks before treating a demo as evidence.
 7. V01/B01/E01/E02: replay comparisons, runtime/memory, application error and joint-release
    attack evaluation; do not infer empirical privacy improvement from rule compliance.
 8. E05: compare preparation strategies with equal outputs first, then under real-time
@@ -709,6 +694,6 @@ only. Renderer controls observe the manager and do not decide aggregation.
 9. E06: implement/validate the selected publication-model variants and compare them with
    Temporal First/Spatial First using the adopted preservation-priority terminology.
 
-Run meaningful correctness cases per slice. S04 is P0 for a trustworthy live demo, but
-can proceed independently of bucket design. No production simulator run, database cleanup,
+Run meaningful correctness cases per slice. S04 transport is implemented and regression-
+tested; manual visual verification remains separate from bucket correctness. No production simulator run, database cleanup,
 source change or configuration change is authorized merely by this planning document.

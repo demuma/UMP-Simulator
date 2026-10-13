@@ -14,11 +14,10 @@ AgentBasedSensor::AgentBasedSensor(
     const std::string &databaseName,
     const std::string &collectionName,
     std::shared_ptr<mongocxx::client> client,
-    SharedBuffer<sensorBufferFrameType>& sensorBuffer
-) : Sensor(frameRate, detectionArea, client, sensorBuffer),
+    std::string id
+) : Sensor(frameRate, detectionArea, client, std::move(id)),
     db(client->database(databaseName)), // Initialize db in initializer list
-    collection(db[collectionName]),
-    sensorBuffer(sensorBuffer)
+    collection(db[collectionName])
 {
     this->detectionArea = detectionArea;
 }
@@ -26,10 +25,8 @@ AgentBasedSensor::AgentBasedSensor(
 // Alternative constructor for rendering
 AgentBasedSensor::AgentBasedSensor(
     sf::FloatRect detectionArea,
-    sf::Color detectionAreaColor,
-    SharedBuffer<sensorBufferFrameType>& sensorBuffer
-) : Sensor(detectionArea, detectionAreaColor, sensorBuffer), 
-    sensorBuffer(sensorBuffer) {
+    sf::Color detectionAreaColor
+) : Sensor(detectionArea, detectionAreaColor) {
     this->detectionArea = detectionArea;
     this->detectionAreaColor = detectionAreaColor;
 }
@@ -40,6 +37,7 @@ AgentBasedSensor::~AgentBasedSensor() {}
 // Observe the initial state internally, then capture at the configured sampling rate.
 void AgentBasedSensor::update(std::vector<Agent>& agents, float timeStep, std::chrono::system_clock::time_point timestamp) {
     this->timestamp = timestamp;
+    pendingSample.reset();
 
     if (!samplingInitialized) {
         previousPositions.clear();
@@ -55,6 +53,7 @@ void AgentBasedSensor::update(std::vector<Agent>& agents, float timeStep, std::c
     }
 
     captureAgentData(agents);
+    pendingSample = AgentSensorSample{dataStorage.second, currentPositions.size()};
     previousPositions = std::move(currentPositions);
     currentPositions.clear();
 }

@@ -389,7 +389,7 @@ void Simulation::initializeSensors() {
         if (type == "agent-based") {
             
             // Create the agent-based sensor and add to sensors vector
-            sensors.push_back(std::make_unique<AgentBasedSensor>(frameRate, detectionArea, databaseName, collectionName, client, sensorBuffer));
+            sensors.push_back(std::make_unique<AgentBasedSensor>(frameRate, detectionArea, databaseName, collectionName, client, sensorNode["id"].as<std::string>()));
             sensors.back()->scale = scale;
             sensors.back()->timestamp = timestamp;
 
@@ -411,7 +411,7 @@ void Simulation::initializeSensors() {
             bool showGrid = sensorNode["grid"]["show_grid"].as<bool>();
 
             // Create the grid-based sensor and add to sensors vector
-            sensors.push_back(std::make_unique<GridBasedSensor>(frameRate, detectionArea, cellSize, databaseName, collectionName, client, sensorBuffer));
+            sensors.push_back(std::make_unique<GridBasedSensor>(frameRate, detectionArea, cellSize, databaseName, collectionName, client, sensorNode["id"].as<std::string>()));
             sensors.back()->scale = scale;
             sensors.back()->timestamp = timestamp;
 
@@ -432,7 +432,7 @@ void Simulation::initializeSensors() {
             int maxDepth = sensorNode["grid"]["max_depth"].as<int>();
 
             // Create the grid-based sensor and add to sensors vector
-            sensors.push_back(std::make_unique<AdaptiveGridBasedSensor>(frameRate, detectionArea, cellSize, maxDepth, databaseName, collectionName, client, sensorBuffer));
+            sensors.push_back(std::make_unique<AdaptiveGridBasedSensor>(frameRate, detectionArea, cellSize, maxDepth, databaseName, collectionName, client, sensorNode["id"].as<std::string>()));
             sensors.back()->scale = scale;
             sensors.back()->timestamp = timestamp;
             
@@ -464,18 +464,17 @@ void Simulation::run() {
     currentSimulationTimeStep = timeStep;
     simulationRealTime += simulationClock.getElapsedTime();
 
-    // Main simulation loop
-    while ((agentBuffer.currentWriteFrameIndex < maxFrames && !agentBuffer.stop.load())) {
+    const bool renderEnabled = config["renderer"]["show_renderer"].as<bool>();
+    std::size_t completedSteps = 0;
+    // Headless runs do not retain unused render queues.
+    while ((maxFrames == 0 || completedSteps < maxFrames) && !agentBuffer.stop.load()) {
 
         // Restart the clock
         simulationClock.restart();
         
         // Write the agent current frame to the agent buffer
-        auto currentFramePtr = std::make_shared<agentFrameType>(timestamp, agents);
-        agentBuffer.write(currentFramePtr);
-        
-        // Swap the read and write buffers if the read agentBuffer is empty
-        agentBuffer.swap();
+        agentBufferFrameType currentFramePtr;
+        if (renderEnabled) currentFramePtr = std::make_shared<const agentFrameType>(timestamp, agents);
         
         // Update the agentBuffer write time
         writeBufferTime = simulationClock.getElapsedTime();
@@ -493,8 +492,13 @@ void Simulation::run() {
         // Update timestamp
         timestamp = generateISOTimestamp(simulationTime, datetime);
         
-        // Swap the sensor agentBuffer
-        sensorBuffer.swap();
+        // Publish the agent state only after its complete sensor frame exists.
+        if (renderEnabled) {
+            sensorBuffer.swap();
+            agentBuffer.write(currentFramePtr);
+            agentBuffer.swap();
+        }
+        ++completedSteps;
         
         // Update the simulation update time
         simulationUpdateTime += simulationClock.getElapsedTime() - writeBufferTime;
@@ -508,8 +512,7 @@ void Simulation::run() {
     }
 
     // Signalize the simulation has finished so that the renderer can swap buffers if needed
-    agentBuffer.stop.store(true);
-    sensorBuffer.stop.store(true);
+    // Normal completion drains pending frames; cancellation is signaled by requestStop().
 
     // End the simulation
     agentBuffer.end();
@@ -518,26 +521,31 @@ void Simulation::run() {
     DEBUG_MSG("Simulation: finished");
 
     // Print simulation statistics
-    STATS_MSG("Total simulation wall time: " << simulationRealTime.asSeconds() << " seconds for " << agentBuffer.currentWriteFrameIndex << " frames");
+    STATS_MSG("Total simulation wall time: " << simulationRealTime.asSeconds() << " seconds for " << completedSteps << " frames");
     STATS_MSG("Total simulation time: " << simulationTime.asSeconds() << " seconds" << " for " << numAgents << " agents");
     STATS_MSG("Simulation speedup: " << (maxFrames * timeStep) / simulationRealTime.asSeconds());
-    STATS_MSG("Frame rate: " << 1/(simulationRealTime.asSeconds() / agentBuffer.currentWriteFrameIndex));
-    STATS_MSG("Average simulation update time: " << simulationUpdateTime.asSeconds() / agentBuffer.currentWriteFrameIndex);
-    STATS_MSG("Average simulation time step: " << simulationRealTime.asSeconds() / agentBuffer.currentWriteFrameIndex);
-    STATS_MSG("Average write buffer time: " << totalWriteBufferTime.asSeconds() / agentBuffer.currentWriteFrameIndex);
+    STATS_MSG("Frame rate: " << 1/(simulationRealTime.asSeconds() / completedSteps));
+    STATS_MSG("Average simulation update time: " << simulationUpdateTime.asSeconds() / completedSteps);
+    STATS_MSG("Average simulation time step: " << simulationRealTime.asSeconds() / completedSteps);
+    STATS_MSG("Average write buffer time: " << totalWriteBufferTime.asSeconds() / completedSteps);
 }
 
 void Simulation::update() {
 
-    // Update sensors and store sensor data
+    SensorFrameBuilder frame(timestamp);
+    // Capture values while sensors remain independent. No sensor writes the render queue.
     for (auto& sensor : sensors) {
 
         // sensor->update(agents, timeStep, simulationTime, datetime);
         sensor->update(agents, timeStep, timestamp);
-        // sensor->printData();
+        if (auto sample = sensor->takeSample())
+            frame.add(sensor->sensorId, sensor->timestamp, std::move(*sample));
         sensor->postData();
         // sensor->postAggregatedData();
     }
+    // Includes an empty map on non-sampling steps: completion is explicit.
+    if (config["renderer"]["show_renderer"].as<bool>())
+        sensorBuffer.write(std::move(frame).finish());
 
     // Update timestamp
     timestamp = generateISOTimestamp(simulationTime, datetime);

@@ -6,8 +6,9 @@ mobility data and adapting spatial and temporal aggregation under regional const
 **Status: 2026-10-13. Current work: define and build the missing aggregation pipeline,
 metric evaluation and regional policy trees, starting with AGBS. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
-and regression-tested. Actual-interval velocity handling and reproducible research
-experiments remain open.**
+and regression-tested. Complete typed sensor frames, stable renderer identity routing and
+bounded, nonblocking renderer consumption are now implemented (S04/S01). Actual-interval
+velocity handling and reproducible research experiments remain open.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -19,6 +20,7 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
+| [Sensor frame contract](docs/SENSOR_FRAMES.md) | Implemented typed payloads, step completion, identity routing, queue bounds and validation |
 | [Technical audit](docs/STATE_AND_NEXT_STEPS.md) | Source-level findings and the recorded database check |
 | [Aggregation design review](docs/AGGREGATION_DESIGN.md) | Configuration/presentation review, bucket semantics, transport, policy trees and metric scheduling before implementation |
 | [Bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) | Detailed planning: state diagram, storage, compiled policies, coordinated releases and renderer correctness |
@@ -139,7 +141,7 @@ reverted test results do not establish correctness of the current implementation
 | AggregationManager | Sensor-local class scaffold, bucket structure and DB test method | No usable algorithm; empty flush; no effective pipeline integration |
 | Regional rules | YAML/Region fields for granularities and k/l thresholds | No active policy evaluation, conflict handling or policy trees |
 | Temporal history | Short-lived sensor data containers | No bounded reconstructable history or variable aggregation windows |
-| Rendering | In-process view and four V3 database renderers | Stale/non-consumed sensor frames, first-entry-only AGBS drawing and blocking/shutdown issues (S04/S01); aggregation overlay pending |
+| Rendering | Complete typed per-step sensor frames, stable per-sensor routing, nonblocking pairing and bounded queues; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
 | Evaluation | Earlier experiments in Data_analysis outside this import | Metric semantics, independent attacker evaluation and fair baselines missing |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |
@@ -151,15 +153,16 @@ core research evaluation are still pending.
 
 ### 5.1 Do GT and ABS describe different times?
 
-In the active Aggregation_Manager import, Simulation::run/update follows this sequence:
+In the current simulator, Simulation::run/update follows this sequence:
 
 ```text
 State X(t), timestamp t
-    → store GT and agent snapshot
+    → store GT and copy the agent snapshot
     → increment simulationTime internally; timestamp still remains t
-    → sensors observe X(t) with timestamp t
-    → set timestamp to t + dt
-    → move agents to the next state
+    → sensors observe X(t) with timestamp t; assemble the complete sensor frame
+    → publish the complete sensor frame (empty map when no sensor samples)
+    → set timestamp to t + dt and move agents to the next state
+    → expose the copied agent snapshot for t to the renderer
 ```
 
 On this path, matching timestamps describe the same position state. Requiring a second
@@ -190,9 +193,10 @@ ABS owns its initial-position capture in its first update; Simulation no longer 
 previousPositions by accessing the derived sensor's state during construction.
 
 GBS/AGBS keep their existing DB output policy: an entirely empty area writes no count
-documents. AGBS emits an empty renderer snapshot on the scheduled observation instead
-of every simulation tick. A newly populated area is counted on the next scheduled sample.
-Representing explicit zero counts or distinguishing Empty/Suppressed/Unavailable remains D03.
+documents. The combined frame now contains an identified empty payload for a due empty
+measurement, and an empty map when no sensor is due. A newly populated area is counted on
+the next scheduled sample. Public Empty/Suppressed/Unavailable semantics remain D03;
+the internal frame states are defined in [Sensor frames](docs/SENSOR_FRAMES.md).
 
 ### 5.3 One velocity calculation and the new-agent rule
 
@@ -297,7 +301,7 @@ Simulation thread
   ├── ABS → position / velocity / MongoDB
   ├── GBS → fixed-cell counts / MongoDB
   ├── AGBS → quadtree-cell counts / MongoDB
-  └── SharedBuffer → renderer on the main thread
+  └── complete typed sensor frame + matching agent snapshot → bounded queues → renderer
 
 Separate V3 renderers → read stored data from MongoDB
 ```
@@ -409,7 +413,19 @@ cmake --build renderers/abs/build -j4
 Replace abs with gbs, agbs or gt for the other applications. Each target is named Visualizer,
 so the renderers remain separate CMake projects for now.
 
-### Run the sensor regression test
+### Run frame and sensor regression tests
+
+FrameRegressionTests is enabled by default and needs neither MongoDB nor a window:
+
+```sh
+ctest --test-dir simulator/build -R frame_regression --output-on-failure
+```
+
+It verifies pairing, multi-ID routing, empty steps, pause, chronological validation,
+bounded concurrent FIFO consumption and shutdown. Disable it with UMP_BUILD_FRAME_TESTS=OFF
+only when a build without the test executable is specifically needed.
+
+The sensor integration test remains opt-in:
 
 The opt-in test requires MongoDB on localhost:27017. It creates a fresh
 UMP_sensor_regression_<UUID> database and removes only that database on normal exit.
@@ -422,8 +438,13 @@ ctest --test-dir simulator/build --output-on-failure
 ```
 
 The test checks known motion, first capture, repeated ABS publication, new identities,
-reentry, empty areas, grid counts and renderer snapshot timestamps. Normal builds leave
-the test target disabled. A force-killed test may leave its isolated database for cleanup.
+reentry, empty areas, grid counts, combined frame timestamps and two AGBS at different rates.
+Normal builds leave the MongoDB integration target disabled. A force-killed test may leave its isolated database for cleanup.
+
+Optional transport settings: sensors[].id provides a stable configured identity; otherwise
+Main generates a UUID once per run. renderer.buffer_capacity defaults to 128 frames per
+queue and must be positive. Headless runs do not enqueue render frames. See the
+[frame contract](docs/SENSOR_FRAMES.md) for payloads and exact empty-step behavior.
 
 ### Configuration and startup
 

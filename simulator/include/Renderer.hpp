@@ -17,6 +17,7 @@
 #include "Obstacle.hpp"
 #include "Utilities.hpp"
 #include "Sensor.hpp"
+#include "SensorFrameCursor.hpp"
 
 /************************************/
 /********** RENDERER CLASS **********/
@@ -44,12 +45,7 @@ public:
     // void handleEvents(sf::Event& event); // Note: SFML 2.6.2 or prior
     void handleEvents();
     sf::Time calculateSleepTime();
-    void printSensorBuffer();
-    void printAgentBuffer();
-    void printLocalBuffer();
-    void readAgentBufferFrame();
-    void readSensorBufferFrame();
-    void readLocalSensorBufferFrame();
+    bool readNextFrame();
 
 private:
 // Struct for rendering agents
@@ -165,14 +161,10 @@ private:
 
     // Shared buffers
     // SharedBuffer<std::vector<Agent>>& agentBuffer;
-    bool sensorBufferDrained = false;
     SharedBuffer<agentBufferFrameType>& agentBuffer;
     SharedBuffer<sensorBufferFrameType>& sensorBuffer;
-    sensorBufferFrameType currentSensorBufferFrame;
-    agentBufferFrameType currentAgentBufferFrame;
-    sensorBufferFrameType currentLocalSensorBufferFrame;
-    std::deque<sensorBufferFrameType> localSensorBuffer;
-    std::chrono::system_clock::time_point agentFrameTimestamp;
+    agentBufferFrameType pendingAgentFrame;
+    SensorFrameCursor sensorFrames;
 
     // Sensors
     std::vector<std::unique_ptr<Sensor>> sensors;
@@ -189,9 +181,8 @@ private:
     // Agents and sensors
     std::shared_ptr<const agentFrame> currentAgentFrame;
     std::shared_ptr<const sensorFrame> currentSensorFrame;
-    // sensorBufferFrameType currentCellIds;
     
-    // Sensor buffer frame: timestamp, map (sensorID -> set of cell IDs)
+    // Sensor buffer frame: timestamp, map (sensorID -> typed measurement payload)
     int currentNumAgents;
     float waypointRadius;
     bool showTrajectories = false;

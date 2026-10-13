@@ -273,3 +273,27 @@ velocity was (2,1) m/s over 0–100 ms. The test database was removed on exit.
 Existing Simulation data/configuration was unchanged; the full simulator was not run.
 Variable steps, non-aligned periods, failure injection and full-run reproducibility remain
 unverified. Current rules and build/test commands are maintained in README and TO-DO.
+
+
+## Implementation record — 2026-10-13: S04/S01
+
+The renderer defects described in the original import have now been corrected. SensorFrame
+owns typed ABS/GBS/AGBS values, with stable IDs and explicit empty-step completion. Sensors
+handoff samples without a SharedBuffer dependency. Simulation assembles one frame before
+publishing the corresponding copied agent state. The renderer selects chronological frames
+without blocking, clears missing measurements, retains one future frame and routes each AGBS
+by its own ID. Geometry is rebuilt on frame advance, not on repeated paused draws.
+
+SharedBuffer now drains both queues, wakes readers/writers on end/stop and supports bounded
+capacity. Main uses 128 frames per queue by default; headless runs do not enqueue render
+data. Queue changes do not introduce another consumer or an aggregation thread.
+
+Verification: Release build; FrameRegressionTests; expanded isolated MongoDB sensor regression
+with two AGBS at 10/5 Hz; full executable headless smoke test with 20 timestamps and four
+distinct sensor IDs consistent with their metadata. Tests use and remove only their own
+UUID-named databases. The first sandboxed MongoDB attempt timed out; rerunning with local
+network access passed. Existing Simulation data and the user's YAML were not changed.
+
+Manual GUI inspection and long-run performance are not covered. AGBS counts still cannot
+establish distinct contributors across time. Actual buckets, metrics and policy trees remain
+open. See [Sensor frames](SENSOR_FRAMES.md) and the chronological TO-DO for the next slice.

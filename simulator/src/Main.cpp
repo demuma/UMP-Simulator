@@ -29,15 +29,31 @@ int main() {
         return 1;
     }
 
+    // A run-stable ID maps database metadata, samples and render instances to one sensor.
+    std::unordered_set<std::string> sensorIds;
+    for (auto sensor : config["sensors"]) {
+        if (!sensor["id"]) sensor["id"] = generateUUID();
+        const auto id = sensor["id"].as<std::string>();
+        if (id.empty() || !sensorIds.insert(id).second) {
+            std::cerr << "Sensor IDs must be nonempty and unique.\n";
+            return 1;
+        }
+    }
+
     // Shared buffers for agent data
     // SharedBuffer<std::vector<Agent>> agentBuffer;
     // SharedBuffer<std::shared_ptr<const std::vector<Agent>>> agentBuffer("Agents");
-    SharedBuffer<agentBufferFrameType> agentBuffer("Agents");
+    const auto bufferCapacity = config["renderer"]["buffer_capacity"].as<std::size_t>(128);
+    if (bufferCapacity == 0) {
+        std::cerr << "renderer.buffer_capacity must be greater than zero.\n";
+        return 1;
+    }
+    SharedBuffer<agentBufferFrameType> agentBuffer("Agents", bufferCapacity);
     
     // Shared buffers for sensor data
     // std::unordered_map<std::string,std::shared_ptr<SharedBuffer<std::shared_ptr<QuadtreeSnapshot::Node>>>> sensorBuffers;
     // SharedBuffer<std::unordered_map<std::string, std::vector<int>>> sensorBuffer;
-    SharedBuffer<sensorBufferFrameType> sensorBuffer("Sensors");
+    SharedBuffer<sensorBufferFrameType> sensorBuffer("Sensors", bufferCapacity);
 
     // Load global configuration data
     float timeStep = config["simulation"]["time_step"].as<float>();
@@ -46,16 +62,37 @@ int main() {
     // Shared variabes
     std::atomic<float> currentSimulationTimeStep{timeStep};
 
-    Simulation simulation(agentBuffer, sensorBuffer, currentSimulationTimeStep, config);
-    std::thread simulationThread(&Simulation::run, &simulation);
-
-    // Run the renderer if not in headless mode
-    if (enableRendering) {
-        Renderer renderer(agentBuffer, sensorBuffer, currentSimulationTimeStep, config);
-        renderer.run();
+    try {
+        Simulation simulation(agentBuffer, sensorBuffer, currentSimulationTimeStep, config);
+        if (enableRendering) {
+            // Construct the window before starting a producer that may wait on a full queue.
+            Renderer renderer(agentBuffer, sensorBuffer, currentSimulationTimeStep, config);
+            std::exception_ptr simulationError;
+            std::thread simulationThread([&] {
+                try { simulation.run(); }
+                catch (...) {
+                    simulationError = std::current_exception();
+                    agentBuffer.end();
+                    sensorBuffer.end();
+                }
+            });
+            try { renderer.run(); }
+            catch (...) {
+                agentBuffer.requestStop();
+                sensorBuffer.requestStop();
+                simulationThread.join();
+                throw;
+            }
+            agentBuffer.requestStop();
+            sensorBuffer.requestStop();
+            simulationThread.join();
+            if (simulationError) std::rethrow_exception(simulationError);
+        } else {
+            simulation.run();
+        }
+    } catch (const std::exception& error) {
+        std::cerr << "Simulation failed: " << error.what() << '\n';
+        return 1;
     }
-
-    simulationThread.join();
-
     return 0;
 }

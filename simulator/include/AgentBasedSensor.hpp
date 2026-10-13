@@ -6,16 +6,7 @@
 class AgentBasedSensor : public Sensor {
 public:
 
-    struct AgentData {
-
-        // Sensor data structure
-        std::string sensorId;
-        std::string agentId;
-        std::chrono::system_clock::time_point timestamp;
-        std::string type;
-        sf::Vector2f position;
-        sf::Vector2f estimatedVelocity;
-    };
+    using AgentData = AgentObservation;
 
     // Base constructor for simulation
     AgentBasedSensor(
@@ -24,14 +15,13 @@ public:
         const std::string& databaseName,
         const std::string& collectionName,
         std::shared_ptr<mongocxx::client> client,
-        SharedBuffer<sensorBufferFrameType>& sensorBuffer
+        std::string id = generateUUID()
     );
 
     // Alternative constructor for rendering
     AgentBasedSensor( 
         sf::FloatRect detectionArea, 
-        sf::Color detectionAreaColor,
-        SharedBuffer<sensorBufferFrameType>& sensorBuffer
+        sf::Color detectionAreaColor
     );
 
     ~AgentBasedSensor();
@@ -49,6 +39,5 @@ private:
     mongocxx::collection collection;
 
     // Pending output batch; observations are assembled locally in captureAgentData().
-    SharedBuffer<sensorBufferFrameType>& sensorBuffer;
     std::pair<std::chrono::system_clock::time_point, std::vector<AgentData>> dataStorage;
 };

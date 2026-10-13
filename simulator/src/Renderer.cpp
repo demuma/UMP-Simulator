@@ -183,7 +183,8 @@ void Renderer::initializeSensors() {
         if (type == "agent-based") {
             
             // Create the agent-based sensor and add to sensors vector
-            sensors.push_back(std::make_unique<AgentBasedSensor>(detectionArea, colorAlpha, sensorBuffer));
+            sensors.push_back(std::make_unique<AgentBasedSensor>(detectionArea, colorAlpha));
+            sensors.back()->sensorId = sensorNode["id"].as<std::string>();
             sensors.back()->scale = scale;
 
 
@@ -194,7 +195,8 @@ void Renderer::initializeSensors() {
             bool showSensorGrid = sensorNode["grid"]["show_grid"].as<bool>();
 
             // Create the grid-based sensor and add to sensors vector
-            sensors.push_back(std::make_unique<GridBasedSensor>(detectionArea, colorAlpha, cellSize, showSensorGrid, sensorBuffer));
+            sensors.push_back(std::make_unique<GridBasedSensor>(detectionArea, colorAlpha, cellSize, showSensorGrid));
+            sensors.back()->sensorId = sensorNode["id"].as<std::string>();
             sensors.back()->scale = scale;
         } else if (type == "adaptive-grid-based") {
 
@@ -203,7 +205,8 @@ void Renderer::initializeSensors() {
             int maxDepth = sensorNode["grid"]["max_depth"].as<int>();
 
             // Create the grid-based sensor and add to sensors vector
-            sensors.push_back(std::make_unique<AdaptiveGridBasedSensor>(detectionArea, colorAlpha, cellSize, maxDepth, showSensorGrid, sensorBuffer));
+            sensors.push_back(std::make_unique<AdaptiveGridBasedSensor>(detectionArea, colorAlpha, cellSize, maxDepth, showSensorGrid));
+            sensors.back()->sensorId = sensorNode["id"].as<std::string>();
             sensors.back()->scale = scale;
         }
     }
@@ -398,7 +401,8 @@ void Renderer::handleEvents() {
     // Lambda to handle window close events.
     const auto onClose = [this](const sf::Event::Closed&) {
         window.close();
-        agentBuffer.stop.store(true);
+        agentBuffer.requestStop();
+        sensorBuffer.requestStop();
     };
 
     // Lambda to handle window resize events.
@@ -462,7 +466,8 @@ void Renderer::handleEvents() {
         
         else if (keyPressed.scancode == sf::Keyboard::Scancode::Q) {
             window.close();
-            agentBuffer.stop.store(true);
+            agentBuffer.requestStop();
+            sensorBuffer.requestStop();
         }
 
         else if (keyPressed.scancode == sf::Keyboard::Scancode::R) {
@@ -494,7 +499,8 @@ void Renderer::handleEvents() {
 
         else if (keyPressed.scancode == sf::Keyboard::Scancode::Escape) {
             window.close();
-            agentBuffer.stop.store(true);
+            agentBuffer.requestStop();
+            sensorBuffer.requestStop();
         }
     };
 
@@ -638,13 +644,14 @@ void Renderer::run() {
     rendererRealTime += rendererClock.restart();
 
     // Main rendering loop
-    while (window.isOpen() && agentBuffer.currentReadFrameIndex < maxFrames) {
+    while (window.isOpen()) {
 
         // Reset the frame time clock
         rendererFrameClock.restart();
 
         // Handle events
         handleEvents();
+        if (!window.isOpen()) break;
 
         // Polling mouse position for panning when dragging mouse
         if (isPanning){
@@ -662,8 +669,11 @@ void Renderer::run() {
         if(!paused) {
 
             // Process the buffer frames
-            readAgentBufferFrame();
-            readSensorBufferFrame();
+            if (!readNextFrame()) {
+                if (agentBuffer.isDrained() && !pendingAgentFrame) break;
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                continue;
+            }
             
             // Update the pause frame pointer
             pauseAgentFrame = currentAgentFrame;
@@ -705,8 +715,8 @@ void Renderer::run() {
 
             // Replay last frame and sleep time in paused state
             currentAgentFrame = pauseAgentFrame;
-            render();
-            std::this_thread::sleep_for(std::chrono::duration<float>(pauseSleepTime.asSeconds()));
+            if (currentAgentFrame) render();
+            std::this_thread::sleep_for(std::chrono::duration<float>(std::max(0.001f, pauseSleepTime.asSeconds())));
         }
     }
     STATS_MSG("Total render wall time: " << rendererRealTime.asSeconds() << " seconds for " << agentBuffer.currentReadFrameIndex << " frames");
@@ -748,149 +758,35 @@ sf::Time Renderer::calculateSleepTime() {
     return std::max(remainingTime, sf::Time::Zero);
 }
 
-// Function to print the current sensor buffer frame for debugging
-void Renderer::printSensorBuffer() {
+// Select a complete pair without blocking event processing.
+bool Renderer::readNextFrame() {
+    if (!pendingAgentFrame) {
+        auto next = agentBuffer.tryRead();
+        if (!next) return false;
+        pendingAgentFrame = std::move(*next);
+        if (!pendingAgentFrame) return false;
+    }
+    if (!sensorFrames.select(pendingAgentFrame->first, sensorBuffer)) return false;
+    currentAgentFrame = std::shared_ptr<const agentFrame>(pendingAgentFrame, &pendingAgentFrame->second);
+    const auto& selected = sensorFrames.frame();
+    currentSensorFrame = selected
+        ? std::shared_ptr<const sensorFrame>(selected, &selected->second) : nullptr;
+    pendingAgentFrame.reset();
 
-    // Get the current sensor buffer data
-    std::ostringstream out;
-
-    out << "Timestamp: " << generateISOTimestampString(currentSensorBufferFrame->first) << " - ";
-
-    // Iterate and print
-    for (const auto& [sensorId, cellIds]: currentSensorBufferFrame->second) {
-        out << "Sensor ID: " << sensorId << " - ";
-        out << "Cell IDs: ";
-        for (const auto& cellId: cellIds) {
-            out << cellId << " ";
+    // Each sensor owns its geometry; route only its own typed payload.
+    for (auto& sensor : sensors) {
+        auto* agbs = dynamic_cast<AdaptiveGridBasedSensor*>(sensor.get());
+        if (!agbs) continue;
+        agbs->adaptiveGrid.clear();
+        const auto* sample = currentSensorFrame
+            ? findSensorSample<AdaptiveGridSensorSample>(*currentSensorFrame, agbs->sensorId) : nullptr;
+        if (sample) {
+            std::unordered_set<int> cells;
+            for (const auto& [id, counts] : sample->cells) cells.insert(id);
+            agbs->adaptiveGrid.splitFromCellIds(cells);
         }
     }
-    DEBUG_MSG(out.str());
-}
-
-// Function to print the current sensor buffer frame for debugging
-void Renderer::printLocalBuffer() {
-
-    // Get the current sensor buffer data
-    std::ostringstream out;
-
-    out << "Timestamp: " << generateISOTimestampString(currentLocalSensorBufferFrame->first) << " - ";
-
-    // Iterate and print
-    for (const auto& [sensorId, cellIds]: currentLocalSensorBufferFrame->second) {
-        out << "Sensor ID: " << sensorId << " - ";
-        out << "Cell IDs: ";
-        for (const auto& cellId: cellIds) {
-            out << cellId << " ";
-        }
-    }
-    DEBUG_MSG(out.str());
-}
-
-// Function to print the current agent buffer frame for debugging
-void Renderer::printAgentBuffer() {
-
-    // Get the current agent buffer data
-    std::ostringstream out;
-
-    out << "Timestamp: " << generateISOTimestampString(currentAgentBufferFrame->first) << " - ";
-    out << "Agent IDs: ";
-
-    // Iterate and print
-    for (const auto& agent: currentAgentBufferFrame->second) {
-            out << agent.agentId << " ";
-    }
-    DEBUG_MSG(out.str());
-}
-
-// Process agent buffer
-void Renderer::readAgentBufferFrame() {
-
-    // Read the current frame from the agentBuffer
-    currentAgentBufferFrame = agentBuffer.read();
-
-    // Check if pointer is not null and assign to currentFrame
-    if(currentAgentBufferFrame) {
-
-        // printAgentBuffer();
-
-        agentFrameTimestamp = currentAgentBufferFrame->first;
-        currentAgentFrame = std::shared_ptr<const agentFrame>(currentAgentBufferFrame, &currentAgentBufferFrame->second);
-    } else {
-        DEBUG_MSG("Renderer: " << agentBuffer.name << " buffer drained with last frame " << agentBuffer.currentReadFrameIndex-1);
-        sensorBufferDrained = true; // Also mark sensor buffer as drained to stop reading
-    }
-}
-
-// Process sensor buffer (not working yet)
-void Renderer::readSensorBufferFrame() {
-
-    if(!sensorBufferDrained){
-
-        // Get the current sensor buffer frame
-        currentSensorBufferFrame = sensorBuffer.read();
-
-        // Check if pointer is not null = valid
-        if (currentSensorBufferFrame) {
-
-            // printSensorBuffer();
-
-            // Compare timestamp from sensor buffer frame and agent buffer frame
-            if(agentFrameTimestamp == currentSensorBufferFrame->first) {
-                currentSensorFrame = std::shared_ptr<const sensorFrame>(currentSensorBufferFrame, &currentSensorBufferFrame->second);
-                DEBUG_MSG("Renderer: " << sensorBuffer.name << " timestamp match at frame " << sensorBuffer.currentReadFrameIndex-1);
-            }
-            else {
-                // Store in local buffer for later processing
-                localSensorBuffer.emplace_back(currentSensorBufferFrame);
-                DEBUG_MSG("Renderer: " << sensorBuffer.name << " buffer frame timestamp mismatch at frame " << sensorBuffer.currentReadFrameIndex-1);
-
-                readLocalSensorBufferFrame();
-            }
-        } else {
-            sensorBufferDrained = true;
-            DEBUG_MSG("Renderer: " << sensorBuffer.name << " buffer drained with last frame " << sensorBuffer.currentReadFrameIndex-1);
-        }
-    }
-    else {
-        readLocalSensorBufferFrame();
-    }
-}
-
-// Read from local sensor buffer
-void Renderer::readLocalSensorBufferFrame() {
-    
-    int frameNumber = 0;
-
-    DEBUG_MSG("Renderer: searching local sensor buffer for matching timestamp " << generateISOTimestampString(agentFrameTimestamp));
-
-    // Search for matching timestamp in local storage
-    for (const auto& storedSensorFrame : localSensorBuffer) {
-        if (storedSensorFrame->first == agentFrameTimestamp) {
-
-            DEBUG_MSG("Renderer: found matching timestamp in local sensor buffer at frame " << frameNumber);
-
-            // // Get the current sensor buffer data
-            std::ostringstream out;
-
-            out << "Timestamp: " << generateISOTimestampString(storedSensorFrame->first) << " - ";
-
-            // Iterate and print
-            for (const auto& [sensorId, cellIds]: storedSensorFrame->second) {
-                out << "Sensor ID: " << sensorId << " - ";
-                out << "Cell IDs: ";
-                for (const auto& cellId: cellIds) {
-                    out << cellId << " ";
-                }
-            }
-
-            DEBUG_MSG(out.str());
-            currentSensorFrame = std::shared_ptr<const sensorFrame>(storedSensorFrame, &storedSensorFrame->second);
-            // break;
-            return;
-        }
-        frameNumber++;
-    }
-    DEBUG_MSG("Renderer: no matching timestamp found in local sensor buffer");
+    return true;
 }
 
 // Main rendering function
@@ -1002,38 +898,6 @@ void Renderer::render() {  // Input: meters, Output: pixels
                 }
 
                 else if(auto adaptiveGridBasedSensor = dynamic_cast<AdaptiveGridBasedSensor*>(sensor.get())) {
-                    
-                    adaptiveGridBasedSensor->adaptiveGrid.reset();
-                    std::vector<std::vector<int>> splitSequences;
-
-                    if (!currentSensorFrame) {
-                        DEBUG_MSG("Renderer: No sensor frame found for timestamp");
-                        break;
-                    }
-                    else {
-
-                        for (const auto& [sensorIds, cellIds]: *currentSensorFrame){
-                            adaptiveGridBasedSensor->sensorId = sensorIds;
-                            adaptiveGridBasedSensor->adaptiveGrid.splitFromCellIds(cellIds);
-                            // for (const auto& cellId: cellIds) {
-                            //     auto splitSequence = adaptiveGridBasedSensor->adaptiveGrid.getSplitSequence(cellId);
-                            //     std::cout << "Split sequence for cell " << cellId << ": ";
-                            //     for (const auto& morton : splitSequence) {
-                            //         std::cout << morton << " ";
-                            //     }
-                            //     std::cout << std::endl;
-                            //     splitSequences.push_back(splitSequence);
-                            //     // splitSequences.push_back(adaptiveGridBasedSensor->adaptiveGrid.getSplitSequence(cellId));
-
-                            //     // Split the cells in the adaptive grid
-                            //     for(const auto& seq : splitSequences) {
-                                    
-                            //         adaptiveGridBasedSensor->adaptiveGrid.splitCell(seq);
-                            //     }
-                            // }
-                            break;
-                        }
-                    } 
                     
                     // Draw the grid if enabled
                     if(adaptiveGridBasedSensor->showGrid && showSensors) {

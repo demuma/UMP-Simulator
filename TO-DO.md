@@ -24,7 +24,7 @@ crashes or corrupt input are blockers, not reasons to begin an unrelated redesig
 
 ## 2. Chronological execution order
 
-**Current position: Stage 1, planning the AGBS input and aggregate contract.** The detailed
+**Current position: Stage 1. S04/S01 transport correction implemented; next is the identity-bearing AGBS input and aggregate contract.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
 proposals, flow diagram, storage model and hand-worked cases. No bucket implementation
 is implied by this planning work. The core is intended to be reusable across sensor types;
@@ -45,8 +45,8 @@ sensor provides every metric input or supports arbitrary spatial refinement.
 | 9 — as justified | Further metrics, uncertainty, graphics and infrastructure | E03, X06–X09 | Research or measured engineering need |
 
 F01 and S01–S04 are corrections alongside the active stage when its correctness
-or execution depends on them. **S04/S01 are P0 before trusting the live sensor/aggregation
-demo**; renderer repair does not block independent bucket contract work. F03 covers
+or execution depends on them. **S04 and the S01 transport correction are implemented and
+regression-tested; manual live inspection remains pending.** Bucket contract work continues. F03 covers
 persistence recovery beyond successful writes.
 Completed audits and sensor fixes are collected at the end of this file.
 
@@ -294,6 +294,11 @@ Do not shift timestamps merely to make records appear synchronized.
 multiple times for contributions. Small example data demonstrates every chosen definition.
 
 ### A01 — Define states and AggregatedCell — P0
+
+**First enabling slice implemented:** value-owned typed SensorSample handoff and complete
+step frames (S04). This separates sensors from renderer transport. AGBS/GBS payloads are
+still count-only: the identity-bearing internal AGBS adapter, window semantics and actual
+AggregationManager ingestion are the next slice, not completed by the frame change.
 
 - [ ] Describe geometry, history, release rules and publications separately.
 - [ ] Specify sensor-local ownership; favor a manager without MongoDB coupling.
@@ -684,53 +689,42 @@ position and timestamp still match GT. Unknown agents follow D01.
 fixes aligned startup, consolidates calculation and implements D01; it deliberately retains
 nominal frameRate estimation. The older 0ce473f implementation remains reverted.
 
-### S01 — SharedBuffer shutdown and consumption — P0 before larger runs
+### S01 — SharedBuffer shutdown and consumption — transport correction implemented
 
-- [ ] Include finished/stop and data availability in the wait condition.
-- [ ] Check empty-queue shutdown, final frames and early renderer closure.
-- [ ] Measure/bound growth with absent or slow consumers.
-- [ ] Describe synchronization of snapshots at different sensor frequencies.
+- [x] Include end/stop and both queues in data availability and wake conditions.
+- [x] Verify empty-queue shutdown, final write-queue drain and blocked-writer cancellation.
+- [x] Bound renderer queues (default 128 frames each); apply backpressure without dropping.
+- [x] Skip render queues in headless runs; separate simulation progress from queue counters.
+- [x] Document aligned mixed-rate production and consumptive, non-broadcast reads.
+- [ ] Measure complete-run performance and manually exercise early window close/pause.
 
-**Finding:** end notifies, but read's wait predicate only checks queue non-emptiness.
-Headless operation still produces snapshots. An access count of three implements neither
-broadcast nor backpressure; existing read removes a frame.
+**Verification:** FrameRegressionTests covers concurrent FIFO order, capacity and reader/
+writer wake-up. A full executable headless smoke check covers 20 steps and four sensors.
+The wider simulation memory issues remain S02/S03. Aggregation stays in the simulation
+thread and receives values directly; no additional shared-buffer consumer is introduced.
 
-**Proposal:** keep aggregation in the simulation thread initially. Rendering may skip frames;
-evaluation may require every batch. Define requirements before choosing queue/snapshot transport.
-**Acceptance:** no shutdown hangs and bounded memory for the selected operation mode.
+### S04 — Complete sensor frames and chronological matching — implemented
 
-### S04 — Match chronological complete sensor frames to agent frames — P0 for live correctness
+**Baseline:** the imported renderer retained consumed local frames, reused stale data,
+read the queue before local matching and processed only the first sensor ID. Aggregation_Manager
+had the same code; SimulatorV3 did not have an active sensor-frame matching path.
 
-**Verified in source:** Renderer::readLocalSensorBufferFrame returns the first exact match
-without consuming it, and no-match paths can retain currentSensorFrame. The direct path
-blocks in SharedBuffer::read before local lookup. The AGBS render loop breaks after the
-first sensor-map entry and overwrites the render instance's sensor ID with that entry.
-Currently AGBS is the sensor-buffer producer. This is a correctness issue distinct from
-later renderer settings/GUI work; coordinate queue changes with S01.
+- [x] Assemble one immutable timestamped sensor-ID map per rendered step in Simulation.
+- [x] Carry distinct ABS/GBS/AGBS payloads; non-due sensors contribute nothing.
+- [x] Preserve IDs for due empty measurements; use an empty map for a completed no-sample step.
+- [x] Publish the complete sensor frame before exposing its matching agent snapshot.
+- [x] Consume exact matches once, discard older frames and retain at most one future frame.
+- [x] Clear the measurement view on an unmatched new step; preserve pause/redraw of a matched step.
+- [x] Reject duplicate/out-of-order stream timestamps and mismatched/duplicate builder contributions.
+- [x] Assign run-stable sensor IDs once and route each AGBS to its own typed payload.
+- [x] Use nonblocking renderer reads; cancel both queues on close and drain on normal end.
+- [x] Test old/exact/future/pending/end cases, several IDs, mixed 10/5-Hz sensors and measured-empty input.
+- [ ] Perform a manual visual check of two AGBS, pause/resume and early close before the live demo.
 
-- [ ] Combine actual contributions for step t into one complete timestamped sensorId ->
-  cell-ID-set frame. Non-due sensors must not wait for later measurements to join t.
-- [ ] Preserve source identity for measured-empty sets; distinguish them from no sample due.
-- [ ] Define step completeness: proposed step packet couples agent data and an optional
-  sensor map after capture, or explicit presence/completion metadata if queues stay separate.
-  An empty queue/tryRead miss alone cannot prove that no measurement exists.
-- [ ] Treat local frames as an ordered FIFO: discard older entries, pop one exact match,
-  keep future entries, and clear current measurement data when the agent frame advances
-  without a match. Repainting/pausing the same agent frame may retain its matched view.
-- [ ] Guarantee producer order/completeness; define duplicate/out-of-order handling and
-  bounded buffering when frames are skipped.
-- [ ] Route every sensor-map entry to the correct render instance using stable IDs; removing
-  the first-entry break alone must not merge all sensors into every displayed AGBS grid.
-- [ ] Avoid blocking on nonexistent measurements; keep UI events responsive for in-flight
-  frames and complete shutdown/draining with S01.
-- [ ] Verify measured steps, between-sample steps, no match, old/exact/future FIFO entries,
-  multiple sensors at different rates, measured-empty frames, pause/redraw and end of stream.
-
-**Acceptance:** one complete matching frame is consumed once; older data are not displayed
-as current; future data remain buffered; all sensor IDs reach their own visualizations;
-missing measurements cause neither unintended waiting nor stale reuse. Last-known display,
-if later desired, must explicitly show its original time/age. Use saved timestamped output
-instead of claiming a correct live overlay until these cases pass.
+**Contract and evidence:** [Sensor frames](docs/SENSOR_FRAMES.md). Frame and isolated MongoDB
+regressions pass. The renderer clears/reconstructs each AGBS only on frame advance; ABS/GBS
+payload transport does not imply new heatmaps or agent-observation overlays. Last-known
+display and policy-driven aggregation visualization remain separate work.
 
 ### S02 — Collision grid and pointer lifetime — P1 before more realistic scenarios
 
