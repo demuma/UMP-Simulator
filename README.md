@@ -39,17 +39,20 @@ need binding definitions. A minimum number of contributors per publication is in
 an operational release rule. It does not by itself establish formal k-anonymity or a
 reduction in empirical attack success.
 
-**Next milestone: October 14 supervisor meeting.** Prepare a reliable demo, preserve one
-identifiable run, validate the complete sensor output against GT, and report implemented,
-verified and still-proposed parts explicitly. The user confirmed simulator startup works;
-full-run data validation remains open.
+**Next milestone: October 14 supervisor meeting.** The main development target is the first
+complete aggregation path: observations, cell/window aggregation, initial metrics, effective
+regional policy lookup through a minimal policy tree, and release/suppress decisions.
+Input checks and demo preparation accompany this work. Simulator startup works and sensor
+regression tests passed; the aggregation foundation is still missing, not an implemented feature.
 
-The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) is the maintained
-schedule: a fixed spatial/temporal evaluation for the October 18 presentation submission,
-then a small tested adaptive comparison as the October 25 conference target. The full
-dissertation narrative remains in the presentation. Improved empirical privacy is an
-experimental question, not a promised outcome. Paper submission remains due in mid-November
-and the dissertation at year-end.
+The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) now prioritizes
+that foundation immediately, dynamic spatial release selection and initial comparisons by
+October 18, then temporal adaptation and stronger comparative evidence by October 25.
+The existing quadtree remains the spatial foundation. Its maximum depth may stay bounded
+while the chosen publication cells change according to metrics and policies. The complete
+dissertation narrative remains in the presentation; improved empirical privacy is an
+experimental question. Paper submission remains due in mid-November and the dissertation
+at year-end. See TO-DO for targets, acceptance checks and fallback scope.
 
 ## 3. Origin and repository layout
 
