@@ -409,6 +409,10 @@ cd simulator
 ./build/Simulator
 ```
 
+Starting ./simulator/build/Simulator from the repository root does not change the working
+directory and therefore cannot find simulator/config.yaml. Startup config errors now print
+to stderr even when optional ERROR logging is disabled (corrected on 2026-10-13).
+
 The unmodified simulator configuration sets clear_database: true and targets Simulation.
 Its initialization deletes the configured GT and sensor collections. A new run must not
 accidentally replace the inspected reference series. Choose a separate experiment database

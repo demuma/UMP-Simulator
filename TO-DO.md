@@ -41,6 +41,7 @@ results and remaining limits. A class or configuration field alone does not comp
 - [x] Consume successful ABS batches and replace class working state with local observations.
 - [x] Remove the unused second velocity calculation; define delayed full records for new/reentering agents.
 - [x] Build the corrected simulator and pass the isolated MongoDB sensor regression test.
+- [x] Make missing/invalid startup config errors visible without optional ERROR logging (2026-10-13); verify wrong-directory exit before DB initialization.
 
 **Still open:** actual-interval velocity handling, full-run validation, reproducible experiments,
 actual adaptation, metric definitions and evidence of improved privacy. Historical reverted

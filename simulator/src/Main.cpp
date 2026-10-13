@@ -23,7 +23,9 @@ int main() {
     try {
         config = YAML::LoadFile("config.yaml");
     } catch (const YAML::Exception& e) {
-        ERROR_MSG("Error loading config file: " << e.what());
+        // Startup failures must remain visible independently of optional logging macros.
+        std::cerr << "Error loading config.yaml: " << e.what() << '\n'
+                  << "Run from the simulator directory: cd simulator && ./build/Simulator\n";
         return 1;
     }
 
