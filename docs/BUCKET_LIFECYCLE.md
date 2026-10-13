@@ -1,6 +1,8 @@
 # Bucket lifecycle and release protocol
 
-Status: 2026-10-13. Detailed design proposal, not implemented behavior. This document
+Status: 2026-10-13. Detailed adaptive-release proposal, not implemented behavior.
+The implemented fixed-window foundation is documented in [FIXED_AGGREGATION.md](FIXED_AGGREGATION.md).
+This document
 refines [Aggregation design review](AGGREGATION_DESIGN.md); [TO-DO](../TO-DO.md)
 remains the execution queue. Examples and numerical thresholds are illustrative.
 
@@ -56,9 +58,11 @@ the manager may remain a composed member of AGBS. Class separation is compatible
 sensor-local ownership. The core must not fetch mutable Agent pointers, renderer frames,
 or MongoDB records for ordinary candidate evaluation.
 
-Current code is only a scaffold: AGBS contains an AggregationManager member, whose
-constructor holds references to a MongoDB collection and timestamp. Its bucket flush is
-empty. Removing those dependencies belongs to A01; modular separation is not complete yet.
+A01 has replaced the original collection/timestamp-reference scaffold. An enabled AGBS
+owns an optional manager that accepts value observations and tracks one fixed window.
+The external diagnostic sink consumes candidates synchronously. The core is independent
+of sensors, geometry objects, MongoDB and render transport. The adaptive lifecycle below
+still requires reconstructable history, policies and a public release protocol.
 
 Proposed logical interfaces, not final C++ signatures:
 

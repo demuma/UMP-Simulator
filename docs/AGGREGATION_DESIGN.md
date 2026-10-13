@@ -1,6 +1,8 @@
 # Aggregation design review
 
-Status: 2026-10-13. Planning document; no implementation is implied by the proposals below.
+Status: 2026-10-13. Design review with updated baseline. Proposals below are not implied
+implementation. The first fixed-window slice is specified separately in
+[FIXED_AGGREGATION.md](FIXED_AGGREGATION.md).
 The user requests preservation of sensor modularity and existing performance work. The
 current configuration and presentation are design inputs, not instructions to execute
 every item in an old implementation plan.
@@ -61,12 +63,14 @@ must be explicit before policy validation is enabled.
 - Updated 2026-10-13: the sensor buffer carries complete timestamped sensor-ID -> typed
   ABS/GBS/AGBS payloads, including counts, only on measurement steps. The subsequent agent
   frame confirms that sensor work for its time is complete. See [Sensor frames](SENSOR_FRAMES.md).
-  GBS/AGBS still lack contributor identities and aggregation history; do not infer temporal distinct
-  people from these counts. The manager receives values directly, not via this render queue.
+  GBS/AGBS renderer payloads remain count-only; do not infer temporal distinct people from
+  these counts. An optional AGBS adapter now supplies identity-bearing values directly to
+  its fixed-window manager, independently of this render queue.
 - SharedBuffer::read takes the front queue item and pops it. It is consumptive, not broadcast.
-- AggregationManager owns a MongoDB collection reference and a bucket scaffold. Its only
-  implemented action is a timestamp insertion test. Bucket flush is empty, and the bucket
-  constructor does not initialize its cellId member from its argument.
+- A01 replaced the MongoDB/timestamp-reference scaffold with a standard-C++ manager:
+  identity-bearing ingestion, fixed windows, contributor unions, sample means, coverage
+  accounting and an external diagnostic sink. Render instances do not instantiate it.
+  Adaptive history, policies, public releases and preemptive buckets remain unimplemented.
 - The spatial hierarchy supports nodes, parents, children and cell IDs. Current AGBS
   splitting follows positions at configured maxDepth, not policy/metric decisions.
 

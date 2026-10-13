@@ -61,10 +61,18 @@ int main() {
         const sf::FloatRect area({0.f, 0.f}, {20.f, 20.f});
         AgentBasedSensor abs(10.f, area, name, "abs", client);
         GridBasedSensor gbs(10.f, area, 5.f, name, "gbs", client);
-        AdaptiveGridBasedSensor agbs(10.f, area, 20.f, 2, name, "agbs", client, "agbs-fast");
-        AdaptiveGridBasedSensor slow(5.f, area, 20.f, 2, name, "agbs_slow", client, "agbs-slow");
+        AdaptiveGridBasedSensor agbs(10.f, area, 10.f, 2, name, "agbs", client, "agbs-fast");
+        AdaptiveGridBasedSensor slow(5.f, area, 10.f, 2, name, "agbs_slow", client, "agbs-slow");
         require(agbs.sensorId == "agbs-fast" && slow.sensorId == "agbs-slow", "Explicit sensor IDs lost");
+        AdaptiveGridBasedSensor renderOnly(area, sf::Color::Blue, 10.f, 2, true);
+        require(!renderOnly.getAggregationManager() && !agbs.getAggregationManager(),
+            "Disabled/render-only AGBS unexpectedly instantiated a manager");
         const auto origin = TimePoint{std::chrono::milliseconds{1744191000000LL}};
+        std::vector<ump::AggregationCandidate> fastCandidates, slowCandidates;
+        agbs.enableAggregation({"fixture", agbs.sensorId, "baseline", {0, 0, 20, 20, 2}, 100, 400},
+            0.05f, origin, [&](const auto& result) { fastCandidates.push_back(result); });
+        slow.enableAggregation({"fixture", slow.sensorId, "baseline", {0, 0, 20, 20, 2}, 200, 400},
+            0.05f, origin, [&](const auto& result) { slowCandidates.push_back(result); });
         std::vector<Agent> agents;
         Agent::AgentTypeAttributes attributes{};
 
@@ -118,6 +126,30 @@ int main() {
             }
         }
 
+        agbs.finishAggregation(origin + std::chrono::milliseconds{950});
+        slow.finishAggregation(origin + std::chrono::milliseconds{950});
+        require(fastCandidates.size() == 3 && slowCandidates.size() == 3,
+            "Live AGBS adapter did not close fixed/partial windows");
+        const std::vector<std::uint64_t> fastContributions{3, 4, 2}, slowContributions{1, 2, 1};
+        const std::vector<std::uint64_t> expectedDistinct{1, 2, 1};
+        for (std::size_t index = 0; index < 3; ++index) {
+            require(fastCandidates[index].counts.observationContributions == fastContributions[index]
+                && slowCandidates[index].counts.observationContributions == slowContributions[index],
+                "AGBS internal contributions differ from raw capture");
+            require(fastCandidates[index].counts.distinctContributors == expectedDistinct[index]
+                && slowCandidates[index].counts.distinctContributors == expectedDistinct[index],
+                "AGBS entry/reentry identities lost across observations");
+            require(fastCandidates[index].coverage == ump::WindowCoverage::Complete
+                && slowCandidates[index].coverage == ump::WindowCoverage::Complete,
+                "AGBS adapter omitted a measured-empty sample");
+        }
+        require(fastCandidates[1].measuredSamples == 4 && slowCandidates[1].measuredSamples == 2,
+            "Independent sensor schedules became coupled");
+        require(fastCandidates.back().truncated && fastCandidates.back().endMs == 950,
+            "Final AGBS partial interval not marked");
+        require(agbs.getAggregationManager()->debugState().retainedIdentityMemberships == 0,
+            "AGBS finalization retained private identities");
+
         require(frameCount == 9, "Expected 9 measured frames for 19 simulation steps");
         const Counts gridCounts{{100,1}, {200,1}, {300,1}, {400,2}, {500,2}, {800,1}, {900,1}};
         verifyGrid(fixture.db["gbs"], origin, gridCounts);
@@ -146,7 +178,7 @@ int main() {
         require(absKeys.count({500, "entrant"}) == 1 && absKeys.count({400, "entrant"}) == 0,
                 "New entrant published without two observations");
         std::cout << "PASS: startup, interval velocities, batch consumption, entry/reentry, "
-                     "grid counts, empty-area cadence and renderer timestamps.\n";
+                     "grid counts, empty-area cadence, renderer timestamps and identity-bearing aggregation.\n";
         std::cout << "Isolated test database: " << name << " (removed on exit).\n";
         return 0;
     } catch (const std::exception& e) {

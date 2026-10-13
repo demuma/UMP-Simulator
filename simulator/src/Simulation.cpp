@@ -4,6 +4,7 @@
 #include "../include/GridBasedSensor.hpp"
 #include "../include/AdaptiveGridBasedSensor.hpp"
 #include "../include/Region.hpp"
+#include "../include/AggregationDiagnostics.hpp"
 
 // Simulation constructor
 Simulation::Simulation(
@@ -432,7 +433,23 @@ void Simulation::initializeSensors() {
             int maxDepth = sensorNode["grid"]["max_depth"].as<int>();
 
             // Create the grid-based sensor and add to sensors vector
-            sensors.push_back(std::make_unique<AdaptiveGridBasedSensor>(frameRate, detectionArea, cellSize, maxDepth, databaseName, collectionName, client, sensorNode["id"].as<std::string>()));
+            auto sensor = std::make_unique<AdaptiveGridBasedSensor>(frameRate, detectionArea, cellSize,
+                maxDepth, databaseName, collectionName, client, sensorNode["id"].as<std::string>());
+            const auto aggregation = sensorNode["aggregation"];
+            if (aggregation && aggregation["enabled"].as<bool>(false)) {
+                if (!std::isfinite(frameRate) || frameRate <= 0)
+                    throw std::invalid_argument("Aggregation requires a positive finite sensor frame rate");
+                const auto budget = aggregation["max_observations_per_window"].as<std::int64_t>(1000000);
+                if (budget <= 0) throw std::invalid_argument("Aggregation observation budget must be positive");
+                ump::AggregationConfig settings{aggregationRunId, sensor->sensorId,
+                    aggregation["application_id"].as<std::string>("fixed-baseline"),
+                    {detectionArea.position.x, detectionArea.position.y, detectionArea.size.x, detectionArea.size.y, maxDepth},
+                    static_cast<ump::AggregationTime>(std::llround(1000.0 / frameRate)),
+                    aggregation["window_ms"].as<ump::AggregationTime>(), static_cast<std::uint64_t>(budget)};
+                sensor->enableAggregation(settings, timeStep, timestamp,
+                    makeAggregationDiagnosticsSink(aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp));
+            }
+            sensors.push_back(std::move(sensor));
             sensors.back()->scale = scale;
             sensors.back()->timestamp = timestamp;
             
@@ -510,6 +527,12 @@ void Simulation::run() {
         
         // Calculate the simulation time
         simulationRealTime += simulationStepTime;
+    }
+
+    // The last processed state precedes this exclusive end. Flush even a partial window.
+    for (auto& sensor : sensors) {
+        if (auto* adaptive = dynamic_cast<AdaptiveGridBasedSensor*>(sensor.get()))
+            adaptive->finishAggregation(timestamp);
     }
 
     // Signalize the simulation has finished so that the renderer can swap buffers if needed

@@ -22,8 +22,7 @@ AdaptiveGridBasedSensor::AdaptiveGridBasedSensor(
     maxDepth(maxDepth),
     db(client->database(databaseName)),
     collection(db[collectionName]),
-    adaptiveGrid(detectionArea.position.x, detectionArea.position.y, cellSize, maxDepth),
-    aggregationManager(collection, sensorId, timestamp)
+    adaptiveGrid(detectionArea.position.x, detectionArea.position.y, cellSize, maxDepth)
 {
     this->detectionArea = detectionArea;
 }
@@ -38,13 +37,42 @@ AdaptiveGridBasedSensor::AdaptiveGridBasedSensor(
 )
     : Sensor(detectionArea, detectionAreaColor),
     cellSize(cellSize), 
-    adaptiveGrid(detectionArea.position.x, detectionArea.position.y, cellSize, maxDepth), maxDepth(maxDepth), 
-    aggregationManager(collection, sensorId, timestamp)
+    adaptiveGrid(detectionArea.position.x, detectionArea.position.y, cellSize, maxDepth), maxDepth(maxDepth)
     {
         this->detectionArea = detectionArea;
         this->detectionAreaColor = detectionAreaColor;
         this->showGrid = showGrid;
     }
+
+void AdaptiveGridBasedSensor::enableAggregation(ump::AggregationConfig config, float simulationStep,
+    std::chrono::system_clock::time_point origin, AggregationManager::Sink sink) {
+    if (samplingInitialized || aggregationManager)
+        throw std::logic_error("Enable AGBS aggregation once, before the first update");
+    const double stepMs = simulationStep * 1000.0;
+    const double periodMs = 1000.0 / frameRate;
+    if (!std::isfinite(stepMs) || !std::isfinite(periodMs) || stepMs < 1 || periodMs < 1
+        || std::abs(stepMs - std::round(stepMs)) > 1e-4
+        || std::abs(periodMs - std::round(periodMs)) > 1e-4
+        || std::llround(periodMs) % std::llround(stepMs) != 0
+        || config.samplingPeriodMs != std::llround(periodMs))
+        throw std::invalid_argument("AGBS aggregation requires whole-millisecond periods aligned to simulation ticks");
+    if (detectionArea.size.x != 2 * cellSize || detectionArea.size.y != 2 * cellSize
+        || maxDepth < 1 || maxDepth > 14)
+        throw std::invalid_argument("AGBS aggregation requires a square full-quadtree extent and depth 1..14");
+    const auto& grid = config.coverage;
+    if (config.sensorId != sensorId || grid.x != detectionArea.position.x || grid.y != detectionArea.position.y
+        || grid.width != detectionArea.size.x || grid.height != detectionArea.size.y || grid.leafDepth != maxDepth)
+        throw std::invalid_argument("AGBS aggregation configuration must match this sensor's identity and coverage");
+    auto manager = std::make_unique<AggregationManager>(config, std::move(sink));
+    aggregationRunId = config.runId;
+    aggregationOrigin = origin;
+    aggregationManager = std::move(manager);
+}
+
+void AdaptiveGridBasedSensor::finishAggregation(std::chrono::system_clock::time_point end) {
+    if (aggregationManager)
+        aggregationManager->finish(std::chrono::duration_cast<std::chrono::milliseconds>(end - aggregationOrigin).count());
+}
 
 // Destructor
 AdaptiveGridBasedSensor::~AdaptiveGridBasedSensor() {
@@ -68,8 +96,18 @@ void AdaptiveGridBasedSensor::update(std::vector<Agent>& agents, float timeStep,
     // // Get the current timestamp as a string
     // auto currentTime = timestamp;
 
+    const auto observedAtMs = aggregationManager
+        ? std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - aggregationOrigin).count() : 0;
+    // No-sample ticks still close elapsed fixed windows.
+    if (aggregationManager) aggregationManager->advance(observedAtMs);
+
     // The shared gate handles initialization and resets the timer even for empty areas.
     if (isSamplingDue(timeStep)) {
+        std::optional<ump::ObservationBatch> batch;
+        if (aggregationManager) {
+            batch.emplace(ump::ObservationBatch{aggregationRunId, sensorId, ++aggregationSequence,
+                observedAtMs, ump::ObservationStatus::Measured, {}});
+        }
 
         // Clear the grid data
         // adaptiveGridData.clear();
@@ -91,6 +129,7 @@ void AdaptiveGridBasedSensor::update(std::vector<Agent>& agents, float timeStep,
 
         if(hasAgents) {
 
+            if (batch) batch->observations.reserve(adaptiveGrid.agents.size());
             // Generate split sequence
             adaptiveGrid.splitFromPositions();
             
@@ -105,11 +144,19 @@ void AdaptiveGridBasedSensor::update(std::vector<Agent>& agents, float timeStep,
                 // Increment the count of the agent type and total agents in the cell
                 adaptiveGridData[cellId].agentTypeCount[agent.type]++;
                 adaptiveGridData[cellId].totalAgents++;
+                if (batch) {
+                    const auto* node = adaptiveGrid.getNodeById(cellId);
+                    if (!node) throw std::logic_error("AGBS observation has no quadtree cell");
+                    const auto& bounds = node->bounds;
+                    batch->observations.push_back({agent.agentId, agent.type,
+                        {cellId, node->depth, bounds.position.x, bounds.position.y, bounds.size.x, bounds.size.y}});
+                }
             }
             
             // Push timestamped adaptive grid data to the data storage
             dataStorage.push_back({this->timestamp, adaptiveGridData});
         }
+        if (batch) aggregationManager->ingest(*batch); // Also ingest a measured-empty area.
         pendingSample = AdaptiveGridSensorSample{adaptiveGridData};
     }
 }

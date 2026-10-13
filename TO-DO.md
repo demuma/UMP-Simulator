@@ -24,10 +24,12 @@ crashes or corrupt input are blockers, not reasons to begin an unrelated redesig
 
 ## 2. Chronological execution order
 
-**Current position: Stage 1. S04/S01 transport correction implemented; next is the identity-bearing AGBS input and aggregate contract.** The detailed
+**Current position: Stage 1 foundation implemented; moving to the metric/application contract.
+S04/S01 transport and the first A01 fixed-window AGBS pipeline are regression-tested.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
-proposals, flow diagram, storage model and hand-worked cases. No bucket implementation
-is implied by this planning work. The core is intended to be reusable across sensor types;
+proposals, flow diagram, storage model and hand-worked cases. The
+[fixed aggregation contract](docs/FIXED_AGGREGATION.md) records actual A01 behavior;
+active/preemptive history and adaptive release rules remain proposals. The core is intended to be reusable across sensor types;
 AGBS is the first integration target.
 Separate sensor behavior/state is preserved. A generic API does not imply that every
 sensor provides every metric input or supports arbitrary spatial refinement.
@@ -73,7 +75,7 @@ made for this review.
 
 - [ ] Prepare an evaluation configuration with equal ABS/GBS/AGBS areas and time basis;
   retain the separate-area configuration as a demo option.
-- [ ] Specify the internal observation batch; do not treat renderer cell-ID snapshots as input data.
+- [x] Specify the internal observation batch; do not treat renderer cell-ID snapshots as input data (A01 fixed input).
 - [ ] Resolve active/preemptive interval ownership, publication states and bounded retention.
 - [ ] Define sibling time alignment and already-published-data behavior for merge/split.
 - [ ] Integrate existing Region instances into one application policy tree, with cached lookup
@@ -91,9 +93,10 @@ contract implementation-ready.
 
 The existing quadtree is the spatial foundation. Source review confirms that makeCell and
 getSplitSequence use maxDepth, while AGBS splits from current positions and writes counts.
-AggregationManager has no active ingestion/decision/release path; bucket flush is empty.
-Region attributes exist, but no active policy tree evaluates them. These are missing
-components, not configuration adjustments to a functioning adaptive aggregator.
+AggregationManager now ingests identity-bearing batches and emits bounded fixed-window
+candidates through a separate sink. Region attributes exist, but no active policy tree
+evaluates them. Decision/release logic and adaptive history remain missing components,
+not configuration adjustments to a functioning adaptive aggregator.
 
 **Proposed flow:** sensor observation -> bounded history -> candidate cell/window aggregate
 -> metric evaluation + effective policy lookup -> decision -> published aggregate.
@@ -106,11 +109,12 @@ Database writing and rendering consume the resulting release rather than decidin
   identity-bearing internal observations before count-only serialization; they cannot be
   reconstructed from GBS/AGBS counts alone. Delayed complete ABS records also omit first
   observations, so using that stream must be an explicit semantic choice.
-- [ ] **P2 — Working aggregation/history (A01/A02).** Implement ingestion and one fixed
-  cell/window mode first. Retain the observations or sufficient statistics needed for
-  parent aggregation, child refinement and temporal extension. Test repeated observations,
-  boundary times, empty windows and contributor-set unions. Describe active versus
-  preemptive logical windows and retention before choosing physical bucket containers.
+  A01 now implements the input/count/window portion; release-time semantics remain A05.
+- [ ] **P2 — Working aggregation/history (A01/A02).** Fixed candidate mode is implemented
+  and tested for repeated observations, boundaries, empty windows and contributor unions.
+  Next retain the observations or sufficient statistics needed for parent aggregation,
+  child refinement and temporal extension. Describe active versus preemptive logical
+  windows and retention before choosing physical bucket containers.
 - [ ] **P3 — Metric contract and initial measures (E01/E02/D03).** Each metric must have
   a definition, inputs, units, validity and relationship to a constraint or objective.
   Start with distinct contributors, cell size/area, aggregation duration and release age.
@@ -281,41 +285,52 @@ Do not shift timestamps merely to make records appear synchronized.
 
 ### D03 — Define aggregate counts and windows — P0 before temporal aggregation
 
-- [ ] Distinguish observation contributions, distinct people, occupancy and average occupancy.
-- [ ] Name class counts and totalAgents/totalCount unambiguously.
-- [ ] Define window boundaries, preferably half-open [start,end), and base-bin alignment.
-- [ ] Define complete coverage, no sample due, measured empty and unavailable observations.
+Fixed-mode contract and a worked example: [FIXED_AGGREGATION.md](docs/FIXED_AGGREGATION.md).
+
+- [x] Distinguish contributions, distinct people, instantaneous sample occupancy and sample
+  mean occupancy. A continuous-time average still needs an interpolation/integration model.
+- [x] Use explicit observationContributions, distinctContributors and typeObservationContributions.
+- [x] Define fixed half-open [start,end) windows, integer milliseconds and sampling alignment.
+- [x] Define complete coverage, no sample due, measured empty and unavailable observations.
+- [x] Finalize fixed windows explicitly at the exclusive end; mark truncated final intervals.
 - [ ] Keep original window start/deadline through spatial merges; distinguish duration
-  from release age and finalize partial windows at end of run explicitly.
+  from release age when the public release protocol is implemented.
 - [ ] Distinguish Empty, Suppressed and Unavailable.
-- [ ] Separate internal identities from publication fields.
+- [x] Separate internal identities from candidate output fields; public release metadata remains A05.
 
 **Acceptance:** repeated observations of one person count once for distinct people but
 multiple times for contributions. Small example data demonstrates every chosen definition.
 
 ### A01 — Define states and AggregatedCell — P0
 
-**First enabling slice implemented:** value-owned typed SensorSample handoff and complete
-step frames (S04). This separates sensors from renderer transport. AGBS/GBS payloads are
-still count-only: the identity-bearing internal AGBS adapter, window semantics and actual
-AggregationManager ingestion are the next slice, not completed by the frame change.
+**Implemented first slice (2026-10-13):** optional AGBS adapter, standard-C++ fixed-window
+manager and external JSONL sink. See [FIXED_AGGREGATION.md](docs/FIXED_AGGREGATION.md).
+The renderer path remains count-only and separate. This is internal candidate aggregation;
+it neither approves publications nor implements adaptive bucket history.
 
-- [ ] Describe geometry, history, release rules and publications separately.
-- [ ] Specify sensor-local ownership; favor a manager without MongoDB coupling.
-- [ ] Define every count/time/policy field and stable run/batch/cell/window/release keys.
-- [ ] Specify ingest(batch), advance(now), completed output and read-only debug snapshot
-  responsibilities. No-sample time advances must still trigger deadlines.
-- [ ] Replace the prototype collection/timestamp references with explicit value input
-  and an external publication sink; inspect AGBS member composition and render construction.
-- [ ] Choose update(now, tree) versus a bound reference from actual requirements.
-- [ ] Define one concrete AGBS input adapter and a core that does not depend on Sensor
-  subclasses, SFML Agent objects, MongoDB or renderer buffers.
-- [ ] Keep quadtree-specific candidate enumeration behind the spatial component; do not
-  claim the initial spatial strategy is independent of its hierarchy.
-- [ ] Declare input capabilities: positions, cell support, internal identities and attributes.
-  A count-only source cannot promise distinct contributors or finer detail than its input.
-- [ ] Keep independent per-sensor/per-application bucket state; share read-only definitions
-  where useful. Add ABS/GBS adapters after the AGBS path is demonstrated.
+- [x] Separate geometry/input, current-window state and output. Document missing history/release layers.
+- [x] Use sensor-local optional ownership without MongoDB coupling in the core.
+- [x] Define run/sensor/batch/cell/window/application keys and concrete count/time units.
+- [ ] Define public release keys/generations and policy/decision fields with A05.
+- [x] Implement ingest(batch), advance(now), synchronous completed-output consumption,
+  finish(end) and read-only debug state; no-sample ticks still close elapsed windows.
+- [x] Replace prototype collection/timestamp references with value input and an external sink;
+  render-only AGBS instances do not instantiate an operational manager.
+- [x] Choose direct value batches; the manager needs neither update(now, tree) nor a bound tree.
+- [x] Implement an AGBS adapter and reusable core without Sensor, Agent, SFML, MongoDB or
+  renderer-buffer dependencies. Reuse the existing quadtree mapping in the adapter.
+- [x] Declare capabilities: internal identities, observed type and fixed leaf-cell support;
+  count-only sources are rejected for this distinct-contributor mode.
+- [x] Bound active-window state by an explicit observation budget and synchronous output sink.
+- [x] Validate stream identity, duplicate/order/cadence, cell support and finalization.
+- [x] Keep manager state independent per sensor/application; exercise two live AGBS rates.
+- [ ] Add multiple application instances per configured sensor and ABS/GBS adapters later.
+- [ ] Add reconstructable history, dynamic candidates and supported parent enumeration under A02/A03.
+
+**Validation:** Release build, three CTest suites, and a one-second full executable smoke
+run with isolated MongoDB. Six candidate windows from 10/5-Hz AGBS matched sampled GT
+distinct IDs/contributions and raw AGBS contributions per cell/window. JSONL contains no
+individual IDs. Existing Simulation data and maintained YAML were unchanged.
 
 **Acceptance:** small interfaces with clear ingestion and output; no empty abstraction hierarchy.
 

@@ -60,6 +60,7 @@ public:
 
 private:
     void postMetadata();
+    std::string aggregationRunId = generateUUID();
     void postData(const std::vector<Agent>& agents);
      // Simulation parameters
     // ThreadPool threadPool;

@@ -51,10 +51,19 @@ public:
     void clearDatabase() override;
     void calculateCellDensity();
 
+    // Optional internal aggregation. Render-only instances never enable this path.
+    void enableAggregation(ump::AggregationConfig config, float simulationStep,
+        std::chrono::system_clock::time_point origin, AggregationManager::Sink sink);
+    void finishAggregation(std::chrono::system_clock::time_point end);
+    const AggregationManager* getAggregationManager() const { return aggregationManager.get(); }
+
 private:
     mongocxx::database db;
     mongocxx::collection collection;
-    AggregationManager aggregationManager;
+    std::unique_ptr<AggregationManager> aggregationManager;
+    std::string aggregationRunId;
+    std::chrono::system_clock::time_point aggregationOrigin;
+    std::uint64_t aggregationSequence = 0;
     AdaptiveGridData adaptiveGridData;
     std::vector<std::pair<std::chrono::system_clock::time_point, AdaptiveGridData>> dataStorage; // Data Storage: timestamp, map(cell id, map(agent type, count)
 };

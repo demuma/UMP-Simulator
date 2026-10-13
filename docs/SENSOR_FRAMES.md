@@ -132,3 +132,13 @@ Next foundation slice: define the identity-bearing internal AGBS observation ada
 the fixed-cell/window count contract (D03/A01), then implement the smallest observation-to-
 decision path with explicit metrics and policies. Preserve sensor independence and keep
 the manager out of the renderer transport.
+
+
+## Separate A01 aggregation input
+
+An optionally enabled AGBS now supplies identity-bearing cell observations directly to
+its sensor-local fixed-window AggregationManager. This path does not read or expand the
+renderer queue. AGBS/GBS SensorSample payloads remain count-only; their schemas and sparse
+frame cadence are unchanged. Measured-empty AGBS captures reach the manager as explicit
+empty batches, and non-sampling ticks call advance without fabricating a sample. See
+[Fixed aggregation contract](FIXED_AGGREGATION.md) for input/count/window semantics.

@@ -7,8 +7,10 @@ mobility data and adapting spatial and temporal aggregation under regional const
 metric evaluation and regional policy trees, starting with AGBS. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
-bounded, nonblocking renderer consumption are now implemented (S04/S01). Actual-interval
-velocity handling and reproducible research experiments remain open.**
+bounded, nonblocking renderer consumption are implemented (S04/S01). The first A01 slice
+now adds optional identity-bearing AGBS input, a dependency-free fixed-window core and
+internal JSONL candidates. Policy trees, adaptive buckets and privacy release decisions
+remain open, as do actual-interval velocities and reproducible research experiments.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -20,6 +22,7 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
+| [Fixed aggregation contract](docs/FIXED_AGGREGATION.md) | Implemented A01 input, count/window semantics, coverage, memory bounds and opt-in configuration |
 | [Sensor frame contract](docs/SENSOR_FRAMES.md) | Implemented typed payloads, step completion, identity routing, queue bounds and validation |
 | [Technical audit](docs/STATE_AND_NEXT_STEPS.md) | Source-level findings and the recorded database check |
 | [Aggregation design review](docs/AGGREGATION_DESIGN.md) | Configuration/presentation review, bucket semantics, transport, policy trees and metric scheduling before implementation |
@@ -62,7 +65,8 @@ reduction in empirical attack success.
 complete aggregation path: observations, cell/window aggregation, initial metrics, effective
 regional policy lookup through a minimal policy tree, and release/suppress decisions.
 Input checks and demo preparation accompany this work. Simulator startup works and sensor
-regression tests passed; the aggregation foundation is still missing, not an implemented feature.
+regression tests passed. The fixed-window aggregation foundation is implemented; metric-driven
+release decisions and the regional policy tree are the next missing components.
 
 The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) now prioritizes
 that foundation immediately, dynamic spatial release selection and initial comparisons by
@@ -138,16 +142,17 @@ reverted test results do not establish correctness of the current implementation
 | ABS | Position, type, identity and velocity from consecutive observations; first complete output at 100 ms for the current 10-Hz setup | Nominal-period velocity requires aligned fixed intervals; publication after DB errors is not guaranteed |
 | GBS | Fixed cells, class counts and total count per observation | No full temporal aggregation or privacy-based release decision |
 | AGBS | Quadtree, position mapping, counts and cell IDs | Splitting follows positions/max depth, not metrics or policies |
-| AggregationManager | Sensor-local class scaffold, bucket structure and DB test method | No usable algorithm; empty flush; no effective pipeline integration |
+| AggregationManager | Optional AGBS ingestion, fixed windows, distinct contributor unions, sample occupancy and separate JSONL candidates | No policy checks, approved releases, merges or temporal extension |
 | Regional rules | YAML/Region fields for granularities and k/l thresholds | No active policy evaluation, conflict handling or policy trees |
-| Temporal history | Short-lived sensor data containers | No bounded reconstructable history or variable aggregation windows |
+| Temporal history | Bounded active-window identity sets and counts | No reconstructable history, preemptive buckets or variable aggregation windows |
 | Rendering | Combined typed frames on measurement steps, stable per-sensor routing, nonblocking pairing and bounded queues; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
 | Evaluation | Earlier experiments in Data_analysis outside this import | Metric semantics, independent attacker evaluation and fair baselines missing |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |
 
-Existing source does not imply all edge cases are correct. The aggregation algorithm and
-core research evaluation are still pending.
+Existing source does not imply all edge cases are correct. Adaptive aggregation and
+core research evaluation remain pending. Fixed candidates are internal research data,
+not privacy-approved publications.
 
 ## 5. ABS timestamps, velocity estimation and duplicate writes
 
@@ -265,7 +270,7 @@ output vector. The historical database check below records that old behavior; ex
 Simulation data has not been repaired or replaced.
 
 **The prototype aggregator is not involved.** ABS does not invoke AggregationManager.
-AGBS owns its scaffold but does not call an aggregation routine in the active update path.
+AGBS now optionally invokes its fixed-window manager on a separate internal path; it does not rewrite or combine raw ABS records.
 
 ### 5.6 Historical baseline database check
 
@@ -302,26 +307,31 @@ Simulation thread
   ├── ABS → position / velocity / MongoDB
   ├── GBS → fixed-cell counts / MongoDB
   ├── AGBS → quadtree-cell counts / MongoDB
+  │        └── optional internal ID/cell batches → fixed-window manager → research JSONL
   └── complete typed sensor frame + matching agent snapshot → bounded queues → renderer
 
 Separate V3 renderers → read stored data from MongoDB
 ```
 
-### Proposed aggregation direction
+### Implemented fixed aggregation and the remaining adaptive path
 
-Sensor-local aggregation is preferred: each sensor coordinates observation, aggregation
-and output. The future manager should not depend directly on MongoDB. Geometry, temporal
-history, policy evaluation and release state have separate responsibilities.
+An enabled simulation AGBS owns one manager; rendering instances do not instantiate it.
+Its adapter copies IDs, types and leaf geometry in the existing capture pass. The core uses
+only standard C++ and accepts values through ingest/advance/finish, without a tree reference,
+MongoDB coupling, renderer queue access or additional thread. An external synchronous sink
+writes candidate JSONL. See the [concrete contract](docs/FIXED_AGGREGATION.md).
 
-AggregatedCell is a useful possible publication record. Before fixing its fields, define
-whether totalAgents means occupancy, observation contributions, distinct people or average
-occupancy. These are not interchangeable. Internal identities may support deduplication;
-they do not automatically belong in published data.
+Counts explicitly distinguish observation contributions, distinct contributors and sample
+mean occupancy. Stream distinct counts union IDs across cells. The core tracks measured,
+missing and unavailable samples, closes fixed half-open windows even on non-sampling ticks,
+and marks truncated final intervals. One active window and an observation budget bound
+retained state. Output contains no individual IDs; it is still internal research data.
 
-The proposed update(now, tree) and update(now) with a bound tree reference remain undecided.
-A tree alone provides no observation history. Mandatory dependencies can be references;
-optional pointers make sense only when a dependency is genuinely optional. Add abstractions
-only after the required state and behavior are clear.
+This first mode uses configured leaf depth and a fixed time window. It does not implement
+privacy checks, suppression, release approval, regional policies, merges/splits or preemptive
+history. Its identity sets are discarded when a window closes; A02 must add reconstructable
+history before adaptive candidates can reuse those observations. Geometry, history,
+policy evaluation and public release state remain separate responsibilities.
 
 A static spatial hierarchy with a dynamic release view is a plausible design. A fully
 materialized maximum-depth tree is not yet a requirement. The existing tree starts with
@@ -414,7 +424,20 @@ cmake --build renderers/abs/build -j4
 Replace abs with gbs, agbs or gt for the other applications. Each target is named Visualizer,
 so the renderers remain separate CMake projects for now.
 
-### Run frame and sensor regression tests
+### Run aggregation, frame and sensor regression tests
+
+AggregationRegressionTests is enabled by default (UMP_BUILD_AGGREGATION_TESTS). Its core
+and test executable depend only on standard C++:
+
+```sh
+ctest --test-dir simulator/build -R aggregation_regression --output-on-failure
+```
+
+It checks distinct unions across time/cells, half-open boundaries, zero-versus-missing data,
+partial/no-sample intervals, stream/cadence validation, budget failures and state bounds
+across 100 windows. The simulator's CMake configuration still locates the application
+dependencies; the core can alternatively be built directly with a C++17 compiler.
+
 
 FrameRegressionTests is enabled by default and needs neither MongoDB nor a window:
 
@@ -442,12 +465,28 @@ ctest --test-dir simulator/build --output-on-failure
 
 The test checks known motion, first capture, repeated ABS publication, new identities,
 reentry, empty areas, grid counts, combined frame timestamps and two AGBS at different rates.
+Both AGBS now also feed independent fixed-window managers; the test verifies their candidate
+contributions, distinct IDs, empty-sample completeness and final partial interval.
 Normal builds leave the MongoDB integration target disabled. A force-killed test may leave its isolated database for cleanup.
 
 Optional transport settings: sensors[].id provides a stable configured identity; otherwise
 Main generates a UUID once per run. renderer.buffer_capacity defaults to 128 frames per
 queue and must be positive. Headless runs do not enqueue render frames. See the
 [frame contract](docs/SENSOR_FRAMES.md) for payloads and exact empty-step behavior.
+
+### Enable the fixed aggregation foundation
+
+Aggregation is opt-in; the maintained config.yaml is unchanged. Add the documented
+`aggregation` block to an AGBS entry in an experiment copy of config.yaml; see
+[configuration and semantics](docs/FIXED_AGGREGATION.md#configuration). For the current
+10-Hz AGBS, a 1000-ms window is a suitable functional demonstration parameter. Its existing
+80-m square area and 40-m base-cell size satisfy the adapter's coverage requirement.
+
+Each enabled stream prints the path to a new `results/aggregation/candidates-<UUID>.jsonl`
+file. Rows contain exact windows, completeness, stream/cell counts and sample means. This
+output can be inspected immediately but is not a public release or evidence of privacy
+improvement. Normal raw MongoDB output continues separately. The original sensor areas
+remain adjacent: align them in an evaluation configuration before comparing sensor types.
 
 ### Configuration and startup
 
@@ -503,9 +542,17 @@ removed. The full simulator was not run; existing Simulation data and configurat
 were not modified. This test is not full-run or all-configuration validation.
 
 Actual-interval velocities, non-aligned scheduling and DB failure recovery remain open.
-Other findings include missing shared seeds, wall-clock noise, SharedBuffer shutdown,
-unbounded queues, collision-grid bounds/pointers and quadtree ownership. See the audit
-and task list for priorities and remaining verification.
+SharedBuffer shutdown and bounded transport were corrected under S04/S01. Remaining
+findings include missing shared seeds, wall-clock noise, collision-grid bounds/pointers
+and quadtree ownership. See the audit and task list for priorities and remaining verification.
+
+On 2026-10-13, the A01 Release build and all three CTest suites passed. A full one-second
+headless run used an isolated UUID-named database, 20 GT steps, two AGBS at 10/5 Hz and
+400-ms windows. Its six output windows matched sampled GT identities/contributions and raw
+AGBS contributions per window and cell; no contributor IDs appeared in JSONL. The fixture
+used equal 80-m sensor areas in a temporary config. Test databases were removed. The existing
+Simulation database and maintained config were not modified. This is functional validation,
+not a performance benchmark, manual GUI check or empirical privacy result.
 
 ## 10. Working process
 

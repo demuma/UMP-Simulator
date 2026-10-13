@@ -320,3 +320,36 @@ The current maintained contract is docs/SENSOR_FRAMES.md.
 
 Release builds and both updated CTest regressions passed. The normal simulator/build/Simulator
 was rebuilt; manual visual inspection remains a separate open check.
+
+
+## Implementation record — 2026-10-13: A01 fixed-window foundation
+
+Replaced the unused DB-dependent AggregationManager scaffold with an independently
+testable standard-C++ core. Optional simulation AGBS instances copy internal contributor
+IDs, types and existing leaf geometry during capture. Direct synchronous ingestion avoids
+another SharedBuffer consumer. Render instances and configurations without aggregation
+do not instantiate the manager or copy identities for it.
+
+Fixed half-open windows use integer run-relative milliseconds and aligned sampling.
+Counts distinguish contributions, contributor unions and sample mean occupancy. Expected,
+measured, unavailable and missing samples remain separate. No-sample ticks advance window
+deadlines; normal/cancelled completion flushes the exclusive final interval explicitly.
+The adapter currently requires a square full-quadtree extent and aligned millisecond ticks.
+An observation budget bounds active state; the external synchronous JSONL sink has no
+unbounded output queue. Internal IDs never enter the candidate output schema.
+
+Verification: Release build and all three CTest suites passed. Core tests cover a worked
+count/movement example, 100 consecutive windows, invalid/late/duplicate input, missing and
+empty coverage, budget rejection and partial intervals. The MongoDB fixture exercises two
+live AGBS at 10/5 Hz, including empty captures, entrants and reentry. A full headless smoke
+run adds config parsing, file output and end-of-run finalization: 30 initial agents,
+20 GT steps, equal 80-m sensor areas and six 400-ms/partial candidate windows. Per-cell and
+per-window counts/distinct contributors matched sampled GT; contributions also matched
+raw AGBS MongoDB data. JSONL contained no individual contributor IDs. Only UUID-named test
+databases were used and removed; maintained YAML and existing Simulation data were untouched.
+
+This implements fixed candidate statistics, not metric-driven privacy approval, policy
+trees, public release, merge/split, preemptive buckets or reconstructable history. No speed
+claim or empirical privacy improvement follows from these functional checks. The next
+research contract is E01/E02: one fixed utility query/reference and justified initial
+constraint metrics, followed by A04's minimal regional policy tree.
