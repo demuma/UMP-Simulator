@@ -24,8 +24,11 @@ crashes or corrupt input are blockers, not reasons to begin an unrelated redesig
 
 ## 2. Chronological execution order
 
-**Current position: Stage 1, planning the AGBS input and aggregate contract.** The core is
-intended to be reusable across sensor types; AGBS is the first implemented integration.
+**Current position: Stage 1, planning the AGBS input and aggregate contract.** The detailed
+[bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
+proposals, flow diagram, storage model and hand-worked cases. No bucket implementation
+is implied by this planning work. The core is intended to be reusable across sensor types;
+AGBS is the first integration target.
 Separate sensor behavior/state is preserved. A generic API does not imply that every
 sensor provides every metric input or supports arbitrary spatial refinement.
 
@@ -35,14 +38,16 @@ sensor provides every metric input or supports arbitrary spatial refinement.
 | 2 | Metric definitions and required statistics | E01, E02, E04 | Defined inputs, calculated values and evaluation references |
 | 3 | Policy tree using existing Regions | A04 | Effective regional requirements, inheritance and conflicts |
 | 4 | Active/preemptive buckets and history | A02 | Hand-worked windows, lifecycle and retention rules |
-| 5 | AGBS integration and decisions | A03 | Fixed release/suppress path, then tested merge/split/time extension |
+| 5 | Publication coordination, AGBS decisions and inspection | A05, A03, A06 | Fixed release/suppress path, then tested merge/split/time extension and debug view |
 | 6 | Complete-run checks and comparative evaluation | V01, B01, R01–R03, X02 | Saved equal input, verified releases and result figures |
 | 7 — later | Taxonomy brainstorming, renderer settings and control GUI | X01, X10, X11 | Separate design proposals and measured implementation scope |
 | 8 — later | Map extraction, routes and collision avoidance | X04, X03, X05 | Controlled scenarios and realism/performance evidence |
 | 9 — as justified | Further metrics, uncertainty, graphics and infrastructure | E03, X06–X09 | Research or measured engineering need |
 
-F01 and S01–S03 are conditional corrections alongside the active stage when its correctness
-or execution depends on them. F03 covers persistence recovery beyond successful writes.
+F01 and S01–S04 are corrections alongside the active stage when its correctness
+or execution depends on them. **S04/S01 are P0 before trusting the live sensor/aggregation
+demo**; renderer repair does not block independent bucket contract work. F03 covers
+persistence recovery beyond successful writes.
 Completed audits and sensor fixes are collected at the end of this file.
 
 The later simulator extensions improve input quality, realism and usability. They are lower
@@ -164,6 +169,8 @@ explicitly incomplete until demonstrated. This is an ambitious one-day target.
 5. **Prepare the meeting:** rehearse the existing simulator plus the new path; record a
    short fallback and a status/architecture page. Reserve the end of the day for this.
 
+- [ ] Verify live frame matching (S04/S01) before using sensor overlays as evidence;
+  use timestamped saved output if that repair is not yet ready.
 - [ ] One saved identifiable input and chosen input semantics.
 - [ ] Concrete contracts and expected-result examples.
 - [ ] An actual aggregation -> metrics -> policy -> output path.
@@ -276,7 +283,10 @@ Do not shift timestamps merely to make records appear synchronized.
 
 - [ ] Distinguish observation contributions, distinct people, occupancy and average occupancy.
 - [ ] Name class counts and totalAgents/totalCount unambiguously.
-- [ ] Define window boundaries, preferably half-open [start,end).
+- [ ] Define window boundaries, preferably half-open [start,end), and base-bin alignment.
+- [ ] Define complete coverage, no sample due, measured empty and unavailable observations.
+- [ ] Keep original window start/deadline through spatial merges; distinguish duration
+  from release age and finalize partial windows at end of run explicitly.
 - [ ] Distinguish Empty, Suppressed and Unavailable.
 - [ ] Separate internal identities from publication fields.
 
@@ -287,7 +297,11 @@ multiple times for contributions. Small example data demonstrates every chosen d
 
 - [ ] Describe geometry, history, release rules and publications separately.
 - [ ] Specify sensor-local ownership; favor a manager without MongoDB coupling.
-- [ ] Define every count/time/policy field.
+- [ ] Define every count/time/policy field and stable run/batch/cell/window/release keys.
+- [ ] Specify ingest(batch), advance(now), completed output and read-only debug snapshot
+  responsibilities. No-sample time advances must still trigger deadlines.
+- [ ] Replace the prototype collection/timestamp references with explicit value input
+  and an external publication sink; inspect AGBS member composition and render construction.
 - [ ] Choose update(now, tree) versus a bound reference from actual requirements.
 - [ ] Define one concrete AGBS input adapter and a core that does not depend on Sensor
   subclasses, SFML Agent objects, MongoDB or renderer buffers.
@@ -318,6 +332,8 @@ must not automatically eliminate error. Do not label record retention as data fi
 - [ ] Consider aggregate-occupancy membership inference and justify its relevance.
 - [ ] Define a prior/no-output baseline and clear attack-success measure.
 - [ ] Include repeated releases, overlapping windows and possible differencing attacks.
+- [ ] Include observable adaptive geometry, publication timing and suppression patterns;
+  evaluate all views visible to the attacker jointly.
 - [ ] Distinguish k-threshold compliance from measured risk.
 
 **Acceptance:** reproducible attacker knowledge and baseline. No general anonymity claim
@@ -351,7 +367,17 @@ The metric evaluator requires no renderer or live database access.
   effective requirements; bucket statistics -> Metric Evaluator -> observed values;
   the AggregationManager consumes both and decides.
 - [ ] Keep policy hierarchy independent of data hierarchy.
+- [ ] Compile inherited effective policies at initialization for reachable cells and
+  cross-region parents; share identical policies and measure full-tree versus sparse cost.
+- [ ] Apply strict compatible hard bounds: max of lower bounds, min of upper bounds,
+  all mandatory metrics and intersections of allowed actions. Reject contradictions.
+- [ ] Define min/max cell side in metres and coarsest allowed depth unambiguously;
+  validate metric units, parameters and reference definitions before combining thresholds.
+- [ ] Resolve Spatial First/Temporal First as preferences with explicit priority/ties;
+  preferences never weaken hard constraints.
 - [ ] Handle overlaps, boundary-crossing cells and conflicting requirements.
+- [ ] Fix policies during initial runs; specify policy versions/cache invalidation
+  and open-window behavior before permitting live policy changes.
 - [ ] Add multiple views only after a correct single release pipeline.
 
 **Acceptance:** spatial merges cannot silently weaken regional rules; conflicts have
@@ -363,7 +389,16 @@ explicit resolution or rejection.
 
 - [ ] Specify retrospective parent aggregation from internal observations.
 - [ ] Compare physical active/preemptive containers with logical windows over shared history.
-- [ ] Define retention, open windows and cleanup.
+- [ ] Define retention, open windows and cleanup, with bounded coordination/retry retention.
+- [ ] Store owned fine time-bin history and reference it from sparse bucket records keyed
+  by stream/application, cell/depth, window start and generation. No Agent*/Node* lifetimes.
+- [ ] Treat leaf flags as work hints; verify full sibling coverage including known-empty cells.
+- [ ] Use exact contributor unions/reference counts and appropriate time weights; do not
+  sum unique child counts or treat repeated observations as different people.
+- [ ] Define COLLECTING/WAITING, READY, SEALED/PENDING_OUTPUT, COMMITTED, SUPERSEDED
+  and SUPPRESSED. Keep temporal_exhausted separate from publication state.
+- [ ] Invalidate competing preemptive candidates after a committed cut; reclaim history
+  only after all bounded dependencies are resolved.
 - [ ] Handle cell-specific windows and compatible temporal merge coverage.
 - [ ] Reconcile the paper's interval-tree proposal with the presentation's active/preemptive
   buckets: specify whether an interval index is required by actual queries before choosing
@@ -376,17 +411,60 @@ Deleting a DB record cannot retract an already externally visible publication.
 
 ## 8. Stage 5 — AGBS integration and adaptation decisions
 
+### A05 — Publication coordination and irreversible output — P0
+
+- [ ] Define private observation/GT/checkpoint storage versus externally visible releases;
+  keep the publication sink outside the manager and enforce the selected access boundary.
+- [ ] Define reservations before any competing child release, and a ledger of reserved,
+  committed and retired cell/interval coverage per application stream.
+- [ ] Choose a small initial coordination domain and merge-depth cap. Compare holding its
+  unpublished cut with early child release that makes historical ancestors unavailable.
+- [ ] Require compatible complete temporal support for all sibling regions/descendants.
+  A passing child can be held for coordination without being described as privacy-failing.
+- [ ] Publish one non-overlapping selected cut; reject parent/child reuse of the same
+  committed or pending-output support. Future adaptation uses a common handover boundary.
+- [ ] Seal immutable output with a stable release ID; preserve reservations on sink failure.
+  Coordinate retry/idempotency and bounded pending output with F03.
+- [ ] Suppress/retire infeasible support with internal reasons; separate this from raw
+  history cleanup. Do not delete visible records as a purported privacy repair.
+
+**Acceptance:** demonstrate the additive-count subtraction counterexample, a rejected
+merge over a published child, and an allowed future transition. Pending writes cannot
+reopen coverage for a competing candidate. Disjoint release coverage is not a privacy proof.
+
 ### A03 — Start with simple adaptive strategies — P0
 
 - [ ] Integrate fixed candidate release/suppress with the initial regional policy tree.
 - [ ] Specify and implement one first adaptive decision order; compare Spatial First and
   Temporal First only after the initial path is correct.
-- [ ] Define sibling/parent/child checks, merge, split and suppression.
+- [ ] Define sibling/parent/child checks, merge, split and suppression using A05 reservations.
+- [ ] Evaluate one complete parent at a time and expand to its siblings only when the
+  next ancestor is needed and allowed. Avoid an automatic cascade to the depth cap.
+- [ ] Recompute effective regional policy and all mandatory metrics for every candidate.
+  More aggregation is not assumed to improve every metric monotonically.
+- [ ] Allow early completion only after hard minimum/maximum bounds and release
+  coordination pass. Temporal exhaustion permits only remaining legal actions.
+- [ ] Bound retries/search; wait for new evidence or a deadline rather than polling
+  unchanged candidates. Preserve original start time through every merge.
+- [ ] Initially split only at future common boundaries with a complete checked child cut;
+  prevent split/merge oscillation within one unresolved window.
 - [ ] Handle impossible constraint combinations explicitly.
 - [ ] Compare against B01 baselines.
 
 **Acceptance:** decisions are explainable and spatial/temporal releases agree. Measure a
 better privacy/utility trade-off rather than assuming it.
+
+### A06 — Live aggregation state overlay — P1, after S04
+
+- [ ] Define a read-only debug snapshot separate from sensor cell-ID measurements.
+- [ ] Show collecting/ready candidates, proposed parents, committed output and suppressed
+  intervals with distinct labels/styles and correct observation/window/release times.
+- [ ] Expose policy ID and decision reason on inspection; cache unchanged geometry.
+- [ ] Separate trusted GT/internal inspection from the application's release-only view.
+  Internal counts, failed candidates and debug details must not leak through public output.
+
+**Acceptance:** a hand-worked merge can be followed visually without stale frames or
+the renderer influencing aggregation. A06 is targeted inspection, not the later X11 GUI.
 
 ## 9. Stage 6 — Validation and comparable experiments
 
@@ -507,6 +585,39 @@ broadcast nor backpressure; existing read removes a frame.
 **Proposal:** keep aggregation in the simulation thread initially. Rendering may skip frames;
 evaluation may require every batch. Define requirements before choosing queue/snapshot transport.
 **Acceptance:** no shutdown hangs and bounded memory for the selected operation mode.
+
+### S04 — Match chronological complete sensor frames to agent frames — P0 for live correctness
+
+**Verified in source:** Renderer::readLocalSensorBufferFrame returns the first exact match
+without consuming it, and no-match paths can retain currentSensorFrame. The direct path
+blocks in SharedBuffer::read before local lookup. The AGBS render loop breaks after the
+first sensor-map entry and overwrites the render instance's sensor ID with that entry.
+Currently AGBS is the sensor-buffer producer. This is a correctness issue distinct from
+later renderer settings/GUI work; coordinate queue changes with S01.
+
+- [ ] Combine actual contributions for step t into one complete timestamped sensorId ->
+  cell-ID-set frame. Non-due sensors must not wait for later measurements to join t.
+- [ ] Preserve source identity for measured-empty sets; distinguish them from no sample due.
+- [ ] Define step completeness: proposed step packet couples agent data and an optional
+  sensor map after capture, or explicit presence/completion metadata if queues stay separate.
+  An empty queue/tryRead miss alone cannot prove that no measurement exists.
+- [ ] Treat local frames as an ordered FIFO: discard older entries, pop one exact match,
+  keep future entries, and clear current measurement data when the agent frame advances
+  without a match. Repainting/pausing the same agent frame may retain its matched view.
+- [ ] Guarantee producer order/completeness; define duplicate/out-of-order handling and
+  bounded buffering when frames are skipped.
+- [ ] Route every sensor-map entry to the correct render instance using stable IDs; removing
+  the first-entry break alone must not merge all sensors into every displayed AGBS grid.
+- [ ] Avoid blocking on nonexistent measurements; keep UI events responsive for in-flight
+  frames and complete shutdown/draining with S01.
+- [ ] Verify measured steps, between-sample steps, no match, old/exact/future FIFO entries,
+  multiple sensors at different rates, measured-empty frames, pause/redraw and end of stream.
+
+**Acceptance:** one complete matching frame is consumed once; older data are not displayed
+as current; future data remain buffered; all sensor IDs reach their own visualizations;
+missing measurements cause neither unintended waiting nor stale reuse. Last-known display,
+if later desired, must explicitly show its original time/age. Use saved timestamped output
+instead of claiming a correct live overlay until these cases pass.
 
 ### S02 — Collision grid and pointer lifetime — P1 before more realistic scenarios
 

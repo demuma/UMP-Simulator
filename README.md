@@ -21,6 +21,7 @@ its original external file remains unchanged.
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
 | [Technical audit](docs/STATE_AND_NEXT_STEPS.md) | Source-level findings and the recorded database check |
 | [Aggregation design review](docs/AGGREGATION_DESIGN.md) | Configuration/presentation review, bucket semantics, transport, policy trees and metric scheduling before implementation |
+| [Bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) | Detailed planning: state diagram, storage, compiled policies, coordinated releases and renderer correctness |
 | [Historical implementation plan](docs/reference/IMPLEMENTATION_PLAN.md) | Reference specification; not an instruction to execute every phase |
 
 Read the current status, then follow TO-DO Section 2 in execution order. Section 5 of
@@ -90,6 +91,8 @@ UMP-Simulator/
 │   └── gt/                       # GT_Renderer_database_V3
 └── docs/
     ├── STATE_AND_NEXT_STEPS.md
+    ├── AGGREGATION_DESIGN.md
+    ├── BUCKET_LIFECYCLE.md
     └── reference/
         └── IMPLEMENTATION_PLAN.md
 ```
@@ -125,7 +128,7 @@ reverted test results do not establish correctness of the current implementation
 | AggregationManager | Sensor-local class scaffold, bucket structure and DB test method | No usable algorithm; empty flush; no effective pipeline integration |
 | Regional rules | YAML/Region fields for granularities and k/l thresholds | No active policy evaluation, conflict handling or policy trees |
 | Temporal history | Short-lived sensor data containers | No bounded reconstructable history or variable aggregation windows |
-| Rendering | In-process view and four V3 database renderers | Snapshot/shutdown issues; release view still undefined |
+| Rendering | In-process view and four V3 database renderers | Stale/non-consumed sensor frames, first-entry-only AGBS drawing and blocking/shutdown issues (S04/S01); aggregation overlay pending |
 | Evaluation | Earlier experiments in Data_analysis outside this import | Metric semantics, independent attacker evaluation and fair baselines missing |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |

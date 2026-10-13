@@ -5,6 +5,11 @@ The user requests preservation of sensor modularity and existing performance wor
 current configuration and presentation are design inputs, not instructions to execute
 every item in an old implementation plan.
 
+The [bucket lifecycle and release protocol](BUCKET_LIFECYCLE.md) expands the October 13
+discussion into a state diagram, data/storage contract, policy compilation rules,
+sibling reservations, irreversible publication behavior and renderer acceptance cases.
+It is the detailed proposal for these topics; implementation remains pending.
+
 ## 1. Sources and verified baseline
 
 Reviewed the supplied presentation, *Adaptive, Metric-Based and Privacy-Preserving Sharing
@@ -193,6 +198,9 @@ decision remains pending until new evidence, a policy change or a deadline. Pree
 candidates are invalidated or recomputed when their input/policy versions change. Final
 discard and history reclamation are separate from publication state.
 
+The detailed lifecycle distinguishes READY, SEALED/PENDING_OUTPUT, COMMITTED,
+SUPERSEDED and SUPPRESSED, with temporal exhaustion as a separate property. Early
+completion also requires publication coordination; a passing child may still be held.
 Do not use one ambiguous `finished` flag for both a closed window and an external release.
 Fix these semantics with hand-worked examples before implementation:
 
@@ -224,6 +232,11 @@ Retain that protocol and make its preconditions precise:
   avoid unintended simultaneous parent/child release of the same contributions.
 - Make irreversible external publication distinct from temporary internal DB storage.
   Removing an already visible DB record cannot erase information already read by a client.
+- Reserve required sibling/ancestor support before competing child publication. Choose
+  either a bounded coordination domain or early release that closes conflicting historical
+  merges. Merely flagging a failing leaf is too late if its siblings were already published.
+- Preserve original window start/deadline through merges. Reaching the maximum duration
+  permits a remaining legal spatial candidate or suppression; it does not reset time.
 - A pending request must have a wake-up trigger/deadline; otherwise heterogeneous windows
   can cause repeated polling or indefinite waits.
 
@@ -264,8 +277,10 @@ configuration/policy version change or geometry refinement, not every simulation
 For intersecting regions, combine constraints by a declared rule. For compatible lower
 bounds use the strongest lower bound, for upper bounds the tightest upper bound; reject
 an empty feasible interval. Class/metric semantics and priorities still need explicit
-definitions, so this numeric rule is not a universal conflict resolver. Region overrides
-must say whether relaxing a default is permitted. Start with aligned non-overlapping
+definitions, so this numeric rule is not a universal conflict resolver. The October 13
+requirement is strict inheritance: regional children may tighten compatible hard rules,
+but must not silently relax them. Spatial-first/temporal-first are preferences with
+explicit priority/tie rules, not numerically comparable privacy bounds. Start with aligned non-overlapping
 regions, then test overlapping and cross-boundary cells before enabling them.
 
 Missing region type references should be configuration errors. Current map indexing in
