@@ -9,8 +9,10 @@ initialization, single-use ABS batches and local observation assembly are implem
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
 bounded, nonblocking renderer consumption are implemented (S04/S01). The first A01 slice
 now adds optional identity-bearing AGBS input, a dependency-free fixed-window core and
-internal JSONL candidates. Policy trees, adaptive buckets and privacy release decisions
-remain open, as do actual-interval velocities and reproducible research experiments.**
+internal JSONL candidates. E04 now adds measured cell metrics, explicit unavailable values
+and optional uniform, versioned threshold checks. Regional policy trees, adaptive buckets
+and privacy release decisions remain open, as do actual-interval velocities and reproducible
+research experiments.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -22,6 +24,7 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
+| [Candidate metrics](docs/METRICS.md) | Implemented online metric registry, threshold assessment, configuration and first fixed utility-query contract |
 | [Fixed aggregation contract](docs/FIXED_AGGREGATION.md) | Implemented A01 input, count/window semantics, coverage, memory bounds and opt-in configuration |
 | [Sensor frame contract](docs/SENSOR_FRAMES.md) | Implemented typed payloads, step completion, identity routing, queue bounds and validation |
 | [Technical audit](docs/STATE_AND_NEXT_STEPS.md) | Source-level findings and the recorded database check |
@@ -56,8 +59,10 @@ tries spatial aggregation first. Spatial First prioritizes spatial detail and tr
 aggregation first. The name identifies the dimension to preserve. Hard bounds still apply;
 these are specified strategies, not completed implementations.
 
-The attacker model, auxiliary knowledge, application query and evaluation metrics still
-need binding definitions. A minimum number of contributors per publication is initially
+The first application query is now mean sampled occupancy on a fixed 10-m reference grid
+over 1-second intervals; [METRICS.md](docs/METRICS.md) defines its reference, reconstruction
+assumptions and missing-data treatment. Its GT experiment is still pending. The attacker
+model, auxiliary knowledge and empirical privacy evaluation still need binding definitions. A minimum number of contributors per publication is initially
 an operational release rule. It does not by itself establish formal k-anonymity or a
 reduction in empirical attack success.
 
@@ -142,11 +147,11 @@ reverted test results do not establish correctness of the current implementation
 | ABS | Position, type, identity and velocity from consecutive observations; first complete output at 100 ms for the current 10-Hz setup | Nominal-period velocity requires aligned fixed intervals; publication after DB errors is not guaranteed |
 | GBS | Fixed cells, class counts and total count per observation | No full temporal aggregation or privacy-based release decision |
 | AGBS | Quadtree, position mapping, counts and cell IDs | Splitting follows positions/max depth, not metrics or policies |
-| AggregationManager | Optional AGBS ingestion, fixed windows, distinct contributor unions, sample occupancy and separate JSONL candidates | No policy checks, approved releases, merges or temporal extension |
+| AggregationManager | Optional AGBS ingestion, fixed windows, contributor unions and JSONL candidates evaluated by a separate metric component | No regional policies, approved releases, merges or temporal extension |
 | Regional rules | YAML/Region fields for granularities and k/l thresholds | No active policy evaluation, conflict handling or policy trees |
 | Temporal history | Bounded active-window identity sets and counts | No reconstructable history, preemptive buckets or variable aggregation windows |
 | Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry between samples; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
-| Evaluation | Earlier experiments in Data_analysis outside this import | Metric semantics, independent attacker evaluation and fair baselines missing |
+| Evaluation | Online metric registry, uniform threshold assessments and a defined first occupancy-query baseline | GT utility experiment, independent attacker evaluation and comparative baselines remain open |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |
 
@@ -307,7 +312,7 @@ Simulation thread
   ├── ABS → position / velocity / MongoDB
   ├── GBS → fixed-cell counts / MongoDB
   ├── AGBS → quadtree-cell counts / MongoDB
-  │        └── optional internal ID/cell batches → fixed-window manager → research JSONL
+  │        └── optional ID/cell batches → fixed-window manager → metric evaluator → research JSONL
   └── complete typed sensor frame + matching agent snapshot → bounded queues → renderer
 
 Separate V3 renderers → read stored data from MongoDB
@@ -327,9 +332,15 @@ missing and unavailable samples, closes fixed half-open windows even on non-samp
 and marks truncated final intervals. One active window and an observation budget bound
 retained state. Output contains no individual IDs; it is still internal research data.
 
-This first mode uses configured leaf depth and a fixed time window. It does not implement
-privacy checks, suppression, release approval, regional policies, merges/splits or preemptive
-history. Its identity sets are discarded when a window closes; A02 must add reconstructable
+The metric evaluator now computes per-cell support, contribution counts, sample occupancy,
+geometry, duration, age, post-window delay and sample coverage. An optional versioned uniform
+policy requests min/max checks. Missing reference-dependent metrics are explicitly unavailable;
+incomplete coverage prevents a successful overall assessment. The writer only serializes
+the candidate and assessment. See [METRICS.md](docs/METRICS.md) for meanings and units.
+
+This first mode uses configured leaf depth and a fixed time window. Its threshold assessments
+do not implement empirical privacy measurement, suppression, release approval, regional
+policies, merges/splits or preemptive history. Its identity sets are discarded when a window closes; A02 must add reconstructable
 history before adaptive candidates can reuse those observations. Geometry, history,
 policy evaluation and public release state remain separate responsibilities.
 
@@ -424,7 +435,16 @@ cmake --build renderers/abs/build -j4
 Replace abs with gbs, agbs or gt for the other applications. Each target is named Visualizer,
 so the renderers remain separate CMake projects for now.
 
-### Run aggregation, frame and sensor regression tests
+### Run metric, aggregation, frame and sensor regression tests
+
+MetricRegressionTests is enabled by default (UMP_BUILD_METRIC_TESTS) and uses standard C++
+only. It verifies hand-computed values, units, inclusive/invalid bounds, unavailable inputs,
+coverage gates and the difference between window duration and age at evaluation:
+
+```sh
+ctest --test-dir simulator/build -R metric_regression --output-on-failure
+```
+
 
 AggregationRegressionTests is enabled by default (UMP_BUILD_AGGREGATION_TESTS). Its core
 and test executable depend only on standard C++:
@@ -494,8 +514,10 @@ Aggregation is opt-in; the maintained config.yaml is unchanged. Add the document
 80-m square area and 40-m base-cell size satisfy the adapter's coverage requirement.
 
 Each enabled stream prints the path to a new `results/aggregation/candidates-<UUID>.jsonl`
-file. Rows contain exact windows, completeness, stream/cell counts and sample means. This
-output can be inspected immediately but is not a public release or evidence of privacy
+file. Schema `ump.fixed-candidate.v2` adds per-cell metric values/units, a coverage gate
+and individual threshold checks to the original windows/counts. Omitting `metric_policy`
+produces `not_configured`; optional checks use the block in [METRICS.md](docs/METRICS.md#configuration-and-diagnostic-output).
+The results can be inspected immediately but are not public releases or evidence of privacy
 improvement. Normal raw MongoDB output continues separately. The original sensor areas
 remain adjacent: align them in an evaluation configuration before comparing sensor types.
 
@@ -570,6 +592,12 @@ additionally exposed an existing MongoDB instance/client destruction-order defec
 corrected so the driver outlives the client. Isolated full runs with and without a window
 then exited successfully without stderr. The UI tool could not select the standalone
 Simulator window, so direct visual/pause/resume inspection remains open.
+
+The E04 metric slice subsequently passed all four CTest suites and a full isolated
+headless run. Four AGBS policies produced twelve windows exercising pass, fail, unavailable
+reference and no-policy outcomes; numeric metrics/checks matched their candidate data.
+Unknown YAML metrics fail explicitly at initialization. No maintained YAML or existing
+Simulation data was changed. Regional inheritance and GT/attacker evaluation remain open.
 
 ## 10. Working process
 

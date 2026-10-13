@@ -24,8 +24,9 @@ crashes or corrupt input are blockers, not reasons to begin an unrelated redesig
 
 ## 2. Chronological execution order
 
-**Current position: Stage 1 foundation implemented; moving to the metric/application contract.
-S04/S01 transport and the first A01 fixed-window AGBS pipeline are regression-tested.** The detailed
+**Current position: initial Stage 2 online metrics implemented; next is A04's minimal
+regional policy tree. E01's fixed occupancy-query contract is documented; the GT experiment
+and E02 attacker definition remain open. S04/S01, A01 and E04 have regression coverage.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
 proposals, flow diagram, storage model and hand-worked cases. The
 [fixed aggregation contract](docs/FIXED_AGGREGATION.md) records actual A01 behavior;
@@ -36,9 +37,9 @@ sensor provides every metric input or supports arbitrary spatial refinement.
 
 | Order | Work package | Main tasks | Completion evidence |
 |---|---|---|---|
-| 1 — now | Common evaluation area; input, count and output semantics | D01–D03, A01 | Concrete AGBS batch/aggregate examples and chosen units |
-| 2 | Metric definitions and required statistics | E01, E02, E04 | Defined inputs, calculated values and evaluation references |
-| 3 | Policy tree using existing Regions | A04 | Effective regional requirements, inheritance and conflicts |
+| 1 — foundation implemented | Common evaluation area; input, count and output semantics | D01–D03, A01 | Concrete AGBS batch/aggregate examples and chosen units |
+| 2 — online slice implemented | Metric definitions and required statistics | E01, E02, E04 | Defined inputs, calculated values and evaluation references |
+| 3 — next | Policy tree using existing Regions | A04 | Effective regional requirements, inheritance and conflicts |
 | 4 | Active/preemptive buckets and history | A02 | Hand-worked windows, lifecycle and retention rules |
 | 5 | Publication coordination, AGBS decisions and inspection | A05, A03, A07, A06 | Fixed release/suppress path, then merge/split, partial suppression, time extension and debug view |
 | 6 | Complete-run checks and comparative evaluation | V01, B01, R01–R03, X02, E05, E06 | Equal input, verified releases, publication/priority comparisons and preparation-cost study |
@@ -122,6 +123,8 @@ Database writing and rendering consume the resulting release rather than decidin
   resolution/delay alone do not establish application utility. Define a fixed application
   query and compute its error against GT in evaluation. Empirical attack evaluation remains
   a separate research measurement. Unavailable metrics must be reported, not invented.
+  The E04 online registry/checks and E01 query contract are implemented/documented; the
+  GT reconstruction experiment and independent attacker model remain pending.
 - [ ] **P4 — Minimal actual policy tree (A04).** Implement a default/root policy with
   inherited regional child policies for one application. Keep policy content/resolution
   separate from the data quadtree even if they share geometry or cell identifiers. Start
@@ -338,9 +341,15 @@ individual IDs. Existing Simulation data and maintained YAML were unchanged.
 
 ### E01 — Define one utility application — P0
 
-- [ ] Select a first query, such as mean occupancy/density over a time interval.
-- [ ] Fix reference grid, reference times and missing/suppressed-data treatment.
-- [ ] Define error against GT and use the same query for every variant.
+Baseline contract: [METRICS.md](docs/METRICS.md#first-utility-question-e01-baseline-contract).
+
+- [x] Select mean sampled occupancy in fixed reference cells/time intervals as the first baseline query.
+- [x] Define a common 80-m evaluation square, 10-m reference cells, 1-second intervals and
+  aligned 100-ms sample times; missing/suppressed predictions are not zeros.
+- [x] Define conditional MAE and answered-query coverage separately; keep reference support
+  fixed and document uniform reconstruction assumptions for coarser aggregate support.
+- [ ] Implement GT extraction and prediction reconstruction for that query; run every variant
+  against the same saved reference, including the coarsening counterexample.
 - [ ] Measure resolution, staleness, coverage and numerical error separately.
 
 **Acceptance:** a fixed question and its GT answer are defined. Coarsening the reference
@@ -361,13 +370,24 @@ based only on a distinct-contributor count.
 
 ### E04 — Define the online metric contract — P0
 
-- [ ] Specify each metric ID, meaning, inputs, units, aggregation rule and valid/undefined cases.
-- [ ] Separate metric definitions, selected requirements and measured values.
-- [ ] Distinguish contribution support from a justified anonymity/equivalence-class metric.
+- [x] Specify the initial registry's metric IDs, inputs, units and defined/unavailable cases
+  in [METRICS.md](docs/METRICS.md); additional presentation metrics remain subject to review.
+- [x] Separate registry definitions, versioned uniform requirements, measured values and checks.
+- [x] Distinguish observed contributor support from a justified anonymity/equivalence-class metric.
+- [x] Evaluate complete fixed candidates at closure, expose every failed/unavailable requirement
+  and enforce an observation-coverage gate that thresholds cannot bypass.
+- [x] Validate policy names, versions, duplicate/unknown requirements, numeric bounds and input
+  consistency. No configuration means no implicit thresholds or approval.
+- [x] Integrate actual metrics/assessments into v2 internal diagnostics, outside the serializer.
+- [x] Test worked examples, inclusive limits, missing data, unavailable references, per-cell
+  support, truncated windows and a complete YAML-to-JSONL simulation path.
 - [ ] Reconcile presentation metrics with paper Tables 3–5, including definitions and
   reference populations. Do not transfer example thresholds as universally safe defaults.
-- [ ] Select incremental statistics and cache invalidation triggers; verify before publication.
-- [ ] Separate aggregation duration, sensor period, release age and wall-clock processing time.
+- [x] Reuse A01 incremental counts/unions; measure fixed candidates only at closure. Re-evaluate
+  at actual decision/release time once delayed publication is implemented.
+- [x] Separate sensor period, actual duration, age at evaluation and post-window delay;
+  wall-clock runtime and public release age are not inferred from these values.
+- [ ] Extend metrics to actual release-time evaluation and adaptive-history candidates.
 
 **Acceptance:** one candidate has hand-computable metric values, one policy supplies the
 corresponding allowed ranges, and a decision explains each passed/failed/unavailable check.
@@ -376,6 +396,11 @@ The metric evaluator requires no renderer or live database access.
 ## 6. Stage 3 — Policy tree and existing Regions
 
 ### A04 — Regional policy trees / application layer — P0
+
+**Next implementation:** root plus two aligned regional policies from existing Region
+geometry. Feed inherited/intersected requirements into E04's evaluator. The currently
+implemented `aggregation.metric_policy` is a uniform stream policy, not a spatial tree.
+Legacy k/l field names must not be silently mapped to the observed-support proxy.
 
 - [ ] Define default, regional and application-specific constraints.
 - [ ] Distinguish maximum window duration, age at release, post-window delay, optional

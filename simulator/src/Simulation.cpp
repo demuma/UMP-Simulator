@@ -446,8 +446,43 @@ void Simulation::initializeSensors() {
                     {detectionArea.position.x, detectionArea.position.y, detectionArea.size.x, detectionArea.size.y, maxDepth},
                     static_cast<ump::AggregationTime>(std::llround(1000.0 / frameRate)),
                     aggregation["window_ms"].as<ump::AggregationTime>(), static_cast<std::uint64_t>(budget)};
+                std::optional<ump::MetricPolicy> metricPolicy;
+                if (const auto policy = aggregation["metric_policy"]) {
+                    if (!policy.IsMap()) throw std::invalid_argument("aggregation.metric_policy must be a map");
+                    for (const auto& item : policy) {
+                        const auto key = item.first.as<std::string>();
+                        if (key != "id" && key != "version" && key != "requirements")
+                            throw std::invalid_argument("Unknown metric_policy setting: " + key);
+                    }
+                    metricPolicy.emplace(ump::MetricPolicy{policy["id"].as<std::string>(), policy["version"].as<std::string>(), {}});
+                    const auto requirements = policy["requirements"];
+                    if (!requirements.IsMap()) throw std::invalid_argument("Metric requirements must be a map");
+                    for (const auto& item : requirements) {
+                        ump::MetricRequirement requirement{ump::metricIdFromName(item.first.as<std::string>()), {}, {}};
+                        if (!item.second.IsMap()) throw std::invalid_argument("Metric bounds must be a min/max map");
+                        for (const auto& bound : item.second) {
+                            const auto key = bound.first.as<std::string>();
+                            if (key == "min") {
+                                if (requirement.min) throw std::invalid_argument("Duplicate minimum metric bound");
+                                requirement.min = bound.second.as<double>();
+                            } else if (key == "max") {
+                                if (requirement.max) throw std::invalid_argument("Duplicate maximum metric bound");
+                                requirement.max = bound.second.as<double>();
+                            }
+                            else throw std::invalid_argument("Unknown metric bound: " + key);
+                        }
+                        metricPolicy->requirements.push_back(requirement);
+                    }
+                }
+                ump::MetricEvaluator evaluator(std::move(metricPolicy));
+                auto diagnostics = makeAggregationDiagnosticsSink(
+                    aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp);
                 sensor->enableAggregation(settings, timeStep, timestamp,
-                    makeAggregationDiagnosticsSink(aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp));
+                    [evaluator = std::move(evaluator), diagnostics = std::move(diagnostics)](const auto& candidate) {
+                        // Evaluate first; the external sink only serializes measured values and checks.
+                        const auto assessment = evaluator.evaluate(candidate, candidate.closedAtMs);
+                        diagnostics(candidate, assessment);
+                    });
             }
             sensors.push_back(std::move(sensor));
             sensors.back()->scale = scale;

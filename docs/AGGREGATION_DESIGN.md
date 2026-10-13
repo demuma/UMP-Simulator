@@ -305,6 +305,11 @@ integration instead of silently obtaining unintended constraints.
 
 ### Metric requirements versus measured values
 
+Implemented E04 baseline: [METRICS.md](METRICS.md) defines the online registry, a uniform
+versioned MetricPolicy and per-cell checks in the real fixed-window path. An offline
+reference-dependent metric is unavailable online. The spatial policy tree, inheritance
+and release coordination below remain planned; threshold compliance is not release approval.
+
 The policy tree is the source of effective *requirements*. It can select which metrics
 matter, their parameters/reference definitions, thresholds, and preferences. It does not
 produce current measured values merely by being queried for a region.

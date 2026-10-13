@@ -385,3 +385,38 @@ explicitly requires the instance to outlive every other driver object. Moving th
 declaration before the client corrects that lifetime. Subsequent one-second, two-AGBS
 full-executable runs with a window and headless both exited 0 with empty stderr; their
 isolated databases were removed. This execution check does not replace visual inspection.
+
+
+## Implementation record — 2026-10-13: E04 candidate metrics and uniform checks
+
+Added a standard-C++ registry and evaluator for observed contributor support, contribution
+counts, sample mean occupancy, cell side/area, actual window duration, age at evaluation,
+post-window delay and sample coverage. occupancy_mae is registered as an offline quantity
+and explicitly returns offline_reference_required in the online path. E01 now has a fixed
+reference occupancy-query contract; reference extraction/reconstruction is not implemented.
+
+Each optional MetricPolicy has an ID, version and inclusive min/max requirements. Invalid
+units/ranges, unknown metric names, duplicate requirements and inconsistent candidate inputs
+fail explicitly. Incomplete observation coverage cannot pass the mandatory quality gate.
+Pass/fail/unavailable checks are kept per cell; stream-wide support is never substituted
+for a sparse cell's contributors. Empty sparse windows and absent policies have separate
+no_candidates/not_configured statuses. No result is a public release or privacy guarantee.
+
+Simulation constructs the evaluator once per configured stream and evaluates at candidate
+closure before invoking the external JSONL sink. Diagnostics schema v2 records values,
+units, missing-value reasons, provenance, inclusive bounds, checks and overall status.
+No extra thread, buffer consumer or per-tick full metric calculation was added. A01's raw
+sensor/aggregation counts and the user's maintained configuration remain unchanged.
+
+Verification: full Release build and all four CTest suites passed. Metric tests use
+hand-computed values, different requirements on the same candidate, delayed assessment,
+partial windows, missing/empty/unavailable data and malformed inputs. A complete one-second
+headless run produced twelve windows across four AGBS streams exercising pass, fail,
+unavailable-reference and absent-policy outputs. The v2 numeric fields/checks matched their
+candidate data, and an unknown YAML metric caused a clear startup failure. The UUID-named
+test database was removed; existing Simulation data was not accessed or changed.
+
+Next: A04 root/regional inheritance and conflicts using Region geometry. The current
+uniform policy does not activate Region thresholds, adaptive search, release/suppress,
+publication-history checks or empirical privacy/utility evaluation. Performance benchmarking
+and presentation-metric reconciliation also remain open.

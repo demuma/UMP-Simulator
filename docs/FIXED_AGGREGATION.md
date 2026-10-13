@@ -2,7 +2,9 @@
 
 Status: 2026-10-13. A01 implementation contract. This is the first fixed-window
 foundation, not the adaptive release protocol in [BUCKET_LIFECYCLE.md](BUCKET_LIFECYCLE.md).
-Implementation and verification status is recorded in TO-DO and README.
+Implementation and verification status is recorded in TO-DO and README. The subsequent
+[metric contract](METRICS.md) adds a separate evaluator and versioned threshold assessments
+to v2 diagnostics; the fixed-window core and its count semantics are unchanged.
 
 ## Scope and ownership
 
