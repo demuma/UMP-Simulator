@@ -56,6 +56,29 @@ pipeline, not in a late optional extension. The full dissertation narrative rema
 presentation format. Dates below are delivery targets, not claims of completed features
 or promises of improved empirical privacy.
 
+### Architecture review before implementation
+
+The user requests that current sensor configuration and the presentation's bucket/merge/split
+protocol guide the design, while preserving sensor independence and existing performance work.
+See [Aggregation design review](docs/AGGREGATION_DESIGN.md) for the source review, proposals,
+metric-definition issues and the decisions still required. No source or YAML changes were
+made for this review.
+
+- [ ] Prepare an evaluation configuration with equal ABS/GBS/AGBS areas and time basis;
+  retain the separate-area configuration as a demo option.
+- [ ] Specify the internal observation batch; do not treat renderer cell-ID snapshots as input data.
+- [ ] Resolve active/preemptive interval ownership, publication states and bounded retention.
+- [ ] Define sibling time alignment and already-published-data behavior for merge/split.
+- [ ] Integrate existing Region instances into one application policy tree, with cached lookup
+  and explicit inheritance/boundary rules; no full tree per individual metric.
+- [ ] Define metric inputs/units and update triggers; distinguish per-observation statistics,
+  deadline-based checks and offline evaluation. Correct the slide's ambiguous utility formulas.
+- [ ] Establish a small performance baseline before adding a thread or changing data transport.
+
+The first implementation starts after these contracts are concrete enough for the hand-worked
+cases in the design review. Deadline pressure does not make an undefined bucket or metric
+contract implementation-ready.
+
 ### Foundation: first complete observation-to-release path
 
 The existing quadtree is the spatial foundation. Source review confirms that makeCell and
