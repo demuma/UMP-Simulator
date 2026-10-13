@@ -17,35 +17,37 @@ to begin every listed phase. All project documentation is maintained in English.
 For every implementation, record affected files, behavioral effect, verification,
 results and remaining limits. A class or configuration field alone does not complete a task.
 
-## 2. Completed organization and audit work
+Read Section 2 from top to bottom. Task IDs remain stable when tasks move. A date milestone
+does not override a missing prerequisite. Complete the current stage's smallest working
+path and checks before opening a later expansion. Validation accompanies each stage;
+crashes or corrupt input are blockers, not reasons to begin an unrelated redesign.
 
-- [x] Create the local repository, initially named UrbanMobilityPrivacy; no remote.
-- [x] Move it outside Coding to ~/Developer/UMP-Simulator on 2026-10-09, preserving Git history.
-- [x] Adopt the name Urban Mobility Privacy Simulator and update location/workspace documentation.
-- [x] Import Aggregation_Manager and four separate V3 database renderers.
-- [x] Preserve import commit 96fae5b as the baseline.
-- [x] Build the unmodified simulator and all four renderers successfully.
-- [x] Compare 101 imported component files byte for byte with the originals.
-- [x] Archive the historical implementation plan under docs/reference.
-- [x] Document classes, data flow and major source-level risks.
-- [x] Inspect the local MongoDB connection and collections read only.
-- [x] Check the example agent's GT/ABS matches, duplicates and velocity intervals.
-- [x] Revert the temporary ABS fix and its test target with db2bdbb.
-- [x] Establish detailed README and TO-DO files as the central project overview.
-- [x] Read UAM-Simulator-Modern documentation and identify its native Metal backend.
-- [x] Translate all repository documentation into English, including the reference plan.
-- [x] Record the exact duplicate-write sequence and prototype-aggregator non-involvement.
-- [x] Record SFML/Metal trade-offs and available history of the graphics test project.
+## 2. Chronological execution order
 
-- [x] Correct shared ABS/GBS/AGBS sampling initialization and empty-area timer reset.
-- [x] Consume successful ABS batches and replace class working state with local observations.
-- [x] Remove the unused second velocity calculation; define delayed full records for new/reentering agents.
-- [x] Build the corrected simulator and pass the isolated MongoDB sensor regression test.
-- [x] Make missing/invalid startup config errors visible without optional ERROR logging (2026-10-13); verify wrong-directory exit before DB initialization.
+**Current position: Stage 1, planning the AGBS input and aggregate contract.** The core is
+intended to be reusable across sensor types; AGBS is the first implemented integration.
+Separate sensor behavior/state is preserved. A generic API does not imply that every
+sensor provides every metric input or supports arbitrary spatial refinement.
 
-**Still open:** actual-interval velocity handling, full-run validation, reproducible experiments,
-actual adaptation, metric definitions and evidence of improved privacy. Historical reverted
-work remains in Git; the 2026-10-12 correction is a new implementation.
+| Order | Work package | Main tasks | Completion evidence |
+|---|---|---|---|
+| 1 — now | Common evaluation area; input, count and output semantics | D01–D03, A01 | Concrete AGBS batch/aggregate examples and chosen units |
+| 2 | Metric definitions and required statistics | E01, E02, E04 | Defined inputs, calculated values and evaluation references |
+| 3 | Policy tree using existing Regions | A04 | Effective regional requirements, inheritance and conflicts |
+| 4 | Active/preemptive buckets and history | A02 | Hand-worked windows, lifecycle and retention rules |
+| 5 | AGBS integration and decisions | A03 | Fixed release/suppress path, then tested merge/split/time extension |
+| 6 | Complete-run checks and comparative evaluation | V01, B01, R01–R03, X02 | Saved equal input, verified releases and result figures |
+| 7 — later | Taxonomy brainstorming, renderer settings and control GUI | X01, X10, X11 | Separate design proposals and measured implementation scope |
+| 8 — later | Map extraction, routes and collision avoidance | X04, X03, X05 | Controlled scenarios and realism/performance evidence |
+| 9 — as justified | Further metrics, uncertainty, graphics and infrastructure | E03, X06–X09 | Research or measured engineering need |
+
+F01 and S01–S03 are conditional corrections alongside the active stage when its correctness
+or execution depends on them. F03 covers persistence recovery beyond successful writes.
+Completed audits and sensor fixes are collected at the end of this file.
+
+The later simulator extensions improve input quality, realism and usability. They are lower
+priority than aggregation, metrics, policy trees and evaluation, and do not by themselves
+establish a better adaptive privacy/utility trade-off.
 
 ## 3. Delivery plan: October 14, 18 and 25
 
@@ -75,7 +77,8 @@ made for this review.
   deadline-based checks and offline evaluation. Correct the slide's ambiguous utility formulas.
 - [ ] Establish a small performance baseline before adding a thread or changing data transport.
 
-The first implementation starts after these contracts are concrete enough for the hand-worked
+The first implementation targets AGBS with a reusable sensor-independent core. It starts
+after these contracts are concrete enough for the hand-worked
 cases in the design review. Deadline pressure does not make an undefined bucket or metric
 contract implementation-ready.
 
@@ -127,7 +130,8 @@ Database writing and rendering consume the resulting release rather than decidin
   Store decision traces separately from public output. The fixed and adaptive variants
   must share observations, count semantics and metric definitions.
 
-These are dependency-ordered parts of one small pipeline, not six framework rewrites.
+These are components of one small pipeline. Section 2 specifies the execution order;
+metric/policy input requirements must be clear before finalizing bucket storage.
 Start in the existing simulation thread; an extra aggregation thread is not a prerequisite.
 GT is available for evaluation, but must not silently give an online policy access to
 information unavailable in its declared observation stream.
@@ -237,7 +241,7 @@ broad collision-model replacement remain outside this work package. Minimal poli
 metric definitions and aggregation are explicitly inside it. Address existing correctness
 defects when they invalidate input, aggregation or the chosen demo.
 
-## 4. Observation and data semantics
+## 4. Stage 1 — Observation and aggregate contracts
 
 ### D01 — Define velocity and missing observations — P0
 
@@ -279,87 +283,115 @@ Do not shift timestamps merely to make records appear synchronized.
 **Acceptance:** repeated observations of one person count once for distinct people but
 multiple times for contributions. Small example data demonstrates every chosen definition.
 
-## 5. Sensor corrections: implemented scope and remaining work
+### A01 — Define states and AggregatedCell — P0
 
-### F00 — Fix initial sampling across ABS, GBS and AGBS — P0 — implemented
+- [ ] Describe geometry, history, release rules and publications separately.
+- [ ] Specify sensor-local ownership; favor a manager without MongoDB coupling.
+- [ ] Define every count/time/policy field.
+- [ ] Choose update(now, tree) versus a bound reference from actual requirements.
+- [ ] Define one concrete AGBS input adapter and a core that does not depend on Sensor
+  subclasses, SFML Agent objects, MongoDB or renderer buffers.
+- [ ] Keep quadtree-specific candidate enumeration behind the spatial component; do not
+  claim the initial spatial strategy is independent of its hierarchy.
+- [ ] Declare input capabilities: positions, cell support, internal identities and attributes.
+  A count-only source cannot promise distinct contributors or finer detail than its input.
+- [ ] Keep independent per-sensor/per-application bucket state; share read-only definitions
+  where useful. Add ABS/GBS adapters after the AGBS path is demonstrated.
 
-- [x] Exclude the initial call from completed-step accounting.
-- [x] Use one shared sampling gate for ABS, GBS and AGBS.
-- [x] At 10 Hz / 50-ms ticks, capture at 100 ms, then 200 ms, 300 ms, etc.
-- [x] Retain the initial ABS position internally; preserve matching state timestamps.
-- [x] Reset the sampling timer even when the detection area is empty.
-- [x] Verify startup, counts, empty renderer snapshots and repopulation.
+**Acceptance:** small interfaces with clear ingestion and output; no empty abstraction hierarchy.
 
-**Baseline finding:** all three sensors added 50 ms while observing X(0), then captured
-X(50 ms) at the next call. ABS used X(0) as its reference but assumed a 100-ms interval,
-halving the first estimate. GBS/AGBS reset only when populated, altering empty-area cadence.
+## 5. Stage 2 — Metric definitions and evaluation questions
 
-**Implementation, 2026-10-12:** Sensor::isSamplingDue initializes once without adding time,
-then advances by simulation steps and resets at every due sample, independent of occupancy.
-ABS owns the initial-position observation; Simulation no longer seeds its map externally.
-GBS/AGBS still omit empty DB count batches. AGBS emits empty renderer snapshots on schedule.
+### E01 — Define one utility application — P0
 
-**Affected files:** Sensor.hpp/.cpp, all three sensor update methods and Simulation.cpp.
-**Verification:** Release build and isolated MongoDB regression passed, including non-epoch
-initial time, first correct known velocity and state/time matching at 100 ms.
-**Limits:** fixed aligned intervals only. Non-aligned/fractional scheduling remains D02/F01.
+- [ ] Select a first query, such as mean occupancy/density over a time interval.
+- [ ] Fix reference grid, reference times and missing/suppressed-data treatment.
+- [ ] Define error against GT and use the same query for every variant.
+- [ ] Measure resolution, staleness, coverage and numerical error separately.
 
-### F01 — Use actual elapsed observation time for velocity — P0
+**Acceptance:** a fixed question and its GT answer are defined. Coarsening the reference
+must not automatically eliminate error. Do not label record retention as data fidelity without justification.
 
-- [ ] Retain earlier position and its observation time together.
-- [ ] Calculate velocity as DeltaPosition / DeltaTime.
-- [ ] Handle zero/negative elapsed time.
-- [x] Consolidate duplicate calculations; remove unused estimateVelocities and its ABS map.
-- [x] Implement delayed complete records for unknown/reentering agents as selected in D01.
+### E02 — Define attacker and privacy evaluation — P0
 
-**Affected code:** simulator/src/AgentBasedSensor.cpp (observation history and capture),
-simulator/src/Sensor.cpp (sampling gate), and their headers. estimateVelocities was removed
-by the 2026-10-12 consolidation; initial observations now belong to ABS, not Simulation.
+- [ ] Specify attack goal, auxiliary information and visible publications.
+- [ ] Consider aggregate-occupancy membership inference and justify its relevance.
+- [ ] Define a prior/no-output baseline and clear attack-success measure.
+- [ ] Include repeated releases, overlapping windows and possible differencing attacks.
+- [ ] Distinguish k-threshold compliance from measured risk.
 
-**Historical defect (now fixed by F00):** initial position at t=0; first ABS capture at t=50 ms. Multiplication
-by 10 Hz assumes 100 ms and halves the first value. Recognizing the identity does not
-solve the time-interval error.
+**Acceptance:** reproducible attacker knowledge and baseline. No general anonymity claim
+based only on a distinct-contributor count.
 
-**Minimum scope:** associate two observations with time correctly. No new transport layer,
-extra thread or generic tracking framework. A previous sample timestamp might suffice for
-synchronously observed agents; use per-agent timestamps only if entry/dropout rules need them.
-Choose the data structure after D01/D02.
+### E04 — Define the online metric contract — P0
 
-**Acceptance:** after F00, known constant motion produces the correct first velocity
-over 0–100 ms and subsequent 100-ms intervals. A separate deliberately supplied 50-ms
-observation interval must also be calculated using its actual duration. Different spacing remains correct. Identity,
-position and timestamp still match GT. Unknown agents follow D01.
+- [ ] Specify each metric ID, meaning, inputs, units, aggregation rule and valid/undefined cases.
+- [ ] Separate metric definitions, selected requirements and measured values.
+- [ ] Distinguish contribution support from a justified anonymity/equivalence-class metric.
+- [ ] Reconcile presentation metrics with paper Tables 3–5, including definitions and
+  reference populations. Do not transfer example thresholds as universally safe defaults.
+- [ ] Select incremental statistics and cache invalidation triggers; verify before publication.
+- [ ] Separate aggregation duration, sensor period, release age and wall-clock processing time.
 
-**Status:** actual elapsed-time calculation remains open. The 2026-10-12 correction
-fixes aligned startup, consolidates calculation and implements D01; it deliberately retains
-nominal frameRate estimation. The older 0ce473f implementation remains reverted.
+**Acceptance:** one candidate has hand-computable metric values, one policy supplies the
+corresponding allowed ranges, and a decision explains each passed/failed/unavailable check.
+The metric evaluator requires no renderer or live database access.
 
-### F02 — Publish each ABS measurement batch once — P0 — implemented for successful writes
+## 6. Stage 3 — Policy tree and existing Regions
 
-- [x] Assemble a local observations vector; remove the class member agentData.
-- [x] Name the output reference pendingObservations to eliminate shadowing.
-- [x] Consume dataStorage.second after a successful insert_many.
-- [x] Verify repeated postData calls, non-capture ticks, empty samples and final output.
-- [x] Document the failure policy and partial-write limitations.
+### A04 — Regional policy trees / application layer — P0
 
-**Baseline finding:** update cleared the working vector while postData read a different,
-retained vector in dataStorage. Repeated loop calls reinserted a successful batch. The
-reference agent had 199 rows for 100 observation timestamps and 99 extra identical rows.
-The prototype aggregator was not involved.
+- [ ] Define default, regional and application-specific constraints.
+- [ ] Reuse Region instances and region_taxonomy as policy inputs; validate type references.
+- [ ] Store metric requirements/parameters and allowed bounds in the policy tree; calculate
+  actual metric values in an evaluator from bucket statistics.
+- [ ] Separate hard constraints, preferences/objectives, and measured candidate values.
+  Maximum aggregation duration is a bound; current window duration is its measured value.
+- [ ] Update the presentation architecture: Regions/application settings -> Policy Tree ->
+  effective requirements; bucket statistics -> Metric Evaluator -> observed values;
+  the AggregationManager consumes both and decides.
+- [ ] Keep policy hierarchy independent of data hierarchy.
+- [ ] Handle overlaps, boundary-crossing cells and conflicting requirements.
+- [ ] Add multiple views only after a correct single release pipeline.
 
-**Implementation:** the local observations vector is moved into the timestamped output pair.
-postData checks pendingObservations and clears the pair's vector after success. printData
-reads the pending batch before publication. The pair itself has no clear()/empty() method.
+**Acceptance:** spatial merges cannot silently weaken regional rules; conflicts have
+explicit resolution or rejection.
 
-**Verification, 2026-10-12:** regression calls ABS postData three times per tick and verifies
-unique sensor measurement identities/timestamps, correct position/time and final publication.
+## 7. Stage 4 — Active/preemptive buckets and bounded history
 
-**Failure policy:** an exception leaves the pending vector available until another attempt
-or the next capture, which replaces it. This is not a durable retry queue. Partial/ambiguous
-DB failures can cause duplicates on retry; exactly-once persistence is not guaranteed.
-- [ ] Design/test failure recovery and idempotent writes if required by experiments.
+### A02 — Bounded history and active/preemptive windows — P0
 
-**Existing data:** no reference database cleanup or replacement was performed.
+- [ ] Specify retrospective parent aggregation from internal observations.
+- [ ] Compare physical active/preemptive containers with logical windows over shared history.
+- [ ] Define retention, open windows and cleanup.
+- [ ] Handle cell-specific windows and compatible temporal merge coverage.
+- [ ] Reconcile the paper's interval-tree proposal with the presentation's active/preemptive
+  buckets: specify whether an interval index is required by actual queries before choosing
+  it over bounded bins/history. These structures have different roles.
+- [ ] Distinguish closed, decision-ready, externally published and discarded states;
+  define already-published-data behavior for retrospective reconstruction.
+
+**Acceptance:** no double counting, bounded storage and reconstructable permitted windows.
+Deleting a DB record cannot retract an already externally visible publication.
+
+## 8. Stage 5 — AGBS integration and adaptation decisions
+
+### A03 — Start with simple adaptive strategies — P0
+
+- [ ] Integrate fixed candidate release/suppress with the initial regional policy tree.
+- [ ] Specify and implement one first adaptive decision order; compare Spatial First and
+  Temporal First only after the initial path is correct.
+- [ ] Define sibling/parent/child checks, merge, split and suppression.
+- [ ] Handle impossible constraint combinations explicitly.
+- [ ] Compare against B01 baselines.
+
+**Acceptance:** decisions are explainable and spatial/temporal releases agree. Measure a
+better privacy/utility trade-off rather than assuming it.
+
+## 9. Stage 6 — Validation and comparable experiments
+
+Checks accompany each implementation. This stage collects the complete-run evidence
+and comparisons once the first path is executable.
 
 ### V01 — Verify reference data and the later correction — P0
 
@@ -380,7 +412,15 @@ cadence checks. This is direct sensor-pipeline validation, not a complete simula
 **Acceptance:** documented before/after identity, position, timestamp, duplicate and interval
 velocity comparisons. Keep reference data unchanged. One checked agent does not validate all runs.
 
-## 6. Reproducibility and lean experiment operation
+### B01 — Compare fixed space/time baselines — P0
+
+- [ ] Select a small set of fixed cell sizes and temporal windows.
+- [ ] Use identical observations, detection areas and application queries.
+- [ ] Process counts/windows according to D03.
+- [ ] Export utility error, empirical privacy measure, coverage, staleness and runtime.
+
+**Acceptance:** reproducible table/figure with configuration and explicit limits. A complete
+policy tree or real city map is not required for this first comparison.
 
 ### R01 — Generate or reuse a reproducible measurement stream — P0
 
@@ -412,7 +452,46 @@ measured runtime. DB/CPU/render costs can therefore alter the movement stream.
 **Acceptance:** a small comparison runs without GUI, creates controlled artifacts and does
 not overwrite references. Add a broad output interface only if multiple outputs justify it.
 
-## 7. Simulation and transport checks
+### X02 — Heterogeneous evaluation scenarios — P1
+
+- [ ] Prepare reproducible sparse, dense, empty and changing-density cases.
+- [ ] Use identical observations/areas across compared variants; retain simple scenarios
+  with hand-checkable outcomes before increasing movement realism.
+
+## 10. Conditional corrections supporting the active stage
+
+Bring these forward when they block the current contract, demo or experiment. Do not
+replace the core work package with a general simulator rewrite.
+
+### F01 — Use actual elapsed observation time for velocity — P0
+
+- [ ] Retain earlier position and its observation time together.
+- [ ] Calculate velocity as DeltaPosition / DeltaTime.
+- [ ] Handle zero/negative elapsed time.
+- [x] Consolidate duplicate calculations; remove unused estimateVelocities and its ABS map.
+- [x] Implement delayed complete records for unknown/reentering agents as selected in D01.
+
+**Affected code:** simulator/src/AgentBasedSensor.cpp (observation history and capture),
+simulator/src/Sensor.cpp (sampling gate), and their headers. estimateVelocities was removed
+by the 2026-10-12 consolidation; initial observations now belong to ABS, not Simulation.
+
+**Historical defect (now fixed by F00):** initial position at t=0; first ABS capture at t=50 ms. Multiplication
+by 10 Hz assumes 100 ms and halves the first value. Recognizing the identity does not
+solve the time-interval error.
+
+**Minimum scope:** associate two observations with time correctly. No new transport layer,
+extra thread or generic tracking framework. A previous sample timestamp might suffice for
+synchronously observed agents; use per-agent timestamps only if entry/dropout rules need them.
+Choose the data structure after D01/D02.
+
+**Acceptance:** after F00, known constant motion produces the correct first velocity
+over 0–100 ms and subsequent 100-ms intervals. A separate deliberately supplied 50-ms
+observation interval must also be calculated using its actual duration. Different spacing remains correct. Identity,
+position and timestamp still match GT. Unknown agents follow D01.
+
+**Status:** actual elapsed-time calculation remains open. The 2026-10-12 correction
+fixes aligned startup, consolidates calculation and implements D01; it deliberately retains
+nominal frameRate estimation. The older 0ce473f implementation remains reverted.
 
 ### S01 — SharedBuffer shutdown and consumption — P0 before larger runs
 
@@ -452,38 +531,87 @@ must be adapted to the actual base-cell convention.
 **Acceptance:** clear ownership and valid unchanged identities. Do not replace the spatial
 structure before defining requirements.
 
-## 8. Research questions, metrics and baselines
+### F03 — Persistence failure recovery — P1 when required
 
-### E01 — Define one utility application — P0
+- [ ] Design/test retry ownership and idempotent writes for failed or partially successful batches.
+- [ ] Decide whether a new capture may replace an unsent batch or requires a bounded queue.
 
-- [ ] Select a first query, such as mean occupancy/density over a time interval.
-- [ ] Fix reference grid, reference times and missing/suppressed-data treatment.
-- [ ] Define error against GT and use the same query for every variant.
-- [ ] Measure resolution, staleness, coverage and numerical error separately.
+**Current limit:** F02 fixes repeat publication after successful writes. It does not supply
+durable retries or exactly-once behavior after ambiguous/partial database failures.
 
-**Acceptance:** a fixed question and its GT answer are defined. Coarsening the reference
-must not automatically eliminate error. Do not label record retention as data fidelity without justification.
+## 11. Later simulator improvements — lower priority
 
-### E02 — Define attacker and privacy evaluation — P0
+These items start after the aggregation/metric/policy foundation and first evaluation.
+Order below reflects dependencies, not a commitment to implement them before October 25.
+Brainstorm and define acceptance criteria before selecting libraries or algorithms.
 
-- [ ] Specify attack goal, auxiliary information and visible publications.
-- [ ] Consider aggregate-occupancy membership inference and justify its relevance.
-- [ ] Define a prior/no-output baseline and clear attack-success measure.
-- [ ] Include repeated releases, overlapping windows and possible differencing attacks.
-- [ ] Distinguish k-threshold compliance from measured risk.
+### X01 — Flexible taxonomy: brainstorm and redesign — P2
 
-**Acceptance:** reproducible attacker knowledge and baseline. No general anonymity claim
-based only on a distinct-contributor count.
+- [ ] Identify what makes new agent types and combinations difficult in the current YAML.
+- [ ] Discuss separating identity/classification, age, transport mode, accessories,
+  appearance, behavior and distributions; compare composition, defaults and inheritance.
+- [ ] Define stable type IDs and how combined attributes feed sensors, metrics and policies.
+- [ ] Preserve existing scenarios through a documented configuration migration.
 
-### B01 — Compare fixed space/time baselines — P0
+**Acceptance:** adding an agreed new class/attribute does not require editing unrelated
+renderer, movement and metric code. Choose the model after the brainstorming session.
 
-- [ ] Select a small set of fixed cell sizes and temporal windows.
-- [ ] Use identical observations, detection areas and application queries.
-- [ ] Process counts/windows according to D03.
-- [ ] Export utility error, empirical privacy measure, coverage, staleness and runtime.
+### X10 — Simplify the real-time renderer settings — P2
 
-**Acceptance:** reproducible table/figure with configuration and explicit limits. A complete
-policy tree or real city map is not required for this first comparison.
+- [ ] Inventory settings and controls, including overlap with database playback renderers.
+- [ ] Separate scenario, sensor/policy, rendering and playback configuration responsibilities.
+- [ ] Define clear defaults, presets and dependencies between display options.
+- [ ] Check synchronized sensor/aggregate display and expose decision/metric views needed
+  for understanding the pipeline without moving aggregation logic into the renderer.
+- [ ] Profile display costs and preserve useful existing batching/optimizations.
+
+**Acceptance:** a documented demo preset is easy to reproduce and settings have one clear
+owner. Targeted demo controls can be brought forward only when the current milestone needs them.
+
+### X11 — Missing control GUI — P2
+
+- [ ] Specify controls for simulation start/pause/step/reset, playback speed and run selection.
+- [ ] Distinguish pausing simulation from pausing playback; define thread-safe commands.
+- [ ] Decide which sensor/policy settings can change live and which require a new run.
+- [ ] Show applied versus pending configuration and minimal runtime/status information.
+- [ ] Select a GUI approach after the renderer/settings model is clear.
+
+**Acceptance:** controls have predictable simulation semantics, and GUI changes do not
+silently invalidate the saved experiment configuration or timing model.
+
+### X04 — Map component extraction and environment model — P2
+
+- [ ] Discuss source/import choices and coordinate conversion into simulator metres.
+- [ ] Extract or represent buildings, entrances/doors, roads, sidewalks, cycle paths,
+  crossings and navigable/free space, with provenance for unavailable or inferred details.
+- [ ] Build connectivity and traversability rules for the relevant agent categories.
+- [ ] Define reusable environment components and inspect UAM-Simulator-Modern as a reference.
+
+**Acceptance:** one small map produces valid geometry and a connected routing model;
+rendered appearance and movement constraints refer to the same environment.
+
+### X03 — Routes and trajectories: A*, D* Lite and replanning — P2
+
+- [ ] Discuss destination selection and demand distributions before increasing route complexity.
+- [ ] Compare A* and D* Lite for the intended routing/replanning workload.
+- [ ] Define waypoints, route following and reactions to blocked/changing passages.
+- [ ] Specify the interface between global route planning and local collision avoidance.
+
+**Acceptance:** agents reach destinations through valid map components and can recover
+from the selected obstruction scenarios. The route planner choice remains open.
+
+### X05 — Real-time collision avoidance and ORCA — P2
+
+- [ ] Compare the current TTC/lookahead approach with ORCA and suitable alternatives.
+- [ ] Define how local avoidance combines with A*/D* Lite route following; evaluate these
+  roles separately instead of treating routing and local avoidance as interchangeable.
+- [ ] Include heterogeneous agent sizes/speeds, yielding rules, narrow passages and deadlocks.
+- [ ] Measure collisions, completion, motion plausibility and processing cost on identical inputs.
+
+**Acceptance:** a measured improvement on agreed movement scenarios without unbounded
+runtime cost. Correct S02 safety/lifetime defects before evaluating a replacement model.
+
+## 12. Further research and optional infrastructure
 
 ### E03 — Select additional metrics scientifically — P1/P2
 
@@ -494,73 +622,96 @@ policy tree or real city map is not required for this first comparison.
 **Acceptance:** each metric has a justified meaning and specified internal inputs.
 Class counts alone cannot reconstruct every privacy metric.
 
-## 9. Aggregation and policy foundation: current development stage
-
-### A01 — Define states and AggregatedCell — P1
-
-- [ ] Describe geometry, history, release rules and publications separately.
-- [ ] Specify sensor-local ownership; favor a manager without MongoDB coupling.
-- [ ] Define every count/time/policy field.
-- [ ] Choose update(now, tree) versus a bound reference from actual requirements.
-
-**Acceptance:** small interfaces with clear ingestion and output; no empty abstraction hierarchy.
-
-### A02 — Bounded history and active/preemptive windows — P1
-
-- [ ] Specify retrospective parent aggregation from internal observations.
-- [ ] Compare physical active/preemptive containers with logical windows over shared history.
-- [ ] Define retention, open windows and cleanup.
-- [ ] Handle cell-specific windows and compatible temporal merge coverage.
-
-**Acceptance:** no double counting, bounded storage and reconstructable permitted windows.
-Deleting a DB record cannot retract an already externally visible publication.
-
-### A03 — Start with simple adaptive strategies — P1
-
-- [ ] Specify Spatial First and Temporal First under one global policy.
-- [ ] Define sibling/parent/child checks, merge, split and suppression.
-- [ ] Handle impossible constraint combinations explicitly.
-- [ ] Compare against B01 baselines.
-
-**Acceptance:** decisions are explainable and spatial/temporal releases agree. Measure a
-better privacy/utility trade-off rather than assuming it.
-
-### A04 — Regional policy trees / application layer — P1
-
-- [ ] Define default, regional and application-specific constraints.
-- [ ] Keep policy hierarchy independent of data hierarchy.
-- [ ] Handle overlaps, boundary-crossing cells and conflicting requirements.
-- [ ] Add multiple views only after a correct single release pipeline.
-
-**Acceptance:** spatial merges cannot silently weaken regional rules; conflicts have
-explicit resolution or rejection.
-
-## 10. Extensions outside the next work package
-
-- [ ] **X01 — Taxonomy (P1/P2):** separate identity/class, behavior, distribution and appearance;
-  define YAML compatibility before redesign.
-- [ ] **X02 — Heterogeneous scenarios (P1):** reproducible dense, sparse, empty and dynamic areas;
-  retain uniform distribution for debugging.
-- [ ] **X03 — Paths/trajectories (P2):** corridors, spawn/target areas and waypoints;
-  add real routing when the research/attacker scenario needs it.
-- [ ] **X04 — Maps/buildings/entrances (P2):** define sources, coordinates and required semantics;
-  evaluate UAM-Simulator-Modern as a technical reference.
-- [ ] **X05 — Collision model (P2):** assess after S02; do not automatically require ORCA
-  or a replacement model for aggregation development.
 - [ ] **X06 — Sensor uncertainty (P2):** preserve GT and model errors separately;
-  avoid a full camera/LiDAR simulator without specific need.
-- [ ] **X07 — Metal/3D/GPU (P2):** Modern has a native backend. Keep SFML initially;
-  revisit migration after separate rendering/CPU/DB measurements or a defined 3D need.
-  Record that Metal-Simulator was introduced as a Metal-oriented test environment but its
-  retained application code uses OpenGL. Renderer migration does not move CPU aggregation to GPU.
-- [ ] **X08 — Shared libraries/build (P1/P2):** reduce duplication selectively;
-  preserve working independent builds as references.
-- [ ] **X09 — Packaging/remote (P2):** retain the UMP-Simulator name; decide remote, license,
-  publication and data/asset selection separately.
+  add classification/localization uncertainty when the evaluation needs it.
+- [ ] **X07 — Metal/3D/GPU (P2):** keep SFML initially; revisit after profiling or a defined
+  3D requirement. Modern has a native Metal backend; the older Metal-Simulator test uses
+  OpenGL. Renderer migration does not accelerate CPU aggregation automatically.
+- [ ] **X08 — Shared libraries/build (P2):** selectively reduce duplication while preserving
+  independent builds. Avoid a broad infrastructure project before it is needed.
+- [ ] **X09 — Packaging/remote (P2):** retain the UMP-Simulator name; decide remote,
+  license, publication and data/asset selection separately.
 
-## 11. Process for subsequent changes
+## 13. Completed organization, audit and sensor corrections
 
-Before editing source, name the selected task, data rule and small scope. Afterwards update
-status, verification and remaining limits. Follow Section 3 for the current delivery order.
-F00/F02 and initial D01 rules are implemented. P1–P6 define the current aggregation
-foundation; V01 validation and demo preparation accompany that work. Keep the simulator lean by correcting its existing pipeline.
+- [x] Create the local repository, initially named UrbanMobilityPrivacy; no remote.
+- [x] Move it outside Coding to ~/Developer/UMP-Simulator on 2026-10-09, preserving Git history.
+- [x] Adopt the name Urban Mobility Privacy Simulator and update location/workspace documentation.
+- [x] Import Aggregation_Manager and four separate V3 database renderers.
+- [x] Preserve import commit 96fae5b as the baseline.
+- [x] Build the unmodified simulator and all four renderers successfully.
+- [x] Compare 101 imported component files byte for byte with the originals.
+- [x] Archive the historical implementation plan under docs/reference.
+- [x] Document classes, data flow and major source-level risks.
+- [x] Inspect the local MongoDB connection and collections read only.
+- [x] Check the example agent's GT/ABS matches, duplicates and velocity intervals.
+- [x] Revert the temporary ABS fix and its test target with db2bdbb.
+- [x] Establish detailed README and TO-DO files as the central project overview.
+- [x] Read UAM-Simulator-Modern documentation and identify its native Metal backend.
+- [x] Translate all repository documentation into English, including the reference plan.
+- [x] Record the exact duplicate-write sequence and prototype-aggregator non-involvement.
+- [x] Record SFML/Metal trade-offs and available history of the graphics test project.
+
+- [x] Correct shared ABS/GBS/AGBS sampling initialization and empty-area timer reset.
+- [x] Consume successful ABS batches and replace class working state with local observations.
+- [x] Remove the unused second velocity calculation; define delayed full records for new/reentering agents.
+- [x] Build the corrected simulator and pass the isolated MongoDB sensor regression test.
+- [x] Make missing/invalid startup config errors visible without optional ERROR logging (2026-10-13); verify wrong-directory exit before DB initialization.
+
+### F00 — Fix initial sampling across ABS, GBS and AGBS — P0 — implemented
+
+- [x] Exclude the initial call from completed-step accounting.
+- [x] Use one shared sampling gate for ABS, GBS and AGBS.
+- [x] At 10 Hz / 50-ms ticks, capture at 100 ms, then 200 ms, 300 ms, etc.
+- [x] Retain the initial ABS position internally; preserve matching state timestamps.
+- [x] Reset the sampling timer even when the detection area is empty.
+- [x] Verify startup, counts, empty renderer snapshots and repopulation.
+
+**Baseline finding:** all three sensors added 50 ms while observing X(0), then captured
+X(50 ms) at the next call. ABS used X(0) as its reference but assumed a 100-ms interval,
+halving the first estimate. GBS/AGBS reset only when populated, altering empty-area cadence.
+
+**Implementation, 2026-10-12:** Sensor::isSamplingDue initializes once without adding time,
+then advances by simulation steps and resets at every due sample, independent of occupancy.
+ABS owns the initial-position observation; Simulation no longer seeds its map externally.
+GBS/AGBS still omit empty DB count batches. AGBS emits empty renderer snapshots on schedule.
+
+**Affected files:** Sensor.hpp/.cpp, all three sensor update methods and Simulation.cpp.
+**Verification:** Release build and isolated MongoDB regression passed, including non-epoch
+initial time, first correct known velocity and state/time matching at 100 ms.
+**Limits:** fixed aligned intervals only. Non-aligned/fractional scheduling remains D02/F01.
+
+### F02 — Publish each ABS measurement batch once — P0 — implemented for successful writes
+
+- [x] Assemble a local observations vector; remove the class member agentData.
+- [x] Name the output reference pendingObservations to eliminate shadowing.
+- [x] Consume dataStorage.second after a successful insert_many.
+- [x] Verify repeated postData calls, non-capture ticks, empty samples and final output.
+- [x] Document the failure policy and partial-write limitations.
+
+**Baseline finding:** update cleared the working vector while postData read a different,
+retained vector in dataStorage. Repeated loop calls reinserted a successful batch. The
+reference agent had 199 rows for 100 observation timestamps and 99 extra identical rows.
+The prototype aggregator was not involved.
+
+**Implementation:** the local observations vector is moved into the timestamped output pair.
+postData checks pendingObservations and clears the pair's vector after success. printData
+reads the pending batch before publication. The pair itself has no clear()/empty() method.
+
+**Verification, 2026-10-12:** regression calls ABS postData three times per tick and verifies
+unique sensor measurement identities/timestamps, correct position/time and final publication.
+
+**Failure policy:** an exception leaves the pending vector available until another attempt
+or the next capture, which replaces it. This is not a durable retry queue. Partial/ambiguous
+DB failures can cause duplicates on retry; exactly-once persistence is not guaranteed.
+Further failure recovery and idempotent-write work is tracked separately as F03.
+
+**Existing data:** no reference database cleanup or replacement was performed.
+
+## 14. Working process
+
+Follow the chronological queue in Section 2 and the dates in Section 3. Keep task IDs
+stable and mark completion only with evidence. Before coding, state the contract and
+small scope; afterwards record behavior, verification and limitations. Update the active
+stage when its acceptance criteria are met. Preserve user changes and current sensor
+modularity. All repository documentation remains in English.

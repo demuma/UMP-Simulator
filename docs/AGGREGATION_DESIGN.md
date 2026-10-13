@@ -56,12 +56,71 @@ must be explicit before policy validation is enabled.
 - The spatial hierarchy supports nodes, parents, children and cell IDs. Current AGBS
   splitting follows positions at configured maxDepth, not policy/metric decisions.
 
+### Paper and presentation cross-check (2026-10-13)
+
+Also reviewed the newly supplied *An Adaptive Metric-Based Method for Privacy-Preserving
+Sharing of Anonymized Urban Mobility Data* (10 PDF pages), stored as:
+`/Users/maxdemu/Documents/HAW Hamburg/Konferenzen und Workshops/2024/AutSys 2024/Paper/AutSys_2024_paper_V2_Final.pdf`.
+Relevant metric tables and the framework diagram were visually inspected.
+
+- Presentation printed slide 13 is PDF page 14: the architecture already includes Regional
+  Thresholds and Privacy/Usability Metrics feeding the aggregation control loop. It does
+  not show an explicit policy tree, inheritance or policy conflict resolution.
+- Printed slide 8 (PDF page 9) explains regional/context-dependent constraints. Printed
+  slides 17–19 mention regional checks in the manager and merge/split rules. The topic is
+  present; the implementation model and worked policy examples are missing.
+- Paper Section 3.2 (page 4) explicitly discusses context-dependent metric thresholds.
+  Table 4 on page 5 lists proposed threshold values; these need context-specific justification
+  before becoming defaults. Sections 4.1/4.2 and 6 refer to functional zones and their effect
+  on spatial/temporal aggregation. The paper does not specify an implemented policy tree.
+- Paper Figure 1 (page 6) includes an interval tree; Section 4.2 (page 7) describes that
+  temporal structure. Reconcile its role with active/preemptive buckets and retained history
+  before selecting implementation data structures. Paper descriptions alone do not prove
+  those structures exist in the current simulator.
+- Table 5 (page 5) defines temporal consistency, temporal aggregation error, spatial drift,
+  relative velocity error and average frame-processing time. This differs from the supplied
+  presentation's utility table. Reconcile definitions rather than implementing both lists
+  unchanged. Relative velocity error needs a zero-speed rule, and intentional adaptive
+  timing must be distinguished from undesired timing jitter in temporal consistency.
+
 ## 2. Ownership and threading proposal
 
 Keep sensor-specific capture behavior. Reuse an aggregation implementation through
 composition where needed, with separate state for each sensor and application release
 stream. Do not combine measurements from different sensors merely because their areas
 overlap; sensor fusion would require its own identity and duplication semantics.
+
+### AGBS first, reusable aggregation core
+
+The first integration targets AdaptiveGridBasedSensor. It already sees observations and
+the quadtree geometry required for the planned spatial decisions. Preserve ABS/GBS as
+independent sensors and baseline representations. The reusable core must not depend on a
+Sensor subclass or fetch data from the renderer or MongoDB to drive each decision.
+
+Proposed boundary:
+
+```text
+AGBS capture -> small adapter/normalization -> observation batch
+    -> AggregationManager [history, active/preemptive buckets, candidate orchestration]
+       -> existing quadtree spatial operations
+       -> MetricEvaluator: current candidate values
+       -> PolicyTree: applicable requirements
+       -> release/suppress/adapt decision
+    -> output batch -> persistence / visualization
+```
+
+AGBS may own its AggregationManager instance by composition. Keep observation ingestion
+and advancing time/closing windows distinct in the contract; neither needs a worker thread.
+A direct function call is sufficient initially. An interface illustration is
+`ingest(batch)`, `advance(now)` and retrieval/consumption of completed releases; exact C++
+types remain to be decided from the agreed data contract.
+
+Sensor-independent does not mean that the first spatial strategy is independent of a
+quadtree, nor that every source supports every metric or refinement operation. An ABS
+adapter can provide point observations later. A GBS adapter may provide cell summaries,
+but cannot reconstruct internal identities or finer geometry that its input discarded.
+Declare required inputs and unsupported operations rather than guessing missing values.
+Build the real AGBS adapter first; defer unused adapter classes and abstraction hierarchies.
 
 Initial call path in the simulation thread:
 
@@ -212,6 +271,47 @@ regions, then test overlapping and cross-boundary cells before enabling them.
 Missing region type references should be configuration errors. Current map indexing in
 initializeRegions can default-insert unknown types; validate these lookups during policy
 integration instead of silently obtaining unintended constraints.
+
+### Metric requirements versus measured values
+
+The policy tree is the source of effective *requirements*. It can select which metrics
+matter, their parameters/reference definitions, thresholds, and preferences. It does not
+produce current measured values merely by being queried for a region.
+
+| Concept | Owner/source | Example |
+|---|---|---|
+| Metric definition | Evaluator implementation/specification | Count distinct contributors within the exact candidate support |
+| Metric requirement | Application/region policy | Require contributor support >= 5 |
+| Measured value | Evaluator from current bucket/history | Contributor support = 3 |
+| Hard operational bound | Application/region policy | Maximum aggregation duration = 1 s |
+| Current candidate property | Bucket time/geometry | Aggregation duration = 0.6 s |
+| Decision | AggregationManager / decision function | Candidate fails support; consider permitted alternatives before deadline |
+
+These are illustrative parameters, not empirically justified privacy thresholds. Maximum
+aggregation duration is a constraint on a measurable property; it need not be presented as
+a separate privacy metric. Similarly distinguish maximum release age, cell size bounds,
+hard constraints and optimization preferences. A policy may request a metric configuration
+from the evaluator; the evaluator returns a value or an explicit unavailable status.
+
+Proposed architecture diagram for the presentation (pending slide editing):
+
+```mermaid
+flowchart LR
+    R[Regions and application configuration] --> P[Policy Tree]
+    O[Sensor observations] --> B[Aggregator: buckets and candidate aggregate]
+    B --> M[Metric Evaluator]
+    P -->|Required metrics and parameters| M
+    P -->|Effective constraints and priorities| D[Aggregator: decision]
+    M -->|Measured values| D
+    D -->|Merge, split or extend| B
+    D -->|Approved release| U[Published aggregate]
+```
+
+This is a proposed refinement of printed slide 13: make regional requirements and measured
+data separate inputs to the decision. It is not simply a policy-tree box inserted in a
+serial chain through which all measured values must pass. The diagram's boxes are logical
+responsibilities, not an instruction to create a thread or heavyweight service for each.
+Existing Region geometry/configuration feeds the policy view rather than being replaced.
 
 ## 6. Metric definitions and evaluation schedule
 

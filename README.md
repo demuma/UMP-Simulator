@@ -3,10 +3,11 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
-**Status: 2026-10-13. The first authorized sensor correction is implemented and verified:
-shared sampling initialization, single-use ABS batches and local observation assembly.
-The earlier temporary fix remains reverted; this is a new, smaller implementation.
-Actual-interval velocity handling and reproducible research experiments remain open.**
+**Status: 2026-10-13. Current work: define and build the missing aggregation pipeline,
+metric evaluation and regional policy trees, starting with AGBS. Shared sampling
+initialization, single-use ABS batches and local observation assembly are implemented
+and regression-tested. Actual-interval velocity handling and reproducible research
+experiments remain open.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -17,14 +18,17 @@ its original external file remains unchanged.
 | Document | Purpose |
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
-| [TO-DO.md](TO-DO.md) | Prioritized tasks, evidence, proposed changes, open decisions and acceptance criteria |
+| [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
 | [Technical audit](docs/STATE_AND_NEXT_STEPS.md) | Source-level findings and the recorded database check |
 | [Aggregation design review](docs/AGGREGATION_DESIGN.md) | Configuration/presentation review, bucket semantics, transport, policy trees and metric scheduling before implementation |
 | [Historical implementation plan](docs/reference/IMPLEMENTATION_PLAN.md) | Reference specification; not an instruction to execute every phase |
 
-Read the current status and Section 5 first, then select one concrete task from TO-DO.md.
-Existing behavior, verified defects and proposals that have not been decided are explicitly
-separated. The task list is the single maintained source of implementation priorities.
+Read the current status, then follow TO-DO Section 2 in execution order. Section 5 of
+this README explains the current sensor behavior and known limits. Detailed task stages
+follow the dated milestones in TO-DO, and completed work is collected at the end. Existing
+behavior, verified defects and undecided proposals are explicitly separated. The first
+aggregator integration targets AGBS with a reusable core; later simulator extensions have
+lower priority.
 
 ## 2. Research objective and next milestone
 
