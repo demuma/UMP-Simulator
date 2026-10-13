@@ -406,6 +406,163 @@ is bounded preparation under regional policies, evolving mobility and release de
 novelty requires a targeted literature review before a research claim.
 
 
+### 6.4. Different sibling windows and interval-specific coordination
+
+Different sibling durations and starts are allowed in the intended adaptive design. The
+first fixed aligned-window prototype is a deliberate simplification, not a permanent
+requirement that siblings always have identical buckets. A spatial parent still needs
+complete contributions from every child area over one specified interval I=[s,e).
+It cannot add arbitrary summaries for different intervals and call the result one window.
+
+`childIsAggregating` or `childFinished` is therefore not a sufficient merge condition.
+Query history and release/reservation state for I, not just the current child bucket.
+If a child's current bucket crosses e, only its unpublished prefix in I is transferred
+to the selected parent; keep later contributions separately. Minimum duration/cadence
+rules for remaining pieces still require a valid handover. This must not duplicate or
+discard observations, reset the oldest contribution's deadline, or require raw Agent pointers.
+
+Example at simulation time 300 ms: sibling S2 needs a parent over [0,300), while S1 has
+just opened [300,...). The same current-bucket state has several different meanings:
+
+| S1 history/state for [0,300) | Parent decision |
+|---|---|
+| Complete and private; previous bucket only internally closed | Construct parent now if all siblings/policies qualify; do not wait for S1's new bucket |
+| Some or all of that interval already externally released | Reject overlapping retrospective parent in the first protocol; a new S1 bucket does not undo prior release |
+| Required observations genuinely missing/in flight | Wait only for a defined completion event within applicable bounds, otherwise reject/resolve fallback |
+| Complete but owned by another pending publication | Resolve the existing reservation; do not consume the same support twice |
+
+If S1 instead has an open [200,...) bucket and all earlier support is private, history
+can supply [0,300) and ownership can be reassigned for that prefix. Its advertised maximum
+end need not be reached first. If [0,200) was already public, the same retrospective parent
+remains unavailable. Finishing S1 later does not repair that conflict.
+
+A sibling extending its own temporal bucket does not automatically stop all neighbors.
+Under independent release, other siblings may publish eligible windows, thereby closing
+off overlapping future parent choices. Under a reserved coordination domain, siblings
+continue capturing and updating history but hold competing publications for the reserved
+interval. Spatial parent selection replaces those child outputs for that interval; it
+does not require publishing each child separately as well. Outside that interval/domain,
+unrelated eligible outputs can continue.
+
+There is no unconditional combination of immediate independent child output, arbitrary
+later replacement by parents, and forgetting information already seen by a recipient.
+Choose and document the permitted trade-off. A small bounded coordination domain remains
+the initial recommendation; independent release is a useful separate strategy comparison.
+
+Before waiting or transferring support, check effective parent constraints across all
+regions: window duration e-s, release age now-s (oldest included support), allowed spatial
+extent, minimum duration/cadence, and any explicit coordination hold bound. A maximum
+window duration alone does not bound how long a *closed* result may wait before release;
+define maximum release age/delay separately. Never wait past the earliest applicable
+hard deadline or silently relax one sibling's rule to satisfy another.
+
+If policy forbids the required merge or wait, reject that action immediately. Evaluate a
+currently legal alternative, a valid future handover, or partial/whole suppression. A future
+parent applies only to its new interval; it does not rescue the failed older interval.
+If policy also mandates output that cannot satisfy privacy within its bounds, report the
+requirements as infeasible. Suppression is the no-disclosure outcome, not proof that the
+availability requirement was satisfied.
+
+### 6.5. Retrospective database updates and the publication boundary
+
+Writing a MongoDB document is not intrinsically an external release. Two contracts are
+possible. The user explicitly left the choice open on October 13 and requested a
+comparison of benefits/costs; low latency for traffic applications may be a policy
+requirement. Neither immediate external publication nor private-only storage is approved
+as the sole application contract at this stage:
+
+- **Private working store:** provisional aggregates can be rebuilt, merged, superseded
+  or removed before any downstream recipient outside the trusted processor can read them.
+  Retrospective updates can maintain a coherent final dataset, incorporate later input,
+  support checkpoint/recovery and simplify a trusted renderer's current view. Keep source
+  observations/configuration and versioned decision provenance sufficient for reproducibility.
+- **Recipient-visible stream:** consumers may read/store every exposed version. Replacing
+  or deleting database rows changes the current view but not their knowledge. Versioning
+  and atomic replacement help consistency, not retroactive privacy. A "provisional" flag
+  is not protection if the recipient could read the original data.
+
+An offline experiment can assess the finalized dataset under a final-snapshot observer;
+an online experiment must assess all versions that its observer could have seen. State
+the access model and do not use a cleaned final MongoDB collection as evidence about the
+privacy of a previously visible stream. GT/internal debugging can remain trusted research
+storage, with a separately defined sink/view for released application data. Actual access
+separation is required; collection names alone do not establish that boundary.
+
+Comparison to settle before implementing the publication boundary:
+
+| Model | Benefit | Cost / evaluation obligation |
+|---|---|---|
+| Private retrospective processing, final output later | Freely revise unpublished candidates and optimize the final representation | Longer/variable waiting; final-snapshot evaluation does not demonstrate live utility |
+| Immediate release of individually approved results | Timely information and independent regional progress | Earlier releases close off later overlapping merges; evaluate the entire visible stream |
+| Bounded hold before approved release | Preserves a limited opportunity for coordinated merges | Explicit latency cost; at the bound choose a legal release or missing output |
+| Recipient-visible provisional results with revisions | Consumers can update their current application view | Every version is exposed and must already meet its disclosure contract; revisions do not repair prior disclosure |
+
+Recommended common architecture for comparison: a mutable private working store plus an
+explicit application release interface. The policy determines allowed window duration,
+maximum release age and permitted geometry/strategy for that application. Delaying only
+until requirements pass can reduce latency relative to always waiting for the maximum.
+Strong privacy requirements can still conflict with short deadlines in sparse conditions;
+record an infeasible/missing result, never bypass the privacy check to satisfy availability.
+
+Separate these application quantities: aggregation duration e-s, age of oldest included
+data at release t_release-s, post-window delay t_release-e, optional output cadence, and
+wall-clock processing latency. Decide which are hard bounds versus preferences. A low
+maximum release age may favor earlier permitted spatial coarsening, but utility constraints
+can prohibit coarsening across relevant traffic features. This is a strategy to compare,
+not an assumption that spatial-first always suits traffic better.
+
+Evaluate application query error, coverage, freshness and attack outcomes together for
+each publication model. Keep this release-model comparison separate from E05's first
+cache-only comparison. If several applications receive different views, the attacker model
+must include all views available to the same recipient.
+
+### 6.6. Incremental windows and the meaning of precompute depth three
+
+Recommended adaptive behavior: evaluate the initial eligible window, extend by a declared
+base-bin increment or event boundary when needed, and stop at the earliest eligible release
+under the selected policy. A maximum duration is a ceiling, not the default waiting time.
+At 10-Hz observations, illustrative aligned candidates can have lengths 100, 200, 300 ms
+and so on; actual start/capture alignment follows D02/D03. Checks can occur on new data,
+changed requirements and deadlines rather than on every unchanged simulation frame.
+
+Temporal-first preserves spatial detail while allowed temporal extensions remain useful;
+it can finish early when all release conditions pass. Spatial-first tries permitted
+coarsening at the current interval before waiting longer. Fixed maximum-size windows are
+a separate baseline. Coordination may delay an otherwise passing candidate, but that
+delay must respect its own bound and be measured separately from window duration.
+
+Define precompute depth as *relative ancestor steps* from a specified same-resolution
+base cell, not an ambiguous absolute tree depth. In a regular quadtree:
+
+| Ancestor steps | Fine base cells covered by one ancestor | Side-length factor |
+|---|---|---|
+| 1 | 4 | 2 |
+| 2 | 16 | 4 |
+| 3 | 64 | 8 |
+| 4 | 256 | 16 |
+
+Thus three steps cover 64 equally fine base cells spatially. This does not mean 64 full
+copies or 64 independent windows must be awaited. A path from one base cell has three
+ancestor candidates; preparing *every* internal node of its three-level domain gives
+1+4+16=21 internal summaries plus 64 leaf states, if fully materialized. Adaptive mixed-depth
+leaves need not number 64, and empty cells may have implicit zero statistics with explicit
+coverage. Counts of nodes do not measure the cost of contributor unions/time windows.
+
+Current Quadtree construction stores four base nodes at depth 1; makeCell starts from an
+implicit root code 3. Account for that convention in IDs and depth tests. Merging across
+the four base nodes requires a defined root candidate; do not assume an allocated parent
+already exists or introduce an untested off-by-one conversion.
+
+If a candidate beyond three prepared levels is needed, compute it on demand when geometry,
+complete retained history, reservation state and processing/release limits allow. Verify
+all necessary sibling areas, not just the original path. For the next regular ancestor,
+support expands to 256 base cells. Cache coverage is an execution choice, not a policy cap.
+If the needed history was discarded or committed, do not fabricate missing detail; choose
+another valid action or suppress. If three is also an explicit hard merge cap, it cannot
+be exceeded regardless of available history. Include cache misses beyond the prepared
+range and their deadline cost in E05.
+
+
 ## 7. Hand-worked cases before code
 
 | Case | Expected result |
@@ -416,6 +573,12 @@ novelty requires a targeted literature review before a research claim.
 | One sibling has no observation coverage | Not a zero; candidate incomplete until a permitted completeness decision |
 | A covers [100,200), B covers [100,300) | No direct merge of those summaries; reconstruct compatible intervals or reject |
 | One required child interval already public | Reject historical parent under first release rule; consider a future transition |
+| S1 starts [300,...), its complete [0,300) history is private, S2 requests that interval | Evaluate parent immediately; S1 current bucket need not finish |
+| Same S1 current state, but [0,300) already public | Historical parent remains blocked; waiting for S1 cannot undo release |
+| A child bucket crosses the requested parent end | Transfer only eligible unpublished prefix; preserve the suffix and exact ownership |
+| Required wait exceeds a regional release-age bound | Reject wait; legal alternative/fallback or explicit infeasibility |
+| Privacy passes before maximum window length | Early release when other hard bounds and coordination permit |
+| Three prepared ancestor levels, permitted fourth level needed | Reconstruct from complete eligible history; preparation cap is not a merge cap |
 | Allowed parent also fails | Try its parent only with complete available sibling support and allowed bounds |
 | Maximum duration reached; parent passes | Release parent if its stricter policy and release age still permit it |
 | Maximum duration and coarsening exhausted | Resolve eligible descendant selection, suppress the remainder; never reset start time |

@@ -10,7 +10,9 @@ discussion into a state diagram, data/storage contract, policy compilation rules
 sibling reservations, irreversible publication behavior and renderer acceptance cases.
 Its Sections 6.1–6.3 also define selective suppression, separate allowed/reserved/prepared
 extent, and the controlled full-versus-selective preparation study. It is the detailed
-proposal for these topics; implementation remains pending.
+proposal for these topics; implementation remains pending. Sections 6.4–6.6 address
+asynchronous sibling windows, the unresolved publication boundary and relative ancestor
+depth. The user explicitly wants publication models compared before choosing one.
 
 ## 1. Sources and verified baseline
 

@@ -358,6 +358,9 @@ The metric evaluator requires no renderer or live database access.
 ### A04 — Regional policy trees / application layer — P0
 
 - [ ] Define default, regional and application-specific constraints.
+- [ ] Distinguish maximum window duration, age at release, post-window delay, optional
+  output cadence and processing time; specify hard bounds versus preferences for traffic
+  and other applications. Never interpret a short window as a guarantee of low latency.
 - [ ] Reuse Region instances and region_taxonomy as policy inputs; validate type references.
 - [ ] Store metric requirements/parameters and allowed bounds in the policy tree; calculate
   actual metric values in an evaluator from bucket statistics.
@@ -405,7 +408,14 @@ explicit resolution or rejection.
   and SUPPRESSED. Keep temporal_exhausted separate from publication state.
 - [ ] Invalidate competing preemptive candidates after a committed cut; reclaim history
   only after all bounded dependencies are resolved.
-- [ ] Handle cell-specific windows and compatible temporal merge coverage.
+- [ ] Handle different sibling starts/durations with interval-specific history queries.
+  A sibling starting a new bucket does not block a parent over complete private history.
+- [ ] Transfer only the unpublished prefix needed by a parent; preserve later suffixes,
+  minimum-window rules and exactly one publication owner per cell/interval.
+- [ ] Define three relative ancestor steps as 64 equal base-cell areas, not 64 copied
+  buckets; verify mixed-depth geometry and current four-base-node/implicit-root convention.
+- [ ] Test a requested ancestor beyond the precomputed range: reconstruct on demand
+  only with complete history, available support, representable geometry and valid bounds.
 - [ ] Reconcile the paper's interval-tree proposal with the presentation's active/preemptive
   buckets: specify whether an interval index is required by actual queries before choosing
   it over bounded bins/history. These structures have different roles.
@@ -419,13 +429,23 @@ Deleting a DB record cannot retract an already externally visible publication.
 
 ### A05 — Publication coordination and irreversible output — P0
 
+- [ ] Compare private final-snapshot, immediate approved, bounded-hold and recipient-visible
+  revision models. The user left this choice open; include traffic freshness/latency needs.
 - [ ] Define private observation/GT/checkpoint storage versus externally visible releases;
   keep the publication sink outside the manager and enforce the selected access boundary.
+- [ ] Permit retrospective changes to private working data with reproducible provenance;
+  assess every recipient-visible version when revisions are exposed. Provisional labels
+  do not retract disclosure. Consider mutable internal storage plus an explicit release API.
 - [ ] Define reservations before any competing child release, and a ledger of reserved,
   committed and retired cell/interval coverage per application stream.
 - [ ] Choose a small initial coordination domain and merge-depth cap. Compare holding its
   unpublished cut with early child release that makes historical ancestors unavailable.
 - [ ] Require compatible complete temporal support for all sibling regions/descendants.
+  Query interval availability instead of waiting unconditionally for childFinished.
+- [ ] A sibling's temporal extension alone does not freeze all neighbors. Define which
+  publications are held by reservations and which independent releases close merge options.
+- [ ] Bound waits by every affected policy; when no legal output can meet privacy and
+  mandatory availability together, report infeasibility instead of silently weakening either.
   A passing child can be held for coordination without being described as privacy-failing.
 - [ ] Publish one non-overlapping selected cut; reject parent/child reuse of the same
   committed or pending-output support. Future adaptation uses a common handover boundary.
@@ -445,6 +465,8 @@ reopen coverage for a competing candidate. Disjoint release coverage is not a pr
 - [ ] Integrate fixed candidate release/suppress with the initial regional policy tree.
 - [ ] Specify and implement one first adaptive decision order; compare Spatial First and
   Temporal First only after the initial path is correct.
+- [ ] Extend in declared bin increments and recheck on relevant events; permit early
+  eligible release. Always waiting for the maximum window is a separate baseline.
 - [ ] Define sibling/parent/child checks, merge, split and suppression using A05 reservations.
 - [ ] Evaluate one complete parent at a time and expand to its siblings only when the
   next ancestor is needed and allowed. Avoid an automatic cascade to the depth cap.
@@ -583,8 +605,10 @@ not overwrite references. Add a broad output interface only if multiple outputs 
   DB/renderer conditions. Count history/cache/ledger memory in the budget.
 - [ ] Then apply explicit real-time arrival/processing budgets and measure coverage, delay,
   application error and empirical privacy; distinguish compute misses from metric failures.
-- [ ] Compare several permitted merge extents as a separate policy experiment, not an
-  unnoticed change of candidate universe between cache variants.
+- [ ] Include cache misses beyond the configured preparation depth and distinguish
+  base-cell coverage, cached ancestor count and exact metric-maintenance cost.
+- [ ] Compare several permitted merge extents and independent versus coordinated
+  releases as separate policy experiments, not unnoticed cache-comparison changes.
 - [ ] Review materialized-view selection and streaming aggregation literature before claiming
   novelty; document the mobility/policy/deadline-specific question and measured crossover.
 
