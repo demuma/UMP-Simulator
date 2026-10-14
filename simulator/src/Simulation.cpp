@@ -546,6 +546,7 @@ void Simulation::initializeSensors() {
                 const auto spatialSettings = readSpatialSelection(aggregation, maxDepth);
                 const auto temporalSettings = readTemporalAdaptation(aggregation);
                 const auto publicationSettings = readPublicationConfiguration(aggregation);
+                const bool showProgress = config["renderer"]["show_renderer"].as<bool>();
                 std::shared_ptr<ump::SpatialSelector> selector;
                 std::shared_ptr<ump::AdaptiveAggregation> adaptive;
                 auto* sensorInstance = sensor.get();
@@ -621,10 +622,26 @@ void Simulation::initializeSensors() {
                             }
                         });
                     if (adaptive) sensor->setAggregationProgressSink(
-                        [adaptive, sensorInstance](ump::AggregationTime now, bool finishing) {
+                        [adaptive, sensorInstance, showProgress](ump::AggregationTime now, bool finishing) {
                             const auto& history = *sensorInstance->getAggregationManager()->history();
                             if (finishing) adaptive->finish(now, history);
                             else adaptive->advance(now, history);
+                            if (showProgress) sensorInstance->setAggregationProgress(
+                                std::make_shared<const ump::AggregationProgress>(adaptive->progressSnapshot()));
+                        });
+                    else if (showProgress) sensor->setAggregationProgressSink(
+                        [sensorInstance](ump::AggregationTime now, bool finishing) {
+                            const auto state = sensorInstance->getAggregationManager()->debugState();
+                            ump::AggregationProgress progress;
+                            progress.strategy = "temporal_first_spatial_only";
+                            progress.startMs = state.windowStartMs;
+                            progress.nextEndMs = state.windowEndMs;
+                            progress.hardDeadlineMs = state.windowEndMs;
+                            progress.observedThroughMs = now;
+                            progress.phase = finishing ? ump::AggregationProgressPhase::Finished
+                                : ump::AggregationProgressPhase::Collecting;
+                            sensorInstance->setAggregationProgress(
+                                std::make_shared<const ump::AggregationProgress>(std::move(progress)));
                         });
                 } else {
                     sensor->enableAggregation(settings, timeStep, timestamp,

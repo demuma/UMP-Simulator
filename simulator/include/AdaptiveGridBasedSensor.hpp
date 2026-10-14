@@ -63,6 +63,9 @@ public:
     }
     void finishAggregation(std::chrono::system_clock::time_point end);
     const AggregationManager* getAggregationManager() const { return aggregationManager.get(); }
+    void setAggregationProgress(std::shared_ptr<const ump::AggregationProgress> snapshot) {
+        aggregationProgress = std::move(snapshot);
+    }
     void setAggregationDebug(std::shared_ptr<const ump::SpatialSelection> snapshot) {
         aggregationDebug = std::move(snapshot);
     }
@@ -72,6 +75,7 @@ private:
     mongocxx::collection collection;
     std::unique_ptr<AggregationManager> aggregationManager;
     std::shared_ptr<const ump::SpatialSelection> aggregationDebug;
+    std::shared_ptr<const ump::AggregationProgress> aggregationProgress;
     std::string aggregationRunId;
     std::chrono::system_clock::time_point aggregationOrigin;
     std::uint64_t aggregationSequence = 0;

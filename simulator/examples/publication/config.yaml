@@ -9,6 +9,8 @@ display:
 renderer:
   show_renderer: true
   show_aggregation: true
+  show_sensor_grid: false # H: fine AGBS input geometry, independent of output.
+  show_aggregation_progress: true # P: active window and dated last check.
   buffer_capacity: 128
   show_obstacles: false
   show_corridors: false

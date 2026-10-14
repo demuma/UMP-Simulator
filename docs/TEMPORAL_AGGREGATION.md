@@ -33,8 +33,11 @@ The program loads `config.yaml` from its working directory. The example uses a l
 MongoDB server, 200 simulated agents, a 10 Hz AGBS stream, a 400 ms initial window,
 100 ms extension steps, and a 1000 ms maximum. Its 80 m square has finest depth 6,
 which gives 1.25 m leaf sides. It runs for 30 simulated seconds at 0.5x playback,
-with the aggregation overlay initially visible. `G` toggles that overlay and Space
-pauses/resumes playback. The displayed interval is the latest completed selection.
+with completed output (G) and running progress (P) initially visible, and the black fine
+sensor grid (H) hidden. Space pauses/resumes playback. The sidebar labels the latest
+completed interval separately from the current collecting/extending interval, next check
+and deadline. Pending dashed amber outlines are dated check results, never a release.
+See [live progress](LIVE_AGGREGATION_PROGRESS.md) for the display/transport contract.
 
 The example appends raw research data to `UMP_Temporal_Demo_Raw`, recipient releases
 to `UMP_Temporal_Demo_Releases`, and private journal entries to

@@ -347,6 +347,22 @@ individual IDs. Existing Simulation data and maintained YAML were unchanged.
 
 ## 5. Stage 2 — Metric definitions and evaluation questions
 
+**Next research work after the live-progress display:**
+
+1. Implement R01's frozen observation replay before comparing strategies; independent
+   random simulator runs are not equal-input experiments. Retain run/config/time provenance.
+2. Implement E01's already specified 10-m / 1-s occupancy query against the same GT;
+   report conditional MAE together with answered-query coverage, not missing-as-zero error.
+3. Resolve E02's attack goal, adversary knowledge and visible channels before adding a
+   privacy score. Include release geometry/timing and suppression, not just cell counts.
+4. Run B01/E06 with fixed baselines, spatial-only selection, Temporal First and Spatial First;
+   first verify policy compliance, disjoint support, loss and latency, then interpret utility
+   and independently measured privacy. Record feasible/infeasible policy regimes explicitly.
+
+These steps retain the implemented metrics as operational checks. New risk metrics and
+claims require a defined evaluation contract; the visualization adds no privacy guarantee.
+
+
 ### E01 — Define one utility application — P0
 
 Baseline contract: [METRICS.md](docs/METRICS.md#first-utility-question-e01-baseline-contract).
@@ -665,6 +681,13 @@ Keep whole-candidate suppression as a correct simpler baseline until this fallba
 
 ### A06 — Aggregation inspection and live state overlay — P1, after S04
 
+**Live progress slice implemented and verified:** expose dated running-window progress
+separately from the latest completed selection; independently toggle sensor grid (H),
+output (G), and progress (P). Existing metric checks are reused without additional per-frame
+history queries. Fourteen CTest suites and native-window layer checks passed. See
+[LIVE_AGGREGATION_PROGRESS.md](docs/LIVE_AGGREGATION_PROGRESS.md).
+
+
 **Offline inspection slice implemented, 2026-10-14.** Brought forward for the supervisor
 demo; A05 and temporal A03 are now integrated in separate opt-in examples. The [inspector guide](docs/AGGREGATION_INSPECTOR.md)
 documents the prepared recording, reproduction, local MongoDB debug copy and limitations.
@@ -678,6 +701,13 @@ documents the prepared recording, reproduction, local MongoDB debug copy and lim
 - [x] Prepare and inspect a real 30-window recording; verify regional bounds and database
   totals, builder fidelity/safety checks, and Safari interaction. This is recorded replay,
   not live adaptive behavior or empirical privacy/utility evidence.
+
+- [x] Show collecting/extending state, next check, hard deadline and explicitly dated last
+  check independently from completed releases; clear prior checks at a new window.
+- [x] Separate H fine sensor grid, G completed output, P active checks and S sensor areas;
+  label pending failed/unavailable checks with dashed amber, never final suppression.
+- [x] Verify immutable typed progress transport, pause/measurement times, sensor isolation,
+  release labels and native independent toggles. Keep the renderer free of policy decisions.
 
 **Live spatial slice implemented, 2026-10-14:**
 

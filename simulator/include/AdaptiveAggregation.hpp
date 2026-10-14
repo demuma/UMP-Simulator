@@ -1,6 +1,7 @@
 #pragma once
 
 #include "SpatialSelection.hpp"
+#include "AggregationProgress.hpp"
 #include <functional>
 
 namespace ump {
@@ -33,12 +34,14 @@ public:
     void advance(AggregationTime nowMs, const AggregationHistory& history);
     void finish(AggregationTime endMs, const AggregationHistory& history);
     AdaptiveAggregationDebugState debugState() const;
+    AggregationProgress progressSnapshot() const;
 
 private:
     struct Pending {
         AggregationTime startMs = 0, nextEndMs = 0;
         std::size_t extensions = 0, evaluations = 0;
         std::vector<TemporalDecision> decisions;
+        std::shared_ptr<const AggregationProgressCheck> lastCheck;
     };
     void validateTime(AggregationTime nowMs, const AggregationHistory& history) const;
     void evaluate(AggregationTime endMs, AggregationTime nowMs,

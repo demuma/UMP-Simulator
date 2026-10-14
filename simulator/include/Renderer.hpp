@@ -71,6 +71,9 @@ private:
 
     void render();
     void drawAggregationOverlay(const ump::SpatialSelection& snapshot);
+    void drawAggregationProgress(const ump::AggregationProgress& progress);
+    void drawAggregationStatusPanels();
+    float drawStatusPanel(const std::vector<std::string>& lines, sf::Vector2f position, float width);
     void appendBufferZones(sf::VertexArray& vertices, const RenderAgent& agent);
     void appendAgentBodies(sf::VertexArray& triangles, const RenderAgent& agent);
 
@@ -115,6 +118,7 @@ private:
     int numAgents;
     bool showGrids = false;
     bool showAggregation = false;
+    bool showAggregationProgress = false;
     bool showBufferZones = false;
     float EPSILON = 1e-6f;
 
@@ -152,6 +156,7 @@ private:
     std::vector<std::unique_ptr<Sensor>> sensors;
     bool showSensors = false;
     bool showSensorGrid = true;
+    bool overrideSensorGridVisibility = false;
 
     // Obstacles
     bool showObstacles = false;

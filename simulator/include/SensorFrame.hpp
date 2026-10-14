@@ -2,6 +2,7 @@
 
 #include <SFML/System/Vector2.hpp>
 #include "SpatialSelection.hpp"
+#include "AggregationProgress.hpp"
 #include <chrono>
 #include <memory>
 #include <optional>
@@ -45,6 +46,8 @@ struct AdaptiveGridSensorSample {
     // Separate debug attachment: the last CLOSED aggregation window, not this measurement.
     // Shared immutable values avoid copying the diagnostic tree on every sensor tick.
     std::shared_ptr<const ump::SpatialSelection> aggregationDebug = {};
+    // Running interval metadata and its dated latest check; never a released measurement.
+    std::shared_ptr<const ump::AggregationProgress> aggregationProgress = {};
 };
 
 using SensorSample = std::variant<AgentSensorSample, GridSensorSample, AdaptiveGridSensorSample>;

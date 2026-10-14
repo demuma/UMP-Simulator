@@ -34,6 +34,7 @@ its original external file remains unchanged.
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
 | [Publication coordination](docs/PUBLICATION_COORDINATION.md) | Integrated immutable MongoDB releases, private journal, retries and recovery boundaries |
+| [Live aggregation progress](docs/LIVE_AGGREGATION_PROGRESS.md) | Separate current-window checks, completed output and sensor geometry; H/G/P controls |
 | [Temporal adaptation](docs/TEMPORAL_AGGREGATION.md) | Implemented Temporal First/Spatial First, shared-history windows, deadlines and runnable example |
 | [Adaptive pipeline validation](docs/ADAPTIVE_PUBLICATION_VALIDATION.md) | Regression coverage and real headless simulator evidence |
 | [Spatial selection and live demo](docs/SPATIAL_SELECTION.md) | Actual private parent/child selection, live overlay, recorded replay, configuration and tested limits |
@@ -636,9 +637,9 @@ cd /Users/maxdemu/Developer/UMP-Simulator/simulator/examples/spatial-selection
 ```
 
 This separate example enables private spatial selection and the live overlay. **G** toggles
-the overlay; **Space** pauses/resumes. Green cells are selected, orange cells became coarser,
-blue cells became finer and red footprints are suppressed. Fine sensor boundaries remain
-visible underneath. Counts and the last closed window are labelled explicitly.
+the completed-decision overlay; **H** toggles the fine AGBS sensor grid; **P** toggles
+current-window progress. **Space** pauses/resumes. Green cells are selected, orange cells became coarser,
+blue cells became finer and red footprints are suppressed. Fine sensor boundaries are an independently switchable input layer. Counts and the last closed window are labelled explicitly.
 
 The [spatial selection guide](docs/SPATIAL_SELECTION.md) explains the algorithm and limits.
 `results/demos/spatial-inspector.html` provides recorded before/after comparison and buttons
@@ -657,6 +658,11 @@ This separate example enables `spatial_first`: preserve spatial detail by extend
 `policy_tree.execution.strategy: temporal_first` in that example to try spatial adaptation
 first. It uses depth six, 200 road users, 30 simulated seconds and the existing live overlay.
 Raw data, recipient releases and private journal use separate `UMP_Temporal_Demo_*` databases.
+The example starts with the black input grid hidden (H), completed colored output visible
+(G), and active-window progress visible (P). S controls sensor areas. The sidebar separates
+collecting/extending state and its next check/deadline from the latest completed decision.
+Dashed amber cells refer to the explicitly dated last failed/unavailable check, not final
+suppression or current occupancy. No first-check metrics are invented while collecting.
 A fixed-window release example is in `simulator/examples/publication`.
 
 These are one-application, common-window baselines. Regional duration/age limits constrain

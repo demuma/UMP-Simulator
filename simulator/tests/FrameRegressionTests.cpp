@@ -1,8 +1,10 @@
 #include "SensorFrameCursor.hpp"
 #include "AdaptiveGridDisplayState.hpp"
+#include "AggregationProgress.hpp"
 #include <future>
 #include <iostream>
 #include <thread>
+#include <type_traits>
 
 namespace {
 using namespace std::chrono_literals;
@@ -238,12 +240,121 @@ void aggregationDisplay() {
     require(!display.aggregationSnapshot(), "Absent debug attachment retained unrelated decisions");
 }
 
+
+// Live progress is a dated attachment to a real measurement, independent of both
+// sensor geometry and the previously completed aggregation decision.
+void progressDisplay() {
+    static_assert(std::is_const_v<typename decltype(AdaptiveGridSensorSample{}.aggregationProgress)::element_type>,
+                  "Sensor frames must share immutable progress snapshots");
+
+    auto closedValue = ump::SpatialSelection{};
+    closedValue.candidate.startMs = 0;
+    closedValue.candidate.endMs = 400;
+    const auto closed = std::make_shared<const ump::SpatialSelection>(std::move(closedValue));
+
+    ump::AggregationProgress collecting;
+    collecting.strategy = "spatial_first";
+    collecting.startMs = 400;
+    collecting.nextEndMs = 800;
+    collecting.hardDeadlineMs = 1400;
+    collecting.observedThroughMs = 500;
+    const auto firstProgress = std::make_shared<const ump::AggregationProgress>(collecting);
+    collecting.startMs = 0;
+    collecting.nextEndMs = 1000;
+    const auto otherProgress = std::make_shared<const ump::AggregationProgress>(collecting);
+
+    SharedBuffer<sensorBufferFrameType> buffer("progress display");
+    SensorFrameCursor cursor;
+    AdaptiveGridDisplayState first, second;
+    SensorFrameBuilder firstFrame(at(500));
+    firstFrame.add("agbs-a", at(500), AdaptiveGridSensorSample{{{192, {}}}, closed, firstProgress});
+    firstFrame.add("agbs-b", at(500), AdaptiveGridSensorSample{{{193, {}}}, {}, otherProgress});
+    buffer.write(std::move(firstFrame).finish());
+    cursor.selectCompletedStep(at(500), buffer);
+    require(first.update(cursor.frame(), "agbs-a") && second.update(cursor.frame(), "agbs-b"),
+            "First progress measurements did not establish sensor geometry");
+    const auto* carried = findSensorSample<AdaptiveGridSensorSample>(cursor.frame()->second, "agbs-a");
+    require(carried && carried->aggregationProgress == firstProgress
+            && first.progressSnapshot() == firstProgress && second.progressSnapshot() == otherProgress,
+            "Immutable progress was copied or mixed across sensor IDs");
+    require(first.aggregationSnapshot() == closed && !second.aggregationSnapshot(),
+            "Live progress replaced or invented a completed aggregation decision");
+    cursor.selectCompletedStep(at(500), buffer);
+    require(!first.update(cursor.frame(), "agbs-a") && first.progressSnapshot() == firstProgress
+            && first.measurementTime() == at(500) && buffer.currentReadFrameIndex == 1,
+            "Paused repaint consumed or changed a progress snapshot");
+
+    cursor.selectCompletedStep(at(550), buffer);
+    require(!cursor.frame() && !first.update(cursor.frame(), "agbs-a")
+            && first.progressSnapshot() == firstProgress && first.measurementTime() == at(500)
+            && buffer.currentWriteFrameIndex == 1 && buffer.currentReadFrameIndex == 1,
+            "Progress invented a no-sample frame or relabelled its measurement time");
+
+    ump::AggregationProgressCheck check;
+    check.candidate.startMs = 400;
+    check.candidate.endMs = 800;
+    check.candidate.counts.distinctContributors = 1;
+    ump::AggregationProgress extending = *firstProgress;
+    extending.nextEndMs = 900;
+    extending.observedThroughMs = 800;
+    extending.temporalExtensions = 1;
+    extending.phase = ump::AggregationProgressPhase::Extending;
+    extending.lastCheck = std::make_shared<const ump::AggregationProgressCheck>(std::move(check));
+    const auto nextProgress = std::make_shared<const ump::AggregationProgress>(std::move(extending));
+    SensorFrameBuilder nextFrame(at(800));
+    nextFrame.add("agbs-a", at(800), AdaptiveGridSensorSample{{{192, {}}}, closed, nextProgress});
+    buffer.write(std::move(nextFrame).finish());
+    cursor.selectCompletedStep(at(800), buffer);
+    require(!first.update(cursor.frame(), "agbs-a") && first.progressSnapshot() == nextProgress
+            && first.measurementTime() == at(800),
+            "Unchanged geometry prevented a newer live progress snapshot");
+    require(first.progressSnapshot()->lastCheck
+            && first.progressSnapshot()->lastCheck->candidate.counts.distinctContributors == 1
+            && first.progressSnapshot()->phase == ump::AggregationProgressPhase::Extending
+            && !firstProgress->lastCheck && firstProgress->observedThroughMs == 500,
+            "A later progress update mutated an earlier immutable snapshot");
+    require(first.aggregationSnapshot() == closed && closed->candidate.endMs == 400,
+            "A live intermediate check changed the last completed decision");
+    require(!second.update(cursor.frame(), "agbs-b") && second.progressSnapshot() == otherProgress
+            && second.measurementTime() == at(500),
+            "One sensor's progress refreshed or cleared another sensor");
+
+    ump::AggregationProgress restarted = *nextProgress;
+    restarted.startMs = 900;
+    restarted.nextEndMs = 1300;
+    restarted.observedThroughMs = 900;
+    restarted.temporalExtensions = 0;
+    restarted.phase = ump::AggregationProgressPhase::Collecting;
+    restarted.lastCheck.reset();
+    const auto newWindow = std::make_shared<const ump::AggregationProgress>(std::move(restarted));
+    SensorFrameBuilder newWindowFrame(at(900));
+    newWindowFrame.add("agbs-a", at(900), AdaptiveGridSensorSample{{{192, {}}}, closed, newWindow});
+    buffer.write(std::move(newWindowFrame).finish());
+    cursor.selectCompletedStep(at(900), buffer);
+    require(!first.update(cursor.frame(), "agbs-a") && first.progressSnapshot() == newWindow
+            && !first.progressSnapshot()->lastCheck && first.aggregationSnapshot() == closed,
+            "A new window retained a stale intermediate check or cleared the completed decision");
+
+    SensorFrameBuilder withoutProgress(at(1000));
+    withoutProgress.add("agbs-a", at(1000), AdaptiveGridSensorSample{{{192, {}}}, closed, {}});
+    buffer.write(std::move(withoutProgress).finish());
+    cursor.selectCompletedStep(at(1000), buffer);
+    require(!first.update(cursor.frame(), "agbs-a") && !first.progressSnapshot()
+            && first.aggregationSnapshot() == closed && first.measurementTime() == at(1000),
+            "Removing live progress erased the completed decision or retained unrelated progress");
+    buffer.end();
+    cursor.selectCompletedStep(at(1050), buffer);
+    require(!cursor.frame() && !second.update(cursor.frame(), "agbs-b")
+            && second.progressSnapshot() == otherProgress && second.measurementTime() == at(500),
+            "Run tail erased or relabelled the slower sensor's dated progress");
+}
+
 }
 int main() {
     try {
-        contract(); pairing(); completedStepSequence(); gridDisplay(); aggregationDisplay(); transport();
+        contract(); pairing(); completedStepSequence(); gridDisplay(); aggregationDisplay(); progressDisplay(); transport();
         std::cout << "PASS: complete frames, identity/type routing, old/exact/future selection, "
-                     "pause, sparse completed steps, dated grid display, bounded FIFO, concurrent drain and shutdown.\n";
+                     "pause, sparse completed steps, dated grid/progress display, bounded FIFO, concurrent drain and shutdown.\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "FAIL: " << error.what() << '\n';

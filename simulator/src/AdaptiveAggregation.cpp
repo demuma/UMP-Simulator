@@ -102,7 +102,7 @@ void AdaptiveAggregation::evaluate(AggregationTime endMs, AggregationTime nowMs,
         || grid.leafDepth != expected.leafDepth)
         throw std::invalid_argument("Adaptive history belongs to another stream or grid");
     finest.truncated = final;
-    const auto checked = evaluator.evaluate(finest, nowMs);
+    auto checked = evaluator.evaluate(finest, nowMs);
     next.decisions.push_back({TemporalAction::EvaluateFinest, next.startMs, endMs, nowMs, checked.status});
     const bool complete = finest.coverage == WindowCoverage::Complete;
     const bool finestPass = complete && (checked.status == AssessmentStatus::Pass
@@ -150,11 +150,23 @@ void AdaptiveAggregation::evaluate(AggregationTime endMs, AggregationTime nowMs,
     ++next.extensions;
     next.decisions.push_back({TemporalAction::ExtendWindow, next.startMs, next.nextEndMs,
         nowMs, checked.status});
+    // Retain already computed evidence only after an extension is accepted.
+    // Terminal sink failures leave the prior snapshot and private cut intact.
+    next.lastCheck = std::make_shared<const AggregationProgressCheck>(
+        AggregationProgressCheck{std::move(finest), std::move(checked)});
     pending = std::move(next);
 }
 
 AdaptiveAggregationDebugState AdaptiveAggregation::debugState() const {
     return {pending.startMs, pending.nextEndMs, pending.startMs + durationCapMs,
         pending.extensions, pending.evaluations, pending.decisions.size(), completedWindows, finished};
+}
+
+AggregationProgress AdaptiveAggregation::progressSnapshot() const {
+    return {adaptationStrategyName(temporal.strategy), pending.startMs, pending.nextEndMs,
+        pending.startMs + durationCapMs, lastNowMs, pending.extensions, pending.evaluations,
+        finished ? AggregationProgressPhase::Finished
+            : pending.extensions ? AggregationProgressPhase::Extending : AggregationProgressPhase::Collecting,
+        pending.lastCheck};
 }
 } // namespace ump

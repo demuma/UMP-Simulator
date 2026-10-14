@@ -24,15 +24,18 @@ public:
         cells = std::move(nextCells);
         lastMeasurement = frame->first;
         aggregation = sample->aggregationDebug;
+        progress = sample->aggregationProgress;
         return changed;
     }
 
     const std::unordered_set<int>& cellIds() const { return cells; }
     std::optional<SensorTime> measurementTime() const { return lastMeasurement; }
     const std::shared_ptr<const ump::SpatialSelection>& aggregationSnapshot() const { return aggregation; }
+    const std::shared_ptr<const ump::AggregationProgress>& progressSnapshot() const { return progress; }
 
 private:
     std::unordered_set<int> cells;
     std::optional<SensorTime> lastMeasurement;
     std::shared_ptr<const ump::SpatialSelection> aggregation;
+    std::shared_ptr<const ump::AggregationProgress> progress;
 };

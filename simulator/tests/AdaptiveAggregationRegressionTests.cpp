@@ -71,6 +71,84 @@ void exactUnionEarlyReleaseAndOriginalStart() {
     require(f.outputs.size() == 1, "Repeated progress emitted the same interval twice");
 }
 
+void immutableProgressThroughCollectionExtensionAndRelease() {
+    Fixture f;
+    auto initial = f.engine.progressSnapshot();
+    require(initial.strategy == "spatial_first" && initial.startMs == 0 && initial.nextEndMs == 400
+        && initial.hardDeadlineMs == 800 && initial.observedThroughMs == 0
+        && initial.temporalExtensions == 0 && initial.evaluations == 0
+        && initial.phase == AggregationProgressPhase::Collecting && !initial.lastCheck,
+        "Initial progress invented a completed check or an incorrect window");
+    for (int time : {100,200,300}) f.sample(time, {observation("A")});
+    f.advance(350);
+    const auto collecting = f.engine.progressSnapshot();
+    require(collecting.observedThroughMs == 350 && collecting.evaluations == 0
+        && !collecting.lastCheck && collecting.phase == AggregationProgressPhase::Collecting,
+        "An unsampled collection tick invented metric evidence or lost simulation progress");
+
+    f.sample(400, {observation("B")});
+    const auto extending = f.engine.progressSnapshot();
+    require(extending.phase == AggregationProgressPhase::Extending && extending.startMs == 0
+        && extending.nextEndMs == 500 && extending.hardDeadlineMs == 800
+        && extending.observedThroughMs == 400 && extending.temporalExtensions == 1
+        && extending.evaluations == 1 && extending.lastCheck,
+        "An accepted extension did not expose its actual pending interval and check");
+    require(extending.lastCheck->candidate.startMs == 0 && extending.lastCheck->candidate.endMs == 400
+        && extending.lastCheck->candidate.closedAtMs == 400
+        && extending.lastCheck->candidate.counts.distinctContributors == 1
+        && extending.lastCheck->candidate.counts.observationContributions == 3
+        && extending.lastCheck->assessment.status == AssessmentStatus::Fail,
+        "Progress evidence was labeled as current support or included the excluded endpoint");
+    f.advance(450);
+    const auto waiting = f.engine.progressSnapshot();
+    require(waiting.observedThroughMs == 450 && waiting.lastCheck == extending.lastCheck
+        && waiting.evaluations == 1 && waiting.nextEndMs == 500,
+        "Waiting ticks recalculated or copied check evidence instead of sharing its immutable snapshot");
+
+    f.advance(500);
+    const auto nextWindow = f.engine.progressSnapshot();
+    require(nextWindow.startMs == 500 && nextWindow.nextEndMs == 900
+        && nextWindow.hardDeadlineMs == 1300 && nextWindow.observedThroughMs == 500
+        && nextWindow.temporalExtensions == 0 && nextWindow.evaluations == 0
+        && nextWindow.phase == AggregationProgressPhase::Collecting && !nextWindow.lastCheck,
+        "A new window reused the prior window's check or extension state");
+    require(extending.lastCheck->candidate.endMs == 400
+        && extending.lastCheck->candidate.counts.distinctContributors == 1,
+        "A published progress snapshot changed after a later window completed");
+    f.sample(500, {observation("C")});
+    f.finish(550);
+    const auto finished = f.engine.progressSnapshot();
+    require(finished.phase == AggregationProgressPhase::Finished
+        && finished.observedThroughMs == 550 && !finished.lastCheck,
+        "Final progress retained a stale window check or lost the end-of-stream state");
+}
+
+void failedSinkPreservesProgressEvidence() {
+    auto config = settings();
+    AggregationHistory history(config, *config.history);
+    bool fail = true;
+    AdaptiveAggregation engine(config, {AdaptationStrategy::SpatialFirst,100,800,32}, {2,64}, policy(),
+        [&](const SpatialSelection&) { if (fail) throw std::runtime_error("sink failure"); });
+    for (int time : {100,200,300,400}) {
+        history.append({"run", "sensor", static_cast<std::uint64_t>(time / 100), time,
+            ObservationStatus::Measured, {observation(time == 400 ? "B" : "A")}});
+        engine.advance(time, history);
+    }
+    const auto before = engine.progressSnapshot();
+    history.advance(500);
+    rejects([&] { engine.advance(500, history); });
+    const auto after = engine.progressSnapshot();
+    require(after.lastCheck == before.lastCheck && after.startMs == before.startMs
+        && after.nextEndMs == before.nextEndMs && after.observedThroughMs == before.observedThroughMs
+        && after.evaluations == before.evaluations && after.temporalExtensions == before.temporalExtensions
+        && after.phase == before.phase,
+        "A failed terminal sink changed the accepted progress snapshot");
+    fail = false;
+    engine.advance(500, history);
+    require(engine.progressSnapshot().startMs == 500 && !engine.progressSnapshot().lastCheck,
+        "Successful retry failed to retire the old progress evidence");
+}
+
 void exactGlobalUnionAcrossMovingCells() {
     Fixture f;
     f.sample(100,{observation("A",192)});
@@ -315,11 +393,12 @@ void validationAndHistoryLoss() {
 }
 int main() {
     try {
-        exactUnionEarlyReleaseAndOriginalStart(); exactGlobalUnionAcrossMovingCells();
+        exactUnionEarlyReleaseAndOriginalStart(); immutableProgressThroughCollectionExtensionAndRelease();
+        failedSinkPreservesProgressEvidence(); exactGlobalUnionAcrossMovingCells();
         sharedManagerProgressAndFinalFlush(); trueStrategyOrdering(); maximumAndConfiguredSteps();
         regionalDeadlineIncludingEmptyFootprintAndPassingNeighbor(); missingUnavailableAndLateEvaluation();
         finalFlushAndTransactionalSelection(); refinementAndBoundedLongRun(); validationAndHistoryLoss();
         std::cout << "PASS: adaptive strategy order, exact temporal unions, early release, regional deadlines, "
-            "coverage, final flush, provisional cuts, refinement, disjointness and bounded replay.\n";
+            "coverage, final flush, provisional cuts, immutable progress, refinement, disjointness and bounded replay.\n";
     } catch (const std::exception& error) { std::cerr << "FAIL: " << error.what() << '\n'; return 1; }
 }

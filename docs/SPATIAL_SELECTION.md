@@ -94,7 +94,9 @@ Set `renderer.show_aggregation: true` to initially show the overlay. **G** toggl
 **Space** pauses/resumes, and the existing left/right controls change playback speed.
 **B** toggles buffer zones (enabled initially), **A** arrows, **T** past/future trajectories
 together, and **W** waypoints. Separate past/future toggles are not implemented.
-The overlay also requires the sensor grids to be visible. The demo starts with the large
+The completed overlay no longer depends on sensor-grid visibility. H toggles the fine
+AGBS input grid; P toggles current-window progress; S controls sensor areas. Explicit
+`renderer.show_sensor_grid` or pressing H overrides legacy per-sensor visibility flags. The demo starts with the large
 general info display hidden to keep the map readable; its Infos button remains available.
 
 - Thin sensor boundaries remain visible beneath the chosen aggregation geometry.

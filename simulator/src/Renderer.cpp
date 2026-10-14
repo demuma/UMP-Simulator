@@ -2,6 +2,8 @@
 #include "../include/GridBasedSensor.hpp"
 #include "../include/AgentBasedSensor.hpp"
 #include "../include/AdaptiveGridBasedSensor.hpp"
+#include "../include/AggregationPresentation.hpp"
+#include <sstream>
 
 // Renderer member functions
 Renderer::Renderer(
@@ -68,6 +70,15 @@ void Renderer::loadConfiguration() {
     waypointRadius = config["agents"]["waypoint_radius"].as<float>();
     showGrids = config["renderer"]["show_grids"].as<bool>();
     showAggregation = config["renderer"]["show_aggregation"].as<bool>(false);
+    showAggregationProgress = config["renderer"]["show_aggregation_progress"].as<bool>(false);
+    overrideSensorGridVisibility = config["renderer"]["show_sensor_grid"].IsDefined();
+    showSensorGrid = config["renderer"]["show_sensor_grid"].as<bool>(false);
+    if (!overrideSensorGridVisibility) {
+        for (const auto& sensor : config["sensors"])
+            if (sensor["type"].as<std::string>() == "adaptive-grid-based")
+                showSensorGrid = showSensorGrid || sensor["grid"]["show_grid"].as<bool>();
+        showSensorGrid = showSensorGrid && showGrids && config["renderer"]["show_sensors"].as<bool>();
+    }
     showSensors = config["renderer"]["show_sensors"].as<bool>();
     showBufferZones = config["renderer"]["show_buffer"].as<bool>();
     showArrow = config["renderer"]["show_arrow"].as<bool>();
@@ -439,6 +450,15 @@ void Renderer::handleEvents() {
             showAggregation = !showAggregation;
         }
 
+        else if (keyPressed.scancode == sf::Keyboard::Scancode::H) {
+            showSensorGrid = !showSensorGrid;
+            overrideSensorGridVisibility = true;
+        }
+
+        else if (keyPressed.scancode == sf::Keyboard::Scancode::P) {
+            showAggregationProgress = !showAggregationProgress;
+        }
+
         else if (keyPressed.scancode == sf::Keyboard::Scancode::B) {
             showBufferZones = !showBufferZones;
         }
@@ -464,7 +484,6 @@ void Renderer::handleEvents() {
 
         else if (keyPressed.scancode == sf::Keyboard::Scancode::S) {
             showSensors = !showSensors;
-            showSensorGrid = !showSensorGrid;
         }
 
         else if (keyPressed.scancode == sf::Keyboard::Scancode::T) {
@@ -726,6 +745,125 @@ void Renderer::drawAggregationOverlay(const ump::SpatialSelection& snapshot) {
     }
 }
 
+// Pending outlines describe the last evaluated finest cells in the active window.
+// They are not suppression decisions and never mutate sensor or aggregation state.
+void Renderer::drawAggregationProgress(const ump::AggregationProgress& progress) {
+    if (!progress.lastCheck || progress.phase == ump::AggregationProgressPhase::Finished) return;
+    std::unordered_set<int> pending;
+    for (const auto& assessment : progress.lastCheck->assessment.cells)
+        if (ump::pendingAggregationCell(assessment.status)) pending.insert(assessment.cellId);
+    sf::VertexArray dashes(sf::PrimitiveType::Lines);
+    const sf::Color amber(180, 130, 20, 230);
+    const auto edge = [&](sf::Vector2f from, sf::Vector2f to) {
+        const auto delta = to - from;
+        const float length = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+        if (length <= 0.f) return;
+        const auto direction = delta / length;
+        for (float at = 0.f; at < length; at += 8.f) {
+            dashes.append(sf::Vertex{from + direction * at, amber});
+            dashes.append(sf::Vertex{from + direction * std::min(at + 5.f, length), amber});
+        }
+    };
+    for (const auto& item : progress.lastCheck->candidate.cells) {
+        if (!pending.count(item.cell.id)) continue;
+        const auto& cell = item.cell;
+        const float x = static_cast<float>(cell.x * scale) + offset.x;
+        const float y = static_cast<float>(cell.y * scale) + offset.y;
+        const float w = static_cast<float>(cell.width * scale);
+        const float h = static_cast<float>(cell.height * scale);
+        edge({x, y}, {x + w, y});
+        edge({x + w, y}, {x + w, y + h});
+        edge({x + w, y + h}, {x, y + h});
+        edge({x, y + h}, {x, y});
+    }
+    window.draw(dashes);
+}
+
+// Word wrapping follows measured font widths so the sidebar also works after resizing.
+float Renderer::drawStatusPanel(const std::vector<std::string>& lines, sf::Vector2f position, float width) {
+    if (width < 40.f || lines.empty()) return 0.f;
+    const float textWidth = width - 16.f;
+    sf::Text measured(font, "", 12);
+    std::string wrapped;
+    for (const auto& paragraph : lines) {
+        std::istringstream words(paragraph);
+        std::string word, line;
+        while (words >> word) {
+            const std::string candidate = line.empty() ? word : line + " " + word;
+            measured.setString(candidate);
+            if (measured.getLocalBounds().size.x <= textWidth) {
+                line = candidate;
+                continue;
+            }
+            if (!line.empty()) {
+                wrapped += line + '\n';
+                line.clear();
+            }
+            measured.setString(word);
+            if (measured.getLocalBounds().size.x <= textWidth) {
+                line = word;
+                continue;
+            }
+            // Split only unusually long identifiers, keeping normal words intact.
+            for (const char ch : word) {
+                measured.setString(line + ch);
+                if (!line.empty() && measured.getLocalBounds().size.x > textWidth) {
+                    wrapped += line + '\n';
+                    line.clear();
+                }
+                line += ch;
+            }
+        }
+        wrapped += line + '\n';
+    }
+    if (!wrapped.empty()) wrapped.pop_back();
+    sf::Text text(font, wrapped, 12);
+    text.setFillColor(sf::Color(35, 40, 45));
+    text.setPosition(position + sf::Vector2f{8.f, 5.f});
+    const float height = text.getLocalBounds().size.y + 16.f;
+    sf::RectangleShape background({width, height});
+    background.setPosition(position);
+    background.setFillColor(sf::Color(255, 255, 255, 243));
+    background.setOutlineColor(sf::Color(205, 210, 215));
+    background.setOutlineThickness(1.f);
+    window.draw(background);
+    window.draw(text);
+    return height;
+}
+
+void Renderer::drawAggregationStatusPanels() {
+    if (!showAggregation && !showAggregationProgress && !showSensorGrid && !showSensors) return;
+    const float availableWidth = static_cast<float>(window.getSize().x) - 24.f;
+    const bool besideMap = offset.x >= 205.f;
+    const float panelWidth = besideMap ? std::min(offset.x - 24.f, 285.f) : std::min(availableWidth, 430.f);
+    sf::Vector2f position{12.f, besideMap ? std::max(12.f, offset.y) : 12.f};
+    for (const auto& sensor : sensors) {
+        const auto* adaptive = dynamic_cast<const AdaptiveGridBasedSensor*>(sensor.get());
+        if (!adaptive) continue;
+        const auto it = adaptiveGridDisplays.find(adaptive->sensorId);
+        if (it == adaptiveGridDisplays.end()) continue;
+        const auto& display = it->second;
+        std::vector<std::string> lines{"Sensor " + adaptive->sensorId, "H input grid | G completed | P active | S area"};
+        if (showSensorGrid && (overrideSensorGridVisibility || adaptive->showGrid)) {
+            if (const auto measuredAt = display.measurementTime()) {
+                const auto age = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - *measuredAt).count();
+                lines.push_back("Input grid: last sample " + std::to_string(age) + " ms ago");
+            } else lines.push_back("Input grid: waiting for a sample");
+        }
+        if (showAggregation) {
+            lines.emplace_back("");
+            const auto closed = ump::aggregationCompletedLines(display.aggregationSnapshot().get());
+            lines.insert(lines.end(), closed.begin(), closed.end());
+        }
+        if (showAggregationProgress) {
+            lines.emplace_back("");
+            const auto active = ump::aggregationProgressLines(display.progressSnapshot().get());
+            lines.insert(lines.end(), active.begin(), active.end());
+        }
+        position.y += drawStatusPanel(lines, position, panelWidth) + 12.f;
+    }
+}
+
 // Main rendering function
 void Renderer::render() {  // Input: meters, Output: pixels
 
@@ -741,10 +879,9 @@ void Renderer::render() {  // Input: meters, Output: pixels
     if (currentNumAgents != 0 || agentBuffer.currentReadFrameIndex != maxFrames) {
 
         // Draw the grid if enabled
-        if(showGrids) {
-            
-            // Draw the collision grid
-            if(showCollisionGrid) {
+        {
+            // The collision grid is independent of sensor and aggregation visibility.
+            if(showGrids && showCollisionGrid) {
 
                 // Draw outer rectangle
                 sf::RectangleShape gridBoundaries(sf::Vector2f(simulationWidth, simulationHeight));
@@ -797,7 +934,7 @@ void Renderer::render() {  // Input: meters, Output: pixels
                 else if(auto gridBasedSensor = dynamic_cast<GridBasedSensor*>(sensor.get())) {
 
                     // Draw the grid if enabled
-                    if(gridBasedSensor->showGrid && showSensors) {
+                    if(gridBasedSensor->showGrid && showSensors && showGrids) {
 
                         // Draw outer rectangle
                         sf::RectangleShape gridBoundaries(sf::Vector2f(gridBasedSensor->detectionArea.size.x * scale, gridBasedSensor->detectionArea.size.y * scale));
@@ -829,61 +966,27 @@ void Renderer::render() {  // Input: meters, Output: pixels
                 }
 
                 else if(auto adaptiveGridBasedSensor = dynamic_cast<AdaptiveGridBasedSensor*>(sensor.get())) {
-                    
-                    // Draw the grid if enabled
-                    if(adaptiveGridBasedSensor->showGrid && showSensors) {
-
-                        // Draw outer rectangle
-                        sf::RectangleShape gridBoundaries(sf::Vector2f(adaptiveGridBasedSensor->detectionArea.size.x * scale, adaptiveGridBasedSensor->detectionArea.size.y * scale));
-                        gridBoundaries.setPosition({adaptiveGridBasedSensor->detectionArea.position.x * scale + offset.x, adaptiveGridBasedSensor->detectionArea.position.y * scale + offset.y}); // Set position in pixels
-                        // gridBoundaries.setFillColor(sf::Color::Transparent);
-                        gridBoundaries.setFillColor(adaptiveGridBasedSensor->detectionAreaColor);
-                        gridBoundaries.setOutlineColor(sf::Color::Black);
-                        gridBoundaries.setOutlineThickness(3);
-                        window.draw(gridBoundaries);
-
-                        // Draw the adaptive grid with scaling and offset
+                    // Sensor coverage, acquisition geometry and aggregation evidence are
+                    // separate layers. H, G and P remain usable when S is hidden.
+                    if (showSensors) {
+                        sf::RectangleShape boundary({adaptiveGridBasedSensor->detectionArea.size.x * scale,
+                                                     adaptiveGridBasedSensor->detectionArea.size.y * scale});
+                        boundary.setPosition({adaptiveGridBasedSensor->detectionArea.position.x * scale + offset.x,
+                                              adaptiveGridBasedSensor->detectionArea.position.y * scale + offset.y});
+                        boundary.setFillColor(adaptiveGridBasedSensor->detectionAreaColor);
+                        boundary.setOutlineColor(sf::Color::Black);
+                        boundary.setOutlineThickness(2.f);
+                        window.draw(boundary);
+                    }
+                    if (showSensorGrid && (overrideSensorGridVisibility || adaptiveGridBasedSensor->showGrid)) {
                         adaptiveGridBasedSensor->adaptiveGrid.showCellId = showText;
                         adaptiveGridBasedSensor->adaptiveGrid.draw(window, font, scale, offset);
-
-                        // A persistent geometry display must retain its measurement age.
-                        const auto& display = adaptiveGridDisplays.at(adaptiveGridBasedSensor->sensorId);
-                        std::string status = "Grid: waiting for first sample";
-                        if (const auto measuredAt = display.measurementTime()) {
-                            const auto ageMs = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - *measuredAt).count();
-                            status = "Grid: latest sample (" + std::to_string(ageMs) + " ms old)";
-                        }
-                        if (const auto& snapshot = display.aggregationSnapshot()) {
-                            if (showAggregation) {
-                                drawAggregationOverlay(*snapshot);
-                                status += "\nPrivate aggregation [" + std::to_string(snapshot->candidate.startMs)
-                                    + ", " + std::to_string(snapshot->candidate.endMs) + ") ms | selected "
-                                    + std::to_string(snapshot->selectedCells) + " | suppressed "
-                                    + std::to_string(snapshot->suppressedCells);
-                                status += "\n" + snapshot->strategy + " | time extensions "
-                                    + std::to_string(snapshot->temporalExtensions);
-                                status += "\nOrange: coarser " + std::to_string(snapshot->coarsenedCells)
-                                    + " | Blue: finer " + std::to_string(snapshot->refinedCells)
-                                    + " | Green: selected | G: overlay";
-                            } else status += "\nAggregation overlay hidden (G)";
-                        } else if (showAggregation) status += "\nAggregation: waiting for a closed window";
-                        sf::Text gridStatus(font, status, 12);
-                        gridStatus.setFillColor(sf::Color::Black);
-                        const sf::Vector2f labelPosition = gridBoundaries.getPosition() + sf::Vector2f{5.f, 4.f};
-                        gridStatus.setPosition(labelPosition);
-                        const auto labelBounds = gridStatus.getLocalBounds();
-                        sf::RectangleShape labelBackground({labelBounds.size.x + 8.f, labelBounds.size.y + 8.f});
-                        labelBackground.setPosition(labelPosition + labelBounds.position - sf::Vector2f{4.f, 4.f});
-                        labelBackground.setFillColor(sf::Color(255, 255, 255, 230));
-                        window.draw(labelBackground);
-                        window.draw(gridStatus);
-
-                        // adaptiveGridBasedSensor->adaptiveGrid.printChildren(12);
-                        // adaptiveGridBasedSensor->adaptiveGrid.printChildren(13);
-                        // adaptiveGridBasedSensor->adaptiveGrid.printChildren(14);
-                        // adaptiveGridBasedSensor->adaptiveGrid.printChildren(15);
-
                     }
+                    const auto& display = adaptiveGridDisplays.at(adaptiveGridBasedSensor->sensorId);
+                    if (showAggregation && display.aggregationSnapshot())
+                        drawAggregationOverlay(*display.aggregationSnapshot());
+                    if (showAggregationProgress && display.progressSnapshot())
+                        drawAggregationProgress(*display.progressSnapshot());
                 }
             }
         }
@@ -1107,6 +1210,9 @@ void Renderer::render() {  // Input: meters, Output: pixels
             window.draw(timeText);
             window.draw(playbackSpeedText);
         }
+
+        // Diagnostics remain legible above the moving road users.
+        drawAggregationStatusPanels();
 
         // Draw buttons
         window.draw(pauseButton);
