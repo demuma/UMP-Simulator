@@ -1,6 +1,8 @@
 # Controlled replay and first evaluation
 
-Status: 2026-10-14. Implementation contract recorded before the first comparison.
+Status: 2026-10-14. Current user-selected scope: utility and policy fulfilment first.
+The original implementation contract preceded the first comparison; privacy evaluation
+is now deferred. Existing exploratory artifacts remain preserved.
 
 ## Research question
 
@@ -61,9 +63,10 @@ MAE is undefined when S is empty. Online `occupancy_mae` remains unavailable bec
 online evaluator has no private GT input. Offline evaluation does not leak GT into policy
 selection or add an oracle to the algorithm.
 
-## Initial privacy scope
+## Deferred optional privacy scope
 
-The first optional check is deterministic neighbouring-output distinguishability. Remove
+The existing optional check is deterministic neighbouring-output distinguishability.
+It is outside the current utility/policy milestone and is not enabled by the commands below. Remove
 one target's observations from the frozen stream while retaining all other observations,
 all sample times and measured-empty batches; rerun from the beginning. Compare the full
 recipient-visible transcript, including counts, geometry, intervals and logical release
@@ -108,13 +111,14 @@ python3 tools/evaluation/make_fixture.py --output results/my-fixture-input
 python3 tools/evaluation/run_comparison.py \
   --input results/my-fixture-input/observations.json \
   --config results/my-fixture-input/policy.json \
-  --output results/my-comparison --privacy-targets 3
+  --output results/my-comparison
 python3 tools/evaluation/plot_summary.py results/my-comparison
 ```
 
 Every output directory must be new. Use `--scenario handover` for the analytical action-order
-fixture. Omitting `--privacy-targets` runs utility/policy evaluation only. The optional
-privacy count selects the first N lexically sorted observed IDs and stores the exact list;
+fixture. The current commands and CLI default run utility/policy evaluation only; their
+manifest records no privacy scope and zero privacy targets. If the deferred privacy work
+is resumed, the optional `--privacy-targets N` flag selects the first N lexically sorted observed IDs and stores the exact list;
 it is not a random population sample.
 
 For an actual simulator source, the capture adapter uses only the maintained temporal
@@ -132,7 +136,7 @@ python3 tools/evaluation/run_comparison.py \
   --input results/my-capture/observations.json \
   --config results/my-fixture-input/policy.json \
   --provenance results/my-capture/capture-manifest.json \
-  --output results/my-capture-comparison --privacy-targets 3
+  --output results/my-capture-comparison
 ```
 
 The normal simulator executable must already be built for capture. The adapter verifies

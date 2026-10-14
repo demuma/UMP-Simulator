@@ -2,7 +2,11 @@
 
 Date: 2026-10-14. These are reproducible descriptive pilots, not a completed benchmark or
 an empirical privacy guarantee. Methods: [CONTROLLED_EVALUATION.md](CONTROLLED_EVALUATION.md),
-[METRICS.md](METRICS.md), and [PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md).
+[METRICS.md](METRICS.md).
+
+Current scope decision: **utility and policy fulfilment first**. The earlier optional privacy
+checks are retained as historical exploratory evidence in
+[the deferred privacy document](PRIVACY_EVALUATION.md), outside the active analysis below.
 
 ## What was implemented
 
@@ -10,7 +14,8 @@ The simulator already computed nine online quantities: observation contributions
 road users, mean sampled occupancy, cell side, cell area, window duration, age at evaluation,
 post-window delay and measured-sample fraction. This work adds offline fixed-query occupancy
 MAE, answered/scored-query coverage, reference availability, resolution/age distributions,
-contribution retention and a scoped deterministic neighbouring-output comparison.
+contribution retention and effective-policy compliance checks. The optional neighbouring-output
+comparison was also implemented earlier, but is deferred from the current milestone.
 
 The new CLI reuses the actual aggregation, shared-history, policy-tree, spatial selection,
 temporal adaptation and publication-coordinator cores. Fixed baselines obey the same policy
@@ -38,10 +43,10 @@ claims are still pending.
 - Seven modes: 10/20-m fixed cells crossed with 400/1000-ms windows, spatial-only,
   Temporal First (space first), Spatial First (time first). Input and policy files are copied
   and hashed. Exact counts/unions, policy passes and nonoverlapping support are checked.
-- Privacy: remove each of the first N lexically sorted observed IDs from the same stream and
-  replay from the beginning. This target selection is explicit, not representative sampling.
-  Compare recipient-visible counts, geometry, intervals, logical release time and policy IDs.
-  The observer knows every background trajectory and the target trace exactly.
+
+Every selected release cell in the 21 scenario/configuration comparisons passed its
+effective policy checks. This establishes compliance for the emitted cells in these pilots;
+it does not establish that the search found every feasible release or maximized useful output.
 
 ## Actual simulator capture
 
@@ -52,15 +57,15 @@ cell ID, geometry, total count and type count matched the GT-derived observation
 There were no missing sensor frames. The fresh capture database was removed only after the
 raw exports, frozen input and proof were safely written. Existing databases were untouched.
 
-| Configuration | Conditional MAE (road users) | Answered queries | Retained observations | Mean sealing age (ms) | Changed target pairs |
-|---|---:|---:|---:|---:|---:|
-| Fixed 10 m / 400 ms | 0.0238 | 56.84% | 81.78% | 400 | 2/3 |
-| Fixed 10 m / 1000 ms | 0.0000 | 65.43% | 83.93% | 1000 | 2/3 |
-| Fixed 20 m / 400 ms | 1.3396 | 100.00% | 100.00% | 400 | 3/3 |
-| Fixed 20 m / 1000 ms | 1.3396 | 100.00% | 100.00% | 1000 | 3/3 |
-| Spatial only | 0.9776 | 86.13% | 100.00% | 400 | 3/3 |
-| Temporal First | 0.9776 | 86.13% | 100.00% | 400 | 3/3 |
-| Spatial First | 0.9073 | 92.38% | 100.00% | 1000 | 3/3 |
+| Configuration | Conditional MAE (road users) | Answered queries | Retained observations | Mean sealing age (ms) |
+|---|---:|---:|---:|---:|
+| Fixed 10 m / 400 ms | 0.0238 | 56.84% | 81.78% | 400 |
+| Fixed 10 m / 1000 ms | 0.0000 | 65.43% | 83.93% | 1000 |
+| Fixed 20 m / 400 ms | 1.3396 | 100.00% | 100.00% | 400 |
+| Fixed 20 m / 1000 ms | 1.3396 | 100.00% | 100.00% | 1000 |
+| Spatial only | 0.9776 | 86.13% | 100.00% | 400 |
+| Temporal First | 0.9776 | 86.13% | 100.00% | 400 |
+| Spatial First | 0.9073 | 92.38% | 100.00% | 1000 |
 
 The adaptive modes retained all observations in this capture, yet their query coverage is
 below 100%: fine sparse footprints need not cover an entire 10-m query cell. The 20-m fixed
@@ -78,13 +83,6 @@ only/Temporal First MAE is 0.8321, Spatial First 0.7810, fixed 20 m/400 ms 1.383
 10 m/1000 ms approximately zero. This additional comparison helps separate differences in
 answered subsets; it does not remove the need to report full-domain coverage.
 
-For the three tested targets, both 10-m fixed baselines changed two public transcripts;
-the other five configurations changed all three. The corresponding perfect-background
-balanced successes (5/6 and 1) are mathematically derived from deterministic equality,
-not trained-classifier accuracies. No privacy improvement of adaptation is established.
-A matching transcript for one suppressed target is not a guarantee for other targets or
-other forms of knowledge. Generalization and population confidence intervals are unwarranted.
-
 The local figure is available as PNG, SVG and PDF in
 `results/evaluation/2026-10-14/simulator/comparison.*`.
 
@@ -94,23 +92,22 @@ This hand-inspectable eight-second fixture contains 36 stable road-user identiti
 clusters of different densities, deterministic cross-cell motion and a fully empty second.
 It is a mechanism test rather than a realistic mobility model.
 
-| Configuration | Conditional MAE (road users) | Answered queries | Retained observations | Mean sealing age (ms) | Changed target pairs |
-|---|---:|---:|---:|---:|---:|
-| Fixed 10 m / 400 ms | 0.0820 | 6.45% | 68.44% | 400 | 3/3 |
-| Fixed 10 m / 1000 ms | 0.0000 | 8.79% | 72.42% | 1000 | 3/3 |
-| Fixed 20 m / 400 ms | 1.5828 | 32.81% | 96.54% | 400 | 3/3 |
-| Fixed 20 m / 1000 ms | 1.5323 | 34.38% | 96.98% | 1000 | 3/3 |
-| Spatial only | 1.3547 | 14.45% | 97.22% | 400 | 3/3 |
-| Temporal First | 1.2665 | 23.24% | 97.22% | 900 | 3/3 |
-| Spatial First | 1.2665 | 23.24% | 97.22% | 900 | 3/3 |
+| Configuration | Conditional MAE (road users) | Answered queries | Retained observations | Mean sealing age (ms) |
+|---|---:|---:|---:|---:|
+| Fixed 10 m / 400 ms | 0.0820 | 6.45% | 68.44% | 400 |
+| Fixed 10 m / 1000 ms | 0.0000 | 8.79% | 72.42% | 1000 |
+| Fixed 20 m / 400 ms | 1.5828 | 32.81% | 96.54% | 400 |
+| Fixed 20 m / 1000 ms | 1.5323 | 34.38% | 96.98% | 1000 |
+| Spatial only | 1.3547 | 14.45% | 97.22% | 400 |
+| Temporal First | 1.2665 | 23.24% | 97.22% | 900 |
+| Spatial First | 1.2665 | 23.24% | 97.22% | 900 |
 
 Both adaptive priorities produce the same final public result here. An isolated branch
 cannot reach the minimum support even at its maximum spatial extent; the common-window
 coordination keeps extending before its final suppression. This exposes a limitation of
 the current shared-window model: one unresolved branch can delay otherwise feasible areas.
 It motivates, but does not yet implement, independent-window and selective-fallback studies.
-Only 16 queries have scored support common to all configurations. At the stated strongest
-knowledge level, all three tested targets changed the output for every configuration.
+Only 16 queries have scored support common to all configurations.
 
 ## Analytical handover fixture
 
@@ -119,15 +116,15 @@ common ancestor. The first 400-ms window has one identity per fine cell but two 
 common ancestor. This
 fixture intentionally isolates the action order; it makes no continuous-motion claim.
 
-| Configuration | Conditional MAE (road users) | Answered queries | Retained observations | Mean sealing age (ms) | Changed target pairs |
-|---|---:|---:|---:|---:|---:|
-| Fixed 10 m / 400 ms | 0.0000 | 1.56% | 100.00% | 400 | 4/4 |
-| Fixed 10 m / 1000 ms | 0.0000 | 1.56% | 100.00% | 1000 | 4/4 |
-| Fixed 20 m / 400 ms | 0.7500 | 6.25% | 100.00% | 400 | 4/4 |
-| Fixed 20 m / 1000 ms | 0.7500 | 6.25% | 100.00% | 1000 | 4/4 |
-| Spatial only | 0.0000 | 1.56% | 100.00% | 400 | 4/4 |
-| Temporal First | 0.0000 | 1.56% | 100.00% | 400 | 4/4 |
-| Spatial First | undefined | 0.00% | 100.00% | 400 | 4/4 |
+| Configuration | Conditional MAE (road users) | Answered queries | Retained observations | Mean sealing age (ms) |
+|---|---:|---:|---:|---:|
+| Fixed 10 m / 400 ms | 0.0000 | 1.56% | 100.00% | 400 |
+| Fixed 10 m / 1000 ms | 0.0000 | 1.56% | 100.00% | 1000 |
+| Fixed 20 m / 400 ms | 0.7500 | 6.25% | 100.00% | 400 |
+| Fixed 20 m / 1000 ms | 0.7500 | 6.25% | 100.00% | 1000 |
+| Spatial only | 0.0000 | 1.56% | 100.00% | 400 |
+| Temporal First | 0.0000 | 1.56% | 100.00% | 400 |
+| Spatial First | undefined | 0.00% | 100.00% | 400 |
 
 Temporal First's first release covers the common ancestor at 400 ms. Spatial First waits to 500 ms,
 then releases two fine cells after the identity handover supplies the required support.
@@ -170,12 +167,13 @@ The capture's Mongo metadata provides the authoritative relative-time origin. Th
 configured datetime and its UTC interpretation need a separate DST/timezone audit (D02);
 this did not affect the verified relative GT/AGBS alignment or replay cadence.
 
-## What remains before dissertation-level claims
+## Next utility and policy work
 
 Choose explicit empty-support publication semantics for the intended application; study
 thresholds, regional caps, density/motion regimes and infeasible policies over independent
-runs; design and validate a realistic attacker with separated training/testing; and add
-other utility tasks only when their application is defined. Formalize release soundness
+runs; and add other utility tasks only when their application is defined. Measure release
+compliance separately from output availability and suppression reasons. Privacy evaluation
+is deferred until after this milestone. Formalize release soundness
 separately from search completeness or optimality. The current greedy/common-window
 algorithm can suppress support despite alternatives a future coordinator might find.
 Independent sibling windows, selective suppression, other publication models, multiple

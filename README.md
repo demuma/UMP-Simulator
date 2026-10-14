@@ -4,7 +4,7 @@ Research workspace for the dissertation on quantifying privacy and utility in ur
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
 **Status: 2026-10-14. Current work: verify the integrated AGBS aggregation pipeline
-and prepare controlled privacy/utility experiments. Shared sampling
+and evaluate utility and policy fulfilment first. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
 bounded, nonblocking renderer consumption are implemented (S04/S01). S05 now paces
@@ -23,7 +23,8 @@ writes and a durable private journal. Live and recorded diagnostics show the sel
 strategy and transitions. Automatic restart/resume, independent sibling windows, additional
 publication models and realistic attack studies remain open. The offline replay now compares
 four fixed baselines and three adaptive modes on identical input, with occupancy utility
-and an explicitly scoped neighbouring-output privacy stress test.**
+and effective-policy checks. Privacy evaluation is deferred by the current scope decision;
+the previously added optional stress-test helper remains available.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -37,7 +38,7 @@ its original external file remains unchanged.
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
 | [Controlled evaluation](docs/CONTROLLED_EVALUATION.md) | Frozen input, seven comparable configurations, fixed-query utility and reproduction commands |
 | [First comparison results](docs/EVALUATION_RESULTS_2026-10-14.md) | Measured results, interpretation, reproducibility artifacts and limitations |
-| [Privacy evaluation](docs/PRIVACY_EVALUATION.md) | Complete-background neighbour distinguishability; distinction from realistic membership attacks |
+| [Deferred privacy evaluation](docs/PRIVACY_EVALUATION.md) | Previously implemented optional stress test; outside the current utility/policy milestone |
 | [Publication coordination](docs/PUBLICATION_COORDINATION.md) | Integrated immutable MongoDB releases, private journal, retries and recovery boundaries |
 | [Live aggregation progress](docs/LIVE_AGGREGATION_PROGRESS.md) | Separate current-window checks, completed output and sensor geometry; H/G/P controls |
 | [Temporal adaptation](docs/TEMPORAL_AGGREGATION.md) | Implemented Temporal First/Spatial First, shared-history windows, deadlines and runnable example |
@@ -86,17 +87,17 @@ The first application query is now mean sampled occupancy on a fixed 10-m refere
 over 1-second intervals; [METRICS.md](docs/METRICS.md) defines its reference, reconstruction
 assumptions and missing-data treatment. The offline evaluator now computes conditional MAE,
 answered/scored-query coverage, reference availability, resolution and simulated sealing age.
-The initial privacy test compares deterministic neighbouring public transcripts under complete
-background knowledge; a realistic trained membership attack remains open. A minimum number of contributors per publication is initially
+The current evaluation focuses on utility and policy fulfilment. The optional deterministic
+privacy stress test and future realistic attack studies are deferred. A minimum number of contributors per publication is initially
 an operational release rule. It does not by itself establish formal k-anonymity or a
 reduction in empirical attack success.
 
 **Next milestone: October 18 presentation evidence, then October 25 conference.**
 The October 14 supervisor discussion supported the concrete proof of concept. Input,
 metrics, regional policies, shared history, spatial/temporal adaptation and the first durable
-release path now run together. The first controlled evaluation and scoped threat model are
-implemented. Next come broader policy/scenario sweeps, a realistic attacker study and precise
-feasibility claims for the presentation. Implementation demonstrates mechanics;
+release path now run together. The first controlled utility/policy evaluation is implemented.
+Next come explicit missing/empty-support semantics, policy/scenario sweeps and precise
+feasibility claims for the presentation. Privacy evaluation follows after this milestone. Implementation demonstrates mechanics;
 mathematical feasibility and measured effectiveness require separate evidence.
 
 The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) now prioritizes

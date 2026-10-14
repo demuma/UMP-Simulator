@@ -132,7 +132,8 @@ def main():
         input_provenance_sha256=digest(output / 'input-provenance.json') if provenance_bytes is not None else None,
         config_sha256=digest(config), binary_sha256=digest(binary),
         source_sha256={str(p.relative_to(root)): digest(p) for p in source_files},
-        privacy_scope='deterministic_full_known_background_neighbour_stress_test',
+        privacy_scope='deterministic_full_known_background_neighbour_stress_test' if args.privacy_targets else None,
+        privacy_target_count=0,
         reference_cell_m=10, reference_window_ms=1000, variants=[])
     results, utilities, summaries = {}, {}, {}
     for name, mode, depth, window in VARIANTS:

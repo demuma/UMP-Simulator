@@ -1,6 +1,9 @@
 # Initial membership evaluation contract
 
-Status: 2026-10-14. E02 now has a narrowly defined deterministic neighbour comparison.
+Status: 2026-10-14. **Deferred:** the user selected utility and policy fulfilment first.
+E02 already has a narrowly defined optional deterministic neighbour comparison, implemented
+before that scope preference arrived. The helper and historical evidence are retained;
+this document does not put further privacy experiments in the current work queue.
 This is an offline stress test of recipient-visible releases. It is not a trained
 membership attack, a general privacy score, or a proof of anonymity.
 
@@ -134,3 +137,13 @@ stronger in background knowledge; it is not a replication of their attack.
 The deterministic equality test and balanced-success formula above are our scoped
 experimental design and elementary derivation, not a new empirical result attributed
 to these papers.
+
+## Historical exploratory pilot, outside the current milestone
+
+Before the scope preference arrived, the optional helper ran alongside the first utility
+pilots. In the heterogeneous fixture all three tested targets changed the public transcript
+for all seven configurations; in the handover fixture all four did. In the simulator capture,
+both 10-m fixed baselines changed two of three target transcripts; the other five modes
+changed all three. These are descriptive strongest-background checks, not realistic attack
+accuracies or population estimates. Raw results remain in the original private bundles under
+`results/evaluation/2026-10-14/`; the active utility/policy report omits these columns.

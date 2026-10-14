@@ -5,7 +5,8 @@ implemented. This extends the [fixed aggregation contract](FIXED_AGGREGATION.md)
 supplies requirements through [POLICY_TREE.md](POLICY_TREE.md). Spatial/temporal selection
 and immutable publication are integrated. [Controlled evaluation](CONTROLLED_EVALUATION.md)
 now compares identical inputs; [PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md) defines the
-initial deterministic stress test. A realistic trained attack study remains open.
+previously added optional deterministic stress test. The current user-selected focus is
+utility and policy fulfilment; privacy evaluation is deferred.
 
 ## Separation of responsibilities
 
@@ -120,7 +121,8 @@ Reviewed on 2026-10-13 against the supplied AutSys 2025 presentation, PDF pages 
 (printed slides 5–7), including the displayed formulas. This is a scoped assessment of
 that source, not a completed comparison with all paper tables or a decision to implement
 every metric. The registry currently computes descriptive statistics and constraint
-inputs. It has no empirical privacy-risk score and does not yet calculate GT utility error.
+inputs. The online registry has no empirical privacy-risk score or GT error input;
+the separate offline evaluator now computes GT occupancy MAE and answered-query coverage.
 
 | Presentation metric | Usefulness and required change | Current implementation |
 |---|---|---|
@@ -130,9 +132,9 @@ inputs. It has no empirical privacy-risk score and does not yet calculate GT uti
 | delta-presence | Presence inference is relevant to mobility. A formal delta-presence calculation needs a specified population, released information and attacker knowledge; a local agent count cannot supply a membership probability. | Not implemented. E02 will define an empirical presence/membership attack separately. |
 | Classification accuracy | Useful for an actual classification task with predictions and truth. Copying agent types from GT makes an agent-type classification test trivial. A future congestion classifier would be a different application task. | Not implemented. |
 | Temporal granularity | Keep sampling period, aggregation duration and freshness separate. The displayed S + A adds scans/time to accumulated data points and is not dimensionally consistent. | Actual window duration, age at evaluation and post-window delay; sensor period is a separate input. |
-| Data Fidelity Accuracy | The displayed lost counts / cell count is average loss per cell, not normalized accuracy. Retain the motivation through fixed-query error and answered-query coverage; specify units, weighting and missing-output handling. | Occupancy MAE contract only; online value is unavailable. Input sample coverage is measured, but is not answered-query coverage. |
+| Data Fidelity Accuracy | The displayed lost counts / cell count is average loss per cell, not normalized accuracy. Retain the motivation through fixed-query error and answered-query coverage; specify units, weighting and missing-output handling. | Offline occupancy MAE and answered-query coverage are implemented; the online MAE value remains unavailable. Input sample coverage is a separate online measure. |
 | Overall Localization Accuracy | Useful as spatial reconstruction error when locations matter to the application. The displayed sum is unaveraged and normalized by changing cell size; it need not track physical detail loss across runs. Specify the estimator (e.g. cell center), report mean/quantiles in metres with fixed observation weighting and report suppressed coverage separately. | Cell dimensions only; no GT position-error calculation. |
-| Latency | Essential for timely applications. Measure processing time and observation-to-release delay separately, including waiting/queues. The displayed linear expression is a model requiring fitted coefficients and validation. | Simulation-time age at candidate evaluation and post-window delay only; neither is measured processing latency nor public release latency. |
+| Latency | Essential for timely applications. Measure processing time and observation-to-release delay separately, including waiting/queues. The displayed linear expression is a model requiring fitted coefficients and validation. | Online evaluation age and post-window delay; offline simulated sealing age and core processing time. Actual delivery latency is not measured. |
 
 The equivalence-class and sensitive-attribute prerequisites follow the original
 [l-diversity paper](https://www.cs.cornell.edu/johannes/papers/2006/2006-icde-publishing.pdf)
@@ -142,14 +144,14 @@ addresses disclosure of dataset membership under an explicit data/knowledge mode
 The applicability decisions and utility-formula critiques above are our assessment of
 the simulator and supplied slides, not claims of those papers.
 
-Recommended first evaluation scope: fixed-query occupancy MAE plus answered-query coverage,
-resolution and freshness on the utility side; a declared membership/presence attack
-against the same visible outputs on the privacy side, compared with a prior/no-output
-baseline. Membership inference on aggregate mobility time series is an established
-experimental concern; see [Pyrgelis et al., Knock Knock, Who's There?](https://arxiv.org/abs/1708.06145).
-Retain contributor support as a cheap online requirement, then test whether changing its
-threshold actually reduces attack success for the chosen scenario. This experiment
-does not by itself establish formal delta-presence or protection against other attacks.
+Current first evaluation scope: fixed-query occupancy MAE plus answered-query coverage,
+resolution and freshness, together with effective-policy compliance, suppression and output
+availability. The user selected utility and policy fulfilment before privacy evaluation.
+Contributor support remains an operational requirement; meeting it is not a measured-risk result.
+
+The previously proposed membership/presence evaluation is deferred. Its scientific motivation
+and experimental limits remain in [PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md). Neither
+utility measurements nor policy compliance establish formal anonymity or reduced attack success.
 
 Example motivation: a window containing ten different agents over ten instants can
 still contain only one agent at each instant. The union count ten says nothing by

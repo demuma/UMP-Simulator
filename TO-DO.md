@@ -1,6 +1,6 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-14. Current priority: evaluate the integrated aggregation baseline, select meaningful metrics/threat models and prepare evidence for October 18 and October 25.**
+**Status: 2026-10-14. Current priority: evaluate utility and policy fulfilment, then prepare evidence for October 18 and October 25.**
 
 This is the central task backlog. README describes current behavior; this file tracks
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
@@ -32,7 +32,8 @@ conservative; independent sibling windows, other publication models and automati
 remain open. E01 fixed-query occupancy evaluation and R01 frozen replay are now implemented,
 with four fixed baselines and spatial/Temporal First/Spatial First comparisons. E02 has a
 complete-background neighbouring-output stress test; realistic trained attacks and broader
-independent scenario/policy studies remain open.** The detailed
+independent scenario/policy studies remain open. The user selected utility and policy
+fulfilment first; E02 is deferred and is not a prerequisite for the current milestone.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
 proposals, flow diagram, storage model and hand-worked cases. The
 [fixed aggregation contract](docs/FIXED_AGGREGATION.md) records actual A01 behavior;
@@ -215,9 +216,9 @@ priority of regional constraints, and acceptable evidence for the paper/presenta
 - [x] Run a small fixed space/time matrix and all implemented adaptive strategies.
   Export a result table covering application error, coverage, sealing age and policy compliance,
   with frozen input/configuration and explicit limitations (dated evaluation report).
-- [ ] Specify E02's attack goal, visible releases, auxiliary knowledge and prior/no-output
-  baseline. Run an empirical pilot only if the model and implementation are ready; label
-  contributor counts and threshold compliance accurately if they are the available results.
+- [ ] Prepare the utility/policy evidence: numerical error, query coverage, release compliance,
+  output availability and binding constraints. E02 is deferred beyond this milestone by
+  the current scope decision; support counts remain operational requirements.
 - [ ] Prepare the full presentation on October 17 and submit on October 18. Preserve the
   overall dissertation narrative and distinguish tested functionality from planned work.
 
@@ -243,11 +244,11 @@ comparisons while R01/R02 simulation reproducibility improvements remain pending
   Define conflicts/boundary-crossing candidates before supporting them. Include impossible
   constraint combinations and explicit suppression or a documented fallback.
 - [ ] Compare spatial/temporal adaptation with the fixed and spatial-only variants using
-  equal inputs, reference queries and attacker assumptions. Report measured outcomes even
-  when adaptation loses or no general privacy conclusion is supported.
-- [ ] Extend to additional saved runs/scenarios, summarize variation and run the validated
-  attack evaluation where ready. Measure processing latency/throughput separately from
-  simulated time before making real-time performance claims.
+  equal inputs, reference queries and regional policies. Report measured outcomes even
+  when adaptation loses; empirical privacy claims remain outside the current scope.
+- [ ] Extend utility/policy evaluation to additional saved runs/scenarios and summarize
+  variation. Measure processing latency/throughput separately from simulated time before
+  making real-time performance claims. Revisit E02 after this milestone.
 - [ ] Complete figures and results by October 23. Use October 24 for full rehearsal,
   playback checks and backup material; preserve a stable demo for October 25.
 
@@ -360,26 +361,26 @@ individual IDs. Existing Simulation data and maintained YAML were unchanged.
 1. **Live understanding — implemented:** independent input grid, completed decisions and
    dated active-window progress (A06). This is visualization, not additional privacy.
 2. **Metric/research contract — initial slice implemented:** nine online quantities plus
-   fixed-query occupancy MAE, coverage and resolution/age; a complete-background
-   neighbouring-output stress test with explicit limits. Realistic attack evaluation and
-   further application metrics remain open.
+   fixed-query occupancy MAE, coverage and resolution/age, with effective-policy checks.
+   The previously added optional neighbouring-output stress test is deferred; it is not
+   part of the current utility/policy evaluation.
 3. **Controlled experiments — initial slice implemented:** seven configurations on identical
    frozen input, four fixed size/window combinations, spatial-only, Temporal First and Spatial
-   First. Results include policy compliance, observation conservation, utility and the scoped
-   privacy test. See [CONTROLLED_EVALUATION.md](docs/CONTROLLED_EVALUATION.md) and
+   First. The active results cover policy compliance, observation conservation and utility. See [CONTROLLED_EVALUATION.md](docs/CONTROLLED_EVALUATION.md) and
    [the dated results](docs/EVALUATION_RESULTS_2026-10-14.md).
 
 **Next chronological research steps:**
 
 1. Decide whether applications require explicit empty-cell coverage; current absent support
    is unknown and can make a fixed occupancy query unanswerable even with high retention.
-2. Select a realistic attacker/auxiliary-information model and independent training/testing
-   protocol. The strong deterministic test is a diagnostic, not a completed attack study.
-3. Sweep support thresholds, legal cell sizes/window caps and regional density regimes on
+2. Sweep support thresholds, legal cell sizes/window caps and regional density regimes on
    additional frozen runs; include infeasible cases and common-query support comparisons.
+3. Separate release compliance (every released cell passes) from availability (how much
+   usable output is produced), and record suppression reasons and binding regional limits.
 4. Formalize feasibility, bounded-window decisions and the common-window limitation for the
    presentation; add confidence intervals only with an appropriate independent sampling unit.
-5. Compare independent publication models and preemptive preparation once implemented (E05/E06).
+5. After this utility/policy milestone, revisit E02 attacker assumptions and privacy
+   evaluation. Publication-model and preemptive-preparation studies remain later E05/E06 work.
 
 
 ### E01 — Define one utility application — P0
@@ -399,7 +400,10 @@ Baseline contract: [METRICS.md](docs/METRICS.md#first-utility-question-e01-basel
 **Acceptance:** a fixed question and its GT answer are defined. Coarsening the reference
 must not automatically eliminate error. Do not label record retention as data fidelity without justification.
 
-### E02 — Define attacker and privacy evaluation — P0
+### E02 — Define attacker and privacy evaluation — P1, deferred
+
+**Scope decision, 2026-10-14:** evaluate utility and policy fulfilment first. Completed
+items below record earlier exploratory work; no further attack study is in the current queue.
 
 - [x] Specify one initial goal and visible transcript: whole-recorded-trajectory presence
   under complete deterministic background knowledge (docs/PRIVACY_EVALUATION.md).
@@ -1266,4 +1270,14 @@ modularity. All repository documentation remains in English.
 - Added an exportable result figure, summary CSV/JSON and 44 Python tests plus replay-core
   regressions; all 19 CTest suites passed.
 - No online GT metric oracle or general privacy guarantee was introduced. Remaining priority:
-  application missing-support semantics, realistic attacker study and independent policy/scenario sweeps.
+  application missing-support semantics and independent utility/policy scenario sweeps.
+  The subsequently received user preference defers privacy evaluation until after this milestone.
+
+## Scope decision — utility and policy fulfilment first, 2026-10-14
+
+- The user selected utility and policy fulfilment as the current evaluation focus. E02 is
+  deferred; support thresholds remain operational policy requirements, not measured privacy.
+- Active result tables and reproduction commands now cover utility/policy evaluation only.
+  Existing optional privacy code and historical pilot artifacts are retained.
+- The comparison CLI already defaults to zero privacy targets; its manifest now explicitly
+  records `privacy_scope: null` and `privacy_target_count: 0` when no privacy test runs.
