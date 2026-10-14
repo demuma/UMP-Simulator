@@ -1,4 +1,5 @@
 #include "PolicyConfiguration.hpp"
+#include "AggregationConfiguration.hpp"
 #include "PolicyTree.hpp"
 #include <algorithm>
 #include <iostream>
@@ -37,13 +38,14 @@ ump::MetricEvaluator makeMetricEvaluator(const YAML::Node& aggregation, const um
     const std::string& applicationId, const std::vector<Region>& regions) {
     const auto uniform = aggregation["metric_policy"], tree = aggregation["policy_tree"];
     if (uniform && tree) throw std::invalid_argument("Select metric_policy or policy_tree, not both");
+    validatePolicyExecution(aggregation);
     if (uniform) {
         allowedKeys(uniform, {"id", "version", "requirements"}, "metric_policy");
         return ump::MetricEvaluator(ump::MetricPolicy{uniform["id"].as<std::string>(),
             uniform["version"].as<std::string>(), readMetricRequirements(uniform["requirements"])});
     }
     if (!tree) return ump::MetricEvaluator{};
-    allowedKeys(tree, {"id", "version", "root", "regions", "max_nodes"}, "policy_tree");
+    allowedKeys(tree, {"id", "version", "root", "regions", "max_nodes", "execution"}, "policy_tree");
     const auto budget = tree["max_nodes"].as<std::int64_t>(65536);
     if (budget <= 0) throw std::invalid_argument("policy_tree.max_nodes must be positive");
     ump::PolicyTreeConfig settings{tree["id"].as<std::string>(), tree["version"].as<std::string>(),
@@ -53,6 +55,8 @@ ump::MetricEvaluator makeMetricEvaluator(const YAML::Node& aggregation, const um
     std::unordered_set<std::string> seen;
     std::vector<ump::PolicyRegion> selected;
     for (const auto& reference : references) {
+        if (!reference.IsScalar())
+            throw std::invalid_argument("Regional execution settings are not supported; policy_tree.regions must contain Region ID strings");
         const auto id = reference.as<std::string>();
         if (!seen.insert(id).second) throw std::invalid_argument("Duplicate policy region reference: " + id);
         const auto found = std::find_if(regions.begin(), regions.end(), [&](const Region& region) { return region.id == id; });

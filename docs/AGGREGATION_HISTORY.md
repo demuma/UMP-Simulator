@@ -17,7 +17,7 @@ is cell ID/depth, start time and generation inside a run/sensor/application-scop
 Each records an exclusive end, a maximum extension end, a fixed retention deadline and role.
 No payload or cached statistics are copied per bucket. Preemptive records are alternatives,
 not publication owners; overlapping private candidates are allowed. Creating an alternative
-does not reserve any public coverage. The optional A03 selector now performs on-demand parent search for closed fixed windows; automatic prewarming remains disabled.
+does not reserve any public coverage. The A03 selector performs on-demand parent search; the temporal controller reconstructs variable windows from the same history. Automatic prewarming remains disabled.
 
 Start with on-demand reconstruction. No interval tree is required for bounded chronological
 bins and one-cell interval queries. This baseline scans retained bins/observations; a spatial
@@ -171,3 +171,18 @@ ctest --test-dir simulator/build -R history_regression --output-on-failure
 
 Enable the optional sensor integration suite with `-DUMP_BUILD_SENSOR_REGRESSION_TESTS=ON`
 and local MongoDB. The normal simulator build was updated as well.
+
+
+## Variable-window reconstruction
+
+`queryFinest(startMs, endMs)` scans retained bins once and reconstructs occupied finest
+cells plus a separate whole-domain identity union. A road user seen in two cells counts
+once globally, even though each cell can include that identity. Expected/measured/missing
+samples and half-open endpoints follow `query`. Future or evicted intervals return no
+candidate; missing coverage remains explicit. No raw identities leave the returned candidate.
+
+The manager's progress callback runs after advancing history on every tick and once with
+`finishing=true` at the exclusive stream end. Final advancement does not first send an
+ordinary progress callback, so no extension beyond shutdown is scheduled. These callbacks
+only query history and never reenter manager mutation. A03 shares this store rather than
+subscribing to SharedBuffer or retaining a second observation history.

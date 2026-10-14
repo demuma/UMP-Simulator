@@ -3,8 +3,8 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
-**Status: 2026-10-14. Current work: define and build the missing aggregation pipeline,
-metric evaluation and regional policy trees, starting with AGBS. Shared sampling
+**Status: 2026-10-14. Current work: verify the integrated AGBS aggregation pipeline
+and prepare controlled privacy/utility experiments. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
 bounded, nonblocking renderer consumption are implemented (S04/S01). S05 now paces
@@ -16,12 +16,12 @@ existing Regions, with strict numeric inheritance and per-cell provenance. A02 n
 opt-in bounded private history, on-demand ancestor/time reconstruction and logical active/
 preemptive bucket records. A local aggregation inspector now visualizes recorded metrics,
 regional requirements and check results, with an optional separate MongoDB debug copy.
-An initial A03 spatial selector now chooses mixed-depth cells for common fixed windows,
-with exact history unions, policy checks, suppression and future-window refinement. The
-live renderer and recorded inspector show those internal decisions. An initial standalone
-A05 coordinator now tests immutable output, reservations, acknowledgement and future
-handover. Policy/pipeline/sink integration and durable recovery remain open, along with
-temporal adaptation, actual-interval velocities and research experiments.**
+A03 now selects mixed-depth cells and variable temporal windows with exact history unions,
+regional checks and explicit Temporal First / Spatial First strategies. A05 integrates the
+private-final-snapshot model with a separate immutable MongoDB release sink, idempotent
+writes and a durable private journal. Live and recorded diagnostics show the selected window,
+strategy and transitions. Automatic restart/resume, independent sibling windows, additional
+publication models, attack metrics and comparative research experiments remain open.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -33,7 +33,9 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
-| [Publication coordination core](docs/PUBLICATION_COORDINATION.md) | Tested standalone fixed-window reservations and immutable output; integration and durable recovery remain open |
+| [Publication coordination](docs/PUBLICATION_COORDINATION.md) | Integrated immutable MongoDB releases, private journal, retries and recovery boundaries |
+| [Temporal adaptation](docs/TEMPORAL_AGGREGATION.md) | Implemented Temporal First/Spatial First, shared-history windows, deadlines and runnable example |
+| [Adaptive pipeline validation](docs/ADAPTIVE_PUBLICATION_VALIDATION.md) | Regression coverage and real headless simulator evidence |
 | [Spatial selection and live demo](docs/SPATIAL_SELECTION.md) | Actual private parent/child selection, live overlay, recorded replay, configuration and tested limits |
 | [Aggregation inspector](docs/AGGREGATION_INSPECTOR.md) | Ready-to-open meeting demo, recorded cell metrics/thresholds, timeline, optional MongoDB debug copy and reproduction |
 | [Bounded history and buckets](docs/AGGREGATION_HISTORY.md) | Implemented A02 private reconstruction, logical windows, resource limits, deadlines and verification |
@@ -72,7 +74,7 @@ application policy once their behavior is implemented and tested.
 **Adopted strategy terminology:** Temporal First prioritizes temporal detail/freshness and
 tries spatial aggregation first. Spatial First prioritizes spatial detail and tries temporal
 aggregation first. The name identifies the dimension to preserve. Hard bounds still apply;
-the spatial-only branch of Temporal First is implemented for fixed windows; full strategy/fallback comparison remains open.
+both action orders are implemented; comparative privacy/utility experiments remain open.
 
 The first application query is now mean sampled occupancy on a fixed 10-m reference grid
 over 1-second intervals; [METRICS.md](docs/METRICS.md) defines its reference, reconstruction
@@ -81,13 +83,12 @@ model, auxiliary knowledge and empirical privacy evaluation still need binding d
 an operational release rule. It does not by itself establish formal k-anonymity or a
 reduction in empirical attack success.
 
-**Next milestone: October 14 supervisor meeting.** The main development target is the first
-complete aggregation path: observations, cell/window aggregation, initial metrics, effective
-regional policy lookup through a minimal policy tree, and release/suppress decisions.
-Input checks and demo preparation accompany this work. Simulator startup works and sensor
-regression tests passed. Fixed-window aggregation, initial metrics and the minimal regional
-policy tree and bounded reconstructable history are implemented. Next are publication
-coordination (A05) and temporal/release extensions of A03. Internal spatial selection and its live overlay are now implemented.
+**Next milestone: October 18 presentation evidence, then October 25 conference.**
+The October 14 supervisor discussion supported the concrete proof of concept. Input,
+metrics, regional policies, shared history, spatial/temporal adaptation and the first durable
+release path now run together. Next come an explicit research question and threat model,
+metric selection and controlled baseline experiments. Implementation demonstrates mechanics;
+mathematical feasibility and measured effectiveness require separate evidence.
 
 The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) now prioritizes
 that foundation immediately, dynamic spatial release selection and initial comparisons by
@@ -642,7 +643,27 @@ visible underneath. Counts and the last closed window are labelled explicitly.
 The [spatial selection guide](docs/SPATIAL_SELECTION.md) explains the algorithm and limits.
 `results/demos/spatial-inspector.html` provides recorded before/after comparison and buttons
 for the next coarsening/refinement. These are real metric/policy decisions on common fixed
-windows; they remain internal diagnostics until A05 supplies public-release coordination.
+windows. This original example remains diagnostic-only. Separate examples below enable release coordination.
+
+### Durable publication and temporal adaptation
+
+```sh
+cd /Users/maxdemu/Developer/UMP-Simulator/simulator/examples/temporal-aggregation
+../../build/Simulator
+```
+
+This separate example enables `spatial_first`: preserve spatial detail by extending a
+400-ms initial window in 100-ms steps, up to 1,000 ms, before spatial fallback. Set
+`policy_tree.execution.strategy: temporal_first` in that example to try spatial adaptation
+first. It uses depth six, 200 road users, 30 simulated seconds and the existing live overlay.
+Raw data, recipient releases and private journal use separate `UMP_Temporal_Demo_*` databases.
+A fixed-window release example is in `simulator/examples/publication`.
+
+These are one-application, common-window baselines. Regional duration/age limits constrain
+the whole common window, including requirements in empty areas. Only selected scalar counts
+are released. Current metrics and support thresholds are unchanged; no empirical privacy
+improvement is claimed. See the [temporal guide](docs/TEMPORAL_AGGREGATION.md) and
+[publication guide](docs/PUBLICATION_COORDINATION.md) for storage and recovery limits.
 
 ### Configuration and startup
 

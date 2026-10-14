@@ -14,6 +14,16 @@ bool contains(const CellGeometry& parent, const CellGeometry& child) {
 }
 }
 
+const char* temporalActionName(TemporalAction action) {
+    switch (action) {
+        case TemporalAction::EvaluateFinest: return "evaluate_finest";
+        case TemporalAction::CoarsenSpatially: return "coarsen_spatially";
+        case TemporalAction::ExtendWindow: return "extend_window";
+        case TemporalAction::Finalize: return "finalize";
+    }
+    throw std::invalid_argument("Unknown temporal action");
+}
+
 SpatialSelector::SpatialSelector(AggregationConfig settings, SpatialSelectionConfig bounds)
     : config(std::move(settings)), limits(bounds) {
     historyCell(config.coverage, 12, 1); // Validate the supported data-tree geometry.
@@ -24,6 +34,13 @@ SpatialSelector::SpatialSelector(AggregationConfig settings, SpatialSelectionCon
 
 SpatialSelection SpatialSelector::select(const AggregationCandidate& finest,
     const AggregationHistory& history, const MetricEvaluator& evaluator) {
+    auto result = propose(finest, history, evaluator);
+    commit(result);
+    return result;
+}
+
+SpatialSelection SpatialSelector::propose(const AggregationCandidate& finest,
+    const AggregationHistory& history, const MetricEvaluator& evaluator) const {
     const auto& g = finest.grid;
     const auto& expected = config.coverage;
     if (finest.runId != config.runId || finest.sensorId != config.sensorId
@@ -142,11 +159,27 @@ SpatialSelection SpatialSelector::select(const AggregationCandidate& finest,
     // remains the input's exact union; it is never a sum of per-cell distinct counts.
     result.assessment = evaluator.evaluate(result.candidate, finest.closedAtMs);
     for (auto& [id, attempt] : cache) result.attempts.push_back(std::move(attempt));
-    std::vector<CellGeometry> next;
-    for (std::size_t i = 0; i < result.decisions.size(); ++i)
-        if (result.decisions[i].selected) next.push_back(result.candidate.cells[i].cell);
-    previousSelected = std::move(next);
-    previousEnd = finest.endMs; // Commit internal transition state only after a complete result.
     return result;
+}
+
+void SpatialSelector::commit(const SpatialSelection& selection) {
+    const auto& candidate = selection.candidate;
+    const auto& g = candidate.grid;
+    const auto& expected = config.coverage;
+    if (candidate.runId != config.runId || candidate.sensorId != config.sensorId
+        || candidate.applicationId != config.applicationId || g.x != expected.x || g.y != expected.y
+        || g.width != expected.width || g.height != expected.height || g.leafDepth != expected.leafDepth
+        || candidate.startMs < 0 || candidate.endMs <= candidate.startMs
+        || (previousEnd && candidate.startMs != *previousEnd)
+        || candidate.cells.size() != selection.decisions.size())
+        throw std::invalid_argument("Spatial commit requires the next disjoint selection of one stream");
+    std::vector<CellGeometry> next;
+    for (std::size_t i = 0; i < selection.decisions.size(); ++i) {
+        if (selection.decisions[i].cellId != candidate.cells[i].cell.id)
+            throw std::invalid_argument("Spatial commit cell and decision mismatch");
+        if (selection.decisions[i].selected) next.push_back(candidate.cells[i].cell);
+    }
+    previousSelected = std::move(next);
+    previousEnd = candidate.endMs;
 }
 } // namespace ump

@@ -110,7 +110,7 @@ function render(){
  $('mapTitle').textContent=spatial?($('viewMode').value==='finest'?'Finest input cells':'Selected cut + suppressed footprints'):'Candidate cells';
  document.querySelectorAll('.step')[3].textContent=spatial?'Spatial candidate selection':'Recorded checks';
  document.querySelector('.tag').textContent=spatial?'Internal spatial decisions · recorded replay':'Internal diagnostics · recorded replay';
- document.querySelector('.later').textContent=spatial?'Next: publication coordination & time adaptation':'Next: release coordination & adaptation';
+ document.querySelector('.later').textContent=spatial?`Publication: ${row.spatial_selection.publication??'internal_only'}`:'Internal metric checks';
  $('timeline').max=rows().length-1;$('timeline').value=index;$('interval').textContent=`[${seconds(row.start_ms)}, ${seconds(row.end_ms)})`;$('windowIndex').textContent=`Window ${index+1} / ${rows().length}${row.truncated?' · truncated':''}`;
  $('previous').disabled=index===0;$('next').disabled=index===rows().length-1;
  const counts={pass:0,fail:0,unavailable:0,not_configured:0};row.cells.forEach(c=>counts[effectiveStatus(row,c)]++);$('counts').replaceChildren();
@@ -122,7 +122,7 @@ function render(){
  $('mapNote').textContent=row.assessment.coverage_gate.status==='pass'?'Grey areas have no stored candidate or no configured requirements; neither is displayed as approved. Click a cell to inspect its regional requirements.':'Incomplete observation coverage: all cell assessments are shown as unavailable, even if an individual numeric check passes.';
  $('context').replaceChildren();for(const text of [`Sensor: ${row.sensor_id}`,`Application: ${row.application_id}`,`Samples: ${row.measured_samples}/${row.expected_samples} measured · ${row.missing_samples} missing · ${row.unavailable_samples} unavailable`,`Evaluated at: ${seconds(row.assessment.evaluated_at_ms)}`])$('context').append(element('span',text));
  $('provenance').textContent=`Run ${row.run_id.slice(0,8)} · ${row.schema}`;$('provenance').title=payload.sources.map(s=>s.name+' · SHA-256 '+s.sha256).join('\n');
- if(spatial){const d=row.spatial_selection;$('context').append(element('span',`Selected: ${d.selected_cells} · Suppressed: ${d.suppressed_cells} · Coarser: ${d.coarsened_cells} · Finer: ${d.refined_cells} · Evaluations: ${d.evaluations}`));}
+ if(spatial){const d=row.spatial_selection;$('context').append(element('span',`Strategy: ${d.mode} · Time extensions: ${d.temporal_extensions??0} · Completion: ${d.completion_reason??'fixed_window'}`));$('context').append(element('span',`Selected: ${d.selected_cells} · Suppressed: ${d.suppressed_cells} · Coarser: ${d.coarsened_cells} · Finer: ${d.refined_cells} · Evaluations: ${d.evaluations}`));}
  renderMap();renderDetail();if(!timer)stop();
 }
 $('play').addEventListener('click',()=>{if(timer){stop();return;}if(index===rows().length-1)index=0;timer=setInterval(()=>{if(index>=rows().length-1){stop();return;}index++;render();if(index===rows().length-1)stop();},700);$('play').textContent='Ⅱ Pause';render();});

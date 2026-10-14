@@ -11,11 +11,15 @@ std::string keyPart(const std::string& value) {
 }
 }
 PublicationCoordinator::PublicationCoordinator(AggregationConfig settings, MetricEvaluator metrics,
-    PublicationLimits bounds) : config(std::move(settings)), evaluator(std::move(metrics)), limits(bounds) {
+    PublicationLimits bounds, std::optional<AggregationTime> maximum)
+    : config(std::move(settings)), evaluator(std::move(metrics)), limits(bounds), maximumWindowMs(maximum) {
     historyCell(config.coverage, 12, 1);
     if (config.runId.empty() || config.sensorId.empty() || config.applicationId.empty()
         || config.windowMs <= 0 || !limits.maxCells || !limits.maxTypeEntries || !limits.maxTypeBytes)
-        throw std::invalid_argument("Publication requires a stream, fixed window and positive limits");
+        throw std::invalid_argument("Publication requires a stream, window and positive limits");
+    if (maximumWindowMs && (config.samplingPeriodMs <= 0 || *maximumWindowMs < config.windowMs
+            || *maximumWindowMs % config.samplingPeriodMs))
+        throw std::invalid_argument("Variable publication intervals need an aligned maximum at least the base window");
 }
 
 std::shared_ptr<const ReleaseSnapshot> PublicationCoordinator::seal(
@@ -30,9 +34,11 @@ std::shared_ptr<const ReleaseSnapshot> PublicationCoordinator::seal(
         || candidate.applicationId != config.applicationId || g.x != expected.x || g.y != expected.y
         || g.width != expected.width || g.height != expected.height || g.leafDepth != expected.leafDepth
         || candidate.startMs != retiredThroughMs || candidate.endMs <= candidate.startMs
-        || candidate.endMs - candidate.startMs > config.windowMs)
-        throw std::invalid_argument("Publication requires the next disjoint fixed window of one stream");
-    if ((!candidate.truncated && candidate.endMs - candidate.startMs != config.windowMs)
+        || candidate.endMs - candidate.startMs > maximumWindowMs.value_or(config.windowMs))
+        throw std::invalid_argument("Publication requires the next disjoint bounded interval of one stream");
+    if ((!candidate.truncated && (maximumWindowMs
+            ? (candidate.endMs - candidate.startMs) % config.samplingPeriodMs != 0
+            : candidate.endMs - candidate.startMs != config.windowMs))
         || candidate.cells.size() != selection.decisions.size())
         throw std::invalid_argument("Publication window/decision shape is inconsistent");
     if (candidate.cells.size() > limits.maxCells)
@@ -95,7 +101,10 @@ std::shared_ptr<const ReleaseSnapshot> PublicationCoordinator::seal(
             || !check.effectivePolicyId)
             throw std::invalid_argument("Selected cell does not meet current publication requirements");
         indices.push_back(i);
-        output->cells.push_back({candidate.cells[i], *check.effectivePolicyId});
+        auto publicCell = candidate.cells[i];
+        // Type-level support has no separate disclosure policy in this first output model.
+        publicCell.counts.typeObservationContributions.clear();
+        output->cells.push_back({std::move(publicCell), *check.effectivePolicyId});
     }
     // Reserve before exposing any payload. Exceptions above leave the interval available.
     pending.emplace(Pending{candidate, std::move(indices), output,

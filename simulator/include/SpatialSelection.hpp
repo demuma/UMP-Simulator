@@ -18,6 +18,14 @@ struct SpatialCellDecision {
     std::string transition = "initial";
 };
 
+enum class TemporalAction { EvaluateFinest, CoarsenSpatially, ExtendWindow, Finalize };
+const char* temporalActionName(TemporalAction action);
+struct TemporalDecision {
+    TemporalAction action;
+    AggregationTime startMs, endMs, evaluatedAtMs;
+    AssessmentStatus status;
+};
+
 struct SpatialAttempt {
     AggregatedCell cell;
     CellMetricAssessment assessment;
@@ -34,15 +42,24 @@ struct SpatialSelection {
     std::vector<SpatialAttempt> attempts;
     int minDepth;
     std::size_t selectedCells = 0, suppressedCells = 0, coarsenedCells = 0, refinedCells = 0;
+    std::string strategy = "temporal_first_spatial_only";
+    std::size_t temporalExtensions = 0;
+    std::string completionReason = "fixed_window";
+    std::vector<TemporalDecision> temporalDecisions = {};
+    std::string publicationState = "disabled";
+    std::string releaseId = {};
 };
 
-// Internal, synchronous selection for disjoint fixed windows of one stream. Finest-first
-// search coarsens entire sibling footprints; it does not publish or mutate history.
+// Internal, synchronous selection for disjoint windows of one stream. Finest-first
+// search coarsens entire sibling footprints; proposals do not mutate transition state.
 class SpatialSelector {
 public:
     SpatialSelector(AggregationConfig config, SpatialSelectionConfig limits);
     SpatialSelection select(const AggregationCandidate& finest, const AggregationHistory& history,
         const MetricEvaluator& evaluator);
+    SpatialSelection propose(const AggregationCandidate& finest, const AggregationHistory& history,
+        const MetricEvaluator& evaluator) const;
+    void commit(const SpatialSelection& selection);
 private:
     AggregationConfig config;
     SpatialSelectionConfig limits;

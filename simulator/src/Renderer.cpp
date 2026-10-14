@@ -860,6 +860,8 @@ void Renderer::render() {  // Input: meters, Output: pixels
                                     + ", " + std::to_string(snapshot->candidate.endMs) + ") ms | selected "
                                     + std::to_string(snapshot->selectedCells) + " | suppressed "
                                     + std::to_string(snapshot->suppressedCells);
+                                status += "\n" + snapshot->strategy + " | time extensions "
+                                    + std::to_string(snapshot->temporalExtensions);
                                 status += "\nOrange: coarser " + std::to_string(snapshot->coarsenedCells)
                                     + " | Blue: finer " + std::to_string(snapshot->refinedCells)
                                     + " | Green: selected | G: overlay";

@@ -107,6 +107,10 @@ void AggregationManager::ingest(const ump::ObservationBatch& batch) {
 }
 
 void AggregationManager::advance(ump::AggregationTime nowMs) {
+    advanceTo(nowMs, true);
+}
+
+void AggregationManager::advanceTo(ump::AggregationTime nowMs, bool notifyProgress) {
     if (finished) throw std::logic_error("Aggregation stream already finished");
     if (nowMs < watermarkMs) throw std::invalid_argument("Aggregation clock moved backwards");
     if (nowMs > std::numeric_limits<ump::AggregationTime>::max() - config.windowMs)
@@ -115,13 +119,15 @@ void AggregationManager::advance(ump::AggregationTime nowMs) {
     while (windowStartMs + config.windowMs <= nowMs)
         closeWindow(windowStartMs + config.windowMs, nowMs, false);
     watermarkMs = nowMs;
+    if (notifyProgress && progressSink) progressSink(nowMs, false);
 }
 
 void AggregationManager::finish(ump::AggregationTime endMs) {
     if (lastObservationMs && endMs <= *lastObservationMs)
         throw std::invalid_argument("Exclusive stream end must follow its last observation");
-    advance(endMs);
+    advanceTo(endMs, false); // Final progress must not schedule an extension beyond stream end.
     if (endMs > windowStartMs) closeWindow(endMs, endMs, true);
+    if (progressSink) progressSink(endMs, true);
     finished = true;
 }
 

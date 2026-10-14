@@ -34,7 +34,8 @@ struct PublicationState {
     std::size_t selectedCells, suppressedCells;
 };
 
-// Initial A05 core: one whole-grid, closed fixed window is the coordination domain.
+// One whole-grid, closed interval is the coordination domain. Variable intervals require
+// an explicit maximum; the default preserves fixed-window validation.
 // All support stays private until sealing. One pending immutable output bounds memory;
 // competing seals are rejected, not queued. Acknowledgement retires the entire interval.
 // This in-memory core must not be restarted with the same run ID without durable recovery.
@@ -42,7 +43,7 @@ class PublicationCoordinator {
 public:
     using Sink = std::function<SinkResult(const ReleaseSnapshot&)>;
     PublicationCoordinator(AggregationConfig config, MetricEvaluator evaluator,
-        PublicationLimits limits = {});
+        PublicationLimits limits = {}, std::optional<AggregationTime> maximumWindowMs = std::nullopt);
     PublicationCoordinator(const PublicationCoordinator&) = delete;
     PublicationCoordinator& operator=(const PublicationCoordinator&) = delete;
 
@@ -64,6 +65,7 @@ private:
     AggregationConfig config;
     MetricEvaluator evaluator;
     PublicationLimits limits;
+    std::optional<AggregationTime> maximumWindowMs;
     std::optional<Pending> pending;
     AggregationTime retiredThroughMs = 0, lastDeliveryMs = 0;
     bool delivering = false, finished = false;

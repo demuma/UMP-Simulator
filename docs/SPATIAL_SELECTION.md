@@ -1,6 +1,8 @@
 # Spatial candidate selection and live inspection
 
-Implementation scope agreed on 2026-10-14 for the supervisor demonstration.
+The initial fixed-window scope below was implemented for the 2026-10-14 supervisor demonstration.
+The same selector now also serves [temporal adaptation](TEMPORAL_AGGREGATION.md) and
+[durable publication](PUBLICATION_COORDINATION.md) in separate opt-in examples.
 
 ## Contract before implementation
 
@@ -22,10 +24,9 @@ Implementation scope agreed on 2026-10-14 for the supervisor demonstration.
 - Validate exact unions, sibling replacement, depth bounds, refinement, conflicting/unknown
   metrics, missing coverage, bounded work and live renderer transport before the demo.
 
-Variable temporal windows, automatic prewarming, public releases/retries, hysteresis and
-comparison of preservation strategies remain separate tasks. The implemented spatial-only
-search is the first branch of Temporal First (preserve temporal detail); it does not yet
-fall back to temporal extension.
+The original spatial-only example retains fixed windows and internal output. The separate
+temporal controller now adds both preservation priorities; the publication adapter adds
+releases/retries. Automatic prewarming, hysteresis and experimental comparisons remain open.
 
 ## Implemented behavior
 
@@ -52,9 +53,10 @@ The selector holds only the previous selected geometry between calls. The evalua
 counts finest-cell checks plus reconstructed ancestors. Exceeding it raises an explicit
 error; it does not silently approve or discard support. History queries currently scan
 retained bins; no preemptive cache, spatial history index or additional thread was added.
-Failed diagnostic writes remain fatal, as in the existing fixed diagnostics path. No durable
-publication acknowledgement, retry, idempotency ledger or recipient access boundary is
-claimed. Those remain A05/F03 work before application-visible release.
+The original diagnostic-only mode retains fatal diagnostic writes. Publication-enabled mode
+proposes without changing transition state, performs durable output, then commits the future
+cut. Post-commit diagnostic failures are reported without undoing acknowledged output.
+Automatic simulator restart remains separate from read-only journal recovery.
 
 ## Configuration and live demo
 

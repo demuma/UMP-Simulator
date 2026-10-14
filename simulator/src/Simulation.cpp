@@ -8,6 +8,12 @@
 #include "../include/PolicyConfiguration.hpp"
 #include "../include/AggregationConfiguration.hpp"
 #include <limits>
+#include <algorithm>
+#include <cctype>
+#include "PublicationCoordinator.hpp"
+#include "PublicationStore.hpp"
+#include "AdaptiveAggregation.hpp"
+#include <mongocxx/exception/exception.hpp>
 
 // Simulation constructor
 Simulation::Simulation(
@@ -141,6 +147,7 @@ void Simulation::loadRegionsAttributes() {
     // Extract region atributes per type
     if (config["region_taxonomy"]) {
         for (const auto& regionType : config["region_taxonomy"]) {
+            if (regionType["execution"]) throw std::invalid_argument("Regional execution strategies are not supported");
             Region::RegionTypeAttributes attributes;
             std::string type = regionType["type"].as<std::string>();
             if (type.empty() || regionTypeAttributes.count(type))
@@ -322,6 +329,7 @@ void Simulation::initializeRegions() {
         if (!config["regions"].IsSequence()) throw std::invalid_argument("regions must be a sequence");
         std::unordered_set<std::string> ids;
         for (const auto& regionType: config["regions"]) {
+            if (regionType["execution"]) throw std::invalid_argument("Regional execution strategies are not supported");
             const auto type = regionType["type"].as<std::string>();
             const auto attributes = regionTypeAttributes.find(type);
             if (attributes == regionTypeAttributes.end()) throw std::invalid_argument("Unknown region type: " + type);
@@ -357,28 +365,66 @@ void Simulation::initializeRegions() {
 
 // Compile each enabled stream's immutable policy view without DB or sensor instances.
 void Simulation::initializeMetricPolicies() {
+    std::vector<std::string> rawDatabases{config["database"]["db_name"].as<std::string>()};
+    for (const auto& sensor : config["sensors"])
+        rawDatabases.push_back(sensor["database"]["db_name"].as<std::string>());
+    std::vector<PublicationConfiguration> publicationDestinations;
+    std::unordered_set<std::string> streamIds;
     for (const auto& sensor : config["sensors"]) {
         const auto aggregation = sensor["aggregation"];
         if (!aggregation || !aggregation["enabled"].as<bool>(false)) continue;
         if (sensor["type"].as<std::string>() != "adaptive-grid-based")
             throw std::invalid_argument("Aggregation/policy integration currently requires an AGBS stream");
+        const auto id = sensor["id"].as<std::string>();
+        if (!streamIds.insert(id).second) throw std::invalid_argument("Duplicate aggregation sensor ID");
         const auto area = sensor["detection_area"];
         const ump::GridCoverage coverage{area["x"].as<float>(), area["y"].as<float>(),
             area["width"].as<float>(), area["height"].as<float>(), sensor["grid"]["max_depth"].as<int>()};
         const auto applicationId = aggregation["application_id"].as<std::string>("fixed-baseline");
-        if (const auto limits = readHistoryLimits(aggregation["history"])) {
-            const double rate = sensor["frame_rate"].as<double>();
-            if (!std::isfinite(rate) || rate <= 0 || 1000.0 / rate < 1 || 1000.0 / rate >= static_cast<double>(std::numeric_limits<ump::AggregationTime>::max()))
-                throw std::invalid_argument("History requires a representable positive sensor period");
-            ump::AggregationConfig historySetup{aggregationRunId, sensor["id"].as<std::string>(),
-                applicationId, coverage, static_cast<ump::AggregationTime>(std::llround(1000.0 / rate)),
-                aggregation["window_ms"].as<ump::AggregationTime>()};
-            ump::AggregationHistory checked(historySetup, *limits); // Preflight before database writes.
+        if (aggregation["diagnostics_directory"].as<std::string>("results/aggregation").empty())
+            throw std::invalid_argument("Aggregation diagnostics_directory must not be empty");
+        const double rate = sensor["frame_rate"].as<double>();
+        if (!std::isfinite(rate) || rate <= 0 || 1000.0 / rate < 1
+            || 1000.0 / rate >= static_cast<double>(std::numeric_limits<ump::AggregationTime>::max()))
+            throw std::invalid_argument("Aggregation requires a representable positive sensor period");
+        const auto period = static_cast<ump::AggregationTime>(std::llround(1000.0 / sensor["frame_rate"].as<float>()));
+        const auto budget = aggregation["max_observations_per_window"].as<std::int64_t>(1000000);
+        if (budget <= 0) throw std::invalid_argument("Aggregation observation budget must be positive");
+        ump::AggregationConfig settings{aggregationRunId, id, applicationId, coverage, period,
+            aggregation["window_ms"].as<ump::AggregationTime>(), static_cast<std::uint64_t>(budget)};
+        settings.history = readHistoryLimits(aggregation["history"]);
+        AdaptiveGridBasedSensor::validateAggregationConfig(settings, timeStep,
+            sensor["frame_rate"].as<float>(),
+            sf::FloatRect({area["x"].as<float>(), area["y"].as<float>()},
+                {area["width"].as<float>(), area["height"].as<float>()}),
+            sensor["grid"]["cell_size"].as<float>(), coverage.leafDepth);
+        AggregationManager checked(settings, [](const auto&) {});
+        const auto spatial = readSpatialSelection(aggregation, coverage.leafDepth);
+        auto evaluator = makeMetricEvaluator(aggregation, coverage, applicationId, regions);
+        const auto temporal = readTemporalAdaptation(aggregation);
+        if (spatial) { ump::SpatialSelector checkedSelector(settings, *spatial); }
+        if (temporal) { ump::AdaptiveAggregation checkedAdaptive(settings, *temporal, *spatial,
+            evaluator, [](const auto&) {}); }
+        if (const auto publication = readPublicationConfiguration(aggregation)) {
+            validatePublicationDestinations(*publication, rawDatabases);
+            ump::PublicationStoreOptions options{publication->database, publication->collection,
+                publication->journalDatabase, publication->journalCollection, publication->maxDocumentBytes};
+            options.validate();
+            ump::PublicationCoordinator checkedPublication(settings, evaluator, {},
+                temporal ? std::optional<ump::AggregationTime>{temporal->maxWindowMs} : std::nullopt);
+            publicationDestinations.push_back(*publication);
         }
-        readSpatialSelection(aggregation, coverage.leafDepth);
-        metricEvaluators.emplace(sensor["id"].as<std::string>(),
-            makeMetricEvaluator(aggregation, coverage, applicationId, regions));
+        metricEvaluators.emplace(id, std::move(evaluator));
     }
+    const auto folded = [](std::string name) {
+        std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) { return std::tolower(c); });
+        return name;
+    };
+    // No private journal may share another stream's recipient database.
+    for (const auto& a : publicationDestinations)
+        for (const auto& b : publicationDestinations)
+            if (folded(a.database) == folded(b.journalDatabase))
+                throw std::invalid_argument("Recipient database overlaps another stream's private journal");
 }
 
 // Initialize the database connection
@@ -497,27 +543,95 @@ void Simulation::initializeSensors() {
                 auto evaluator = std::move(metricEvaluators.at(sensor->sensorId));
                 auto diagnostics = makeAggregationDiagnosticsSink(
                     aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp);
+                const auto spatialSettings = readSpatialSelection(aggregation, maxDepth);
+                const auto temporalSettings = readTemporalAdaptation(aggregation);
+                const auto publicationSettings = readPublicationConfiguration(aggregation);
                 std::shared_ptr<ump::SpatialSelector> selector;
-                SpatialDiagnosticsSink spatialDiagnostics;
-                if (const auto selection = readSpatialSelection(aggregation, maxDepth)) {
-                    selector = std::make_shared<ump::SpatialSelector>(settings, *selection);
-                    spatialDiagnostics = makeSpatialDiagnosticsSink(
-                        aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp);
-                }
+                std::shared_ptr<ump::AdaptiveAggregation> adaptive;
                 auto* sensorInstance = sensor.get();
-                sensor->enableAggregation(settings, timeStep, timestamp,
-                    [evaluator = std::move(evaluator), diagnostics = std::move(diagnostics),
-                     selector, spatialDiagnostics, sensorInstance](const auto& candidate) {
-                        const auto assessment = evaluator.evaluate(candidate, candidate.closedAtMs);
-                        diagnostics(candidate, assessment);
-                        if (selector) {
-                            // The closing callback only queries history. It never mutates/reenters the manager.
-                            auto selected = std::make_shared<const ump::SpatialSelection>(selector->select(
-                                candidate, *sensorInstance->getAggregationManager()->history(), evaluator));
-                            spatialDiagnostics(*selected);
-                            sensorInstance->setAggregationDebug(std::move(selected));
+                if (spatialSettings) {
+                    auto spatialDiagnostics = makeSpatialDiagnosticsSink(
+                        aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp);
+                    std::shared_ptr<ump::PublicationCoordinator> coordinator;
+                    std::shared_ptr<ump::PublicationStore> store;
+                    std::size_t maxAttempts = 0;
+                    if (publicationSettings) {
+                        coordinator = std::make_shared<ump::PublicationCoordinator>(settings, evaluator,
+                            ump::PublicationLimits{}, temporalSettings
+                                ? std::optional<ump::AggregationTime>{temporalSettings->maxWindowMs} : std::nullopt);
+                        store = std::make_shared<ump::PublicationStore>(client,
+                            ump::PublicationStoreOptions{publicationSettings->database, publicationSettings->collection,
+                                publicationSettings->journalDatabase, publicationSettings->journalCollection,
+                                publicationSettings->maxDocumentBytes});
+                        maxAttempts = publicationSettings->maxAttempts;
+                        std::cout << "Recipient releases: " << publicationSettings->database << '.'
+                            << publicationSettings->collection << " (private journal: "
+                            << publicationSettings->journalDatabase << ")\n";
+                    }
+                    auto terminal = [coordinator, store, maxAttempts, spatialDiagnostics, sensorInstance]
+                        (const ump::SpatialSelection& selected) {
+                        auto recorded = std::make_shared<ump::SpatialSelection>(selected);
+                        if (coordinator) {
+                            const auto now = selected.candidate.closedAtMs;
+                            const auto release = coordinator->seal(selected, now);
+                            // Allocate diagnostic metadata before any possible recipient disclosure.
+                            recorded->publicationState = release->cells.empty() ? "retired_without_release" : "committed";
+                            recorded->releaseId = release->releaseId;
+                            bool delivered = false;
+                            for (std::size_t attempt = 0; attempt < maxAttempts && !delivered; ++attempt) {
+                                try {
+                                    store->prepare(*release);
+                                    // Empty intervals have no recipient record, but retire durably first.
+                                    if (release->cells.empty()) store->commit(*release);
+                                    delivered = coordinator->deliver(now, [store](const auto& payload) {
+                                        const auto result = store->publish(payload);
+                                        if (result == ump::SinkResult::Acknowledged) store->commit(payload);
+                                        return result;
+                                    });
+                                } catch (const mongocxx::exception&) {
+                                    if (attempt + 1 == maxAttempts) throw;
+                                }
+                            }
+                            if (!delivered) throw std::runtime_error(
+                                "Publication attempts exhausted; private journal and reservation remain pending");
                         }
-                    });
+                        try { spatialDiagnostics(*recorded); }
+                        catch (const std::exception& error) {
+                            if (!coordinator) throw;
+                            // Diagnostic I/O cannot undo acknowledged output or block selector handover.
+                            std::cerr << "Committed release retained; diagnostic write failed: " << error.what() << '\n';
+                        }
+                        sensorInstance->setAggregationDebug(std::move(recorded));
+                    };
+                    if (temporalSettings)
+                        adaptive = std::make_shared<ump::AdaptiveAggregation>(settings, *temporalSettings,
+                            *spatialSettings, evaluator, terminal);
+                    else {
+                        selector = std::make_shared<ump::SpatialSelector>(settings, *spatialSettings);
+                        // The fixed callback below owns the terminal output operation.
+                    }
+                    sensor->enableAggregation(settings, timeStep, timestamp,
+                        [evaluator, diagnostics, selector, terminal, sensorInstance](const auto& candidate) {
+                            diagnostics(candidate, evaluator.evaluate(candidate, candidate.closedAtMs));
+                            if (selector) {
+                                const auto selected = selector->propose(candidate,
+                                    *sensorInstance->getAggregationManager()->history(), evaluator);
+                                terminal(selected);
+                                selector->commit(selected);
+                            }
+                        });
+                    if (adaptive) sensor->setAggregationProgressSink(
+                        [adaptive, sensorInstance](ump::AggregationTime now, bool finishing) {
+                            const auto& history = *sensorInstance->getAggregationManager()->history();
+                            if (finishing) adaptive->finish(now, history);
+                            else adaptive->advance(now, history);
+                        });
+                } else {
+                    sensor->enableAggregation(settings, timeStep, timestamp,
+                        [evaluator, diagnostics](const auto& candidate) {
+                            diagnostics(candidate, evaluator.evaluate(candidate, candidate.closedAtMs));
+                        });
+                }
             }
             sensors.push_back(std::move(sensor));
             sensors.back()->scale = scale;

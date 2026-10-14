@@ -44,10 +44,8 @@ AdaptiveGridBasedSensor::AdaptiveGridBasedSensor(
         this->showGrid = showGrid;
     }
 
-void AdaptiveGridBasedSensor::enableAggregation(ump::AggregationConfig config, float simulationStep,
-    std::chrono::system_clock::time_point origin, AggregationManager::Sink sink) {
-    if (samplingInitialized || aggregationManager)
-        throw std::logic_error("Enable AGBS aggregation once, before the first update");
+void AdaptiveGridBasedSensor::validateAggregationConfig(const ump::AggregationConfig& config,
+    float simulationStep, float frameRate, sf::FloatRect detectionArea, float cellSize, int maxDepth) {
     const double stepMs = simulationStep * 1000.0;
     const double periodMs = 1000.0 / frameRate;
     if (!std::isfinite(stepMs) || !std::isfinite(periodMs) || stepMs < 1 || periodMs < 1
@@ -60,9 +58,18 @@ void AdaptiveGridBasedSensor::enableAggregation(ump::AggregationConfig config, f
         || maxDepth < 1 || maxDepth > 14)
         throw std::invalid_argument("AGBS aggregation requires a square full-quadtree extent and depth 1..14");
     const auto& grid = config.coverage;
-    if (config.sensorId != sensorId || grid.x != detectionArea.position.x || grid.y != detectionArea.position.y
+    if (grid.x != detectionArea.position.x || grid.y != detectionArea.position.y
         || grid.width != detectionArea.size.x || grid.height != detectionArea.size.y || grid.leafDepth != maxDepth)
         throw std::invalid_argument("AGBS aggregation configuration must match this sensor's identity and coverage");
+}
+
+void AdaptiveGridBasedSensor::enableAggregation(ump::AggregationConfig config, float simulationStep,
+    std::chrono::system_clock::time_point origin, AggregationManager::Sink sink) {
+    if (samplingInitialized || aggregationManager)
+        throw std::logic_error("Enable AGBS aggregation once, before the first update");
+    validateAggregationConfig(config, simulationStep, frameRate, detectionArea, cellSize, maxDepth);
+    if (config.sensorId != sensorId)
+        throw std::invalid_argument("AGBS aggregation configuration must match this sensor identity");
     auto manager = std::make_unique<AggregationManager>(config, std::move(sink));
     aggregationRunId = config.runId;
     aggregationOrigin = origin;

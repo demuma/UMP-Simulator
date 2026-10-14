@@ -51,9 +51,16 @@ public:
     void clearDatabase() override;
     void calculateCellDensity();
 
+    // Shared startup validation: no sensor instance, DB writes or rendering are needed.
+    static void validateAggregationConfig(const ump::AggregationConfig& config, float simulationStep,
+        float frameRate, sf::FloatRect detectionArea, float cellSize, int maxDepth);
     // Optional internal aggregation. Render-only instances never enable this path.
     void enableAggregation(ump::AggregationConfig config, float simulationStep,
         std::chrono::system_clock::time_point origin, AggregationManager::Sink sink);
+    void setAggregationProgressSink(AggregationManager::ProgressSink sink) {
+        if (!aggregationManager) throw std::logic_error("Aggregation must be enabled before setting progress output");
+        aggregationManager->setProgressSink(std::move(sink));
+    }
     void finishAggregation(std::chrono::system_clock::time_point end);
     const AggregationManager* getAggregationManager() const { return aggregationManager.get(); }
     void setAggregationDebug(std::shared_ptr<const ump::SpatialSelection> snapshot) {

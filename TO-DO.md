@@ -1,6 +1,6 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-14. Current priority: build the missing aggregation foundation, including metrics and policy trees; show the first integrated path on October 14, evaluate it by October 18, and extend adaptation by October 25.**
+**Status: 2026-10-14. Current priority: evaluate the integrated aggregation baseline, select meaningful metrics/threat models and prepare evidence for October 18 and October 25.**
 
 This is the central task backlog. README describes current behavior; this file tracks
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
@@ -24,18 +24,19 @@ crashes or corrupt input are blockers, not reasons to begin an unrelated redesig
 
 ## 2. Chronological execution order
 
-**Current position: initial Stage 4 bounded history and logical active/preemptive windows
-implemented alongside E04/A04 metrics and policies. The first standalone A05 coordination
-core is tested; next is its policy configuration, pipeline and durable sink integration,
-then remaining A03 temporal/release behavior. A private fixed-window spatial selector and
-live overlay were brought forward for the meeting; internal decisions do not authorize release.
-E01's fixed occupancy-query contract is documented; the GT experiment and E02 attacker
-definition remain open. S04/S01, S05, A01, E04, the A04 numeric-policy slice and initial A02 history have regression coverage.** The detailed
+**Current position: the first integrated Stage 5 baseline is implemented. A05 now connects
+policy-selected private final snapshots to a durable MongoDB release sink and private
+journal. A03 adds Temporal First and Spatial First with bounded temporal extension,
+regional deadlines and future handover. The common-window model is intentionally
+conservative; independent sibling windows, other publication models and automatic restart
+remain open. Next are metric/threat-model decisions and controlled baseline experiments.
+E01's occupancy-query contract is documented; its GT experiment and E02 attacker definition
+remain open.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
 proposals, flow diagram, storage model and hand-worked cases. The
 [fixed aggregation contract](docs/FIXED_AGGREGATION.md) records actual A01 behavior;
 the [A02 history contract](docs/AGGREGATION_HISTORY.md) records implemented private
-reconstruction and logical windows. Adaptive release rules remain proposals. The core is reusable across sensor types;
+reconstruction and logical windows. The first common-window release rules are implemented; finer coordination models remain proposals. The core is reusable across sensor types;
 AGBS is the first integration target.
 Separate sensor behavior/state is preserved. A generic API does not imply that every
 sensor provides every metric input or supports arbitrary spatial refinement.
@@ -46,7 +47,7 @@ sensor provides every metric input or supports arbitrary spatial refinement.
 | 2 — online slice implemented | Metric definitions and required statistics | E01, E02, E04 | Defined inputs, calculated values and evaluation references |
 | 3 — initial numeric slice implemented | Policy tree using existing Regions | A04 | Effective regional requirements, inheritance and conflicts |
 | 4 — private reconstruction implemented | Active/preemptive buckets and history | A02 | Hand-worked windows, lifecycle and retention rules |
-| 5 — next | Publication coordination, AGBS decisions and inspection | A05, A03, A07, A06 | Fixed release/suppress path, then merge/split, partial suppression, time extension and debug view |
+| 5 — baseline implemented; extensions open | Publication coordination, AGBS decisions and inspection | A05, A03, A07, A06 | Fixed release/suppress path, then merge/split, partial suppression, time extension and debug view |
 | 6 | Complete-run checks and comparative evaluation | V01, B01, R01–R03, X02, E05, E06 | Equal input, verified releases, publication/priority comparisons and preparation-cost study |
 | 7 — later | Taxonomy brainstorming, renderer settings and control GUI | X01, X10, X11 | Separate design proposals and measured implementation scope |
 | 8 — later | Map extraction, routes and collision avoidance | X04, X03, X05 | Controlled scenarios and realism/performance evidence |
@@ -139,8 +140,8 @@ Database writing and rendering consume the resulting release rather than decidin
   bounds intersect; cross-region parent conflicts do not contaminate child requirements.
   Unsupported overlaps/unaligned boundaries and contradictory inherited rules fail explicitly.
   Tests cover geometry, inheritance, context and startup before DB writes. Thresholds are
-  demonstration parameters; priorities, publication models and live policy changes remain open.
-- [ ] **P5 — Decision and publication (A03).** Evaluate a candidate with P3/P4 and record
+  demonstration parameters; root strategy/model selection is now integrated, while regional execution overrides and live policy changes remain open.
+- [x] **P5 — Initial decision and publication baseline (A03/A05).** Evaluate a candidate with P3/P4 and record
   the decision and reason. First implement release/suppress on fixed candidates; then
   add parent/child selection and temporal extension. A maximum quadtree depth may remain
   fixed as a capacity/resolution bound while the selected release depth varies by region
@@ -222,7 +223,7 @@ priority of regional constraints, and acceptable evidence for the paper/presenta
 **Suggested sequence:** October 14: supervisor feedback and complete the first path.
 October 15: dynamic spatial release selection and fixed baselines. October 16: experiments,
 validation and figures. October 17: interpretation, slides and rehearsal. October 18: submission.
-Temporal adaptation can follow after the first submission, whose slides may still be updated.
+Temporal adaptation was brought forward and is implemented; comparative evidence remains due.
 
 **Scope:** initial metrics and the minimal policy tree are required foundation work. A full
 taxonomy rewrite or multiple application trees are not. F01/D02 actual-interval handling is
@@ -249,13 +250,10 @@ comparisons while R01/R02 simulation reproducibility improvements remain pending
 - [ ] Complete figures and results by October 23. Use October 24 for full rehearsal,
   playback checks and backup material; preserve a stable demo for October 25.
 
-**Suggested sequence:** October 19–20: temporal history and decisions. October 21:
-merge/split and regional edge cases. October 22–23: comparative evaluation and interpretation.
-October 24: freeze/rehearsal. October 25: presentation.
-
-If temporal adaptation remains unverified, present the tested spatial-policy pipeline and
-its comparison, with temporal adaptation clearly marked as pending. Keep unimplemented
-active/preemptive behavior visible in the backlog rather than treating it as completed.
+**Updated sequence:** the common-window temporal baseline is verified on October 14.
+Use October 19–23 for controlled comparisons, regional edge cases and interpretation.
+October 24: freeze/rehearsal. October 25: presentation. Keep unimplemented independent
+active/preemptive coordination visible in the backlog rather than treating it as completed.
 
 ### Work deferred unless a milestone requires it
 
@@ -479,15 +477,15 @@ decisions remains A02/A03/A05 work.
 [AGGREGATION_HISTORY.md](docs/AGGREGATION_HISTORY.md) records storage, API, deadline semantics,
 configuration, worked examples and verification. History is opt-in; the maintained config
 is unchanged. The regional example enables it. Bucket creation/extension is available via
-the manager API. A03 now performs on-demand spatial selection for closed fixed windows;
-automatic prewarming and the general active/preemptive lifecycle remain open. READY and
-publication states require the later decision/release layer, not an arbitrary history flag.
+the manager API. A03 now performs spatial selection and variable-window reconstruction.
+Automatic prewarming and the general active/preemptive lifecycle remain open. Decision
+and publication status belong to A03/A05, not an arbitrary history progress flag.
 
 - [x] Specify retrospective parent aggregation from internal observations.
 - [x] Compare physical active/preemptive containers with logical windows over shared history.
 - [x] Define bounded sample retention, logical open windows and cleanup. Bucket deadlines
   fit the fixed retention horizon; expired records are removed before their support expires.
-- [ ] Integrate bounded publication coordination/retry retention under A05/F03.
+- [x] Integrate bounded common-window publication coordination and synchronous retry retention under A05; automatic restart remains F03.
 - [x] Store owned fine time-bin history and reference it from sparse bucket records keyed
   by stream/application, cell/depth, window start and generation. No Agent*/Node* lifetimes.
 - [x] Reconstruct complete parent footprints using coverage metadata, including known-empty
@@ -515,7 +513,7 @@ publication states require the later decision/release layer, not an arbitrary hi
   buckets; verify mixed-depth geometry and current four-base-node/implicit-root convention.
 - [x] Test uncached ancestors, geometry/root limits, evicted/future support and A04 metric
   evaluation of reconstructed candidates. Queries return incomplete coverage explicitly.
-- [ ] Gate actual release on full coverage, policy bounds and unpublished availability (A05).
+- [x] Gate actual release on full coverage, policy bounds and unpublished availability (A05).
 - [x] Use bounded chronological bins for the first interval queries and small logical
   records for active/preemptive alternatives. An interval tree is not needed for correctness;
   indexing/caching remains an E05 performance choice with separate ownership semantics.
@@ -538,9 +536,12 @@ record cannot retract an already externally visible publication.
 
 ### A05 — Publication coordination and irreversible output — P0
 
-**Initial standalone core implemented, 2026-10-14.** See
-[PUBLICATION_COORDINATION.md](docs/PUBLICATION_COORDINATION.md). This is not yet connected
-to the simulator callback or an application-visible database sink. A05 remains open.
+**Integrated first model, 2026-10-14.** The simulator now uses the coordinator with
+`private_final_snapshot`, separate recipient/private databases and durable idempotency.
+See [PUBLICATION_COORDINATION.md](docs/PUBLICATION_COORDINATION.md), the
+[implementation contract](docs/ADAPTIVE_PUBLICATION_IMPLEMENTATION.md) and
+[verification record](docs/ADAPTIVE_PUBLICATION_VALIDATION.md). The broader A05 research
+package remains open for other models and automatic checkpoint/resume.
 
 - [x] Implement a bounded, single-pending private-final-snapshot coordinator for complete
   closed fixed windows, with a whole-grid reservation and monotonic retirement watermark.
@@ -552,10 +553,13 @@ to the simulator callback or an application-visible database sink. A05 remains o
   on Retry or exception; retire empty/suppressed windows privately.
 - [x] Test subtraction, pending/committed ancestor rejection, lost acknowledgement and
   idempotent sink contract, deadline expiry, future merge/split and malformed input.
-- [ ] Wire this core into the actual sensor -> selector -> publication path using an explicit
+- [x] Wire this core into the actual sensor -> selector -> publication path using an explicit
   supported policy model and a separate recipient boundary. Add startup validation.
-- [ ] Implement durable sink idempotency, restart recovery and reconciliation of ambiguous
-  expired writes (F03). Do not restart the in-memory ledger with the same run ID.
+- [x] Implement whole-document MongoDB idempotency, durable prepared/committed journal,
+  read-only recovery and reconciliation of already-visible identical writes; retire empty
+  cuts privately. Preserve ambiguity and abort on exhausted bounded retries.
+- [ ] Implement automatic checkpoint/resume with the full reservation/retirement ledger and
+  fresh policy/time evidence (F03). Do not restart the in-memory ledger with the same run ID.
 
 - [ ] Implement publication models as independently testable policy-selected behaviors:
   private final-snapshot, immediate approved, bounded-hold and recipient-visible revisions.
@@ -563,7 +567,7 @@ to the simulator callback or an application-visible database sink. A05 remains o
   visibility/deadline handling and tests. No stub mode or silent substitution.
 - [ ] Compare these models under E06/RQ-PUB; the preferred application mode remains open,
   including traffic freshness/latency needs.
-- [ ] Define private observation/GT/checkpoint storage versus externally visible releases;
+- [x] Separate current private observation/GT/diagnostic storage from externally visible releases;
   keep the publication sink outside the manager and enforce the selected access boundary.
 - [ ] Permit retrospective changes to private working data with reproducible provenance;
   assess every recipient-visible version when revisions are exposed. Provisional labels
@@ -579,9 +583,9 @@ to the simulator callback or an application-visible database sink. A05 remains o
 - [ ] Bound waits by every affected policy; when no legal output can meet privacy and
   mandatory availability together, report infeasibility instead of silently weakening either.
   A passing child can be held for coordination without being described as privacy-failing.
-- [ ] Publish one non-overlapping selected cut; reject parent/child reuse of the same
+- [x] Publish one non-overlapping selected cut in the common-window model; reject parent/child reuse of the same
   committed or pending-output support. Future adaptation uses a common handover boundary.
-- [ ] Seal immutable output with a stable release ID; preserve reservations on sink failure.
+- [x] Seal immutable output with a stable release ID; preserve reservations on sink failure.
   Coordinate retry/idempotency and bounded pending output with F03.
 - [ ] Settle any A07 descendant fallback before retiring support; suppress only the final
   unreleasable remainder. Whole-candidate suppression remains the initial baseline.
@@ -594,10 +598,12 @@ reopen coverage for a competing candidate. Disjoint release coverage is not a pr
 
 ### A03 — Start with simple adaptive strategies — P0
 
-**Initial private spatial slice implemented, 2026-10-14.**
-[SPATIAL_SELECTION.md](docs/SPATIAL_SELECTION.md) specifies the scope, configuration and
-evidence. All choices share a closed fixed window and stay internal; A05 is still required
-for externally visible output. Full Temporal First/Spatial First remain unchecked below.
+**Spatial and temporal baseline integrated, 2026-10-14.**
+[SPATIAL_SELECTION.md](docs/SPATIAL_SELECTION.md) and
+[TEMPORAL_AGGREGATION.md](docs/TEMPORAL_AGGREGATION.md) describe actual behavior.
+Both preservation priorities now run through A05 using one common unpublished interval.
+Regional maxima conservatively cap that interval. Independent regional windows and
+experimental effectiveness remain open.
 
 - [x] Select a non-overlapping cut from fine observations; replace whole sibling groups
   with eligible parents using exact retained identity unions and full-footprint policy checks.
@@ -608,26 +614,26 @@ for externally visible output. Full Temporal First/Spatial First remain unchecke
 - [x] Test merge/refine/merge, unions, sibling replacement, unknown/missing evidence,
   footprint policies, bounded work, transport and configuration; verify an actual 75-window run.
 
-**Remaining release and temporal work:**
+**Release and temporal implementation, followed by remaining extensions:**
 
-- [ ] Integrate fixed candidate release/suppress with the initial regional policy tree.
-- [ ] Implement Temporal First by trying spatial aggregation before temporal extension,
+- [x] Integrate fixed candidate release/suppress with the initial regional policy tree.
+- [x] Implement Temporal First by trying spatial aggregation before temporal extension,
   and Spatial First by trying temporal aggregation before spatial coarsening. Start with
-  one verified strategy, then compare both under E06/RQ-ORDER.
-- [ ] Test label-to-action mapping with a failing candidate for which both actions are legal;
+  both verified strategies; comparative experiments remain under E06/RQ-ORDER.
+- [x] Test label-to-action mapping with a failing candidate for which both actions are legal;
   record the preservation priority and chosen action in experiment/decision metadata.
-- [ ] Extend in declared bin increments and recheck on relevant events; permit early
+- [x] Extend in declared bin increments and recheck on relevant events; permit early
   eligible release. Always waiting for the maximum window is a separate baseline.
 - [ ] Define sibling/parent/child checks, merge, split and suppression using A05 reservations.
 - [ ] Evaluate one complete parent at a time and expand to its siblings only when the
   next ancestor is needed and allowed. Avoid an automatic cascade to the depth cap.
-- [ ] Recompute effective regional policy and all mandatory metrics for every candidate.
+- [x] Recompute effective regional policy and all mandatory metrics for every candidate.
   More aggregation is not assumed to improve every metric monotonically.
-- [ ] Allow early completion only after hard minimum/maximum bounds and release
+- [x] Allow early completion only after hard minimum/maximum bounds and release
   coordination pass. Temporal exhaustion permits only remaining legal actions.
-- [ ] Bound retries/search; wait for new evidence or a deadline rather than polling
+- [x] Bound retries/search; wait for new evidence or a deadline rather than polling
   unchanged candidates. Preserve original start time through every merge.
-- [ ] Apply changes to an already published spatial selection at future common boundaries.
+- [x] Apply changes to an already published spatial selection at future common boundaries.
   Distinguish those transitions from A07 selecting unpublished descendants as final fallback;
   prevent split/merge oscillation within one unresolved window.
 - [ ] Handle impossible constraint combinations explicitly.
@@ -660,7 +666,7 @@ Keep whole-candidate suppression as a correct simpler baseline until this fallba
 ### A06 — Aggregation inspection and live state overlay — P1, after S04
 
 **Offline inspection slice implemented, 2026-10-14.** Brought forward for the supervisor
-demo; A05 remains the next core implementation. The [inspector guide](docs/AGGREGATION_INSPECTOR.md)
+demo; A05 and temporal A03 are now integrated in separate opt-in examples. The [inspector guide](docs/AGGREGATION_INSPECTOR.md)
 documents the prepared recording, reproduction, local MongoDB debug copy and limitations.
 
 - [x] Show recorded candidate geometry, metric values, regional thresholds and policy
@@ -967,8 +973,10 @@ object lifetime; it does not establish recovery from network or partial-write fa
 - [ ] Design/test retry ownership and idempotent writes for failed or partially successful batches.
 - [ ] Decide whether a new capture may replace an unsent batch or requires a bounded queue.
 
-**Current limit:** F02 fixes repeat publication after successful writes. It does not supply
-durable retries or exactly-once behavior after ambiguous/partial database failures.
+**Current limit:** legacy sensor persistence still has no general durable batch recovery.
+The separate A05 release sink now implements whole-document idempotency, private intent/
+commit journaling and bounded retries. Read-only recovery can reconcile existing output;
+automatic simulator checkpoint/resume and restoration of pending policy evidence remain open.
 
 ## 11. Later simulator improvements — lower priority
 
@@ -1160,3 +1168,27 @@ stable and mark completion only with evidence. Before coding, state the contract
 small scope; afterwards record behavior, verification and limitations. Update the active
 stage when its acceptance criteria are met. Preserve user changes and current sensor
 modularity. All repository documentation remains in English.
+
+
+## Implementation record — integrated A05 and temporal A03, 2026-10-14
+
+- Shared history now reconstructs finest occupied cuts and exact whole-domain identity
+  unions for arbitrary half-open intervals. The manager supplies per-tick/final progress;
+  fixed-window raw diagnostics remain independent.
+- Policy execution selects the supported publication model and preservation strategy.
+  Strict preflight covers temporal alignment, resource bounds, sensor geometry and all
+  raw/recipient/journal destinations before database initialization.
+- MongoDB publishes one immutable selected-only document per release. Private intent and
+  commit records support bounded retries and read-only recovery. Per-type counts are
+  withheld because no separate disclosure policy currently assesses them.
+- Temporal First attempts spatial aggregation before time extension. Spatial First attempts
+  time extension before spatial fallback. Original starts, regional caps, exact unions,
+  final flush and common future handover are tested.
+- Thirteen CTest suites and six inspector tests passed. Three four-second headless runs
+  verified public output against diagnostics, conservation of 7,800 observation contributions
+  per run and disjoint intervals; invalid geometry/empty diagnostic settings caused no DB writes.
+- The main config, workspace file and pre-existing ABS edit were preserved. Dedicated
+  `publication` and `temporal-aggregation` examples provide opt-in demonstrations.
+- Next: bind the threat model and meaningful privacy/utility metrics, then compare fixed
+  baselines and both strategies on identical input. Automatic restart, independent sibling
+  windows, A07 selective rescue, other publication models and proactive caches remain open.

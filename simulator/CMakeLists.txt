@@ -159,3 +159,36 @@ if(UMP_BUILD_PUBLICATION_TESTS)
     add_test(NAME publication_regression COMMAND PublicationRegressionTests)
     set_tests_properties(publication_regression PROPERTIES LABELS "unit;aggregation;publication" TIMEOUT 15)
 endif()
+
+option(UMP_BUILD_ADAPTIVE_TESTS "Build temporal strategy tests (standard C++ only)" ON)
+if(UMP_BUILD_ADAPTIVE_TESTS)
+    enable_testing()
+    add_executable(AdaptiveAggregationRegressionTests tests/AdaptiveAggregationRegressionTests.cpp
+        src/AdaptiveAggregation.cpp src/SpatialSelection.cpp src/AggregationHistory.cpp
+        src/AggregationManager.cpp src/CandidateMetrics.cpp src/PolicyTree.cpp)
+    target_compile_features(AdaptiveAggregationRegressionTests PRIVATE cxx_std_17)
+    add_test(NAME adaptive_aggregation_regression COMMAND AdaptiveAggregationRegressionTests)
+    set_tests_properties(adaptive_aggregation_regression PROPERTIES LABELS "unit;aggregation;temporal" TIMEOUT 30)
+endif()
+
+# Opt-in MongoDB publication tests create and remove only fresh UUID databases.
+option(UMP_BUILD_PUBLICATION_STORE_TESTS "Build durable publication tests (requires localhost MongoDB)" OFF)
+if(UMP_BUILD_PUBLICATION_STORE_TESTS)
+    enable_testing()
+    add_executable(PublicationStoreRegressionTests tests/PublicationStoreRegressionTests.cpp src/PublicationStore.cpp)
+    target_compile_features(PublicationStoreRegressionTests PRIVATE cxx_std_17)
+    target_link_libraries(PublicationStoreRegressionTests PRIVATE mongo::mongocxx_shared mongo::bsoncxx_shared)
+    add_test(NAME publication_store_regression COMMAND PublicationStoreRegressionTests)
+    set_tests_properties(publication_store_regression PROPERTIES LABELS "integration;mongodb;publication" TIMEOUT 60)
+endif()
+
+if(UMP_BUILD_PUBLICATION_STORE_TESTS)
+    add_executable(PublicationPipelineRegressionTests tests/PublicationPipelineRegressionTests.cpp
+        src/PublicationStore.cpp src/PublicationCoordinator.cpp src/AdaptiveAggregation.cpp
+        src/AggregationManager.cpp src/AggregationHistory.cpp src/SpatialSelection.cpp
+        src/CandidateMetrics.cpp src/PolicyTree.cpp)
+    target_compile_features(PublicationPipelineRegressionTests PRIVATE cxx_std_17)
+    target_link_libraries(PublicationPipelineRegressionTests PRIVATE mongo::mongocxx_shared mongo::bsoncxx_shared)
+    add_test(NAME publication_pipeline_regression COMMAND PublicationPipelineRegressionTests)
+    set_tests_properties(publication_pipeline_regression PROPERTIES LABELS "integration;mongodb;publication;temporal" TIMEOUT 60)
+endif()

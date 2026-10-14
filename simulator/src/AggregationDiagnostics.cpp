@@ -143,14 +143,23 @@ static DetailedSink makeDetailedSink(const std::string& directory,
             kvp("counts", countDocument(candidate.counts)),
             kvp("assessment", assessmentDocument(assessment)), kvp("cells", cells));
         if (spatial) {
-            bsoncxx::builder::basic::array finest, attempts;
+            bsoncxx::builder::basic::array finest, attempts, temporalDecisions;
             for (std::size_t i = 0; i < spatial->finest.cells.size(); ++i)
                 finest.append(cellDocument(spatial->finest.cells[i], spatial->finestAssessment.cells[i]));
             for (const auto& attempt : spatial->attempts)
                 attempts.append(cellDocument(attempt.cell, attempt.assessment));
-            row.append(kvp("source_cells", finest), kvp("attempts", attempts),
-                kvp("spatial_selection", make_document(kvp("mode", "temporal_first_spatial_only"),
-                    kvp("publication", "internal_only"), kvp("min_depth", spatial->minDepth),
+            for (const auto& decision : spatial->temporalDecisions)
+                temporalDecisions.append(make_document(
+                    kvp("action", std::string(ump::temporalActionName(decision.action))),
+                    kvp("start_ms", decision.startMs), kvp("end_ms", decision.endMs),
+                    kvp("evaluated_at_ms", decision.evaluatedAtMs),
+                    kvp("status", std::string(ump::assessmentStatusName(decision.status)))));
+            row.append(kvp("temporal_decisions", temporalDecisions),
+                kvp("source_cells", finest), kvp("attempts", attempts),
+                kvp("spatial_selection", make_document(kvp("mode", spatial->strategy),
+                    kvp("publication", spatial->publicationState), kvp("release_id", spatial->releaseId),
+                    kvp("temporal_extensions", static_cast<std::int64_t>(spatial->temporalExtensions)),
+                    kvp("completion_reason", spatial->completionReason), kvp("min_depth", spatial->minDepth),
                     kvp("evaluations", static_cast<std::int64_t>(spatial->attempts.size())),
                     kvp("selected_cells", static_cast<std::int64_t>(spatial->selectedCells)),
                     kvp("suppressed_cells", static_cast<std::int64_t>(spatial->suppressedCells)),

@@ -181,6 +181,56 @@ HistoryQuery AggregationHistory::query(const CellGeometry& cell, AggregationTime
     return {status, std::move(result)};
 }
 
+HistoryQuery AggregationHistory::queryFinest(AggregationTime startMs, AggregationTime endMs) const {
+    if (startMs < 0 || endMs <= startMs)
+        throw std::invalid_argument("History queries require a nonempty nonnegative half-open interval");
+    if (startMs < retainedFrom(watermarkMs)) return {HistoryQueryStatus::Evicted, std::nullopt};
+    if (endMs > watermarkMs) return {HistoryQueryStatus::Future, std::nullopt};
+    const auto before = [&](AggregationTime time) -> std::uint64_t {
+        return time > 0 ? static_cast<std::uint64_t>((time - 1) / config.samplingPeriodMs) : 0;
+    };
+    AggregationCandidate result{config.runId, config.sensorId, config.applicationId, config.coverage,
+        startMs, endMs, watermarkMs, false, before(endMs) - before(startMs), 0, 0, 0,
+        WindowCoverage::NoScheduledSamples, {}, {}};
+    struct CellEvidence {
+        AggregateCounts counts;
+        std::unordered_set<std::string> identities;
+    };
+    std::unordered_set<std::string> identities;
+    std::map<int, CellEvidence> cells;
+    for (const auto& bin : bins) {
+        if (bin.timeMs < startMs) continue;
+        if (bin.timeMs >= endMs) break;
+        if (bin.status == ObservationStatus::Unavailable) { ++result.unavailableSamples; continue; }
+        ++result.measuredSamples;
+        for (const auto& observation : bin.observations) {
+            auto& cell = cells[observation.cell.id];
+            ++cell.counts.observationContributions;
+            ++cell.counts.typeObservationContributions[observation.type];
+            cell.identities.insert(observation.contributorId);
+            ++result.counts.observationContributions;
+            ++result.counts.typeObservationContributions[observation.type];
+            identities.insert(observation.contributorId);
+        }
+    }
+    result.missingSamples = result.expectedSamples - result.measuredSamples - result.unavailableSamples;
+    const auto finalize = [&](AggregateCounts& counts, std::size_t distinct) {
+        counts.distinctContributors = distinct;
+        if (result.measuredSamples)
+            counts.meanSampleOccupancy = static_cast<double>(counts.observationContributions) / result.measuredSamples;
+    };
+    finalize(result.counts, identities.size());
+    for (auto& [id, cell] : cells) {
+        finalize(cell.counts, cell.identities.size());
+        result.cells.push_back({historyCell(config.coverage, id, config.coverage.leafDepth), std::move(cell.counts)});
+    }
+    result.coverage = !result.expectedSamples ? WindowCoverage::NoScheduledSamples
+        : result.missingSamples || result.unavailableSamples ? WindowCoverage::Incomplete : WindowCoverage::Complete;
+    const auto status = result.coverage == WindowCoverage::Complete ? HistoryQueryStatus::Complete
+        : result.coverage == WindowCoverage::Incomplete ? HistoryQueryStatus::Incomplete : HistoryQueryStatus::NoScheduledSamples;
+    return {status, std::move(result)};
+}
+
 void AggregationHistory::openBucket(CandidateBucket record) {
     historyCell(config.coverage, record.key.cellId, record.key.depth);
     if (!record.key.generation || record.key.startMs < retainedFrom(watermarkMs)

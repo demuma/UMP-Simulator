@@ -12,7 +12,10 @@
 class AggregationManager {
 public:
     using Sink = std::function<void(const ump::AggregationCandidate&)>;
+    using ProgressSink = std::function<void(ump::AggregationTime, bool finishing)>;
     AggregationManager(ump::AggregationConfig config, Sink sink);
+    // Runs after the history watermark advances; callback may query but never mutate this manager.
+    void setProgressSink(ProgressSink output) { progressSink = std::move(output); }
 
     void ingest(const ump::ObservationBatch& batch);
     void advance(ump::AggregationTime nowMs);
@@ -31,10 +34,12 @@ private:
     };
 
     void validate(const ump::ObservationBatch& batch) const;
+    void advanceTo(ump::AggregationTime nowMs, bool notifyProgress);
     void closeWindow(ump::AggregationTime endMs, ump::AggregationTime closedAtMs, bool truncated);
 
     ump::AggregationConfig config;
     Sink sink;
+    ProgressSink progressSink;
     std::unique_ptr<ump::AggregationHistory> retainedHistory;
     ump::AggregationTime windowStartMs = 0;
     ump::AggregationTime watermarkMs = 0;

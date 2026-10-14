@@ -48,6 +48,8 @@ public:
     void append(const ObservationBatch& batch);
     void advance(AggregationTime nowMs);
     HistoryQuery query(const CellGeometry& cell, AggregationTime startMs, AggregationTime endMs) const;
+    // Reconstruct the finest occupied cut and exact whole-domain identity union.
+    HistoryQuery queryFinest(AggregationTime startMs, AggregationTime endMs) const;
     void openBucket(CandidateBucket bucket);
     void extendBucket(const BucketKey& key, AggregationTime endMs);
     bool discardBucket(const BucketKey& key);

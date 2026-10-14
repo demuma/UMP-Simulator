@@ -43,6 +43,8 @@ void retryAndFutureHandover() {
     PublicationCoordinator coordinator(f.config,policy());
     const auto sealed=coordinator.seal(children,400);
     require(sealed->cells.size()==4,"Expected fine approved road-user cells");
+    for (const auto& cell : sealed->cells)
+        require(cell.aggregate.counts.typeObservationContributions.empty(), "Type breakdown leaked into public snapshot");
     auto parent=children;
     parent.candidate=*f.manager.history()->query(historyCell(f.config.coverage,48,2),0,400).candidate;
     parent.decisions={{48,true,"test",{}}};

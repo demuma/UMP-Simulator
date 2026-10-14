@@ -156,8 +156,10 @@ The JavaScript passed a syntax check. Native Safari inspection verified local-fi
 support/duration/passing examples, timeline navigation and playback through the final
 window. This slice changes no simulator C++ code or sensor scheduling.
 
-The next core task remains A05 publication coordination and the remaining A03 temporal
-behavior. Private fixed-window spatial selection and its live overlay are now implemented;
-collecting/preemptive/committed lifecycle views remain under A06. The original recording
-above shows fixed assessment. The new spatial recording shows actual private decisions,
-without claiming application-visible release or improved empirical privacy.
+A05 publication and A03 temporal adaptation are now integrated in separate opt-in examples.
+New selection records add strategy, temporal extension count, completion reason, decision
+trace and publication/journal linkage. The inspector displays the strategy, extension count
+and publication status while retaining the original diagnostic-only records' compatibility.
+All these records are internal: even a `committed` status does not make their suppressed
+counts or failed alternatives safe recipient output. Only `ump.release.v1` documents use
+the recipient schema. Full collecting/preemptive lifecycle visualization remains A06.

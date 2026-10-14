@@ -1,8 +1,9 @@
 # Regional policy tree
 
-Status: 2026-10-13. A04 initial numeric policy tree implemented and verified.
-This extends fixed-window candidate assessment, not public release,
-adaptive merge/split, preservation priorities or publication-model selection.
+Status: 2026-10-14. A04 numeric policies are implemented and verified. The initial tree
+now also accepts application-level execution choices for the integrated A03/A05 path.
+Metric computation remains in the evaluator; execution choices are interpreted by the
+controller/publication adapter, not numerically intersected as metric requirements.
 
 ## Requirements and inheritance
 
@@ -153,3 +154,28 @@ pass/fail/unavailable and absent-policy compatibility with the new v3 fields.
 Integration fixtures used only UUID-named databases, which were removed. Existing Simulation
 data and the maintained config were untouched. These checks do not measure full-run policy
 performance, empirical privacy or application utility; those studies remain in TO-DO.
+
+
+## Application execution policy
+
+```yaml
+policy_tree:
+  # Existing id/version/root/regions apply.
+  execution:
+    publication_model: private_final_snapshot
+    strategy: spatial_first
+```
+
+`publication_model` is required when `aggregation.publication` is enabled; only
+`private_final_snapshot` is implemented. `strategy` is required with
+`aggregation.temporal_adaptation`; supported choices are `temporal_first` (try spatial
+coarsening first to preserve time) and `spatial_first` (try time extension first to preserve
+space). Execution choices are root/application-level only. Regional strategies and other
+model names are explicitly rejected; they are not inherited as numeric bounds. Storage
+names/retry limits belong to `aggregation.publication`, not the tree.
+
+Regional time requirements remain intersected numeric bounds. The initial controller uses
+the strictest whole-domain time maximum, including empty base footprints. Thus one region
+can constrain the shared window for all cells. This is an explicit conservative coordination
+choice, not independently scheduled regional adaptation. See
+[TEMPORAL_AGGREGATION.md](TEMPORAL_AGGREGATION.md).
