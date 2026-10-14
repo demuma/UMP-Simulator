@@ -18,8 +18,10 @@ preemptive bucket records. A local aggregation inspector now visualizes recorded
 regional requirements and check results, with an optional separate MongoDB debug copy.
 An initial A03 spatial selector now chooses mixed-depth cells for common fixed windows,
 with exact history unions, policy checks, suppression and future-window refinement. The
-live renderer and recorded inspector show those internal decisions. General publication
-coordination, temporal adaptation, actual-interval velocities and research experiments remain open.**
+live renderer and recorded inspector show those internal decisions. An initial standalone
+A05 coordinator now tests immutable output, reservations, acknowledgement and future
+handover. Policy/pipeline/sink integration and durable recovery remain open, along with
+temporal adaptation, actual-interval velocities and research experiments.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -31,6 +33,7 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
+| [Publication coordination core](docs/PUBLICATION_COORDINATION.md) | Tested standalone fixed-window reservations and immutable output; integration and durable recovery remain open |
 | [Spatial selection and live demo](docs/SPATIAL_SELECTION.md) | Actual private parent/child selection, live overlay, recorded replay, configuration and tested limits |
 | [Aggregation inspector](docs/AGGREGATION_INSPECTOR.md) | Ready-to-open meeting demo, recorded cell metrics/thresholds, timeline, optional MongoDB debug copy and reproduction |
 | [Bounded history and buckets](docs/AGGREGATION_HISTORY.md) | Implemented A02 private reconstruction, logical windows, resource limits, deadlines and verification |

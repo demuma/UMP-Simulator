@@ -710,7 +710,7 @@ void Renderer::drawAggregationOverlay(const ump::SpatialSelection& snapshot) {
         window.draw(box);
         if (c.width * scale >= 42) {
             const std::string label = decision.selected
-                ? "d" + std::to_string(c.depth) + " n=" + std::to_string(item.counts.distinctContributors)
+                ? "d" + std::to_string(c.depth) + " RU=" + std::to_string(item.counts.distinctContributors)
                 : "SUPPRESSED";
             sf::Text text(font, label, 11);
             text.setFillColor(edge);

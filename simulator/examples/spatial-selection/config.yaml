@@ -15,7 +15,7 @@ renderer:
   show_trajectories: false
   show_waypoints: false
   show_arrow: true
-  show_buffer: false
+  show_buffer: true
   show_info: false
   show_grids: true
   show_sensors: true
@@ -71,7 +71,7 @@ sensors:
       alpha: 0.1
     grid:
       cell_size: 40
-      max_depth: 3
+      max_depth: 6
       show_grid: true
     database:
       db_name: UMP_SpatialSelection_Demo
@@ -125,7 +125,7 @@ region_taxonomy:
       k_anonymity: {min: 1}
       l_diversity: {min: 1}
     metric_requirements:
-      window_duration_ms: {max: 200}
+      window_duration_ms: {max: 400}
 regions:
   - id: west
     type: demo_residential

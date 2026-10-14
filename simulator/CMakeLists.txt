@@ -148,3 +148,14 @@ if(UMP_BUILD_SPATIAL_TESTS)
     add_test(NAME spatial_regression COMMAND SpatialRegressionTests)
     set_tests_properties(spatial_regression PROPERTIES LABELS "unit;aggregation;spatial" TIMEOUT 15)
 endif()
+
+option(UMP_BUILD_PUBLICATION_TESTS "Build fixed-window publication coordination tests (standard C++ only)" ON)
+if(UMP_BUILD_PUBLICATION_TESTS)
+    enable_testing()
+    add_executable(PublicationRegressionTests tests/PublicationRegressionTests.cpp src/PublicationCoordinator.cpp
+        src/SpatialSelection.cpp src/AggregationManager.cpp src/AggregationHistory.cpp
+        src/CandidateMetrics.cpp src/PolicyTree.cpp)
+    target_compile_features(PublicationRegressionTests PRIVATE cxx_std_17)
+    add_test(NAME publication_regression COMMAND PublicationRegressionTests)
+    set_tests_properties(publication_regression PROPERTIES LABELS "unit;aggregation;publication" TIMEOUT 15)
+endif()

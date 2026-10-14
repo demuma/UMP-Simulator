@@ -25,7 +25,8 @@ crashes or corrupt input are blockers, not reasons to begin an unrelated redesig
 ## 2. Chronological execution order
 
 **Current position: initial Stage 4 bounded history and logical active/preemptive windows
-implemented alongside E04/A04 metrics and policies. Next is A05 publication coordination,
+implemented alongside E04/A04 metrics and policies. The first standalone A05 coordination
+core is tested; next is its policy configuration, pipeline and durable sink integration,
 then remaining A03 temporal/release behavior. A private fixed-window spatial selector and
 live overlay were brought forward for the meeting; internal decisions do not authorize release.
 E01's fixed occupancy-query contract is documented; the GT experiment and E02 attacker
@@ -537,6 +538,25 @@ record cannot retract an already externally visible publication.
 
 ### A05 — Publication coordination and irreversible output — P0
 
+**Initial standalone core implemented, 2026-10-14.** See
+[PUBLICATION_COORDINATION.md](docs/PUBLICATION_COORDINATION.md). This is not yet connected
+to the simulator callback or an application-visible database sink. A05 remains open.
+
+- [x] Implement a bounded, single-pending private-final-snapshot coordinator for complete
+  closed fixed windows, with a whole-grid reservation and monotonic retirement watermark.
+- [x] Recheck selected cells with the immutable evaluator at sealing and each delivery;
+  reject overlapping cuts, mismatched geometry/stream, incomplete selected support and
+  resource-budget overflow. Keep expired/ambiguous output reserved.
+- [x] Seal immutable selected-only payloads with stable release IDs; omit suppressed
+  statistics, whole-window totals and private debug evidence. Preserve payload/reservation
+  on Retry or exception; retire empty/suppressed windows privately.
+- [x] Test subtraction, pending/committed ancestor rejection, lost acknowledgement and
+  idempotent sink contract, deadline expiry, future merge/split and malformed input.
+- [ ] Wire this core into the actual sensor -> selector -> publication path using an explicit
+  supported policy model and a separate recipient boundary. Add startup validation.
+- [ ] Implement durable sink idempotency, restart recovery and reconciliation of ambiguous
+  expired writes (F03). Do not restart the in-memory ledger with the same run ID.
+
 - [ ] Implement publication models as independently testable policy-selected behaviors:
   private final-snapshot, immediate approved, bounded-hold and recipient-visible revisions.
   Start with one supported model; each additional mode needs actual lifecycle/sink semantics,
@@ -969,6 +989,9 @@ renderer, movement and metric code. Choose the model after the brainstorming ses
 
 ### X10 — Simplify the real-time renderer settings — P2
 
+- [ ] If needed later, expose separate past/future trajectory toggles (currently T toggles
+  both); keep this below aggregation and evaluation work.
+
 Frame pacing correctness is tracked separately in S05 and may be brought forward.
 
 - [ ] Inventory settings and controls, including overlap with database playback renderers.
@@ -1120,6 +1143,15 @@ DB failures can cause duplicates on retry; exactly-once persistence is not guara
 Further failure recovery and idempotent-write work is tracked separately as F03.
 
 **Existing data:** no reference database cleanup or replacement was performed.
+
+### Demo refinement and terminology — completed 2026-10-14
+
+- [x] Use finest depth 6 in the separate 80 m demo (1.25 m leaves), show road-user buffers
+  initially and set the northeast duration limit to 400 ms, compatible with its fixed window.
+- [x] Use distinct road users, road-user observations and mean road-user occupancy in
+  visible inspector labels; retain existing serialized keys for compatibility.
+- [x] Verify 75 depth-6 windows, mixed selected depths 1..6 and both coarsening/refinement;
+  refresh the offline inspector and inspect the live renderer with buffers enabled.
 
 ## 14. Working process
 

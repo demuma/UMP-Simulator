@@ -66,10 +66,11 @@ cd /Users/maxdemu/Developer/UMP-Simulator/simulator/examples/spatial-selection
 ```
 
 The example uses `UMP_SpatialSelection_Demo`, clearing disabled, 200 agents, 30 simulated
-seconds, 0.5x playback and finest depth 3. It appends data on every invocation. The maintained
+seconds, 0.5x playback and finest depth 6 (1.25 m cells in the 80 m square). It appends data on every invocation. The maintained
 `simulator/config.yaml` is not modified. The example's root support minimum is two and the
-west region inherits five; the northeast's 200-ms duration bound deliberately conflicts with
-the fixed 400-ms window to demonstrate an unsatisfied application constraint.
+west region inherits five. The northeast allows at most 400 ms, matching the fixed window;
+its age limit is 600 ms. The earlier 200-ms demonstration bound intentionally forced
+suppression at every depth and is no longer the regular demo default.
 
 Opt-in settings within an existing, history-enabled aggregation configuration:
 
@@ -89,11 +90,13 @@ preflight before database initialization.
 
 Set `renderer.show_aggregation: true` to initially show the overlay. **G** toggles it,
 **Space** pauses/resumes, and the existing left/right controls change playback speed.
+**B** toggles buffer zones (enabled initially), **A** arrows, **T** past/future trajectories
+together, and **W** waypoints. Separate past/future toggles are not implemented.
 The overlay also requires the sensor grids to be visible. The demo starts with the large
 general info display hidden to keep the map readable; its Infos button remains available.
 
 - Thin sensor boundaries remain visible beneath the chosen aggregation geometry.
-- Green outlines identify selected footprints; labels show depth and distinct support.
+- Green outlines identify selected footprints; labels show depth and `RU`, the number of distinct road users within that cell/window.
 - Orange outlines indicate coarsening relative to the previous selected window.
 - Blue outlines indicate refinement; red footprints are internally suppressed.
 - The label states the exact closed interval in milliseconds and the transition counts.
@@ -127,7 +130,7 @@ the evaluated leaves/parents. `spatial_selection` records the mode, depth cap, e
 count and selected/suppressed/transition counts. `counts` covers the whole internal window,
 including suppressed footprints; it is not a public selected-output total.
 
-The first verified capture is stored in `results/demos/spatial-selection.jsonl`, with its
+The original depth-3 capture was stored in `results/demos/spatial-selection.jsonl`, with its
 finest baseline in `spatial-source.jsonl` and configuration in `spatial-capture-config.yaml`.
 It has 75 windows, 1,329 selected cell-window records, 75 suppressed footprints, 27 coarsened
 and 94 refined cells. Its run ID is `FB0BD2EE-EE52-4A07-B3DC-D404F78379AB`. The debug copy is
@@ -161,8 +164,31 @@ not used. Native inspection verified the live overlay, G toggle and pause/resume
 inspection verified the recorded geometry and transitions. These checks establish functional
 behavior, not a measured privacy benefit or general real-time performance guarantee.
 
-Next: A05 public-release coordination, then temporal extension and policy-selected strategy
+Next: integrate the initial standalone [A05 coordinator](PUBLICATION_COORDINATION.md) with
+policy configuration and a durable sink, then temporal extension and policy-selected strategy
 comparison. Automatic prewarming, committed-output invalidation, hysteresis, selective
 suppression fallback and the separate MongoDB AGBS renderer remain open. The private spatial
 baseline is the spatial branch of Temporal First; a full Temporal First implementation also
 needs the remaining legal temporal fallback. Spatial First is not implemented here.
+
+## Domain terminology
+
+User-facing views use **distinct road users** for unique observed identities within one
+cell/window; this is not instantaneous occupancy. **Road-user observations** counts repeated
+measurements, and **mean road-user occupancy** averages occupancy across measured samples.
+Existing `distinct_contributors` and related serialized keys remain compatible. Internal
+identity support is generic, but presentation terminology follows the mobility domain.
+A minimum cell side limits refinement; a maximum cell side limits spatial coarsening.
+Greater finest depth alone cannot resolve a temporal violation or guarantee less suppression.
+
+## Depth-6 demonstration verification
+
+The refreshed `results/demos/spatial-inspector.html` uses
+`spatial-depth6-selection.jsonl` with finest inputs in `spatial-depth6-source.jsonl` and
+configuration in `spatial-depth6-capture-config.yaml`. Run
+`434FCB3F-996F-4EA2-92FA-0411AB51CA00` has 75 windows, 2,337 selected cell-window records,
+zero suppressed footprints, 144 coarsened and 419 refined cells, with depths 1 through 6.
+These are randomized run observations, not guarantees or privacy measurements. The old
+depth-3 capture remains available separately. Its MongoDB debug copy was not overwritten.
+The new capture used a disposable UUID-named database, removed after export. The updated
+live demo was opened and paused with buffer zones and mixed-depth overlays visibly present.
