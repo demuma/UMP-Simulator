@@ -14,8 +14,9 @@ internal JSONL candidates. E04 now adds measured cell metrics, explicit unavaila
 and versioned threshold checks. A04 now compiles immutable regional policy trees from
 existing Regions, with strict numeric inheritance and per-cell provenance. A02 now adds
 opt-in bounded private history, on-demand ancestor/time reconstruction and logical active/
-preemptive bucket records. Automatic adaptive selection and privacy release decisions remain
-open, as do actual-interval velocities and reproducible research experiments.**
+preemptive bucket records. A local aggregation inspector now visualizes recorded metrics,
+regional requirements and check results, with an optional separate MongoDB debug copy.
+Automatic adaptive selection and privacy release decisions remain open, as do actual-interval velocities and reproducible research experiments.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -27,6 +28,7 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
+| [Aggregation inspector](docs/AGGREGATION_INSPECTOR.md) | Ready-to-open meeting demo, recorded cell metrics/thresholds, timeline, optional MongoDB debug copy and reproduction |
 | [Bounded history and buckets](docs/AGGREGATION_HISTORY.md) | Implemented A02 private reconstruction, logical windows, resource limits, deadlines and verification |
 | [Regional policy tree](docs/POLICY_TREE.md) | Implemented root/type/region inheritance, sparse compilation, conflict semantics and runnable example |
 | [Candidate metrics](docs/METRICS.md) | Implemented online metric registry, threshold assessment, configuration and first fixed utility-query contract |
@@ -594,6 +596,26 @@ Set `renderer.show_renderer: true` in the example to show the ordinary sensor gr
 decisions have no rendering overlay yet. The example has no shared random seed and is not
 a comparative research experiment.
 
+### Inspect aggregation metrics and regional thresholds
+
+The prepared supervisor demo opens directly as a local file:
+
+```sh
+open results/demos/aggregation-inspector.html
+```
+
+It contains 30 actual 400-ms windows from a separate 12-second, 200-agent run. Select a
+cell to see metric values, applied bounds and policy sources; use the timeline or Play
+to inspect changes. The example buttons select support failure, duration failure and
+passing cases. The same recording is available in local MongoDB under
+`UMP_Debug_AutSys.aggregation_candidates` (internal diagnostics only).
+
+The [inspector guide](docs/AGGREGATION_INSPECTOR.md) provides a three-minute walkthrough,
+input/output paths and the Python report/export command. Generated recordings remain
+local under ignored `results/`; the builder and template are versioned. This is recorded
+fixed-candidate assessment. Automatic adaptive decisions and the live SFML aggregation
+overlay remain open.
+
 ### Configuration and startup
 
 Applications load config.yaml relative to their working directory. Run each from its
@@ -692,6 +714,13 @@ including measured-empty samples. The full history-enabled example produced five
 with 316 independently checked regional cell assessments; fourteen startup failures preserved
 a disposable database sentinel. Only test databases were used and removed. The normal build
 was updated. These are correctness checks, not a performance or privacy/utility experiment.
+
+The offline A06 inspection slice was verified on a separate 12-second simulation with
+30 windows and 1,725 cell assessments; the regional bounds were independently checked.
+The 30-window MongoDB debug copy matched the capture totals. Five Python builder checks
+passed, JavaScript syntax was checked and Safari interaction verified local-file loading,
+cell selection, timeline navigation and playback completion. No simulator C++ behavior
+was changed for this tool. See [AGGREGATION_INSPECTOR.md](docs/AGGREGATION_INSPECTOR.md).
 
 ## 10. Working process
 

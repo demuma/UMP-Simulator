@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UMP · Aggregation inspector</title>
+<style>
+:root{color-scheme:light;--bg:#f3f5f7;--paper:#fff;--ink:#152533;--muted:#526575;--line:#dce3e9;--pass:#cee9db;--pass-ink:#17553b;--fail:#f5d2c7;--fail-ink:#893522;--unavailable:#f4e7bd;--unavailable-ink:#705512;--empty:#edf0f3;--accent:#244e78}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button,select{border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);padding:8px 12px}button{cursor:pointer}button:hover{border-color:var(--accent);background:#edf3f8}button:disabled{opacity:.45;cursor:default}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #6998c6;outline-offset:2px}h1,h2,p{margin:0}h1{font-size:28px;letter-spacing:-.7px;font-weight:650}h2{font-size:18px;font-weight:600}.muted{color:var(--muted)}.small{font-size:12px}.mono,.num{font-variant-numeric:tabular-nums}.mono{font-family:ui-monospace,SFMono-Regular,monospace}.shell{max-width:1370px;margin:auto;padding:24px 30px}.top{display:flex;align-items:center;justify-content:space-between;gap:20px}.eyebrow{letter-spacing:1.5px;text-transform:uppercase;font-size:11px;color:var(--muted);font-weight:650}.tag{border:1px solid var(--line);padding:5px 10px;border-radius:20px;font-size:12px;white-space:nowrap;background:var(--paper)}.flow{display:flex;gap:10px;align-items:center;margin:19px 0;color:var(--muted);font-size:13px;flex-wrap:wrap}.flow .step{background:var(--paper);border:1px solid var(--line);padding:6px 10px;border-radius:6px;color:var(--ink)}.flow .later{border-style:dashed;color:var(--muted)}.toolbar{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 17px;display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:16px}.timeline{flex:1;min-width:200px}.timeline input{width:100%;accent-color:var(--accent)}.timehead{display:flex;justify-content:space-between;gap:16px}.primary{background:var(--accent);color:white;border-color:var(--accent)}.primary:hover{background:#193e61;color:white}.workspace{display:grid;grid-template-columns:minmax(430px,1.25fr) minmax(350px,1fr);gap:18px}.panel{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}.panelhead{padding:16px 20px 12px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}.counts{display:flex;gap:12px;flex-wrap:wrap;font-size:12px}.counts b{font-size:17px;margin-right:3px}.mapwrap{padding:8px 14px 2px}.mapwrap svg{display:block;width:100%;max-height:510px;overflow:visible}.mapwrap .cell{cursor:pointer;stroke:#fff;stroke-width:1}.mapwrap .cell:focus{outline:none;stroke:var(--accent);stroke-width:3}.mapwrap text{pointer-events:none}.mapwrap .axis{font-size:12px;fill:var(--muted)}.mapwrap .cellvalue{font-size:17px;font-weight:600;fill:var(--ink)}.mapwrap .selected{stroke:var(--ink);stroke-width:3;paint-order:stroke fill}.legend{padding:8px 20px;display:flex;gap:15px;flex-wrap:wrap;font-size:12px;color:var(--muted)}.swatch{display:inline-block;width:11px;height:11px;margin-right:5px;vertical-align:-1px;border-radius:3px}.examples{display:flex;flex-wrap:wrap;gap:7px;padding:12px 20px}.examples button{font-size:12px;padding:7px 10px}.footnote{padding:0 20px 16px;font-size:12px;color:var(--muted)}.details{padding:17px 20px}.celltitle{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:5px}.badge{display:inline-block;font-size:12px;font-weight:600;border-radius:20px;padding:5px 10px}.badge.pass{background:var(--pass);color:var(--pass-ink)}.badge.fail{background:var(--fail);color:var(--fail-ink)}.badge.unavailable{background:var(--unavailable);color:var(--unavailable-ink)}.badge.not_configured{background:var(--empty);color:var(--muted)}.summary{font-size:14px;margin:14px 0 16px;padding:11px 13px;background:var(--bg);border-radius:8px}.table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}.table th{text-align:left;color:var(--muted);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.5px}.table td,.table th{padding:9px 4px;border-bottom:1px solid var(--line)}.table td:nth-child(2),.table th:nth-child(2){text-align:right;white-space:nowrap}.table td:nth-child(3),.table th:nth-child(3){text-align:right;white-space:nowrap}.table tr.failed td:first-child{font-weight:650}.checkmark{display:inline-block;min-width:17px;font-weight:650;margin-right:4px}.passmark{color:var(--pass-ink)}.failmark{color:var(--fail-ink)}.warnmark{color:var(--unavailable-ink)}.sectionlabel{margin-top:20px;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}.sources{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0}.source{font-size:11px;padding:4px 7px;background:var(--bg);border-radius:5px}.policyid{font-size:11px;overflow-wrap:anywhere;color:var(--muted)}details{margin-top:17px}summary{cursor:pointer;font-size:13px;color:var(--muted)}.context{display:flex;gap:18px;flex-wrap:wrap;font-size:12px;padding-top:14px;color:var(--muted)}.footer{margin:16px 0;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}#streamWrap{display:none}#stream{max-width:390px}#error{color:#893522;white-space:pre-wrap}.emptydetail{padding:25px 20px;color:var(--muted)}@media(max-width:850px){.shell{padding:15px}.workspace{grid-template-columns:1fr}.top{align-items:flex-start}h1{font-size:23px}.mapwrap svg{max-height:560px}.flow{font-size:11px}}@media print{button,input,.examples{display:none}.workspace{grid-template-columns:1fr 1fr}.shell{padding:0}.panel{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main class="shell">
+  <header class="top"><div><div class="eyebrow">Urban mobility privacy · Research prototype</div><h1>Aggregation under regional constraints</h1><p class="muted">Recorded candidate metrics and the requirements applied to each cell.</p></div><span class="tag">Internal diagnostics · recorded replay</span></header>
+  <div class="flow" aria-label="Implemented processing path"><span class="step">Sensor observations</span><span>→</span><span class="step">Cell + time window</span><span>→</span><span class="step">Metrics + policy requirements</span><span>→</span><span class="step">Recorded checks</span><span class="step later">Next: release coordination & adaptation</span></div>
+  <div class="toolbar"><button class="primary" id="play">▶ Play</button><button id="previous" aria-label="Previous window">←</button><button id="next" aria-label="Next window">→</button><div class="timeline"><div class="timehead"><strong class="num" id="interval"></strong><span class="small muted" id="windowIndex"></span></div><input id="timeline" type="range" min="0" step="1" value="0" aria-label="Recorded aggregation window"></div><label id="streamWrap" class="small">Stream <select id="stream" aria-label="Run and sensor stream"></select></label></div>
+  <div id="error" role="alert"></div>
+  <div class="workspace">
+    <section class="panel"><div class="panelhead"><div><h2>Candidate cells</h2><div class="small muted">Numbers = distinct observed contributors</div></div><div class="counts" id="counts"></div></div>
+      <div class="mapwrap"><svg id="map" viewBox="0 0 610 550" role="group" aria-label="Spatial map of recorded cell checks. Select a cell for its metrics and regional thresholds."></svg></div>
+      <div class="legend"><span><i class="swatch" style="background:var(--pass)"></i>✓ Requirements met</span><span><i class="swatch" style="background:var(--fail)"></i>× Requirement violated</span><span><i class="swatch" style="background:var(--unavailable)"></i>? Unavailable</span><span><i class="swatch" style="background:var(--empty)"></i>No candidate / no policy</span></div>
+      <div class="examples"><button id="supportExample">Show support failure</button><button id="durationExample">Show duration failure</button><button id="passExample">Show passing cell</button></div>
+      <p class="footnote" id="mapNote"></p>
+    </section>
+    <section class="panel" aria-label="Selected cell detail"><div class="panelhead"><h2>Why this result?</h2><span class="small muted" id="cellArea"></span></div><div id="detail"></div></section>
+  </div>
+  <div class="context" id="context"></div>
+  <footer class="footer"><span>Threshold compliance is not a privacy guarantee or a release decision.</span><span id="provenance"></span></footer>
+</main>
+<script type="application/json" id="diagnostics">__UMP_DIAGNOSTICS__</script>
+<script>
+'use strict';
+const payload=JSON.parse(document.getElementById('diagnostics').textContent);
+const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg';
+const names={distinct_contributors:'Distinct contributors',observation_contributions:'Observation contributions',mean_sample_occupancy:'Mean sampled occupancy',cell_side_m:'Cell side',cell_area_m2:'Cell area',window_duration_ms:'Window duration',age_at_evaluation_ms:'Age at evaluation',post_window_delay_ms:'Post-window delay',measured_sample_fraction:'Measured sample fraction',occupancy_mae:'Occupancy MAE'};
+const labels={pass:'Requirements met',fail:'Requirement violated',unavailable:'Unavailable',not_configured:'No policy configured'};
+const reasons={offline_reference_required:'Requires an offline ground-truth comparison',incomplete_observation_coverage:'Observation coverage is incomplete',no_scheduled_samples:'No samples scheduled in this interval',contradictory_policy_bounds:'Conflicting regional bounds'};
+const fmt=value=>value==null?'—':Number(value).toLocaleString('en-US',{maximumFractionDigits:3});
+const seconds=value=>(value/1000).toFixed(2)+' s';
+const unit=u=>({contributors:'contributors',observations:'observations',agents:'agents',m2:'m²',fraction:''})[u]??u;
+const title=id=>names[id]??id;
+const element=(tag,text,className)=>{const el=document.createElement(tag);if(text!=null)el.textContent=text;if(className)el.className=className;return el;};
+function svg(tag,attrs,text){const el=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attrs))el.setAttribute(k,String(v));if(text!=null)el.textContent=text;return el;}
+function bounds(check){if(check.min!=null&&check.max!=null)return fmt(check.min)+'–'+fmt(check.max);if(check.min!=null)return '≥ '+fmt(check.min);if(check.max!=null)return '≤ '+fmt(check.max);return '—';}
+const groups=new Map();for(const row of payload.records){const key=JSON.stringify([row.run_id,row.sensor_id,row.application_id]);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}
+const streams=[...groups.values()];for(const rows of streams)rows.sort((a,b)=>a.start_ms-b.start_ms||a.end_ms-b.end_ms);
+let streamIndex=0,index=0,selected=null,timer=null;
+const rows=()=>streams[streamIndex], current=()=>rows()[index];
+const effectiveStatus=(row,cell)=>row.assessment.coverage_gate.status!=='pass'?'unavailable':cell.threshold_status;
+function stop(){if(timer)clearInterval(timer);timer=null;$('play').textContent=index===rows().length-1?'↺ Replay':'▶ Play';}
+function selectCell(id){selected=id;renderMap();renderDetail();}
+function jump(predicate){const match=current().cells.find(predicate);if(match)selectCell(match.cell_id);}
+function renderMap(){
+ const row=current(),g=row.grid,map=$('map');map.replaceChildren();
+ const scale=Math.min(520/g.width,470/g.height),w=g.width*scale,h=g.height*scale,x0=55+(520-w)/2,y0=30;
+ map.append(svg('rect',{x:x0,y:y0,width:w,height:h,fill:'var(--empty)',rx:1}));
+ for(let tick=0;tick<=4;tick++){const dx=tick*w/4,dy=tick*h/4;
+   map.append(svg('text',{x:x0+dx,y:y0+h+23,'text-anchor':'middle',class:'axis'},fmt(g.x+tick*g.width/4)));
+   map.append(svg('text',{x:x0-11,y:y0+dy+4,'text-anchor':'end',class:'axis'},fmt(g.y+tick*g.height/4)));
+ }
+ map.append(svg('text',{x:x0+w/2,y:y0+h+45,'text-anchor':'middle',class:'axis'},'x (m)'));
+ map.append(svg('text',{x:5,y:16,class:'axis'},'y (m)'));
+ const sorted=[...row.cells].sort((a,b)=>(a.cell_id===selected)-(b.cell_id===selected));
+ for(const cell of sorted){const status=effectiveStatus(row,cell),x=x0+(cell.x-g.x)*scale,y=y0+(cell.y-g.y)*scale,cw=cell.width*scale,ch=cell.height*scale;
+   const group=svg('g',{}),rect=svg('rect',{x,y,width:cw,height:ch,fill:`var(--${status==='not_configured'?'empty':status})`,class:'cell'+(cell.cell_id===selected?' selected':''),tabindex:0,role:'button','aria-label':`Cell ${cell.cell_id}, ${cell.counts.distinct_contributors} contributors, ${labels[status]}`,'aria-pressed':cell.cell_id===selected,'data-cell':cell.cell_id});
+   rect.append(svg('title',{},`Cell ${cell.cell_id} · ${fmt(cell.width)} m · ${cell.counts.distinct_contributors} contributors · ${labels[status]}`));
+   rect.addEventListener('click',()=>selectCell(cell.cell_id));rect.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();selectCell(cell.cell_id);}});group.append(rect);
+   if(cw>28&&ch>30)group.append(svg('text',{x:x+cw/2,y:y+ch/2+5,'text-anchor':'middle',class:'cellvalue'},fmt(cell.counts.distinct_contributors)));
+   if(cw>45&&ch>42)group.append(svg('text',{x:x+cw-6,y:y+13,'text-anchor':'end','font-size':11,fill:'var(--ink)'},status==='pass'?'✓':status==='fail'?'×':status==='unavailable'?'?':'–'));
+   map.append(group);
+ }
+}
+function renderDetail(){
+ const row=current(),cell=row.cells.find(c=>c.cell_id===selected),detail=$('detail');detail.replaceChildren();
+ if(!cell){detail.append(element('p','No recorded candidate for this cell in this window. No threshold result is inferred.','emptydetail'));$('cellArea').textContent='';return;}
+ detail.className='details';const status=effectiveStatus(row,cell),head=element('div',null,'celltitle');head.append(element('h2','Cell '+cell.cell_id),element('span',labels[status],'badge '+status));detail.append(head);
+ detail.append(element('div',`Depth ${cell.depth} · x ${fmt(cell.x)}–${fmt(cell.x+cell.width)} m · y ${fmt(cell.y)}–${fmt(cell.y+cell.height)} m`,'small muted'));
+ $('cellArea').textContent=`${fmt(cell.width)} × ${fmt(cell.height)} m`;
+ const failed=cell.checks.filter(c=>c.status==='fail'),unavailable=cell.checks.filter(c=>c.status==='unavailable');let summary;
+ if(row.assessment.coverage_gate.status!=='pass')summary='Assessment unavailable: '+(reasons[row.assessment.coverage_gate.reason]??row.assessment.coverage_gate.reason)+'.';
+ else if(failed.length)summary=failed.map(c=>`${title(c.metric)}: ${fmt(c.observed)} ${unit(c.unit)}; required ${bounds(c)} ${unit(c.unit)}.`).join(' ');
+ else if(unavailable.length)summary='A required metric is unavailable. '+unavailable.map(c=>title(c.metric)).join(', ')+'.';
+ else if(status==='not_configured')summary='Metrics were recorded without configured requirements.';
+ else summary='All configured requirements are met for this candidate. Publication has not been decided.';
+ detail.append(element('div',summary,'summary'));
+ const table=element('table',null,'table'),thead=element('thead'),tr=element('tr');['Required metric','Observed','Threshold'].forEach(t=>tr.append(element('th',t)));thead.append(tr);table.append(thead);const body=element('tbody');
+ for(const check of cell.checks){const line=element('tr',null,check.status==='fail'?'failed':''),label=element('td');label.append(element('span',check.status==='pass'?'✓':check.status==='fail'?'×':'?','checkmark '+(check.status==='pass'?'passmark':check.status==='fail'?'failmark':'warnmark')),document.createTextNode(title(check.metric)));line.append(label,element('td',fmt(check.observed)+' '+unit(check.unit),'num'),element('td',bounds(check)+' '+unit(check.unit),'num'));body.append(line);}table.append(body);detail.append(table);
+ if(!cell.checks.length)detail.append(element('p','No configured threshold checks.','small muted'));
+ detail.append(element('div','Applied regional policy','sectionlabel'));
+ const sources=element('div',null,'sources');for(const source of cell.policy.sources??[])sources.append(element('span',source.replace('region_type:','Type: ').replace('region:','Region: ').replace('root:','Root: ').replace('uniform:','Uniform: '),'source'));detail.append(sources,element('div',`${cell.policy.effective_id??'None'} · version ${row.assessment.policy_version??'—'}`,'policyid mono'));
+ if(cell.policy.feasible===false)detail.append(element('p','The combined regional bounds are contradictory.','summary'));
+ const more=element('details'),moreTitle=element('summary','All recorded metrics, including unavailable values');more.append(moreTitle);const metrics=element('table',null,'table');
+ for(const [id,metric]of Object.entries(cell.metrics)){const tr=element('tr');tr.append(element('td',title(id)),element('td',metric.value==null?(reasons[metric.reason]??metric.reason??'Unavailable'):fmt(metric.value)+' '+unit(metric.unit)));metrics.append(tr);}more.append(metrics);detail.append(more);
+}
+function render(){
+ const row=current();$('timeline').max=rows().length-1;$('timeline').value=index;$('interval').textContent=`[${seconds(row.start_ms)}, ${seconds(row.end_ms)})`;$('windowIndex').textContent=`Window ${index+1} / ${rows().length}${row.truncated?' · truncated':''}`;
+ $('previous').disabled=index===0;$('next').disabled=index===rows().length-1;
+ const counts={pass:0,fail:0,unavailable:0,not_configured:0};row.cells.forEach(c=>counts[effectiveStatus(row,c)]++);$('counts').replaceChildren();
+ for(const [label,key]of [['met','pass'],['violated','fail'],['unavailable','unavailable']]){const span=element('span');span.append(element('b',counts[key],'num'),document.createTextNode(label));$('counts').append(span);}
+ if(counts.not_configured){const span=element('span',`${counts.not_configured} no policy`);$('counts').append(span);}
+ $('supportExample').disabled=!row.cells.some(c=>c.checks.some(k=>k.metric==='distinct_contributors'&&k.status==='fail'));
+ $('durationExample').disabled=!row.cells.some(c=>c.checks.some(k=>k.metric==='window_duration_ms'&&k.status==='fail'));
+ $('passExample').disabled=!row.cells.some(c=>effectiveStatus(row,c)==='pass');
+ $('mapNote').textContent=row.assessment.coverage_gate.status==='pass'?'Grey areas have no stored candidate or no configured requirements; neither is displayed as approved. Click a cell to inspect its regional requirements.':'Incomplete observation coverage: all cell assessments are shown as unavailable, even if an individual numeric check passes.';
+ $('context').replaceChildren();for(const text of [`Sensor: ${row.sensor_id}`,`Application: ${row.application_id}`,`Samples: ${row.measured_samples}/${row.expected_samples} measured · ${row.missing_samples} missing · ${row.unavailable_samples} unavailable`,`Evaluated at: ${seconds(row.assessment.evaluated_at_ms)}`])$('context').append(element('span',text));
+ $('provenance').textContent=`Run ${row.run_id.slice(0,8)} · ${row.schema}`;$('provenance').title=payload.sources.map(s=>s.name+' · SHA-256 '+s.sha256).join('\n');
+ renderMap();renderDetail();if(!timer)stop();
+}
+$('play').addEventListener('click',()=>{if(timer){stop();return;}if(index===rows().length-1)index=0;timer=setInterval(()=>{if(index>=rows().length-1){stop();return;}index++;render();if(index===rows().length-1)stop();},700);$('play').textContent='Ⅱ Pause';render();});
+$('previous').addEventListener('click',()=>{stop();index=Math.max(0,index-1);render();});$('next').addEventListener('click',()=>{stop();index=Math.min(rows().length-1,index+1);render();});$('timeline').addEventListener('input',()=>{stop();index=Number($('timeline').value);render();});
+$('supportExample').addEventListener('click',()=>jump(c=>c.checks.some(k=>k.metric==='distinct_contributors'&&k.status==='fail')));
+$('durationExample').addEventListener('click',()=>jump(c=>c.checks.some(k=>k.metric==='window_duration_ms'&&k.status==='fail')));
+$('passExample').addEventListener('click',()=>jump(c=>effectiveStatus(current(),c)==='pass'));
+streams.forEach((group,i)=>{const option=element('option',`${group[0].sensor_id} · ${group[0].run_id.slice(0,8)} · ${group[0].application_id}`);option.value=i;$('stream').append(option);});
+if(streams.length>1)$('streamWrap').style.display='block';$('stream').addEventListener('change',()=>{stop();streamIndex=Number($('stream').value);index=0;selected=rows()[0].cells[0]?.cell_id??null;render();});
+selected=rows()[0].cells.find(c=>c.checks.some(k=>k.metric==='distinct_contributors'&&k.status==='fail'))?.cell_id??rows()[0].cells[0]?.cell_id??null;
+try{render();}catch(error){$('error').textContent='Could not display diagnostics: '+error.message;throw error;}
+</script>
+</body>
+</html>

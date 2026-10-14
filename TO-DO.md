@@ -618,7 +618,23 @@ better privacy/utility trade-off rather than assuming it.
 10/2/2/2 threshold example preserves eligible children; no output silently changes support.
 Keep whole-candidate suppression as a correct simpler baseline until this fallback is tested.
 
-### A06 — Live aggregation state overlay — P1, after S04
+### A06 — Aggregation inspection and live state overlay — P1, after S04
+
+**Offline inspection slice implemented, 2026-10-14.** Brought forward for the supervisor
+demo; A05 remains the next core implementation. The [inspector guide](docs/AGGREGATION_INSPECTOR.md)
+documents the prepared recording, reproduction, local MongoDB debug copy and limitations.
+
+- [x] Show recorded candidate geometry, metric values, regional thresholds and policy
+  provenance in a self-contained HTML inspector with cell selection and timeline playback.
+- [x] Distinguish violated, met and unavailable assessments, including a failed coverage
+  gate; do not reuse a selected cell's old values when no candidate is present.
+- [x] Support an explicit export of existing diagnostics into a dedicated `UMP_Debug...`
+  MongoDB collection, without additional database writes in the simulation loop.
+- [x] Prepare and inspect a real 30-window recording; verify regional bounds and database
+  totals, builder fidelity/safety checks, and Safari interaction. This is recorded replay,
+  not live adaptive behavior or empirical privacy/utility evidence.
+
+**Remaining live integration:**
 
 - [ ] Define a read-only debug snapshot separate from sensor cell-ID measurements.
 - [ ] Show collecting/ready candidates, proposed parents, committed output and suppressed
