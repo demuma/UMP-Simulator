@@ -158,3 +158,19 @@ renderer queue. AGBS/GBS SensorSample payloads remain count-only; their schemas 
 frame cadence are unchanged. Measured-empty AGBS captures reach the manager as explicit
 empty batches, and non-sampling ticks call advance without fabricating a sample. See
 [Fixed aggregation contract](FIXED_AGGREGATION.md) for input/count/window semantics.
+
+
+## SharedBuffer comments and debug traces — 2026-10-14
+
+Restored explanatory English comments and DEBUG_MSG calls in SharedBuffer.hpp/.tpp,
+following the current bounded FIFO implementation rather than the obsolete swap/wait
+logic. Traces identify the buffer name, accepted frame index, physical read/write roles,
+capacity/data waits, promotion and end/stop with pending counts. Empty tryRead polling is
+normal and does not produce repeated log messages. Queue behavior is unchanged.
+
+Logging.hpp compiles these calls only when the DEBUG preprocessor symbol is defined.
+The normal Release build keeps them disabled. The existing commented
+`target_compile_definitions(Simulator PRIVATE DEBUG)` line in CMakeLists.txt enables them;
+verbose logging can affect measured timing and should stay off for performance experiments.
+The complete FrameRegressionTests suite passed when compiled with `-DDEBUG`, covering
+bounded backpressure, concurrent FIFO order, sparse measurement pairing and shutdown.
