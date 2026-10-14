@@ -36,6 +36,7 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
+| [Research questions and experiment plan](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md) | Current answers, data prerequisites, feasibility oracle and staged utility/policy experiments |
 | [Controlled evaluation](docs/CONTROLLED_EVALUATION.md) | Frozen input, seven comparable configurations, fixed-query utility and reproduction commands |
 | [First comparison results](docs/EVALUATION_RESULTS_2026-10-14.md) | Measured results, interpretation, reproducibility artifacts and limitations |
 | [Deferred privacy evaluation](docs/PRIVACY_EVALUATION.md) | Previously implemented optional stress test; outside the current utility/policy milestone |

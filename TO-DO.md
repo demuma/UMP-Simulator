@@ -371,16 +371,27 @@ individual IDs. Existing Simulation data and maintained YAML were unchanged.
 
 **Next chronological research steps:**
 
-1. Decide whether applications require explicit empty-cell coverage; current absent support
-   is unknown and can make a fixed occupancy query unanswerable even with high retention.
-2. Sweep support thresholds, legal cell sizes/window caps and regional density regimes on
-   additional frozen runs; include infeasible cases and common-query support comparisons.
-3. Separate release compliance (every released cell passes) from availability (how much
-   usable output is produced), and record suppression reasons and binding regional limits.
-4. Formalize feasibility, bounded-window decisions and the common-window limitation for the
-   presentation; add confidence intervals only with an appropriate independent sampling unit.
-5. After this utility/policy milestone, revisit E02 attacker assumptions and privacy
-   evaluation. Publication-model and preemptive-preparation studies remain later E05/E06 work.
+The [question register and experiment plan](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md)
+records current answers, hypotheses, prerequisites and EP01–EP04. Utility and policy remain
+first; sensitive-attribute/privacy contracts may be clarified now, with experiments deferred.
+
+1. Keep absent public support unknown and define the private diagnostic breakdown for
+   measured-empty, unavailable input, policy suppression and partial query support.
+2. Implement EP01's independent small-case compliance/feasibility reference. Distinguish
+   current coordination rules from relaxed A07 partial rescue, and local from global deadlines.
+3. Run EP02 controlled dense/sparse/handover/blocked-branch/empty/missing/regional cases.
+4. Freeze and run EP03's policy matrix and legal fixed baselines; compare availability,
+   error, age, retention and suppression reasons on the same query and frozen observations.
+5. Plan EP04 independent replications from pilot variability and a stated precision target;
+   formalize feasibility versus search completeness and keep runtime measurement separate.
+6. After this milestone, implement E02/E03 privacy studies whose secret, protected unit,
+   attribute/reference data and attacker assumptions have been specified. E05/E06 remain later.
+
+- [x] Record the metric data-readiness matrix, question register and staged experiment design.
+- [ ] Implement EP01's independent oracle and hand-checked expected results.
+- [ ] Export private suppression/binding-constraint diagnostics with explicit denominators.
+- [ ] Freeze the EP02/EP03 scenario and parameter manifest before running the study.
+- [ ] Choose EP04 replication and uncertainty reporting from the pilot and target precision.
 
 
 ### E01 — Define one utility application — P0
@@ -1123,6 +1134,17 @@ runtime cost. Correct S02 safety/lifetime defects before evaluating a replacemen
 ## 12. Further research and optional infrastructure
 
 ### E03 — Select additional metrics scientifically — P1/P2
+
+Data prerequisites and future sensitive-attribute design are recorded in
+[RESEARCH_QUESTIONS_AND_EXPERIMENTS.md](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md).
+Planning is active; privacy metric/attack implementation follows the utility/policy milestone.
+
+- [x] Separate additional attributes, background/reference distributions and independent
+  experimental realizations; more sensor rows alone do not satisfy those requirements.
+- [ ] Specify each proposed secret, protected unit, public representation, attribute time scope,
+  equivalence/group model and attacker knowledge before implementing a privacy metric.
+- [ ] Specify synthetic attribute assignment and independent/correlated/skewed controls;
+  keep latent labels private and separate from sensor-visible information.
 
 - [ ] Evaluate k/l/t/delta/entropy metrics for actual data and attack scenarios.
 - [ ] Clarify sensitive attributes and the meaning of agent classes.

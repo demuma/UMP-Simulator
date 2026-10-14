@@ -115,6 +115,10 @@ Online diagnostics deliberately continue to return `offline_reference_required` 
 Operational support/threshold checks and the offline known-background distinguishability
 stress test remain different quantities; neither establishes a general privacy guarantee.
 
+The [question register and experiment plan](RESEARCH_QUESTIONS_AND_EXPERIMENTS.md) now
+separates current answers from untested hypotheses and lists the required data for future
+metrics. Defining those prerequisites does not activate the deferred privacy experiments.
+
 ## Presentation metric review
 
 Reviewed on 2026-10-13 against the supplied AutSys 2025 presentation, PDF pages 6–8

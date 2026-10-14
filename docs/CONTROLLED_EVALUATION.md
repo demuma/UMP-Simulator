@@ -17,6 +17,10 @@ selection, Temporal First (preserve time; try space first) and Spatial First (pr
 space; try time first). This is a controlled mechanism comparison, not evidence that one
 strategy always dominates or that the simulator reproduces a real city.
 
+The next study is specified in [RESEARCH_QUESTIONS_AND_EXPERIMENTS.md](RESEARCH_QUESTIONS_AND_EXPERIMENTS.md):
+independent feasibility checks, controlled mechanism cases, policy sweeps and independent
+replications. It is a design awaiting implementation, separate from the completed pilot.
+
 ## Frozen private input
 
 `AggregationReplay` accepts a versioned JSON observation stream and a small YAML/JSON
