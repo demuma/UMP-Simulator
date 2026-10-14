@@ -70,8 +70,10 @@ int main() {
             "Disabled/render-only AGBS unexpectedly instantiated a manager");
         const auto origin = TimePoint{std::chrono::milliseconds{1744191000000LL}};
         std::vector<ump::AggregationCandidate> fastCandidates, slowCandidates;
-        agbs.enableAggregation({"fixture", agbs.sensorId, "baseline", {0, 0, 20, 20, 2}, 100, 400},
-            0.05f, origin, [&](const auto& result) { fastCandidates.push_back(result); });
+        ump::AggregationConfig fastConfig{"fixture", agbs.sensorId, "baseline", {0, 0, 20, 20, 2}, 100, 400};
+        fastConfig.history = ump::HistoryLimits{1000, 16, 1000, 64000, 16};
+        agbs.enableAggregation(fastConfig, 0.05f, origin,
+            [&](const auto& result) { fastCandidates.push_back(result); });
         slow.enableAggregation({"fixture", slow.sensorId, "baseline", {0, 0, 20, 20, 2}, 200, 400},
             0.05f, origin, [&](const auto& result) { slowCandidates.push_back(result); });
         std::vector<Agent> agents;
@@ -169,7 +171,22 @@ int main() {
         require(fastCandidates.back().truncated && fastCandidates.back().endMs == 950,
             "Final AGBS partial interval not marked");
         require(agbs.getAggregationManager()->debugState().retainedIdentityMemberships == 0,
-            "AGBS finalization retained private identities");
+            "AGBS fixed accumulator retained identities after closure");
+
+        const auto* history = agbs.getAggregationManager()->history();
+        require(history && history->debugState().bins == 9 && history->debugState().observations == 9,
+            "Live AGBS did not retain measured-empty samples and private observations");
+        const auto historicalParent = history->query(ump::historyCell(fastConfig.coverage, 12, 1), 0, 950);
+        require(historicalParent.status == ump::HistoryQueryStatus::Complete
+            && historicalParent.candidate->counts.distinctContributors == 2
+            && historicalParent.candidate->counts.observationContributions == 9
+            && historicalParent.candidate->counts.meanSampleOccupancy == 1,
+            "Live AGBS history could not reconstruct across closed windows");
+        const auto emptyParent = history->query(ump::historyCell(fastConfig.coverage, 13, 1), 0, 950);
+        require(emptyParent.status == ump::HistoryQueryStatus::Complete
+            && emptyParent.candidate->counts.observationContributions == 0,
+            "Unpopulated sibling lost known-empty coverage");
+        require(!slow.getAggregationManager()->history(), "History leaked into an opt-out stream");
 
         require(frameCount == 9, "Expected 9 measured frames for 19 simulation steps");
         const Counts gridCounts{{100,1}, {200,1}, {300,1}, {400,2}, {500,2}, {800,1}, {900,1}};

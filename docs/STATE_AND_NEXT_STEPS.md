@@ -482,3 +482,31 @@ Initial scope is aligned, non-overlapping rectangles and numeric registered metr
 Nested/overlapping regions, live policy changes, preservation priorities, publication models,
 release/suppress, adaptive history and merge/split remain open. No formal anonymity claim,
 empirical privacy improvement, utility result or performance benchmark follows from these checks.
+
+
+## Implementation record — 2026-10-14: SharedBuffer traces and initial A02 history
+
+Restored English method/ownership comments and DEBUG_MSG calls to SharedBuffer.hpp/.tpp,
+covering initialization, waits, frame indices, promotion and drain/stop. The current bounded
+FIFO algorithm is unchanged; polling an empty tryRead does not flood the log. The frame
+suite passed with DEBUG enabled. The restoration is a separate local commit.
+
+AggregationHistory now owns bounded sample bins under AggregationManager. Configured
+retention, bin/observation/string-byte limits and bucket limits prevent growth with run
+duration. Invalid input/capacity errors are explicit. Active/preemptive records share
+observations, carry original start, mutable bounded end and finite retention deadline, and
+are collected/closed/expired independently. No Agent/Node pointer or SharedBuffer access.
+
+Queries reconstruct finest cells or representable ancestors over exact half-open intervals,
+with contributor unions, type contribution counts and measured-sample occupancy. They
+distinguish incomplete, future and evicted support from measured zero. Siblings with
+different current windows do not block complete private historical queries. No candidate
+cache/precomputation, release owner or public output is implied. A04/E04 can evaluate the
+resulting candidates without a new serializer. Fixed-window JSONL remains schema v3.
+
+Eight suites, strict standard-C++ compilation, a 1,200-query replay oracle and actual AGBS
+reconstruction across three windows passed. Five full regional windows/316 cell assessments
+were checked with history enabled; fourteen invalid configurations preserved a test DB
+sentinel. Test DBs removed; normal simulator rebuilt. Details: AGGREGATION_HISTORY.md.
+The next core stage is A05 publication coordination, followed by A03 automatic selection;
+publication models, reservations, commit-driven invalidation and prepare-cost studies remain open.

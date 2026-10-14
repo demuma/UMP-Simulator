@@ -1,11 +1,14 @@
 #pragma once
 
 #include "AggregationInput.hpp"
+#include "AggregationHistory.hpp"
+#include <memory>
 #include <functional>
 #include <unordered_map>
 #include <unordered_set>
 
-// Sensor-independent fixed-window core. All calls and its output sink are synchronous.
+// Sensor-independent fixed-window output with optional bounded private reconstruction.
+// All calls and the output sink are synchronous; history is separate from renderer transport.
 class AggregationManager {
 public:
     using Sink = std::function<void(const ump::AggregationCandidate&)>;
@@ -15,6 +18,10 @@ public:
     void advance(ump::AggregationTime nowMs);
     void finish(ump::AggregationTime endMs);
     ump::AggregationDebugState debugState() const;
+    const ump::AggregationHistory* history() const { return retainedHistory.get(); }
+    void openBucket(ump::CandidateBucket bucket);
+    void extendBucket(const ump::BucketKey& key, ump::AggregationTime endMs);
+    bool discardBucket(const ump::BucketKey& key);
 
 private:
     struct CellAccumulator {
@@ -28,6 +35,7 @@ private:
 
     ump::AggregationConfig config;
     Sink sink;
+    std::unique_ptr<ump::AggregationHistory> retainedHistory;
     ump::AggregationTime windowStartMs = 0;
     ump::AggregationTime watermarkMs = 0;
     std::optional<ump::AggregationTime> lastObservationMs;

@@ -64,6 +64,7 @@ if(UMP_BUILD_SENSOR_REGRESSION_TESTS)
         src/CollisionGrid.cpp
         src/CollisionAvoidance.cpp
         src/AggregationManager.cpp
+        src/AggregationHistory.cpp
         src/Utilities.cpp
     )
     target_compile_features(SensorRegressionTests PRIVATE cxx_std_17)
@@ -88,7 +89,7 @@ endif()
 option(UMP_BUILD_AGGREGATION_TESTS "Build fixed aggregation core tests (standard C++ only)" ON)
 if(UMP_BUILD_AGGREGATION_TESTS)
     enable_testing()
-    add_executable(AggregationRegressionTests tests/AggregationRegressionTests.cpp src/AggregationManager.cpp)
+    add_executable(AggregationRegressionTests tests/AggregationRegressionTests.cpp src/AggregationManager.cpp src/AggregationHistory.cpp)
     target_compile_features(AggregationRegressionTests PRIVATE cxx_std_17)
     add_test(NAME aggregation_regression COMMAND AggregationRegressionTests)
     set_tests_properties(aggregation_regression PROPERTIES LABELS "unit;aggregation" TIMEOUT 15)
@@ -121,9 +122,19 @@ if(UMP_BUILD_POLICY_TESTS)
     target_compile_features(PolicyRegressionTests PRIVATE cxx_std_17)
     add_test(NAME policy_regression COMMAND PolicyRegressionTests)
     add_executable(PolicyConfigurationTests tests/PolicyConfigurationTests.cpp src/PolicyTree.cpp
-        src/CandidateMetrics.cpp src/PolicyConfiguration.cpp src/Region.cpp)
+        src/CandidateMetrics.cpp src/PolicyConfiguration.cpp src/AggregationConfiguration.cpp src/Region.cpp)
     target_compile_features(PolicyConfigurationTests PRIVATE cxx_std_17)
     target_link_libraries(PolicyConfigurationTests PRIVATE SFML::Graphics yaml-cpp::yaml-cpp)
     add_test(NAME policy_configuration COMMAND PolicyConfigurationTests)
     set_tests_properties(policy_regression policy_configuration PROPERTIES LABELS "unit;policies" TIMEOUT 15)
+endif()
+
+option(UMP_BUILD_HISTORY_TESTS "Build bounded history and logical bucket tests (standard C++ only)" ON)
+if(UMP_BUILD_HISTORY_TESTS)
+    enable_testing()
+    add_executable(HistoryRegressionTests tests/HistoryRegressionTests.cpp src/AggregationHistory.cpp
+        src/AggregationManager.cpp src/CandidateMetrics.cpp src/PolicyTree.cpp)
+    target_compile_features(HistoryRegressionTests PRIVATE cxx_std_17)
+    add_test(NAME history_regression COMMAND HistoryRegressionTests)
+    set_tests_properties(history_regression PROPERTIES LABELS "unit;aggregation;history" TIMEOUT 15)
 endif()

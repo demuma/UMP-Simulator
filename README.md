@@ -3,7 +3,7 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
-**Status: 2026-10-13. Current work: define and build the missing aggregation pipeline,
+**Status: 2026-10-14. Current work: define and build the missing aggregation pipeline,
 metric evaluation and regional policy trees, starting with AGBS. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
@@ -12,9 +12,10 @@ agent-frame consumption independently of producer runtime and displays requested
 now adds optional identity-bearing AGBS input, a dependency-free fixed-window core and
 internal JSONL candidates. E04 now adds measured cell metrics, explicit unavailable values
 and versioned threshold checks. A04 now compiles immutable regional policy trees from
-existing Regions, with strict numeric inheritance and per-cell provenance. Adaptive buckets
-and privacy release decisions remain open, as do actual-interval velocities and reproducible
-research experiments.**
+existing Regions, with strict numeric inheritance and per-cell provenance. A02 now adds
+opt-in bounded private history, on-demand ancestor/time reconstruction and logical active/
+preemptive bucket records. Automatic adaptive selection and privacy release decisions remain
+open, as do actual-interval velocities and reproducible research experiments.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -26,6 +27,7 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
+| [Bounded history and buckets](docs/AGGREGATION_HISTORY.md) | Implemented A02 private reconstruction, logical windows, resource limits, deadlines and verification |
 | [Regional policy tree](docs/POLICY_TREE.md) | Implemented root/type/region inheritance, sparse compilation, conflict semantics and runnable example |
 | [Candidate metrics](docs/METRICS.md) | Implemented online metric registry, threshold assessment, configuration and first fixed utility-query contract |
 | [Fixed aggregation contract](docs/FIXED_AGGREGATION.md) | Implemented A01 input, count/window semantics, coverage, memory bounds and opt-in configuration |
@@ -75,8 +77,8 @@ complete aggregation path: observations, cell/window aggregation, initial metric
 regional policy lookup through a minimal policy tree, and release/suppress decisions.
 Input checks and demo preparation accompany this work. Simulator startup works and sensor
 regression tests passed. Fixed-window aggregation, initial metrics and the minimal regional
-policy tree are implemented. Next are reconstructable history (A02) and coordinated
-metric-driven release decisions (A05/A03).
+policy tree and bounded reconstructable history are implemented. Next are publication
+coordination (A05) and metric-driven release/adaptation decisions (A03).
 
 The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) now prioritizes
 that foundation immediately, dynamic spatial release selection and initial comparisons by
@@ -154,7 +156,7 @@ reverted test results do not establish correctness of the current implementation
 | AGBS | Quadtree, position mapping, counts and cell IDs | Splitting follows positions/max depth, not metrics or policies |
 | AggregationManager | Optional AGBS ingestion, fixed windows, contributor unions and JSONL candidates assessed against uniform or regional requirements | No approved releases, merges or temporal extension |
 | Regional rules | Immutable sparse PolicyTree; explicit root/type/region metric requirements, strict numeric inheritance and footprint conflicts | Aligned, non-overlapping rectangles only; legacy granularity/k/l fields inactive; no action/model selection or live updates |
-| Temporal history | Bounded active-window identity sets and counts | No reconstructable history, preemptive buckets or variable aggregation windows |
+| Temporal history | Opt-in bounded sample history; exact ancestor/time queries and logical active/preemptive windows with finite deadlines | Private reconstruction only; no automatic preparation, release reservations or commit-driven invalidation |
 | Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry and independent playback pacing; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
 | Evaluation | Online metric registry, uniform/regional threshold assessments and a defined first occupancy-query baseline | GT utility experiment, independent attacker evaluation and comparative baselines remain open |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
@@ -347,8 +349,11 @@ the candidate and assessment. See [METRICS.md](docs/METRICS.md) for meanings and
 
 This first mode uses configured leaf depth and a fixed time window. Its threshold assessments
 do not implement empirical privacy measurement, suppression, release approval,
-merges/splits or preemptive history. Its identity sets are discarded when a window closes; A02 must add reconstructable
-history before adaptive candidates can reuse those observations. Geometry, history,
+merge/split selection or publication coordination. Its accumulator identity sets are discarded
+when a fixed window closes. With A02 history enabled, owned fine observations remain for a
+bounded horizon and can reconstruct ancestors or extended/offset intervals. Logical active/
+preemptive records share that history and never publish independently. See
+[AGGREGATION_HISTORY.md](docs/AGGREGATION_HISTORY.md). Geometry, history,
 policy evaluation and public release state remain separate responsibilities.
 
 A static spatial hierarchy with a dynamic release view is a plausible design. A fully
@@ -455,7 +460,17 @@ cmake --build renderers/abs/build -j4
 Replace abs with gbs, agbs or gt for the other applications. Each target is named Visualizer,
 so the renderers remain separate CMake projects for now.
 
-### Run policy, metric, playback, aggregation, frame and sensor regression tests
+### Run history, policy, metric, playback, aggregation, frame and sensor regression tests
+
+HistoryRegressionTests is enabled by default (UMP_BUILD_HISTORY_TESTS), uses standard C++
+only, and checks exact unions, asynchronous windows, empty/missing support, expiration,
+budget failures and an independent geometry/time replay oracle. SensorRegressionTests
+also verifies reconstruction from actual AGBS observations across fixed-window closure:
+
+```sh
+ctest --test-dir simulator/build -R history_regression --output-on-failure
+```
+
 
 PolicyRegressionTests and PolicyConfigurationTests are enabled by default
 (UMP_BUILD_POLICY_TESTS). The former uses standard C++ only; the latter links YAML and
@@ -568,8 +583,8 @@ cd /Users/maxdemu/Developer/UMP-Simulator/simulator/examples/regional-policy
 ../../build/Simulator
 ```
 
-This runs a two-second headless AGBS demonstration with a default/root policy and two
-regional policies, using MongoDB database `UMP_PolicyTree_Demo` with clearing disabled.
+This runs a two-second headless AGBS demonstration with a default/root policy, two
+regional policies and a 2000-ms private history, using MongoDB database `UMP_PolicyTree_Demo` with clearing disabled.
 Each invocation appends raw data and creates a separate candidate JSONL file under that
 directory's `results/aggregation`. It does not use the maintained `Simulation` database.
 The west region requires at least five contributors; the northeast permits at most 200-ms
@@ -667,6 +682,16 @@ A further four-stream run checked twelve v3 windows for uniform and absent-polic
 Only UUID-named test databases were used and removed. The normal simulator build was updated.
 These are functional checks; regional policy runtime/memory benchmarks and empirical privacy
 or utility improvements have not been measured. See [POLICY_TREE.md](docs/POLICY_TREE.md).
+
+On 2026-10-14 SharedBuffer comments and DEBUG_MSG traces were restored against the current
+FIFO behavior. The frame suite passed with DEBUG enabled. A02 passed all eight suites and
+strict standard-C++ compilation. Its replay oracle checked 1,200 queries over 300 steps;
+retention stayed within five bins/twenty observations in that fixture. AGBS integration
+reconstructed nine contributions/two distinct contributors across three closed windows,
+including measured-empty samples. The full history-enabled example produced five windows
+with 316 independently checked regional cell assessments; fourteen startup failures preserved
+a disposable database sentinel. Only test databases were used and removed. The normal build
+was updated. These are correctness checks, not a performance or privacy/utility experiment.
 
 ## 10. Working process
 

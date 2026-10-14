@@ -2,6 +2,9 @@
 
 Status: 2026-10-13. Detailed adaptive-release proposal, not implemented behavior.
 The implemented fixed-window foundation is documented in [FIXED_AGGREGATION.md](FIXED_AGGREGATION.md).
+Update 2026-10-14: A02's bounded private bins and logical candidate records are implemented
+in [AGGREGATION_HISTORY.md](AGGREGATION_HISTORY.md), alongside A04's numeric policy tree.
+The reservation, publication and automatic decision lifecycle below remains a proposal.
 This document
 refines [Aggregation design review](AGGREGATION_DESIGN.md); [TO-DO](../TO-DO.md)
 remains the execution queue. Examples and numerical thresholds are illustrative.
@@ -62,7 +65,8 @@ A01 has replaced the original collection/timestamp-reference scaffold. An enable
 owns an optional manager that accepts value observations and tracks one fixed window.
 The external diagnostic sink consumes candidates synchronously. The core is independent
 of sensors, geometry objects, MongoDB and render transport. The adaptive lifecycle below
-still requires reconstructable history, policies and a public release protocol.
+now has bounded reconstruction and numeric policies; it still requires automatic selection
+and a public release protocol.
 
 Proposed logical interfaces, not final C++ signatures:
 

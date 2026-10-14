@@ -6,7 +6,8 @@ Implementation and verification status is recorded in TO-DO and README. The subs
 [metric contract](METRICS.md) adds a separate evaluator and versioned threshold assessments
 to diagnostics. A04's [regional tree](POLICY_TREE.md) now supplies inherited requirements
 and per-cell policy provenance in schema v3; the fixed-window core and its count semantics
-are unchanged. Neither extension adds adaptive history or public release decisions.
+are unchanged. A02 now optionally retains fine observations for private reconstruction;
+see [AGGREGATION_HISTORY.md](AGGREGATION_HISTORY.md). Public release decisions remain open.
 
 ## Scope and ownership
 
@@ -94,8 +95,11 @@ exceeding it aborts with an error rather than dropping people or declaring priva
 Memory grows with occupied cells and distinct contributors in this one window, not run
 length. A synchronous sink prevents an unbounded completed-output queue. Sink/file errors
 abort the run; there is no durable retry or exactly-once guarantee across process failure.
-Private reconstructable history, preemptive buckets, merges, policies and public release
-records are not implemented by this slice. Closing the fixed window discards its ID sets.
+Closing the fixed window discards its accumulator ID sets. Without A02 history this also
+discards reconstruction input. With `history` enabled, a separately bounded sample store
+retains owned observations across closure; logical active/preemptive candidates reference
+that store. Fixed output remains unchanged. Automatic merges and public release records
+are not implemented. Policies evaluate outputs through the separate A04/E04 path.
 
 ## Configuration
 

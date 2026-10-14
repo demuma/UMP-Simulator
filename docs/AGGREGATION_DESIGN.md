@@ -2,7 +2,10 @@
 
 Status: 2026-10-13. Design review with updated baseline. Proposals below are not implied
 implementation. The first fixed-window slice is specified separately in
-[FIXED_AGGREGATION.md](FIXED_AGGREGATION.md).
+[FIXED_AGGREGATION.md](FIXED_AGGREGATION.md). Update 2026-10-14: initial A04 numeric
+policies and A02 bounded reconstruction/logical windows are implemented; actual A02 behavior
+is specified in [AGGREGATION_HISTORY.md](AGGREGATION_HISTORY.md). Adaptive release coordination
+and automatic strategy selection remain proposals.
 The user requests preservation of sensor modularity and existing performance work. The
 current configuration and presentation are design inputs, not instructions to execute
 every item in an old implementation plan.
@@ -71,7 +74,8 @@ regions. Spatial and temporal metric bounds have explicit registry units.
 - A01 replaced the MongoDB/timestamp-reference scaffold with a standard-C++ manager:
   identity-bearing ingestion, fixed windows, contributor unions, sample means, coverage
   accounting and an external diagnostic sink. Render instances do not instantiate it.
-  Adaptive history, policies, public releases and preemptive buckets remain unimplemented.
+  A04 adds numeric regional policies; A02 adds bounded private history and logical bucket
+  alternatives. Public releases and automatic adaptive selection remain unimplemented.
 - The spatial hierarchy supports nodes, parents, children and cell IDs. Current AGBS
   splitting follows positions at configured maxDepth, not policy/metric decisions.
 

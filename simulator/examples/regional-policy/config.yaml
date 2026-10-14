@@ -80,6 +80,13 @@ sensors:
       application_id: occupancy-demo
       window_ms: 400
       diagnostics_directory: results/aggregation
+      # Private A02 reconstruction survives fixed-window closure; no automatic release.
+      history:
+        retention_ms: 2000
+        max_bins: 32
+        max_observations: 100000
+        max_identity_bytes: 16000000
+        max_buckets: 128
       policy_tree:
         id: occupancy-regions
         version: '1'

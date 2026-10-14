@@ -6,6 +6,8 @@
 #include "../include/Region.hpp"
 #include "../include/AggregationDiagnostics.hpp"
 #include "../include/PolicyConfiguration.hpp"
+#include "../include/AggregationConfiguration.hpp"
+#include <limits>
 
 // Simulation constructor
 Simulation::Simulation(
@@ -364,6 +366,15 @@ void Simulation::initializeMetricPolicies() {
         const ump::GridCoverage coverage{area["x"].as<float>(), area["y"].as<float>(),
             area["width"].as<float>(), area["height"].as<float>(), sensor["grid"]["max_depth"].as<int>()};
         const auto applicationId = aggregation["application_id"].as<std::string>("fixed-baseline");
+        if (const auto limits = readHistoryLimits(aggregation["history"])) {
+            const double rate = sensor["frame_rate"].as<double>();
+            if (!std::isfinite(rate) || rate <= 0 || 1000.0 / rate < 1 || 1000.0 / rate >= static_cast<double>(std::numeric_limits<ump::AggregationTime>::max()))
+                throw std::invalid_argument("History requires a representable positive sensor period");
+            ump::AggregationConfig historySetup{aggregationRunId, sensor["id"].as<std::string>(),
+                applicationId, coverage, static_cast<ump::AggregationTime>(std::llround(1000.0 / rate)),
+                aggregation["window_ms"].as<ump::AggregationTime>()};
+            ump::AggregationHistory checked(historySetup, *limits); // Preflight before database writes.
+        }
         metricEvaluators.emplace(sensor["id"].as<std::string>(),
             makeMetricEvaluator(aggregation, coverage, applicationId, regions));
     }
@@ -481,6 +492,7 @@ void Simulation::initializeSensors() {
                     {detectionArea.position.x, detectionArea.position.y, detectionArea.size.x, detectionArea.size.y, maxDepth},
                     static_cast<ump::AggregationTime>(std::llround(1000.0 / frameRate)),
                     aggregation["window_ms"].as<ump::AggregationTime>(), static_cast<std::uint64_t>(budget)};
+                settings.history = readHistoryLimits(aggregation["history"]);
                 auto evaluator = std::move(metricEvaluators.at(sensor->sensorId));
                 auto diagnostics = makeAggregationDiagnosticsSink(
                     aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp);

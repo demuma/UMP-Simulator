@@ -92,7 +92,9 @@ No new thread, SharedBuffer consumer, mutable data-tree reference or per-tick re
 is introduced. The tree is immutable for the run. It uses standard C++; YAML/Region adaptation
 and JSON serialization are outside the core. Runtime policy changes, overlapping/nested
 selected regions, arbitrary polygons, temporal policy regions, preference/action conflicts,
-multiple simultaneously published application views and adaptive history remain open.
+multiple simultaneously published application views and adaptive decision selection remain open.
+A02 now provides [bounded private reconstruction](AGGREGATION_HISTORY.md) for alternative
+cell/interval candidates; this does not change policy or publication semantics.
 
 ## Implementation and runnable example
 
@@ -107,7 +109,7 @@ multiple simultaneously published application views and adaptive history remain 
 - `AggregationDiagnostics.cpp`: serialize v3 assessments, including policy provenance.
 
 The complete `simulator/examples/regional-policy/config.yaml` has one root and two selected
-regions. Run it from its directory using `../../build/Simulator` after the normal build.
+regions. Since A02 it also enables bounded private history with explicit resource limits. Run it from its directory using `../../build/Simulator` after the normal build.
 It requires local MongoDB and uses `UMP_PolicyTree_Demo` with clearing disabled. Repeated
 runs append raw data; each run receives a new JSONL candidate file. It starts headless;
 the optional renderer still shows sensor cells, not policy decisions.

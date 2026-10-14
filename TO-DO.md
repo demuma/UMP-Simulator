@@ -1,6 +1,6 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-13. Current priority: build the missing aggregation foundation, including metrics and policy trees; show the first integrated path on October 14, evaluate it by October 18, and extend adaptation by October 25.**
+**Status: 2026-10-14. Current priority: build the missing aggregation foundation, including metrics and policy trees; show the first integrated path on October 14, evaluate it by October 18, and extend adaptation by October 25.**
 
 This is the central task backlog. README describes current behavior; this file tracks
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
@@ -24,14 +24,16 @@ crashes or corrupt input are blockers, not reasons to begin an unrelated redesig
 
 ## 2. Chronological execution order
 
-**Current position: initial Stage 3 regional policy tree implemented and integrated with
-E04 metrics. Next is A02's bounded history and active/preemptive window contract.
+**Current position: initial Stage 4 bounded history and logical active/preemptive windows
+implemented alongside E04/A04 metrics and policies. Next is A05 publication coordination,
+then A03's decision layer; private candidate reconstruction does not authorize release.
 E01's fixed occupancy-query contract is documented; the GT experiment and E02 attacker
-definition remain open. S04/S01, S05, A01, E04 and the A04 numeric-policy slice have regression coverage.** The detailed
+definition remain open. S04/S01, S05, A01, E04, the A04 numeric-policy slice and initial A02 history have regression coverage.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
 proposals, flow diagram, storage model and hand-worked cases. The
 [fixed aggregation contract](docs/FIXED_AGGREGATION.md) records actual A01 behavior;
-active/preemptive history and adaptive release rules remain proposals. The core is intended to be reusable across sensor types;
+the [A02 history contract](docs/AGGREGATION_HISTORY.md) records implemented private
+reconstruction and logical windows. Adaptive release rules remain proposals. The core is reusable across sensor types;
 AGBS is the first integration target.
 Separate sensor behavior/state is preserved. A generic API does not imply that every
 sensor provides every metric input or supports arbitrary spatial refinement.
@@ -41,8 +43,8 @@ sensor provides every metric input or supports arbitrary spatial refinement.
 | 1 — foundation implemented | Common evaluation area; input, count and output semantics | D01–D03, A01 | Concrete AGBS batch/aggregate examples and chosen units |
 | 2 — online slice implemented | Metric definitions and required statistics | E01, E02, E04 | Defined inputs, calculated values and evaluation references |
 | 3 — initial numeric slice implemented | Policy tree using existing Regions | A04 | Effective regional requirements, inheritance and conflicts |
-| 4 — next | Active/preemptive buckets and history | A02 | Hand-worked windows, lifecycle and retention rules |
-| 5 | Publication coordination, AGBS decisions and inspection | A05, A03, A07, A06 | Fixed release/suppress path, then merge/split, partial suppression, time extension and debug view |
+| 4 — private reconstruction implemented | Active/preemptive buckets and history | A02 | Hand-worked windows, lifecycle and retention rules |
+| 5 — next | Publication coordination, AGBS decisions and inspection | A05, A03, A07, A06 | Fixed release/suppress path, then merge/split, partial suppression, time extension and debug view |
 | 6 | Complete-run checks and comparative evaluation | V01, B01, R01–R03, X02, E05, E06 | Equal input, verified releases, publication/priority comparisons and preparation-cost study |
 | 7 — later | Taxonomy brainstorming, renderer settings and control GUI | X01, X10, X11 | Separate design proposals and measured implementation scope |
 | 8 — later | Map extraction, routes and collision avoidance | X04, X03, X05 | Controlled scenarios and realism/performance evidence |
@@ -99,7 +101,8 @@ getSplitSequence use maxDepth, while AGBS splits from current positions and writ
 AggregationManager now ingests identity-bearing batches and emits bounded fixed-window
 candidates through a separate sink. A04 compiles explicit root/type/Region requirements
 into a sparse policy tree and E04 evaluates them for each candidate. Legacy k/l fields
-remain inactive. Decision/release logic and adaptive history remain missing components,
+remain inactive. A02 now retains bounded fine observations and reconstructs candidate
+windows on demand. Decision/release logic and automatic adaptive selection remain missing components,
 not configuration adjustments to a functioning adaptive aggregator.
 
 **Proposed flow:** sensor observation -> bounded history -> candidate cell/window aggregate
@@ -116,9 +119,9 @@ Database writing and rendering consume the resulting release rather than decidin
   A01 now implements the input/count/window portion; release-time semantics remain A05.
 - [ ] **P2 — Working aggregation/history (A01/A02).** Fixed candidate mode is implemented
   and tested for repeated observations, boundaries, empty windows and contributor unions.
-  Next retain the observations or sufficient statistics needed for parent aggregation,
-  child refinement and temporal extension. Describe active versus preemptive logical
-  windows and retention before choosing physical bucket containers.
+  A02 now retains fine observation bins and reconstructs parent/child or extended candidates
+  on demand. Active/preemptive logical records share that history, with explicit resource
+  limits and deadlines. Coordination ownership and committed-output invalidation remain A05.
 - [ ] **P3 — Metric contract and initial measures (E01/E02/D03).** Each metric must have
   a definition, inputs, units, validity and relationship to a constraint or objective.
   Start with distinct contributors, cell size/area, aggregation duration and release age.
@@ -331,7 +334,8 @@ it neither approves publications nor implements adaptive bucket history.
 - [x] Validate stream identity, duplicate/order/cadence, cell support and finalization.
 - [x] Keep manager state independent per sensor/application; exercise two live AGBS rates.
 - [ ] Add multiple application instances per configured sensor and ABS/GBS adapters later.
-- [ ] Add reconstructable history, dynamic candidates and supported parent enumeration under A02/A03.
+- [x] Add bounded reconstructable history and representable ancestor queries under A02.
+- [ ] Add automatic dynamic candidate selection under A03 with A05 publication coordination.
 
 **Validation:** Release build, three CTest suites, and a one-second full executable smoke
 run with isolated MongoDB. Six candidate windows from 10/5-Hz AGBS matched sampled GT
@@ -468,38 +472,63 @@ decisions remains A02/A03/A05 work.
 
 ### A02 — Bounded history and active/preemptive windows — P0
 
-- [ ] Specify retrospective parent aggregation from internal observations.
-- [ ] Compare physical active/preemptive containers with logical windows over shared history.
-- [ ] Define retention, open windows and cleanup, with bounded coordination/retry retention.
-- [ ] Store owned fine time-bin history and reference it from sparse bucket records keyed
+**Initial private-history implementation complete, 2026-10-14.**
+[AGGREGATION_HISTORY.md](docs/AGGREGATION_HISTORY.md) records storage, API, deadline semantics,
+configuration, worked examples and verification. History is opt-in; the maintained config
+is unchanged. The regional example enables it. Bucket creation/extension is available via
+the manager API; automatic active-cut selection and prewarming are not enabled. READY and
+publication states require the later decision/release layer, not an arbitrary history flag.
+
+- [x] Specify retrospective parent aggregation from internal observations.
+- [x] Compare physical active/preemptive containers with logical windows over shared history.
+- [x] Define bounded sample retention, logical open windows and cleanup. Bucket deadlines
+  fit the fixed retention horizon; expired records are removed before their support expires.
+- [ ] Integrate bounded publication coordination/retry retention under A05/F03.
+- [x] Store owned fine time-bin history and reference it from sparse bucket records keyed
   by stream/application, cell/depth, window start and generation. No Agent*/Node* lifetimes.
-- [ ] Treat leaf flags as work hints; verify full sibling coverage including known-empty cells.
+- [x] Reconstruct complete parent footprints using coverage metadata, including known-empty
+  siblings without physical bucket records; missing/unavailable samples never become zeros.
+- [ ] Treat future leaf flags as work hints rather than completeness/publication ownership.
 - [ ] Separate legal merge extent, reserved unpublished extent and precomputation extent.
   Specify ancestor lookahead levels, finite temporal candidates and cache/memory budgets.
-- [ ] Start with on-demand reconstruction; add one/two-level, full and selective preparation
-  as E05 variants. An uncached candidate remains available when complete history permits it.
-- [ ] Use exact contributor unions/reference counts and appropriate time weights; do not
-  sum unique child counts or treat repeated observations as different people.
-- [ ] Define COLLECTING/WAITING, READY, SEALED/PENDING_OUTPUT, COMMITTED, SUPERSEDED
-  and SUPPRESSED. Keep temporal_exhausted separate from publication state.
+- [x] Implement on-demand reconstruction independently of prepared buckets. An uncached
+  representable ancestor remains reconstructable when the interval is retained and closed.
+- [ ] Add one/two-level, full and selective preparation as E05 variants with measured budgets.
+- [x] Use exact contributor unions across space/time; do not sum unique child counts or
+  repeated observations as people. Preserve A01's equal measured-sample weights, including
+  measured-empty bins. Continuous-time occupancy integration is not claimed.
+- [x] Implement private COLLECTING/CLOSED observation progress, bounded extension, discard
+  and deadline expiry. CLOSED does not imply metric readiness, approval or publication.
+- [ ] Implement decision/publication states WAITING, READY, SEALED/PENDING_OUTPUT, COMMITTED,
+  SUPERSEDED and SUPPRESSED under A03/A05. Keep temporal_exhausted separate.
 - [ ] Invalidate competing preemptive candidates after a committed cut; reclaim history
   only after all bounded dependencies are resolved.
-- [ ] Handle different sibling starts/durations with interval-specific history queries.
+- [x] Handle different sibling starts/durations with interval-specific history queries.
   A sibling starting a new bucket does not block a parent over complete private history.
 - [ ] Transfer only the unpublished prefix needed by a parent; preserve later suffixes,
   minimum-window rules and exactly one publication owner per cell/interval.
-- [ ] Define three relative ancestor steps as 64 equal base-cell areas, not 64 copied
+- [x] Define three relative ancestor steps as 64 equal base-cell areas, not 64 copied
   buckets; verify mixed-depth geometry and current four-base-node/implicit-root convention.
-- [ ] Test a requested ancestor beyond the precomputed range: reconstruct on demand
-  only with complete history, available support, representable geometry and valid bounds.
-- [ ] Reconcile the paper's interval-tree proposal with the presentation's active/preemptive
-  buckets: specify whether an interval index is required by actual queries before choosing
-  it over bounded bins/history. These structures have different roles.
+- [x] Test uncached ancestors, geometry/root limits, evicted/future support and A04 metric
+  evaluation of reconstructed candidates. Queries return incomplete coverage explicitly.
+- [ ] Gate actual release on full coverage, policy bounds and unpublished availability (A05).
+- [x] Use bounded chronological bins for the first interval queries and small logical
+  records for active/preemptive alternatives. An interval tree is not needed for correctness;
+  indexing/caching remains an E05 performance choice with separate ownership semantics.
 - [ ] Distinguish closed, decision-ready, externally published and discarded states;
   define already-published-data behavior for retrospective reconstruction.
 
-**Acceptance:** no double counting, bounded storage and reconstructable permitted windows.
-Deleting a DB record cannot retract an already externally visible publication.
+**Verification:** all eight CTest suites passed, plus strict C++17 compilation without
+SFML/MongoDB for the history core. Tests check exact unions, geometry, coverage, sibling
+windows, deadlines, budgets and rejection without side effects. A 300-step oracle verifies
+1,200 cell/interval queries with at most five retained bins/twenty observations. Actual AGBS
+input reconstructs nine contributions/two distinct contributors across three closed windows.
+A full history-enabled regional run checked five windows/316 cells; fourteen invalid
+policy/history configurations failed before DB clearing or metadata writes. Test DBs removed.
+
+**Acceptance:** no double counting, bounded storage and reconstructable private windows.
+Whether that support remains legally unpublished is A05's responsibility. Deleting a DB
+record cannot retract an already externally visible publication.
 
 ## 8. Stage 5 — AGBS integration and adaptation decisions
 

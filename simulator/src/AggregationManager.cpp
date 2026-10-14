@@ -35,6 +35,7 @@ AggregationManager::AggregationManager(ump::AggregationConfig settings, Sink out
         throw std::invalid_argument("Invalid aggregation grid coverage");
     if (config.capabilities != ump::InputCapabilities::IdentityCellObservations)
         throw std::invalid_argument("Distinct contributors require identity-bearing input");
+    if (config.history) retainedHistory = std::make_unique<ump::AggregationHistory>(config, *config.history);
 }
 
 void AggregationManager::validate(const ump::ObservationBatch& batch) const {
@@ -75,10 +76,15 @@ void AggregationManager::validate(const ump::ObservationBatch& batch) const {
         if (sameWindow && existing != cells.end() && !sameGeometry(existing->second.geometry, c))
             throw std::invalid_argument("Cell geometry changed inside aggregation window");
     }
+    if (batch.observedAtMs > std::numeric_limits<ump::AggregationTime>::max() - config.windowMs)
+        throw std::overflow_error("Aggregation clock exceeds supported range");
 }
 
 void AggregationManager::ingest(const ump::ObservationBatch& batch) {
     validate(batch); // Invalid input must not mutate active state or emit output.
+    // History validates its geometry/budgets once, before fixed-window emission. Its
+    // half-open queries exclude the new endpoint sample while an old window closes.
+    if (retainedHistory) retainedHistory->append(batch);
     advance(batch.observedAtMs);
     lastSequence = batch.sequence;
     lastObservationMs = batch.observedAtMs;
@@ -105,6 +111,7 @@ void AggregationManager::advance(ump::AggregationTime nowMs) {
     if (nowMs < watermarkMs) throw std::invalid_argument("Aggregation clock moved backwards");
     if (nowMs > std::numeric_limits<ump::AggregationTime>::max() - config.windowMs)
         throw std::overflow_error("Aggregation clock exceeds supported range");
+    if (retainedHistory) retainedHistory->advance(nowMs);
     while (windowStartMs + config.windowMs <= nowMs)
         closeWindow(windowStartMs + config.windowMs, nowMs, false);
     watermarkMs = nowMs;
@@ -152,4 +159,17 @@ ump::AggregationDebugState AggregationManager::debugState() const {
     for (const auto& [id, cell] : cells) memberships += cell.contributors.size();
     return {windowStartMs, windowStartMs + config.windowMs, measuredSamples,
         counts.observationContributions, cells.size(), memberships, finished};
+}
+
+void AggregationManager::openBucket(ump::CandidateBucket bucket) {
+    if (!retainedHistory) throw std::logic_error("History is not enabled for this stream");
+    retainedHistory->openBucket(std::move(bucket));
+}
+void AggregationManager::extendBucket(const ump::BucketKey& key, ump::AggregationTime endMs) {
+    if (!retainedHistory) throw std::logic_error("History is not enabled for this stream");
+    retainedHistory->extendBucket(key, endMs);
+}
+bool AggregationManager::discardBucket(const ump::BucketKey& key) {
+    if (!retainedHistory) throw std::logic_error("History is not enabled for this stream");
+    return retainedHistory->discardBucket(key);
 }

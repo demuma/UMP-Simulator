@@ -1,4 +1,5 @@
 #include "PolicyConfiguration.hpp"
+#include "AggregationConfiguration.hpp"
 #include <iostream>
 
 namespace {
@@ -52,6 +53,15 @@ policy_tree:
             "Absent policy changed baseline behavior");
         require(parse("metric_policy: {id: u, version: '1', requirements: {distinct_contributors: {min: 4}}}")
             .evaluate(candidate, 400).policyMode == "uniform", "Existing uniform YAML stopped working");
+        const std::string history = "{retention_ms: 2000, max_bins: 32, max_observations: 1000, max_identity_bytes: 64000, max_buckets: 16}";
+        require(readHistoryLimits(YAML::Load(history))->retentionMs == 2000, "History limits were not parsed");
+        require(!readHistoryLimits(YAML::Load("{}")["absent"]), "Absent history must stay disabled");
+        rejects([&] { readHistoryLimits(YAML::Load("null")); }, "must be a map");
+        rejects([&] { readHistoryLimits(YAML::Load("{retention_ms: 2000}")); }, "explicit");
+        rejects([&] { readHistoryLimits(YAML::Load("{unsupported: 1}")); }, "Unknown");
+        rejects([&] { readHistoryLimits(YAML::Load("{max_bins: 1, max_bins: 2}")); }, "duplicate");
+        auto zero = history; zero.replace(zero.find("max_bins: 32"), 12, "max_bins: 0");
+        rejects([&] { readHistoryLimits(YAML::Load(zero)); }, "positive");
         std::cout << "PASS: YAML/Region adapter, strict options, inheritance and legacy/uniform compatibility.\n";
         return 0;
     } catch (const std::exception& error) {

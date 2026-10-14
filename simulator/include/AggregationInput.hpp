@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 #include <map>
 #include <optional>
 #include <string>
@@ -40,6 +41,12 @@ struct ObservationBatch {
     std::vector<CellObservation> observations;
 };
 
+// Explicit private-history resource budgets; omitted configuration retains fixed-window-only mode.
+struct HistoryLimits {
+    AggregationTime retentionMs;
+    std::size_t maxBins, maxObservations, maxIdentityBytes, maxBuckets;
+};
+
 struct AggregationConfig {
     std::string runId;
     std::string sensorId;
@@ -49,6 +56,7 @@ struct AggregationConfig {
     AggregationTime windowMs;
     std::uint64_t maxObservationsPerWindow = 1000000;
     InputCapabilities capabilities = InputCapabilities::IdentityCellObservations;
+    std::optional<HistoryLimits> history = std::nullopt;
 };
 
 struct AggregateCounts {
