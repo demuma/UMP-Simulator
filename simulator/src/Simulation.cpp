@@ -375,6 +375,7 @@ void Simulation::initializeMetricPolicies() {
                 aggregation["window_ms"].as<ump::AggregationTime>()};
             ump::AggregationHistory checked(historySetup, *limits); // Preflight before database writes.
         }
+        readSpatialSelection(aggregation, coverage.leafDepth);
         metricEvaluators.emplace(sensor["id"].as<std::string>(),
             makeMetricEvaluator(aggregation, coverage, applicationId, regions));
     }
@@ -496,11 +497,26 @@ void Simulation::initializeSensors() {
                 auto evaluator = std::move(metricEvaluators.at(sensor->sensorId));
                 auto diagnostics = makeAggregationDiagnosticsSink(
                     aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp);
+                std::shared_ptr<ump::SpatialSelector> selector;
+                SpatialDiagnosticsSink spatialDiagnostics;
+                if (const auto selection = readSpatialSelection(aggregation, maxDepth)) {
+                    selector = std::make_shared<ump::SpatialSelector>(settings, *selection);
+                    spatialDiagnostics = makeSpatialDiagnosticsSink(
+                        aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp);
+                }
+                auto* sensorInstance = sensor.get();
                 sensor->enableAggregation(settings, timeStep, timestamp,
-                    [evaluator = std::move(evaluator), diagnostics = std::move(diagnostics)](const auto& candidate) {
-                        // Evaluate first; the external sink only serializes measured values and checks.
+                    [evaluator = std::move(evaluator), diagnostics = std::move(diagnostics),
+                     selector, spatialDiagnostics, sensorInstance](const auto& candidate) {
                         const auto assessment = evaluator.evaluate(candidate, candidate.closedAtMs);
                         diagnostics(candidate, assessment);
+                        if (selector) {
+                            // The closing callback only queries history. It never mutates/reenters the manager.
+                            auto selected = std::make_shared<const ump::SpatialSelection>(selector->select(
+                                candidate, *sensorInstance->getAggregationManager()->history(), evaluator));
+                            spatialDiagnostics(*selected);
+                            sensorInstance->setAggregationDebug(std::move(selected));
+                        }
                     });
             }
             sensors.push_back(std::move(sensor));

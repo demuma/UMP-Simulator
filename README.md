@@ -16,7 +16,10 @@ existing Regions, with strict numeric inheritance and per-cell provenance. A02 n
 opt-in bounded private history, on-demand ancestor/time reconstruction and logical active/
 preemptive bucket records. A local aggregation inspector now visualizes recorded metrics,
 regional requirements and check results, with an optional separate MongoDB debug copy.
-Automatic adaptive selection and privacy release decisions remain open, as do actual-interval velocities and reproducible research experiments.**
+An initial A03 spatial selector now chooses mixed-depth cells for common fixed windows,
+with exact history unions, policy checks, suppression and future-window refinement. The
+live renderer and recorded inspector show those internal decisions. General publication
+coordination, temporal adaptation, actual-interval velocities and research experiments remain open.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -28,6 +31,7 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
+| [Spatial selection and live demo](docs/SPATIAL_SELECTION.md) | Actual private parent/child selection, live overlay, recorded replay, configuration and tested limits |
 | [Aggregation inspector](docs/AGGREGATION_INSPECTOR.md) | Ready-to-open meeting demo, recorded cell metrics/thresholds, timeline, optional MongoDB debug copy and reproduction |
 | [Bounded history and buckets](docs/AGGREGATION_HISTORY.md) | Implemented A02 private reconstruction, logical windows, resource limits, deadlines and verification |
 | [Regional policy tree](docs/POLICY_TREE.md) | Implemented root/type/region inheritance, sparse compilation, conflict semantics and runnable example |
@@ -65,7 +69,7 @@ application policy once their behavior is implemented and tested.
 **Adopted strategy terminology:** Temporal First prioritizes temporal detail/freshness and
 tries spatial aggregation first. Spatial First prioritizes spatial detail and tries temporal
 aggregation first. The name identifies the dimension to preserve. Hard bounds still apply;
-these are specified strategies, not completed implementations.
+the spatial-only branch of Temporal First is implemented for fixed windows; full strategy/fallback comparison remains open.
 
 The first application query is now mean sampled occupancy on a fixed 10-m reference grid
 over 1-second intervals; [METRICS.md](docs/METRICS.md) defines its reference, reconstruction
@@ -80,7 +84,7 @@ regional policy lookup through a minimal policy tree, and release/suppress decis
 Input checks and demo preparation accompany this work. Simulator startup works and sensor
 regression tests passed. Fixed-window aggregation, initial metrics and the minimal regional
 policy tree and bounded reconstructable history are implemented. Next are publication
-coordination (A05) and metric-driven release/adaptation decisions (A03).
+coordination (A05) and temporal/release extensions of A03. Internal spatial selection and its live overlay are now implemented.
 
 The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) now prioritizes
 that foundation immediately, dynamic spatial release selection and initial comparisons by
@@ -156,10 +160,10 @@ reverted test results do not establish correctness of the current implementation
 | ABS | Position, type, identity and velocity from consecutive observations; first complete output at 100 ms for the current 10-Hz setup | Nominal-period velocity requires aligned fixed intervals; publication after DB errors is not guaranteed |
 | GBS | Fixed cells, class counts and total count per observation | No full temporal aggregation or privacy-based release decision |
 | AGBS | Quadtree, position mapping, counts and cell IDs | Splitting follows positions/max depth, not metrics or policies |
-| AggregationManager | Optional AGBS ingestion, fixed windows, contributor unions and JSONL candidates assessed against uniform or regional requirements | No approved releases, merges or temporal extension |
+| AggregationManager | Optional AGBS ingestion, fixed windows, contributor unions and JSONL candidates assessed against uniform or regional requirements | Internal spatial selection is opt-in; no approved public releases or temporal extension |
 | Regional rules | Immutable sparse PolicyTree; explicit root/type/region metric requirements, strict numeric inheritance and footprint conflicts | Aligned, non-overlapping rectangles only; legacy granularity/k/l fields inactive; no action/model selection or live updates |
 | Temporal history | Opt-in bounded sample history; exact ancestor/time queries and logical active/preemptive windows with finite deadlines | Private reconstruction only; no automatic preparation, release reservations or commit-driven invalidation |
-| Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry and independent playback pacing; four V3 DB renderers | Manual visual/long-run checks and policy-driven aggregation overlay remain pending |
+| Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry and independent playback pacing; four V3 DB renderers | Live spatial overlay and offline replay implemented; collecting/preemptive/release lifecycle views and long-run tests remain open |
 | Evaluation | Online metric registry, uniform/regional threshold assessments and a defined first occupancy-query baseline | GT utility experiment, independent attacker evaluation and comparative baselines remain open |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |
@@ -322,6 +326,8 @@ Simulation thread
   ├── GBS → fixed-cell counts / MongoDB
   ├── AGBS → quadtree-cell counts / MongoDB
   │        └── optional ID/cell batches → fixed-window manager → metric evaluator → research JSONL
+  │                                      └── optional history + spatial selector → private cut/diagnostics
+  │                                                                              └── immutable live overlay
   └── complete typed sensor frame + matching agent snapshot → bounded queues → renderer
 
 Separate V3 renderers → read stored data from MongoDB
@@ -350,8 +356,9 @@ incomplete coverage prevents a successful overall assessment. The writer only se
 the candidate and assessment. See [METRICS.md](docs/METRICS.md) for meanings and units.
 
 This first mode uses configured leaf depth and a fixed time window. Its threshold assessments
-do not implement empirical privacy measurement, suppression, release approval,
-merge/split selection or publication coordination. Its accumulator identity sets are discarded
+alone do not implement empirical privacy measurement or release approval. The optional
+[spatial selector](docs/SPATIAL_SELECTION.md) adds private sibling merges, suppression and
+refinement at later fixed-window boundaries. Publication coordination remains separate. Its accumulator identity sets are discarded
 when a fixed window closes. With A02 history enabled, owned fine observations remain for a
 bounded horizon and can reconstruct ancestors or extended/offset intervals. Logical active/
 preemptive records share that history and never publish independently. See
@@ -593,7 +600,8 @@ The west region requires at least five contributors; the northeast permits at mo
 windows, deliberately failing the configured fixed 400-ms candidates. Inspect each cell's
 `policy`, `checks` and `threshold_status`. These demonstrate assessment, not adaptive correction.
 Set `renderer.show_renderer: true` in the example to show the ordinary sensor grid; policy
-decisions have no rendering overlay yet. The example has no shared random seed and is not
+selection is disabled in that example. Use the spatial example below for the new overlay.
+The example has no shared random seed and is not
 a comparative research experiment.
 
 ### Inspect aggregation metrics and regional thresholds
@@ -613,8 +621,25 @@ passing cases. The same recording is available in local MongoDB under
 The [inspector guide](docs/AGGREGATION_INSPECTOR.md) provides a three-minute walkthrough,
 input/output paths and the Python report/export command. Generated recordings remain
 local under ignored `results/`; the builder and template are versioned. This is recorded
-fixed-candidate assessment. Automatic adaptive decisions and the live SFML aggregation
-overlay remain open.
+fixed-candidate assessment. For the newer mixed-depth selection use
+`results/demos/spatial-inspector.html`, described below.
+
+### Show actual spatial aggregation in the live renderer
+
+```sh
+cd /Users/maxdemu/Developer/UMP-Simulator/simulator/examples/spatial-selection
+../../build/Simulator
+```
+
+This separate example enables private spatial selection and the live overlay. **G** toggles
+the overlay; **Space** pauses/resumes. Green cells are selected, orange cells became coarser,
+blue cells became finer and red footprints are suppressed. Fine sensor boundaries remain
+visible underneath. Counts and the last closed window are labelled explicitly.
+
+The [spatial selection guide](docs/SPATIAL_SELECTION.md) explains the algorithm and limits.
+`results/demos/spatial-inspector.html` provides recorded before/after comparison and buttons
+for the next coarsening/refinement. These are real metric/policy decisions on common fixed
+windows; they remain internal diagnostics until A05 supplies public-release coordination.
 
 ### Configuration and startup
 
@@ -721,6 +746,12 @@ The 30-window MongoDB debug copy matched the capture totals. Five Python builder
 passed, JavaScript syntax was checked and Safari interaction verified local-file loading,
 cell selection, timeline navigation and playback completion. No simulator C++ behavior
 was changed for this tool. See [AGGREGATION_INSPECTOR.md](docs/AGGREGATION_INSPECTOR.md).
+
+The subsequent A03/A06 spatial slice passed all nine CTest suites, including exact union,
+merge/refine/merge, whole-sibling replacement, missing evidence, policy conflicts and bounded
+search checks. A 75-window capture verified non-overlap and contribution conservation and
+recorded both coarsening and refinement. Native live-renderer and Safari interaction were
+checked. See [SPATIAL_SELECTION.md](docs/SPATIAL_SELECTION.md) for scope and evidence.
 
 ## 10. Working process
 

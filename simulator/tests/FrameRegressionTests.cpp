@@ -216,10 +216,32 @@ void transport() {
     producer.get();
     require(concurrent.isDrained(), "Concurrent drain failed");
 }
+void aggregationDisplay() {
+    AdaptiveGridDisplayState display;
+    const auto snapshot = std::make_shared<const ump::SpatialSelection>();
+    SensorFrameBuilder first(at(400));
+    first.add("agbs", at(400), AdaptiveGridSensorSample{{{192, {}}}, snapshot});
+    auto frame = std::move(first).finish();
+    require(display.update(frame, "agbs") && display.aggregationSnapshot() == snapshot,
+        "Closed-window snapshot was not routed with its sensor");
+    frame.reset();
+    require(!display.update({}, "agbs") && display.aggregationSnapshot() == snapshot,
+        "No-sample step dropped the last dated aggregation snapshot");
+    const auto next = std::make_shared<const ump::SpatialSelection>();
+    SensorFrameBuilder second(at(500));
+    second.add("agbs", at(500), AdaptiveGridSensorSample{{{192, {}}}, next});
+    require(!display.update(std::move(second).finish(), "agbs") && display.aggregationSnapshot() == next,
+        "Unchanged sensor geometry prevented a newer aggregation snapshot");
+    SensorFrameBuilder empty(at(600));
+    empty.add("agbs", at(600), AdaptiveGridSensorSample{});
+    display.update(std::move(empty).finish(), "agbs");
+    require(!display.aggregationSnapshot(), "Absent debug attachment retained unrelated decisions");
+}
+
 }
 int main() {
     try {
-        contract(); pairing(); completedStepSequence(); gridDisplay(); transport();
+        contract(); pairing(); completedStepSequence(); gridDisplay(); aggregationDisplay(); transport();
         std::cout << "PASS: complete frames, identity/type routing, old/exact/future selection, "
                      "pause, sparse completed steps, dated grid display, bounded FIFO, concurrent drain and shutdown.\n";
         return 0;

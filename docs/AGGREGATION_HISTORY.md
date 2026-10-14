@@ -17,7 +17,7 @@ is cell ID/depth, start time and generation inside a run/sensor/application-scop
 Each records an exclusive end, a maximum extension end, a fixed retention deadline and role.
 No payload or cached statistics are copied per bucket. Preemptive records are alternatives,
 not publication owners; overlapping private candidates are allowed. Creating an alternative
-does not reserve any public coverage. No automatic parent search/prewarming is enabled.
+does not reserve any public coverage. The optional A03 selector now performs on-demand parent search for closed fixed windows; automatic prewarming remains disabled.
 
 Start with on-demand reconstruction. No interval tree is required for bounded chronological
 bins and one-cell interval queries. This baseline scans retained bins/observations; a spatial
@@ -132,9 +132,10 @@ if (query.status == ump::HistoryQueryStatus::Complete) {
 manager.extendBucket(key, 600); // Same start/deadline; end grows within maxEndMs.
 ```
 
-The main fixed-window sink still receives its original leaf candidates. It does not
-automatically register buckets, enumerate parents or emit reconstructed alternatives.
-Those APIs are exercised in regression tests and become A03's decision-layer inputs.
+The main fixed-window sink still receives its original leaf candidates. With
+`aggregation.spatial_selection` enabled, its callback also invokes the standard-C++
+[spatial selector](SPATIAL_SELECTION.md), which queries parents on demand and emits a private
+mixed-depth cut. It does not automatically register/prewarm logical buckets or publish output.
 The regional example enables actual sample retention; no history block means no history
 copying. Read-only debug counters expose retained bins, observations, string bytes, live
 records and expired-record count, without contributor identities.

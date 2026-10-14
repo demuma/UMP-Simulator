@@ -67,6 +67,7 @@ void Renderer::loadConfiguration() {
     showWaypoints = config["renderer"]["show_waypoints"].as<bool>();
     waypointRadius = config["agents"]["waypoint_radius"].as<float>();
     showGrids = config["renderer"]["show_grids"].as<bool>();
+    showAggregation = config["renderer"]["show_aggregation"].as<bool>(false);
     showSensors = config["renderer"]["show_sensors"].as<bool>();
     showBufferZones = config["renderer"]["show_buffer"].as<bool>();
     showArrow = config["renderer"]["show_arrow"].as<bool>();
@@ -434,6 +435,10 @@ void Renderer::handleEvents() {
             showArrow = !showArrow;
         }
 
+        else if (keyPressed.scancode == sf::Keyboard::Scancode::G) {
+            showAggregation = !showAggregation;
+        }
+
         else if (keyPressed.scancode == sf::Keyboard::Scancode::B) {
             showBufferZones = !showBufferZones;
         }
@@ -687,6 +692,40 @@ bool Renderer::readNextFrame() {
     return true;
 }
 
+// Read-only overlay of the last closed candidate window. Fine sensor geometry remains
+// intact underneath. Coarsening/refinement labels compare adjacent closed windows only.
+void Renderer::drawAggregationOverlay(const ump::SpatialSelection& snapshot) {
+    for (std::size_t i = 0; i < snapshot.candidate.cells.size(); ++i) {
+        const auto& item = snapshot.candidate.cells[i];
+        const auto& decision = snapshot.decisions[i];
+        const auto& c = item.cell;
+        sf::Color edge = decision.selected ? sf::Color(28, 116, 80) : sf::Color(175, 52, 45);
+        if (decision.selected && decision.transition == "coarsened") edge = sf::Color(205, 112, 18);
+        if (decision.selected && decision.transition == "refined") edge = sf::Color(37, 92, 190);
+        sf::RectangleShape box({static_cast<float>(c.width * scale), static_cast<float>(c.height * scale)});
+        box.setPosition({static_cast<float>(c.x * scale) + offset.x, static_cast<float>(c.y * scale) + offset.y});
+        box.setFillColor(sf::Color(edge.r, edge.g, edge.b, decision.selected ? 36 : 65));
+        box.setOutlineColor(edge);
+        box.setOutlineThickness(-2.5f);
+        window.draw(box);
+        if (c.width * scale >= 42) {
+            const std::string label = decision.selected
+                ? "d" + std::to_string(c.depth) + " n=" + std::to_string(item.counts.distinctContributors)
+                : "SUPPRESSED";
+            sf::Text text(font, label, 11);
+            text.setFillColor(edge);
+            const auto bounds = text.getLocalBounds();
+            const auto position = box.getPosition() + sf::Vector2f{4.f, static_cast<float>(c.height * scale) - 19.f};
+            text.setPosition(position);
+            sf::RectangleShape backing({bounds.size.x + 4.f, bounds.size.y + 5.f});
+            backing.setPosition(position + bounds.position - sf::Vector2f{2.f, 2.f});
+            backing.setFillColor(sf::Color(255, 255, 255, 220));
+            window.draw(backing);
+            window.draw(text);
+        }
+    }
+}
+
 // Main rendering function
 void Renderer::render() {  // Input: meters, Output: pixels
 
@@ -814,6 +853,18 @@ void Renderer::render() {  // Input: meters, Output: pixels
                             const auto ageMs = std::chrono::duration_cast<std::chrono::milliseconds>(timestamp - *measuredAt).count();
                             status = "Grid: latest sample (" + std::to_string(ageMs) + " ms old)";
                         }
+                        if (const auto& snapshot = display.aggregationSnapshot()) {
+                            if (showAggregation) {
+                                drawAggregationOverlay(*snapshot);
+                                status += "\nPrivate aggregation [" + std::to_string(snapshot->candidate.startMs)
+                                    + ", " + std::to_string(snapshot->candidate.endMs) + ") ms | selected "
+                                    + std::to_string(snapshot->selectedCells) + " | suppressed "
+                                    + std::to_string(snapshot->suppressedCells);
+                                status += "\nOrange: coarser " + std::to_string(snapshot->coarsenedCells)
+                                    + " | Blue: finer " + std::to_string(snapshot->refinedCells)
+                                    + " | Green: selected | G: overlay";
+                            } else status += "\nAggregation overlay hidden (G)";
+                        } else if (showAggregation) status += "\nAggregation: waiting for a closed window";
                         sf::Text gridStatus(font, status, 12);
                         gridStatus.setFillColor(sf::Color::Black);
                         const sf::Vector2f labelPosition = gridBoundaries.getPosition() + sf::Vector2f{5.f, 4.f};

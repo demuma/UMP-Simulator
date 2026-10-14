@@ -57,6 +57,20 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(self.source.read_bytes(), before)
         self.assertEqual(len(payload['sources'][0]['sha256']), 64)
 
+    def test_spatial_decisions_and_finest_baseline_remain_separate(self):
+        finest = candidate()
+        spatial = copy.deepcopy(finest)
+        spatial.update(schema='ump.spatial-selection.v1', data_role='internal_spatial_selection')
+        spatial['source_cells'] = copy.deepcopy(finest['cells'])
+        spatial['attempts'] = copy.deepcopy(finest['cells'])
+        spatial['cells'][0]['decision'] = {'state': 'suppressed', 'reason': 'requirements_failed_at_depth_cap',
+                                          'transition': 'suppressed', 'trigger_cells': []}
+        self.write([finest, spatial])
+        payload = build([self.source], self.root / 'spatial.html')
+        self.assertEqual(payload['records'], [finest, spatial])
+        self.assertNotIn('decision', payload['records'][1]['source_cells'][0])
+        self.assertEqual(payload['records'][1]['cells'][0]['decision']['state'], 'suppressed')
+
     def test_metadata_cannot_close_the_inert_data_element(self):
         row = candidate()
         row['sensor_id'] = '</script><script>alert("example")</script> · sensor'
@@ -96,7 +110,7 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(args[args.index('--collection') + 1], 'aggregation_candidates')
         self.assertEqual(args[args.index('--mode') + 1], 'upsert')
         self.assertEqual(args[args.index('--upsertFields') + 1],
-                         'run_id,sensor_id,application_id,start_ms,end_ms')
+                         'schema,run_id,sensor_id,application_id,start_ms,end_ms')
         self.assertNotIn('--drop', args)
 
 

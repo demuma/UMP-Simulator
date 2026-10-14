@@ -62,6 +62,16 @@ policy_tree:
         rejects([&] { readHistoryLimits(YAML::Load("{max_bins: 1, max_bins: 2}")); }, "duplicate");
         auto zero = history; zero.replace(zero.find("max_bins: 32"), 12, "max_bins: 0");
         rejects([&] { readHistoryLimits(YAML::Load(zero)); }, "positive");
+
+        const std::string selectionPrefix = "history: {}\nmetric_policy: {}\nspatial_selection: ";
+        auto selection = readSpatialSelection(YAML::Load(selectionPrefix + "{min_depth: 1, max_evaluations: 64}"), 3);
+        require(selection && selection->minDepth == 1 && selection->maxEvaluations == 64, "Selection options not parsed");
+        require(!readSpatialSelection(YAML::Load("{}"), 3), "Absent spatial selection must stay disabled");
+        rejects([&] { readSpatialSelection(YAML::Load(selectionPrefix + "{min_depth: 0, max_evaluations: 64}"), 3); }, "Invalid");
+        rejects([&] { readSpatialSelection(YAML::Load(selectionPrefix + "{min_depth: 4, max_evaluations: 64}"), 3); }, "Invalid");
+        rejects([&] { readSpatialSelection(YAML::Load(selectionPrefix + "{min_depth: 1, max_evaluations: 0}"), 3); }, "Invalid");
+        rejects([&] { readSpatialSelection(YAML::Load(selectionPrefix + "{min_depth: 1, max_evaluations: 64, publish: true}"), 3); }, "Unknown");
+        rejects([&] { readSpatialSelection(YAML::Load("spatial_selection: {min_depth: 1, max_evaluations: 64}"), 3); }, "requires history");
         std::cout << "PASS: YAML/Region adapter, strict options, inheritance and legacy/uniform compatibility.\n";
         return 0;
     } catch (const std::exception& error) {

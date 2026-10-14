@@ -56,11 +56,15 @@ public:
         std::chrono::system_clock::time_point origin, AggregationManager::Sink sink);
     void finishAggregation(std::chrono::system_clock::time_point end);
     const AggregationManager* getAggregationManager() const { return aggregationManager.get(); }
+    void setAggregationDebug(std::shared_ptr<const ump::SpatialSelection> snapshot) {
+        aggregationDebug = std::move(snapshot);
+    }
 
 private:
     mongocxx::database db;
     mongocxx::collection collection;
     std::unique_ptr<AggregationManager> aggregationManager;
+    std::shared_ptr<const ump::SpatialSelection> aggregationDebug;
     std::string aggregationRunId;
     std::chrono::system_clock::time_point aggregationOrigin;
     std::uint64_t aggregationSequence = 0;

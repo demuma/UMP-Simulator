@@ -70,6 +70,7 @@ private:
     };
 
     void render();
+    void drawAggregationOverlay(const ump::SpatialSelection& snapshot);
     void appendBufferZones(sf::VertexArray& vertices, const RenderAgent& agent);
     void appendAgentBodies(sf::VertexArray& triangles, const RenderAgent& agent);
 
@@ -113,6 +114,7 @@ private:
     bool live_mode;
     int numAgents;
     bool showGrids = false;
+    bool showAggregation = false;
     bool showBufferZones = false;
     float EPSILON = 1e-6f;
 

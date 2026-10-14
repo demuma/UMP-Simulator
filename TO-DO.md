@@ -26,7 +26,8 @@ crashes or corrupt input are blockers, not reasons to begin an unrelated redesig
 
 **Current position: initial Stage 4 bounded history and logical active/preemptive windows
 implemented alongside E04/A04 metrics and policies. Next is A05 publication coordination,
-then A03's decision layer; private candidate reconstruction does not authorize release.
+then remaining A03 temporal/release behavior. A private fixed-window spatial selector and
+live overlay were brought forward for the meeting; internal decisions do not authorize release.
 E01's fixed occupancy-query contract is documented; the GT experiment and E02 attacker
 definition remain open. S04/S01, S05, A01, E04, the A04 numeric-policy slice and initial A02 history have regression coverage.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
@@ -102,8 +103,9 @@ AggregationManager now ingests identity-bearing batches and emits bounded fixed-
 candidates through a separate sink. A04 compiles explicit root/type/Region requirements
 into a sparse policy tree and E04 evaluates them for each candidate. Legacy k/l fields
 remain inactive. A02 now retains bounded fine observations and reconstructs candidate
-windows on demand. Decision/release logic and automatic adaptive selection remain missing components,
-not configuration adjustments to a functioning adaptive aggregator.
+windows on demand. A03 now automatically chooses a private spatial cut per fixed window,
+including sibling merging, future-window refinement and whole-domain suppression. Public
+release coordination and temporal adaptation remain missing components.
 
 **Proposed flow:** sensor observation -> bounded history -> candidate cell/window aggregate
 -> metric evaluation + effective policy lookup -> decision -> published aggregate.
@@ -476,7 +478,8 @@ decisions remains A02/A03/A05 work.
 [AGGREGATION_HISTORY.md](docs/AGGREGATION_HISTORY.md) records storage, API, deadline semantics,
 configuration, worked examples and verification. History is opt-in; the maintained config
 is unchanged. The regional example enables it. Bucket creation/extension is available via
-the manager API; automatic active-cut selection and prewarming are not enabled. READY and
+the manager API. A03 now performs on-demand spatial selection for closed fixed windows;
+automatic prewarming and the general active/preemptive lifecycle remain open. READY and
 publication states require the later decision/release layer, not an arbitrary history flag.
 
 - [x] Specify retrospective parent aggregation from internal observations.
@@ -571,6 +574,22 @@ reopen coverage for a competing candidate. Disjoint release coverage is not a pr
 
 ### A03 — Start with simple adaptive strategies — P0
 
+**Initial private spatial slice implemented, 2026-10-14.**
+[SPATIAL_SELECTION.md](docs/SPATIAL_SELECTION.md) specifies the scope, configuration and
+evidence. All choices share a closed fixed window and stay internal; A05 is still required
+for externally visible output. Full Temporal First/Spatial First remain unchecked below.
+
+- [x] Select a non-overlapping cut from fine observations; replace whole sibling groups
+  with eligible parents using exact retained identity unions and full-footprint policy checks.
+- [x] Bound the search by minimum depth and evaluation count; suppress the whole unresolved
+  domain at the cap, and reject missing coverage/unavailable required metrics.
+- [x] Reassess from fine observations at each future common window boundary, recording
+  coarsening/refinement without modifying past diagnostics.
+- [x] Test merge/refine/merge, unions, sibling replacement, unknown/missing evidence,
+  footprint policies, bounded work, transport and configuration; verify an actual 75-window run.
+
+**Remaining release and temporal work:**
+
 - [ ] Integrate fixed candidate release/suppress with the initial regional policy tree.
 - [ ] Implement Temporal First by trying spatial aggregation before temporal extension,
   and Spatial First by trying temporal aggregation before spatial coarsening. Start with
@@ -634,9 +653,16 @@ documents the prepared recording, reproduction, local MongoDB debug copy and lim
   totals, builder fidelity/safety checks, and Safari interaction. This is recorded replay,
   not live adaptive behavior or empirical privacy/utility evidence.
 
-**Remaining live integration:**
+**Live spatial slice implemented, 2026-10-14:**
 
-- [ ] Define a read-only debug snapshot separate from sensor cell-ID measurements.
+- [x] Attach an immutable, dated spatial-selection snapshot separately from instantaneous
+  cell counts. Preserve sensor identity routing and bounded transport; add regression checks.
+- [x] Show chosen/suppressed footprints, depth/support and closed-window times over the
+  sensor grid, with G to toggle and distinct coarsening/refinement colors. Verify native UI.
+- [x] Extend the offline inspector with same-window finest/selected comparison, actual
+  transition navigation and triggering child checks. Keep raw diagnostics separate.
+
+**Remaining live integration:**
 - [ ] Show collecting/ready candidates, proposed parents, committed output and suppressed
   intervals with distinct labels/styles and correct observation/window/release times.
 - [ ] Expose policy ID and decision reason on inspection; cache unchanged geometry.

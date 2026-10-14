@@ -157,7 +157,7 @@ void AdaptiveGridBasedSensor::update(std::vector<Agent>& agents, float timeStep,
             dataStorage.push_back({this->timestamp, adaptiveGridData});
         }
         if (batch) aggregationManager->ingest(*batch); // Also ingest a measured-empty area.
-        pendingSample = AdaptiveGridSensorSample{adaptiveGridData};
+        pendingSample = AdaptiveGridSensorSample{adaptiveGridData, aggregationDebug};
     }
 }
 

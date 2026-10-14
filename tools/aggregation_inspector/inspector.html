@@ -13,13 +13,13 @@
 <main class="shell">
   <header class="top"><div><div class="eyebrow">Urban mobility privacy · Research prototype</div><h1>Aggregation under regional constraints</h1><p class="muted">Recorded candidate metrics and the requirements applied to each cell.</p></div><span class="tag">Internal diagnostics · recorded replay</span></header>
   <div class="flow" aria-label="Implemented processing path"><span class="step">Sensor observations</span><span>→</span><span class="step">Cell + time window</span><span>→</span><span class="step">Metrics + policy requirements</span><span>→</span><span class="step">Recorded checks</span><span class="step later">Next: release coordination & adaptation</span></div>
-  <div class="toolbar"><button class="primary" id="play">▶ Play</button><button id="previous" aria-label="Previous window">←</button><button id="next" aria-label="Next window">→</button><div class="timeline"><div class="timehead"><strong class="num" id="interval"></strong><span class="small muted" id="windowIndex"></span></div><input id="timeline" type="range" min="0" step="1" value="0" aria-label="Recorded aggregation window"></div><label id="streamWrap" class="small">Stream <select id="stream" aria-label="Run and sensor stream"></select></label></div>
+  <div class="toolbar"><label id="viewWrap" class="small" hidden>View <select id="viewMode"><option value="selected">Selected aggregation cut</option><option value="finest">Finest input cells</option></select></label><button class="primary" id="play">▶ Play</button><button id="previous" aria-label="Previous window">←</button><button id="next" aria-label="Next window">→</button><div class="timeline"><div class="timehead"><strong class="num" id="interval"></strong><span class="small muted" id="windowIndex"></span></div><input id="timeline" type="range" min="0" step="1" value="0" aria-label="Recorded aggregation window"></div><label id="streamWrap" class="small">Stream <select id="stream" aria-label="Run and sensor stream"></select></label></div>
   <div id="error" role="alert"></div>
   <div class="workspace">
-    <section class="panel"><div class="panelhead"><div><h2>Candidate cells</h2><div class="small muted">Numbers = distinct observed contributors</div></div><div class="counts" id="counts"></div></div>
+    <section class="panel"><div class="panelhead"><div><h2 id="mapTitle">Candidate cells</h2><div class="small muted">Numbers = distinct observed contributors</div></div><div class="counts" id="counts"></div></div>
       <div class="mapwrap"><svg id="map" viewBox="0 0 610 550" role="group" aria-label="Spatial map of recorded cell checks. Select a cell for its metrics and regional thresholds."></svg></div>
       <div class="legend"><span><i class="swatch" style="background:var(--pass)"></i>✓ Requirements met</span><span><i class="swatch" style="background:var(--fail)"></i>× Requirement violated</span><span><i class="swatch" style="background:var(--unavailable)"></i>? Unavailable</span><span><i class="swatch" style="background:var(--empty)"></i>No candidate / no policy</span></div>
-      <div class="examples"><button id="supportExample">Show support failure</button><button id="durationExample">Show duration failure</button><button id="passExample">Show passing cell</button></div>
+      <div class="examples"><button id="nextCoarser" hidden>Next coarsening</button><button id="nextFiner" hidden>Next refinement</button><button id="supportExample">Show support failure</button><button id="durationExample">Show duration failure</button><button id="passExample">Show passing cell</button></div>
       <p class="footnote" id="mapNote"></p>
     </section>
     <section class="panel" aria-label="Selected cell detail"><div class="panelhead"><h2>Why this result?</h2><span class="small muted" id="cellArea"></span></div><div id="detail"></div></section>
@@ -42,10 +42,11 @@ const title=id=>names[id]??id;
 const element=(tag,text,className)=>{const el=document.createElement(tag);if(text!=null)el.textContent=text;if(className)el.className=className;return el;};
 function svg(tag,attrs,text){const el=document.createElementNS(NS,tag);for(const [k,v]of Object.entries(attrs))el.setAttribute(k,String(v));if(text!=null)el.textContent=text;return el;}
 function bounds(check){if(check.min!=null&&check.max!=null)return fmt(check.min)+'–'+fmt(check.max);if(check.min!=null)return '≥ '+fmt(check.min);if(check.max!=null)return '≤ '+fmt(check.max);return '—';}
-const groups=new Map();for(const row of payload.records){const key=JSON.stringify([row.run_id,row.sensor_id,row.application_id]);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}
+const groups=new Map();for(const row of payload.records){const key=JSON.stringify([row.run_id,row.sensor_id,row.application_id,row.schema]);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}
 const streams=[...groups.values()];for(const rows of streams)rows.sort((a,b)=>a.start_ms-b.start_ms||a.end_ms-b.end_ms);
 let streamIndex=0,index=0,selected=null,timer=null;
-const rows=()=>streams[streamIndex], current=()=>rows()[index];
+const rows=()=>streams[streamIndex], stored=()=>rows()[index];
+const current=()=>stored().source_cells&&$('viewMode').value==='finest'?{...stored(),cells:stored().source_cells}:stored();
 const effectiveStatus=(row,cell)=>row.assessment.coverage_gate.status!=='pass'?'unavailable':cell.threshold_status;
 function stop(){if(timer)clearInterval(timer);timer=null;$('play').textContent=index===rows().length-1?'↺ Replay':'▶ Play';}
 function selectCell(id){selected=id;renderMap();renderDetail();}
@@ -83,6 +84,14 @@ function renderDetail(){
  else if(status==='not_configured')summary='Metrics were recorded without configured requirements.';
  else summary='All configured requirements are met for this candidate. Publication has not been decided.';
  detail.append(element('div',summary,'summary'));
+ if(cell.decision){
+   const decision=cell.decision;
+   detail.append(element('p',`Internal decision: ${decision.state} · ${decision.transition}`,'small'));
+   const explanation={finest_requirements_met:'The finest observed cell meets all configured requirements.',sibling_failure_parent_passed:'A child failed. The entire sibling footprint was reconstructed and this parent passed.',requirements_failed_at_depth_cap:'No eligible complete cut was found within the configured depth cap. This whole footprint is suppressed.',assessment_unavailable:'Required evidence is unavailable; this footprint is suppressed.',policy_not_configured:'No policy is configured; no candidate is selected.'};
+   detail.append(element('p',explanation[decision.reason]??decision.reason,'small muted'));
+   for(const id of decision.trigger_cells){const child=row.attempts.find(c=>c.cell_id===id);if(child){const failures=child.checks.filter(c=>c.status!=='pass').map(c=>`${title(c.metric)} ${fmt(c.observed)} (required ${bounds(c)})`);detail.append(element('p',`Trigger cell ${id}: ${failures.join('; ')||child.threshold_status}`,'small muted'));}}
+ }
+
  const table=element('table',null,'table'),thead=element('thead'),tr=element('tr');['Required metric','Observed','Threshold'].forEach(t=>tr.append(element('th',t)));thead.append(tr);table.append(thead);const body=element('tbody');
  for(const check of cell.checks){const line=element('tr',null,check.status==='fail'?'failed':''),label=element('td');label.append(element('span',check.status==='pass'?'✓':check.status==='fail'?'×':'?','checkmark '+(check.status==='pass'?'passmark':check.status==='fail'?'failmark':'warnmark')),document.createTextNode(title(check.metric)));line.append(label,element('td',fmt(check.observed)+' '+unit(check.unit),'num'),element('td',bounds(check)+' '+unit(check.unit),'num'));body.append(line);}table.append(body);detail.append(table);
  if(!cell.checks.length)detail.append(element('p','No configured threshold checks.','small muted'));
@@ -93,7 +102,16 @@ function renderDetail(){
  for(const [id,metric]of Object.entries(cell.metrics)){const tr=element('tr');tr.append(element('td',title(id)),element('td',metric.value==null?(reasons[metric.reason]??metric.reason??'Unavailable'):fmt(metric.value)+' '+unit(metric.unit)));metrics.append(tr);}more.append(metrics);detail.append(more);
 }
 function render(){
- const row=current();$('timeline').max=rows().length-1;$('timeline').value=index;$('interval').textContent=`[${seconds(row.start_ms)}, ${seconds(row.end_ms)})`;$('windowIndex').textContent=`Window ${index+1} / ${rows().length}${row.truncated?' · truncated':''}`;
+ const row=current();
+ const spatial=!!row.spatial_selection;
+ $('viewWrap').hidden=!spatial;$('nextCoarser').hidden=!spatial;$('nextFiner').hidden=!spatial;
+ $('nextCoarser').disabled=!rows().slice(index+1).some(r=>r.spatial_selection?.coarsened_cells>0);
+ $('nextFiner').disabled=!rows().slice(index+1).some(r=>r.spatial_selection?.refined_cells>0);
+ $('mapTitle').textContent=spatial?($('viewMode').value==='finest'?'Finest input cells':'Selected cut + suppressed footprints'):'Candidate cells';
+ document.querySelectorAll('.step')[3].textContent=spatial?'Spatial candidate selection':'Recorded checks';
+ document.querySelector('.tag').textContent=spatial?'Internal spatial decisions · recorded replay':'Internal diagnostics · recorded replay';
+ document.querySelector('.later').textContent=spatial?'Next: publication coordination & time adaptation':'Next: release coordination & adaptation';
+ $('timeline').max=rows().length-1;$('timeline').value=index;$('interval').textContent=`[${seconds(row.start_ms)}, ${seconds(row.end_ms)})`;$('windowIndex').textContent=`Window ${index+1} / ${rows().length}${row.truncated?' · truncated':''}`;
  $('previous').disabled=index===0;$('next').disabled=index===rows().length-1;
  const counts={pass:0,fail:0,unavailable:0,not_configured:0};row.cells.forEach(c=>counts[effectiveStatus(row,c)]++);$('counts').replaceChildren();
  for(const [label,key]of [['met','pass'],['violated','fail'],['unavailable','unavailable']]){const span=element('span');span.append(element('b',counts[key],'num'),document.createTextNode(label));$('counts').append(span);}
@@ -104,16 +122,21 @@ function render(){
  $('mapNote').textContent=row.assessment.coverage_gate.status==='pass'?'Grey areas have no stored candidate or no configured requirements; neither is displayed as approved. Click a cell to inspect its regional requirements.':'Incomplete observation coverage: all cell assessments are shown as unavailable, even if an individual numeric check passes.';
  $('context').replaceChildren();for(const text of [`Sensor: ${row.sensor_id}`,`Application: ${row.application_id}`,`Samples: ${row.measured_samples}/${row.expected_samples} measured · ${row.missing_samples} missing · ${row.unavailable_samples} unavailable`,`Evaluated at: ${seconds(row.assessment.evaluated_at_ms)}`])$('context').append(element('span',text));
  $('provenance').textContent=`Run ${row.run_id.slice(0,8)} · ${row.schema}`;$('provenance').title=payload.sources.map(s=>s.name+' · SHA-256 '+s.sha256).join('\n');
+ if(spatial){const d=row.spatial_selection;$('context').append(element('span',`Selected: ${d.selected_cells} · Suppressed: ${d.suppressed_cells} · Coarser: ${d.coarsened_cells} · Finer: ${d.refined_cells} · Evaluations: ${d.evaluations}`));}
  renderMap();renderDetail();if(!timer)stop();
 }
 $('play').addEventListener('click',()=>{if(timer){stop();return;}if(index===rows().length-1)index=0;timer=setInterval(()=>{if(index>=rows().length-1){stop();return;}index++;render();if(index===rows().length-1)stop();},700);$('play').textContent='Ⅱ Pause';render();});
 $('previous').addEventListener('click',()=>{stop();index=Math.max(0,index-1);render();});$('next').addEventListener('click',()=>{stop();index=Math.min(rows().length-1,index+1);render();});$('timeline').addEventListener('input',()=>{stop();index=Number($('timeline').value);render();});
+$('viewMode').addEventListener('change',()=>{selected=current().cells[0]?.cell_id??null;render();});
+function nextTransition(kind){const offset=rows().slice(index+1).findIndex(r=>r.spatial_selection?.[kind==='coarsened'?'coarsened_cells':'refined_cells']>0);if(offset<0)return;stop();index+=offset+1;$('viewMode').value='selected';selected=current().cells.find(c=>c.decision?.transition===kind)?.cell_id??null;render();}
+$('nextCoarser').addEventListener('click',()=>nextTransition('coarsened'));
+$('nextFiner').addEventListener('click',()=>nextTransition('refined'));
 $('supportExample').addEventListener('click',()=>jump(c=>c.checks.some(k=>k.metric==='distinct_contributors'&&k.status==='fail')));
 $('durationExample').addEventListener('click',()=>jump(c=>c.checks.some(k=>k.metric==='window_duration_ms'&&k.status==='fail')));
 $('passExample').addEventListener('click',()=>jump(c=>effectiveStatus(current(),c)==='pass'));
-streams.forEach((group,i)=>{const option=element('option',`${group[0].sensor_id} · ${group[0].run_id.slice(0,8)} · ${group[0].application_id}`);option.value=i;$('stream').append(option);});
+streams.forEach((group,i)=>{const option=element('option',`${group[0].sensor_id} · ${group[0].run_id.slice(0,8)} · ${group[0].application_id} · ${group[0].spatial_selection?'selected':'finest'}`);option.value=i;$('stream').append(option);});
 if(streams.length>1)$('streamWrap').style.display='block';$('stream').addEventListener('change',()=>{stop();streamIndex=Number($('stream').value);index=0;selected=rows()[0].cells[0]?.cell_id??null;render();});
-selected=rows()[0].cells.find(c=>c.checks.some(k=>k.metric==='distinct_contributors'&&k.status==='fail'))?.cell_id??rows()[0].cells[0]?.cell_id??null;
+selected=rows()[0].cells.find(c=>c.decision?.state==='selected'&&c.depth<rows()[0].grid.leaf_depth)?.cell_id??rows()[0].cells.find(c=>c.checks.some(k=>k.metric==='distinct_contributors'&&k.status==='fail'))?.cell_id??rows()[0].cells[0]?.cell_id??null;
 try{render();}catch(error){$('error').textContent='Could not display diagnostics: '+error.message;throw error;}
 </script>
 </body>

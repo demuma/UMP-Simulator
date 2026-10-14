@@ -138,3 +138,13 @@ if(UMP_BUILD_HISTORY_TESTS)
     add_test(NAME history_regression COMMAND HistoryRegressionTests)
     set_tests_properties(history_regression PROPERTIES LABELS "unit;aggregation;history" TIMEOUT 15)
 endif()
+
+option(UMP_BUILD_SPATIAL_TESTS "Build fixed-window spatial selection tests (standard C++ only)" ON)
+if(UMP_BUILD_SPATIAL_TESTS)
+    enable_testing()
+    add_executable(SpatialRegressionTests tests/SpatialRegressionTests.cpp src/SpatialSelection.cpp
+        src/AggregationManager.cpp src/AggregationHistory.cpp src/CandidateMetrics.cpp src/PolicyTree.cpp)
+    target_compile_features(SpatialRegressionTests PRIVATE cxx_std_17)
+    add_test(NAME spatial_regression COMMAND SpatialRegressionTests)
+    set_tests_properties(spatial_regression PROPERTIES LABELS "unit;aggregation;spatial" TIMEOUT 15)
+endif()

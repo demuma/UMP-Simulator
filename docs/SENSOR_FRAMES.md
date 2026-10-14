@@ -174,3 +174,16 @@ The normal Release build keeps them disabled. The existing commented
 verbose logging can affect measured timing and should stay off for performance experiments.
 The complete FrameRegressionTests suite passed when compiled with `-DDEBUG`, covering
 bounded backpressure, concurrent FIFO order, sparse measurement pairing and shutdown.
+
+## Separate spatial-selection debug attachment — 2026-10-14
+
+An AGBS payload can now carry `aggregationDebug`, an immutable shared `SpatialSelection`
+snapshot separate from its instantaneous count map. It describes the last closed candidate
+window with its own start/end/evaluation times; it is not a new measurement at the sensor
+timestamp. The renderer routes it by sensor ID and displays that interval explicitly.
+No-sample steps retain the dated display. A newer snapshot replaces the previous one even
+when sensor geometry is unchanged; a payload without an attachment clears it. The existing
+shared buffer transports owned immutable values without a new reader or reference counter.
+Core aggregation still receives its identity-bearing batches directly from the sensor.
+No agent IDs or live pointers enter the debug attachment. Public releases and complete
+bucket-lifecycle visualization remain separate. See [SPATIAL_SELECTION.md](SPATIAL_SELECTION.md).

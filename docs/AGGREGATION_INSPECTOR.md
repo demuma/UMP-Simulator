@@ -5,6 +5,14 @@ for the supervisor meeting. The simulator records the metrics and regional requi
 the inspector displays those recorded assessments. It does not run the policy evaluator
 again or generate an adaptive decision.
 
+## Spatial selection update
+
+The new `results/demos/spatial-inspector.html` adds actual mixed-depth decisions, a finest
+input/selected cut switch and next-coarsening/refinement buttons. The same decision data
+also drives the live SFML overlay. See [SPATIAL_SELECTION.md](SPATIAL_SELECTION.md) for the
+current demonstration, startup command and limits. The original fixed assessment recording
+below remains available as a baseline.
+
 ## Open the prepared demonstration
 
 From the repository root:
@@ -82,7 +90,8 @@ that input directory is empty. Multiple runs, sensors or applications appear as 
 streams in the inspector. Windows are sorted within each stream. Use the generated
 report, not `tools/aggregation_inspector/inspector.html`, which is a template.
 
-Input must use schema `ump.fixed-candidate.v3` and role `internal_research_candidate`.
+Input supports schema `ump.fixed-candidate.v3` with role `internal_research_candidate`,
+or `ump.spatial-selection.v1` with role `internal_spatial_selection`.
 The builder rejects duplicate window keys, invalid geometry and empty inputs. It embeds
 the original metric values, bounds, unavailable reasons and provenance without changing
 the source files. Input filenames and SHA-256 hashes are included in the report; hover
@@ -123,7 +132,7 @@ For example, in MongoDB Compass select `UMP_Debug_AutSys.aggregation_candidates`
 ```
 
 The import only permits database names beginning with `UMP_Debug`. It upserts by the
-run/sensor/application/window key, so repeating a debug import replaces the same debug
+schema/run/sensor/application/window key, so repeating a debug import replaces the same debug
 document. It does not clear the collection or alter raw sensor collections. These are
 internal research records, not application-visible releases. A concurrent import workflow,
 access control and a live MongoDB diagnostics sink are outside this first tool's scope.
@@ -147,8 +156,8 @@ The JavaScript passed a syntax check. Native Safari inspection verified local-fi
 support/duration/passing examples, timeline navigation and playback through the final
 window. This slice changes no simulator C++ code or sensor scheduling.
 
-The next core task remains A05 publication coordination, followed by A03 automatic spatial/
-temporal selection. The separate SFML overlay for collecting/preemptive buckets, proposed
-parents, suppression and actual releases remains under A06. The present recording shows
-fixed candidate assessment; it does not animate a merge/split algorithm that is not yet
-connected to release decisions.
+The next core task remains A05 publication coordination and the remaining A03 temporal
+behavior. Private fixed-window spatial selection and its live overlay are now implemented;
+collecting/preemptive/committed lifecycle views remain under A06. The original recording
+above shows fixed assessment. The new spatial recording shows actual private decisions,
+without claiming application-visible release or improved empirical privacy.

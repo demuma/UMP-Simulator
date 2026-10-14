@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/System/Vector2.hpp>
+#include "SpatialSelection.hpp"
 #include <chrono>
 #include <memory>
 #include <optional>
@@ -39,7 +40,12 @@ struct GridCellSample {
     CellCounts counts;
 };
 struct GridSensorSample { std::vector<GridCellSample> cells; };
-struct AdaptiveGridSensorSample { std::unordered_map<int, CellCounts> cells; };
+struct AdaptiveGridSensorSample {
+    std::unordered_map<int, CellCounts> cells;
+    // Separate debug attachment: the last CLOSED aggregation window, not this measurement.
+    // Shared immutable values avoid copying the diagnostic tree on every sensor tick.
+    std::shared_ptr<const ump::SpatialSelection> aggregationDebug = {};
+};
 
 using SensorSample = std::variant<AgentSensorSample, GridSensorSample, AdaptiveGridSensorSample>;
 // Absence of an ID means no observation was due. A present, empty payload means measured empty.

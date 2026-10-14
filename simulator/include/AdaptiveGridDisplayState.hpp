@@ -23,13 +23,16 @@ public:
         const bool changed = nextCells != cells;
         cells = std::move(nextCells);
         lastMeasurement = frame->first;
+        aggregation = sample->aggregationDebug;
         return changed;
     }
 
     const std::unordered_set<int>& cellIds() const { return cells; }
     std::optional<SensorTime> measurementTime() const { return lastMeasurement; }
+    const std::shared_ptr<const ump::SpatialSelection>& aggregationSnapshot() const { return aggregation; }
 
 private:
     std::unordered_set<int> cells;
     std::optional<SensorTime> lastMeasurement;
+    std::shared_ptr<const ump::SpatialSelection> aggregation;
 };

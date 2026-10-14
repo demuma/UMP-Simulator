@@ -59,6 +59,34 @@ bsoncxx::array::value checkArray(const std::vector<ump::MetricCheck>& checks) {
     return results.extract();
 }
 
+bsoncxx::document::value cellDocument(const ump::AggregatedCell& cell,
+    const ump::CellMetricAssessment& evaluated, const ump::SpatialCellDecision* decision = nullptr) {
+    bsoncxx::builder::basic::document appliedPolicy;
+    if (evaluated.effectivePolicyId) {
+        bsoncxx::builder::basic::array sources;
+        for (const auto& source : evaluated.policySources) sources.append(source);
+        appliedPolicy.append(kvp("effective_id", *evaluated.effectivePolicyId),
+            kvp("sources", sources), kvp("feasible", evaluated.policyFeasible));
+    }
+    const auto& g = cell.cell;
+    bsoncxx::builder::basic::document row;
+    row.append(kvp("cell_id", g.id), kvp("depth", g.depth),
+        kvp("x", g.x), kvp("y", g.y), kvp("width", g.width), kvp("height", g.height),
+        kvp("counts", countDocument(cell.counts)), kvp("policy", appliedPolicy),
+        kvp("metrics", metricDocument(evaluated.metrics)),
+        kvp("threshold_status", std::string(ump::assessmentStatusName(evaluated.status))),
+        kvp("checks", checkArray(evaluated.checks)));
+    if (decision) {
+        bsoncxx::builder::basic::array triggers;
+        for (const auto id : decision->triggerCells) triggers.append(id);
+        row.append(kvp("decision", make_document(
+            kvp("state", decision->selected ? "selected" : "suppressed"),
+            kvp("reason", decision->reason), kvp("transition", decision->transition),
+            kvp("trigger_cells", triggers))));
+    }
+    return row.extract();
+}
+
 bsoncxx::document::value assessmentDocument(const ump::WindowMetricAssessment& assessment) {
     bsoncxx::builder::basic::document row;
     row.append(kvp("kind", "configured_thresholds_only"), kvp("policy_mode", assessment.policyMode),
@@ -73,16 +101,17 @@ bsoncxx::document::value assessmentDocument(const ump::WindowMetricAssessment& a
 }
 }
 
-AggregationDiagnosticsSink makeAggregationDiagnosticsSink(const std::string& directory,
-    std::chrono::system_clock::time_point simulationOrigin) {
+using DetailedSink = std::function<void(const ump::AggregationCandidate&, const ump::WindowMetricAssessment&, const ump::SpatialSelection*)>;
+static DetailedSink makeDetailedSink(const std::string& directory,
+    std::chrono::system_clock::time_point simulationOrigin, bool spatialMode) {
     if (directory.empty()) throw std::invalid_argument("Aggregation diagnostics_directory must not be empty");
     std::filesystem::create_directories(directory);
-    const auto path = std::filesystem::path(directory) / ("candidates-" + generateUUID() + ".jsonl");
+    const auto path = std::filesystem::path(directory) / ((spatialMode ? "selection-" : "candidates-") + generateUUID() + ".jsonl");
     if (std::filesystem::exists(path)) throw std::runtime_error("Aggregation diagnostic file already exists");
     auto file = std::make_shared<std::ofstream>(path);
     file->exceptions(std::ios::badbit | std::ios::failbit);
     std::cout << "Internal aggregation diagnostics: " << std::filesystem::absolute(path) << '\n';
-    return [file, simulationOrigin](const ump::AggregationCandidate& candidate, const ump::WindowMetricAssessment& assessment) {
+    return [file, simulationOrigin](const ump::AggregationCandidate& candidate, const ump::WindowMetricAssessment& assessment, const ump::SpatialSelection* spatial) {
         if (assessment.cells.size() != candidate.cells.size())
             throw std::invalid_argument("Metric assessment does not match candidate cells");
         const auto& grid = candidate.grid;
@@ -92,25 +121,13 @@ AggregationDiagnosticsSink makeAggregationDiagnosticsSink(const std::string& dir
             const auto& evaluated = assessment.cells[index];
             if (evaluated.cellId != cell.cell.id)
                 throw std::invalid_argument("Metric assessment cell order differs from candidate");
-            bsoncxx::builder::basic::document appliedPolicy;
-            if (evaluated.effectivePolicyId) {
-                bsoncxx::builder::basic::array sources;
-                for (const auto& source : evaluated.policySources) sources.append(source);
-                appliedPolicy.append(kvp("effective_id", *evaluated.effectivePolicyId),
-                    kvp("sources", sources), kvp("feasible", evaluated.policyFeasible));
-            }
-            const auto& g = cell.cell;
-            cells.append(make_document(kvp("cell_id", g.id), kvp("depth", g.depth),
-                kvp("x", g.x), kvp("y", g.y), kvp("width", g.width), kvp("height", g.height),
-                kvp("counts", countDocument(cell.counts)), kvp("policy", appliedPolicy),
-                kvp("metrics", metricDocument(evaluated.metrics)),
-                kvp("threshold_status", std::string(ump::assessmentStatusName(evaluated.status))),
-                kvp("checks", checkArray(evaluated.checks))));
+            cells.append(cellDocument(cell, evaluated, spatial ? &spatial->decisions.at(index) : nullptr));
         }
         const char* coverage = candidate.coverage == ump::WindowCoverage::Complete ? "complete"
             : candidate.coverage == ump::WindowCoverage::Incomplete ? "incomplete" : "no_scheduled_samples";
-        auto row = make_document(kvp("schema", "ump.fixed-candidate.v3"),
-            kvp("data_role", "internal_research_candidate"),
+        bsoncxx::builder::basic::document row;
+        row.append(kvp("schema", spatial ? "ump.spatial-selection.v1" : "ump.fixed-candidate.v3"),
+            kvp("data_role", spatial ? "internal_spatial_selection" : "internal_research_candidate"),
             kvp("simulation_origin", bsoncxx::types::b_date{simulationOrigin}),
             kvp("run_id", candidate.runId), kvp("sensor_id", candidate.sensorId),
             kvp("application_id", candidate.applicationId),
@@ -125,7 +142,36 @@ AggregationDiagnosticsSink makeAggregationDiagnosticsSink(const std::string& dir
                 kvp("height", grid.height), kvp("leaf_depth", grid.leafDepth))),
             kvp("counts", countDocument(candidate.counts)),
             kvp("assessment", assessmentDocument(assessment)), kvp("cells", cells));
+        if (spatial) {
+            bsoncxx::builder::basic::array finest, attempts;
+            for (std::size_t i = 0; i < spatial->finest.cells.size(); ++i)
+                finest.append(cellDocument(spatial->finest.cells[i], spatial->finestAssessment.cells[i]));
+            for (const auto& attempt : spatial->attempts)
+                attempts.append(cellDocument(attempt.cell, attempt.assessment));
+            row.append(kvp("source_cells", finest), kvp("attempts", attempts),
+                kvp("spatial_selection", make_document(kvp("mode", "temporal_first_spatial_only"),
+                    kvp("publication", "internal_only"), kvp("min_depth", spatial->minDepth),
+                    kvp("evaluations", static_cast<std::int64_t>(spatial->attempts.size())),
+                    kvp("selected_cells", static_cast<std::int64_t>(spatial->selectedCells)),
+                    kvp("suppressed_cells", static_cast<std::int64_t>(spatial->suppressedCells)),
+                    kvp("coarsened_cells", static_cast<std::int64_t>(spatial->coarsenedCells)),
+                    kvp("refined_cells", static_cast<std::int64_t>(spatial->refinedCells)))));
+        }
         *file << bsoncxx::to_json(row.view(), bsoncxx::ExtendedJsonMode::k_relaxed) << '\n';
         file->flush();
+    };
+}
+
+AggregationDiagnosticsSink makeAggregationDiagnosticsSink(const std::string& directory,
+    std::chrono::system_clock::time_point origin) {
+    auto write = makeDetailedSink(directory, origin, false);
+    return [write](const auto& candidate, const auto& assessment) { write(candidate, assessment, nullptr); };
+}
+
+SpatialDiagnosticsSink makeSpatialDiagnosticsSink(const std::string& directory,
+    std::chrono::system_clock::time_point origin) {
+    auto write = makeDetailedSink(directory, origin, true);
+    return [write](const ump::SpatialSelection& selection) {
+        write(selection.candidate, selection.assessment, &selection);
     };
 }

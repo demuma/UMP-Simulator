@@ -22,3 +22,22 @@ std::optional<ump::HistoryLimits> readHistoryLimits(const YAML::Node& node) {
         static_cast<std::size_t>(positive("max_observations")), static_cast<std::size_t>(positive("max_identity_bytes")),
         static_cast<std::size_t>(positive("max_buckets"))};
 }
+
+std::optional<ump::SpatialSelectionConfig> readSpatialSelection(const YAML::Node& aggregation, int leafDepth) {
+    const auto node = aggregation["spatial_selection"];
+    if (!node) return std::nullopt;
+    if (!node.IsMap()) throw std::invalid_argument("spatial_selection must be a map");
+    std::set<std::string> seen;
+    for (const auto& item : node) {
+        const auto key = item.first.as<std::string>();
+        if ((key != "min_depth" && key != "max_evaluations") || !seen.insert(key).second)
+            throw std::invalid_argument("Unknown or duplicate spatial_selection setting: " + key);
+    }
+    if (!aggregation["history"] || (!aggregation["metric_policy"] && !aggregation["policy_tree"]))
+        throw std::invalid_argument("spatial_selection requires history and an explicit metric policy");
+    const int depth = node["min_depth"].as<int>();
+    const auto budget = node["max_evaluations"].as<std::int64_t>();
+    if (depth < 1 || depth > leafDepth || budget <= 0)
+        throw std::invalid_argument("Invalid spatial_selection depth or evaluation budget");
+    return ump::SpatialSelectionConfig{depth, static_cast<std::size_t>(budget)};
+}
