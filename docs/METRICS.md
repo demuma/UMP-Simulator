@@ -1,9 +1,11 @@
 # Candidate metrics and threshold assessment
 
-Status: 2026-10-13. Initial E04 implementation and E01 baseline query contract. This extends the
-[fixed aggregation contract](FIXED_AGGREGATION.md). A04 now supplies regional requirements
-through [POLICY_TREE.md](POLICY_TREE.md). Adaptive search, a publication protocol and
-empirical privacy evaluation remain unimplemented.
+Status: 2026-10-14. Nine online measures and the offline E01 occupancy evaluator are
+implemented. This extends the [fixed aggregation contract](FIXED_AGGREGATION.md); A04
+supplies requirements through [POLICY_TREE.md](POLICY_TREE.md). Spatial/temporal selection
+and immutable publication are integrated. [Controlled evaluation](CONTROLLED_EVALUATION.md)
+now compares identical inputs; [PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md) defines the
+initial deterministic stress test. A realistic trained attack study remains open.
 
 ## Separation of responsibilities
 
@@ -99,8 +101,18 @@ not zero. Report answered-query coverage and conditional MAE separately, plus re
 and age; do not interpret improved conditional MAE after dropping hard cases as better
 overall utility. Equal-weight query scoring and the reference stay fixed across variants.
 
-The GT query/reconstruction experiment and attacker evaluation remain unimplemented.
-Online diagnostics deliberately return `offline_reference_required` for occupancy_mae.
+The offline query/reconstruction experiment is implemented in `tools/evaluation/occupancy.py`
+and exercised by `run_comparison.py` on frozen private GT input and recipient releases.
+It reports conditional `occupancy_mae`, `answered_query_coverage`, `scored_query_coverage`,
+`reference_availability`, cell-side/area/window distributions, and simulated sealing age.
+A query needs complete public spatial support at every scheduled sample; missing sparse
+cells cannot be inferred to contain zero. All fixed reference cells, including empty ones,
+remain in the coverage denominator. Incomplete reference intervals are unscorable.
+
+Online diagnostics deliberately continue to return `offline_reference_required` for
+`occupancy_mae`. The online aggregator does not receive private GT as a decision oracle.
+Operational support/threshold checks and the offline known-background distinguishability
+stress test remain different quantities; neither establishes a general privacy guarantee.
 
 ## Presentation metric review
 
@@ -190,3 +202,13 @@ A04 subsequently passed all seven suites and exercised this evaluator with root/
 requirements. The four-stream fixture was rerun against schema v3, verifying uniform and
 absent-policy modes and provenance along with all twelve windows' existing numeric checks.
 Separate regional/conflict and startup-validation evidence is in POLICY_TREE.md.
+
+## Offline verification added on 2026-10-14
+
+The occupancy evaluator tests uniform coarsening, fixed denominators, first-nine/later-ten
+sample weighting, temporal boundaries, missing/empty support, unavailable references,
+public-only predictions, overlap rejection and final partial queries. Replay regressions
+exercise the actual policy/selection/adaptation/publication cores, all modes, stricter
+regional inheritance, exact count conservation, determinism and invalid-input rejection.
+See [the comparison report](EVALUATION_RESULTS_2026-10-14.md) for the measured pilot; these
+are descriptive cases, not a completed privacy/utility benchmark.

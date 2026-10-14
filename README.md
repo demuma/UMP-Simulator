@@ -21,7 +21,9 @@ regional checks and explicit Temporal First / Spatial First strategies. A05 inte
 private-final-snapshot model with a separate immutable MongoDB release sink, idempotent
 writes and a durable private journal. Live and recorded diagnostics show the selected window,
 strategy and transitions. Automatic restart/resume, independent sibling windows, additional
-publication models, attack metrics and comparative research experiments remain open.**
+publication models and realistic attack studies remain open. The offline replay now compares
+four fixed baselines and three adaptive modes on identical input, with occupancy utility
+and an explicitly scoped neighbouring-output privacy stress test.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -33,6 +35,9 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
+| [Controlled evaluation](docs/CONTROLLED_EVALUATION.md) | Frozen input, seven comparable configurations, fixed-query utility and reproduction commands |
+| [First comparison results](docs/EVALUATION_RESULTS_2026-10-14.md) | Measured results, interpretation, reproducibility artifacts and limitations |
+| [Privacy evaluation](docs/PRIVACY_EVALUATION.md) | Complete-background neighbour distinguishability; distinction from realistic membership attacks |
 | [Publication coordination](docs/PUBLICATION_COORDINATION.md) | Integrated immutable MongoDB releases, private journal, retries and recovery boundaries |
 | [Live aggregation progress](docs/LIVE_AGGREGATION_PROGRESS.md) | Separate current-window checks, completed output and sensor geometry; H/G/P controls |
 | [Temporal adaptation](docs/TEMPORAL_AGGREGATION.md) | Implemented Temporal First/Spatial First, shared-history windows, deadlines and runnable example |
@@ -75,20 +80,23 @@ application policy once their behavior is implemented and tested.
 **Adopted strategy terminology:** Temporal First prioritizes temporal detail/freshness and
 tries spatial aggregation first. Spatial First prioritizes spatial detail and tries temporal
 aggregation first. The name identifies the dimension to preserve. Hard bounds still apply;
-both action orders are implemented; comparative privacy/utility experiments remain open.
+both action orders are implemented and included in the initial frozen-input comparison.
 
 The first application query is now mean sampled occupancy on a fixed 10-m reference grid
 over 1-second intervals; [METRICS.md](docs/METRICS.md) defines its reference, reconstruction
-assumptions and missing-data treatment. Its GT experiment is still pending. The attacker
-model, auxiliary knowledge and empirical privacy evaluation still need binding definitions. A minimum number of contributors per publication is initially
+assumptions and missing-data treatment. The offline evaluator now computes conditional MAE,
+answered/scored-query coverage, reference availability, resolution and simulated sealing age.
+The initial privacy test compares deterministic neighbouring public transcripts under complete
+background knowledge; a realistic trained membership attack remains open. A minimum number of contributors per publication is initially
 an operational release rule. It does not by itself establish formal k-anonymity or a
 reduction in empirical attack success.
 
 **Next milestone: October 18 presentation evidence, then October 25 conference.**
 The October 14 supervisor discussion supported the concrete proof of concept. Input,
 metrics, regional policies, shared history, spatial/temporal adaptation and the first durable
-release path now run together. Next come an explicit research question and threat model,
-metric selection and controlled baseline experiments. Implementation demonstrates mechanics;
+release path now run together. The first controlled evaluation and scoped threat model are
+implemented. Next come broader policy/scenario sweeps, a realistic attacker study and precise
+feasibility claims for the presentation. Implementation demonstrates mechanics;
 mathematical feasibility and measured effectiveness require separate evidence.
 
 The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) now prioritizes
@@ -161,21 +169,22 @@ reverted test results do not establish correctness of the current implementation
 | Area | Present | Missing or limited |
 |---|---|---|
 | Simulation | Agents, class attributes, movement, regions and configurable timestep | No central seed; movement noise partly depends on wall-clock time |
-| Ground truth | Agent identity, position, velocity and timestamp stored in MongoDB | Completeness across all runs and boundary cases not systematically validated |
+| Ground truth | Agent identity, position, velocity and timestamp stored in MongoDB; one full controlled AGBS run verified against GT | Completeness across other runs, sensor types and boundary cases not systematically validated |
 | ABS | Position, type, identity and velocity from consecutive observations; first complete output at 100 ms for the current 10-Hz setup | Nominal-period velocity requires aligned fixed intervals; publication after DB errors is not guaranteed |
 | GBS | Fixed cells, class counts and total count per observation | No full temporal aggregation or privacy-based release decision |
-| AGBS | Quadtree, position mapping, counts and cell IDs | Splitting follows positions/max depth, not metrics or policies |
-| AggregationManager | Optional AGBS ingestion, fixed windows, contributor unions and JSONL candidates assessed against uniform or regional requirements | Internal spatial selection is opt-in; no approved public releases or temporal extension |
-| Regional rules | Immutable sparse PolicyTree; explicit root/type/region metric requirements, strict numeric inheritance and footprint conflicts | Aligned, non-overlapping rectangles only; legacy granularity/k/l fields inactive; no action/model selection or live updates |
-| Temporal history | Opt-in bounded sample history; exact ancestor/time queries and logical active/preemptive windows with finite deadlines | Private reconstruction only; no automatic preparation, release reservations or commit-driven invalidation |
-| Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry and independent playback pacing; four V3 DB renderers | Live spatial overlay and offline replay implemented; collecting/preemptive/release lifecycle views and long-run tests remain open |
-| Evaluation | Online metric registry, uniform/regional threshold assessments and a defined first occupancy-query baseline | GT utility experiment, independent attacker evaluation and comparative baselines remain open |
+| AGBS | Fine observation quadtree, position mapping, counts and cell IDs; optional reusable aggregation pipeline | Input geometry follows positions/max depth; adaptive publication uses a separately selected cut |
+| Aggregation pipeline | AGBS ingestion, bounded history, regional checks, spatial/temporal selection and immutable policy-approved MongoDB releases | Common-window coordination; independent sibling windows, alternative publication models and automatic restart remain open |
+| Regional rules | Immutable sparse PolicyTree; root/type/region metric inheritance, footprint conflicts and stream-level Temporal First/Spatial First selection | Aligned, non-overlapping rectangles only; legacy granularity/k/l fields inactive; no regional strategy overrides or live updates |
+| Temporal history | Bounded sample history, exact ancestor/time queries, logical active/preemptive windows, bounded extension and coordinated retirement | No selective proactive caches or independent sibling-window coordination |
+| Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry and independent playback pacing; four V3 DB renderers | Independent input/completed/active-window displays implemented; broader lifecycle inspection and long-run tests remain open |
+| Evaluation | Nine online measures, fixed-query occupancy MAE/coverage/age, seven-mode frozen replay and known-background neighbour stress test | Realistic trained attacks, independent scenario/seed sweeps, further utility tasks and formal guarantees remain open |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |
 
-Existing source does not imply all edge cases are correct. Adaptive aggregation and
-core research evaluation remain pending. Fixed candidates are internal research data,
-not privacy-approved publications.
+Existing source does not imply all edge cases are correct. The adaptive baseline and initial
+controlled evaluation are implemented; broader scientific validation remains open. Fixed
+candidates and progress frames are internal research data. Only the separate publication
+coordinator produces recipient releases, and policy compliance alone is not a privacy guarantee.
 
 ## 5. ABS timestamps, velocity estimation and duplicate writes
 
@@ -748,7 +757,8 @@ headless run. Four AGBS policies produced twelve windows exercising pass, fail, 
 reference and no-policy outcomes; numeric metrics/checks matched their candidate data.
 Unknown YAML metrics fail explicitly at initialization. No maintained YAML or existing
 Simulation data was changed. This E04 verification preceded the regional implementation below;
-GT/attacker evaluation remains open.
+At that stage GT/attacker evaluation remained open; the initial offline evaluation added on
+October 14 is documented in the controlled comparison report.
 
 A04 subsequently passed all seven CTest suites, including the two new policy suites and
 the existing MongoDB sensor regression. The standard-C++ policy core also built with

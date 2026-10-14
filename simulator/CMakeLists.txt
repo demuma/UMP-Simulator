@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)  
+cmake_minimum_required(VERSION 3.12)
 
 # Set the project name
 project(Simulator)
@@ -198,4 +198,31 @@ if(UMP_BUILD_FRAME_TESTS)
     target_compile_features(AggregationPresentationTests PRIVATE cxx_std_17)
     add_test(NAME aggregation_presentation COMMAND AggregationPresentationTests)
     set_tests_properties(aggregation_presentation PROPERTIES LABELS "unit;frames;presentation" TIMEOUT 15)
+endif()
+
+# Offline research adapter: same decision cores, no MongoDB or renderer at runtime.
+option(UMP_BUILD_REPLAY "Build frozen observation replay and evaluation tests" ON)
+if(UMP_BUILD_REPLAY)
+    set(UMP_REPLAY_CORE_SOURCES
+        src/AggregationManager.cpp src/AggregationHistory.cpp src/CandidateMetrics.cpp
+        src/PolicyTree.cpp src/SpatialSelection.cpp src/AdaptiveAggregation.cpp
+        src/PublicationCoordinator.cpp src/AggregationConfiguration.cpp src/PolicyConfiguration.cpp)
+    add_executable(AggregationReplay tools/AggregationReplay.cpp ${UMP_REPLAY_CORE_SOURCES})
+    target_compile_features(AggregationReplay PRIVATE cxx_std_17)
+    target_compile_options(AggregationReplay PRIVATE -O3)
+    target_link_libraries(AggregationReplay PRIVATE SFML::Graphics yaml-cpp::yaml-cpp)
+
+    enable_testing()
+    add_executable(ReplayRegressionTests tests/ReplayRegressionTests.cpp ${UMP_REPLAY_CORE_SOURCES})
+    target_compile_features(ReplayRegressionTests PRIVATE cxx_std_17)
+    target_link_libraries(ReplayRegressionTests PRIVATE SFML::Graphics yaml-cpp::yaml-cpp)
+    add_test(NAME replay_regression COMMAND ReplayRegressionTests)
+    set_tests_properties(replay_regression PROPERTIES LABELS "unit;replay;evaluation" TIMEOUT 30)
+    find_package(Python3 3.9 COMPONENTS Interpreter REQUIRED)
+    foreach(evaluation occupancy privacy comparison capture)
+        add_test(NAME ${evaluation}_evaluation COMMAND ${Python3_EXECUTABLE} -m unittest discover
+            -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/evaluation -p test_${evaluation}.py)
+        set_tests_properties(${evaluation}_evaluation PROPERTIES LABELS "unit;evaluation"
+            ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;UMP_REPLAY_BINARY=$<TARGET_FILE:AggregationReplay>" TIMEOUT 30)
+    endforeach()
 endif()

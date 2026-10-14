@@ -29,9 +29,10 @@ policy-selected private final snapshots to a durable MongoDB release sink and pr
 journal. A03 adds Temporal First and Spatial First with bounded temporal extension,
 regional deadlines and future handover. The common-window model is intentionally
 conservative; independent sibling windows, other publication models and automatic restart
-remain open. Next are metric/threat-model decisions and controlled baseline experiments.
-E01's occupancy-query contract is documented; its GT experiment and E02 attacker definition
-remain open.** The detailed
+remain open. E01 fixed-query occupancy evaluation and R01 frozen replay are now implemented,
+with four fixed baselines and spatial/Temporal First/Spatial First comparisons. E02 has a
+complete-background neighbouring-output stress test; realistic trained attacks and broader
+independent scenario/policy studies remain open.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
 proposals, flow diagram, storage model and hand-worked cases. The
 [fixed aggregation contract](docs/FIXED_AGGREGATION.md) records actual A01 behavior;
@@ -205,15 +206,15 @@ priority of regional constraints, and acceptable evidence for the paper/presenta
 ### M2 — Pipeline and first results by October 18
 
 - [ ] Finish the minimum P1–P6 integration and the checks deferred from M1.
-- [ ] Add metric/policy-based parent/child selection (A03) so release depth varies locally.
+- [x] Add metric/policy-based parent/child selection (A03) so release depth varies locally.
   Retain the existing quadtree as the hierarchy; make the release selection explicit.
-- [ ] Use identical saved observations and detection area for fixed/adaptive comparisons.
+- [x] Use identical saved observations and detection area for fixed/adaptive comparisons.
   Current live ABS/GBS/AGBS regions differ and are not directly comparable populations.
-- [ ] Freeze D03 window/count semantics and E01's fixed application query, including how
+- [x] Freeze D03 window/count semantics and E01's fixed application query, including how
   coarse or delayed releases answer it and how suppression/missing data are handled.
-- [ ] Run a small fixed space/time parameter matrix and the first spatial adaptive variant.
-  Produce 1–2 figures and a result table covering application error, coverage, delay and
-  support-rule compliance. Record input/configuration and avoid unsupported generalization.
+- [x] Run a small fixed space/time matrix and all implemented adaptive strategies.
+  Export a result table covering application error, coverage, sealing age and policy compliance,
+  with frozen input/configuration and explicit limitations (dated evaluation report).
 - [ ] Specify E02's attack goal, visible releases, auxiliary knowledge and prior/no-output
   baseline. Run an empirical pilot only if the model and implementation are ready; label
   contributor counts and threshold compliance accurately if they are the available results.
@@ -293,6 +294,13 @@ makes the sequence harder to read but does not by itself make the records incons
 **Acceptance:** a short timeline explains one complete tick and two sensor observations.
 Do not shift timestamps merely to make records appear synchronized.
 
+**Additional absolute-time audit (2026-10-14):**
+
+- [ ] Make the timezone convention explicit for `simulation.datetime` and audit DST handling.
+  The capture configured `2026-10-14T10:30:00`, while authoritative Mongo metadata used
+  `2026-10-14T09:30:00.000Z`. Relative GT/AGBS times were exactly aligned; do not infer the
+  intended UTC offset from this timezone-free string or change old reference timestamps.
+
 ### D03 — Define aggregate counts and windows — P0 before temporal aggregation
 
 Fixed-mode contract and a worked example: [FIXED_AGGREGATION.md](docs/FIXED_AGGREGATION.md).
@@ -347,20 +355,31 @@ individual IDs. Existing Simulation data and maintained YAML were unchanged.
 
 ## 5. Stage 2 — Metric definitions and evaluation questions
 
-**Next research work after the live-progress display:**
+**Agreed three-part work, updated 2026-10-14:**
 
-1. Implement R01's frozen observation replay before comparing strategies; independent
-   random simulator runs are not equal-input experiments. Retain run/config/time provenance.
-2. Implement E01's already specified 10-m / 1-s occupancy query against the same GT;
-   report conditional MAE together with answered-query coverage, not missing-as-zero error.
-3. Resolve E02's attack goal, adversary knowledge and visible channels before adding a
-   privacy score. Include release geometry/timing and suppression, not just cell counts.
-4. Run B01/E06 with fixed baselines, spatial-only selection, Temporal First and Spatial First;
-   first verify policy compliance, disjoint support, loss and latency, then interpret utility
-   and independently measured privacy. Record feasible/infeasible policy regimes explicitly.
+1. **Live understanding — implemented:** independent input grid, completed decisions and
+   dated active-window progress (A06). This is visualization, not additional privacy.
+2. **Metric/research contract — initial slice implemented:** nine online quantities plus
+   fixed-query occupancy MAE, coverage and resolution/age; a complete-background
+   neighbouring-output stress test with explicit limits. Realistic attack evaluation and
+   further application metrics remain open.
+3. **Controlled experiments — initial slice implemented:** seven configurations on identical
+   frozen input, four fixed size/window combinations, spatial-only, Temporal First and Spatial
+   First. Results include policy compliance, observation conservation, utility and the scoped
+   privacy test. See [CONTROLLED_EVALUATION.md](docs/CONTROLLED_EVALUATION.md) and
+   [the dated results](docs/EVALUATION_RESULTS_2026-10-14.md).
 
-These steps retain the implemented metrics as operational checks. New risk metrics and
-claims require a defined evaluation contract; the visualization adds no privacy guarantee.
+**Next chronological research steps:**
+
+1. Decide whether applications require explicit empty-cell coverage; current absent support
+   is unknown and can make a fixed occupancy query unanswerable even with high retention.
+2. Select a realistic attacker/auxiliary-information model and independent training/testing
+   protocol. The strong deterministic test is a diagnostic, not a completed attack study.
+3. Sweep support thresholds, legal cell sizes/window caps and regional density regimes on
+   additional frozen runs; include infeasible cases and common-query support comparisons.
+4. Formalize feasibility, bounded-window decisions and the common-window limitation for the
+   presentation; add confidence intervals only with an appropriate independent sampling unit.
+5. Compare independent publication models and preemptive preparation once implemented (E05/E06).
 
 
 ### E01 — Define one utility application — P0
@@ -372,22 +391,27 @@ Baseline contract: [METRICS.md](docs/METRICS.md#first-utility-question-e01-basel
   aligned 100-ms sample times; missing/suppressed predictions are not zeros.
 - [x] Define conditional MAE and answered-query coverage separately; keep reference support
   fixed and document uniform reconstruction assumptions for coarser aggregate support.
-- [ ] Implement GT extraction and prediction reconstruction for that query; run every variant
-  against the same saved reference, including the coarsening counterexample.
-- [ ] Measure resolution, staleness, coverage and numerical error separately.
+- [x] Implement private-position reference extraction and public-only prediction reconstruction;
+  replay all variants on one frozen input, including the coarsening counterexample.
+- [x] Measure resolution, simulated sealing age, coverage and numerical error separately.
+- [ ] Extend to additional application queries, independent scenarios and a justified policy sweep.
 
 **Acceptance:** a fixed question and its GT answer are defined. Coarsening the reference
 must not automatically eliminate error. Do not label record retention as data fidelity without justification.
 
 ### E02 — Define attacker and privacy evaluation — P0
 
-- [ ] Specify attack goal, auxiliary information and visible publications.
-- [ ] Consider aggregate-occupancy membership inference and justify its relevance.
-- [ ] Define a prior/no-output baseline and clear attack-success measure.
+- [x] Specify one initial goal and visible transcript: whole-recorded-trajectory presence
+  under complete deterministic background knowledge (docs/PRIVACY_EVALUATION.md).
+- [x] Review aggregate-location membership inference and justify a scoped initial test.
+- [x] Define the balanced no-output baseline and derived perfect-knowledge success.
+  This is not measured classifier accuracy; helper tests include no-output/exact-count controls.
+- [ ] Implement a realistic attacker with disjoint training/calibration/test scenarios.
 - [ ] Include repeated releases, overlapping windows and possible differencing attacks.
 - [ ] Include observable adaptive geometry, publication timing and suppression patterns;
   evaluate all views visible to the attacker jointly.
-- [ ] Distinguish k-threshold compliance from measured risk.
+- [x] Distinguish support-threshold compliance from the scoped distinguishability result and
+  from realistic measured attack success (which remains open).
 
 **Acceptance:** reproducible attacker knowledge and baseline. No general anonymity claim
 based only on a distinct-contributor count.
@@ -739,7 +763,10 @@ and comparisons once the first path is executable.
 - [ ] Optionally extend matching/duplicate checks to all agents and sensor identities.
 - [x] Select a separate controlled dataset for the sensor regression test.
 - [x] Add and pass a sensor regression test with the chosen correction.
-- [ ] Validate a complete new simulator run against GT across all agents/sensors.
+- [x] Validate one complete 8-second controlled run against GT for all 200 agents and AGBS:
+  79 sensor timestamps, 15800 observations, all cell/type counts and geometry matched.
+- [ ] Extend complete-run validation to ABS/GBS and additional scenarios; one AGBS run does
+  not validate every sensor, configuration or movement regime.
 
 **Existing result:** agent C0B64FE1-740C-486C-A2D1-00E030269E71: GT 200 records, ABS 199,
 100 sensor timestamps; no missing GT joins or position differences; 99 duplicate keys;
@@ -754,10 +781,12 @@ velocity comparisons. Keep reference data unchanged. One checked agent does not 
 
 ### B01 — Compare fixed space/time baselines — P0
 
-- [ ] Select a small set of fixed cell sizes and temporal windows.
-- [ ] Use identical observations, detection areas and application queries.
-- [ ] Process counts/windows according to D03.
-- [ ] Export utility error, empirical privacy measure, coverage, staleness and runtime.
+- [x] Compare 10-m/20-m cells crossed with 400-ms/1000-ms windows, plus three adaptive modes.
+- [x] Use identical frozen observations, detection area, policies and 10-m/1-s application query.
+- [x] Process counts/windows through the same D03 aggregation/publication cores.
+- [x] Export conditional utility error, coverage, simulated sealing age, contribution retention,
+  processing time and a labelled known-background distinguishability diagnostic.
+- [ ] Add realistic empirical attacks, a wider parameter sweep and independent replications.
 
 **Acceptance:** reproducible table/figure with configuration and explicit limits. A complete
 policy tree or real city map is not required for this first comparison.
@@ -766,8 +795,9 @@ policy tree or real city map is not required for this first comparison.
 
 - [ ] Inventory random sources: spawning, targets, velocity, noise and identities.
 - [ ] Evaluate one configurable seed and stable scientific identities.
-- [ ] Feed identical observations to all compared aggregation variants.
-- [ ] Record parameters, time basis and run identity.
+- [x] Feed identical saved observations to all compared aggregation variants with AggregationReplay.
+- [x] Record input/config/binary/source hashes, parameters, time basis, run identity and commands.
+- [x] Verify repeated replay equality after excluding the explicitly measured runtime field.
 
 **Finding:** multiple random_device/mt19937 initializations; no shared seed.
 **Acceptance:** equal configuration/seed produces equal scientific states, or a fixed saved
@@ -787,7 +817,8 @@ measured runtime. DB/CPU/render costs can therefore alter the movement stream.
 - [ ] Choose an experiment database before rerunning the simulator.
 - [ ] Make clear_database behavior explicit and configure it for experiments.
 - [ ] Decouple headless operation from snapshot production and DB I/O as needed.
-- [ ] Evaluate minimal file/null output or offline processing of saved observations.
+- [x] Implement offline saved-observation processing without database or GUI runtime access.
+  The existing CMake project still discovers its normal build dependencies.
 
 **Acceptance:** a small comparison runs without GUI, creates controlled artifacts and does
 not overwrite references. Add a broad output interface only if multiple outputs justify it.
@@ -1222,3 +1253,17 @@ modularity. All repository documentation remains in English.
 - Next: bind the threat model and meaningful privacy/utility metrics, then compare fixed
   baselines and both strategies on identical input. Automatic restart, independent sibling
   windows, A07 selective rescue, other publication models and proactive caches remain open.
+
+## Implementation record — controlled evaluation, 2026-10-14
+
+- Added the offline AggregationReplay CLI using actual aggregation/policy/publication cores.
+- Added deterministic fixtures, private verified GT/AGBS capture, seven-mode orchestration,
+  provenance hashes, public-only occupancy reconstruction and known-background neighbour checks.
+- Ran heterogeneous, analytical-handover and verified-simulator pilots. Results and limits:
+  [EVALUATION_RESULTS_2026-10-14.md](docs/EVALUATION_RESULTS_2026-10-14.md).
+- Captured 15800 observations from one real eight-second simulator run; all cell/time counts,
+  type counts and geometry matched GT. Only the fresh owned capture database was removed.
+- Added an exportable result figure, summary CSV/JSON and 44 Python tests plus replay-core
+  regressions; all 19 CTest suites passed.
+- No online GT metric oracle or general privacy guarantee was introduced. Remaining priority:
+  application missing-support semantics, realistic attacker study and independent policy/scenario sweeps.
