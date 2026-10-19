@@ -181,7 +181,9 @@ HistoryQuery AggregationHistory::query(const CellGeometry& cell, AggregationTime
     return {status, std::move(result)};
 }
 
-HistoryQuery AggregationHistory::queryFinest(AggregationTime startMs, AggregationTime endMs) const {
+HistoryQuery AggregationHistory::queryFinest(AggregationTime startMs, AggregationTime endMs,
+    std::optional<CellGeometry> domain) const {
+    if (domain) validateCell(config.coverage, *domain);
     if (startMs < 0 || endMs <= startMs)
         throw std::invalid_argument("History queries require a nonempty nonnegative half-open interval");
     if (startMs < retainedFrom(watermarkMs)) return {HistoryQueryStatus::Evicted, std::nullopt};
@@ -204,6 +206,8 @@ HistoryQuery AggregationHistory::queryFinest(AggregationTime startMs, Aggregatio
         if (bin.status == ObservationStatus::Unavailable) { ++result.unavailableSamples; continue; }
         ++result.measuredSamples;
         for (const auto& observation : bin.observations) {
+            if (domain && (observation.cell.id >> (2 * (config.coverage.leafDepth - domain->depth))) != domain->id)
+                continue;
             auto& cell = cells[observation.cell.id];
             ++cell.counts.observationContributions;
             ++cell.counts.typeObservationContributions[observation.type];

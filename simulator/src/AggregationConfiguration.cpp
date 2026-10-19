@@ -113,23 +113,34 @@ void validatePolicyExecution(const YAML::Node& aggregation) {
 std::optional<ump::TemporalAdaptationConfig> readTemporalAdaptation(const YAML::Node& aggregation) {
     const auto node = aggregation["temporal_adaptation"];
     if (!node) return std::nullopt;
-    allowedKeys(node, {"extension_step_ms", "max_window_ms", "max_evaluations"}, "temporal_adaptation");
+    allowedKeys(node, {"extension_step_ms", "max_window_ms", "max_evaluations",
+        "coordination", "max_active_cells"}, "temporal_adaptation");
     if (!aggregation["history"] || !aggregation["spatial_selection"])
         throw std::invalid_argument("temporal_adaptation requires history and spatial_selection");
     validatePolicyExecution(aggregation);
     const auto strategy = aggregation["policy_tree"]["execution"]["strategy"].as<std::string>();
-    return ump::TemporalAdaptationConfig{
+    ump::TemporalAdaptationConfig settings{
         strategy == "temporal_first" ? ump::AdaptationStrategy::TemporalFirst : ump::AdaptationStrategy::SpatialFirst,
         positive(node, "extension_step_ms", "temporal_adaptation"),
         positive(node, "max_window_ms", "temporal_adaptation"),
         static_cast<std::size_t>(positive(node, "max_evaluations", "temporal_adaptation"))};
+    if (node["coordination"]) {
+        const auto mode = node["coordination"].as<std::string>();
+        if (mode == "cell_local") settings.coordination = ump::CoordinationMode::CellLocal;
+        else if (mode != "common_window") throw std::invalid_argument("Unsupported temporal_adaptation.coordination");
+    }
+    if (node["max_active_cells"]) settings.maxActiveCells = static_cast<std::size_t>(
+        positive(node, "max_active_cells", "temporal_adaptation"));
+    if (settings.maxActiveCells < 4)
+        throw std::invalid_argument("max_active_cells must cover the four base cells");
+    return settings;
 }
 
 std::optional<PublicationConfiguration> readPublicationConfiguration(const YAML::Node& aggregation) {
     const auto node = aggregation["publication"];
     if (!node) return std::nullopt;
     allowedKeys(node, {"database", "collection", "journal_database", "journal_collection",
-        "max_document_bytes", "max_attempts"}, "publication");
+        "max_document_bytes", "max_attempts", "journal_empty_retirements"}, "publication");
     if (!aggregation["spatial_selection"])
         throw std::invalid_argument("publication requires spatial_selection");
     validatePolicyExecution(aggregation);
@@ -144,6 +155,8 @@ std::optional<PublicationConfiguration> readPublicationConfiguration(const YAML:
         settings.maxDocumentBytes = static_cast<std::size_t>(positive(node, "max_document_bytes", "publication"));
     if (node["max_attempts"])
         settings.maxAttempts = static_cast<std::size_t>(positive(node, "max_attempts", "publication"));
+    if (node["journal_empty_retirements"])
+        settings.journalEmptyRetirements = node["journal_empty_retirements"].as<bool>();
     validateDatabaseName(settings.database);
     validateDatabaseName(settings.journalDatabase);
     validateCollectionName(settings.collection);

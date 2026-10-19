@@ -1,5 +1,10 @@
 # Test report — independent validation and empirical privacy milestone
 
+**Later implementation update:** this report preserves the common-window privacy benchmark
+milestone. The subsequent cell-local implementation, current regression totals and real
+integration checks are in [COORDINATION_TEST_REPORT_2026-10-19.md](COORDINATION_TEST_REPORT_2026-10-19.md).
+The historical pilot numbers below are unchanged.
+
 Date: 2026-10-19. Repository: `/Users/maxdemu/Developer/UMP-Simulator`.
 
 **Outcome:** the first controlled end-to-end evaluation implementation is complete. All

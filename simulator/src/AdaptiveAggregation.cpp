@@ -19,6 +19,8 @@ AdaptiveAggregation::AdaptiveAggregation(AggregationConfig settings,
     : config(std::move(settings)), temporal(timeSettings), evaluator(std::move(metrics)),
       selector(config, spatial), sink(std::move(output)), durationCapMs(temporal.maxWindowMs) {
     adaptationStrategyName(temporal.strategy);
+    if (temporal.coordination != CoordinationMode::CommonWindow)
+        throw std::invalid_argument("Cell-local configuration requires CellLocalAggregation");
     if (!sink || config.samplingPeriodMs <= 0 || config.windowMs <= 0
         || config.windowMs % config.samplingPeriodMs || temporal.extensionStepMs <= 0
         || temporal.extensionStepMs % config.samplingPeriodMs

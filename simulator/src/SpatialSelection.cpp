@@ -19,6 +19,8 @@ const char* temporalActionName(TemporalAction action) {
         case TemporalAction::EvaluateFinest: return "evaluate_finest";
         case TemporalAction::CoarsenSpatially: return "coarsen_spatially";
         case TemporalAction::ExtendWindow: return "extend_window";
+        case TemporalAction::CoordinationHold: return "coordination_hold";
+        case TemporalAction::RequestHandoff: return "handoff_requested";
         case TemporalAction::Finalize: return "finalize";
     }
     throw std::invalid_argument("Unknown temporal action");

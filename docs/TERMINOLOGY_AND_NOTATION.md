@@ -1,6 +1,6 @@
 # Terminology, notation and mathematical contract
 
-Version 1.0 — 2026-10-19. This is the project's canonical terminology for the presentation,
+Version 1.1 — 2026-10-19. This is the project's canonical terminology for the presentation,
 paper, dissertation and new documentation. It describes the implemented baseline and marks
 future extensions explicitly. Earlier reviews retain historical/local notation; use this
 reference when translating them into publication text. Code identifiers are mapped below;
@@ -14,17 +14,18 @@ they do not become aggregation cells, buckets or independent clocks.**
 A candidate refers to a quadtree cell C and a half-open time interval I. The constraints
 for that candidate follow from the application's policy and every selected functional region
 intersected by C. A region can contain many cells; one cell can intersect several regions.
-Cells in the same region can have different observation histories and, in a future local
+Cells in the same region can have different observation histories and, in the opt-in local
 controller, different aggregation intervals.
 
-Use **cell-local temporal adaptation with coordinated merge groups** for the planned
-extension. The earlier phrase **independent regional aggregation windows** is deprecated:
+Use **cell-local temporal adaptation with coordinated merge groups** for the implemented
+opt-in local mode. The earlier phrase **independent regional aggregation windows** is deprecated:
 it incorrectly suggests that a semantic region owns one bucket/window or that region and
 quadtree boundaries must coincide.
 
 The current history API can reconstruct different intervals for different cells. The
-current adaptive controller and publication coordinator still use one common interval over
-the entire sensor grid. Changing that coordination is future implementation work.
+default adaptive controller and publication coordinator use one common interval over
+the entire sensor grid. The opt-in `cell_local` mode has independent spatial owner intervals
+and coordinated parent handoffs; see [CELL_LOCAL_COORDINATION.md](CELL_LOCAL_COORDINATION.md).
 
 ## 2. Canonical terms
 
@@ -285,8 +286,8 @@ inside the same region may reach their required support at different times.
 | C_2 | Footway | 1000 ms | [0,400) |
 | C_3 | The same footway | 1000 ms | [0,800) |
 
-These intervals illustrate the target cell-local model; they are not current scheduler
-output. A parent overlapping road and footway inherits the 200-ms upper bound, so it cannot
+These intervals illustrate the implemented cell-local model; exact observed intervals depend
+on the configured checks, input and coordination holds. A parent overlapping road and footway inherits the 200-ms upper bound, so it cannot
 simply absorb the whole 800-ms footway candidate.
 
 Current common-window model:
@@ -297,8 +298,8 @@ $$
 
 The controller also takes a conservative whole-grid duration/age cap, including empty
 regional footprints. Terminal decisions hand over at a common boundary. The history can
-query cell-local intervals; scheduling, reservations and retirement for independently
-completing cells/coordination groups remain future work. A coordination group may couple
+query cell-local intervals; the opt-in local controller now schedules and retires independently
+completing cells/coordination groups. A coordination group may couple
 cells across a semantic boundary or several cells inside one region.
 
 ## 9. Spatial and temporal transformations
@@ -633,3 +634,40 @@ k-anonymity/DP parameters or a universal privacy score. AUC below 0.5 is not tes
 The independent source realization is the uncertainty unit, with both labels and all
 mechanisms paired; the present bootstrap preserves scenario strata and freezes fitted
 models/thresholds. The calibrated FPR cap is empirical, not a held-out guarantee.
+
+
+## 19. Cell-local ownership and retirement
+
+The private ownership frontier at time t is a spatial partition. Each member owns its
+original unresolved interval start; functional regions supply constraints without owning
+these intervals. Write rho_C(t) for the retirement frontier of cell C. Its open interval
+starts there, even if source history retains earlier observations.
+
+$$
+\mathcal F(t)=\{(C,s_C,e_C,d_C)\},\qquad s_C=\rho_C(t).
+$$
+
+Here e_C is the next planned check and d_C the absolute policy/global deadline. Cells may
+have different e_C and d_C. A parent P can directly take over the same unpublished prefix
+of a complete mixed-depth descendant frontier D_P:
+
+$$
+P=\mathop{\dot\bigcup}_{C\in\mathcal D_P}C,\qquad
+s_C=s\ \ (C\in\mathcal D_P),\qquad I=[s,e).
+$$
+
+Metrics are recomputed from the retained observations in P x I. Equal check endpoints
+are unnecessary. If starts differ because some support has retired, a historical parent
+cannot reuse that support; resolve earlier prefixes and establish a future common boundary.
+No equation here assumes that extending time or coarsening space improves every metric.
+
+For completed terminal decisions H over a fully finalized run [0,T), including private
+suppression and measured-empty retirement, exact ownership requires:
+
+$$
+\sum_{h\in\mathcal H}\mathbf 1_{C_h}(x)\mathbf 1_{[s_h,e_h)}(t)=1,
+\qquad x\in\Omega,\quad 0\le t<T.
+$$
+
+For the recipient stream, only selected decisions remain; the sum is at most one. These
+are support/accounting invariants, not a privacy guarantee or an optimality theorem.

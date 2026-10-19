@@ -21,6 +21,8 @@ struct PublicationConfiguration {
     std::string journalCollection = "publication_journal";
     std::size_t maxDocumentBytes = 8 * 1024 * 1024;
     std::size_t maxAttempts = 3;
+    // Recipient delivery is always durable; optional private no-output checkpoints.
+    bool journalEmptyRetirements = true;
 };
 std::optional<PublicationConfiguration> readPublicationConfiguration(const YAML::Node& aggregation);
 void validatePublicationDestinations(const PublicationConfiguration& settings,

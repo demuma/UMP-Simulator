@@ -8,20 +8,22 @@ bucket APIs, the actual adaptive controller, and planned proactive aggregation.
 `CandidateBucket`, `BucketRole::Active/Preemptive` and open/extend/query/discard operations
 are implemented and regression-tested. The production adaptive controller does **not**
 automatically create these records or maintain continuously aggregated parent/grandparent
-buckets. It owns one pending common interval and reconstructs candidates directly from
-bounded fine observation history. Automatic ancestor prewarming/caching remains E05.
+buckets. The default controller owns one common interval; the new opt-in `CellLocalAggregation`
+owns a sparse frontier of independent cell windows. Both reconstruct candidates directly
+from bounded fine observation history. Automatic ancestor prewarming/caching remains E05.
+See [CELL_LOCAL_COORDINATION.md](CELL_LOCAL_COORDINATION.md) and its test report.
 
 | Component | Actual behavior |
 |---|---|
 | AGBS source | Produces identity/type/finest-cell observations at each scheduled sensor sample |
 | Fixed accumulator | AggregationManager maintains current fixed-window per-cell counts/ID unions for diagnostics |
 | Shared private history | Owns chronological sensor-sample bins with fine observations, statuses and bounded retention |
-| Active adaptive state | AdaptiveAggregation owns one pending interval over the sensor grid |
+| Active adaptive state | Common mode: one pending grid interval; local mode: independent mixed-depth cell owners |
 | Logical bucket API | Represents an arbitrary valid cell/interval/generation and Active/Preemptive role over that history |
 | Parent/grandparent aggregate | Reconstructed on request from descendant fine observations over the requested interval |
-| Attempt cache | Local to one SpatialSelector proposal; not maintained across candidate endpoints/windows |
+| Attempt cache | Common selector proposal cache; local controller reuses owner checks per endpoint; no persistent ancestor statistic cache |
 | Automatic preemptive ancestor preparation | Not implemented |
-| Publication | One approved terminal cut/interval; no intermediate provisional parent/child publication |
+| Publication | Common cut or scoped local decision; only approved terminal output, no competing parent/child release |
 
 ## Where observations and history are created
 
@@ -64,9 +66,8 @@ space by extending before its spatial fallback. Provisional spatial coarsening d
 destroy fine history or force the next cut to remain coarse.
 
 Passing siblings remain private until the common interval terminates. Already published
-intervals cannot later be reaggregated as a privacy repair. Future independently scheduled
-cell windows therefore need explicit compatible unpublished support, reservation/retirement
-and merge-group coordination; the current whole-grid interval avoids that alignment problem.
+intervals cannot later be reaggregated as a privacy repair. The opt-in local controller now enforces compatible unpublished support, scoped retirement
+and merge-group handoffs. The default whole-grid interval avoids that alignment problem.
 
 A future preparation limit must count relative ancestor steps, separately from absolute
 observation depth, legal merge extent and reserved support. Preparation can reduce repeated
@@ -176,7 +177,7 @@ explicit instrumentation.
    wall-clock processing, renderer playback and aggregation waiting age.
 4. Prioritize targeted A07 partial-child rescue and one controlled functional-region/query
    scenario with a clear visual effect. They address demonstrated utility/model limits.
-5. Implement cell-local coordination before claiming independent local temporal windows.
+5. Evaluate the implemented cell-local coordination against common windows before claiming improved local retention/latency.
    Otherwise explicitly present the current common-window baseline.
 6. If proactive preemptive preparation is claimed as an implemented contribution, implement
    and measure at least one bounded variant against on-demand reconstruction. Otherwise

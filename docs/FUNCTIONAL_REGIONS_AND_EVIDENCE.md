@@ -1,5 +1,10 @@
 # Functional regions, scenario reconstruction and evidence
 
+**October 19 implementation update:** the descriptions of a single common interval below
+refer to the retained baseline. The opt-in cell-local controller, scoped publication and
+independent space-time audit are documented in [CELL_LOCAL_COORDINATION.md](CELL_LOCAL_COORDINATION.md).
+The historical numerical pilot results are unchanged.
+
 Review date: 2026-10-19. Scope: the residential street and shop-front scenarios represented
 on printed presentation slides 26/27 (PDF pages 27/28). The goal is to reproduce their
 functional scenario and measurable aggregation effects; the drawing geometry is not a

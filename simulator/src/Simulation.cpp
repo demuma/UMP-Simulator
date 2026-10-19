@@ -13,6 +13,7 @@
 #include "PublicationCoordinator.hpp"
 #include "PublicationStore.hpp"
 #include "AdaptiveAggregation.hpp"
+#include "CellLocalAggregation.hpp"
 #include <mongocxx/exception/exception.hpp>
 
 // Simulation constructor
@@ -403,15 +404,21 @@ void Simulation::initializeMetricPolicies() {
         auto evaluator = makeMetricEvaluator(aggregation, coverage, applicationId, regions);
         const auto temporal = readTemporalAdaptation(aggregation);
         if (spatial) { ump::SpatialSelector checkedSelector(settings, *spatial); }
-        if (temporal) { ump::AdaptiveAggregation checkedAdaptive(settings, *temporal, *spatial,
-            evaluator, [](const auto&) {}); }
+        if (temporal) {
+            if (temporal->coordination == ump::CoordinationMode::CellLocal) {
+                ump::CellLocalAggregation checkedAdaptive(settings, *temporal, *spatial, evaluator,
+                    [](const auto&) {}, temporal->maxActiveCells);
+            } else { ump::AdaptiveAggregation checkedAdaptive(settings, *temporal, *spatial,
+                evaluator, [](const auto&) {}); }
+        }
         if (const auto publication = readPublicationConfiguration(aggregation)) {
             validatePublicationDestinations(*publication, rawDatabases);
             ump::PublicationStoreOptions options{publication->database, publication->collection,
                 publication->journalDatabase, publication->journalCollection, publication->maxDocumentBytes};
             options.validate();
             ump::PublicationCoordinator checkedPublication(settings, evaluator, {},
-                temporal ? std::optional<ump::AggregationTime>{temporal->maxWindowMs} : std::nullopt);
+                temporal ? std::optional<ump::AggregationTime>{temporal->maxWindowMs} : std::nullopt,
+                temporal && temporal->coordination == ump::CoordinationMode::CellLocal);
             publicationDestinations.push_back(*publication);
         }
         metricEvaluators.emplace(id, std::move(evaluator));
@@ -549,6 +556,8 @@ void Simulation::initializeSensors() {
                 const bool showProgress = config["renderer"]["show_renderer"].as<bool>();
                 std::shared_ptr<ump::SpatialSelector> selector;
                 std::shared_ptr<ump::AdaptiveAggregation> adaptive;
+                std::shared_ptr<ump::CellLocalAggregation> local;
+                const bool localMode = temporalSettings && temporalSettings->coordination == ump::CoordinationMode::CellLocal;
                 auto* sensorInstance = sensor.get();
                 if (spatialSettings) {
                     auto spatialDiagnostics = makeSpatialDiagnosticsSink(
@@ -557,9 +566,11 @@ void Simulation::initializeSensors() {
                     std::shared_ptr<ump::PublicationStore> store;
                     std::size_t maxAttempts = 0;
                     if (publicationSettings) {
+                        ump::PublicationLimits limits;
+                        if (localMode) limits.maxCoordinationNodes = temporalSettings->maxActiveCells * 2;
                         coordinator = std::make_shared<ump::PublicationCoordinator>(settings, evaluator,
-                            ump::PublicationLimits{}, temporalSettings
-                                ? std::optional<ump::AggregationTime>{temporalSettings->maxWindowMs} : std::nullopt);
+                            limits, temporalSettings
+                                ? std::optional<ump::AggregationTime>{temporalSettings->maxWindowMs} : std::nullopt, localMode);
                         store = std::make_shared<ump::PublicationStore>(client,
                             ump::PublicationStoreOptions{publicationSettings->database, publicationSettings->collection,
                                 publicationSettings->journalDatabase, publicationSettings->journalCollection,
@@ -569,16 +580,36 @@ void Simulation::initializeSensors() {
                             << publicationSettings->collection << " (private journal: "
                             << publicationSettings->journalDatabase << ")\n";
                     }
-                    auto terminal = [coordinator, store, maxAttempts, spatialDiagnostics, sensorInstance]
+                    auto terminal = [coordinator, store, maxAttempts, spatialDiagnostics, sensorInstance,
+                        journalEmpty = !publicationSettings || publicationSettings->journalEmptyRetirements]
                         (const ump::SpatialSelection& selected) {
                         auto recorded = std::make_shared<ump::SpatialSelection>(selected);
                         if (coordinator) {
-                            const auto now = selected.candidate.closedAtMs;
-                            const auto release = coordinator->seal(selected, now);
+                            const auto now = sensorInstance->getAggregationManager()->history()->debugState().watermarkMs;
+                            auto release = coordinator->pendingRelease();
+                            if (release) {
+                                // The controller retries its immutable selection before any later
+                                // work. Resume the held reservation after a transient sink error.
+                                const auto& c = selected.candidate;
+                                if (release->runId != c.runId || release->sensorId != c.sensorId
+                                    || release->applicationId != c.applicationId || release->startMs != c.startMs
+                                    || release->endMs != c.endMs
+                                    || bool(release->coordinationCell) != bool(selected.coordinationCell)
+                                    || (release->coordinationCell && (release->coordinationCell->id != selected.coordinationCell->id
+                                        || release->coordinationCell->depth != selected.coordinationCell->depth)))
+                                    throw std::logic_error("Retry does not match the reserved local publication");
+                            } else release = coordinator->seal(selected, now);
                             // Allocate diagnostic metadata before any possible recipient disclosure.
                             recorded->publicationState = release->cells.empty() ? "retired_without_release" : "committed";
                             recorded->releaseId = release->releaseId;
+                            // No recipient payload exists for an empty/suppressed scope. Its
+                            // optional private checkpoint is independent of durable disclosure.
                             bool delivered = false;
+                            if (release->cells.empty() && !journalEmpty)
+                                delivered = coordinator->deliver(now, [](const auto&) {
+                                    throw std::logic_error("A no-output retirement invoked a recipient sink");
+                                    return ump::SinkResult::Retry;
+                                });
                             for (std::size_t attempt = 0; attempt < maxAttempts && !delivered; ++attempt) {
                                 try {
                                     store->prepare(*release);
@@ -604,7 +635,10 @@ void Simulation::initializeSensors() {
                         }
                         sensorInstance->setAggregationDebug(std::move(recorded));
                     };
-                    if (temporalSettings)
+                    if (localMode)
+                        local = std::make_shared<ump::CellLocalAggregation>(settings, *temporalSettings,
+                            *spatialSettings, evaluator, terminal, temporalSettings->maxActiveCells);
+                    else if (temporalSettings)
                         adaptive = std::make_shared<ump::AdaptiveAggregation>(settings, *temporalSettings,
                             *spatialSettings, evaluator, terminal);
                     else {
@@ -621,7 +655,15 @@ void Simulation::initializeSensors() {
                                 selector->commit(selected);
                             }
                         });
-                    if (adaptive) sensor->setAggregationProgressSink(
+                    if (local) sensor->setAggregationProgressSink(
+                        [local, sensorInstance, showProgress](ump::AggregationTime now, bool finishing) {
+                            const auto& history = *sensorInstance->getAggregationManager()->history();
+                            if (finishing) local->finish(now, history);
+                            else local->advance(now, history);
+                            if (showProgress) sensorInstance->setAggregationProgress(
+                                std::make_shared<const ump::AggregationProgress>(local->progressSnapshot()));
+                        });
+                    else if (adaptive) sensor->setAggregationProgressSink(
                         [adaptive, sensorInstance, showProgress](ump::AggregationTime now, bool finishing) {
                             const auto& history = *sensorInstance->getAggregationManager()->history();
                             if (finishing) adaptive->finish(now, history);

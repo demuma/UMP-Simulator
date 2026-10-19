@@ -11,12 +11,13 @@ std::string keyPart(const std::string& value) {
 }
 }
 PublicationCoordinator::PublicationCoordinator(AggregationConfig settings, MetricEvaluator metrics,
-    PublicationLimits bounds, std::optional<AggregationTime> maximum)
-    : config(std::move(settings)), evaluator(std::move(metrics)), limits(bounds), maximumWindowMs(maximum) {
+    PublicationLimits bounds, std::optional<AggregationTime> maximum, bool scoped)
+    : config(std::move(settings)), evaluator(std::move(metrics)), limits(bounds), maximumWindowMs(maximum), cellLocal(scoped) {
     historyCell(config.coverage, 12, 1);
     if (config.runId.empty() || config.sensorId.empty() || config.applicationId.empty()
         || config.windowMs <= 0 || !limits.maxCells || !limits.maxTypeEntries || !limits.maxTypeBytes)
         throw std::invalid_argument("Publication requires a stream, window and positive limits");
+    if (cellLocal) retiredLedger.emplace(config.coverage, limits.maxCoordinationNodes);
     if (maximumWindowMs && (config.samplingPeriodMs <= 0 || *maximumWindowMs < config.windowMs
             || *maximumWindowMs % config.samplingPeriodMs))
         throw std::invalid_argument("Variable publication intervals need an aligned maximum at least the base window");
@@ -33,9 +34,20 @@ std::shared_ptr<const ReleaseSnapshot> PublicationCoordinator::seal(
     if (candidate.runId != config.runId || candidate.sensorId != config.sensorId
         || candidate.applicationId != config.applicationId || g.x != expected.x || g.y != expected.y
         || g.width != expected.width || g.height != expected.height || g.leafDepth != expected.leafDepth
-        || candidate.startMs != retiredThroughMs || candidate.endMs <= candidate.startMs
+        || candidate.startMs < 0 || candidate.endMs <= candidate.startMs
         || candidate.endMs - candidate.startMs > maximumWindowMs.value_or(config.windowMs))
         throw std::invalid_argument("Publication requires the next disjoint bounded interval of one stream");
+    if (cellLocal != selection.coordinationCell.has_value())
+        throw std::invalid_argument("Publication coordination scope does not match stream mode");
+    std::optional<CellWindowLedger> ledgerAfterAck;
+    if (cellLocal) {
+        // Preflight the final retirement before any possible disclosure. ACK only swaps
+        // this prepared ledger, so a memory/budget failure cannot follow publication.
+        ledgerAfterAck = *retiredLedger;
+        ledgerAfterAck->retire(*selection.coordinationCell, candidate.startMs, candidate.endMs);
+    } else if (candidate.startMs != retiredThroughMs) {
+        throw std::invalid_argument("Publication requires the next whole-grid interval");
+    }
     if ((!candidate.truncated && (maximumWindowMs
             ? (candidate.endMs - candidate.startMs) % config.samplingPeriodMs != 0
             : candidate.endMs - candidate.startMs != config.windowMs))
@@ -61,6 +73,11 @@ std::shared_ptr<const ReleaseSnapshot> PublicationCoordinator::seal(
         const auto& item = candidate.cells[i];
         const auto& cell = item.cell;
         const auto canonical = historyCell(g, cell.id, cell.depth);
+        if (selection.coordinationCell) {
+            const auto& scope = *selection.coordinationCell;
+            if (cell.depth < scope.depth || (cell.id >> (2 * (cell.depth - scope.depth))) != scope.id)
+                throw std::invalid_argument("Publication cell lies outside its coordination footprint");
+        }
         const auto close = [&](double a, double b) {
             const auto tolerance = std::min(std::ldexp(g.width, -g.leafDepth) * 1e-4,
                 1e-6 * std::max({1.0, std::abs(a), std::abs(b)}));
@@ -90,9 +107,14 @@ std::shared_ptr<const ReleaseSnapshot> PublicationCoordinator::seal(
     output->sealedAtMs = nowMs;
     output->policyId = checked.policyId.value_or("");
     output->policyVersion = checked.policyVersion.value_or("");
-    output->releaseId = "ump-release-v1/" + keyPart(candidate.runId) + keyPart(candidate.sensorId)
+    output->coordinationCell = selection.coordinationCell;
+    output->releaseId = std::string(cellLocal ? "ump-release-v2/" : "ump-release-v1/")
+        + keyPart(candidate.runId) + keyPart(candidate.sensorId)
         + keyPart(candidate.applicationId) + "/" + std::to_string(candidate.startMs)
         + "/" + std::to_string(candidate.endMs);
+    if (output->coordinationCell)
+        output->releaseId += "/" + std::to_string(output->coordinationCell->id)
+            + "/" + std::to_string(output->coordinationCell->depth);
     std::vector<std::size_t> indices;
     for (std::size_t i = 0; i < candidate.cells.size(); ++i) {
         if (!selection.decisions[i].selected) continue;
@@ -108,7 +130,7 @@ std::shared_ptr<const ReleaseSnapshot> PublicationCoordinator::seal(
     }
     // Reserve before exposing any payload. Exceptions above leave the interval available.
     pending.emplace(Pending{candidate, std::move(indices), output,
-        candidate.cells.size() - output->cells.size()});
+        candidate.cells.size() - output->cells.size(), std::move(ledgerAfterAck)});
     lastDeliveryMs = nowMs;
     return output;
 }
@@ -131,8 +153,13 @@ bool PublicationCoordinator::deliver(AggregationTime nowMs, const Sink& sink) {
         if (result != SinkResult::Acknowledged) return false;
     }
     // Empty/suppressed windows retire privately without emitting a revealing empty record.
-    retiredThroughMs = pending->candidate.endMs;
-    finished = pending->candidate.truncated;
+    if (cellLocal) {
+        retiredLedger.swap(pending->retiredLedgerAfterAck);
+        retiredThroughMs = retiredLedger->minimumRetiredThrough();
+    } else {
+        retiredThroughMs = pending->candidate.endMs;
+        finished = pending->candidate.truncated;
+    }
     pending.reset();
     return true;
 }

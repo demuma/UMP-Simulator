@@ -748,10 +748,12 @@ void Renderer::drawAggregationOverlay(const ump::SpatialSelection& snapshot) {
 // Pending outlines describe the last evaluated finest cells in the active window.
 // They are not suppression decisions and never mutate sensor or aggregation state.
 void Renderer::drawAggregationProgress(const ump::AggregationProgress& progress) {
-    if (!progress.lastCheck || progress.phase == ump::AggregationProgressPhase::Finished) return;
-    std::unordered_set<int> pending;
-    for (const auto& assessment : progress.lastCheck->assessment.cells)
-        if (ump::pendingAggregationCell(assessment.status)) pending.insert(assessment.cellId);
+    if (progress.phase == ump::AggregationProgressPhase::Finished) return;
+    std::vector<std::shared_ptr<const ump::AggregationProgressCheck>> checks;
+    if (progress.cellLocal) {
+        for (const auto& cell : progress.cells) if (cell.lastCheck) checks.push_back(cell.lastCheck);
+    } else if (progress.lastCheck) checks.push_back(progress.lastCheck);
+    if (checks.empty()) return;
     sf::VertexArray dashes(sf::PrimitiveType::Lines);
     const sf::Color amber(180, 130, 20, 230);
     const auto edge = [&](sf::Vector2f from, sf::Vector2f to) {
@@ -764,7 +766,11 @@ void Renderer::drawAggregationProgress(const ump::AggregationProgress& progress)
             dashes.append(sf::Vertex{from + direction * std::min(at + 5.f, length), amber});
         }
     };
-    for (const auto& item : progress.lastCheck->candidate.cells) {
+    for (const auto& check : checks) {
+      std::unordered_set<int> pending;
+      for (const auto& assessment : check->assessment.cells)
+          if (ump::pendingAggregationCell(assessment.status)) pending.insert(assessment.cellId);
+      for (const auto& item : check->candidate.cells) {
         if (!pending.count(item.cell.id)) continue;
         const auto& cell = item.cell;
         const float x = static_cast<float>(cell.x * scale) + offset.x;
@@ -775,6 +781,7 @@ void Renderer::drawAggregationProgress(const ump::AggregationProgress& progress)
         edge({x + w, y}, {x + w, y + h});
         edge({x + w, y + h}, {x, y + h});
         edge({x, y + h}, {x, y});
+    }
     }
     window.draw(dashes);
 }

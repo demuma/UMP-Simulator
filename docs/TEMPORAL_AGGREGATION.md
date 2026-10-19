@@ -1,5 +1,10 @@
 # Bounded temporal aggregation
 
+**October 19 implementation update:** the descriptions of a single common interval below
+refer to the retained baseline. The opt-in cell-local controller, scoped publication and
+independent space-time audit are documented in [CELL_LOCAL_COORDINATION.md](CELL_LOCAL_COORDINATION.md).
+The historical numerical pilot results are unchanged.
+
 Implemented A03 baseline, 2026-10-14. `AdaptiveAggregation` chooses a variable common
 interval and an eligible spatial cut from the existing bounded private observation
 history. It supports Temporal First and Spatial First, early completion, regional time

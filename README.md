@@ -20,8 +20,10 @@ A03 now selects mixed-depth cells and variable temporal windows with exact histo
 regional checks and explicit Temporal First / Spatial First strategies. A05 integrates the
 private-final-snapshot model with a separate immutable MongoDB release sink, idempotent
 writes and a durable private journal. Live and recorded diagnostics show the selected window,
-strategy and transitions. Automatic restart/resume, independent sibling windows, additional
-publication models and realistic attack studies remain open. The offline replay now compares
+strategy and transitions. An opt-in cell-local controller now adds independent spatial
+owner windows, mixed-depth parent takeovers, bounded sibling holds, future handoffs and
+spatially scoped immutable publication. Automatic restart/resume, additional publication
+models and realistic attack studies remain open. The offline replay now compares
 four fixed baselines and three adaptive modes on identical input, with occupancy utility
 and effective-policy checks. EP01 independent validation, seeded grouped datasets and a
 public-only calibrated empirical membership benchmark are now implemented. Controlled
@@ -46,6 +48,8 @@ its original external file remains unchanged.
 | [Privacy roadmap and diagnostic](docs/PRIVACY_EVALUATION.md) | Threat model, implemented first synthetic study, later extensions and the historical deterministic stress test |
 | [Empirical evaluation implementation](docs/EMPIRICAL_PRIVACY_IMPLEMENTATION.md) | Independent oracle, seeded pairs/splits, public features, classifier, controls and reproduction |
 | [October 19 test report](docs/TEST_REPORT_2026-10-19.md) | Actual regression results, independent hand cases, synthetic pilot evidence and limitations |
+| [Cell-local coordination](docs/CELL_LOCAL_COORDINATION.md) | Independent cell windows, mixed-depth ownership, handoffs, scoped releases and configuration |
+| [Coordination test report](docs/COORDINATION_TEST_REPORT_2026-10-19.md) | New coordination regressions, independent space-time audit and integration evidence |
 | [Bucket/history status](docs/BUCKET_IMPLEMENTATION_STATUS.md) | Actual logical APIs versus pending proactive parent preparation, history basis and presentation priorities |
 | [Endurance/timestep report](docs/LONG_RUN_REPORT_2026-10-19.md) | Real 300/600-s headless runs, numerical-step compatibility, sustained analytical load and limits |
 | [Publication coordination](docs/PUBLICATION_COORDINATION.md) | Integrated immutable MongoDB releases, private journal, retries and recovery boundaries |
@@ -192,9 +196,9 @@ reverted test results do not establish correctness of the current implementation
 | ABS | Position, type, identity and velocity from consecutive observations; first complete output at 100 ms for the current 10-Hz setup | Nominal-period velocity requires aligned fixed intervals; publication after DB errors is not guaranteed |
 | GBS | Fixed cells, class counts and total count per observation | No full temporal aggregation or privacy-based release decision |
 | AGBS | Fine observation quadtree, position mapping, counts and cell IDs; optional reusable aggregation pipeline | Input geometry follows positions/max depth; adaptive publication uses a separately selected cut |
-| Aggregation pipeline | AGBS ingestion, bounded history, regional checks, spatial/temporal selection and immutable policy-approved MongoDB releases | Common-window coordination; independent sibling windows, alternative publication models and automatic restart remain open |
+| Aggregation pipeline | AGBS ingestion, bounded history, regional checks, spatial/temporal selection and immutable policy-approved MongoDB releases | Default common-window plus opt-in cell-local coordination; alternative publication models and automatic restart remain open |
 | Regional rules | Immutable sparse PolicyTree; root/type/region metric inheritance, footprint conflicts and stream-level Temporal First/Spatial First selection | Aligned, non-overlapping rectangles only; legacy granularity/k/l fields inactive; no regional strategy overrides or live updates |
-| Temporal history | Bounded sample history, exact ancestor/time queries, logical active/preemptive windows, bounded extension and coordinated retirement | No selective proactive caches or independent sibling-window coordination |
+| Temporal history | Bounded sample history, exact ancestor/time queries, logical active/preemptive windows, bounded extension and coordinated retirement | No automatic precomputed ancestor statistic caches; cell-local coordination is opt-in |
 | Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry and independent playback pacing; four V3 DB renderers | Independent input/completed/active-window displays implemented; broader lifecycle inspection and long-run tests remain open |
 | Evaluation | Nine online measures, fixed-query occupancy MAE/coverage/age, seven-mode frozen replay and known-background neighbour stress test | Realistic trained attacks, independent scenario/seed sweeps, further utility tasks and formal guarantees remain open |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |

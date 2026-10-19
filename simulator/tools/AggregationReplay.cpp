@@ -1,4 +1,5 @@
 #include "AdaptiveAggregation.hpp"
+#include "CellLocalAggregation.hpp"
 #include "AggregationConfiguration.hpp"
 #include "AggregationManager.hpp"
 #include "PolicyConfiguration.hpp"
@@ -84,6 +85,10 @@ std::string array(const std::vector<std::string>& values) {
 Fields geometry(const CellGeometry& cell) {
     return {{"cell_id", number(cell.id)}, {"depth", number(cell.depth)},
         {"x", number(cell.x)}, {"y", number(cell.y)}, {"width", number(cell.width)}, {"height", number(cell.height)}};
+}
+std::string scopedObject(Fields fields, const std::optional<CellGeometry>& scope) {
+    if (scope) fields.emplace_back("coordination_cell", object(geometry(*scope)));
+    return object(fields);
 }
 void counts(Fields& fields, const AggregateCounts& value) {
     fields.emplace_back("observation_contributions", number(value.observationContributions));
@@ -299,7 +304,7 @@ std::string serializeWindow(const SpatialSelection& selection) {
         decisions.push_back(object({{"action", quoted(temporalActionName(decision.action))},
             {"start_ms", number(decision.startMs)}, {"end_ms", number(decision.endMs)},
             {"evaluated_at_ms", number(decision.evaluatedAtMs)}, {"status", quoted(assessmentStatusName(decision.status))}}));
-    return object({{"start_ms", number(c.startMs)}, {"end_ms", number(c.endMs)},
+    return scopedObject({{"start_ms", number(c.startMs)}, {"end_ms", number(c.endMs)},
         {"evaluated_at_ms", number(c.closedAtMs)}, {"truncated", c.truncated ? "true" : "false"},
         {"expected_samples", number(c.expectedSamples)}, {"measured_samples", number(c.measuredSamples)},
         {"unavailable_samples", number(c.unavailableSamples)}, {"missing_samples", number(c.missingSamples)},
@@ -309,7 +314,7 @@ std::string serializeWindow(const SpatialSelection& selection) {
         {"input_observation_contributions", number(c.counts.observationContributions)},
         {"policy_id", quoted(selection.assessment.policyId.value_or(""))},
         {"policy_version", quoted(selection.assessment.policyVersion.value_or(""))},
-        {"cells", array(cells)}, {"temporal_decisions", array(decisions)}});
+        {"cells", array(cells)}, {"temporal_decisions", array(decisions)}}, selection.coordinationCell);
 }
 std::string serializeRelease(const ReleaseSnapshot& release) {
     std::vector<std::string> cells;
@@ -318,17 +323,20 @@ std::string serializeRelease(const ReleaseSnapshot& release) {
         fields.emplace_back("effective_policy_id", quoted(cell.effectivePolicyId));
         cells.push_back(object(fields));
     }
-    return object({{"release_id", quoted(release.releaseId)}, {"start_ms", number(release.startMs)},
+    return scopedObject({{"release_id", quoted(release.releaseId)}, {"start_ms", number(release.startMs)},
         {"end_ms", number(release.endMs)}, {"sealed_at_ms", number(release.sealedAtMs)},
         {"model", quoted(release.model)}, {"policy_id", quoted(release.policyId)},
-        {"policy_version", quoted(release.policyVersion)}, {"cells", array(cells)}});
+        {"policy_version", quoted(release.policyVersion)}, {"cells", array(cells)}}, release.coordinationCell);
 }
 
 std::string run(const Input& input, const Settings& settings, const Options& options) {
     const auto started = std::chrono::steady_clock::now();
     const auto& config = settings.aggregation;
-    PublicationCoordinator publication(config, settings.evaluator, {},
-        settings.temporal ? std::optional<AggregationTime>{settings.temporal->maxWindowMs} : std::nullopt);
+    const bool localMode = settings.temporal && settings.temporal->coordination == CoordinationMode::CellLocal;
+    PublicationLimits publicationLimits;
+    if (localMode) publicationLimits.maxCoordinationNodes = settings.temporal->maxActiveCells * 2;
+    PublicationCoordinator publication(config, settings.evaluator, publicationLimits,
+        settings.temporal ? std::optional<AggregationTime>{settings.temporal->maxWindowMs} : std::nullopt, localMode);
     std::vector<std::string> windows, releases;
     std::size_t serializedBytes = 0;
     const auto retain = [&](std::vector<std::string>& destination, std::string value) {
@@ -359,7 +367,15 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
     });
     managerPtr = &manager;
     std::unique_ptr<AdaptiveAggregation> adaptive;
-    if (settings.temporal) {
+    std::unique_ptr<CellLocalAggregation> local;
+    if (localMode) {
+        local = std::make_unique<CellLocalAggregation>(config, *settings.temporal, settings.spatial,
+            settings.evaluator, terminal, settings.temporal->maxActiveCells);
+        manager.setProgressSink([&](auto now, bool finishing) {
+            if (finishing) local->finish(now, *manager.history());
+            else local->advance(now, *manager.history());
+        });
+    } else if (settings.temporal) {
         adaptive = std::make_unique<AdaptiveAggregation>(config, *settings.temporal, settings.spatial, settings.evaluator, terminal);
         manager.setProgressSink([&](auto now, bool finishing) {
             if (finishing) adaptive->finish(now, *manager.history());
@@ -390,7 +406,8 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
             {"end_ms", number(input.endMs)}, {"all_observations_have_coordinates", input.hasCoordinates ? "true" : "false"},
             {"coverage", object({{"x", number(g.x)}, {"y", number(g.y)}, {"width", number(g.width)},
                 {"height", number(g.height)}, {"leaf_depth", number(g.leafDepth)}})}})},
-        {"parameters", object({{"window_ms", number(config.windowMs)}, {"fixed_depth", options.mode == "fixed" ? number(settings.fixedDepth) : "null"},
+        {"parameters", object({{"coordination", quoted(localMode ? "cell_local" : "common_window")},
+            {"window_ms", number(config.windowMs)}, {"fixed_depth", options.mode == "fixed" ? number(settings.fixedDepth) : "null"},
             {"min_depth", number(settings.spatial.minDepth)},
             {"extension_step_ms", settings.temporal ? number(settings.temporal->extensionStepMs) : "null"},
             {"max_window_ms", settings.temporal ? number(settings.temporal->maxWindowMs) : number(config.windowMs)}})},

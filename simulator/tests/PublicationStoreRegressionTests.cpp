@@ -4,6 +4,7 @@
 #include <mongocxx/instance.hpp>
 #include <mongocxx/uri.hpp>
 #include <array>
+#include <algorithm>
 #include <cmath>
 #include <iomanip>
 #include <iostream>
@@ -15,6 +16,11 @@
 namespace {
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
+
+std::string stringField(bsoncxx::document::view row, const char* key) {
+    const auto value = row[key].get_string().value;
+    return {value.data(), value.size()};
+}
 
 void require(bool condition, const std::string& message) {
     if (!condition) throw std::runtime_error(message);
@@ -218,6 +224,69 @@ int main() {
             "MongoDB hard document limit was not reserved");
         require(recipient.count_documents({}) == 1 && journal.count_documents({}) == 3,
             "Rejected input left partial persistence");
+        // Cell-local intervals with equal timestamps have distinct immutable identities.
+        // v1 snapshots keep the original byte layout; v2 adds a canonical scope.
+        require(stringField(publicRow->view(), "schema") == "ump.release.v1"
+                && !publicRow->view()["coordination_cell"],
+            "Legacy release BSON gained scoped metadata or changed schema");
+        const auto scopedSnapshot = [&](int id) {
+            auto scoped = snapshot();
+            auto& cell = scoped.cells.front().aggregate.cell;
+            cell.id = id;
+            cell.x = id == 12 ? 0 : 20;
+            scoped.coordinationCell = cell;
+            scoped.releaseId = "ump-release-v2/"
+                + scoped.releaseId.substr(std::string("ump-release-v1/").size())
+                + "/" + std::to_string(id) + "/1";
+            return scoped;
+        };
+        const auto scopedA = scopedSnapshot(12), scopedB = scopedSnapshot(13);
+        require(scopedA.releaseId != scopedB.releaseId,
+            "Independent scoped intervals collided in their release IDs");
+        store.prepare(scopedA);
+        auto scopedPending = store.recoverPending();
+        const auto recoveredA = std::find_if(scopedPending.begin(), scopedPending.end(),
+            [&](const auto& value) { return value.releaseId == scopedA.releaseId; });
+        require(recoveredA != scopedPending.end() && recoveredA->coordinationCell
+                && recoveredA->coordinationCell->id == 12
+                && recoveredA->coordinationCell->width == 20,
+            "Prepared scoped recovery lost its coordination footprint");
+        require(store.publish(*recoveredA) == ump::SinkResult::Acknowledged
+                && store.publish(scopedA) == ump::SinkResult::Acknowledged,
+            "Scoped retry did not preserve immutable payload identity");
+        store.commit(scopedA);
+        store.prepare(scopedB);
+        require(store.publish(scopedB) == ump::SinkResult::Acknowledged,
+            "Equal-interval adjacent scoped release failed");
+        store.commit(scopedB);
+        const auto scopedRow = recipient.find_one(make_document(kvp("_id", scopedB.releaseId)));
+        require(scopedRow && stringField(scopedRow->view(), "schema") == "ump.release.v2"
+                && scopedRow->view()["coordination_cell"].get_document().view()["cell_id"].get_int32().value == 13,
+            "Scoped recipient BSON omitted schema or geometry");
+        const auto recoveredStream = store.recoverStream(release.runId, release.sensorId, release.applicationId);
+        std::size_t scopedCommitted = 0;
+        for (const auto& item : recoveredStream)
+            if (item.release.coordinationCell) {
+                require(item.committed, "Committed scoped intent recovered as pending");
+                ++scopedCommitted;
+            }
+        require(scopedCommitted == 2 && recipient.count_documents({}) == 3
+                && journal.count_documents({}) == 5,
+            "Scoped recovery, exactly-once inserts or journal accounting failed");
+        changed = scopedA;
+        changed.coordinationCell->id = 13;
+        mustThrow<std::invalid_argument>([&] { store.prepare(changed); },
+            "Changed coordination scope retained the same release identity");
+        changed = scopedB;
+        changed.cells.front().aggregate.cell.id = 12;
+        mustThrow<std::invalid_argument>([&] { store.prepare(changed); },
+            "Scoped store accepted an out-of-footprint cell");
+        changed = scopedB;
+        changed.cells.front().aggregate.cell.x += 1;
+        mustThrow<std::invalid_argument>([&] { store.prepare(changed); },
+            "Scoped store accepted geometry inconsistent with its scope");
+        require(recipient.count_documents({}) == 3 && journal.count_documents({}) == 5,
+            "Rejected scoped input left partial persistence");
         std::cout << "Publication store regression tests passed\n";
         return 0;
     } catch (const std::exception& error) {

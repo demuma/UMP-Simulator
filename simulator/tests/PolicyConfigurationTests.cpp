@@ -97,6 +97,16 @@ policy_tree:
         spatialFirst["policy_tree"]["execution"]["strategy"] = "spatial_first";
         require(readTemporalAdaptation(spatialFirst)->strategy == ump::AdaptationStrategy::SpatialFirst,
             "Spatial First strategy was relabeled as Temporal First");
+        auto local = YAML::Load(adaptivePrefix + temporalOptions);
+        local["temporal_adaptation"]["coordination"] = "cell_local";
+        local["temporal_adaptation"]["max_active_cells"] = 128;
+        require(readTemporalAdaptation(local)->coordination == ump::CoordinationMode::CellLocal
+            && readTemporalAdaptation(local)->maxActiveCells == 128, "Cell-local coordination settings were lost");
+        local["temporal_adaptation"]["max_active_cells"] = 3;
+        rejects([&] { readTemporalAdaptation(local); }, "four base cells");
+        local["temporal_adaptation"]["max_active_cells"] = 128;
+        local["temporal_adaptation"]["coordination"] = "arbitrary";
+        rejects([&] { readTemporalAdaptation(local); }, "Unsupported");
         require(!readTemporalAdaptation(YAML::Load("{}")), "Absent temporal adaptation must stay disabled");
         rejects([&] { readTemporalAdaptation(YAML::Load(adaptivePrefix + "null")); }, "must be a map");
         rejects([&] { readTemporalAdaptation(YAML::Load(adaptivePrefix + "{extension_step_ms: 100, max_window_ms: 1000}")); }, "explicit");
@@ -122,6 +132,11 @@ policy_tree:
             "policy_tree: {execution: {publication_model: private_final_snapshot}}\npublication: ";
         const std::string destinations = "{database: UMP_Recipient, journal_database: UMP_PrivateJournal}";
         const auto publication = readPublicationConfiguration(YAML::Load(publicationPrefix + destinations));
+        require(publication->journalEmptyRetirements, "Private retirement journaling must default to legacy behavior");
+        auto noEmptyJournal = YAML::Load(publicationPrefix + destinations);
+        noEmptyJournal["publication"]["journal_empty_retirements"] = false;
+        require(!readPublicationConfiguration(noEmptyJournal)->journalEmptyRetirements,
+            "Explicit no-output journaling configuration was ignored");
         require(publication && publication->database == "UMP_Recipient" && publication->collection == "releases"
             && publication->journalDatabase == "UMP_PrivateJournal" && publication->journalCollection == "publication_journal"
             && publication->maxDocumentBytes == 8 * 1024 * 1024 && publication->maxAttempts == 3,

@@ -34,6 +34,8 @@ inline std::vector<std::string> aggregationCompletedLines(const SpatialSelection
         "Coarser: " + std::to_string(snapshot.coarsenedCells) + " | Finer: "
             + std::to_string(snapshot.refinedCells)
     };
+    if (snapshot.coordinationCell)
+        lines.insert(lines.begin() + 1, "Latest local decision: cell " + std::to_string(snapshot.coordinationCell->id));
     if (snapshot.publicationState == "retired_without_release") lines.push_back("No cells released");
     lines.push_back("Solid: green selected, orange coarser, blue finer, red suppressed");
     return lines;
@@ -44,6 +46,16 @@ inline std::vector<std::string> aggregationProgressLines(const AggregationProgre
     const auto& state = *progress;
     if (state.phase == AggregationProgressPhase::Finished)
         return {"Aggregation finished (P)", "State at " + std::to_string(state.observedThroughMs) + " ms"};
+    if (state.cellLocal) {
+        std::size_t extending = 0;
+        for (const auto& cell : state.cells) extending += cell.temporalExtensions != 0;
+        return {"Cell-local coordination (P)", aggregationStrategyLabel(state.strategy),
+            "Active domains: " + std::to_string(state.cells.size()) + " | Extending: " + std::to_string(extending),
+            "Earliest next check: " + std::to_string(state.nextEndMs) + " ms",
+            "State at " + std::to_string(state.observedThroughMs) + " ms",
+            "Each domain has its own interval and policy deadline",
+            "Dashed amber: pending local policy checks"};
+    }
     std::vector<std::string> lines{
         state.phase == AggregationProgressPhase::Extending ? "Active: extending time (P)" : "Active: collecting (P)",
         aggregationStrategyLabel(state.strategy),

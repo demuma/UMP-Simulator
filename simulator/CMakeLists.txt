@@ -205,7 +205,7 @@ option(UMP_BUILD_REPLAY "Build frozen observation replay and evaluation tests" O
 if(UMP_BUILD_REPLAY)
     set(UMP_REPLAY_CORE_SOURCES
         src/AggregationManager.cpp src/AggregationHistory.cpp src/CandidateMetrics.cpp
-        src/PolicyTree.cpp src/SpatialSelection.cpp src/AdaptiveAggregation.cpp
+        src/PolicyTree.cpp src/SpatialSelection.cpp src/AdaptiveAggregation.cpp src/CellLocalAggregation.cpp
         src/PublicationCoordinator.cpp src/AggregationConfiguration.cpp src/PolicyConfiguration.cpp)
     add_executable(AggregationReplay tools/AggregationReplay.cpp ${UMP_REPLAY_CORE_SOURCES})
     target_compile_features(AggregationReplay PRIVATE cxx_std_17)
@@ -219,13 +219,36 @@ if(UMP_BUILD_REPLAY)
     add_test(NAME replay_regression COMMAND ReplayRegressionTests)
     set_tests_properties(replay_regression PROPERTIES LABELS "unit;replay;evaluation" TIMEOUT 30)
     find_package(Python3 3.9 COMPONENTS Interpreter REQUIRED)
-    foreach(evaluation occupancy privacy comparison capture oracle privacy_dataset empirical_privacy privacy_study)
+    foreach(evaluation occupancy privacy comparison capture oracle privacy_dataset empirical_privacy privacy_study coordination)
         add_test(NAME ${evaluation}_evaluation COMMAND ${Python3_EXECUTABLE} -m unittest discover
             -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/evaluation -p test_${evaluation}.py)
         set_tests_properties(${evaluation}_evaluation PROPERTIES LABELS "unit;evaluation"
             ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;UMP_REPLAY_BINARY=$<TARGET_FILE:AggregationReplay>" TIMEOUT 30)
-        if(evaluation STREQUAL "privacy_study")
+        if(evaluation STREQUAL "privacy_study" OR evaluation STREQUAL "coordination")
             set_tests_properties(${evaluation}_evaluation PROPERTIES TIMEOUT 120)
         endif()
     endforeach()
+endif()
+
+# Cell-local space-time coordination and scoped recipient retirement.
+option(UMP_BUILD_COORDINATION_TESTS "Build independent cell-local coordination regressions" ON)
+if(UMP_BUILD_COORDINATION_TESTS)
+    enable_testing()
+    add_executable(CoordinationRegressionTests tests/CoordinationRegressionTests.cpp
+        src/CellLocalAggregation.cpp src/AdaptiveAggregation.cpp src/SpatialSelection.cpp
+        src/AggregationHistory.cpp src/CandidateMetrics.cpp src/PolicyTree.cpp)
+    target_compile_features(CoordinationRegressionTests PRIVATE cxx_std_17)
+    add_test(NAME cell_local_coordination COMMAND CoordinationRegressionTests)
+    set_tests_properties(cell_local_coordination PROPERTIES LABELS "unit;aggregation;coordination" TIMEOUT 60)
+    add_executable(CoordinationStressTests tests/CoordinationStressTests.cpp
+        src/CellLocalAggregation.cpp src/AdaptiveAggregation.cpp src/SpatialSelection.cpp
+        src/AggregationHistory.cpp src/CandidateMetrics.cpp src/PolicyTree.cpp)
+    target_compile_features(CoordinationStressTests PRIVATE cxx_std_17)
+    add_test(NAME cell_local_coordination_stress COMMAND CoordinationStressTests)
+    set_tests_properties(cell_local_coordination_stress PROPERTIES LABELS "unit;aggregation;coordination;stress" TIMEOUT 60)
+    add_executable(ScopedPublicationRegressionTests tests/ScopedPublicationRegressionTests.cpp
+        src/PublicationCoordinator.cpp src/AggregationHistory.cpp src/CandidateMetrics.cpp src/PolicyTree.cpp)
+    target_compile_features(ScopedPublicationRegressionTests PRIVATE cxx_std_17)
+    add_test(NAME scoped_publication COMMAND ScopedPublicationRegressionTests)
+    set_tests_properties(scoped_publication PROPERTIES LABELS "unit;publication;coordination" TIMEOUT 30)
 endif()

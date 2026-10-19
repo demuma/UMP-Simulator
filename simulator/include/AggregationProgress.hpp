@@ -16,6 +16,13 @@ struct AggregationProgressCheck {
     WindowMetricAssessment assessment;
 };
 
+struct CellAggregationProgress {
+    CellGeometry cell;
+    AggregationTime startMs, nextEndMs, hardDeadlineMs;
+    std::size_t temporalExtensions = 0, evaluations = 0;
+    std::shared_ptr<const AggregationProgressCheck> lastCheck;
+};
+
 // Internal renderer diagnostics, separate from the last finalized spatial cut.
 // Copies share immutable check evidence; waiting ticks do not query history or
 // recalculate metrics. A new window always starts without a previous check.
@@ -30,6 +37,9 @@ struct AggregationProgress {
     std::size_t evaluations = 0;
     AggregationProgressPhase phase = AggregationProgressPhase::Collecting;
     std::shared_ptr<const AggregationProgressCheck> lastCheck;
+    // In local mode top-level clocks are a summary; these are the actual owners.
+    bool cellLocal = false;
+    std::vector<CellAggregationProgress> cells;
 };
 
 } // namespace ump

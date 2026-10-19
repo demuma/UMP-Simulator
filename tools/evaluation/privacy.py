@@ -8,6 +8,7 @@ Only standard-library dependencies are used.
 from __future__ import annotations
 
 from copy import deepcopy
+from bisect import bisect_left, insort
 import math
 from typing import Any
 
@@ -109,18 +110,19 @@ def canonical_transcript(result: dict[str, Any]) -> tuple:
     if not isinstance(result.get("releases"), list):
         raise ValueError("result.releases must be an array")
     transcript = []
-    previous_end = 0
+    previous_sealed = -1
+    events = []
     for index, release in enumerate(result["releases"]):
         where = f"releases[{index}]"
         release = _object(release, where)
-        _keys(release, _RELEASE_KEYS, where)
+        _keys(release, _RELEASE_KEYS | ({"coordination_cell"} if "coordination_cell" in release else set()), where)
         _string(release["release_id"], f"{where}.release_id")
         start = _integer(release["start_ms"], f"{where}.start_ms")
         end = _integer(release["end_ms"], f"{where}.end_ms")
         sealed = _integer(release["sealed_at_ms"], f"{where}.sealed_at_ms")
-        if start < previous_end or end <= start or sealed < end:
-            raise ValueError(f"{where} has overlapping, unordered or invalid interval times")
-        previous_end = end
+        if end <= start or sealed < end or sealed < previous_sealed:
+            raise ValueError(f"{where} has unordered or invalid interval times")
+        previous_sealed = sealed
         model = _string(release["model"], f"{where}.model")
         policy_id = _string(release["policy_id"], f"{where}.policy_id")
         policy_version = _string(release["policy_version"], f"{where}.policy_version")
@@ -136,6 +138,9 @@ def canonical_transcript(result: dict[str, Any]) -> tuple:
             if depth > 14 or cell_id >> (2 * depth) != 3 or cell_id in seen_ids:
                 raise ValueError("A public cell has an invalid or duplicate quadtree ID")
             seen_ids.add(cell_id)
+            shift = 2 * (14 - depth)
+            token = (cell_id << shift, (cell_id + 1) << shift, index, len(cells))
+            events.extend([(start, 1, token), (end, 0, token)])
             x, y = (_number(cell[key], f"cell.{key}") for key in ("x", "y"))
             width, height = (_number(cell[key], f"cell.{key}", 0) for key in ("width", "height"))
             if width == 0 or height == 0:
@@ -149,8 +154,27 @@ def canonical_transcript(result: dict[str, Any]) -> tuple:
                 _number(mean, "cell.mean_sample_occupancy", 0)
             effective_policy = _string(cell["effective_policy_id"], "cell.effective_policy_id")
             cells.append((cell_id, depth, x, y, width, height, contributions, distinct, mean, effective_policy))
+        if "coordination_cell" in release:
+            # The local controller publishes one selected cell per ownership scope.
+            # Scope repeats public cell geometry; normalize this redundant copy away.
+            scope = _object(release["coordination_cell"], f"{where}.coordination_cell")
+            scope_keys = ("cell_id", "depth", "x", "y", "width", "height")
+            _keys(scope, frozenset(scope_keys), f"{where}.coordination_cell")
+            if len(cells) != 1 or tuple(scope[k] for k in scope_keys) != cells[0][:6]:
+                raise ValueError("Public local scope must match its sole released cell")
         cells.sort(key=lambda cell: cell[0])
         transcript.append((start, end, sealed, model, policy_id, policy_version, tuple(cells)))
+    active = []
+    for _, kind, token in sorted(events):
+        position = bisect_left(active, token)
+        if not kind:
+            if position < len(active) and active[position] == token:
+                active.pop(position)
+        else:
+            if ((position and active[position - 1][1] > token[0]) or
+                    (position < len(active) and active[position][0] < token[1])):
+                raise ValueError("Recipient cells have overlapping space-time support")
+            insort(active, token)
     return tuple(transcript)
 
 

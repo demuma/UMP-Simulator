@@ -61,9 +61,20 @@ Document releaseDocument(const ReleaseSnapshot& release, std::size_t maxBytes) {
         || release.startMs < 0 || release.endMs <= release.startMs
         || release.sealedAtMs < release.endMs || release.model != "private_final_snapshot")
         throw std::invalid_argument("Publication snapshot has invalid stream, interval or model");
-    const auto expectedId = "ump-release-v1/" + keyPart(release.runId) + keyPart(release.sensorId)
+    auto expectedId = std::string(release.coordinationCell ? "ump-release-v2/" : "ump-release-v1/")
+        + keyPart(release.runId) + keyPart(release.sensorId)
         + keyPart(release.applicationId) + "/" + std::to_string(release.startMs)
         + "/" + std::to_string(release.endMs);
+    if (release.coordinationCell) {
+        const auto& scope = *release.coordinationCell;
+        if (scope.depth < 1 || scope.depth > 14 || scope.id < 0
+            || (scope.id >> (2 * scope.depth)) != 3 || !std::isfinite(scope.x)
+            || !std::isfinite(scope.y) || !std::isfinite(scope.width)
+            || !std::isfinite(scope.height) || scope.width <= 0 || scope.height != scope.width
+            || !std::isfinite(scope.x + scope.width) || !std::isfinite(scope.y + scope.height))
+            throw std::invalid_argument("Publication coordination footprint is invalid");
+        expectedId += "/" + std::to_string(scope.id) + "/" + std::to_string(scope.depth);
+    }
     if (release.releaseId != expectedId)
         throw std::invalid_argument("Publication release ID does not identify its stream interval");
     if (!release.cells.empty() && (release.policyId.empty() || release.policyVersion.empty()))
@@ -92,6 +103,26 @@ Document releaseDocument(const ReleaseSnapshot& release, std::size_t maxBytes) {
             || (counts.meanSampleOccupancy && (!std::isfinite(*counts.meanSampleOccupancy)
                 || *counts.meanSampleOccupancy < 0)))
             throw std::invalid_argument("Publication selected cell has invalid geometry, policy or counts");
+        if (release.coordinationCell) {
+            const auto& scope = *release.coordinationCell;
+            if (cell.depth < scope.depth || cell.depth > 14
+                || (cell.id >> (2 * (cell.depth - scope.depth))) != scope.id)
+                throw std::invalid_argument("Publication selected cell lies outside coordination footprint");
+            auto expected = scope;
+            for (int depth = scope.depth + 1; depth <= cell.depth; ++depth) {
+                const int quadrant = (cell.id >> (2 * (cell.depth - depth))) & 3;
+                expected.width /= 2; expected.height /= 2;
+                expected.x += (quadrant & 1) * expected.width;
+                expected.y += (quadrant >> 1) * expected.height;
+            }
+            const auto close = [&](double actual, double canonical) {
+                return std::abs(actual - canonical) <= std::min(expected.width * 1e-4,
+                    1e-6 * std::max({1.0, std::abs(actual), std::abs(canonical)}));
+            };
+            if (!close(cell.x, expected.x) || !close(cell.y, expected.y)
+                || !close(cell.width, expected.width) || !close(cell.height, expected.height))
+                throw std::invalid_argument("Publication selected geometry differs from coordination footprint");
+        }
         accountString(released.effectivePolicyId);
         // Per-type breakdowns have no independent threshold assessment and are not releasable.
         if (!counts.typeObservationContributions.empty())
@@ -108,15 +139,23 @@ Document releaseDocument(const ReleaseSnapshot& release, std::size_t maxBytes) {
         if (cells.view().length() > maxBytes)
             throw std::length_error("Publication BSON size limit exceeded");
     }
-    auto result = make_document(kvp("_id", release.releaseId), kvp("schema", "ump.release.v1"),
+    bsoncxx::builder::basic::document result;
+    result.append(kvp("_id", release.releaseId),
+        kvp("schema", release.coordinationCell ? "ump.release.v2" : "ump.release.v1"),
         kvp("data_role", "recipient_release"), kvp("run_id", release.runId),
         kvp("sensor_id", release.sensorId), kvp("application_id", release.applicationId),
         kvp("model", release.model), kvp("policy_id", release.policyId),
         kvp("policy_version", release.policyVersion), kvp("start_ms", release.startMs),
         kvp("end_ms", release.endMs), kvp("sealed_at_ms", release.sealedAtMs), kvp("cells", cells));
+    if (release.coordinationCell) {
+        const auto& scope = *release.coordinationCell;
+        result.append(kvp("coordination_cell", make_document(kvp("cell_id", scope.id),
+            kvp("depth", scope.depth), kvp("x", scope.x), kvp("y", scope.y),
+            kvp("width", scope.width), kvp("height", scope.height))));
+    }
     if (result.view().length() > maxBytes)
         throw std::length_error("Publication BSON size limit exceeded");
-    return result;
+    return result.extract();
 }
 
 Document journalDocument(const ReleaseSnapshot& release, View payload, bool committed,
@@ -143,6 +182,19 @@ ReleaseSnapshot parseRelease(View document) {
     release.startMs = document["start_ms"].get_int64().value;
     release.endMs = document["end_ms"].get_int64().value;
     release.sealedAtMs = document["sealed_at_ms"].get_int64().value;
+    const auto schema = stringField(document, "schema");
+    const bool scoped = schema == "ump.release.v2";
+    if ((!scoped && schema != "ump.release.v1")
+        || scoped != static_cast<bool>(document["coordination_cell"]))
+        throw PublicationConflict("Publication journal schema and coordination footprint disagree");
+    if (scoped) {
+        const auto scope = document["coordination_cell"].get_document().view();
+        release.coordinationCell = CellGeometry{scope["cell_id"].get_int32().value,
+            scope["depth"].get_int32().value, scope["x"].get_double().value,
+            scope["y"].get_double().value, scope["width"].get_double().value,
+            scope["height"].get_double().value};
+    }
+
     const auto nonnegative = [](std::int64_t count) -> std::uint64_t {
         if (count < 0) throw PublicationConflict("Publication journal contains a negative count");
         return static_cast<std::uint64_t>(count);

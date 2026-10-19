@@ -1,5 +1,10 @@
 # Bounded history and logical candidate buckets
 
+**October 19 implementation update:** the descriptions of a single common interval below
+refer to the retained baseline. The opt-in cell-local controller, scoped publication and
+independent space-time audit are documented in [CELL_LOCAL_COORDINATION.md](CELL_LOCAL_COORDINATION.md).
+The historical numerical pilot results are unchanged.
+
 Status: 2026-10-14. Initial A02 private history and logical buckets implemented and verified.
 This adds private reconstruction to the existing fixed-window path. A05 still owns
 publication reservations/commit history; A03 owns action selection and metric-ready states.

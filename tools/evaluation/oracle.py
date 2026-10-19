@@ -28,6 +28,7 @@ occupancy evaluator is imported. This is research validation, not a privacy proo
 
 from bisect import bisect_left, insort
 from collections import Counter
+from functools import lru_cache
 import math
 
 SCHEMA = "ump.independent-oracle.v1"
@@ -465,6 +466,8 @@ def analyze_windows(replay, config, result, *, max_nodes=1024, max_cells=20000):
     are deliberately not optimized by this reference. A partial-rescue gap is a
     known difference in model capabilities. No cross-window support is reused.
     """
+    if config.get("temporal_adaptation", {}).get("coordination", "common_window") == "cell_local":
+        raise ValueError("Local coordination supports compliance auditing; whole-domain feasibility enumeration requires common windows")
     compliance = validate_result(replay, config, result, max_cells=max_cells)
     if not compliance["valid"]:
         raise ValueError("Refuse feasibility comparison of an independently invalid result")
@@ -498,6 +501,9 @@ def validate_result(replay, config, result, *, max_cells=20000):
     """
     source = _Input(replay)
     policy = _Policy(source, config)
+    # Many local scopes share an interval. Reuse only this independent raw scan;
+    # keep the cache bounded and never consume production statistics as reference.
+    interval = lru_cache(maxsize=8)(source.interval)
     _int(max_cells, "max_cells", 1)
     violations, released_cells, checked_windows = [], [], []
     def fail(path, reason, **details):
@@ -528,7 +534,33 @@ def validate_result(replay, config, result, *, max_cells=20000):
         releases = []
     if len(raw_windows) + len(releases) > max_cells:
         raise ValueError("Result exceeds oracle window/release budget")
-    visited_cells, window_data, events = 0, {}, []
+    local = config.get("temporal_adaptation", {}).get("coordination", "common_window") == "cell_local"
+    parameters = result.get("parameters", {})
+    if not isinstance(parameters, dict):
+        fail("parameters", "not_a_dictionary")
+        parameters = {}
+    equal(parameters.get("coordination", "common_window"),
+          "cell_local" if local else "common_window", "parameters.coordination")
+    visited_cells, window_data, events, retirement_events = 0, {}, [], []
+    retired_volume = accounted = 0
+
+    def scope_of(raw, path):
+        scope = raw.get("coordination_cell")
+        if not local:
+            if scope is not None:
+                raise ValueError("Common-window result cannot carry a local domain")
+            return None
+        if not isinstance(scope, dict):
+            raise ValueError("Local window/release requires an explicit coordination cell")
+        cid, depth = _int(scope.get("cell_id"), "scope.cell_id", 1), _int(scope.get("depth"), "scope.depth", 1)
+        expected = decode_cell(source.grid, cid, depth)
+        for key, value in expected.items():
+            equal(scope.get(key), value, f"{path}.coordination_cell.{key}", key not in ("cell_id", "depth"))
+        return cid, depth
+
+    def within_scope(cid, depth, scope):
+        return scope is None or (depth >= scope[1] and cid >> (2 * (depth - scope[1])) == scope[0])
+
     def cell(raw, window, path, published=False):
         nonlocal visited_cells
         visited_cells += 1
@@ -550,7 +582,7 @@ def validate_result(replay, config, result, *, max_cells=20000):
             if metric == "distinct_contributors" and expected is None:
                 expected = 0  # AggregateCounts holds zero even when its metric is unavailable.
             equal(raw.get(key), expected, f"{path}.{key}", metric == "mean_sample_occupancy" and expected is not None)
-        if values["observation_contributions"] == 0:
+        if values["observation_contributions"] == 0 and (published or not local):
             fail(path, "zero_observation_footprint_is_not_sparse_output")
         if published and not assessment["pass"]:
             fail(path, "published_cell_fails_independent_requirements", failures=assessment["binding_failures"])
@@ -569,16 +601,29 @@ def validate_result(replay, config, result, *, max_cells=20000):
         try:
             if not isinstance(raw, dict):
                 raise ValueError("Window must be a dictionary")
-            window = source.interval(raw.get("start_ms"), raw.get("end_ms"), raw.get("evaluated_at_ms"))
-            equal(window.start, retired, f"{path}.start_ms")
-            retired = window.end
+            window = interval(raw.get("start_ms"), raw.get("end_ms"), raw.get("evaluated_at_ms"))
+            scope = scope_of(raw, path)
+            if not local:
+                equal(window.start, retired, f"{path}.start_ms")
+                retired = window.end
+            else:
+                cid, depth = scope
+                shift = 2 * (source.depth - depth)
+                lo, hi = cid << shift, (cid + 1) << shift
+                token = (lo, hi, index)
+                retirement_events.extend([(window.start, 1, token), (window.end, 0, token)])
+                retired_volume += (hi - lo) * (window.end - window.start)
             if window.now > source.end:
                 fail(path, "evaluation_after_replay_end")
             if (window.start % source.period or (window.end % source.period and window.end != source.end)):
                 fail(path, "window_not_cadence_aligned")
-            for key, value in window.summary().items():
-                equal(raw.get(key), value, f"{path}.{key}")
-            key = (window.start, window.end)
+            summary = window.summary()
+            expected_total = window.total if scope is None else window.counts[scope[0]]
+            summary["input_observation_contributions"] = expected_total
+            accounted += expected_total
+            for name, value in summary.items():
+                equal(raw.get(name), value, f"{path}.{name}")
+            key = (window.start, window.end, scope)
             if key in window_data:
                 fail(path, "repeated_retired_interval")
             raw_cells = raw.get("cells")
@@ -588,6 +633,8 @@ def validate_result(replay, config, result, *, max_cells=20000):
             for j, raw_cell in enumerate(raw_cells):
                 assessment = cell(raw_cell, window, f"{path}.cells[{j}]")
                 cid, depth = assessment["cell_id"], assessment["depth"]
+                if not within_scope(cid, depth, scope):
+                    fail(path, "diagnostic_cell_outside_coordination_domain")
                 if cid in ids:
                     fail(path, "duplicate_diagnostic_cell")
                 ids.add(cid)
@@ -607,15 +654,22 @@ def validate_result(replay, config, result, *, max_cells=20000):
                 cid, depth = assessment["cell_id"], assessment["depth"]
                 if any(cid >> (2 * (depth - d)) in ids for d in range(1, depth)):
                     fail(path, "diagnostic_parent_child_overlap")
-            equal(sum(a["metrics"]["observation_contributions"] for a in assessments), window.total,
+            equal(sum(a["metrics"]["observation_contributions"] for a in assessments), expected_total,
                   f"{path}.accounted_cell_contributions")
             equal(raw.get("selected_cells"), len(selected), f"{path}.selected_cells")
             equal(raw.get("suppressed_cells"), len(assessments) - len(selected), f"{path}.suppressed_cells")
             window_data[key] = (window, set(selected))
-            checked_windows.append({**window.summary(), "selected_cell_ids": sorted(selected)})
+            checked_windows.append({**summary, "selected_cell_ids": sorted(selected),
+                                    **({"coordination_cell": raw["coordination_cell"]} if local else {})})
         except (ValueError, TypeError, KeyError, AttributeError) as error:
             fail(path, "malformed_window", detail=str(error))
-    equal(retired, source.end, "retirement.end_ms")
+    if local:
+        # Morton widths are exact counts of finest cells. Nonoverlap plus full
+        # space-time volume proves complete retirement without expanding 4**D cells.
+        equal(retired_volume, (4 ** source.depth) * source.end, "retirement.space_time_volume")
+        equal(accounted, source.contributions, "retirement.accounted_contributions")
+    else:
+        equal(retired, source.end, "retirement.end_ms")
     release_ids, released_windows = set(), set()
     last_sealed = -1
     for index, raw in enumerate(releases):
@@ -627,11 +681,12 @@ def validate_result(replay, config, result, *, max_cells=20000):
             if identity in release_ids:
                 fail(path, "duplicate_release_id")
             release_ids.add(identity)
-            window = source.interval(raw.get("start_ms"), raw.get("end_ms"), raw.get("sealed_at_ms"))
+            window = interval(raw.get("start_ms"), raw.get("end_ms"), raw.get("sealed_at_ms"))
             if window.now < last_sealed or window.now > source.end:
                 fail(path, "invalid_publication_time_order")
             last_sealed = window.now
-            key = (window.start, window.end)
+            scope = scope_of(raw, path)
+            key = (window.start, window.end, scope)
             if key in released_windows:
                 fail(path, "repeated_release_interval")
             released_windows.add(key)
@@ -646,6 +701,8 @@ def validate_result(replay, config, result, *, max_cells=20000):
                 assessment = cell(raw_cell, window, f"{path}.cells[{j}]", True)
                 cid, depth = assessment["cell_id"], assessment["depth"]
                 selected.append(cid)
+                if not within_scope(cid, depth, scope):
+                    fail(path, "public_cell_outside_coordination_domain")
                 shift = 2 * (source.depth - depth)
                 lo, hi = cid << shift, (cid + 1) << shift
                 token = (lo, hi, index, j)
@@ -666,17 +723,21 @@ def validate_result(replay, config, result, *, max_cells=20000):
         if selected and key not in released_windows:
             fail("releases", "selected_window_has_no_release", interval=list(key))
     # Morton-code intervals detect ancestor overlap without O(number_of_cells^2).
-    active = []
-    for _, kind, token in sorted(events):
-        at = bisect_left(active, token)
-        if not kind:
-            if at < len(active) and active[at] == token:
-                active.pop(at)
-        else:
-            if ((at and active[at - 1][1] > token[0]) or
-                    (at < len(active) and active[at][0] < token[1])):
-                fail("releases", "public_support_overlap_in_space_and_time")
-            insort(active, token)
+    def check_overlap(items, path, reason):
+        active = []
+        for _, kind, token in sorted(items):
+            at = bisect_left(active, token)
+            if not kind:
+                if at < len(active) and active[at] == token:
+                    active.pop(at)
+            else:
+                if ((at and active[at - 1][1] > token[0]) or
+                        (at < len(active) and active[at][0] < token[1])):
+                    fail(path, reason)
+                insort(active, token)
+    check_overlap(events, "releases", "public_support_overlap_in_space_and_time")
+    if local:
+        check_overlap(retirement_events, "windows", "retired_support_overlap_in_space_and_time")
     # Convert sets in mismatch diagnostics to JSON-compatible deterministic values.
     for item in violations:
         for key in ("expected", "observed"):

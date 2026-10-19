@@ -1,6 +1,6 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-14. Current priority: evaluate utility and policy fulfilment, then prepare evidence for October 18 and October 25.**
+**Status: 2026-10-19. Current priority: evaluate utility and policy fulfilment, then prepare evidence for October 18 and October 25.**
 
 This is the central task backlog. README describes current behavior; this file tracks
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
@@ -9,9 +9,15 @@ to begin every listed phase. All project documentation is maintained in English.
 **Review update, 2026-10-19:** functional street/shop regions and evidence scope are recorded in
 [FUNCTIONAL_REGIONS_AND_EVIDENCE.md](docs/FUNCTIONAL_REGIONS_AND_EVIDENCE.md). The scenario,
 not the exact mockup drawing, defines the next study. Region-to-policy compilation exists;
-corridor-constrained motion and independent scheduling/publication of cell-local windows
-with coordinated merge groups do not yet exist. History reconstruction already supports
-different cell intervals.
+corridor-constrained motion remains open. Independent cell-local windows and coordinated
+merge groups are now available in an opt-in mode; see [CELL_LOCAL_COORDINATION.md](docs/CELL_LOCAL_COORDINATION.md)
+and [the coordination test report](docs/COORDINATION_TEST_REPORT_2026-10-19.md).
+
+**Cell-local verification, later on October 19:** 27/27 CTest suites and 134 Python methods
+pass; 14 coordination cases and 120 seeded stress scenarios also pass ASan/UBSan.
+A complete 120-s headless run passes independent auditing of 160415 terminal domains.
+The next measured performance task is no-output handoff/diagnostic volume, followed by
+paired common/local effectiveness experiments. See the linked coordination test report.
 
 ## 1. Status and priorities
 
@@ -35,18 +41,19 @@ crashes or corrupt input are blockers, not reasons to begin an unrelated redesig
 policy-selected private final snapshots to a durable MongoDB release sink and private
 journal. A03 adds Temporal First and Spatial First with bounded temporal extension,
 regional deadlines and future handover. The common-window model is intentionally
-conservative; independent sibling windows, other publication models and automatic restart
+conservative and remains the default. The opt-in cell-local controller adds independent
+windows, mixed-depth handoffs and scoped publication. Other publication models and automatic restart
 remain open. E01 fixed-query occupancy evaluation and R01 frozen replay are now implemented,
 with four fixed baselines and spatial/Temporal First/Spatial First comparisons. E02 has a
 complete-background diagnostic plus the first public-only controlled synthetic trained attack.
 On 2026-10-19 EP01, seeded grouped datasets and E02-A–C were implemented and tested;
 23 CTest suites and 126 Python tests passed, with three completed synthetic configurations.
-Broader regional studies, real-world attacker realism, cell-local timing and A07 remain open.** The detailed
+Broader regional studies, real-world attacker realism and general A07 optimization remain open.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
 proposals, flow diagram, storage model and hand-worked cases. The
 [fixed aggregation contract](docs/FIXED_AGGREGATION.md) records actual A01 behavior;
 the [A02 history contract](docs/AGGREGATION_HISTORY.md) records implemented private
-reconstruction and logical windows. The first common-window release rules are implemented; finer coordination models remain proposals. The core is reusable across sensor types;
+reconstruction and logical windows. Common-window and opt-in cell-local release coordination are implemented; other recipient-visible publication models remain proposals. The core is reusable across sensor types;
 AGBS is the first integration target.
 Separate sensor behavior/state is preserved. A generic API does not imply that every
 sensor provides every metric input or supports arbitrary spatial refinement.
@@ -262,7 +269,7 @@ comparisons while R01/R02 simulation reproducibility improvements remain pending
 
 **Updated sequence:** the common-window temporal baseline is verified on October 14.
 Use October 19–23 for controlled comparisons, regional edge cases and interpretation.
-October 24: freeze/rehearsal. October 25: presentation. Keep unimplemented independent
+October 24: freeze/rehearsal. October 25: presentation. Keep any unimplemented
 active/preemptive coordination visible in the backlog rather than treating it as completed.
 
 ### Work deferred unless a milestone requires it
@@ -387,7 +394,8 @@ The [question register](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md),
    measured-empty, unavailable, suppression and partial-query cases.
 2. Specify targeted A07 partial-child rescue from the independently demonstrated 9-input /
    0-current / 6-relaxed retention case; add cell-local coordination before claiming
-   independently adapting local temporal windows.
+   independently adapting local temporal windows. Cell-local correctness is now implemented;
+   compare its retention/latency against the common-window baseline before claiming an improvement.
 3. Add justified fixed functional-region queries/masks and the aligned SC01 regional-policy
    fixture. The seeded modal-corridor generator is implemented, but is not that full study.
 4. Expand EP03/EP04 policy/scenario/independent-replication evidence and runtime measurement
@@ -444,8 +452,8 @@ cell-local coordination or A07 before increasing environment realism.
   adaptation priorities, with regional coverage/error/age and EP01 feasibility checks.
 - [ ] Decide the future rule for cross-functional-region cells. Existing intersected numeric
   bounds permit mixing; prohibiting boundary crossings is an additional constraint.
-- [ ] Treat independently scheduled cell/merge-group windows as an explicit extension before claiming that road
-  and entrance data simultaneously use independently chosen aggregation durations.
+- [x] Implement explicitly configured independent cell/merge-group windows before claiming local timing.
+  The cell-local mode is now available; road/entrance effectiveness still needs the controlled scenario study.
 
 ### E01 — Define one utility application — P0
 
@@ -608,8 +616,8 @@ configuration, worked examples and verification. History is opt-in; the maintain
 is unchanged. The regional example enables it. Bucket creation/extension is available via
 the manager API. A03 now performs spatial selection and variable-window reconstruction.
 Automatic prewarming and the general active/preemptive lifecycle remain open.
-The actual controller does not open CandidateBucket records; it tracks a common pending
-interval and queries fine history directly. Parent/grandparent statistics are reconstructed
+The controllers do not open CandidateBucket records: common mode tracks one pending
+interval, while cell-local mode owns a sparse frontier of independent cell windows. Both query fine history directly. Parent/grandparent statistics are reconstructed
 on demand. [BUCKET_IMPLEMENTATION_STATUS.md](docs/BUCKET_IMPLEMENTATION_STATUS.md) is the
 precise implementation/status reference. Decision
 and publication status belong to A03/A05, not an arbitrary history progress flag.
@@ -642,7 +650,7 @@ and publication status belong to A03/A05, not an arbitrary history progress flag
   only after all bounded dependencies are resolved.
 - [x] Handle different sibling starts/durations with interval-specific history queries.
   A sibling starting a new bucket does not block a parent over complete private history.
-- [ ] Transfer only the unpublished prefix needed by a parent; preserve later suffixes,
+- [x] Transfer only the unpublished prefix needed by a parent; preserve later suffixes,
   minimum-window rules and exactly one publication owner per cell/interval.
 - [x] Define three relative ancestor steps as 64 equal base-cell areas, not 64 copied
   buckets; verify mixed-depth geometry and current four-base-node/implicit-root convention.
@@ -737,8 +745,9 @@ reopen coverage for a competing candidate. Disjoint release coverage is not a pr
 [SPATIAL_SELECTION.md](docs/SPATIAL_SELECTION.md) and
 [TEMPORAL_AGGREGATION.md](docs/TEMPORAL_AGGREGATION.md) describe actual behavior.
 Both preservation priorities now run through A05 using one common unpublished interval.
-Regional maxima conservatively cap that interval. Independently scheduled cell/merge-group windows and
-experimental effectiveness remain open.
+Regional maxima conservatively cap the common interval. The opt-in cell-local controller
+now uses per-footprint clocks, bounded sibling holds, immediate private-prefix takeovers,
+future common-boundary handoffs and scoped publication. Comparative effectiveness remains open.
 
 - [x] Select a non-overlapping cut from fine observations; replace whole sibling groups
   with eligible parents using exact retained identity unions and full-footprint policy checks.
@@ -759,8 +768,8 @@ experimental effectiveness remain open.
   record the preservation priority and chosen action in experiment/decision metadata.
 - [x] Extend in declared bin increments and recheck on relevant events; permit early
   eligible release. Always waiting for the maximum window is a separate baseline.
-- [ ] Define sibling/parent/child checks, merge, split and suppression using A05 reservations.
-- [ ] Evaluate one complete parent at a time and expand to its siblings only when the
+- [x] Define sibling/parent/child checks, merge, split and suppression using scoped A05 reservations.
+- [x] Evaluate one complete parent at a time and expand to its siblings only when the
   next ancestor is needed and allowed. Avoid an automatic cascade to the depth cap.
 - [x] Recompute effective regional policy and all mandatory metrics for every candidate.
   More aggregation is not assumed to improve every metric monotonically.
@@ -771,8 +780,34 @@ experimental effectiveness remain open.
 - [x] Apply changes to an already published spatial selection at future common boundaries.
   Distinguish those transitions from A07 selecting unpublished descendants as final fallback;
   prevent split/merge oscillation within one unresolved window.
-- [ ] Handle impossible constraint combinations explicitly.
+- [x] Handle impossible constraint combinations explicitly in candidate checks; suppress unreleasable support without treating suppression as availability fulfilment.
 - [ ] Compare against B01 baselines.
+
+**Cell-local implementation, 2026-10-19:**
+
+- [x] Add actual per-cell original starts, next checks and absolute policy deadlines.
+- [x] Keep a sparse complete ownership frontier; accept mixed-depth descendant takeovers.
+- [x] Reserve exact unpublished space-time support; retain immutable sink retries.
+- [x] Reject historical parents overlapping retired/public support; coordinate future boundaries.
+- [x] Preserve private prefixes/suffixes, known-empty coverage and source contribution accounting.
+- [x] Give scoped releases collision-free IDs, durable journal/recovery and bounded spatial retirement.
+- [x] Integrate the new controller into Simulation and AggregationReplay behind explicit configuration.
+- [x] Extend independent raw-data compliance auditing to local space-time retirement.
+- [x] Verify 27 CTest suites / 134 Python methods, 14 coordination cases, 120 seeded stress
+  cases and fresh ASan/UBSan checks. Complete a real 120-s headless run with independent
+  auditing of 160415 terminal domains, exact conservation and 302 durable releases.
+- [ ] **P1 — Next performance step:** reduce no-output `coordination_handoff` decision churn
+  and offer bounded/summary diagnostics without changing recipient output. The verified
+  120-s run produced 312.5 MiB of private diagnostics; disabling no-output Mongo checkpoints
+  improved execution but does not solve algorithmic/diagnostic volume. Keep durable public
+  publication and default legacy journal behavior unchanged.
+- [ ] Run the paired common/local regional-policy effectiveness study on frozen inputs.
+- [ ] Extend whole-domain feasibility enumeration to a justified asynchronous reference class.
+- [ ] Add a persistent renderer mosaic of latest decisions from every local domain.
+- [ ] Implement E05 precomputed statistic caches separately from ownership/coordination holds.
+
+See [CELL_LOCAL_COORDINATION.md](docs/CELL_LOCAL_COORDINATION.md) for exact semantics and
+[COORDINATION_TEST_REPORT_2026-10-19.md](docs/COORDINATION_TEST_REPORT_2026-10-19.md) for verification.
 
 **Acceptance:** decisions are explainable and spatial/temporal releases agree. Measure a
 better privacy/utility trade-off rather than assuming it.

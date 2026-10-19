@@ -143,6 +143,11 @@ static DetailedSink makeDetailedSink(const std::string& directory,
             kvp("counts", countDocument(candidate.counts)),
             kvp("assessment", assessmentDocument(assessment)), kvp("cells", cells));
         if (spatial) {
+            if (spatial->coordinationCell) {
+                const auto& c = *spatial->coordinationCell;
+                row.append(kvp("coordination_cell", make_document(kvp("cell_id", c.id), kvp("depth", c.depth),
+                    kvp("x", c.x), kvp("y", c.y), kvp("width", c.width), kvp("height", c.height))));
+            }
             bsoncxx::builder::basic::array finest, attempts, temporalDecisions;
             for (std::size_t i = 0; i < spatial->finest.cells.size(); ++i)
                 finest.append(cellDocument(spatial->finest.cells[i], spatial->finestAssessment.cells[i]));

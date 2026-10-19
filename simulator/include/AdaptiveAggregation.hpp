@@ -9,11 +9,15 @@ namespace ump {
 enum class AdaptationStrategy { TemporalFirst, SpatialFirst };
 const char* adaptationStrategyName(AdaptationStrategy strategy);
 
+enum class CoordinationMode { CommonWindow, CellLocal };
+
 struct TemporalAdaptationConfig {
     AdaptationStrategy strategy = AdaptationStrategy::TemporalFirst;
     AggregationTime extensionStepMs = 100;
     AggregationTime maxWindowMs = 1000;
     std::size_t maxEvaluations = 1024;
+    CoordinationMode coordination = CoordinationMode::CommonWindow;
+    std::size_t maxActiveCells = 16384;
 };
 
 struct AdaptiveAggregationDebugState {

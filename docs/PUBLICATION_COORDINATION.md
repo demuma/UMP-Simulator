@@ -1,5 +1,10 @@
 # Publication coordination and durable output
 
+**October 19 implementation update:** the descriptions of a single common interval below
+refer to the retained baseline. The opt-in cell-local controller, scoped publication and
+independent space-time audit are documented in [CELL_LOCAL_COORDINATION.md](CELL_LOCAL_COORDINATION.md).
+The historical numerical pilot results are unchanged.
+
 Status: 2026-10-14. A05's first supported model, `private_final_snapshot`, is integrated
 into the running AGBS pipeline. This document describes implemented behavior. Other
 publication models and automatic simulator checkpoint/resume remain open.

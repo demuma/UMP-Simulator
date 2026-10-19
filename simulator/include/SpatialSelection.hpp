@@ -18,7 +18,7 @@ struct SpatialCellDecision {
     std::string transition = "initial";
 };
 
-enum class TemporalAction { EvaluateFinest, CoarsenSpatially, ExtendWindow, Finalize };
+enum class TemporalAction { EvaluateFinest, CoarsenSpatially, ExtendWindow, CoordinationHold, RequestHandoff, Finalize };
 const char* temporalActionName(TemporalAction action);
 struct TemporalDecision {
     TemporalAction action;
@@ -48,6 +48,9 @@ struct SpatialSelection {
     std::vector<TemporalDecision> temporalDecisions = {};
     std::string publicationState = "disabled";
     std::string releaseId = {};
+    // Local ownership domain, including measured-empty and suppressed support.
+    // Absent in the common-window baseline. Never inferred from occupied output.
+    std::optional<CellGeometry> coordinationCell = std::nullopt;
 };
 
 // Internal, synchronous selection for disjoint windows of one stream. Finest-first
