@@ -268,3 +268,26 @@ this design work; E02-B/C starts after the minimal independent utility/policy ch
 public-schema contract are in place. Broad
 map/routing realism is not a prerequisite. Sensitive-attribute extensions remain separate
 E02-D/E03 decisions; the historical stress test is not the empirical privacy milestone.
+
+## Measured common/local comparison — October 19 follow-through
+
+The first controlled coordination comparison is now complete: six mechanism cases and
+three synthetic families with eight independent realizations each, nine configurations,
+270 independent audits and 120 exact adaptive repeats. The controller was frozen. This
+implements a bounded utility/policy subset of the research program; it does not establish
+an asynchronous optimum, general privacy or realistic traffic validity. [Protocol, complete
+references, formulas, results and figure](COORDINATION_STUDY_2026-10-19.md).
+
+The evidence is conditional. Local windows remove unrelated delay in a blocked-branch
+case and increase mean retained support under regional latency constraints, but reduce
+retention across all tested mixed-density seeds. An illegal-parent hold and an actual
+early-publication overlap provide concrete next regression cases. Empty/missing support
+and fixed query scale materially affect utility. Further coordinator changes must be
+compared against this saved baseline rather than judged only by a live visualization.
+
+Publication opportunity loss remains a separate open metric. First identify otherwise-valid
+candidates rejected specifically by public overlap, with private retirement, constraints,
+coverage/history and budgets as separate causes. A utility regret reference must compare
+feasible schedules with/without a chosen commit under the same prior public prefix and
+bounds; overlapping ancestor alternatives cannot simply be summed. The recorded actual
+witness is an explanatory example, not an aggregate regret estimate.

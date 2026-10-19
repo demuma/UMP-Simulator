@@ -11,6 +11,11 @@ empirical membership study are now implemented. See
 `--privacy-targets` helper remain separate from that new calibrated study.
 
 
+**October 19 coordination study:** a separate nine-configuration runner now compares
+common and local coordination on six analytical cases and 24 seeded realizations.
+See [the protocol, actual results and figures](COORDINATION_STUDY_2026-10-19.md).
+The seven-mode CLI below remains backward compatible.
+
 ## Research question
 
 Under which observation and regional-policy conditions does bounded adaptive aggregation

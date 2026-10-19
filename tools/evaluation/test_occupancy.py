@@ -3,7 +3,7 @@
 import copy
 import unittest
 
-from occupancy import evaluate
+from occupancy import evaluate, summarize_queries, summarize_region_retention
 
 
 def replay(width=20, height=10, end=1000, occupied=None):
@@ -209,6 +209,133 @@ class OccupancyTests(unittest.TestCase):
         self.assertEqual(stats["simulated_post_window_sealing_delay_ms"]["mean"], 250)
         self.assertEqual(stats["cell_size_distribution"],
                          [{"width_m": 20, "height_m": 10, "cells": 1}])
+
+
+class RegionMeasurementTests(unittest.TestCase):
+    @staticmethod
+    def regions():
+        return [dict(id="west", x=0, y=0, width=10, height=10),
+                dict(id="east", x=10, y=0, width=10, height=10)]
+
+    def test_regional_queries_keep_fixed_grid_and_conditional_denominators(self):
+        source = replay(occupied=lambda _: [(1, 1)] * 4)
+        outputs = result(source, [release([cell(width=10, mean=4)])])
+        evaluation = evaluate(source, outputs)
+        before = copy.deepcopy(evaluation)
+        regions = summarize_queries(evaluation, self.regions())["regions"]
+        self.assertEqual(evaluation, before)
+        west, east = regions
+        self.assertEqual(west["reference_queries"], 1)
+        self.assertEqual(west["answered_query_coverage"], 1)
+        self.assertEqual(west["occupancy_mae"], 0)
+        self.assertEqual(west["reference_observation_contributions"], 36)
+        self.assertEqual(west["answered_reference_observation_contributions"], 36)
+        self.assertEqual(west["reconstructed_answered_observation_contribution_equivalents"], 36)
+        self.assertEqual(east["answered_query_coverage"], 0)
+        self.assertIsNone(east["occupancy_mae"])
+        self.assertEqual(east["reference_observation_contributions"], 0)
+
+    def test_partial_boundary_query_is_excluded_instead_of_resized(self):
+        source = replay()
+        evaluation = evaluate(source, result(source, [release([cell()])]))
+        summaries = summarize_queries(evaluation, [dict(id="cut", x=5, y=0, width=10, height=10)])
+        region = summaries["regions"][0]
+        self.assertEqual(region["reference_queries"], 0)
+        self.assertEqual(region["excluded_boundary_queries"], 2)
+        self.assertIsNone(region["answered_query_coverage"])
+        self.assertIsNone(region["occupancy_mae"])
+
+    def test_query_reconstruction_never_claims_exact_regional_retention(self):
+        source = replay(occupied=lambda _: [(1, 1)] * 4)
+        outputs = result(source, [release([cell(mean=4)])])
+        summary = summarize_queries(evaluate(source, outputs), self.regions())["regions"]
+        retention = summarize_region_retention(source, outputs, self.regions())["regions"]
+        self.assertEqual([region["reconstructed_answered_observation_contribution_equivalents"]
+                          for region in summary], [18, 18])
+        self.assertEqual([region["released_observation_contributions"] for region in retention], [36, 0])
+        self.assertEqual(retention[0]["retained_observation_fraction"], 1)
+        self.assertIsNone(retention[1]["retained_observation_fraction"])
+
+    def test_source_retention_uses_half_open_space_and_time(self):
+        source = replay(occupied=lambda _: [(10, 1)])
+        outputs = result(source, [release([cell(x=10, width=10)], start=500)])
+        regions = summarize_region_retention(source, outputs, self.regions())["regions"]
+        self.assertEqual(regions[0]["input_observation_contributions"], 0)
+        self.assertEqual(regions[1]["input_observation_contributions"], 9)
+        self.assertEqual(regions[1]["released_observation_contributions"], 5)
+        self.assertAlmostEqual(regions[1]["retained_observation_fraction"], 5 / 9)
+
+    def test_exact_observation_ages_use_raw_sample_times_not_interval_start(self):
+        source = replay(occupied=lambda _: [(1, 1)])
+        outputs = result(source, [release([cell(width=10)], sealed=1200)])
+        summary = summarize_region_retention(source, outputs, self.regions())
+        ages = summary["regions"][0]["simulated_observation_age_ms"]
+        self.assertEqual(ages["total_weight"], 9)
+        self.assertEqual(ages["mean"], 700)
+        self.assertEqual(ages["min"], 300)
+        self.assertEqual(ages["p50"], 700)
+        self.assertEqual(ages["p95"], 1100)
+        self.assertEqual(ages["p99"], 1100)
+        self.assertEqual(ages["max"], 1100)
+        self.assertIsNone(summary["regions"][1]["simulated_observation_age_ms"]["mean"])
+
+    def test_distinct_cell_sealing_times_produce_exact_region_ages(self):
+        source = replay(occupied=lambda _: [(1, 1), (11, 1)])
+        outputs = result(source, [release([cell(width=10)], sealed=1000, name="west"),
+                                  release([cell(x=10, width=10)], sealed=1400, name="east")])
+        regions = summarize_region_retention(source, outputs, self.regions())["regions"]
+        self.assertEqual(regions[0]["simulated_observation_age_ms"]["mean"], 500)
+        self.assertEqual(regions[1]["simulated_observation_age_ms"]["mean"], 900)
+
+    def test_retention_does_not_depend_on_raw_diagnostic_predictions(self):
+        source = replay(occupied=lambda _: [(1, 1)])
+        outputs = result(source, [])
+        outputs["windows"] = [{"cells": [cell(mean=999)], "input_observation_contributions": 999}]
+        summary = summarize_region_retention(source, outputs, self.regions())
+        self.assertEqual(summary["classification"], "private_source_retention_diagnostics")
+        self.assertEqual(summary["regions"][0]["released_observation_contributions"], 0)
+
+    def test_retention_counts_released_support_even_without_occupancy_estimate(self):
+        source = replay(occupied=lambda _: [(1, 1)])
+        outputs = result(source, [release([cell(mean=None)])])
+        retention = summarize_region_retention(source, outputs, self.regions())
+        utility = summarize_queries(evaluate(source, outputs), self.regions())
+        self.assertEqual(retention["regions"][0]["retained_observation_fraction"], 1)
+        self.assertEqual(utility["regions"][0]["answered_query_coverage"], 0)
+
+    def test_missing_reference_does_not_create_complete_query_contributions(self):
+        source = replay(occupied=lambda _: [(1, 1)])
+        source["batches"].pop(0)
+        outputs = result(source, [release([cell(mean=1)])])
+        query = summarize_queries(evaluate(source, outputs), self.regions())["regions"][0]
+        retained = summarize_region_retention(source, outputs, self.regions())["regions"][0]
+        self.assertEqual(query["reference_observation_contributions"], 0)
+        self.assertEqual(query["answered_query_coverage"], 1)
+        self.assertEqual(query["scored_query_coverage"], 0)
+        self.assertEqual(retained["input_observation_contributions"], 8)
+        self.assertEqual(retained["released_observation_contributions"], 8)
+
+    def test_duplicate_and_invalid_regions_are_rejected(self):
+        source = replay()
+        evaluation = evaluate(source, result(source, []))
+        for regions in ([self.regions()[0]] * 2,
+                        [dict(id="bad", x=0, y=0, width=0, height=10)],
+                        [dict(id="bad", x=0, y=0, width=float("nan"), height=10)]):
+            with self.subTest(regions=regions):
+                with self.assertRaises(ValueError):
+                    summarize_queries(evaluation, regions)
+                with self.assertRaises(ValueError):
+                    summarize_region_retention(source, result(source, []), regions)
+
+    def test_retention_validates_public_overlap_and_source_matching(self):
+        source = replay()
+        outputs = result(source, [release([cell(), cell()])])
+        with self.assertRaisesRegex(ValueError, "overlap"):
+            summarize_region_retention(source, outputs, self.regions())
+        outputs = result(source, [])
+        outputs["source"]["end_ms"] += 100
+        with self.assertRaisesRegex(ValueError, "end_ms"):
+            summarize_region_retention(source, outputs, self.regions())
 
 
 if __name__ == "__main__":

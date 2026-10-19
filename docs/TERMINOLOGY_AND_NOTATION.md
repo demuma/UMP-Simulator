@@ -1,6 +1,6 @@
 # Terminology, notation and mathematical contract
 
-Version 1.1 — 2026-10-19. This is the project's canonical terminology for the presentation,
+Version 1.2 — 2026-10-19. This is the project's canonical terminology for the presentation,
 paper, dissertation and new documentation. It describes the implemented baseline and marks
 future extensions explicitly. Earlier reviews retain historical/local notation; use this
 reference when translating them into publication text. Code identifiers are mapped below;
@@ -432,8 +432,9 @@ $$
 The estimate is defined only when released cells with available means cover all of F_i at
 every scheduled query sample. The displayed sum over partial support must not be used to
 fill an uncovered remainder with zero. This reconstruction is an explicit estimate, not
-recovered original positions. Current queries are regular 10-m cells and full 1-s intervals;
-new region masks need an evaluator extension. A trailing partial query interval is excluded.
+recovered original positions. Default queries are regular 10-m cells and full 1-s intervals; the controlled
+coordination study also declares 5-m / 200-ms queries. Fixed rectangular reporting masks
+select fully contained query footprints; arbitrary query geometries need an extension. A trailing partial query interval is excluded.
 
 **U2 — Denominators and conditional error.** Let $\mathcal Q$ be the index set of all fixed
 queries $Q_i$. Let $\mathcal Q_{\mathrm{ans}}$ contain the answered indices,
@@ -671,3 +672,73 @@ $$
 
 For the recipient stream, only selected decisions remain; the sum is at most one. These
 are support/accounting invariants, not a privacy guarantee or an optimality theorem.
+
+## 20. Contribution retention, exact age and paired evaluation
+
+Version 1.2 adds the measurement contract used by the October 19 common/local study.
+Let O_in be the finite collection of input observation occurrences and B_pub the
+recipient-visible released blocks. Each occurrence o has sensor position x(o) and
+observation time t(o). Define the retained subcollection by exact point/time membership:
+
+$$
+\mathcal O_{\mathrm{ret}}=
+\{o\in\mathcal O_{\mathrm{in}}:\exists b\in\mathcal B_{\mathrm{pub}},\quad
+\mathbf x(o)\in C_b\ \land\ t(o)\in I_b\},\qquad
+r_{\mathrm{obs}}=\frac{|\mathcal O_{\mathrm{ret}}|}{|\mathcal O_{\mathrm{in}}|}.
+$$
+
+The denominator must be positive. These are observation occurrences, not distinct
+road users. Regional diagnostics filter actual source points by the declared fixed
+reporting mask; they do not allocate a coarse cell count uniformly. This is private
+source-based evaluation, separate from public-only occupancy reconstruction.
+
+Nonoverlap makes the containing public block b(o) unique. With sealing timestamp
+t_seal(b), define exact simulated observation age and its retained-only mean:
+
+$$
+A_{\mathrm{obs}}(o)=t_{\mathrm{seal}}(b(o))-t(o),\qquad
+\overline A_{\mathrm{obs}}=
+\frac{1}{|\mathcal O_{\mathrm{ret}}|}\sum_{o\in\mathcal O_{\mathrm{ret}}}A_{\mathrm{obs}}(o).
+$$
+
+The mean is undefined if no observations were retained. A_obs is distinct from the
+interval-age envelope A_seal(b)=t_seal(b)-t_b^- in Section 6; it does not reuse a, the
+application identifier. Public timing uses N_obs(C_b,I_b) as its weight for duration,
+interval-age envelope and post-window delay. It is invariant to grouping the same
+blocks into more release documents. Exact age and retention use the private source.
+None of these simulation-clock quantities measures wall-clock delivery latency.
+
+For nonnegative values z_i and positive contribution weights w_i, the reported weighted
+quantile is the smallest observed value reaching the cumulative proportion p:
+
+$$
+q_p=\min\left\{z:\sum_{i:z_i\le z}w_i\ge p\sum_iw_i\right\},\qquad 0<p\le1.
+$$
+
+Zero-weight rows have no influence. With no positive weight the distribution is
+undefined. In the exact-age histogram w_i counts retained occurrences at that age;
+in public timing it is the released cell's observation-contribution count.
+
+For one frozen realization and preservation strategy, let Q_pair be the fixed queries
+scored by both common and local coordination. Use the same reference answers:
+
+$$
+\mathcal Q_{\mathrm{pair}}=\mathcal Q_{\mathrm{score}}^{\mathrm{com}}
+\cap\mathcal Q_{\mathrm{score}}^{\mathrm{loc}},\qquad
+\operatorname{MAE}_{\mathrm{pair}}^{\mathrm{loc}}=
+\frac{1}{|\mathcal Q_{\mathrm{pair}}|}\sum_{i\in\mathcal Q_{\mathrm{pair}}}
+|\widehat y_i^{\mathrm{loc}}-y_i|.
+$$
+
+The common expression substitutes com for loc. Both are undefined with no paired
+queries. Report full-domain coverage alongside paired accuracy; removing unanswered
+queries is not an improvement in availability. For every declared scalar evaluation
+metric M, use Delta_M=M_loc-M_com for the paired difference. The independent complete
+realization is the statistical unit. Different windows, queries, strategies and
+execution repeats from that realization do not increase its replication count.
+
+Actual contracts and formulas map to `occupancy.summarize_region_retention`,
+`occupancy.summarize_queries`, `coordination_metrics.summarize` and
+`run_coordination_study.matched_errors`. See [the study](COORDINATION_STUDY_2026-10-19.md)
+for the two fixed query scales, full/interior boundaries, defined sample counts,
+retained-set age conditioning and the limits of the synthetic evidence.

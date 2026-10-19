@@ -9,6 +9,8 @@ are explicit reconstruction assumptions, not recovered movement information.
 import math
 from collections import Counter
 
+from coordination_metrics import weighted_distribution
+
 
 REPLAY_SCHEMA = "ump.observation-replay.v1"
 RESULT_SCHEMA = "ump.replay-result.v1"
@@ -300,4 +302,170 @@ def evaluate(replay, result, reference_cell_m=10, reference_window_ms=1000):
         },
         "release_resolution_and_age": resolution,
         "queries": queries,
+    }
+
+
+def _region_rectangles(regions):
+    """Validate named rectangular masks without changing the reference grid."""
+    if not isinstance(regions, list):
+        raise ValueError("Regions must be a list of named rectangles")
+    prepared, identities = [], set()
+    for region in regions:
+        if not isinstance(region, dict):
+            raise ValueError("Each region must be a named rectangle")
+        identity = region.get("id")
+        if not isinstance(identity, str) or not identity or identity in identities:
+            raise ValueError("Region IDs must be nonempty and unique")
+        identities.add(identity)
+        prepared.append((identity, _rectangle(region, "region")))
+    return prepared
+
+
+def _summarize_query_subset(queries):
+    """Preserve the full-grid denominators for a selected fixed-query subset."""
+    total = len(queries)
+    available = [query for query in queries if query["reference_available"]]
+    answered = [query for query in queries if query["answered"]]
+    scored = [query for query in queries if query["absolute_error"] is not None]
+    # Each complete reference mean was obtained from integer per-sample counts.
+    # Round only the reconstructed reference total, never public estimates.
+    reference_contributions = round(math.fsum(
+        query["reference"] * query["scheduled_samples"] for query in available))
+    answered_reference = round(math.fsum(
+        query["reference"] * query["scheduled_samples"] for query in scored))
+    reconstructed = math.fsum(
+        query["prediction"] * query["scheduled_samples"] for query in answered)
+    return {
+        "reference_queries": total,
+        "reference_available_queries": len(available),
+        "answered_queries": len(answered),
+        "scored_queries": len(scored),
+        "reference_availability": _ratio(len(available), total),
+        "answered_query_coverage": _ratio(len(answered), total),
+        "scored_query_coverage": _ratio(len(scored), total),
+        "occupancy_mae": (math.fsum(query["absolute_error"] for query in scored)
+                          / len(scored) if scored else None),
+        "occupancy_mae_unit": "agents",
+        "reference_observation_contributions": reference_contributions,
+        "answered_reference_observation_contributions": answered_reference,
+        "reconstructed_answered_observation_contribution_equivalents": reconstructed,
+    }
+
+
+def summarize_queries(evaluation, regions):
+    """Summarize unchanged fixed queries fully contained in named rectangles.
+
+    A boundary-crossing reference footprint is excluded, not clipped or resized.
+    Overlapping masks are allowed and their summaries are consequently not
+    additive. Reference contribution totals include only complete measured
+    queries; reconstructed contribution equivalents are public occupancy
+    predictions integrated over scheduled samples, not retained source records.
+    Coverage describes eventual answerability, not availability by a deadline.
+    """
+    if evaluation.get("schema") != EVALUATION_SCHEMA:
+        raise ValueError(f"Expected evaluation schema {EVALUATION_SCHEMA}")
+    side = _number(evaluation["reference"]["cell_side_m"], "cell_side_m", 0)
+    if side <= 0:
+        raise ValueError("Reference cell size must be positive")
+    summaries = []
+    for identity, region in _region_rectangles(regions):
+        selected, boundary = [], 0
+        for query in evaluation["queries"]:
+            footprint = (query["x"], query["y"], side, side)
+            if _inside(footprint, region):
+                selected.append(query)
+            elif _intersection_area(footprint, region) > 0:
+                boundary += 1
+        summaries.append({
+            "id": identity,
+            "rectangle": dict(zip(("x", "y", "width", "height"), region)),
+            "excluded_boundary_queries": boundary,
+            **_summarize_query_subset(selected),
+        })
+    return {
+        "selection": "Fixed query footprints fully contained in each rectangle; boundary intersections excluded.",
+        "availability_scope": "Eventual answerability from complete releases; no online deadline is assumed.",
+        "contribution_note": "Reference totals cover complete measured queries; reconstructed equivalents are not retained source contributions.",
+        "regions": summaries,
+    }
+
+
+def summarize_region_retention(replay, result, regions):
+    """Count retained raw contributions by exact point/time membership.
+
+    This is private source-based diagnostics. It never allocates a coarse
+    public count uniformly to a region. Per-region numerators are counts of
+    actual raw observations inside recipient-visible space-time support. This
+    counts released records even if their occupancy value cannot answer a query.
+    """
+    if replay.get("schema") != REPLAY_SCHEMA:
+        raise ValueError(f"Expected replay schema {REPLAY_SCHEMA}")
+    coverage = _rectangle(replay.get("coverage", {}), "coverage")
+    end = _integer(replay.get("end_ms"), "end_ms", 1)
+    period = _integer(replay.get("sampling_period_ms"), "sampling_period_ms", 1)
+    prepared_regions = _region_rectangles(regions)
+    # Validate source matching, released metrics and nonoverlap using the same
+    # recipient validation as the fixed-query evaluator, without a new grid.
+    _prepare_public(result, replay, coverage, [], end)
+    events = sorted(
+        (release["start_ms"], release["end_ms"], _rectangle(cell, "released cell"),
+         release["sealed_at_ms"])
+        for release in result["releases"] for cell in release["cells"])
+    counts = [[0, 0] for _ in prepared_regions]
+    observation_ages = [Counter() for _ in prepared_regions]
+    previous, next_event, active = 0, 0, []
+    batches = replay.get("batches")
+    if not isinstance(batches, list):
+        raise ValueError("Replay batches must be a list")
+    for batch in batches:
+        time = _integer(batch.get("observed_at_ms"), "observed_at_ms", 1)
+        if time <= previous or time >= end or time % period:
+            raise ValueError("Observation times must be increasing, scheduled, positive and before end_ms")
+        previous = time
+        while next_event < len(events) and events[next_event][0] <= time:
+            _, stop, rectangle, sealed = events[next_event]
+            active.append((stop, rectangle, sealed))
+            next_event += 1
+        active = [(stop, rectangle, sealed) for stop, rectangle, sealed in active if stop > time]
+        status, observations = batch.get("status"), batch.get("observations")
+        if status not in ("measured", "unavailable") or not isinstance(observations, list):
+            raise ValueError("Each batch needs a measured/unavailable status and observation list")
+        if status == "unavailable":
+            if observations:
+                raise ValueError("Unavailable batches cannot contain observations")
+            continue
+        identities = set()
+        for observation in observations:
+            identity = observation.get("id")
+            if not isinstance(identity, str) or not identity or identity in identities:
+                raise ValueError("Observation IDs must be nonempty and unique within each sample")
+            identities.add(identity)
+            x = _number(observation.get("x"), "observation.x")
+            y = _number(observation.get("y"), "observation.y")
+            def contains(rectangle):
+                return (rectangle[0] <= x < rectangle[0] + rectangle[2]
+                        and rectangle[1] <= y < rectangle[1] + rectangle[3])
+            if not contains(coverage):
+                raise ValueError("Reference observation is outside the half-open evaluation coverage")
+            matches = [sealed for _, rectangle, sealed in active if contains(rectangle)]
+            if len(matches) > 1:
+                raise ValueError("A raw observation belongs to overlapping public support")
+            retained = bool(matches)
+            for index, (_, region) in enumerate(prepared_regions):
+                if contains(region):
+                    counts[index][0] += 1
+                    counts[index][1] += retained
+                    if retained:
+                        observation_ages[index][matches[0] - time] += 1
+    return {
+        "classification": "private_source_retention_diagnostics",
+        "definition": "Exact raw observation point/time membership in public released support; no uniform allocation of public counts.",
+        "availability_scope": "Eventual released support, independent of delivery deadlines.",
+        "age_definition": "Exact retained raw contribution age: sealed_at_ms minus observed_at_ms; simulation time, not network delivery latency. Each observation contribution has one weight.",
+        "regions": [dict(id=identity, input_observation_contributions=total,
+                         released_observation_contributions=retained,
+                         retained_observation_fraction=_ratio(retained, total),
+                         simulated_observation_age_ms=weighted_distribution(ages.items()))
+                    for (identity, _), (total, retained), ages
+                    in zip(prepared_regions, counts, observation_ages)],
     }

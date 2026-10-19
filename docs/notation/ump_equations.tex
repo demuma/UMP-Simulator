@@ -147,3 +147,28 @@ s_C=s\ \ (C\in\mathcal D_P),\qquad I=[s,e).
 \sum_{h\in\mathcal H}\mathbf 1_{C_h}(x)\mathbf 1_{[s_h,e_h)}(t)=1,
 \qquad x\in\Omega,\quad 0\le t<T.
 \end{equation}
+
+\begin{equation}
+\mathcal O_{\mathrm{ret}}=
+\{o\in\mathcal O_{\mathrm{in}}:\exists b\in\mathcal B_{\mathrm{pub}},\quad
+\mathbf x(o)\in C_b\ \land\ t(o)\in I_b\},\qquad
+r_{\mathrm{obs}}=\frac{|\mathcal O_{\mathrm{ret}}|}{|\mathcal O_{\mathrm{in}}|}.
+\end{equation}
+
+\begin{equation}
+A_{\mathrm{obs}}(o)=t_{\mathrm{seal}}(b(o))-t(o),\qquad
+\overline A_{\mathrm{obs}}=
+\frac{1}{|\mathcal O_{\mathrm{ret}}|}\sum_{o\in\mathcal O_{\mathrm{ret}}}A_{\mathrm{obs}}(o).
+\end{equation}
+
+\begin{equation}
+q_p=\min\left\{z:\sum_{i:z_i\le z}w_i\ge p\sum_iw_i\right\},\qquad 0<p\le1.
+\end{equation}
+
+\begin{equation}
+\mathcal Q_{\mathrm{pair}}=\mathcal Q_{\mathrm{score}}^{\mathrm{com}}
+\cap\mathcal Q_{\mathrm{score}}^{\mathrm{loc}},\qquad
+\operatorname{MAE}_{\mathrm{pair}}^{\mathrm{loc}}=
+\frac{1}{|\mathcal Q_{\mathrm{pair}}|}\sum_{i\in\mathcal Q_{\mathrm{pair}}}
+|\widehat y_i^{\mathrm{loc}}-y_i|.
+\end{equation}

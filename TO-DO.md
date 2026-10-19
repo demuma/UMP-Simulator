@@ -1,6 +1,6 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-19. Current priority: evaluate utility and policy fulfilment, then prepare evidence for October 18 and October 25.**
+**Status: 2026-10-19. Current priority: evaluate utility and policy fulfilment, then prepare reproducible evidence for October 25. October 18 remains a historical milestone.**
 
 This is the central task backlog. README describes current behavior; this file tracks
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
@@ -16,8 +16,11 @@ and [the coordination test report](docs/COORDINATION_TEST_REPORT_2026-10-19.md).
 **Cell-local verification, later on October 19:** 27/27 CTest suites and 134 Python methods
 pass; 14 coordination cases and 120 seeded stress scenarios also pass ASan/UBSan.
 A complete 120-s headless run passes independent auditing of 160415 terminal domains.
-The next measured performance task is no-output handoff/diagnostic volume, followed by
-paired common/local effectiveness experiments. See the linked coordination test report.
+The paired common/local effectiveness study is complete: 270 audited replays and 120
+scientific repeats. It finds benefits under regional constraints and clear mixed-density
+losses, plus concrete hold/publication counterexamples. Next: targeted regressions and
+coordination improvements, then diagnostic-volume optimization. See the linked
+coordination test report and [study results](docs/COORDINATION_STUDY_2026-10-19.md).
 
 ## 1. Status and priorities
 
@@ -781,7 +784,8 @@ future common-boundary handoffs and scoped publication. Comparative effectivenes
   Distinguish those transitions from A07 selecting unpublished descendants as final fallback;
   prevent split/merge oscillation within one unresolved window.
 - [x] Handle impossible constraint combinations explicitly in candidate checks; suppress unreleasable support without treating suppression as availability fulfilment.
-- [ ] Compare against B01 baselines.
+- [x] Compare against B01 baselines in the October 19 frozen nine-configuration study;
+  report retention, coverage and conditional error rather than a universal winner.
 
 **Cell-local implementation, 2026-10-19:**
 
@@ -801,7 +805,14 @@ future common-boundary handoffs and scoped publication. Comparative effectivenes
   120-s run produced 312.5 MiB of private diagnostics; disabling no-output Mongo checkpoints
   improved execution but does not solve algorithmic/diagnostic volume. Keep durable public
   publication and default legacy journal behavior unchanged.
-- [ ] Run the paired common/local regional-policy effectiveness study on frozen inputs.
+- [x] Run the paired common/local regional-policy effectiveness study on frozen inputs:
+  six analytical cases + 24 independent realizations, nine configurations, 270 audited
+  replays and 120 exact repeats. Record all references, two query scales, regional
+  retention, exact contribution age and matched-query MAE.
+- [ ] **P1 — Evidence-led coordination:** add regressions for illegal-parent sibling holds
+  and the verified early-publication barrier (parent 14 versus descendant 56). Restrict
+  holds to concrete policy-feasible candidates; explain mixed-density retention losses
+  with distinct publication/private-retirement/history/deadline causes before optimizing.
 - [ ] Extend whole-domain feasibility enumeration to a justified asynchronous reference class.
 - [ ] Add a persistent renderer mosaic of latest decisions from every local domain.
 - [ ] Implement E05 precomputed statistic caches separately from ownership/coordination holds.
@@ -1027,6 +1038,22 @@ No assumed winner; this study does not block the first aggregation demo.
   first, then selected model-by-priority interactions. Keep E05's cache comparison separate.
 - [ ] Report attack outcomes, application error, released coverage, spatial/temporal detail,
   latency distribution, infeasibility and compute/memory cost, with explicit limitations.
+
+**October 19 measured subset:** the immutable private-final-snapshot common/local
+comparison is implemented and executed, with both preservation priorities and four fixed
+references. Results do not complete the other publication-model or privacy comparisons.
+
+- [x] Add exact retained-observation ages, batching-invariant public timing, fixed regional
+  diagnostics, primary/fine fixed queries, paired support and independent-realization summaries.
+- [x] Preserve a verified post-study publication-overlap witness without claiming total regret.
+- [ ] Instrument otherwise-valid candidates rejected solely by actual public overlap; distinguish
+  private retirement, policy, budget, coverage and history failures. Deduplicate candidates.
+- [ ] Define a bounded asynchronous counterfactual for publication opportunity loss. Compare the
+  best feasible schedule with versus without a commit under the same prior public prefix,
+  policies, data, deadlines, resource limits and utility objective. Do not add overlapping
+  parent/ancestor potential or interpret hindsight optimum as an online guarantee.
+- [ ] Repeat this frozen baseline after a targeted controller change; require no regression in
+  compliance, conservation or deterministic ownership and explain every utility trade-off.
 
 **Acceptance:** reproducible model/strategy comparisons with verified implementations,
 explicit observer assumptions and the adopted terminology in every figure/configuration.
@@ -1513,3 +1540,15 @@ Two real headless runs (300 s at 50 ms;600 s at 100 ms) and one 600-s persistent
 replay through both priorities passed their documented checks. Numerical 200-ms /10-Hz
 sampling is rejected. Scope and presentation-critical priorities are in the new bucket-status
 and endurance reports; full prewarming/cell-local coordination remains open.
+
+## Controlled common/local study — 2026-10-19
+
+The controller stayed unchanged during a fixed 30-case / nine-configuration comparison.
+All 270 primary replays passed independent auditing; 120 adaptive executions reproduced
+identical scientific output. Regional latency improves mean local retention by 12.31/17.20
+percentage points (TF/SF), while mixed-density retention falls by 15.90/18.10 points.
+A blocked branch retains the same data with mean age 538.46 to 148.72 ms. These conditional
+findings, all nine references, the publication-overlap witness, formulas and figure are in
+[the study report](docs/COORDINATION_STUDY_2026-10-19.md). All 31 CTest suites and 179 Python methods pass; the English study test report and
+canonical notation 1.2 are updated. The measured baseline now precedes
+further coordinator changes; realistic maps and precomputed ancestor caches remain later work.

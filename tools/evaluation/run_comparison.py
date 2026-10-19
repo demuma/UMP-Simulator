@@ -30,12 +30,12 @@ def write_json(path, value):
         stream.write('\n')
 
 
-def run_variant(binary, observations, policy, output, mode, depth, window):
+def run_variant(binary, observations, policy, output, mode, depth, window, timeout=120):
     command = [str(binary), '--input', str(observations), '--config', str(policy),
                '--mode', mode, '--output', str(output)]
     if depth is not None:
         command += ['--fixed-depth', str(depth), '--fixed-window-ms', str(window)]
-    completed = subprocess.run(command, text=True, capture_output=True)
+    completed = subprocess.run(command, text=True, capture_output=True, timeout=timeout)
     if completed.returncode:
         raise RuntimeError(f'Replay failed: {completed.stderr.strip()}')
     return json.loads(output.read_text()), command

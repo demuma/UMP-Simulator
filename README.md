@@ -30,6 +30,11 @@ public-only calibrated empirical membership benchmark are now implemented. Contr
 synthetic results and verification are recorded in the October 19 test report. The historical
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
+**Latest measured coordination result:** the frozen 30-case comparison completed 270
+independent audits and 120 deterministic repeats. Cell-local coordination improves some
+regional-policy outcomes but loses retained support in mixed-density cases; it is not a
+universal improvement. See the [study and figures](docs/COORDINATION_STUDY_2026-10-19.md).
+
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
 its original external file remains unchanged.
@@ -49,6 +54,8 @@ its original external file remains unchanged.
 | [Empirical evaluation implementation](docs/EMPIRICAL_PRIVACY_IMPLEMENTATION.md) | Independent oracle, seeded pairs/splits, public features, classifier, controls and reproduction |
 | [October 19 test report](docs/TEST_REPORT_2026-10-19.md) | Actual regression results, independent hand cases, synthetic pilot evidence and limitations |
 | [Cell-local coordination](docs/CELL_LOCAL_COORDINATION.md) | Independent cell windows, mixed-depth ownership, handoffs, scoped releases and configuration |
+| [Study test report](docs/COORDINATION_STUDY_TEST_REPORT_2026-10-19.md) | Measurement implementation, 31 CTest suites, 179 Python methods, provenance and independent checks |
+| [Common/local coordination study](docs/COORDINATION_STUDY_2026-10-19.md) | Frozen nine-configuration experiments, exact contribution ages, regional utility, paired results and limits |
 | [Coordination test report](docs/COORDINATION_TEST_REPORT_2026-10-19.md) | New coordination regressions, independent space-time audit and integration evidence |
 | [Bucket/history status](docs/BUCKET_IMPLEMENTATION_STATUS.md) | Actual logical APIs versus pending proactive parent preparation, history basis and presentation priorities |
 | [Endurance/timestep report](docs/LONG_RUN_REPORT_2026-10-19.md) | Real 300/600-s headless runs, numerical-step compatibility, sustained analytical load and limits |
