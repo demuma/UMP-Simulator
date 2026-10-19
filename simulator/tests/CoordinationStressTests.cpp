@@ -11,7 +11,8 @@
 namespace {
 using namespace ump;
 constexpr unsigned seed = 82561;
-constexpr int scenarioCount = 120;
+constexpr int originalScenarioCount = 120;
+constexpr int scenarioCount = 240;
 constexpr AggregationTime finalTimeMs = 1234;
 
 void require(bool condition, const char* message) {
@@ -113,6 +114,10 @@ void checkTerminalEvidence(const std::vector<SpatialSelection>& outputs,
 
 void runScenario(int trial, std::mt19937& random) {
     const int depth = 2 + static_cast<int>(random()%3);
+    const bool boundedPolicies = trial >= originalScenarioCount;
+    const int maximumDepth = boundedPolicies ? 1 + static_cast<int>(random()%depth) : 1;
+    const double maximumSide = std::ldexp(80.0,-maximumDepth);
+    const AggregationTime maximumWindow = boundedPolicies && random()%2 ? 400 : 800;
     AggregationConfig config{"run","sensor","app",{0,0,80,80,depth},100,200};
     config.history = HistoryLimits{2000,32,10000,1000000,1024};
     std::vector<PolicyRegion> regions;
@@ -122,19 +127,26 @@ void runScenario(int trial, std::mt19937& random) {
         do { id = randomCell(random,depth); } while (!usedRegions.insert(id).second);
         const auto cell = historyCell(config.coverage,id,depth);
         const double durationMaximum = 100*(1+random()%4);
+        std::vector<MetricRequirement> requirements{{MetricId::WindowDurationMs,{},durationMaximum}};
+        if (boundedPolicies) {
+            const double durationMinimum = 100*(1+random()%static_cast<unsigned>(durationMaximum/100));
+            requirements.front().min = durationMinimum;
+            const int regionalDepth = 1 + static_cast<int>(random()%depth);
+            requirements.push_back({MetricId::CellSideM,{},std::ldexp(80.0,-regionalDepth)});
+        }
         regions.push_back({std::to_string(index),"test",cell.x,cell.y,cell.width,cell.height,{},
-            {{MetricId::WindowDurationMs,{},durationMaximum}}});
+            std::move(requirements)});
     }
     const auto tree = std::make_shared<const PolicyTree>(
         PolicyTreeConfig{"policy","1","app",config.coverage,
             {{MetricId::DistinctContributors,static_cast<double>(1+random()%5),{}},
-             {MetricId::CellSideM,{},40}}},std::move(regions));
+             {MetricId::CellSideM,{},maximumSide}}},std::move(regions));
     MetricEvaluator metrics(tree);
     AggregationHistory history(config,*config.history);
     std::vector<ObservationBatch> raw;
     std::vector<SpatialSelection> outputs;
     const auto strategy = trial%2 ? AdaptationStrategy::SpatialFirst : AdaptationStrategy::TemporalFirst;
-    CellLocalAggregation engine(config,{strategy,100,800,32},{1,4096},metrics,
+    CellLocalAggregation engine(config,{strategy,100,maximumWindow,32},{1,4096},metrics,
         [&](const SpatialSelection& selection) { outputs.push_back(selection); });
     checkFrontier(engine,config.coverage);
     for (int time=100;time<=1200;time+=100) {
@@ -168,7 +180,7 @@ int main() {
     try {
         std::mt19937 random(seed);
         for (;trial<scenarioCount;++trial) runScenario(trial,random);
-        std::cout << "PASS: 120 seeded mixed-policy scenarios, complete ownership frontiers, "
+        std::cout << "PASS: 240 seeded mixed-policy scenarios, regional size/duration bounds, complete ownership frontiers, "
             "future handoffs, parent takeovers, raw accounting and fractional finalization.\n";
         return 0;
     } catch (const std::exception& error) {

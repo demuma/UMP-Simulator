@@ -12,6 +12,11 @@ instantiation is now fixed: source-contribution inclusion, exact partial candida
 independent seeded reference realizations, grouped splits, logistic classifier, calibration
 and public-only held-out testing. The historical deterministic diagnostic remains separate.
 
+**Current focus after coordination refinement:** a fixed 184-realization common/local
+source-membership comparison now uses the corrected controller and spatially scoped public
+features. See [the protocol and results](PRIVACY_COORDINATION_STUDY_2026-10-19.md). Its exact
+candidate knowledge and synthetic background limit any real-world interpretation.
+
 ## What already exists and what remains open
 
 | Requirement | Existing diagnostic | Remaining empirical-study work |

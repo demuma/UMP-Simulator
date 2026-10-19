@@ -219,7 +219,8 @@ if(UMP_BUILD_REPLAY)
     add_test(NAME replay_regression COMMAND ReplayRegressionTests)
     set_tests_properties(replay_regression PROPERTIES LABELS "unit;replay;evaluation" TIMEOUT 30)
     find_package(Python3 3.9 COMPONENTS Interpreter REQUIRED)
-    foreach(evaluation occupancy privacy comparison capture oracle privacy_dataset empirical_privacy privacy_study coordination coordination_metrics coordination_scenarios coordination_study plot_coordination_study)
+    foreach(evaluation occupancy privacy comparison capture oracle privacy_dataset empirical_privacy privacy_study coordination coordination_metrics coordination_scenarios coordination_study plot_coordination_study
+        compare_coordination_studies plot_privacy_coordination)
         add_test(NAME ${evaluation}_evaluation COMMAND ${Python3_EXECUTABLE} -m unittest discover
             -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/evaluation -p test_${evaluation}.py)
         set_tests_properties(${evaluation}_evaluation PROPERTIES LABELS "unit;evaluation"

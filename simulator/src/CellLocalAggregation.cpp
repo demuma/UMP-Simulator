@@ -496,40 +496,150 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
         const bool terminalEnd = final && endpoint == now;
         struct Check { AggregationCandidate candidate; WindowMetricAssessment assessment; bool failed; };
         std::map<int, Check> checks;
-        using Group = std::pair<int, AggregationTime>;
-        std::map<Group, std::set<int>> failingGroups;
-        std::set<Group> deadlineGroups;
         std::vector<int> due;
-        const auto groupOf = [&](const CellLocalWindow& w) -> std::optional<Group> {
-            if (w.cell.depth < spatial.minDepth) return std::nullopt;
-            return Group{w.cell.id >> (2 * (w.cell.depth - spatial.minDepth)), w.startMs};
-        };
-        // One assessment per active scope and endpoint. Both sorting and sibling
-        // coordination reuse it; neither scans source history inside a comparator.
+        // Freeze this endpoint's private evidence before considering any output.
+        // A passing small merge must not disclose support needed by a different
+        // failed branch whose nearest passing rescue is a broader ancestor.
         for (const auto& [id, window] : frontier) {
             const auto& w = window.publicState;
             if (w.startMs >= endpoint) continue;
             auto candidate = query(w.cell, w.startMs, endpoint, history, terminalEnd);
             auto assessed = evaluator.evaluate(candidate, now);
             const bool failed = candidate.counts.observationContributions && !passed(candidate, assessed);
-            if (const auto group = groupOf(w)) {
-                if (failed) failingGroups[*group].insert(id);
-                if (w.hardDeadlineMs <= endpoint || now >= w.hardDeadlineMs)
-                    deadlineGroups.insert(*group);
-            }
             checks.emplace(id, Check{std::move(candidate), std::move(assessed), failed});
             if (w.nextEndMs <= endpoint || terminalEnd) due.push_back(id);
         }
         if (due.empty()) break;
+        // Planning must not bypass a due owner's temporal evaluation cap merely
+        // because its support could be absorbed before the per-owner loop below.
+        for (int id : due)
+            if (frontier.at(id).publicState.evaluations >= temporal.maxEvaluations)
+                throw std::length_error("Cell-local temporal evaluation budget exceeded");
+        struct Parent {
+            Check check;
+            bool deadlinePressure;
+            bool futurePossible;
+        };
+        // The budget counts unique reconstructable ancestor assessments per
+        // endpoint, including future-hold tests. It is checked before any sink
+        // call; shared paths do not repeatedly consume this planning budget.
+        std::map<int, std::optional<Parent>> parents;
+        std::size_t ancestorEvaluations = 0;
+        const auto assessParent = [&](const CellGeometry& domain) -> const std::optional<Parent>& {
+            const auto known = parents.find(domain.id);
+            if (known != parents.end()) return known->second;
+            for (const auto& [requestId, request] : handoffs)
+                if (containsCell(domain, request.first) || containsCell(request.first, domain))
+                    return parents.emplace(domain.id, std::nullopt).first->second;
+            AggregationTime start = 0;
+            if (!canMerge(frontier, domain, endpoint, start)
+                || endpoint - start > temporal.maxWindowMs)
+                return parents.emplace(domain.id, std::nullopt).first->second;
+            if (++ancestorEvaluations > spatial.maxEvaluations)
+                throw std::length_error("Cell-local endpoint ancestor evaluation budget exceeded");
+            auto candidate = query(domain, start, endpoint, history, terminalEnd);
+            auto assessed = evaluator.evaluate(candidate, now);
+            bool deadlinePressure = terminalEnd;
+            AggregationTime maximum = start + temporal.maxWindowMs;
+            for (const auto& [ownerId, owner] : frontier)
+                if (containsCell(domain, owner.publicState.cell)) {
+                    maximum = std::min(maximum, owner.publicState.hardDeadlineMs);
+                    deadlinePressure = deadlinePressure || endpoint >= owner.publicState.hardDeadlineMs
+                        || now >= owner.publicState.hardDeadlineMs;
+                }
+            AggregationTime minimum = endpoint + config.samplingPeriodMs;
+            bool futurePossible = candidate.coverage == WindowCoverage::Complete
+                && assessed.cells.at(0).policyFeasible
+                && assessed.cells.at(0).status != AssessmentStatus::NotConfigured;
+            for (const auto& check : assessed.cells.at(0).checks) {
+                const auto& requirement = check.requirement;
+                if (check.status == AssessmentStatus::Unavailable) futurePossible = false;
+                switch (requirement.id) {
+                    case MetricId::CellSideM:
+                    case MetricId::CellAreaM2:
+                        if (check.status != AssessmentStatus::Pass) futurePossible = false;
+                        break;
+                    case MetricId::DistinctContributors:
+                    case MetricId::ObservationContributions:
+                        // These totals cannot shrink when extending this same
+                        // interval; a violated upper bound cannot be repaired.
+                        if (requirement.max && check.observed && *check.observed > *requirement.max)
+                            futurePossible = false;
+                        break;
+                    case MetricId::WindowDurationMs:
+                    case MetricId::AgeAtEvaluationMs:
+                        if (requirement.min && *requirement.min <= temporal.maxWindowMs)
+                            minimum = std::max(minimum, start + static_cast<AggregationTime>(*requirement.min));
+                        else if (requirement.min && *requirement.min > temporal.maxWindowMs)
+                            futurePossible = false;
+                        if (requirement.max && *requirement.max < static_cast<double>(maximum - start))
+                            maximum = start + static_cast<AggregationTime>(*requirement.max);
+                        break;
+                    case MetricId::PostWindowDelayMs:
+                        // A timely next endpoint has zero post-window delay.
+                        // A positive minimum needs a different delayed-release
+                        // model and cannot justify this window-extension hold.
+                        if (requirement.min && *requirement.min > 0) futurePossible = false;
+                        break;
+                    case MetricId::MeanSampleOccupancy:
+                    case MetricId::MeasuredSampleFraction:
+                        // These ratios are not monotone. They may change, but
+                        // no future passing assessment is assumed or fabricated.
+                        break;
+                    case MetricId::OccupancyMae:
+                    case MetricId::Count:
+                        futurePossible = false;
+                        break;
+                }
+            }
+            if (minimum % config.samplingPeriodMs)
+                minimum += config.samplingPeriodMs - minimum % config.samplingPeriodMs;
+            maximum -= maximum % config.samplingPeriodMs;
+            futurePossible = futurePossible && minimum <= maximum && now < maximum;
+            const bool failed = !passed(candidate, assessed);
+            return parents.emplace(domain.id, Parent{Check{std::move(candidate), std::move(assessed), failed},
+                deadlinePressure, futurePossible}).first->second;
+        };
+        std::set<int> proposals;
+        std::set<int> holdDomains;
+        for (const auto& [id, check] : checks) {
+            if (!check.failed) continue;
+            const auto& w = frontier.at(id).publicState;
+            bool foundNearest = false;
+            for (int depth = w.cell.depth - 1; depth >= spatial.minDepth; --depth) {
+                const auto domain = historyAncestor(config.coverage, w.cell, w.cell.depth - depth);
+                const auto& parent = assessParent(domain);
+                if (!parent) continue;
+                if (parent->futurePossible) holdDomains.insert(domain.id);
+                const bool mayCoarsen = temporal.strategy == AdaptationStrategy::TemporalFirst
+                    || parent->deadlinePressure;
+                if (!foundNearest && mayCoarsen && !parent->check.failed) {
+                    proposals.insert(domain.id);
+                    foundNearest = true;
+                }
+            }
+        }
+        // Every proposed domain is the finest passing rescue for at least one
+        // failed owner. When those proposals nest, retain the broader one before
+        // disclosure. Disjoint fine rescues remain fine; a coarser passing cell
+        // alone is never a reason to replace them.
+        std::vector<CellGeometry> planned;
+        for (int id : proposals) {
+            const auto& domain = parents.at(id)->check.candidate.cells.at(0).cell;
+            bool enclosed = false;
+            for (int otherId : proposals)
+                if (id != otherId && containsCell(parents.at(otherId)->check.candidate.cells.at(0).cell, domain)) {
+                    enclosed = true;
+                    break;
+                }
+            if (!enclosed) planned.push_back(domain);
+        }
+        for (const auto& domain : planned)
+            if (!tryMerge(domain, endpoint, history, terminalEnd))
+                throw std::logic_error("A prevalidated cell-local endpoint merge lost its private ownership");
         std::stable_sort(due.begin(), due.end(), [&](int left, int right) {
             return checks.at(left).failed > checks.at(right).failed;
         });
-        const auto forgetRetired = [&]() {
-            for (auto& [group, ids] : failingGroups)
-                for (auto it = ids.begin(); it != ids.end();)
-                    if (!frontier.count(*it) || frontier.at(*it).publicState.startMs != group.second)
-                        it = ids.erase(it); else ++it;
-        };
         for (int id : due) {
             const auto live = frontier.find(id);
             if (live == frontier.end() || live->second.publicState.startMs != checks.at(id).candidate.startMs)
@@ -548,21 +658,7 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
             const bool atHandoff = boundary && endpoint >= *boundary;
             const bool atLimit = endpoint >= state.hardDeadlineMs || now >= state.hardDeadlineMs;
             const bool terminal = terminalEnd || atLimit || atHandoff || (!complete && candidate.expectedSamples);
-            const auto group = groupOf(state);
-            const bool groupDeadline = group && deadlineGroups.count(*group);
-            const bool groupFailure = group && !failingGroups[*group].empty();
             std::size_t proposals = 0;
-            if (!empty && !eligible && (terminal || groupDeadline
-                    || temporal.strategy == AdaptationStrategy::TemporalFirst)) {
-                bool merged = false;
-                for (int depth = state.cell.depth - 1; depth >= spatial.minDepth; --depth) {
-                    if (++proposals > spatial.maxEvaluations)
-                        throw std::length_error("Cell-local spatial proposal budget exceeded");
-                    const auto parent = historyAncestor(config.coverage, state.cell, state.cell.depth - depth);
-                    if (tryMerge(parent, endpoint, history, terminalEnd)) { merged = true; break; }
-                }
-                if (merged) { forgetRetired(); continue; }
-            }
             // A published sibling can close an old parent option. Resolve the old
             // failed prefix, then explicitly align future windows rather than
             // waiting indefinitely or reusing the previously public support.
@@ -598,7 +694,20 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
                     }
                 }
             }
-            const bool hold = !terminal && (eligible || empty) && groupFailure;
+            bool hold = false;
+            if (!terminal && (eligible || empty))
+                for (int parentId : holdDomains) {
+                    const auto& parent = *parents.at(parentId);
+                    const auto& domain = parent.check.candidate.cells.at(0).cell;
+                    if (parent.check.candidate.startMs != state.startMs || !containsCell(domain, state.cell)) continue;
+                    AggregationTime commonStart = 0;
+                    // A disjoint accepted merge elsewhere may have retired part
+                    // of this prospective domain. Never hold for a closed option.
+                    if (canMerge(frontier, domain, endpoint, commonStart) && commonStart == state.startMs) {
+                        hold = true;
+                        break;
+                    }
+                }
             if (!terminal && ((!eligible && !empty) || hold)) {
                 state.nextEndMs = std::min(endpoint + temporal.extensionStepMs, state.hardDeadlineMs);
                 if (boundary) state.nextEndMs = std::min(state.nextEndMs, *boundary);
@@ -623,7 +732,6 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
                 next.publicState.nextEndMs = std::min(next.publicState.nextEndMs, *boundary);
             replacements.emplace(id, std::move(next));
             emit(std::move(selected), std::move(replacements), {id});
-            forgetRetired();
         }
         // Resolve the complete endpoint batch before coalescing: no due sibling
         // can disappear behind a newly compressed owner while awaiting its ACK.

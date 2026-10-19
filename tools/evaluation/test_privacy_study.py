@@ -1,5 +1,6 @@
 """Independent control/denominator tests and a real grouped seven-mode study."""
 from copy import deepcopy
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -11,6 +12,7 @@ from occupancy import evaluate
 from privacy_dataset import build_dataset, generate_case
 from run_privacy_study import (clustered_intervals, control_result, load_dataset,
     paired_auc_difference, relative_file, run_study, stable_seed, utility_rollup)
+from run_coordination_study import STUDY_VARIANTS, effective_policy
 
 ROOT=Path(__file__).resolve().parents[2]
 BINARY=Path(os.environ.get('UMP_REPLAY_BINARY',str(ROOT/'simulator/build/AggregationReplay')))
@@ -67,6 +69,30 @@ class ControlAndStatisticsTests(unittest.TestCase):
         self.assertIsNone(report['common_support_mae'])
         self.assertIsNone(report['mean_release_age_ms'])
 
+    def test_pair_specific_utility_has_its_own_denominator(self):
+        row=dict(reference_queries=10,answered_queries=4,scored_queries=4,occupancy_mae=7,
+                 input_contributions=10,released_contributions=8,release_ages_ms=[],
+                 common_scored_queries=0,paired_scored_queries=2,paired_support_mae=3)
+        report=utility_rollup([row,dict(row,paired_scored_queries=1,paired_support_mae=9)])
+        self.assertEqual(report['paired_scored_queries'],3)
+        self.assertEqual(report['paired_support_mae'],5)
+        self.assertIsNone(report['common_support_mae'])
+
+    def test_effective_variant_configs_change_only_execution_choices(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            dataset=Path(temporary)/'dataset'
+            build_dataset(dataset,73,2,2,2,1000)
+            original=json.loads((dataset/'policy.json').read_text())
+            pristine=deepcopy(original)
+            for variant in STUDY_VARIANTS:
+                effective=effective_policy(original,variant)
+                self.assertEqual(effective['temporal_adaptation']['coordination'],variant[4])
+                self.assertEqual(effective['policy_tree']['root'],original['policy_tree']['root'])
+                self.assertEqual(effective['policy_regions'],original['policy_regions'])
+                if variant[1] in ('temporal_first','spatial_first'):
+                    self.assertEqual(effective['policy_tree']['execution']['strategy'],variant[1])
+            self.assertEqual(original,pristine)
+
     def test_dataset_path_escape_is_rejected(self):
         with tempfile.TemporaryDirectory() as temporary:
             root=Path(temporary)
@@ -99,6 +125,51 @@ class ControlAndStatisticsTests(unittest.TestCase):
 
 @unittest.skipUnless(BINARY.is_file(),'Build AggregationReplay for the real pipeline study')
 class FullStudyIntegrationTests(unittest.TestCase):
+    def test_common_local_study_freezes_protocol_and_audits_each_effective_config(self):
+        with tempfile.TemporaryDirectory(prefix='ump-private-local-study-') as temporary:
+            directory=Path(temporary)
+            dataset,output=directory/'dataset',directory/'study'
+            build_dataset(dataset,20261020,2,2,2,1000)
+            report=run_study(dataset,output,BINARY,knowledge_fractions=(.25,),
+                             bootstrap_repeats=10,coordination_study=True)
+            self.assertTrue(report['coordination_study'])
+            self.assertEqual(report['independent_validation']['checks'],108)
+            self.assertEqual(len(report['attacks']),22)
+            expected_adaptive={name for name,*_ in STUDY_VARIANTS[5:]}
+            self.assertEqual(set(report['independent_validation']['deterministic_repeats']),expected_adaptive)
+            protocol=json.loads((output/'protocol.json').read_text())
+            saved=json.loads((output/'manifest.json').read_text())
+            self.assertEqual(protocol['status'],'predeclared')
+            self.assertEqual(saved['status'],'complete')
+            self.assertEqual(len(protocol['variants']),9)
+            self.assertEqual(protocol['split_scenarios'],{split:{'sparse':1,'dense':1}
+                                                         for split in ('train','calibration','test')})
+            self.assertEqual(hashlib.sha256((output/'AggregationReplay.frozen').read_bytes()).hexdigest(),
+                             protocol['binary_sha256'])
+            local=[attack for attack in report['attacks'] if attack['variant'].startswith('local_')]
+            self.assertEqual(len(local),4)
+            for attack in local:
+                pair=attack['paired_vs_common_same_priority']
+                self.assertEqual(pair['independent_groups'],2)
+                self.assertGreaterEqual(pair['auc_difference'],-1)
+                self.assertLessEqual(pair['auc_difference'],1)
+            configurations={path.stem:json.loads(path.read_text()) for path in (output/'policies').glob('*.json')}
+            self.assertEqual(len(configurations),9)
+            for name,config in configurations.items():
+                expected='cell_local' if name.startswith('local_') else 'common_window'
+                self.assertEqual(config['temporal_adaptation']['coordination'],expected)
+            commands=json.loads((output/'commands.json').read_text())
+            self.assertEqual(len(commands),108)
+            for command in commands:
+                self.assertEqual(Path(command['command'][0]),output.resolve()/'AggregationReplay.frozen')
+                config_path=Path(command['command'][command['command'].index('--config')+1])
+                self.assertEqual(config_path.name,command['variant']+'.json')
+            for path in (output/'public').glob('*.json'):
+                public=json.loads(path.read_text())
+                self.assertEqual(set(public),{'schema','coverage','sampling_period_ms','end_ms','releases'})
+            self.assertEqual(report['utility']['control_no_output']['answered_query_coverage'],0)
+            self.assertEqual(report['utility']['control_exact_count']['answered_query_coverage'],1)
+
     def test_real_study_is_public_only_grouped_deterministic_and_exclusive(self):
         with tempfile.TemporaryDirectory(prefix='ump-privacy-study-test-') as temporary:
             directory=Path(temporary)

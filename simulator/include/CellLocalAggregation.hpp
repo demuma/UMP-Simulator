@@ -17,7 +17,12 @@ struct CellLocalWindow {
 // Independent cell windows over one immutable source history. Parent takeover is
 // possible only for an unpublished, common-start descendant frontier. A sink
 // exception retains the exact immutable proposal and blocks all later work until
-// that proposal is acknowledged by a successful retry.
+// that proposal is acknowledged by a successful retry. Automatic spatial choices
+// are planned for the complete endpoint before disclosure: nearest passing rescues
+// stay fine unless another failed branch needs a containing parent. The per-endpoint
+// reconstructable ancestor assessments are bounded by spatial.maxEvaluations. A sibling hold
+// requires a common-start parent with feasible geometry/time bounds, not merely
+// another failure in the same coarse quadrant; future support is never promised.
 class CellLocalAggregation {
 public:
     using Sink = AdaptiveAggregation::Sink;

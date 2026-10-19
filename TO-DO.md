@@ -1,6 +1,6 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-19. Current priority: evaluate utility and policy fulfilment, then prepare reproducible evidence for October 25. October 18 remains a historical milestone.**
+**Status: 2026-10-19. Current priority: empirical privacy after verified coordination refinement; prepare reproducible evidence for October 25. October 18 remains a historical milestone.**
 
 This is the central task backlog. README describes current behavior; this file tracks
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
@@ -18,9 +18,11 @@ pass; 14 coordination cases and 120 seeded stress scenarios also pass ASan/UBSan
 A complete 120-s headless run passes independent auditing of 160415 terminal domains.
 The paired common/local effectiveness study is complete: 270 audited replays and 120
 scientific repeats. It finds benefits under regional constraints and clear mixed-density
-losses, plus concrete hold/publication counterexamples. Next: targeted regressions and
-coordination improvements, then diagnostic-volume optimization. See the linked
-coordination test report and [study results](docs/COORDINATION_STUDY_2026-10-19.md).
+losses, plus concrete hold/publication counterexamples. A subsequent endpoint-planning
+refinement now closes those examples and is verified on the identical matrix; all 210
+untouched references match. Mixed-density SF retention matches common, TF differs by
+-0.0732 pp on average. The user now prioritizes the [empirical privacy comparison](docs/PRIVACY_COORDINATION_STUDY_2026-10-19.md).
+See the [refinement report](docs/COORDINATION_REFINEMENT_2026-10-19.md) for accuracy trade-offs.
 
 ## 1. Status and priorities
 
@@ -417,6 +419,28 @@ The [question register](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md),
 - [ ] Choose expanded EP04 replication and uncertainty scope from pilot variability.
 
 
+### E02 coordination follow-through — current privacy focus
+
+- [x] Freeze the protected unit/secret/observer: whole four-second source contribution,
+  uncertain synthetic backgrounds and identical 25%/100% exact candidate knowledge.
+- [x] Extend the runner to nine explicit common/local mechanisms and two controls, with
+  immutable protocol, frozen executable, policy hashes, independent per-config audits,
+  paired AUC contrasts and matched-query utility support.
+- [x] Correct local public-feature matching: temporal overlap alone cannot stop the search;
+  require actual spatial containment. Keep private diagnostics out of attack features.
+- [x] Generate 184 independent paired realizations with seed 20261020: 64 train, 40
+  calibration, 80 held-out test; preserve grouped scenarios and clone/provenance checks.
+- [x] Complete the fixed 3312-replay / 44-model comparison: all independent audits pass,
+  all models converge, four deterministic repeats pass. Report held-out TPR/FPR, AUC,
+  paired conditional uncertainty, controls, availability/accuracy and failure cases.
+- [ ] Prioritize the newly declared privacy follow-up over further coordinator tuning:
+  preserve current assessment data; test longer/noisy auxiliary traces, shifted populations,
+  stronger attacks and calibration based only on observable context.
+- [ ] Design a new independent follow-up for longer horizons, noisy auxiliary knowledge,
+  shifted backgrounds and a stronger attack family after reading the fixed report.
+  Keep the current held-out set for assessment; do not tune against its outcomes.
+- [ ] Treat sensitive-attribute inference and formal k/l/t/DP mappings as separate contracts.
+
 ### N01 — Canonical scientific terminology and notation — implemented reference
 
 - [x] Define the authoritative English glossary, symbols, units and code mapping in
@@ -431,9 +455,11 @@ The [question register](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md),
 - [ ] Extend this reference first whenever a new metric, sensor capability, independent
   cell-window model, privacy representation or publication model is adopted.
 
-**Execution priority updated, 2026-10-19:** EP01 and the first synthetic E02 path are
-implemented. Next: the targeted coordination gap, controlled regional-policy fixture and
-its regional utility queries. Rich environment
+**Execution priority updated again, 2026-10-19:** EP01, the first synthetic E02 path,
+cell-local coordination and targeted refinement are implemented. The user now prioritizes
+empirical privacy: finish the predeclared common/local source-membership comparison and
+interpret attack/utility trade-offs before more controller optimization. Controlled
+functional-region scenarios and regional utility extensions follow. Rich environment
 import, destination-demand processes, global/local motion planning and avoidance remain
 later X04/X03/X05 work. A demonstrated aggregation limitation may justify targeted
 cell-local coordination or A07 before increasing environment realism.
@@ -809,10 +835,13 @@ future common-boundary handoffs and scoped publication. Comparative effectivenes
   six analytical cases + 24 independent realizations, nine configurations, 270 audited
   replays and 120 exact repeats. Record all references, two query scales, regional
   retention, exact contribution age and matched-query MAE.
-- [ ] **P1 — Evidence-led coordination:** add regressions for illegal-parent sibling holds
-  and the verified early-publication barrier (parent 14 versus descendant 56). Restrict
-  holds to concrete policy-feasible candidates; explain mixed-density retention losses
-  with distinct publication/private-retirement/history/deadline causes before optimizing.
+- [x] Add regressions for illegal-parent holds and the early-publication barrier (parent
+  14 versus descendant 56); plan competing nearest rescues before output and restrict
+  holds to feasible common-start ancestor opportunities. Seven focused cases plus
+  240 stress cases, fresh ASan/UBSan and same-input 30-case comparison pass.
+- [ ] Keep further coordination optimization behind the current privacy milestone. Explain
+  remaining losses with distinct publication/private-retirement/history/deadline causes;
+  do not interpret the current heuristic as a globally optimal scheduler.
 - [ ] Extend whole-domain feasibility enumeration to a justified asynchronous reference class.
 - [ ] Add a persistent renderer mosaic of latest decisions from every local domain.
 - [ ] Implement E05 precomputed statistic caches separately from ownership/coordination holds.
@@ -1552,3 +1581,19 @@ findings, all nine references, the publication-overlap witness, formulas and fig
 [the study report](docs/COORDINATION_STUDY_2026-10-19.md). All 31 CTest suites and 179 Python methods pass; the English study test report and
 canonical notation 1.2 are updated. The measured baseline now precedes
 further coordinator changes; realistic maps and precomputed ancestor caches remain later work.
+
+## Coordination refinement and current privacy focus — later October 19
+
+Endpoint planning and concrete feasible holds close the proven local coordination
+counterexamples. All 210 untouched references match; the revised 30-case study passes
+270 audits and 120 repeats. On the original mixed-density families local SF retention
+matches common; TF differs by -0.0732 pp on average, with explicit accuracy trade-offs.
+
+The user then prioritized privacy. The fixed 184-realization source-membership study
+completes 3312 audits, four repeats and 44 converged attack models. Full-trace/31-feature
+SF AUC is 0.65609 common versus 0.61969 local; its paired conditional interval excludes
+zero, while the TF interval includes zero. Local utility is slightly lower on this
+separate population; residual membership signal, scenario dependence and realized FPR
+above the nominal calibration cap remain. Do not claim general protection or universal
+advantage. The new independent attack/noisy-knowledge/shift protocol is the next priority;
+formal privacy and sensitive-attribute definitions remain separate research contracts.

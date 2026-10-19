@@ -291,3 +291,19 @@ coverage/history and budgets as separate causes. A utility regret reference must
 feasible schedules with/without a chosen commit under the same prior public prefix and
 bounds; overlapping ancestor alternatives cannot simply be summed. The recorded actual
 witness is an explanatory example, not an aggregate regret estimate.
+
+## Refined controller and privacy assessment — later October 19
+
+The endpoint planner and feasible-hold correction are implemented and verified against
+the identical saved matrix, including 210 unchanged reference outputs. See [the measured
+refinement](COORDINATION_REFINEMENT_2026-10-19.md) for retention/coverage improvements and
+matched-accuracy costs. The original v1 evidence remains unchanged.
+
+The user then selected privacy as the active priority. The new [184-realization assessment](PRIVACY_COORDINATION_STUDY_2026-10-19.md)
+finishes 3312 independent audits and 44 converged source-membership attacks. Full-trace
+SF AUC decreases for the declared local pipeline, but residual signal, small utility
+losses, scenario reversals and calibration/feature limitations remain. The TF paired
+interval includes zero. These are bounded empirical results, not formal privacy or
+universal superiority. Next: a newly predeclared independent longer/noisy-knowledge,
+shifted-background and stronger-attack experiment. Preserve the present test set rather
+than tuning new features or thresholds against it.

@@ -167,6 +167,144 @@ void independentWindowsFollowRegionalPolicies() {
         "Independent cells did not use different legal aggregation intervals");
     f.finish(500); audit(f.outputs,f.raw,500,true);
 }
+// A passing child must not inherit a neighbouring failure's waiting time when
+// every shared parent violates a policy bound. This is the hand-checkable causal
+// case from the frozen coordination study, rather than an aggregate winner test.
+void anIllegalParentCannotDelayAPassingSibling() {
+    for (const auto strategy : {AdaptationStrategy::TemporalFirst, AdaptationStrategy::SpatialFirst}) {
+        auto config=settings();
+        Fixture f(config,policy(config,2,10),{strategy,100,800,32},{2,4096});
+        for (int time : {100,200}) f.sample(time,{f.observation("valid-A",192),
+            f.observation("valid-B",192),f.observation("singleton",193),
+            f.observation("independent-A",208),f.observation("independent-B",208)});
+        const auto* valid=find(f.outputs,192,0,200);
+        const auto* independent=find(f.outputs,208,0,200);
+        require(valid && independent && valid->selectedCells==1 && independent->selectedCells==1,
+            "An infeasible shared parent delayed a passing child or an independent merge group");
+        require(valid->candidate.counts.observationContributions==2,
+            "A timely valid-child release included the excluded endpoint");
+        bool singletonPending=false;
+        for (const auto& window : f.engine.windows()) if (window.cell.id==193)
+            singletonPending=window.startMs==0 && window.nextEndMs>200;
+        require(singletonPending,"Releasing a passing sibling silently discarded an unresolved child");
+        for (const auto& output : f.outputs) if (output.selectedCells)
+            require(output.coordinationCell->width<=10,
+                "A hold repair bypassed the configured maximum cell size");
+        f.finish(400); auditFrontier(f.engine,config.coverage); audit(f.outputs,f.raw,400,true);
+    }
+}
+
+void sameEndpointPlanningProtectsNestedAndIndependentRescues() {
+    auto config=settings(4);
+    Fixture f(config,policy(config,2,40),{AdaptationStrategy::TemporalFirst,100,800,32},{1,4096});
+    // In each 40-m quadrant the first two identities can already use a 20-m
+    // parent. The isolated third needs the full 40-m parent at this same endpoint.
+    // Publishing the smaller merge first would irreversibly close that option.
+    for (int time : {100,200}) f.sample(time,{f.observation("west-A",768),
+        f.observation("west-B",772),f.observation("west-C",806),
+        f.observation("east-A",896),f.observation("east-B",900),f.observation("east-C",934)});
+    for (int parent : {12,14}) {
+        const auto* selected=find(f.outputs,parent,0,200);
+        require(selected && selected->selectedCells==1
+            && selected->candidate.counts.distinctContributors==3
+            && selected->candidate.counts.observationContributions==3,
+            "A same-endpoint smaller publication blocked a broader valid rescue");
+    }
+    require(!find(f.outputs,48,0,200) && !find(f.outputs,56,0,200),
+        "Nested rescue planning emitted an overlapping descendant before its parent");
+    auditFrontier(f.engine,config.coverage);
+    f.finish(400); audit(f.outputs,f.raw,400,true);
+}
+
+void independentNearestRescuesPreserveTheirFinerResolution() {
+    auto config=settings(4);
+    Fixture f(config,policy(config,2,40),{AdaptationStrategy::TemporalFirst,100,800,32},{1,4096});
+    for (int time : {100,200}) f.sample(time,{f.observation("A",896),f.observation("B",900),
+        f.observation("C",928),f.observation("D",932)});
+    const auto* north=find(f.outputs,56,0,200);
+    const auto* south=find(f.outputs,58,0,200);
+    require(north && south && north->selectedCells==1 && south->selectedCells==1,
+        "Two disjoint nearest rescue groups were replaced by unnecessary broader aggregation");
+    require(!find(f.outputs,14,0,200),
+        "A passing ancestor displaced disjoint finer rescues without rescuing additional failed support");
+    f.finish(400); auditFrontier(f.engine,config.coverage); audit(f.outputs,f.raw,400,true);
+}
+
+void aBroaderRescueCannotBypassItsSpatialPolicy() {
+    auto config=settings(4);
+    Fixture f(config,policy(config,2,20),{AdaptationStrategy::TemporalFirst,100,800,32},{1,4096});
+    for (int time : {100,200}) f.sample(time,{f.observation("A",896),f.observation("B",900),
+        f.observation("isolated",934)});
+    const auto* allowed=find(f.outputs,56,0,200);
+    require(allowed && allowed->selectedCells==1 && allowed->candidate.counts.distinctContributors==2,
+        "An illegal broader rescue prevented its policy-valid nearest subgroup from publishing");
+    require(!find(f.outputs,14,0,200),"A nested rescue exceeded its 20-m policy size cap");
+    f.finish(400); auditFrontier(f.engine,config.coverage); audit(f.outputs,f.raw,400,true);
+}
+
+void endpointPlanningPreservesTheDeclaredActionPriority() {
+    for (const auto strategy : {AdaptationStrategy::TemporalFirst, AdaptationStrategy::SpatialFirst}) {
+        auto config=settings();
+        Fixture f(config,policy(config,2,40),{strategy,100,800,32},{2,4096});
+        for (int time : {100,200}) f.sample(time,{f.observation("A",192),f.observation("B",193)});
+        if (strategy==AdaptationStrategy::TemporalFirst) {
+            const auto* parent=find(f.outputs,48,0,200);
+            require(parent && parent->selectedCells==1,
+                "Temporal First failed to preserve time through an immediately feasible spatial rescue");
+        } else {
+            require(!find(f.outputs,48,0,200),
+                "Spatial First coarsened before its legal temporal extension was exhausted");
+            f.sample(300,{f.observation("A2",192),f.observation("B2",193)});
+            f.sample(400,{f.observation("A2",192),f.observation("B2",193)});
+            const auto* left=find(f.outputs,192,0,400);
+            const auto* right=find(f.outputs,193,0,400);
+            require(left && right && left->selectedCells==1 && right->selectedCells==1,
+                "Spatial First failed to preserve fine cells when temporal support became sufficient");
+            require(!find(f.outputs,48,0,400),
+                "Spatial First used a parent despite both finer cells independently passing");
+        }
+        f.finish(500); auditFrontier(f.engine,config.coverage); audit(f.outputs,f.raw,500,true);
+    }
+}
+
+void aRescueCannotBorrowIdentitiesFromItsExcludedEndpoint() {
+    auto config=settings();
+    Fixture f(config,policy(config,2,40),{AdaptationStrategy::TemporalFirst,100,800,32},{1,4096});
+    f.sample(100,{f.observation("original",192)});
+    f.sample(200,{f.observation("arrives-at-endpoint",192)});
+    for (const auto& output : f.outputs)
+        require(!output.selectedCells,"A selected interval borrowed an identity from its excluded endpoint");
+    f.sample(300,{f.observation("not-yet-in-prefix",192)});
+    const auto* selected=find(f.outputs,192,0,300);
+    require(selected && selected->selectedCells==1
+        && selected->candidate.counts.distinctContributors==2
+        && selected->candidate.counts.observationContributions==2,
+        "The next legal interval lost exact support or borrowed a future identity");
+    f.finish(400); auditFrontier(f.engine,config.coverage); audit(f.outputs,f.raw,400,true);
+}
+
+void boundedEndpointSearchFailsBeforeAnyDisclosure() {
+    auto config=settings(4);
+    Fixture f(config,policy(config,2,40),{AdaptationStrategy::TemporalFirst,100,800,32},{1,1});
+    f.sample(100,{f.observation("A",896),f.observation("B",900),f.observation("C",934)});
+    f.sample(200,{f.observation("A",896),f.observation("B",900),f.observation("C",934)},false);
+    // One ancestor assessment cannot establish this two-level rescue. The bounded
+    // planner must fail explicitly before disclosing a tempting smaller release.
+    bool exhausted=false;
+    try { f.engine.advance(200,f.history); }
+    catch (const std::length_error&) { exhausted=true; }
+    require(exhausted,"A bounded endpoint search ignored its spatial proposal limit");
+    require(f.outputs.empty() && f.engine.debugState().completedWindows==0,
+        "An exhausted endpoint search disclosed or retired a partial candidate set");
+    for (const auto& window : f.engine.windows())
+        require(window.startMs==0,"Budget exhaustion consumed a private interval");
+    auditFrontier(f.engine,config.coverage);
+    const auto beforeRetry=state(f.engine);
+    rejects([&] { f.engine.advance(200,f.history); });
+    require(f.outputs.empty() && state(f.engine)==beforeRetry,
+        "Retrying an exhausted bounded search changed support or evaluation progress");
+}
+
 void mixedDepthTakeoverIncludesEmptySiblings() {
     auto config=settings(4);
     Fixture f(config,policy(config,3,40));
@@ -484,7 +622,14 @@ void failedSinkPreservesExactTakeoverAndRetry() {
 }
 int main() {
     try {
-        independentWindowsFollowRegionalPolicies(); mixedDepthTakeoverIncludesEmptySiblings();
+        independentWindowsFollowRegionalPolicies(); anIllegalParentCannotDelayAPassingSibling();
+        sameEndpointPlanningProtectsNestedAndIndependentRescues();
+        independentNearestRescuesPreserveTheirFinerResolution();
+        aBroaderRescueCannotBypassItsSpatialPolicy();
+        endpointPlanningPreservesTheDeclaredActionPriority();
+        aRescueCannotBorrowIdentitiesFromItsExcludedEndpoint();
+        boundedEndpointSearchFailsBeforeAnyDisclosure();
+        mixedDepthTakeoverIncludesEmptySiblings();
         unequalPrivateEndpointsPermitPrefixTakeover(); alreadyPublishedSiblingBlocksHistoricalTakeover();
         incompatiblePoliciesAndUnavailableHistoryAreAtomic();
         futureHandoffResolvesPrefixesBeforeCommonParentStart();

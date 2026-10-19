@@ -1,6 +1,6 @@
 # Terminology, notation and mathematical contract
 
-Version 1.2 — 2026-10-19. This is the project's canonical terminology for the presentation,
+Version 1.3 — 2026-10-19. This is the project's canonical terminology for the presentation,
 paper, dissertation and new documentation. It describes the implemented baseline and marks
 future extensions explicitly. Earlier reviews retain historical/local notation; use this
 reference when translating them into publication text. Code identifiers are mapped below;
@@ -742,3 +742,29 @@ Actual contracts and formulas map to `occupancy.summarize_region_retention`,
 `run_coordination_study.matched_errors`. See [the study](COORDINATION_STUDY_2026-10-19.md)
 for the two fixed query scales, full/interior boundaries, defined sample counts,
 retained-set age conditioning and the limits of the synthetic evidence.
+
+
+## 21. Causal endpoint rescue cut
+
+For one current closed endpoint, freeze the unresolved owner assessments and effective
+policies before any release. For each nonempty failed owner f, let r(f) be its nearest
+passing proper ancestor with compatible common unpublished support and a permitted
+spatial action. Owners without such an ancestor contribute no proposal. Spatial First
+retains temporal priority until the candidate's deadline pressure permits fallback.
+
+$$
+\mathcal A=\{r(f):r(f)\ \text{exists}\},\qquad
+\mathcal P=\{C\in\mathcal A:\nexists C'\in\mathcal A\ \text{with}\ C\subsetneq C'\}.
+$$
+
+Data-quadtree cells are disjoint or nested. Therefore two different members of P cannot
+overlap: otherwise one would be a strict subset of the other and would not belong to P.
+This proves the planned cut's spatial nonoverlap at that endpoint, assuming the existing
+quadtree geometry contract. It does not prove asynchronous completeness, minimum error,
+maximum retained support over future intervals, or privacy. Disjoint finer rescues remain
+fine; a larger passing ancestor is not proposed solely because it passes.
+
+Each accepted cell still requires complete source coverage, exact metric recomputation,
+all effective requirements and an unreused space-time domain. Holds require an actual
+compatible ancestor with possible future geometry/time bounds; future passing observations
+are not assumed. See [the refined implementation and experiments](COORDINATION_REFINEMENT_2026-10-19.md).

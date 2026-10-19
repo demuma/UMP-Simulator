@@ -4,6 +4,12 @@ Implemented: 2026-10-19. This is the first complete **controlled synthetic evalu
 path**, not a formal privacy guarantee or a validated real-world traffic model.
 The [test report](TEST_REPORT_2026-10-19.md) records actual verification and pilot results.
 
+**Coordination extension:** the opt-in `--coordination-study` now compares nine explicit
+common/local configurations plus two controls, with a frozen executable/protocol and
+same-priority paired attack/utility contrasts. Local transcript feature extraction
+requires both spatial and temporal containment. The [predeclared 184-realization study](PRIVACY_COORDINATION_STUDY_2026-10-19.md)
+records scope, actual execution and results separately from the original seven-mode pilot.
+
 ## What the implementation delivers
 
 1. An independent oracle recomputes release correctness from raw frozen observations.
@@ -172,10 +178,11 @@ scientific results and `attack-summary.csv` for the flat attack table.
 
 ## Remaining boundaries and next work
 
-Common-window temporal coordination and current whole-sibling suppression remain the
-algorithm baseline. Independent cell-local clocks, A07 partial-child rescue, multiple
-visible application views, proactive caches, physical sensor uncertainty and richer
-publication models are separate extensions. The tiny oracle can demonstrate a coordination
+Common-window coordination remains the default. Independent cell-local clocks and
+bounded partial rescue are now implemented and compared in the opt-in nine-configuration
+study; they are not an asynchronous optimality reference. Multiple visible application
+views, proactive caches, physical sensor uncertainty and richer publication models remain
+separate extensions. The tiny oracle can demonstrate a coordination
 loss without classifying it as a defect against the current model.
 
 The empirical attacker is transparent and bounded; stronger attacks may succeed. Sensitive

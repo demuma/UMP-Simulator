@@ -62,6 +62,28 @@ class PublicBoundaryTests(unittest.TestCase):
         first["releases"][0]["cells"][0]["mean_sample_occupancy"] = 999
         self.assertEqual(left["releases"][0]["cells"][0]["mean_sample_occupancy"], 2)
 
+    def test_local_scopes_with_independent_windows_use_only_public_support(self):
+        value=private_result()
+        left=value['releases'][0]
+        left['coordination_cell']={key:left['cells'][0][key] for key in
+                                   ('cell_id','depth','x','y','width','height')}
+        right=deepcopy(left)
+        right.update(release_id='private-scope',start_ms=100,end_ms=500,sealed_at_ms=500)
+        right['cells'][0].update(cell_id=13,x=40)
+        right['coordination_cell'].update(cell_id=13,x=40)
+        value['releases'].append(right)
+        public=export_public(value)
+        self.assertEqual(len(public['releases']),2)
+        self.assertNotIn('coordination_cell',public['releases'][0])
+        west=feature_dict(public,[point(time=100)])
+        east=feature_dict(public,[point(time=200,x=45,cell_id=52)])
+        self.assertEqual(west['target_matched_release_age_mean_ms'],400)
+        self.assertEqual(east['target_matched_release_age_mean_ms'],300)
+        # Future/absent support remains unknown; no private retirement becomes zero.
+        self.assertEqual(feature_dict(public,[point(time=500)])['target_cell_matched_fraction'],0)
+        value['windows']=[{'suppressed':True,'target_id':'private','observed_empty':True}]
+        self.assertEqual(public,export_public(value))
+
     def test_unknown_public_channel_rejected(self):
         for target in ("release", "cell"):
             value = private_result()

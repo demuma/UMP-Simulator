@@ -17,6 +17,7 @@ import json
 import math
 from pathlib import Path
 import random
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -27,6 +28,7 @@ from occupancy import evaluate
 from oracle import validate_result
 from privacy_dataset import target_knowledge, validate_dataset
 from run_comparison import VARIANTS, digest, git_state, run_variant, scientific_result, write_json
+from run_coordination_study import STUDY_VARIANTS, effective_policy, matched_errors
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTROLS = ('control_exact_count', 'control_no_output')
@@ -217,6 +219,8 @@ def utility_rollup(rows):
     error = math.fsum((r['occupancy_mae'] or 0)*r['scored_queries'] for r in rows)
     common = sum(r.get('common_scored_queries',0) for r in rows)
     common_error = math.fsum((r.get('common_support_mae') or 0)*r.get('common_scored_queries',0) for r in rows)
+    paired_common = sum(r.get('paired_scored_queries',0) for r in rows)
+    paired_error = math.fsum((r.get('paired_support_mae') or 0)*r.get('paired_scored_queries',0) for r in rows)
     inputs = sum(r['input_contributions'] for r in rows)
     released = sum(r['released_contributions'] for r in rows)
     ages = [age for r in rows for age in r['release_ages_ms']]
@@ -226,6 +230,7 @@ def utility_rollup(rows):
         contribution_retention=released/inputs if inputs else None,
         input_contributions=inputs, released_contributions=released,
         common_scored_queries=common, common_support_mae=common_error/common if common else None,
+        paired_scored_queries=paired_common, paired_support_mae=paired_error/paired_common if paired_common else None,
         mean_release_age_ms=math.fsum(ages)/len(ages) if ages else None,
         p95_release_age_ms=quantile(ages,.95), release_count=len(ages),
         weighting='Pooled equal-weight fixed queries/contributions; one age weight per release',
@@ -237,8 +242,10 @@ def stable_seed(*parts):
 
 
 def run_study(dataset, output, binary, *, knowledge_fractions=(.25,1.0), target_fpr=.1,
-              bootstrap_repeats=200):
+              bootstrap_repeats=200, coordination_study=False):
     """Run real replay, independent checks, public features and held-out attacks."""
+    if not isinstance(coordination_study, bool):
+        raise ValueError('coordination_study must be a boolean')
     manifest, policy_path = load_dataset(dataset)
     config = read_json(policy_path)
     fractions = tuple(knowledge_fractions)
@@ -259,52 +266,105 @@ def run_study(dataset, output, binary, *, knowledge_fractions=(.25,1.0), target_
         raise ValueError('Study output and source dataset must be separate directories')
     # Exclusive creation: evidence is never overwritten.
     output.mkdir(parents=True,exist_ok=False,mode=0o700)
-    for subdirectory in ('raw','public','models'):
+    source_binary = binary
+    frozen_binary = output/'AggregationReplay.frozen'
+    shutil.copy2(source_binary,frozen_binary)
+    frozen_binary.chmod(0o500)
+    if digest(source_binary) != digest(frozen_binary):
+        raise ValueError('Replay executable changed while freezing it')
+    binary = frozen_binary
+    for subdirectory in ('raw','public','models','policies'):
         (output/subdirectory).mkdir(mode=0o700)
+    variant_specs = list(STUDY_VARIANTS) if coordination_study else [
+        (*variant, 'common_window') for variant in VARIANTS]
+    configs, policy_paths = {}, {}
+    for variant in variant_specs:
+        name = variant[0]
+        configs[name] = effective_policy(config, variant) if coordination_study else config
+        policy_paths[name] = output/'policies'/(name+'.json') if coordination_study else policy_path
+        if coordination_study:
+            write_json(policy_paths[name], configs[name])
+    source_files = sorted((ROOT/'tools/evaluation').glob('*.py'))
+    source_files += sorted((ROOT/'simulator/src').glob('*.cpp'))
+    source_files += sorted((ROOT/'simulator/include').glob('*.hpp'))
+    source_files += sorted((ROOT/'simulator/include').glob('*.tpp'))
+    source_files += [ROOT/'simulator/tools/AggregationReplay.cpp',ROOT/'simulator/CMakeLists.txt']
     provenance = dict(schema='ump.privacy-study-manifest.v1', status='running',
         classification='private_research_bundle', created_utc=datetime.now(timezone.utc).isoformat(),
         dataset=str(dataset), dataset_manifest_sha256=digest(dataset/'manifest.json'),
-        policy_sha256=digest(policy_path), binary_sha256=digest(binary), git=git_state(ROOT),
+        policy_sha256=digest(policy_path), binary_sha256=digest(binary), source_binary=str(source_binary),
+        frozen_binary='AggregationReplay.frozen', git=git_state(ROOT),
         python=sys.version, knowledge_fractions=fractions, calibration_target_fpr=target_fpr,
+        coordination_study=coordination_study, variants=[list(spec) for spec in variant_specs],
+        effective_policy_sha256={name:digest(path) for name,path in policy_paths.items()},
+        attack_protocol=dict(classifier='L2 logistic regression', l2=.1, max_iterations=500, tolerance=1e-8,
+            feature_sets=['counts_availability','counts_geometry_time'],
+            fit='Training groups only; feature scaling fitted only on training rows',
+            calibration='Separate calibration groups, fixed FPR target; no test-set threshold selection',
+            uncertainty='Scenario-stratified paired source-group bootstrap, frozen model and threshold',
+            controls=list(CONTROLS), primary_local_comparison='AUC local minus common for each identical priority'),
         bootstrap_repeats=bootstrap_repeats, split_groups=dict(Counter(c['split'] for c in manifest['cases'])),
-        source_sha256={str(p.relative_to(ROOT)):digest(p) for p in sorted((ROOT/'tools/evaluation').glob('*.py'))},
+        source_sha256={str(p.relative_to(ROOT)):digest(p) for p in source_files},
         observer='One immutable application stream; public fields and candidate partial trace only',
         secret='Source-contribution membership; not physical presence',
         utility_population='Included source contributors',
         guarantees='Empirical scoped synthetic study; no k-anonymity, differential privacy or universal guarantee')
+    # This immutable protocol is written before any mechanism sees an IN/OUT pair.
+    write_json(output/'dataset-manifest.json',manifest)
+    write_json(output/'source-policy.json',config)
+    protocol = dict(provenance, schema='ump.privacy-study-protocol.v1',status='predeclared',
+                    split_scenarios={split:dict(Counter(c['scenario'] for c in manifest['cases'] if c['split']==split))
+                                     for split in ('train','calibration','test')},
+                    input_contract='Exact IN/OUT source contribution neighbours; all variants share the same paired groups',
+                    utility_queries=dict(cell_side_m=10,window_ms=1000,availability='Full support or unknown',
+                        common_error='Both all-mechanism and pair-specific identical scored-query support'))
+    write_json(output/'protocol.json',protocol)
+    provenance['protocol_sha256']=digest(output/'protocol.json')
     write_json(output/'manifest.json',provenance)
     feature_rows = defaultdict(list)
     utility_rows = defaultdict(list)
     oracle_records = []
     command_records = []
-    variant_specs = [(name,mode,depth,window) for name,mode,depth,window in VARIANTS]
+    deterministic_repeats = []
     for case_number, case in enumerate(manifest['cases'],1):
-        trace = read_json(relative_file(dataset,case['target_trace']))
+        trace_path = relative_file(dataset,case['target_trace'])
+        if digest(trace_path) != case['sha256']['target_trace']:
+            raise ValueError('Candidate knowledge source changed after dataset validation')
+        trace = read_json(trace_path)
         knowledge = {fraction:target_knowledge(trace,fraction,stable_seed(manifest['seed'],case['group_id'],fraction))
                      for fraction in fractions}
         for world,label in (('present',1),('absent',0)):
             source_path = relative_file(dataset,case[world+'_input'])
+            expected_source_digest = case['sha256'][world+'_input']
+            if digest(source_path) != expected_source_digest:
+                raise ValueError('Frozen source input changed after dataset validation')
             replay = read_json(source_path)
             results, utilities = {}, {}
-            for name,mode,depth,window in variant_specs:
+            for name,mode,depth,window,coordination in variant_specs:
                 artifact = hashlib.sha256(f"{case['case_id']}:{world}:{name}".encode()).hexdigest()[:24]
                 destination = output/'raw'/(artifact+'.json')
-                result,command = run_variant(binary,source_path,policy_path,destination,mode,depth,window)
-                audit = validate_result(replay,config,result)
+                effective_path = policy_paths[name]
+                result,command = run_variant(binary,source_path,effective_path,destination,mode,depth,window)
+                audit = validate_result(replay,configs[name],result)
                 oracle_records.append(dict(case_id=case['case_id'],world=world,variant=name,**audit))
                 if not audit['valid']:
                     write_json(output/'oracle-failure.json',oracle_records[-1])
                     raise ValueError(f'Independent oracle rejected {case["case_id"]}/{world}/{name}')
                 command_records.append(dict(case_id=case['case_id'],world=world,variant=name,
-                    command=command,input_sha256=digest(source_path),result_sha256=digest(destination)))
+                    command=command,input_sha256=digest(source_path),policy_sha256=digest(effective_path),
+                    coordination=coordination,result_sha256=digest(destination)))
                 results[name]=result
-                # Repeat one actual execution to check deterministic scientific output.
-                if case_number==1 and world=='present' and name=='spatial_first':
+                # Repeat each adaptive coordination/priority combination in the opt-in study.
+                repeat = mode in ('temporal_first','spatial_first') if coordination_study else name=='spatial_first'
+                if case_number==1 and world=='present' and repeat:
                     repeated_path=output/'raw'/'determinism-repeat.json'
-                    repeated,_=run_variant(binary,source_path,policy_path,repeated_path,mode,depth,window)
+                    repeated,_=run_variant(binary,source_path,effective_path,repeated_path,mode,depth,window)
                     if scientific_result(repeated)!=scientific_result(result):
                         raise ValueError('Scientific replay is not deterministic')
                     repeated_path.unlink()
+                    deterministic_repeats.append(name)
+            if digest(source_path) != expected_source_digest:
+                raise ValueError('Source input changed during paired mechanism execution')
             for name in CONTROLS:
                 results[name]=control_result(replay,name)
             for name,result in results.items():
@@ -321,6 +381,13 @@ def run_study(dataset, output, binary, *, knowledge_fractions=(.25,1.0), target_
             common=[i for i in range(len(next(iter(utilities.values()))['queries']))
                     if all(utilities[name]['queries'][i]['absolute_error'] is not None
                            for name,*_ in variant_specs)]
+            paired_support = {}
+            if coordination_study:
+                for priority in ('temporal_first','spatial_first'):
+                    common_name, local_name = 'common_'+priority, 'local_'+priority
+                    paired = matched_errors(utilities[common_name],utilities[local_name])
+                    paired_support[common_name] = (paired['scored_queries'],paired['common_mae'])
+                    paired_support[local_name] = (paired['scored_queries'],paired['local_mae'])
             for name,utility in utilities.items():
                 result=results[name]
                 row=dict(case_id=case['case_id'],group_id=case['group_id'],split=case['split'],
@@ -328,10 +395,12 @@ def run_study(dataset, output, binary, *, knowledge_fractions=(.25,1.0), target_
                     input_contributions=sum(len(b['observations']) for b in replay['batches']),
                     released_contributions=sum(c['observation_contributions'] for r in result['releases'] for c in r['cells']),
                     release_ages_ms=[r['sealed_at_ms']-r['start_ms'] for r in result['releases']],
+                    paired_scored_queries=paired_support.get(name,(0,None))[0],
+                    paired_support_mae=paired_support.get(name,(0,None))[1],
                     common_scored_queries=len(common),
                     common_support_mae=(math.fsum(utility['queries'][i]['absolute_error'] for i in common)/len(common)
                                         if common and name not in CONTROLS else None))
-                # Controls are not part of the seven-policy-method common-support comparison.
+                # Controls are not part of the policy-controlled common-support comparison.
                 if name in CONTROLS:
                     row['common_scored_queries']=0
                 utility_rows[name].append(row)
@@ -341,7 +410,8 @@ def run_study(dataset, output, binary, *, knowledge_fractions=(.25,1.0), target_
     for key,rows in sorted(feature_rows.items()):
         name,fraction,feature_set=key
         splits={split:[r for r in rows if r['split']==split] for split in ('train','calibration','test')}
-        model=fit_classifier([r['features'] for r in splits['train']],[r['label'] for r in splits['train']])
+        model=fit_classifier([r['features'] for r in splits['train']],[r['label'] for r in splits['train']],
+                             l2=.1,max_iterations=500,tolerance=1e-8)
         calibration_scores=predict_scores(model,[r['features'] for r in splits['calibration']])
         calibration=calibrate_threshold(calibration_scores,[r['label'] for r in splits['calibration']],target_fpr=target_fpr)
         threshold=calibration['threshold']
@@ -367,6 +437,15 @@ def run_study(dataset, output, binary, *, knowledge_fractions=(.25,1.0), target_
         baseline=('fixed_10m_400ms',record['knowledge_fraction'],record['feature_set'])
         record['paired_vs_fixed_10m_400ms']=paired_auc_difference(predictions[key],predictions[baseline],
             bootstrap_repeats,stable_seed('paired',record['knowledge_fraction'],record['feature_set']))
+    if coordination_study:
+        for record in attacks:
+            if not record['variant'].startswith('local_'):
+                continue
+            key=(record['variant'],record['knowledge_fraction'],record['feature_set'])
+            common=('common_'+record['variant'][len('local_'):],key[1],key[2])
+            record['paired_vs_common_same_priority']=paired_auc_difference(
+                predictions[key],predictions[common],bootstrap_repeats,
+                stable_seed('local-common',key[1],key[2],record['variant']))
     test_groups=[c['group_id'] for c in manifest['cases'] if c['split']=='test']
     prior_labels=[label for _ in test_groups for label in (0,1)]
     prior_calibration_labels=[label for c in manifest['cases'] if c['split']=='calibration' for label in (0,1)]
@@ -377,14 +456,17 @@ def run_study(dataset, output, binary, *, knowledge_fractions=(.25,1.0), target_
         limitations=[provenance['guarantees'],'Synthetic prescribed routes; no city-map realism claim',
             'Classifier failure is not a bound on every possible attacker',
             'Bootstrap conditions on the fitted model and calibrated threshold',
-            'Common-window algorithm baseline; no independent local windows or A07 rescue',
+            ('Common and cell-local coordination compared under identical numeric policies; no global optimality claim'
+             if coordination_study else 'Common-window algorithm baseline; no independent local windows or A07 rescue'),
             'Logical release timing only; transport/runtime channels excluded'],
         prior_only=prior_baseline,attacks=attacks,
         utility={name:utility_rollup([r for r in rows if r['split']=='test']) for name,rows in utility_rows.items()},
         utility_by_scenario={name:{scenario:utility_rollup([r for r in rows if r['split']=='test' and r['scenario']==scenario])
             for scenario in sorted({r['scenario'] for r in rows if r['split']=='test'})}
             for name,rows in utility_rows.items()},
+        coordination_study=coordination_study,
         independent_validation=dict(checks=len(oracle_records),all_valid=True,
+            deterministic_repeats=deterministic_repeats,
             released_cell_count=sum(r.get('released_cell_count',len(r.get('released_cells',[]))) for r in oracle_records),
             no_release_cases=sum(bool(r.get('no_release')) for r in oracle_records)),
         scope=dict(membership_prior=.5,reference_grid_m=10,reference_window_ms=1000,
@@ -403,6 +485,12 @@ def run_study(dataset, output, binary, *, knowledge_fractions=(.25,1.0), target_
         for r in attacks:
             writer.writerow({**{k:r[k] for k in ('variant','knowledge_fraction','feature_set','test_groups')},
                              **{k:r['test'].get(k) for k in ('roc_auc','tpr','fpr','advantage','balanced_accuracy')}})
+    if digest(binary) != provenance['binary_sha256']:
+        raise ValueError('Frozen replay executable changed during the study')
+    if digest(dataset/'manifest.json') != provenance['dataset_manifest_sha256']:
+        raise ValueError('Dataset manifest changed during the study')
+    if digest(output/'protocol.json') != provenance['protocol_sha256']:
+        raise ValueError('Predeclared protocol changed during the study')
     # Replace only our own running manifest after every final artifact exists.
     provenance['status']='complete'
     provenance['report_sha256']=digest(output/'report.json')
@@ -419,10 +507,13 @@ def main():
     parser.add_argument('--knowledge-fractions',type=float,nargs='+',default=[.25,1.0])
     parser.add_argument('--target-fpr',type=float,default=.1)
     parser.add_argument('--bootstrap-repeats',type=int,default=200)
+    parser.add_argument('--coordination-study',action='store_true',
+                        help='Nine mechanisms with explicit common/local policies and paired same-priority AUC comparisons')
     args=parser.parse_args()
     try:
         run_study(args.dataset,args.output,args.binary,knowledge_fractions=args.knowledge_fractions,
-                  target_fpr=args.target_fpr,bootstrap_repeats=args.bootstrap_repeats)
+                  target_fpr=args.target_fpr,bootstrap_repeats=args.bootstrap_repeats,
+                  coordination_study=args.coordination_study)
     except (ValueError,OSError,RuntimeError,KeyError) as error:
         parser.exit(1,f'Privacy study failed: {error}\n')
 

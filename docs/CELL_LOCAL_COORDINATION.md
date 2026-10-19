@@ -67,8 +67,11 @@ The project convention is unchanged:
 - Temporal First preserves temporal detail: attempt spatial aggregation before extending.
 - Spatial First preserves spatial detail: attempt temporal extension before spatial fallback.
 
-Passing or known-empty same-start siblings may be held privately while a sibling needs
-more evidence. The coordination domain is bounded by the configured legal ancestor extent.
+Passing or known-empty same-start siblings may be held privately only for a concrete
+compatible ancestor with feasible geometry and a possible common future interval.
+An unrelated failure under the same minimum-depth ancestor is insufficient. Invalid
+geometry, contradictory/unavailable requirements, irreparable count maxima and disjoint
+time bounds prohibit the hold. Potential future support is not a guaranteed later pass.
 Every held cell keeps its own deadline. At that deadline it must resolve locally rather
 than wait indefinitely for a slower sibling. This can close a later historical parent
 option. A coordination hold is recorded separately from a failed-cell extension.
@@ -76,6 +79,18 @@ option. A coordination hold is recorded separately from a failed-cell extension.
 This is a deterministic legal-action protocol, not a proof that the chosen output maximizes
 retention or minimizes latency. Conflicting requirements may leave no releasable candidate.
 Suppression prevents that release; it does not satisfy a mandatory availability constraint.
+
+## Endpoint planning before disclosure
+
+The refined automatic controller evaluates the current private endpoint before its
+first disclosure. Each failed owner proposes its nearest permitted passing ancestor.
+Containing proposals replace nested smaller proposals only when another failed branch
+needs that broader rescue; separate finer rescues remain separate. This prevents an
+earlier small publication from unnecessarily blocking a currently valid broader one.
+Unique reconstructable ancestor assessments have a per-endpoint spatial budget; due-owner
+temporal caps are preflighted before output. Accepted proposals are revalidated. This
+is a causal deterministic heuristic, not globally optimal scheduling. See the measured
+[refinement and before/after contract](COORDINATION_REFINEMENT_2026-10-19.md).
 
 ## Immediate parent takeover and retained suffixes
 

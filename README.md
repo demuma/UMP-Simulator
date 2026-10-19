@@ -3,8 +3,8 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
-**Status: 2026-10-19. Current work: verify the integrated AGBS aggregation pipeline
-and evaluate utility and policy fulfilment first. Shared sampling
+**Status: 2026-10-19. Current work: empirical privacy evaluation after verified cell-local
+coordination refinement, alongside utility and policy compliance. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
 bounded, nonblocking renderer consumption are implemented (S04/S01). S05 now paces
@@ -30,10 +30,18 @@ public-only calibrated empirical membership benchmark are now implemented. Contr
 synthetic results and verification are recorded in the October 19 test report. The historical
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
-**Latest measured coordination result:** the frozen 30-case comparison completed 270
-independent audits and 120 deterministic repeats. Cell-local coordination improves some
-regional-policy outcomes but loses retained support in mixed-density cases; it is not a
-universal improvement. See the [study and figures](docs/COORDINATION_STUDY_2026-10-19.md).
+**Latest measured coordination result:** the refined endpoint planner closes the proven
+hold/publication counterexamples. The same 30-case matrix passes 270 independent audits
+and 120 repeats; all 210 untouched reference outputs are identical. Mixed-density local
+retention now matches common for Spatial First and differs by only -0.0732 percentage
+points for Temporal First on average. Accuracy trade-offs remain explicit. See the
+[before/after report](docs/COORDINATION_REFINEMENT_2026-10-19.md).
+
+**Current focus — empirical privacy:** the predeclared 184-realization common/local
+source-membership study is complete: 3312 valid audits, four repeats and 44 converged
+public-only attacks. Local SF lowers this attack's pooled AUC from 0.6561 to 0.6197,
+with small availability/retention costs; residual signal and scenario dependence remain.
+[Threat model, protocol and results](docs/PRIVACY_COORDINATION_STUDY_2026-10-19.md).
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -53,6 +61,9 @@ its original external file remains unchanged.
 | [Privacy roadmap and diagnostic](docs/PRIVACY_EVALUATION.md) | Threat model, implemented first synthetic study, later extensions and the historical deterministic stress test |
 | [Empirical evaluation implementation](docs/EMPIRICAL_PRIVACY_IMPLEMENTATION.md) | Independent oracle, seeded pairs/splits, public features, classifier, controls and reproduction |
 | [October 19 test report](docs/TEST_REPORT_2026-10-19.md) | Actual regression results, independent hand cases, synthetic pilot evidence and limitations |
+| [Refinement/privacy test report](docs/REFINEMENT_PRIVACY_TEST_REPORT_2026-10-19.md) | 33 CTest suites, 196 Python methods, sanitizer checks and independent experiment validation |
+| [Coordination refinement](docs/COORDINATION_REFINEMENT_2026-10-19.md) | Endpoint planning, feasible holds, same-input before/after comparison and accuracy trade-offs |
+| [Privacy coordination study](docs/PRIVACY_COORDINATION_STUDY_2026-10-19.md) | Protected secret, 184 independent groups, common/local attacks and held-out privacy/utility findings |
 | [Cell-local coordination](docs/CELL_LOCAL_COORDINATION.md) | Independent cell windows, mixed-depth ownership, handoffs, scoped releases and configuration |
 | [Study test report](docs/COORDINATION_STUDY_TEST_REPORT_2026-10-19.md) | Measurement implementation, 31 CTest suites, 179 Python methods, provenance and independent checks |
 | [Common/local coordination study](docs/COORDINATION_STUDY_2026-10-19.md) | Frozen nine-configuration experiments, exact contribution ages, regional utility, paired results and limits |

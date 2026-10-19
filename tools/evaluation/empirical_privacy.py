@@ -242,7 +242,9 @@ def feature_vector(public: dict, knowledge: list[dict], include_geometry: bool =
                 if cell["mean_sample_occupancy"] is not None:
                     known.append(cell["mean_sample_occupancy"])
                     halves[half].append(cell["mean_sample_occupancy"])
-            break
+                # Independent local windows overlap in time but not in space.
+                # A time match without this candidate's cell cannot end the search.
+                break
     values = [
         len(releases), len(cells), _ratio(len(means), len(cells)),
         sum(cell["observation_contributions"] for cell in cells),
