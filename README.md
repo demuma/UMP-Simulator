@@ -188,7 +188,9 @@ UMP-Simulator/
 
 The original projects remain unchanged. Build artifacts and old VS Code configurations
 were excluded. Components are independently buildable; no shared library or root CMake
-superproject has been introduced. No remote has been configured.
+superproject has been introduced. The public GitHub remote is
+[demuma/UMP-Simulator](https://github.com/demuma/UMP-Simulator), with `main` tracking
+`origin/main`. Private experiment bundles and local builds remain excluded from Git.
 
 ### Git history and rollback
 

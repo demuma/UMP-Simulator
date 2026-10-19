@@ -1369,8 +1369,10 @@ Class counts alone cannot reconstruct every privacy metric.
   OpenGL. Renderer migration does not accelerate CPU aggregation automatically.
 - [ ] **X08 — Shared libraries/build (P2):** selectively reduce duplication while preserving
   independent builds. Avoid a broad infrastructure project before it is needed.
-- [ ] **X09 — Packaging/remote (P2):** retain the UMP-Simulator name; decide remote,
-  license, publication and data/asset selection separately.
+- [x] **X09 — GitHub remote:** publish the audited committed project and history to
+  `https://github.com/demuma/UMP-Simulator`; track `origin/main`, exclude private results
+  and build artifacts, preserve existing local worktree changes.
+- [ ] **X09 — Packaging (P2):** decide license and distributable asset/data selection separately.
 
 ## 13. Completed organization, audit and sensor corrections
 
