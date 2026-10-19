@@ -72,6 +72,78 @@ A future preparation limit must count relative ancestor steps, separately from a
 observation depth, legal merge extent and reserved support. Preparation can reduce repeated
 work; an unprepared allowed candidate must remain queryable from eligible retained history.
 
+## Roles, preparation triggers and resource bounds
+
+There is one CandidateBucket structure with two role values, Active and Preemptive.
+Collecting/Closed are observation-progress states, not additional bucket species or release
+approval. Leaf CellAccumulator, timestamp Bin and provisional SpatialAttempt are different
+data structures; calling all of them buckets conceals their different responsibilities.
+The actual controller's Pending interval is not a registered CandidateBucket.
+
+Every observed leaf accumulates fixed-window counts/ID support. This is ordinary input
+summarization, not preemptive preparation of every possible parent. Unobserved leaves are
+not allocated as accumulators. The selector builds occupied ancestor paths and computes
+parents only when needed. Its temporary attempt cache can survive as diagnostic output,
+but those old results are not consulted as a calculation cache at the next endpoint.
+
+For a future preparation layer, a child's temporal extension or failed release check can
+trigger an eligible parent alternative for the SAME original interval. This is an explicit
+proposed trigger, not current behavior. A normal child collecting observations alone would
+trigger preparation almost everywhere, so it is not a selective trigger. Do not recursively
+materialize every ancestor by default. Cap relative ancestor steps, candidate windows and
+maintenance work; leave on-demand reconstruction available. Exact support expiry requires
+identity unions/reference accounting rather than adding/subtracting distinct child counts.
+
+Current temporal-demo resource settings are: retention 2,000 ms, at most 32 history bins,
+100,000 retained observations, 16,000,000 ID/type string-payload bytes, and
+128 logical bucket records. The last bound concerns the optional logical-record table,
+not the number of leaves or automatically active parent aggregates. The fixed accumulator
+has a separate observation-per-window bound. Spatial proposals cap evaluated attempts at
+4,096 and temporal adaptation at 16 endpoints in that example. Budget rejection raises
+an error; automatic backpressure/degradation is not implemented.
+
+`max_identity_bytes` measures ID/type string payload length. It excludes object/vector/map/
+set allocations, geometry, duplicated fixed-window ID sets, candidates, rendering snapshots,
+publication objects and allocator overhead. It is not a whole-process RAM cap. Detailed
+output files and MongoDB storage are also outside retained-history quotas.
+
+For average observed population N, sample frequency f and retention H, retained observation
+count scales approximately as N*f*H, with endpoint and entry/exit effects. At 200 road users,
+10 Hz and 2 s this is about 4,000 observations (an inclusive retained endpoint can add another
+sample). The count is unrelated to total elapsed simulation duration once retention is full.
+Spatial sparsity avoids allocating every one of 4^D possible leaves. However, each current
+parent query scans interval observations again; many parent attempts/endpoints multiply
+work. Large-area scalability is not established by the small-domain endurance runs.
+
+At fixed depth, increasing domain side also coarsens input cells: h=L/2^D. Preserving h
+requires more depth and potentially more occupied cells/road users. Relevant open work is
+sparse spatial indexing, compact reusable identity/geometry storage, measured selective
+caches, explicit total-memory accounting and larger-workload tests. Very large domains may
+need partitioning with explicit cross-boundary aggregation/coordination semantics. Current
+depth/attempt/history/policy-node budgets are finite limits, not a scaling solution.
+
+## Existing statistics and speedup scope
+
+The existing STATS_MSG output can support performance reporting. In the tested build STATS
+is not defined (its CMake compile-definition line is commented), so the endurance reports
+used external process wall time. Existing fields need explicit scopes before scientific use:
+
+- Speedup currently divides planned maxFrames*timeStep by accumulated loop wall time.
+  Completed-step simulated duration is required for interrupted/unbounded runs.
+- Loop wall accumulation excludes final aggregation flush and other process lifecycle work;
+  it is not the same denominator as external process wall time.
+- Frame rate is simulation-step throughput, not renderer FPS. The average wall time per
+  step is not the configured numerical integration step or a tail-latency guarantee.
+- Average write buffer time is measured around preparation of the agent-frame snapshot,
+  before the actual buffer write/swap; it does not isolate queue backpressure.
+
+For the verified runs, 300/7.623626542 = 39.35135 and 600/9.382591083 = 63.94822 using
+external process wall time. Dividing rounded 7.62/9.38 values gives about39.37/63.97.
+These are valid scoped throughput numbers. Both live populations drain around110s, so they
+do not establish sustained 200-road-user speedup, per-step deadlines or timely release.
+Aggregation waiting age and process throughput are distinct quantities. R02's wall-clock
+influence on motion remains another reason to use frozen input for paired cost comparisons.
+
 ## Long runs and numerical timestep
 
 Duration, numerical integration step, sensor sampling period and aggregation-window duration

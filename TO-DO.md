@@ -629,6 +629,8 @@ and publication status belong to A03/A05, not an arbitrary history progress flag
 - [x] Implement on-demand reconstruction independently of prepared buckets. An uncached
   representable ancestor remains reconstructable when the interval is retained and closed.
 - [ ] Add one/two-level, full and selective preparation as E05 variants with measured budgets.
+  Define triggers as failed checks/temporal extension with the original interval, rather
+  than every leaf collecting normally; bound ancestor/window work and preserve on-demand fallback.
 - [x] Use exact contributor unions across space/time; do not sum unique child counts or
   repeated observations as people. Preserve A01's equal measured-sample weights, including
   measured-empty bins. Continuous-time occupancy integration is not claimed.
@@ -885,6 +887,11 @@ velocity comparisons. Keep reference data unchanged. One checked agent does not 
 - [x] Confirm 200-ms simulation steps with a 10-Hz sensor fail preflight before DB writes.
 - [x] Archive configurations, hashes, logs, recovered audit-tool issues and cleanup evidence in
   [LONG_RUN_REPORT_2026-10-19.md](docs/LONG_RUN_REPORT_2026-10-19.md).
+- [ ] Reuse and correct STATS telemetry with explicit scopes: actual completed simulated
+  duration, main-loop versus full-process wall time, flush inclusion, early-stop/unbounded
+  behavior, simulation throughput versus renderer FPS, and real queue-wait measurement.
+- [ ] Report actual logical-record counts separately from leaf accumulators, history bins
+  and queried parent attempts; string-payload limits are not a total process-memory budget.
 - [ ] Instrument individual stage/step p50/p95/p99/max, queue/backpressure, history occupancy
   and diagnostic/DB I/O before claiming end-to-end realtime or a measured memory plateau.
 - [ ] Perform a short visible renderer/demo rehearsal; headless endurance excludes GUI pacing.
