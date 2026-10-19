@@ -46,6 +46,8 @@ its original external file remains unchanged.
 | [Privacy roadmap and diagnostic](docs/PRIVACY_EVALUATION.md) | Threat model, implemented first synthetic study, later extensions and the historical deterministic stress test |
 | [Empirical evaluation implementation](docs/EMPIRICAL_PRIVACY_IMPLEMENTATION.md) | Independent oracle, seeded pairs/splits, public features, classifier, controls and reproduction |
 | [October 19 test report](docs/TEST_REPORT_2026-10-19.md) | Actual regression results, independent hand cases, synthetic pilot evidence and limitations |
+| [Bucket/history status](docs/BUCKET_IMPLEMENTATION_STATUS.md) | Actual logical APIs versus pending proactive parent preparation, history basis and presentation priorities |
+| [Endurance/timestep report](docs/LONG_RUN_REPORT_2026-10-19.md) | Real 300/600-s headless runs, numerical-step compatibility, sustained analytical load and limits |
 | [Publication coordination](docs/PUBLICATION_COORDINATION.md) | Integrated immutable MongoDB releases, private journal, retries and recovery boundaries |
 | [Live aggregation progress](docs/LIVE_AGGREGATION_PROGRESS.md) | Separate current-window checks, completed output and sensor geometry; H/G/P controls |
 | [Temporal adaptation](docs/TEMPORAL_AGGREGATION.md) | Implemented Temporal First/Spatial First, shared-history windows, deadlines and runnable example |

@@ -607,7 +607,11 @@ decisions remains A02/A03/A05 work.
 configuration, worked examples and verification. History is opt-in; the maintained config
 is unchanged. The regional example enables it. Bucket creation/extension is available via
 the manager API. A03 now performs spatial selection and variable-window reconstruction.
-Automatic prewarming and the general active/preemptive lifecycle remain open. Decision
+Automatic prewarming and the general active/preemptive lifecycle remain open.
+The actual controller does not open CandidateBucket records; it tracks a common pending
+interval and queries fine history directly. Parent/grandparent statistics are reconstructed
+on demand. [BUCKET_IMPLEMENTATION_STATUS.md](docs/BUCKET_IMPLEMENTATION_STATUS.md) is the
+precise implementation/status reference. Decision
 and publication status belong to A03/A05, not an arbitrary history progress flag.
 
 - [x] Specify retrospective parent aggregation from internal observations.
@@ -867,6 +871,25 @@ cadence checks. This is direct sensor-pipeline validation, not a complete simula
 
 **Acceptance:** documented before/after identity, position, timestamp, duplicate and interval
 velocity comparisons. Keep reference data unchanged. One checked agent does not validate all runs.
+
+### V02 — Multi-minute endurance and numerical-step compatibility — P0/P1
+
+- [x] Run actual aggregation-enabled headless simulation for 6,000 steps at 50 ms (300 s)
+  and 100 ms (600 s), preserving a 10-Hz sensor and isolated owned databases.
+- [x] Verify GT/sensor cell-time/type/geometry equality, no duplicate keys, complete coverage,
+  selected-policy/public-payload agreement, contribution totals and final journal retirement.
+- [x] Record population over time, whole-run walltime and maximum RSS; disclose that both
+  live scenes become empty around 110–114 s and do not prove sustained dense load.
+- [x] Independently audit a 600-s frozen persistent 32-road-user analytical workload through
+  both priorities: all 191,968 contributions accounted for/released and final end preserved.
+- [x] Confirm 200-ms simulation steps with a 10-Hz sensor fail preflight before DB writes.
+- [x] Archive configurations, hashes, logs, recovered audit-tool issues and cleanup evidence in
+  [LONG_RUN_REPORT_2026-10-19.md](docs/LONG_RUN_REPORT_2026-10-19.md).
+- [ ] Instrument individual stage/step p50/p95/p99/max, queue/backpressure, history occupancy
+  and diagnostic/DB I/O before claiming end-to-end realtime or a measured memory plateau.
+- [ ] Perform a short visible renderer/demo rehearsal; headless endurance excludes GUI pacing.
+- [ ] For numerical accuracy, define controlled initial states/noise and a fine-step reference;
+  current independent stochastic live runs cannot establish convergence or timestep effects.
 
 ### B01 — Compare fixed space/time baselines — P0
 
@@ -1439,3 +1462,12 @@ separate research decisions. This update changes documentation only, not executi
 - Evidence, formulas, reproduction commands, figure and limitations are in
   [TEST_REPORT_2026-10-19.md](docs/TEST_REPORT_2026-10-19.md). No general privacy guarantee,
   new live movement engine or independent local-window scheduler was introduced.
+
+## Endurance and bucket-status clarification — 2026-10-19
+
+The first evaluation milestone did not implement automatic preemptive ancestor buckets.
+Logical APIs exist; actual adaptive selection reconstructs from retained finest-cell samples.
+Two real headless runs (300 s at 50 ms;600 s at 100 ms) and one 600-s persistent analytical
+replay through both priorities passed their documented checks. Numerical 200-ms /10-Hz
+sampling is rejected. Scope and presentation-critical priorities are in the new bucket-status
+and endurance reports; full prewarming/cell-local coordination remains open.

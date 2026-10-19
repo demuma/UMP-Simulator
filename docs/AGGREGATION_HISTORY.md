@@ -15,6 +15,10 @@ An unavailable bin does not. Existing fixed-window output is preserved.
 Active and preemptive buckets are small logical records over this common history. Their key
 is cell ID/depth, start time and generation inside a run/sensor/application-scoped history.
 Each records an exclusive end, a maximum extension end, a fixed retention deadline and role.
+The logical bucket API is implemented and tested. The production adaptive controller
+currently owns one pending common interval and calls history directly; it does not
+automatically register active/preemptive records. See
+[BUCKET_IMPLEMENTATION_STATUS.md](BUCKET_IMPLEMENTATION_STATUS.md).
 No payload or cached statistics are copied per bucket. Preemptive records are alternatives,
 not publication owners; overlapping private candidates are allowed. Creating an alternative
 does not reserve any public coverage. The A03 selector performs on-demand parent search; the temporal controller reconstructs variable windows from the same history. Automatic prewarming remains disabled.
