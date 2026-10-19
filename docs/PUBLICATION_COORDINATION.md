@@ -4,6 +4,10 @@ Status: 2026-10-14. A05's first supported model, `private_final_snapshot`, is in
 into the running AGBS pipeline. This document describes implemented behavior. Other
 publication models and automatic simulator checkpoint/resume remain open.
 
+Canonical terms, symbols, units and code mappings are defined in
+[TERMINOLOGY_AND_NOTATION.md](TERMINOLOGY_AND_NOTATION.md). Aggregation is bound to
+a data cell and time interval; functional regions supply its requirements.
+
 ## Supported scope and ownership
 
 The entire sensor grid over one closed interval is one coordination domain. Spatial
@@ -148,4 +152,4 @@ ctest --test-dir simulator/build --output-on-failure
 
 See [ADAPTIVE_PUBLICATION_VALIDATION.md](ADAPTIVE_PUBLICATION_VALIDATION.md) for recorded
 whole-simulator checks. Remaining work includes safe checkpoint/resume, other publication
-models, independent regional domains, recipient composition and experimental evaluation.
+models, independently scheduled cell/merge-group domains, recipient composition and experimental evaluation.

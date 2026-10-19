@@ -9,7 +9,9 @@ to begin every listed phase. All project documentation is maintained in English.
 **Review update, 2026-10-19:** functional street/shop regions and evidence scope are recorded in
 [FUNCTIONAL_REGIONS_AND_EVIDENCE.md](docs/FUNCTIONAL_REGIONS_AND_EVIDENCE.md). The scenario,
 not the exact mockup drawing, defines the next study. Region-to-policy compilation exists;
-corridor-constrained motion and independent regional time windows do not yet exist.
+corridor-constrained motion and independent scheduling/publication of cell-local windows
+with coordinated merge groups do not yet exist. History reconstruction already supports
+different cell intervals.
 
 ## 1. Status and priorities
 
@@ -399,6 +401,20 @@ first; sensitive-attribute/privacy contracts may be clarified now, with experime
 - [ ] Choose EP04 replication and uncertainty reporting from the pilot and target precision.
 
 
+### N01 — Canonical scientific terminology and notation — implemented reference
+
+- [x] Define the authoritative English glossary, symbols, units and code mapping in
+  [TERMINOLOGY_AND_NOTATION.md](docs/TERMINOLOGY_AND_NOTATION.md).
+- [x] Correct the region/window distinction: cells and coordinated merge groups own
+  aggregation decisions; functional regions induce the applicable constraints.
+- [x] Specify trajectory phi, tree depth d, half-open cell intervals, count/union/occupancy
+  formulas, policy intersections, lifecycle terms and both preservation priorities.
+- [x] Separate support thresholds from formal k/l representation-specific definitions,
+  observation coverage from answered-query coverage and simulation age from wall time.
+- [x] Generate reusable LaTeX equations from the reference; verify freshness and syntax.
+- [ ] Extend this reference first whenever a new metric, sensor capability, independent
+  cell-window model, privacy representation or publication model is adopted.
+
 ### SC01 — Controlled functional street/shop scenario — P0 design, then implementation
 
 - [x] Review Region/PolicyTree support and corridor stubs against the intended scenario.
@@ -416,7 +432,7 @@ first; sensitive-attribute/privacy contracts may be clarified now, with experime
   adaptation priorities, with regional coverage/error/age and EP01 feasibility checks.
 - [ ] Decide the future rule for cross-functional-region cells. Existing intersected numeric
   bounds permit mixing; prohibiting boundary crossings is an additional constraint.
-- [ ] Treat independent regional windows as an explicit extension before claiming that road
+- [ ] Treat independently scheduled cell/merge-group windows as an explicit extension before claiming that road
   and entrance data simultaneously use independently chosen aggregation durations.
 
 ### E01 — Define one utility application — P0
@@ -656,7 +672,7 @@ package remains open for other models and automatic checkpoint/resume.
   committed and retired cell/interval coverage per application stream.
 - [ ] Choose a small initial coordination domain and merge-depth cap. Compare holding its
   unpublished cut with early child release that makes historical ancestors unavailable.
-- [ ] Require compatible complete temporal support for all sibling regions/descendants.
+- [ ] Require compatible complete temporal support for all sibling cells/descendant footprints.
   Query interval availability instead of waiting unconditionally for childFinished.
 - [ ] A sibling's temporal extension alone does not freeze all neighbors. Define which
   publications are held by reservations and which independent releases close merge options.
@@ -682,7 +698,7 @@ reopen coverage for a competing candidate. Disjoint release coverage is not a pr
 [SPATIAL_SELECTION.md](docs/SPATIAL_SELECTION.md) and
 [TEMPORAL_AGGREGATION.md](docs/TEMPORAL_AGGREGATION.md) describe actual behavior.
 Both preservation priorities now run through A05 using one common unpublished interval.
-Regional maxima conservatively cap that interval. Independent regional windows and
+Regional maxima conservatively cap that interval. Independently scheduled cell/merge-group windows and
 experimental effectiveness remain open.
 
 - [x] Select a non-overlapping cut from fine observations; replace whole sibling groups
@@ -1328,3 +1344,12 @@ modularity. All repository documentation remains in English.
   Existing optional privacy code and historical pilot artifacts are retained.
 - The comparison CLI already defaults to zero privacy targets; its manifest now explicitly
   records `privacy_scope: null` and `privacy_target_count: 0` when no privacy test runs.
+
+## Terminology clarification — cell windows and region constraints, 2026-10-19
+
+Aggregation remains bound to data cells and half-open intervals. Regions can intersect
+cells without matching them one-to-one and supply the intersected requirements. They do
+not become bucket owners or publication clocks. History reconstruction already supports
+cell-local intervals; independently scheduled cells/merge groups still need controller,
+reservation and retirement work beyond the current whole-grid common-window model.
+The canonical reference and generated LaTeX are linked in README; runtime APIs are unchanged.

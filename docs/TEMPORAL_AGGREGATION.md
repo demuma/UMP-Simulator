@@ -9,13 +9,18 @@ JSONL diagnostics, renderer snapshots, and the optional durable publication path
 The scope is one run/sensor/application stream and one whole sensor grid as its
 coordination domain. All footprints in a terminal cut use the same interval. Policy
 requirements may vary by region, but execution priority is selected once at the policy
-tree root. The current mode does not give neighboring regions independent windows.
+tree root. The current mode does not let cells or coordinated merge groups complete different
+windows independently. A semantic region is not a window/bucket owner.
 
 See [aggregation history](AGGREGATION_HISTORY.md),
 [spatial selection](SPATIAL_SELECTION.md), and
 [publication coordination](PUBLICATION_COORDINATION.md) for the underlying contracts.
 The [adaptive publication implementation contract](ADAPTIVE_PUBLICATION_IMPLEMENTATION.md)
 records the combined A03/A05 scope.
+
+Canonical terms, symbols, units and code mappings are defined in
+[TERMINOLOGY_AND_NOTATION.md](TERMINOLOGY_AND_NOTATION.md). Aggregation is bound to
+a data cell and time interval; functional regions supply its requirements.
 
 ## Configuration and example
 

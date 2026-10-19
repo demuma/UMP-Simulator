@@ -8,6 +8,10 @@ now compares identical inputs; [PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md) de
 previously added optional deterministic stress test. The current user-selected focus is
 utility and policy fulfilment; privacy evaluation is deferred.
 
+Canonical terms, symbols, units and code mappings are defined in
+[TERMINOLOGY_AND_NOTATION.md](TERMINOLOGY_AND_NOTATION.md). Aggregation is bound to
+a data cell and time interval; functional regions supply its requirements.
+
 ## Separation of responsibilities
 
 The aggregator maintains counts and identity unions incrementally. At window closure,

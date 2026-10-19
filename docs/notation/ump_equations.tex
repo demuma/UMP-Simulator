@@ -1,0 +1,117 @@
+% Generated from docs/TERMINOLOGY_AND_NOTATION.md; do not edit.
+% Regenerate: python3 tools/export_notation.py
+% Requires amsmath and amssymb. Definitions and scope are in the Markdown source.
+\begin{equation}
+\Omega\subset\mathbb R^2,\quad u\in\mathcal U_{\mathrm{all}},\quad
+\phi_u:t\mapsto\mathbf x_u(t),\quad
+b=(C_b,I_b),\quad I_b=[t_b^-,t_b^+).
+\end{equation}
+
+\begin{equation}
+h(C)=L\,2^{-d(C)},\qquad A(C)=h(C)^2,\qquad 1\le d(C)\le D.
+\end{equation}
+
+\begin{equation}
+\nu(C_{\mathrm{child},q})=4\nu(C)+q,\qquad
+\nu(\operatorname{parent}(C))=\lfloor\nu(C)/4\rfloor.
+\end{equation}
+
+\begin{equation}
+t_j=j\delta_\sigma\ (j\ge1),\qquad
+\mathcal J(I)=\{j\ge1:t_j\in I\},\qquad N_{\mathrm{exp}}(I)=|\mathcal J(I)|.
+\end{equation}
+
+\begin{equation}
+N_{\mathrm{exp}}=N_{\mathrm{meas}}+N_{\mathrm{unavail}}+N_{\mathrm{miss}},\qquad
+\operatorname{Complete}(I)\iff N_{\mathrm{exp}}>0\ \land\ N_{\mathrm{meas}}=N_{\mathrm{exp}}.
+\end{equation}
+
+\begin{equation}
+N_{\mathrm{obs}}(C,I)=|\mathcal O(C,I)|,\qquad
+\mathcal U(C,I)=\bigcup_{o\in\mathcal O(C,I)}\{\operatorname{uid}(o)\}.
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+n(C,I)&=
+\begin{cases}|\mathcal U(C,I)|,&N_{\mathrm{meas}}(I)>0,\\\bot,&N_{\mathrm{meas}}(I)=0,\end{cases}\\
+\bar n(C,I)&=
+\begin{cases}\dfrac{N_{\mathrm{obs}}(C,I)}{N_{\mathrm{meas}}(I)},&N_{\mathrm{meas}}(I)>0,\\\bot,&N_{\mathrm{meas}}(I)=0.\end{cases}
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+\Delta_b=t_b^+-t_b^-,\quad
+A_{\mathrm{eval}}(b;t)=t-t_b^-,\quad
+D_{\mathrm{post}}(b;t)=t-t_b^+,\quad
+c_{\mathrm{meas}}(I)=N_{\mathrm{meas}}/N_{\mathrm{exp}}\quad(N_{\mathrm{exp}}>0).
+\end{equation}
+
+\begin{equation}
+\mathcal I_a(C)=\{r:\operatorname{area}(C\cap R_r)>0\}.
+\end{equation}
+
+\begin{equation}
+\underline\theta_m^{(a)}(C)=\max_{\eta\in\mathcal S_a(C)}\underline\theta_{m,\eta}^{(a)},\qquad
+\overline\theta_m^{(a)}(C)=\min_{\eta\in\mathcal S_a(C)}\overline\theta_{m,\eta}^{(a)}.
+\end{equation}
+
+\begin{equation}
+\operatorname{Admissible}_a(b;t)=
+\operatorname{Complete}(I_b)\ \land\
+\bigwedge_{m\in\mathcal M_a(C_b)}
+\left[v_m(b;t)\ne\bot\ \land\
+\underline\theta_m^{(a)}(C_b)\le v_m(b;t)\le\overline\theta_m^{(a)}(C_b)\right].
+\end{equation}
+
+\begin{equation}
+I_{C,h}=I_h\quad\text{for every selected cell in terminal decision }h.
+\end{equation}
+
+\begin{equation}
+\mathcal U(P,I)=\bigcup_{C\in\operatorname{children}(P)}\mathcal U(C,I),\qquad
+N_{\mathrm{obs}}(P,I)=\sum_{C\in\operatorname{children}(P)}N_{\mathrm{obs}}(C,I).
+\end{equation}
+
+\begin{equation}
+\mathcal U(C,I_1\cup I_2)=\mathcal U(C,I_1)\cup\mathcal U(C,I_2),\qquad
+\bar n(C,I_1\cup I_2)=
+\frac{N_{\mathrm{obs}}(C,I_1)+N_{\mathrm{obs}}(C,I_2)}
+{N_{\mathrm{meas}}(I_1)+N_{\mathrm{meas}}(I_2)}
+\end{equation}
+
+\begin{equation}
+\operatorname{area}(C_i\cap C_j)=0\quad\lor\quad |I_i\cap I_j|=0.
+\end{equation}
+
+\begin{equation}
+y_i=\frac{1}{|\mathcal J(J_i)|}
+\sum_{j\in\mathcal J(J_i)}\sum_{u\in\mathcal U_{\mathrm{GT}}(t_j)}
+\mathbf1\{\phi_u(t_j)\in F_i\}.
+\end{equation}
+
+\begin{equation}
+\widehat n_i(t_j)=
+\sum_{b\,\mathrm{public}:\ t_j\in I_b}
+\bar n_b\,\frac{\operatorname{area}(F_i\cap C_b)}{A(C_b)},\qquad
+\widehat y_i=\frac{1}{|\mathcal J(J_i)|}\sum_{j\in\mathcal J(J_i)}\widehat n_i(t_j).
+\end{equation}
+
+\begin{equation}
+c_{\mathrm{ans}}=\frac{|\mathcal Q_{\mathrm{ans}}|}{|\mathcal Q|},\qquad
+c_{\mathrm{score}}=\frac{|\mathcal Q_{\mathrm{score}}|}{|\mathcal Q|},\qquad
+\operatorname{MAE}_{\mathrm{occ}}=
+\frac{1}{|\mathcal Q_{\mathrm{score}}|}\sum_{i\in\mathcal Q_{\mathrm{score}}}|\widehat y_i-y_i|.
+\end{equation}
+
+\begin{equation}
+n(C,I)\ge k_{\mathrm{sup}}^{(a)}(C).
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+E_{\mathbf q}&=\{u\in\mathcal U_{\mathrm{rel}}:Q_{\mathrm{id}}(u)=\mathbf q\},\\
+k_{\min}&=\min_{\mathbf q:E_{\mathbf q}\ne\varnothing}|E_{\mathbf q}|,\\
+\ell_{\min}^{\mathrm{distinct}}&=\min_{\mathbf q:E_{\mathbf q}\ne\varnothing}|\{S_u:u\in E_{\mathbf q}\}|.
+\end{aligned}
+\end{equation}

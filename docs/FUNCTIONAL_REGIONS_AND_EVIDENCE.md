@@ -5,6 +5,10 @@ on printed presentation slides 26/27 (PDF pages 27/28). The goal is to reproduce
 functional scenario and measurable aggregation effects; the drawing geometry is not a
 specification. No simulator source was changed by this review.
 
+Canonical terms, symbols, units and code mappings are defined in
+[TERMINOLOGY_AND_NOTATION.md](TERMINOLOGY_AND_NOTATION.md). Aggregation is bound to
+a data cell and time interval; functional regions supply its requirements.
+
 ## Current foundation and missing pieces
 
 The AGBS pipeline already supports finest-cell observations, exact private identity unions,
@@ -94,7 +98,7 @@ This is distinct-road-user support, not automatically a formal anonymity equival
 For the implemented lower/upper metric bounds:
 
     k_support(C) = max(k_support(r) for r in R(C))
-    a_max(C)     = min(a_max(r) for r in R(C))
+    h_max(C)     = min(h_max(r) for r in R(C))
     T_max(C)     = min(T_max(r) for r in R(C))
     L_max(C)     = min(L_max(r) for r in R(C))
 
@@ -102,7 +106,7 @@ For this policy subset, an admissible candidate must have complete measured cove
 satisfy all of:
 
     n(C,I) >= k_support(C)
-    side(C) <= a_max(C)
+    h(C) <= h_max(C)
     e - s <= T_max(C)
     t_eval - s <= L_max(C)
 
@@ -113,9 +117,9 @@ measurements and the controller decides which candidate to try.
 
 The present temporal controller imposes the strictest duration/age upper bound across the
 entire sensor coordination domain and uses a shared interval. A 200-ms road cap therefore
-also restricts the entrance area, even when its own bound is 1000 ms. Simultaneous locally
-independent short-road/long-entrance windows are not implemented. Execution priority is also
-root-level, not independently selected for each region. Both limitations belong in the
+also restricts the entrance area, even when its own bound is 1000 ms. Different cells cannot yet complete short road-bound and longer entrance-bound windows
+independently. These are cell windows under regional requirements, not windows owned by
+regions. Execution priority is also root-level, not independently selected for each region. Both limitations belong in the
 experimental model and current-capability description.
 
 Support cannot be computed by adding distinct counts. For four sibling cells C_i sharing
@@ -260,6 +264,6 @@ that case; it is not the full independent oracle, a corridor study, or empirical
 Specify the functional geometry, shared region IDs, movement paths and per-region occupancy
 queries first. Reuse Region/PolicyTree for aligned disjoint rectangles. Add a controlled
 street fixture with region/path validation and policy-boundary cases, alongside EP01's
-independent reference. Then execute the staged utility/policy study. Independent regional
+independent reference. Then execute the staged utility/policy study. Independent cell/merge-group
 time windows, overlapping semantic layers, polygons and actual k/l studies remain explicit
 follow-up work rather than implicit claims of the first corridor experiment.

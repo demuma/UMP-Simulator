@@ -36,6 +36,7 @@ its original external file remains unchanged.
 |---|---|
 | [README.md](README.md) | Project overview, actual capabilities, architecture, data flow, build instructions and limitations |
 | [TO-DO.md](TO-DO.md) | Chronological execution queue, dated milestones, task contracts, later extensions and completed work |
+| [Terminology and notation](docs/TERMINOLOGY_AND_NOTATION.md) | Canonical language, symbols, units, cell/region distinction, equations and code mapping |
 | [Functional regions and evidence](docs/FUNCTIONAL_REGIONS_AND_EVIDENCE.md) | October 19 review: street/shop corridors, actual region support, missing pieces and proof/experiment scope |
 | [Research questions and experiment plan](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md) | Current answers, data prerequisites, feasibility oracle and staged utility/policy experiments |
 | [Controlled evaluation](docs/CONTROLLED_EVALUATION.md) | Frozen input, seven comparable configurations, fixed-query utility and reproduction commands |
@@ -79,6 +80,12 @@ immediate approved release, bounded hold and visible revisions), preservation pr
 regional feasibility bounds, and full versus selective precomputation. E06 tracks model/
 priority comparisons; E05 tracks preparation cost. Publication models may be selected by
 application policy once their behavior is implemented and tested.
+
+**Aggregation terminology:** candidates are cell/interval pairs. Functional regions supply
+their constraints; they are not aggregation-cell or bucket boundaries. Future independent
+windows are cell-local and require coordinated merge groups. The current controller still
+uses a common whole-grid interval. The terminology reference is authoritative for new
+presentation, paper and dissertation text.
 
 **Adopted strategy terminology:** Temporal First prioritizes temporal detail/freshness and
 tries spatial aggregation first. Spatial First prioritizes spatial detail and tries temporal

@@ -24,6 +24,10 @@ bins and one-cell interval queries. This baseline scans retained bins/observatio
 index or prepared ancestor cache needs measurements under E05. An uncached ancestor remains
 queryable as long as its complete requested interval is retained and closed.
 
+Canonical terms, symbols, units and code mappings are defined in
+[TERMINOLOGY_AND_NOTATION.md](TERMINOLOGY_AND_NOTATION.md). Aggregation is bound to
+a data cell and time interval; functional regions supply its requirements.
+
 ## Geometry and interval semantics
 
 Reuse the existing quadtree convention: depth-1 cells are IDs 12..15; the synthetic depth-0
@@ -31,6 +35,10 @@ root is not a supported data cell. Maximum depth is 14. Validate ID/path-derived
 before retaining observations. A request may select a leaf or any representable ancestor;
 three relative levels cover 4^3 = 64 finest-cell areas, without requiring 64 bucket copies.
 Mixed-depth alternatives use the same finest observations. No below-leaf reconstruction.
+
+The history can reconstruct different intervals for different cells, including cells in
+the same functional region. This storage capability does not imply that the current
+controller/publication coordinator already schedules such windows independently.
 
 Queries use half-open [start,end) intervals in integer simulation milliseconds. All query
 boundaries are explicit; sampled occupancy weights each scheduled measured observation

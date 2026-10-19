@@ -63,4 +63,4 @@ previous native-window visual inspection.
 
 Remaining evidence: equal-input baseline experiments, GT utility reconstruction, a stated
 attacker model and empirical privacy metrics, policy-feasibility analysis, meaningful
-runtime/memory comparisons, and independent regional coordination behavior.
+runtime/memory comparisons, and independently scheduled cell/group coordination behavior.

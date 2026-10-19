@@ -44,7 +44,7 @@ selected requirements pass. Preserve the original interval start and use a commo
 handover boundary after retirement. The initial whole-domain window respects the
 strictest applicable regional duration/age cap, including empty footprints. This
 conservative behavior can hold passing cells and limits independently useful
-regional adaptation; independent sibling windows are subsequent research work.
+cell-local adaptation; independent sibling windows are subsequent research work.
 
 At the legal temporal bound, apply remaining spatial actions and suppress unresolved
 footprints. Missing samples and unavailable mandatory metrics never become passes.
@@ -60,6 +60,6 @@ writes, lost acknowledgement, private empty retirement and counts-only output.
 Disposable UUID-named databases are the only integration-test databases removed.
 
 Deferred: additional publication models, automatic simulator restart/checkpointing,
-independent regional windows, concurrent policy contexts, A07 selective descendant
+independently scheduled cell/merge-group windows, concurrent policy contexts, A07 selective descendant
 rescue, proactive ancestor caches, differential privacy, attack-based privacy metrics
 and measured experiment claims. Runtime and utility comparisons require experiments.

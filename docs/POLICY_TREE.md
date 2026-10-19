@@ -5,6 +5,10 @@ now also accepts application-level execution choices for the integrated A03/A05 
 Metric computation remains in the evaluator; execution choices are interpreted by the
 controller/publication adapter, not numerically intersected as metric requirements.
 
+Canonical terms, symbols, units and code mappings are defined in
+[TERMINOLOGY_AND_NOTATION.md](TERMINOLOGY_AND_NOTATION.md). Aggregation is bound to
+a data cell and time interval; functional regions supply its requirements.
+
 ## Requirements and inheritance
 
 An enabled aggregation stream may select either a uniform metric_policy or a policy_tree,
@@ -45,6 +49,10 @@ do not expand every maximum-depth data leaf. Homogeneous descendants share one i
 effective policy, and lookup walks only the existing policy nodes. Enforce max_nodes.
 Small numeric comparison tolerances handle representation error, not arbitrary boundary
 snapping. Candidate ID, depth, bounds, grid and application must match the compiled domain.
+
+A region does not own an aggregation bucket or choose its interval. Its bounds apply to
+each intersecting data-cell/interval candidate. Data cells remain whole quadtree squares;
+this lookup does not clip them to region geometry or prohibit cross-region merges.
 
 Each policy node also stores the intersection for its complete footprint. A candidate
 crossing multiple selected regions must satisfy all their requirements, including those

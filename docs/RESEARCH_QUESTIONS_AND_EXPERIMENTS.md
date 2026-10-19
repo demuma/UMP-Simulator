@@ -9,6 +9,10 @@ This document distinguishes a current answer, a hypothesis and an experiment tha
 needs to be implemented. The [pilot report](EVALUATION_RESULTS_2026-10-14.md) contains actual
 results. The [replay contract](CONTROLLED_EVALUATION.md) defines the existing evaluation.
 
+Canonical terms, symbols, units and code mappings are defined in
+[TERMINOLOGY_AND_NOTATION.md](TERMINOLOGY_AND_NOTATION.md). Aggregation is bound to
+a data cell and time interval; functional regions supply its requirements.
+
 ## Central question and what counts as an answer
 
 Under which observation and regional-policy conditions can the adaptive algorithm produce
