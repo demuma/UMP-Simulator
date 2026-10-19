@@ -6,6 +6,11 @@ This is the central task backlog. README describes current behavior; this file t
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
 to begin every listed phase. All project documentation is maintained in English.
 
+**Review update, 2026-10-19:** functional street/shop regions and evidence scope are recorded in
+[FUNCTIONAL_REGIONS_AND_EVIDENCE.md](docs/FUNCTIONAL_REGIONS_AND_EVIDENCE.md). The scenario,
+not the exact mockup drawing, defines the next study. Region-to-policy compilation exists;
+corridor-constrained motion and independent regional time windows do not yet exist.
+
 ## 1. Status and priorities
 
 - `[x]` completed with a concrete verification result.
@@ -393,6 +398,26 @@ first; sensitive-attribute/privacy contracts may be clarified now, with experime
 - [ ] Freeze the EP02/EP03 scenario and parameter manifest before running the study.
 - [ ] Choose EP04 replication and uncertainty reporting from the pilot and target precision.
 
+
+### SC01 — Controlled functional street/shop scenario — P0 design, then implementation
+
+- [x] Review Region/PolicyTree support and corridor stubs against the intended scenario.
+- [x] Specify the mathematical admissibility model, current global-window limitation and
+  evidence needed for presentation/paper/dissertation in the October 19 review.
+- [x] Check a hand-calculated spatial/temporal probe through the existing replay core:
+  40-m parent at 400 ms versus four 20-m cells at 500 ms; later refinement verified.
+- [ ] Define the street cross-section, stable region IDs and movement paths for road,
+  cycleways, footways and entrance patches, plus the shop-front variant.
+- [ ] Use aligned disjoint rectangles first; explicitly decompose entrance/context overlap.
+- [ ] Validate corridor/path containment and border transitions independently of aggregation.
+- [ ] Define fixed per-region occupancy queries and extend the evaluator for required region
+  masks/query shapes; never use private GT to fill absent public support.
+- [ ] Compare the same functional policies/input across fixed, spatial-only and both
+  adaptation priorities, with regional coverage/error/age and EP01 feasibility checks.
+- [ ] Decide the future rule for cross-functional-region cells. Existing intersected numeric
+  bounds permit mixing; prohibiting boundary crossings is an additional constraint.
+- [ ] Treat independent regional windows as an explicit extension before claiming that road
+  and entrance data simultaneously use independently chosen aggregation durations.
 
 ### E01 — Define one utility application — P0
 
