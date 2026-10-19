@@ -566,3 +566,30 @@ python3 tools/export_notation.py --check
 ```
 
 The Markdown reference is authoritative; the fragment must not be edited by hand.
+
+## 17. Planned environment and demand vocabulary
+
+These terms support scenario design; they do not imply an implemented environment, demand
+engine or routing stack. See [FUNCTIONAL_REGIONS_AND_EVIDENCE.md](FUNCTIONAL_REGIONS_AND_EVIDENCE.md).
+
+| Term | Meaning | Distinction |
+|---|---|---|
+| Canonical environment geometry | Source geometry and stable entity IDs for physical features | Preserved independently of the chosen data-grid depth. |
+| Map topology / connectivity | Allowed connections between surfaces, portals and places | Not identical to geometric adjacency or quadtree parent/child topology. |
+| Derived spatial discretization | A grid/index/mask derived from source geometry | Used for spatial lookup; distinct from adaptive release aggregation. |
+| Portal | An entrance, exit or crossing connection with movement meaning | A point/segment need not be a positive-area policy region. |
+| Destination | A selected place/portal that a road user intends to reach | A behavioral choice, not an output cell. |
+| Demand | Configured arrival/departure/visit process | Not inferred from a static map alone. |
+| Realized flow / flux | Crossing events per declared duration at a specified portal/boundary | Counts events, not necessarily distinct people, and is not occupancy. |
+| Dwell time | Duration of an explicitly defined visit/activity | Not automatically the time an ID is absent from a sensor. |
+| Global route | Intended connected sequence through the environment | May generate the planned waypoint path P_u. |
+| Local motion / trajectory generation | Short-horizon execution of that route | Produces realized phi_u(t) under motion/interaction rules. |
+| Collision avoidance | Local interaction handling subject to clearance/motion rules | Distinct from global route selection and policy-driven aggregation. |
+
+Reserve $\lambda_e^{\mathrm{in}}(t)$ for a future configured arrival intensity at portal e
+(events/s), and $f_e^{\mathrm{in}}(I)$ for realized entry-crossing flow on interval I. With
+the current millisecond convention, its definition is
+$f_e^{\mathrm{in}}(I)=N_e^{\mathrm{in}}(I)/(|I|/1000)$ for a positive-duration interval.
+Use analogous outward quantities only after defining their activity/stock model. This
+notation does not select a Poisson process or implement an online flow metric. Counting
+repeated crossings differs from n(C,I), which counts an identity once per cell/window.

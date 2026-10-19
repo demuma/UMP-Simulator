@@ -415,6 +415,12 @@ first; sensitive-attribute/privacy contracts may be clarified now, with experime
 - [ ] Extend this reference first whenever a new metric, sensor capability, independent
   cell-window model, privacy representation or publication model is adopted.
 
+**Execution priority clarified, 2026-10-19:** implement EP01's independent reference first,
+then a small prescribed street fixture and its regional utility queries. Rich environment
+import, destination-demand processes, global/local motion planning and avoidance remain
+later X04/X03/X05 work. A demonstrated aggregation limitation may justify targeted
+cell-local coordination or A07 before increasing environment realism.
+
 ### SC01 — Controlled functional street/shop scenario — P0 design, then implementation
 
 - [x] Review Region/PolicyTree support and corridor stubs against the intended scenario.
@@ -1145,6 +1151,13 @@ silently invalidate the saved experiment configuration or timing model.
 - [ ] Discuss source/import choices and coordinate conversion into simulator metres.
 - [ ] Extract or represent buildings, entrances/doors, roads, sidewalks, cycle paths,
   crossings and navigable/free space, with provenance for unavailable or inferred details.
+- [ ] Preserve canonical source geometry, stable IDs and provenance; derive spatial
+  discretization and policy lookup without making maximum-depth cells the source map.
+- [ ] Keep geometric features, functional labels, movement connectivity and policy
+  requirements distinct while referencing shared environment IDs.
+- [ ] Model entrance/exit portals separately from positive-area entrance policy zones.
+- [ ] Specify geometry-to-grid intersection/approximation rules and validate narrow
+  features instead of silently using center/majority labels.
 - [ ] Build connectivity and traversability rules for the relevant agent categories.
 - [ ] Define reusable environment components and inspect UAM-Simulator-Modern as a reference.
 
@@ -1154,6 +1167,12 @@ rendered appearance and movement constraints refer to the same environment.
 ### X03 — Routes and trajectories: A*, D* Lite and replanning — P2
 
 - [ ] Discuss destination selection and demand distributions before increasing route complexity.
+- [ ] Define shop-visit choice, entry/exit schedules and dwell/re-entry behavior when a
+  study needs them; keep persistent road-user IDs and explicit sensor visibility.
+- [ ] Distinguish configured demand intensity, realized crossing flow and occupancy;
+  keep departures consistent with visits/dwell and any initial indoor population.
+- [ ] Use explicit paths and schedules in the first controlled fixture before adding
+  general stochastic demand, routing or local planning algorithms.
 - [ ] Compare A* and D* Lite for the intended routing/replanning workload.
 - [ ] Define waypoints, route following and reactions to blocked/changing passages.
 - [ ] Specify the interface between global route planning and local collision avoidance.
@@ -1353,3 +1372,13 @@ not become bucket owners or publication clocks. History reconstruction already s
 cell-local intervals; independently scheduled cells/merge groups still need controller,
 reservation and retirement work beyond the current whole-grid common-window model.
 The canonical reference and generated LaTeX are linked in README; runtime APIs are unchanged.
+
+## Environment and movement priorities — brainstorm, 2026-10-19
+
+The source environment determines physical geometry and connectivity; the quadtree/grid is
+a derived spatial representation for lookup/aggregation. Functional regions induce policy
+constraints on cell/time candidates. Portals and demand/activity processes determine where
+road users start, visit, dwell and leave. Their implementation remains lower priority than
+EP01 and the controlled utility/policy evaluation; the small SC01 fixture uses prescribed
+paths/schedules. Detailed architecture and open choices are recorded in the functional-region
+review and the canonical notation reference. No environment or motion code was changed.

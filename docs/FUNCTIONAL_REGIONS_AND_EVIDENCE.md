@@ -63,6 +63,82 @@ cross-region mixing. A rule forbidding a cell from crossing road/footway boundar
 be a new geometric constraint or a different aggregation-domain design; numeric minimum
 support alone does not implement it. Compare such a rule only once implemented explicitly.
 
+## Environment and demand brainstorm — proposed architecture, 2026-10-19
+
+The richer environment, global/local motion planning and avoidance remain lower priority.
+The immediate research path is EP01, a small controlled scenario and equal-input utility/
+policy comparisons. A complete map import or replacement movement engine is not a
+prerequisite for that path.
+
+Keep a canonical environment source with coordinates, stable IDs and geometry provenance.
+From it derive spatial indexes, functional-region/policy lookups and movement connectivity.
+Do not make the maximum-depth aggregation grid the only surviving representation of the
+map. Changing D must not move entrances, delete narrow passages or redefine route topology.
+
+| Layer | Question it answers | First representation / future extension |
+|---|---|---|
+| Source geometry | Where are buildings, surfaces, boundaries and doors? | Manually authored exact rectangles/segments/points; later imported polygons with provenance. |
+| Functional semantics | Is this a carriageway, cycleway, footway or entrance approach? | Stable region IDs/types sharing source geometry; later overlapping context layers. |
+| Connectivity | Which spaces and portals connect for each road-user mode? | Explicit allowed transitions; later a route graph and richer access rules. |
+| Spatial discretization | Which geometry/requirements intersect a candidate cell? | Derived lookup compatible with the existing finest grid; later an explicit polygon rasterization/intersection contract. |
+| Demand and activity | Who arrives, chooses a destination, waits and leaves? | Prescribed source/target schedules; later shop-visit and dwell processes. |
+| Motion | How does a chosen route become realized movement? | Prescribed valid waypoint paths; later global routing, local following and collision avoidance. |
+
+A spatial quadtree encodes hierarchical proximity/containment. It does not by itself encode
+which side of a wall connects to which entrance or which road-user modes may cross a curb.
+A movement graph and quadtree may share source IDs without being interchangeable structures.
+Likewise, map discretization is an environment lookup stage; it is not the adaptive choice
+of the cell/time blocks that will be published.
+
+For the initial study, use geometry already aligned to the current policy compiler. For
+more general geometry, retain every relevant intersection under a documented approximation
+rule. A center-point-only label can miss a narrow region cutting a cell; a majority label
+can silently drop a stricter policy area. Validate such approximations and their spatial
+error before using them in a constraint guarantee. Build static lookups once where possible;
+no repeated full-map geometry scan is needed for every frame.
+
+### Entrances, destinations and shop flux
+
+An entrance/exit portal is a movement boundary or connection, possibly represented by a
+point/segment plus direction/access information. It is not automatically a positive-area
+PolicyRegion. If constraints apply near a door, define a separate entrance-approach region
+with nonzero area and link it to the same source ID.
+
+A shop visit is an activity: choose the shop, reach its portal, optionally remain inside,
+and later leave. The environment alone does not determine arrival rates or destination
+probabilities. Begin with explicit schedules; choose stochastic laws only when defining a
+specific experiment. Configured demand intensity and realized crossing flow are different
+quantities; their planned notation is in the canonical reference.
+
+For later hidden indoor dwell/re-entry, preserve the road-user identity across the visit.
+Recreating the same person under a new identity would change distinct-support metrics.
+Outdoor sensor visibility also needs an explicit contract; putting an agent behind a
+building polygon does not yet make the current bounding-box sensor stop observing it.
+If visits are conserved, departures must be consistent with prior entries, dwell and any
+initial indoor population, rather than being unrelated spawn events.
+
+### Dependency and priority order
+
+1. **EP01 now:** implement the independent small-case feasibility/compliance reference and
+   private loss diagnostics. No environment implementation is needed to answer those cases.
+2. **Small SC01 fixture:** one street cross-section with stable functional-region IDs and
+   prescribed mode-compatible paths. Named starts/exits suffice; detailed doors, indoor
+   behavior and stochastic shop demand are optional later refinements.
+3. **Regional utility and equal-input evaluation:** predeclare fixed query footprints for
+   the regions; add the necessary query/mask support beyond the current regular 10-m grid.
+   Freeze the stream and compare legal fixed/spatial/Temporal First/Spatial First variants.
+4. **Targeted aggregation extension:** if the common-window cap or sibling suppression
+   prevents the intended result, implement the specifically demonstrated cell-local
+   coordination/A07 extension, then repeat the same frozen cases.
+5. **Later realism:** canonical map import and portal/connectivity validation, destination/
+   activity demand, global routes, local following/trajectory generation and avoidance.
+   Select algorithms from the required workload and measured deficiencies at that stage.
+
+The next concrete software deliverable is EP01's tiny independent reference with known
+expected results. The next environment deliverable is a small scenario contract and fixture,
+not a general city simulator. This order preserves the dissertation's focus on aggregation
+conditions, utility and policy fulfilment.
+
 ## Application requirements by region
 
 | Region | Initial application quantity | Candidate local requirements | Additional prerequisites |
