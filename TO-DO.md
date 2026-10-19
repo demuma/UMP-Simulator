@@ -40,7 +40,8 @@ remain open. E01 fixed-query occupancy evaluation and R01 frozen replay are now 
 with four fixed baselines and spatial/Temporal First/Spatial First comparisons. E02 has a
 complete-background neighbouring-output stress test; realistic trained attacks and broader
 independent scenario/policy studies remain open. The user selected utility and policy
-fulfilment first; E02 is deferred and is not a prerequisite for the current milestone.** The detailed
+fulfilment first; E02 experiment execution follows that milestone. Privacy planning was
+reopened on 2026-10-19 with explicit E02-A–D entry/exit criteria; it is not an empirical result.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
 proposals, flow diagram, storage model and hand-worked cases. The
 [fixed aggregation contract](docs/FIXED_AGGREGATION.md) records actual A01 behavior;
@@ -391,8 +392,10 @@ first; sensitive-attribute/privacy contracts may be clarified now, with experime
    error, age, retention and suppression reasons on the same query and frozen observations.
 5. Plan EP04 independent replications from pilot variability and a stated precision target;
    formalize feasibility versus search completeness and keep runtime measurement separate.
-6. After this milestone, implement E02/E03 privacy studies whose secret, protected unit,
-   attribute/reference data and attacker assumptions have been specified. E05/E06 remain later.
+6. Plan E02-A now, then implement E02-B/C after the minimal independent utility/policy
+   checks and frozen public-schema/query contract. Freeze the secret, protected unit,
+   auxiliary knowledge, grouped splits and attack metrics before final testing. E02-D/E03
+   attribute/formal-metric extensions and E05/E06 remain later.
 
 - [x] Record the metric data-readiness matrix, question register and staged experiment design.
 - [ ] Implement EP01's independent oracle and hand-checked expected results.
@@ -458,25 +461,43 @@ Baseline contract: [METRICS.md](docs/METRICS.md#first-utility-question-e01-basel
 **Acceptance:** a fixed question and its GT answer are defined. Coarsening the reference
 must not automatically eliminate error. Do not label record retention as data fidelity without justification.
 
-### E02 — Define attacker and privacy evaluation — P1, deferred
+### E02 — Define attacker and privacy evaluation — P1, planning active
 
-**Scope decision, 2026-10-14:** evaluate utility and policy fulfilment first. Completed
-items below record earlier exploratory work; no further attack study is in the current queue.
+**Scope clarification, 2026-10-19:** utility/policy implementation remains first. The user
+reopened privacy design; the empirical study is an explicit subsequent milestone. Existing
+stress-test definitions are not a realistic empirical attack result. Detailed proposed
+contracts and entry/exit criteria: [PRIVACY_EVALUATION.md](docs/PRIVACY_EVALUATION.md).
 
-- [x] Specify one initial goal and visible transcript: whole-recorded-trajectory presence
-  under complete deterministic background knowledge (docs/PRIVACY_EVALUATION.md).
-- [x] Review aggregate-location membership inference and justify a scoped initial test.
-- [x] Define the balanced no-output baseline and derived perfect-knowledge success.
-  This is not measured classifier accuracy; helper tests include no-output/exact-count controls.
-- [ ] Implement a realistic attacker with disjoint training/calibration/test scenarios.
-- [ ] Include repeated releases, overlapping windows and possible differencing attacks.
-- [ ] Include observable adaptive geometry, publication timing and suppression patterns;
-  evaluate all views visible to the attacker jointly.
-- [x] Distinguish support-threshold compliance from the scoped distinguishability result and
-  from realistic measured attack success (which remains open).
+- [x] Specify the historical whole-recorded-trajectory membership diagnostic under complete
+  deterministic background knowledge, including its balanced prior and public transcript.
+- [x] Implement/test transcript equality and its derived ideal-observer success; retain
+  no-output/exact-count controls and historical evidence separately from empirical attacks.
+- [x] Record the E02-A–D roadmap and proposed bounded-knowledge contribution-membership study.
+- [ ] **E02-A:** finalize unit/horizon, secret, inclusion assumptions, recipient-visible schema,
+  auxiliary/reference source, partial-trace knowledge levels and membership prior.
+- [ ] Verify recipient access excludes raw MongoDB/GT, private candidates/journal and debug
+  overlays; document logical-time/transport scope and all jointly visible application views.
+- [ ] **E02-B:** after EP01/minimal controlled utility checks, generate independent paired
+  frozen IN/OUT cases and a grouped training/calibration/test manifest; validate background
+  equality, avoid copied-trace/split leakage and sample targets before release outcomes.
+- [ ] **E02-C:** implement a transparent public-only membership attack, declared count/
+  geometry/time features, missing-data masks and fair mechanism-specific training budgets.
+- [ ] Select operating thresholds on calibration only; report ROC-AUC, test TPR/FPR and
+  declared-prior interpretation with independent-run uncertainty and adequate negatives.
+- [ ] Compare legal fixed/spatial/Temporal First/Spatial First releases on identical cases;
+  pair attack results with occupancy error, coverage, retained contributions and age.
+- [ ] Retain prior-only, exact-count and no-output controls; test whether adaptive geometry/
+  timing adds usable information. Do not count projection differences as additive leakage.
+- [ ] **E02-D/E03, later:** define sensitive-visit/attribute/linking secrets and justified
+  QI/group/reference models before adding k/l/t/entropy criteria or a new attack target.
+- [ ] Study repeated-release differencing, multiple visible views and any future overlapping/
+  revision model under an explicit joint-transcript contract once those views are implemented.
+- [x] Separate operational support compliance, empirical attack outcomes and formal guarantees.
 
-**Acceptance:** reproducible attacker knowledge and baseline. No general anonymity claim
-based only on a distinct-contributor count.
+**Acceptance:** reproducible versioned threat model, public-only attack input, split/control
+checks and a frozen held-out comparison with utility trade-offs and uncertainty. An unchanged
+historical diagnostic or a distinct-ID threshold does not complete this milestone. A null or
+negative protection result remains valid evidence; no general anonymity claim follows.
 
 ### E04 — Define the online metric contract — P0
 
@@ -1382,3 +1403,13 @@ road users start, visit, dwell and leave. Their implementation remains lower pri
 EP01 and the controlled utility/policy evaluation; the small SC01 fixture uses prescribed
 paths/schedules. Detailed architecture and open choices are recorded in the functional-region
 review and the canonical notation reference. No environment or motion code was changed.
+
+## Privacy roadmap clarification — 2026-10-19
+
+The historical membership diagnostic already defines a protected unit, secret, complete
+background attacker and transcript. Realistic empirical privacy remains unevaluated. Privacy
+planning is active through E02-A; E02-B/C explicitly follows the minimal independent utility/
+policy milestone, ahead of optional rich map/routing work. The proposed first secret is
+contribution membership, with limited auxiliary knowledge, grouped independent splits and
+calibrated public-only attacks. Sensitive attributes and formal k/l/t/DP choices remain
+separate research decisions. This update changes documentation only, not execution or results.

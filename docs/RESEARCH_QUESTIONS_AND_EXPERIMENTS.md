@@ -1,9 +1,9 @@
 # Research questions, data requirements and experiment plan
 
-Status: 2026-10-14. Design recorded after the first controlled pilots. Utility and policy
-fulfilment remain the immediate experimental scope. Future privacy contracts are specified
-here so that the required data can be generated deliberately. This step records the
-research design; the new experiments and sensitive-attribute implementation remain pending.
+Status: 2026-10-19. Utility and policy fulfilment remain the immediate experimental scope.
+Privacy planning is active again, with an explicit subsequent E02-A–D milestone in
+[PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md). This records proposed research design;
+new privacy experiments, classifiers and sensitive-attribute implementation remain pending.
 
 This document distinguishes a current answer, a hypothesis and an experiment that still
 needs to be implemented. The [pilot report](EVALUATION_RESULTS_2026-10-14.md) contains actual
@@ -39,8 +39,9 @@ They do not prove search completeness, optimality, general superiority or empiri
 | Q4 | Which preservation priority is useful under which conditions? | Handover changes the action order; one permanently unresolved branch can make both strategies extend the same shared window. | Controlled identity turnover at fixed occupancy, dense/sparse cases, and a single blocked branch; inspect complete interval sequences. |
 | Q5 | How should missing and empty support be interpreted? | Current public absence is unknown. Internal measured-empty, missing input, suppression and incomplete public query support are distinct. | Diagnose private causes without supplying them to the recipient estimator; define an explicit policy/release contract before introducing public empty certificates. |
 | Q6 | Do we need more data for additional utility/statistical metrics? | Exact finite-data errors/distributions can be computed on small fixtures. Broader conclusions need relevant variation, independent realizations and a fixed estimand. More frames from one trajectory do not supply independent runs. | Select application task and sampling unit first, then plan replication from pilot variability and desired precision. |
-| Q7 | What data would make additional privacy metrics meaningful? | A protected unit, secret, release schema, grouping and attacker/reference assumptions are missing for several metrics; not just rows. | Complete the metric-specific contracts below before adding labels or formulas. Privacy experiments remain later. |
+| Q7 | What data would make additional privacy metrics meaningful? | The historical full-background membership diagnostic has a unit/secret/transcript contract; realistic attacks and several other metrics still lack finalized contracts, reference data or labels. | Freeze E02-A, then implement E02-B/C after the utility/policy entry milestone; use the readiness table for other metrics. |
 | Q8 | Can the implementation meet runtime requirements? | Replay core timings omit parsing, persistence, transport and rendering; they do not establish end-to-end real-time operation. | Separate repeatable profiling and processing-budget tests on frozen input, with stage timings and deadlines. |
+| Q9 | Under which knowledge/scenario conditions does adaptive aggregation reduce contribution-membership inference, and at what utility cost? | No realistic empirical result. Higher support or policy compliance does not settle this question. | Public-only empirical attack, independent grouped splits, calibrated operating points and paired fixed/adaptive trade-off comparisons under E02-A–C. |
 
 ## Initial decisions for a comparable experiment
 
@@ -203,8 +204,12 @@ alone; freezing input preserves a fair replay comparison but does not correct th
 ## Future privacy metric readiness
 
 These are prerequisites and research questions for E02/E03, not additional current experiment
-runs. Classical k/l/t criteria were formulated for released/generalized person records; our
-aggregate count stream needs a justified mapping before those labels describe its guarantees.
+runs. Privacy contract planning is active; implementation has an explicit entry milestone in
+[PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md#e02-staged-work-packages-and-entry-criteria).
+The first proposed empirical secret is contribution membership, which needs no invented
+sensitive attribute. Classical k/l/t criteria were formulated for released/generalized person
+records; our aggregate count stream needs a justified mapping before those labels describe
+its guarantees.
 
 | Candidate | Required contract/data | What current data cannot establish |
 |---|---|---|
@@ -222,7 +227,7 @@ These distinctions follow the original definitions of
 [delta-presence](https://www.cerias.purdue.edu/assets/pdf/bibtex_archive/p665-nergiz.pdf).
 Their applicability to this aggregate release schema is a research decision, not established
 merely by calculating a formula. The separate [privacy contract](PRIVACY_EVALUATION.md)
-describes the existing optional presence stress test and future attacker study.
+describes the existing optional membership stress test and staged empirical attacker study.
 
 For entity-based attribute statistics, count each protected entity once per defined group/
 window. A pedestrian observed 100 times and a cyclist once produce observation weights
@@ -249,5 +254,8 @@ population model, sensitive labels or a validated attacker.
 Start EP01 with the smallest independent compliance/feasibility cases and add private
 suppression-cause diagnostics needed for EP02. Preserve the current public release protocol
 and existing utility query while these checks are established. Then run EP02, followed by
-the explicit EP03 matrix and EP04 replications. Sensitive-attribute and attack implementations
-follow their separate readiness contracts after the utility/policy milestone.
+the explicit EP03 matrix and EP04 replications. E02-A freezes the privacy contract alongside
+this design work; E02-B/C starts after the minimal independent utility/policy checks and
+public-schema contract are in place. Broad
+map/routing realism is not a prerequisite. Sensitive-attribute extensions remain separate
+E02-D/E03 decisions; the historical stress test is not the empirical privacy milestone.

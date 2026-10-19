@@ -1,17 +1,155 @@
-# Initial membership evaluation contract
+# Privacy evaluation roadmap and membership stress-test contract
 
-Status: 2026-10-14. **Deferred:** the user selected utility and policy fulfilment first.
-E02 already has a narrowly defined optional deterministic neighbour comparison, implemented
-before that scope preference arrived. The helper and historical evidence are retained;
-this document does not put further privacy experiments in the current work queue.
-This is an offline stress test of recipient-visible releases. It is not a trained
-membership attack, a general privacy score, or a proof of anonymity.
+Status: 2026-10-19. **Planning active; new attack experiments not implemented.** The user
+reopened privacy design and its integration into the dissertation plan. Utility and policy
+fulfilment remain the immediate implementation milestone. E02's existing deterministic
+neighbour comparison is retained as a separate diagnostic. A realistic empirical privacy
+study is now an explicit subsequent milestone, rather than an indefinitely optional item.
+The proposed choices below must be frozen before collecting or inspecting final test results.
+No new attack result or privacy guarantee is established by this planning update.
+
+## What already exists and what remains open
+
+| Requirement | Existing diagnostic | Remaining empirical-study work |
+|---|---|---|
+| Attacker model | Complete background and candidate-trace knowledge, deterministic algorithm | Limited and reproducible auxiliary knowledge; explicit public-only attack input |
+| Protected unit | One simulated road user's complete recorded trace in the declared horizon | Freeze the horizon/sensor/application scope; do not reinterpret a vehicle as its occupants |
+| Secret | Whether that trace was included in the recorded input to the mechanism | Confirm membership as the first primary secret; later visit/attribute secrets need separate contracts |
+| Auxiliary/reference knowledge | Every background trace in the strong diagnostic | An independent reference-data source, target-knowledge sampling and uncertainty model |
+| Training/calibration/test | Not required for exact transcript equality | Independent grouped splits and leakage checks for a learned attack |
+| Attack | Ideal comparison of two known deterministic transcripts | Implement and validate a bounded-knowledge empirical attack |
+| Metric | Known-background distinguishability and derived balanced-game success | Measured ROC-AUC/operating-point performance, baselines and independent uncertainty |
+
+Thus these items are not entirely absent: they are defined for a much stronger, narrower
+stress test. Its definitions and historical results below must not be presented as a
+realistic empirical attack evaluation.
+
+## Proposed primary study: contribution membership
+
+**Proposed research question:** under which scenario and attacker-knowledge conditions does
+adaptive aggregation reduce contribution-membership inference relative to legal fixed
+aggregation, and at what cost in application utility, availability and age?
+
+This is a hypothesis to test. Larger cells, longer windows and larger support thresholds
+are not assumed to improve empirical protection monotonically. Data-dependent selection
+can change what the output geometry and timing reveal.
+
+| Contract field | Proposed first empirical setting |
+|---|---|
+| Observer | External recipient of one application's approved AGBS aggregate stream |
+| Protected unit | One simulated road user's entire recorded contribution within a fixed, predeclared evaluation horizon |
+| Secret | Whether the target's contribution was included in that input; distinct from physical presence, identification or a sensitive visit |
+| Neighbours | Add/remove the target from frozen observations; preserve every background trace, sampling opportunity and measured-empty batch |
+| Visible information | Ordered public counts, cells, intervals, logical release times, policy metadata and observable no-release periods over the same horizon |
+| Excluded information | GT, raw sensor collections, identity unions, private candidates/journal, suppression causes and debug/live-progress overlays |
+| Auxiliary knowledge | Public algorithm/policies, a declared partial candidate trace and independently generated/collected reference traces from a specified scenario population |
+| Target knowledge | Predeclared fractions or numbers of space/time observations, with explicit coordinate/time precision and noise; no access to the hidden target contribution label |
+| Prior | Balanced IN/OUT cases for the first controlled game; deployment prevalence is separate and must be supplied before interpreting positive-prediction precision |
+| First attack | A transparent binary classifier using declared public count, geometry and timing features; model/feature selection uses training/calibration data only |
+
+An attacker can know where a target travelled without knowing whether a separate data source
+included its observations. This makes contribution membership a meaningful first secret.
+If the sensor is assumed to capture every physically present target and the attacker already
+knows that fact, the proposed membership question can become trivial. Declare capture/
+inclusion assumptions; do not call this experiment physical-presence protection.
+
+Neither membership inference nor this first study requires an invented sensitive attribute.
+The aggregate-location literature motivates this choice: see the primary references below.
+A synthetic controlled study establishes evidence under its generator and knowledge model;
+it does not by itself validate real-world attacker realism.
+
+## E02 staged work packages and entry criteria
+
+### E02-A — Freeze the scientific and visibility contract
+
+Planning is active now. Finalize the proposed unit, horizon, secret, prior, auxiliary source,
+knowledge levels and public schema. Check that an assumed external recipient actually has
+no access to raw MongoDB collections, debug overlays or the private journal; collection
+separation alone is not access enforcement. State the logical-time/transport scope and
+which application views are visible. The first study uses one immutable application stream;
+multiple visible Policy Trees/views require a later joint-transcript extension.
+
+### E02-B — Build labelled cases after the minimal utility/policy milestone
+
+Entry: independently checked release semantics (EP01), a controlled utility/policy comparison
+and a frozen recipient schema/query. Reuse frozen input and capture provenance; realistic
+maps, shop demand and a general route planner are not prerequisites. Broader EP03/EP04
+studies can reuse the same independent realizations once the utility-first milestone is met.
+
+Select targets independently of release/suppression outcomes. For each case preserve paired
+IN/OUT inputs without rerunning movement; otherwise changed interactions can alter background
+traces. Hash/validate background equality. Create independent source realizations for
+training, calibration and final testing. Keep all windows, IN/OUT variants and mechanism
+outputs from one source realization in the same split. Group reused or cloned traces/people
+where required by the claimed generalization; random IDs do not make copies independent.
+For a target-specific attack, explicitly permit the same candidate target across independent
+background cases and scope the claim accordingly. No test release label may enter training,
+feature design, calibration or reference fitting.
+
+### E02-C — Implement one empirical attack and paired comparison
+
+Start with declared, inspectable features and a simple classifier. Public reconstruction
+must use a common feature/query coordinate system, retain unknown/missing masks, and never
+fill gaps from GT or private measured-empty/suppression diagnostics. Feed the attacker all
+permitted history; compare count-only against count-plus-geometry/time features as a
+leakage diagnostic. Projection differences are not additive causal privacy contributions.
+
+Train/calibrate fairly for each known mechanism with equivalent reference-data budgets;
+training only against an unprotected mechanism can underestimate an adaptive-aware attack.
+Use the existing legal fixed baselines, spatial-only, Temporal First (space aggregated
+first) and Spatial First (time aggregated first), on identical held-out inputs and policies.
+Include prior-only, exact-count and no-output controls. A no-output mechanism has no
+release information in this protocol but zero answered-query coverage.
+
+Predeclare ROC-AUC and TPR/FPR operating points. Choose score direction, hyperparameters
+and thresholds on training/calibration data, then freeze them. Report observed test FPR
+alongside TPR; a very low FPR claim needs enough independent negative cases to resolve it.
+If reporting advantage, define it at the selected threshold as TPR minus FPR. Report the
+membership prior and suitable precision/base-rate interpretation separately from balanced
+accuracy. Failed attacks show resistance only to the evaluated attack and knowledge model.
+
+Report paired mechanism differences and uncertainty using independent source realizations
+as the top-level sampling/resampling unit; targets/windows within a realization are dependent.
+Choose replication from pilot variability and desired precision, not an arbitrary run count.
+Show attack outcomes together with fixed-query occupancy error, full-domain/common-support
+coverage, retained contributions and simulated release age. Compare trade-off curves and
+include cases with no privacy improvement or utility loss. Do not define a universal privacy
+score as one minus attack accuracy.
+
+Exit: a reproducible frozen test report with a versioned threat model, split manifest,
+validated public-only features, controls, uncertainty and utility trade-offs. If the method
+fails to lower attack success, report that result and examine the release mechanism rather
+than replacing the secret or metric after seeing final tests.
+
+### E02-D — Extend only from an explicit research need
+
+Possible next secrets are a sensitive-region visit, trip purpose or trajectory linking.
+Each needs its own label, time scope, attacker prior and baseline. A shop or corridor is
+not inherently sensitive; semantic labels and physical maps do not supply that argument.
+For a visit secret, the attacker must not already know the visit being tested.
+
+Formal k-anonymity/l-diversity/t-closeness require a justified record/QI/group/attribute
+mapping; current distinct-ID support is not such a proof. An offline attack score is also
+not automatically a per-bucket online metric: the Policy Tree can select implemented
+release requirements, but cannot infer calibrated attack risk from a local count alone.
+A future online risk estimator would need separate calibration and out-of-sample validation.
+
+A differential-privacy mechanism would be a separate design decision, including protected
+contribution bounds, privacy accounting over repeated releases and the disclosure of adaptive
+partition/timing decisions. Adding noise to a count after a data-dependent partition does
+not by itself justify a DP claim. DP is not currently implemented or required by this plan.
+
+## Existing diagnostic contract
+
+The remaining sections document the implemented deterministic stress test. They are kept
+separate from the proposed empirical study above.
 
 ## Question and protected unit
 
 The initial question is: **can a recipient with complete knowledge of the background
-observations distinguish whether one target road user's recorded trajectory contributed
-to the release?** Membership in the recorded input is the secret. This does not by
+observations distinguish whether one target road user's recorded trajectory was included
+in the mechanism's input?** Membership in the recorded input is the secret; an IN target
+remains an IN target even if all of its contributions are suppressed. This does not by
 itself measure identification, the target's exact physical location, or a sensitive
 attribute. A road user is one simulator agent; a vehicle agent does not represent all
 of its occupants.
@@ -133,6 +271,10 @@ show that aggregate mobility membership attacks need not rely on a large auxilia
 dataset of real traces. Their threat model still specifies target knowledge and a
 synthetic reference-generation method. Our full-background test is simpler and
 stronger in background knowledge; it is not a replication of their attack.
+
+[Dwork and Roth, *The Algorithmic Foundations of Differential Privacy*](https://www.microsoft.com/en-us/research/publication/algorithmic-foundations-differential-privacy/)
+provides the separate formal-mechanism framework; the present deterministic aggregation
+pipeline makes no differential-privacy claim.
 
 The deterministic equality test and balanced-success formula above are our scoped
 experimental design and elementary derivation, not a new empirical result attributed

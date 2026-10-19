@@ -3,7 +3,7 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
-**Status: 2026-10-14. Current work: verify the integrated AGBS aggregation pipeline
+**Status: 2026-10-19. Current work: verify the integrated AGBS aggregation pipeline
 and evaluate utility and policy fulfilment first. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
@@ -23,8 +23,9 @@ writes and a durable private journal. Live and recorded diagnostics show the sel
 strategy and transitions. Automatic restart/resume, independent sibling windows, additional
 publication models and realistic attack studies remain open. The offline replay now compares
 four fixed baselines and three adaptive modes on identical input, with occupancy utility
-and effective-policy checks. Privacy evaluation is deferred by the current scope decision;
-the previously added optional stress-test helper remains available.**
+and effective-policy checks. Privacy planning is active with explicit E02-A–D entry/exit
+criteria; realistic empirical attack execution follows the utility/policy milestone. The
+historical optional stress-test helper remains available and is not that empirical result.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -41,7 +42,7 @@ its original external file remains unchanged.
 | [Research questions and experiment plan](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md) | Current answers, data prerequisites, feasibility oracle and staged utility/policy experiments |
 | [Controlled evaluation](docs/CONTROLLED_EVALUATION.md) | Frozen input, seven comparable configurations, fixed-query utility and reproduction commands |
 | [First comparison results](docs/EVALUATION_RESULTS_2026-10-14.md) | Measured results, interpretation, reproducibility artifacts and limitations |
-| [Deferred privacy evaluation](docs/PRIVACY_EVALUATION.md) | Previously implemented optional stress test; outside the current utility/policy milestone |
+| [Privacy roadmap and diagnostic](docs/PRIVACY_EVALUATION.md) | Active threat-model planning, staged empirical study after utility/policy checks, and the historical deterministic stress test |
 | [Publication coordination](docs/PUBLICATION_COORDINATION.md) | Integrated immutable MongoDB releases, private journal, retries and recovery boundaries |
 | [Live aggregation progress](docs/LIVE_AGGREGATION_PROGRESS.md) | Separate current-window checks, completed output and sensor geometry; H/G/P controls |
 | [Temporal adaptation](docs/TEMPORAL_AGGREGATION.md) | Implemented Temporal First/Spatial First, shared-history windows, deadlines and runnable example |
@@ -96,8 +97,10 @@ The first application query is now mean sampled occupancy on a fixed 10-m refere
 over 1-second intervals; [METRICS.md](docs/METRICS.md) defines its reference, reconstruction
 assumptions and missing-data treatment. The offline evaluator now computes conditional MAE,
 answered/scored-query coverage, reference availability, resolution and simulated sealing age.
-The current evaluation focuses on utility and policy fulfilment. The optional deterministic
-privacy stress test and future realistic attack studies are deferred. A minimum number of contributors per publication is initially
+The current evaluation focuses on utility and policy fulfilment. Privacy design is active;
+the [E02 roadmap](docs/PRIVACY_EVALUATION.md) specifies a proposed contribution-membership
+study with bounded knowledge and independent grouped testing after the minimal utility/policy
+milestone. No realistic empirical privacy result exists yet. A minimum number of contributors per publication is initially
 an operational release rule. It does not by itself establish formal k-anonymity or a
 reduction in empirical attack success.
 
@@ -106,7 +109,8 @@ The October 14 supervisor discussion supported the concrete proof of concept. In
 metrics, regional policies, shared history, spatial/temporal adaptation and the first durable
 release path now run together. The first controlled utility/policy evaluation is implemented.
 Next come explicit missing/empty-support semantics, policy/scenario sweeps and precise
-feasibility claims for the presentation. Privacy evaluation follows after this milestone. Implementation demonstrates mechanics;
+feasibility claims for the presentation. Privacy attack execution follows the documented
+entry milestone; rich maps/routing are not prerequisites. Implementation demonstrates mechanics;
 mathematical feasibility and measured effectiveness require separate evidence.
 
 The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) now prioritizes
