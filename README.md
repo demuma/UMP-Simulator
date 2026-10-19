@@ -37,11 +37,21 @@ retention now matches common for Spatial First and differs by only -0.0732 perce
 points for Temporal First on average. Accuracy trade-offs remain explicit. See the
 [before/after report](docs/COORDINATION_REFINEMENT_2026-10-19.md).
 
-**Current focus — empirical privacy:** the predeclared 184-realization common/local
+**First empirical privacy comparison:** the predeclared 184-realization common/local
 source-membership study is complete: 3312 valid audits, four repeats and 44 converged
 public-only attacks. Local SF lowers this attack's pooled AUC from 0.6561 to 0.6197,
 with small availability/retention costs; residual signal and scenario dependence remain.
 [Threat model, protocol and results](docs/PRIVACY_COORDINATION_STUDY_2026-10-19.md).
+
+**Latest robustness result:** a new independent 208-group / 16-second study completes
+2080 valid audits and 28 fitted attack models, with exact/uncertain candidate knowledge
+and a held-out background population-count shift. There is no general local privacy
+advantage: 15 of 16 paired intervals contain zero, while one indicates higher attack
+success. Local retention and query availability are also lower on this population.
+All models, negative findings and uncertainty are in the [robustness study](docs/PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md).
+All 36 CTest suites and 228 Python methods pass in the complete optional environment.
+[Attribute/context and online contracts](docs/PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md)
+define the next research questions without claiming those features are implemented.
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -63,6 +73,9 @@ its original external file remains unchanged.
 | [October 19 test report](docs/TEST_REPORT_2026-10-19.md) | Actual regression results, independent hand cases, synthetic pilot evidence and limitations |
 | [Refinement/privacy test report](docs/REFINEMENT_PRIVACY_TEST_REPORT_2026-10-19.md) | 33 CTest suites, 196 Python methods, sanitizer checks and independent experiment validation |
 | [Coordination refinement](docs/COORDINATION_REFINEMENT_2026-10-19.md) | Endpoint planning, feasible holds, same-input before/after comparison and accuracy trade-offs |
+| [Privacy robustness study](docs/PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md) | New independent 16-second groups, two attack families, uncertain knowledge, shift, all results and aggregate tables |
+| [Privacy robustness test report](docs/PRIVACY_ROBUSTNESS_TEST_REPORT_2026-10-19.md) | 36 CTest suites, 228 Python methods and independent numeric/hash verification |
+| [Attribute/context and online contract](docs/PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md) | QI/SA roles, semantic-visit prerequisites, causal recipient prefixes and deadline-aware utility |
 | [Privacy coordination study](docs/PRIVACY_COORDINATION_STUDY_2026-10-19.md) | Protected secret, 184 independent groups, common/local attacks and held-out privacy/utility findings |
 | [Cell-local coordination](docs/CELL_LOCAL_COORDINATION.md) | Independent cell windows, mixed-depth ownership, handoffs, scoped releases and configuration |
 | [Study test report](docs/COORDINATION_STUDY_TEST_REPORT_2026-10-19.md) | Measurement implementation, 31 CTest suites, 179 Python methods, provenance and independent checks |
@@ -131,18 +144,17 @@ A minimum number of contributors per publication is initially
 an operational release rule. It does not by itself establish formal k-anonymity or a
 reduction in empirical attack success.
 
-**Next milestone: October 18 presentation evidence, then October 25 conference.**
-The October 14 supervisor discussion supported the concrete proof of concept. Input,
-metrics, regional policies, shared history, spatial/temporal adaptation and the first durable
-release path now run together. The first controlled utility/policy evaluation is implemented.
-Next come explicit missing/empty-support semantics, policy/scenario sweeps and precise
-feasibility claims for the presentation. Privacy attack execution follows the documented
-entry milestone; rich maps/routing are not prerequisites. Implementation demonstrates mechanics;
-mathematical feasibility and measured effectiveness require separate evidence.
+**Next milestone: October 25 conference evidence; October 18 is historical.**
+Input, metrics, regional policies, bounded history, common/local space-time adaptation
+and immutable publication run together. Independent utility/policy and controlled
+membership studies are complete. The immediate research work is to explain measured
+strengths and failures, justify the next protected semantic secret and define a causal
+online evaluation. Realistic maps/routing remain optional validity improvements rather
+than prerequisites for those controlled studies. Implementation demonstrates mechanics;
+mathematical feasibility and empirical effectiveness are separately evidenced.
 
-The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) now prioritizes
-that foundation immediately, dynamic spatial release selection and initial comparisons by
-October 18, then temporal adaptation and stronger comparative evidence by October 25.
+The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) preserves
+the historical milestones and tracks the remaining publication/evaluation work.
 The existing quadtree remains the spatial foundation. Its maximum depth may stay bounded
 while the chosen publication cells change according to metrics and policies. The complete
 dissertation narrative remains in the presentation; improved empirical privacy is an

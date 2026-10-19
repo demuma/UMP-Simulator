@@ -177,3 +177,9 @@ q_p=\min\left\{z:\sum_{i:z_i\le z}w_i\ge p\sum_iw_i\right\},\qquad 0<p\le1.
 \mathcal A=\{r(f):r(f)\ \text{exists}\},\qquad
 \mathcal P=\{C\in\mathcal A:\nexists C'\in\mathcal A\ \text{with}\ C\subsetneq C'\}.
 \end{equation}
+
+\begin{equation}
+\widetilde{x}_j=\operatorname{clip}_{[0,80)}(x_j+\epsilon_{xj}),\quad
+\widetilde{y}_j=\operatorname{clip}_{[0,80)}(y_j+\epsilon_{yj}),\quad
+\widetilde{t}_j=\operatorname{clip}_{[1,H-1]}(t_j+\eta_j),
+\end{equation}

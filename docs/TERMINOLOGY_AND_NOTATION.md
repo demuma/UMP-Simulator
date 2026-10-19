@@ -1,6 +1,6 @@
 # Terminology, notation and mathematical contract
 
-Version 1.3 — 2026-10-19. This is the project's canonical terminology for the presentation,
+Version 1.4 — 2026-10-19. This is the project's canonical terminology for the presentation,
 paper, dissertation and new documentation. It describes the implemented baseline and marks
 future extensions explicitly. Earlier reviews retain historical/local notation; use this
 reference when translating them into publication text. Code identifiers are mapped below;
@@ -768,3 +768,43 @@ Each accepted cell still requires complete source coverage, exact metric recompu
 all effective requirements and an unreused space-time domain. Holds require an actual
 compatible ancestor with possible future geometry/time bounds; future passing observations
 are not assumed. See [the refined implementation and experiments](COORDINATION_REFINEMENT_2026-10-19.md).
+
+
+## 22. Robustness cohorts, auxiliary knowledge and attribute roles
+
+The [robustness protocol](PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md) retains the source-
+contribution secret from section 18, with a separately declared 16-second protected
+unit. Let $\chi\in\{\mathrm{base},\mathrm{shift}\}$ identify the evaluation
+population, $\psi\in\{\mathrm{logistic},\mathrm{HGB}\}$ the fixed attack family,
+and $\kappa\in\{\mathrm{exact25},\mathrm{noisy25}\}$ the candidate-knowledge profile.
+These labels select evaluation strata/models; private distribution and scenario
+labels are not prediction features. Both test populations use models and thresholds
+fitted/calibrated exclusively on base training/calibration groups.
+
+For each selected auxiliary point $(t_j,x_j,y_j)$, the uncertain profile uses
+
+$$
+\widetilde{x}_j=\operatorname{clip}_{[0,80)}(x_j+\epsilon_{xj}),\quad
+\widetilde{y}_j=\operatorname{clip}_{[0,80)}(y_j+\epsilon_{yj}),\quad
+\widetilde{t}_j=\operatorname{clip}_{[1,H-1]}(t_j+\eta_j),
+$$
+
+where $\epsilon_{xj},\epsilon_{yj}\sim N(0,(2\,\mathrm m)^2)$ independently,
+$\eta_j$ is integer-uniform over $[-200,200]$ milliseconds and $H=16000$ milliseconds.
+The finite implementation clips the spatial upper endpoint to its largest representable
+predecessor, recalculates cell IDs and deduplicates exact triples. It perturbs auxiliary
+knowledge rather than mechanism outputs. Both worlds and all mechanisms share the same
+selected/perturbed points. No formal privacy parameter is implied.
+
+Use $\Delta_{\chi,\psi,\kappa}^{p}=\widehat{\operatorname{AUC}}_{\mathrm{local},\chi,\psi,\kappa}^{p}
+-\widehat{\operatorname{AUC}}_{\mathrm{common},\chi,\psi,\kappa}^{p}$ for a paired
+local/common contrast at preservation priority $p$. Pair and resample independent source
+groups within one population; the base and shifted test cohorts are independent and
+not cross-paired. The intervals condition on fitted models/thresholds and are pointwise.
+
+QI denotes a declared linkage-relevant attribute set under a specified observer and
+reference population. SA denotes the secret attribute/value being protected in the
+chosen inference game. They are roles, not mutually exclusive permanent column types.
+The present membership experiment needs no fabricated SA. A future visit game preserves
+candidate source inclusion in both secret worlds and changes the withheld visit; it
+is not the membership IN/OUT game. See the [attribute/environment/online contract](PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).

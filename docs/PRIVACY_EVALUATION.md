@@ -17,6 +17,14 @@ source-membership comparison now uses the corrected controller and spatially sco
 features. See [the protocol and results](PRIVACY_COORDINATION_STUDY_2026-10-19.md). Its exact
 candidate knowledge and synthetic background limit any real-world interpretation.
 
+**Latest independent extension:** the [16-second robustness study](PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md)
+adds uncertain knowledge, a held-out background population-count shift and a second
+fixed attack family. All 2080 audits and 28 model fits complete. It provides no general
+local privacy advantage, with explicit utility costs and one pointwise contrast toward
+higher attack success. Keep the earlier four-second result scoped to its own population;
+this is not a controlled horizon-effect comparison. QI/SA roles and future semantic/online
+games are defined in the [attribute/context contract](PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
+
 ## What already exists and what remains open
 
 | Requirement | Existing diagnostic | Remaining empirical-study work |

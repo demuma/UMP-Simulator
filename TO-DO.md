@@ -1,6 +1,6 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-19. Current priority: empirical privacy after verified coordination refinement; prepare reproducible evidence for October 25. October 18 remains a historical milestone.**
+**Status: 2026-10-19. Current priority: interpret completed privacy robustness evidence and define semantic-visit/online evaluation contracts before implementation; prepare October 25 evidence. October 18 remains a historical milestone.**
 
 This is the central task backlog. README describes current behavior; this file tracks
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
@@ -23,6 +23,15 @@ refinement now closes those examples and is verified on the identical matrix; al
 untouched references match. Mixed-density SF retention matches common, TF differs by
 -0.0732 pp on average. The user now prioritizes the [empirical privacy comparison](docs/PRIVACY_COORDINATION_STUDY_2026-10-19.md).
 See the [refinement report](docs/COORDINATION_REFINEMENT_2026-10-19.md) for accuracy trade-offs.
+
+**Latest completed milestone:** the independent 208-group robustness study passes
+2080 audits and four repeats, with 28 fixed attack models and separate base/shift tests.
+It does not establish a general local privacy advantage: 15/16 paired intervals contain
+zero and one indicates greater attack success. Local retention/availability also fall.
+[All results](docs/PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md); [36-suite / 228-method test report](docs/PRIVACY_ROBUSTNESS_TEST_REPORT_2026-10-19.md).
+The next ordered discussion is the protected semantic secret and auxiliary knowledge,
+then causal online-prefix/deadline evaluation; further coordinator tuning follows
+explicitly measured needs.
 
 ## 1. Status and priorities
 
@@ -433,13 +442,35 @@ The [question register](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md),
 - [x] Complete the fixed 3312-replay / 44-model comparison: all independent audits pass,
   all models converge, four deterministic repeats pass. Report held-out TPR/FPR, AUC,
   paired conditional uncertainty, controls, availability/accuracy and failure cases.
-- [ ] Prioritize the newly declared privacy follow-up over further coordinator tuning:
-  preserve current assessment data; test longer/noisy auxiliary traces, shifted populations,
-  stronger attacks and calibration based only on observable context.
-- [ ] Design a new independent follow-up for longer horizons, noisy auxiliary knowledge,
-  shifted backgrounds and a stronger attack family after reading the fixed report.
-  Keep the current held-out set for assessment; do not tune against its outcomes.
-- [ ] Treat sensitive-attribute inference and formal k/l/t/DP mappings as separate contracts.
+- [x] Prioritize and complete the new independent follow-up before further coordinator
+  tuning: seed 20261021, 16-second recorded units, 48 train/32 calibration/64 base-test/
+  64 shifted-test groups, exact/noisy 25% knowledge, five mechanisms and two controls.
+- [x] Add the optional pinned nonlinear attack family alongside logistic regression; fit
+  only base TRAIN, calibrate only base CAL, preserve the same threshold for both test
+  cohorts, and report all 28 models / 56 assessments without selecting a winner.
+- [x] Complete 2080 independent audits, four repeats and group-paired conditional
+  uncertainty; preserve all 16 contrasts, 224 scenario assessments and utility costs.
+  The new evidence shows no general local privacy benefit. See the
+  [robustness study](docs/PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md).
+- [x] Document QI/SA roles and environmental-context risks, semantic-visit prerequisites
+  and the online-prefix contract in the [new reference](docs/PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
+  These are research/interface definitions, not implemented semantic labels or an online client.
+- [ ] **Next discussion, E02-D:** choose a defensible semantic secret and visit ground truth
+  (entry/dwell rather than building proximity); keep candidate source participation in
+  both visit worlds, freeze backgrounds and withhold secret/guard intervals from knowledge.
+- [ ] **Then, E02-D implementation:** build a minimal synthetic destination/access-path
+  fixture and auxiliary-only/release-plus-knowledge controls, independent splits and
+  frozen attack protocol. Real city maps remain a separate realism extension.
+- [ ] **Then, online evaluation:** implement recipient-prefix features and deadline-aware
+  fixed-query utility with no future releases/knowledge. Distinguish assumed instantaneous
+  logical delivery from measured wall-clock processing, queues and end-to-end availability.
+- [ ] Test noise-aware matching/trajectory smoothing or probabilistic localization on a
+  newly declared assessment; current uncertain points use direct matching. Preserve all
+  completed test sets and avoid tuning these methods on their outcomes.
+- [ ] Explore calibration based only on observable context, with adequate independent
+  negative counts; private scenario IDs/distribution labels must not become attack features.
+- [ ] Treat sensitive-attribute inference and formal k/l/t/DP mappings as separate contracts;
+  do not turn road-user classes into sensitive attributes simply because they already exist.
 
 ### N01 — Canonical scientific terminology and notation — implemented reference
 
@@ -1356,7 +1387,10 @@ extensions still require separate contracts; see the October 19 implementation/t
   keep latent labels private and separate from sensor-visible information.
 
 - [ ] Evaluate k/l/t/delta/entropy metrics for actual data and attack scenarios.
-- [ ] Clarify sensitive attributes and the meaning of agent classes.
+- [x] Document candidate QI/SA roles and why road-user classes are not automatically
+  sensitive; see [the attribute contract](docs/PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
+- [ ] Select an actual sensitive secret, semantic label and observer before implementing
+  the next attribute-inference game; the documented role table is not generated ground truth.
 - [ ] Define multiple seeds/scenarios and suitable statistical summaries.
 
 **Acceptance:** each metric has a justified meaning and specified internal inputs.
@@ -1599,3 +1633,23 @@ separate population; residual membership signal, scenario dependence and realize
 above the nominal calibration cap remain. Do not claim general protection or universal
 advantage. The new independent attack/noisy-knowledge/shift protocol is the next priority;
 formal privacy and sensitive-attribute definitions remain separate research contracts.
+
+
+## Privacy robustness and GitHub publication — later October 19
+
+- Published the audited committed project/history to `demuma/UMP-Simulator` with
+  `main` tracking `origin/main`; private data/builds and pre-existing local edits excluded.
+- Added independent v2 long-path groups, auxiliary uncertainty, population-count shift
+  and a pinned optional boosted-tree attack without changing the simulation engine.
+- Passed 36 CTest suites and all 228 Python methods in the complete optional environment;
+  legacy Python runs 222 methods with six optional HGB skips. The current fixed study
+  completes 2080 audits / 178649 released cells / four repeats / 28 fitted models.
+- Independent review recomputes all 56 AUCs, 224 scenario assessments, 16 paired
+  bootstrap intervals, utility denominators and 5371 artifact hashes. No general local
+  privacy advantage is established; retention/query-availability losses are explicit.
+- Exported all aggregate comparisons and a visually inspected scientific PNG/SVG.
+  [Study](docs/PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md),
+  [test report](docs/PRIVACY_ROBUSTNESS_TEST_REPORT_2026-10-19.md),
+  [QI/SA/environment/online contract](docs/PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
+- Next are the explicit semantic-secret and online-prefix discussions; maps, SA labels,
+  noise-aware attacks and an online application are still unimplemented.

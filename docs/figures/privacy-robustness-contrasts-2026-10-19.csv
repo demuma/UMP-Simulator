@@ -1,0 +1,17 @@
+variant,knowledge_profile,attack_family,cohort,groups,delta_auc,ci_low,ci_high,bootstrap_repeats
+local_spatial_first,exact_25,logistic,base,64,0.007080078125,-0.025885009765625,0.040289306640624994,400
+local_spatial_first,exact_25,logistic,background_density_shift,64,0.004638671875,-0.01636962890625,0.024926757812499978,400
+local_spatial_first,exact_25,hist_gradient_boosting,base,64,-0.0338134765625,-0.0905914306640625,0.020635986328124994,400
+local_spatial_first,exact_25,hist_gradient_boosting,background_density_shift,64,-0.01904296875,-0.091448974609375,0.05142211914062497,400
+local_spatial_first,noisy_25,logistic,base,64,0.002685546875,-0.037841796875,0.04592285156249998,400
+local_spatial_first,noisy_25,logistic,background_density_shift,64,0.010009765625,-0.010748291015625,0.03199462890624999,400
+local_spatial_first,noisy_25,hist_gradient_boosting,base,64,-0.011962890625,-0.050695800781249994,0.03419189453124999,400
+local_spatial_first,noisy_25,hist_gradient_boosting,background_density_shift,64,-0.0396728515625,-0.0870452880859375,0.006900024414062442,400
+local_temporal_first,exact_25,logistic,base,64,0.041015625,-0.004644775390625,0.08186035156249993,400
+local_temporal_first,exact_25,logistic,background_density_shift,64,0.029052734375,-0.012457275390625,0.07670898437499996,400
+local_temporal_first,exact_25,hist_gradient_boosting,base,64,-0.00537109375,-0.0631134033203125,0.05496215820312497,400
+local_temporal_first,exact_25,hist_gradient_boosting,background_density_shift,64,0.0416259765625,-0.0178466796875,0.0985015869140624,400
+local_temporal_first,noisy_25,logistic,base,64,0.05712890625,0.01121826171875,0.106201171875,400
+local_temporal_first,noisy_25,logistic,background_density_shift,64,0.024658203125,-0.005621337890625,0.055908203125,400
+local_temporal_first,noisy_25,hist_gradient_boosting,base,64,-0.0400390625,-0.10587158203125,0.032730102539062486,400
+local_temporal_first,noisy_25,hist_gradient_boosting,background_density_shift,64,0.0384521484375,-0.0382110595703125,0.11736450195312495,400

@@ -1,0 +1,3 @@
+# Optional robustness attack environment; requires Python >=3.11.
+# Legacy evaluation and logistic attacks remain dependency-free.
+scikit-learn==1.9.1
