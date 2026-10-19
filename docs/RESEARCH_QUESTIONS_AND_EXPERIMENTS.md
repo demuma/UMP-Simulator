@@ -1,9 +1,10 @@
 # Research questions, data requirements and experiment plan
 
 Status: 2026-10-19. Utility and policy fulfilment remain the immediate experimental scope.
-Privacy planning is active again, with an explicit subsequent E02-A–D milestone in
-[PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md). This records proposed research design;
-new privacy experiments, classifiers and sensitive-attribute implementation remain pending.
+EP01 and the first E02-A–C controlled synthetic membership evaluation are implemented.
+[EMPIRICAL_PRIVACY_IMPLEMENTATION.md](EMPIRICAL_PRIVACY_IMPLEMENTATION.md) and the
+[test report](TEST_REPORT_2026-10-19.md) separate actual evidence from broader EP02–EP04
+sweeps, sensitive-attribute studies and formal claims that remain pending.
 
 This document distinguishes a current answer, a hypothesis and an experiment that still
 needs to be implemented. The [pilot report](EVALUATION_RESULTS_2026-10-14.md) contains actual
@@ -41,7 +42,7 @@ They do not prove search completeness, optimality, general superiority or empiri
 | Q6 | Do we need more data for additional utility/statistical metrics? | Exact finite-data errors/distributions can be computed on small fixtures. Broader conclusions need relevant variation, independent realizations and a fixed estimand. More frames from one trajectory do not supply independent runs. | Select application task and sampling unit first, then plan replication from pilot variability and desired precision. |
 | Q7 | What data would make additional privacy metrics meaningful? | The historical full-background membership diagnostic has a unit/secret/transcript contract; realistic attacks and several other metrics still lack finalized contracts, reference data or labels. | Freeze E02-A, then implement E02-B/C after the utility/policy entry milestone; use the readiness table for other metrics. |
 | Q8 | Can the implementation meet runtime requirements? | Replay core timings omit parsing, persistence, transport and rendering; they do not establish end-to-end real-time operation. | Separate repeatable profiling and processing-budget tests on frozen input, with stage timings and deadlines. |
-| Q9 | Under which knowledge/scenario conditions does adaptive aggregation reduce contribution-membership inference, and at what utility cost? | No realistic empirical result. Higher support or policy compliance does not settle this question. | Public-only empirical attack, independent grouped splits, calibrated operating points and paired fixed/adaptive trade-off comparisons under E02-A–C. |
+| Q9 | Under which knowledge/scenario conditions does adaptive aggregation reduce contribution-membership inference, and at what utility cost? | A first controlled synthetic public-only benchmark is implemented and executed; see the October 19 test report. Real-world protection is unresolved. | Expand independent/scenario/attacker evidence from the frozen E02-A–C protocol; higher support or policy compliance alone does not settle the question. |
 
 ## Initial decisions for a comparable experiment
 
@@ -129,8 +130,11 @@ retained contributions, algorithm retention gap and binding requirements. A zero
 is scoped to the enumerated domain, intervals and supported policy subset.
 
 Acceptance: exact hand cases for sufficient support, impossible support, handover, a strict
-regional crossing, one failing sibling, missing input, and deadline/size boundaries. Only
-then extend the oracle to larger tiny trees. The oracle is not implemented yet.
+regional crossing, one failing sibling, missing input, and deadline/size boundaries.
+Implemented in `tools/evaluation/oracle.py` with bounded references and raw compliance
+recomputation; tests include exhaustive depth-2 patterns and actual seven-mode replay.
+See the test report for evidence and the demonstrated partial-rescue model gap. Larger
+search/online-optimality and independent cell-window claims remain outside this reference.
 
 ## EP02 — Controlled mechanism cases
 
@@ -249,7 +253,12 @@ baseline must include that knowledge; an attribute copied from the exact publish
 would make the experiment circular. Likewise, realistic maps alone do not provide a
 population model, sensitive labels or a validated attacker.
 
-## Immediate next implementation
+## Implementation progression
+
+October 19 update: the small independent oracle, seeded paired datasets and first public-only
+empirical study below are now implemented. The earlier sequence is preserved as design
+context; full EP02–EP04 regional-policy sweeps and advanced coordination remain open.
+
 
 Start EP01 with the smallest independent compliance/feasibility cases and add private
 suppression-cause diagnostics needed for EP02. Preserve the current public release protocol

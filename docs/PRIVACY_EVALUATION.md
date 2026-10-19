@@ -1,12 +1,16 @@
 # Privacy evaluation roadmap and membership stress-test contract
 
-Status: 2026-10-19. **Planning active; new attack experiments not implemented.** The user
-reopened privacy design and its integration into the dissertation plan. Utility and policy
-fulfilment remain the immediate implementation milestone. E02's existing deterministic
-neighbour comparison is retained as a separate diagnostic. A realistic empirical privacy
-study is now an explicit subsequent milestone, rather than an indefinitely optional item.
-The proposed choices below must be frozen before collecting or inspecting final test results.
-No new attack result or privacy guarantee is established by this planning update.
+Status: 2026-10-19. **The first controlled synthetic empirical path is implemented.**
+The user authorized the complete independent-check/data/attack implementation. The selected
+E02-A–C contract, code and reproduction are in
+[EMPIRICAL_PRIVACY_IMPLEMENTATION.md](EMPIRICAL_PRIVACY_IMPLEMENTATION.md); actual results
+are in [TEST_REPORT_2026-10-19.md](TEST_REPORT_2026-10-19.md). Real-world attacker realism,
+sensitive-attribute studies and formal guarantees remain open. E02-D is future work.
+
+The roadmap below preserves the design rationale and initial proposal. Its first empirical
+instantiation is now fixed: source-contribution inclusion, exact partial candidate knowledge,
+independent seeded reference realizations, grouped splits, logistic classifier, calibration
+and public-only held-out testing. The historical deterministic diagnostic remains separate.
 
 ## What already exists and what remains open
 
@@ -20,9 +24,10 @@ No new attack result or privacy guarantee is established by this planning update
 | Attack | Ideal comparison of two known deterministic transcripts | Implement and validate a bounded-knowledge empirical attack |
 | Metric | Known-background distinguishability and derived balanced-game success | Measured ROC-AUC/operating-point performance, baselines and independent uncertainty |
 
-Thus these items are not entirely absent: they are defined for a much stronger, narrower
-stress test. Its definitions and historical results below must not be presented as a
-realistic empirical attack evaluation.
+The table records the original readiness gaps. The first synthetic implementation now
+supplies bounded knowledge, grouped splits, a calibrated attack and empirical metrics under
+the linked implementation contract. The stronger diagnostic and its historical results
+below remain separate evidence; neither study validates real-world protection.
 
 ## Proposed primary study: contribution membership
 
@@ -62,7 +67,8 @@ it does not by itself validate real-world attacker realism.
 
 ### E02-A — Freeze the scientific and visibility contract
 
-Planning is active now. Finalize the proposed unit, horizon, secret, prior, auxiliary source,
+The first offline instantiation is fixed in the linked implementation contract. Before a
+live/external extension, finalize its unit, horizon, secret, prior, auxiliary source,
 knowledge levels and public schema. Check that an assumed external recipient actually has
 no access to raw MongoDB collections, debug overlays or the private journal; collection
 separation alone is not access enforcement. State the logical-time/transport scope and

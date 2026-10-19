@@ -115,3 +115,21 @@ k_{\min}&=\min_{\mathbf q:E_{\mathbf q}\ne\varnothing}|E_{\mathbf q}|,\\
 \ell_{\min}^{\mathrm{distinct}}&=\min_{\mathbf q:E_{\mathbf q}\ne\varnothing}|\{S_u:u\in E_{\mathbf q}\}|.
 \end{aligned}
 \end{equation}
+
+\begin{equation}
+\operatorname{TPR}=\frac{TP}{TP+FN},\qquad
+\operatorname{FPR}=\frac{FP}{FP+TN},\qquad
+\operatorname{Adv}_{\tau}=\operatorname{TPR}-\operatorname{FPR}.
+\end{equation}
+
+\begin{equation}
+\operatorname{BA}_{\tau}=\frac{\operatorname{TPR}+1-\operatorname{FPR}}{2}.
+\end{equation}
+
+\begin{equation}
+\widehat{\operatorname{AUC}}=
+\frac{1}{n_{\mathrm{in}}n_{\mathrm{out}}}
+\sum_{i=1}^{n_{\mathrm{in}}}\sum_{j=1}^{n_{\mathrm{out}}}
+\left(\mathbf{1}[s_i^{\mathrm{in}}>s_j^{\mathrm{out}}]
++\frac{1}{2}\mathbf{1}[s_i^{\mathrm{in}}=s_j^{\mathrm{out}}]\right).
+\end{equation}

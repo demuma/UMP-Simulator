@@ -5,8 +5,10 @@ implemented. This extends the [fixed aggregation contract](FIXED_AGGREGATION.md)
 supplies requirements through [POLICY_TREE.md](POLICY_TREE.md). Spatial/temporal selection
 and immutable publication are integrated. [Controlled evaluation](CONTROLLED_EVALUATION.md)
 now compares identical inputs; [PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md) defines the
-previously added optional deterministic stress test. The current user-selected focus is
-utility and policy fulfilment; privacy evaluation is deferred.
+previously added optional deterministic stress test. Utility and policy evaluation now have an independent checker and a separate first
+controlled synthetic empirical membership study; see
+[EMPIRICAL_PRIVACY_IMPLEMENTATION.md](EMPIRICAL_PRIVACY_IMPLEMENTATION.md). The online
+registry still contains no per-bucket empirical privacy-risk estimate or formal guarantee.
 
 Canonical terms, symbols, units and code mappings are defined in
 [TERMINOLOGY_AND_NOTATION.md](TERMINOLOGY_AND_NOTATION.md). Aggregation is bound to
@@ -157,8 +159,9 @@ resolution and freshness, together with effective-policy compliance, suppression
 availability. The user selected utility and policy fulfilment before privacy evaluation.
 Contributor support remains an operational requirement; meeting it is not a measured-risk result.
 
-The previously proposed membership/presence evaluation is deferred. Its scientific motivation
-and experimental limits remain in [PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md). Neither
+A first synthetic contribution-membership study is now implemented separately from the
+online registry. Its motivation and limits remain in [PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md)
+and the implementation/test report. Neither
 utility measurements nor policy compliance establish formal anonymity or reduced attack success.
 
 Example motivation: a window containing ten different agents over ten instants can

@@ -119,8 +119,10 @@ initial indoor population, rather than being unrelated spawn events.
 
 ### Dependency and priority order
 
-1. **EP01 now:** implement the independent small-case feasibility/compliance reference and
-   private loss diagnostics. No environment implementation is needed to answer those cases.
+1. **EP01 implemented:** the independent small-case compliance/feasibility reference now
+   demonstrates model gaps. See [TEST_REPORT_2026-10-19.md](TEST_REPORT_2026-10-19.md).
+   The seeded empirical generator is also implemented; expanded private cause diagnostics
+   and the complete regional-policy study remain open.
 2. **Small SC01 fixture:** one street cross-section with stable functional-region IDs and
    prescribed mode-compatible paths. Named starts/exits suffice; detailed doors, indoor
    behavior and stochastic shop demand are optional later refinements.
@@ -134,9 +136,9 @@ initial indoor population, rather than being unrelated spawn events.
    activity demand, global routes, local following/trajectory generation and avoidance.
    Select algorithms from the required workload and measured deficiencies at that stage.
 
-The next concrete software deliverable is EP01's tiny independent reference with known
-expected results. The next environment deliverable is a small scenario contract and fixture,
-not a general city simulator. This order preserves the dissertation's focus on aggregation
+EP01 and a first seeded prescribed-motion empirical fixture are now implemented. The next
+environment deliverable is the controlled regional-policy contract and fixed query masks;
+the full street/shop study remains distinct from the current modal-path generator. This order preserves the dissertation's focus on aggregation
 conditions, utility and policy fulfilment.
 
 ## Application requirements by region

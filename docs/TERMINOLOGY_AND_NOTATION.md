@@ -593,3 +593,43 @@ $f_e^{\mathrm{in}}(I)=N_e^{\mathrm{in}}(I)/(|I|/1000)$ for a positive-duration i
 Use analogous outward quantities only after defining their activity/stock model. This
 notation does not select a Poisson process or implement an online flow metric. Counting
 repeated crossings differs from n(C,I), which counts an identity once per cell/window.
+
+
+## 18. Empirical source-contribution membership
+
+Implemented evaluation contract: [EMPIRICAL_PRIVACY_IMPLEMENTATION.md](EMPIRICAL_PRIVACY_IMPLEMENTATION.md).
+Use source-contribution membership for inclusion in the mechanism input, including targets
+whose observations are eventually suppressed. It does not mean physical presence or
+survival in a public output. The unit is one road user's whole recorded contribution over
+the declared horizon. Candidate auxiliary trace knowledge is the same in IN and OUT.
+
+Let s be the frozen attack score, tau its calibration-selected decision threshold, and
+TP/FP/TN/FN the held-out confusion counts for membership. Predict IN when s >= tau.
+
+$$
+\operatorname{TPR}=\frac{TP}{TP+FN},\qquad
+\operatorname{FPR}=\frac{FP}{FP+TN},\qquad
+\operatorname{Adv}_{\tau}=\operatorname{TPR}-\operatorname{FPR}.
+$$
+
+$$
+\operatorname{BA}_{\tau}=\frac{\operatorname{TPR}+1-\operatorname{FPR}}{2}.
+$$
+
+With n_in IN scores and n_out OUT scores, the tie-aware empirical ranking measure is
+
+$$
+\widehat{\operatorname{AUC}}=
+\frac{1}{n_{\mathrm{in}}n_{\mathrm{out}}}
+\sum_{i=1}^{n_{\mathrm{in}}}\sum_{j=1}^{n_{\mathrm{out}}}
+\left(\mathbf{1}[s_i^{\mathrm{in}}>s_j^{\mathrm{out}}]
++\frac{1}{2}\mathbf{1}[s_i^{\mathrm{in}}=s_j^{\mathrm{out}}]\right).
+$$
+
+Undefined denominators remain unavailable. The implemented balanced game has membership
+prior 0.5. Deployment precision requires a separately declared prior; balanced accuracy
+alone does not supply it. ROC-AUC and threshold advantage are attack outcomes, not formal
+k-anonymity/DP parameters or a universal privacy score. AUC below 0.5 is not test-inverted.
+The independent source realization is the uncertainty unit, with both labels and all
+mechanisms paired; the present bootstrap preserves scenario strata and freezes fitted
+models/thresholds. The calibrated FPR cap is empirical, not a held-out guarantee.

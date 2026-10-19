@@ -23,9 +23,10 @@ writes and a durable private journal. Live and recorded diagnostics show the sel
 strategy and transitions. Automatic restart/resume, independent sibling windows, additional
 publication models and realistic attack studies remain open. The offline replay now compares
 four fixed baselines and three adaptive modes on identical input, with occupancy utility
-and effective-policy checks. Privacy planning is active with explicit E02-A–D entry/exit
-criteria; realistic empirical attack execution follows the utility/policy milestone. The
-historical optional stress-test helper remains available and is not that empirical result.**
+and effective-policy checks. EP01 independent validation, seeded grouped datasets and a
+public-only calibrated empirical membership benchmark are now implemented. Controlled
+synthetic results and verification are recorded in the October 19 test report. The historical
+complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
@@ -42,7 +43,9 @@ its original external file remains unchanged.
 | [Research questions and experiment plan](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md) | Current answers, data prerequisites, feasibility oracle and staged utility/policy experiments |
 | [Controlled evaluation](docs/CONTROLLED_EVALUATION.md) | Frozen input, seven comparable configurations, fixed-query utility and reproduction commands |
 | [First comparison results](docs/EVALUATION_RESULTS_2026-10-14.md) | Measured results, interpretation, reproducibility artifacts and limitations |
-| [Privacy roadmap and diagnostic](docs/PRIVACY_EVALUATION.md) | Active threat-model planning, staged empirical study after utility/policy checks, and the historical deterministic stress test |
+| [Privacy roadmap and diagnostic](docs/PRIVACY_EVALUATION.md) | Threat model, implemented first synthetic study, later extensions and the historical deterministic stress test |
+| [Empirical evaluation implementation](docs/EMPIRICAL_PRIVACY_IMPLEMENTATION.md) | Independent oracle, seeded pairs/splits, public features, classifier, controls and reproduction |
+| [October 19 test report](docs/TEST_REPORT_2026-10-19.md) | Actual regression results, independent hand cases, synthetic pilot evidence and limitations |
 | [Publication coordination](docs/PUBLICATION_COORDINATION.md) | Integrated immutable MongoDB releases, private journal, retries and recovery boundaries |
 | [Live aggregation progress](docs/LIVE_AGGREGATION_PROGRESS.md) | Separate current-window checks, completed output and sensor geometry; H/G/P controls |
 | [Temporal adaptation](docs/TEMPORAL_AGGREGATION.md) | Implemented Temporal First/Spatial First, shared-history windows, deadlines and runnable example |
@@ -97,10 +100,10 @@ The first application query is now mean sampled occupancy on a fixed 10-m refere
 over 1-second intervals; [METRICS.md](docs/METRICS.md) defines its reference, reconstruction
 assumptions and missing-data treatment. The offline evaluator now computes conditional MAE,
 answered/scored-query coverage, reference availability, resolution and simulated sealing age.
-The current evaluation focuses on utility and policy fulfilment. Privacy design is active;
-the [E02 roadmap](docs/PRIVACY_EVALUATION.md) specifies a proposed contribution-membership
-study with bounded knowledge and independent grouped testing after the minimal utility/policy
-milestone. No realistic empirical privacy result exists yet. A minimum number of contributors per publication is initially
+The evaluation now includes a first controlled synthetic contribution-membership benchmark
+with bounded knowledge and independent grouped testing; see the [implementation contract](docs/EMPIRICAL_PRIVACY_IMPLEMENTATION.md)
+and [test report](docs/TEST_REPORT_2026-10-19.md). Real-world protection remains unevaluated.
+A minimum number of contributors per publication is initially
 an operational release rule. It does not by itself establish formal k-anonymity or a
 reduction in empirical attack success.
 

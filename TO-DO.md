@@ -38,10 +38,10 @@ regional deadlines and future handover. The common-window model is intentionally
 conservative; independent sibling windows, other publication models and automatic restart
 remain open. E01 fixed-query occupancy evaluation and R01 frozen replay are now implemented,
 with four fixed baselines and spatial/Temporal First/Spatial First comparisons. E02 has a
-complete-background neighbouring-output stress test; realistic trained attacks and broader
-independent scenario/policy studies remain open. The user selected utility and policy
-fulfilment first; E02 experiment execution follows that milestone. Privacy planning was
-reopened on 2026-10-19 with explicit E02-A–D entry/exit criteria; it is not an empirical result.** The detailed
+complete-background diagnostic plus the first public-only controlled synthetic trained attack.
+On 2026-10-19 EP01, seeded grouped datasets and E02-A–C were implemented and tested;
+23 CTest suites and 126 Python tests passed, with three completed synthetic configurations.
+Broader regional studies, real-world attacker realism, cell-local timing and A07 remain open.** The detailed
 [bucket lifecycle and release protocol](docs/BUCKET_LIFECYCLE.md) records the current
 proposals, flow diagram, storage model and hand-worked cases. The
 [fixed aggregation contract](docs/FIXED_AGGREGATION.md) records actual A01 behavior;
@@ -377,31 +377,33 @@ individual IDs. Existing Simulation data and maintained YAML were unchanged.
    First. The active results cover policy compliance, observation conservation and utility. See [CONTROLLED_EVALUATION.md](docs/CONTROLLED_EVALUATION.md) and
    [the dated results](docs/EVALUATION_RESULTS_2026-10-14.md).
 
-**Next chronological research steps:**
+**Next chronological research steps — updated after implementation, 2026-10-19:**
 
-The [question register and experiment plan](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md)
-records current answers, hypotheses, prerequisites and EP01–EP04. Utility and policy remain
-first; sensitive-attribute/privacy contracts may be clarified now, with experiments deferred.
+The [question register](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md),
+[implementation contract](docs/EMPIRICAL_PRIVACY_IMPLEMENTATION.md) and
+[test report](docs/TEST_REPORT_2026-10-19.md) distinguish completed evidence from open work.
 
-1. Keep absent public support unknown and define the private diagnostic breakdown for
-   measured-empty, unavailable input, policy suppression and partial query support.
-2. Implement EP01's independent small-case compliance/feasibility reference. Distinguish
-   current coordination rules from relaxed A07 partial rescue, and local from global deadlines.
-3. Run EP02 controlled dense/sparse/handover/blocked-branch/empty/missing/regional cases.
-4. Freeze and run EP03's policy matrix and legal fixed baselines; compare availability,
-   error, age, retention and suppression reasons on the same query and frozen observations.
-5. Plan EP04 independent replications from pilot variability and a stated precision target;
-   formalize feasibility versus search completeness and keep runtime measurement separate.
-6. Plan E02-A now, then implement E02-B/C after the minimal independent utility/policy
-   checks and frozen public-schema/query contract. Freeze the secret, protected unit,
-   auxiliary knowledge, grouped splits and attack metrics before final testing. E02-D/E03
-   attribute/formal-metric extensions and E05/E06 remain later.
+1. Keep absent public support unknown and extend private cause diagnostics for EP02's
+   measured-empty, unavailable, suppression and partial-query cases.
+2. Specify targeted A07 partial-child rescue from the independently demonstrated 9-input /
+   0-current / 6-relaxed retention case; add cell-local coordination before claiming
+   independently adapting local temporal windows.
+3. Add justified fixed functional-region queries/masks and the aligned SC01 regional-policy
+   fixture. The seeded modal-corridor generator is implemented, but is not that full study.
+4. Expand EP03/EP04 policy/scenario/independent-replication evidence and runtime measurement
+   from the actual pilots and stated precision targets.
+5. Extend E02 only under declared additional knowledge/attack conditions; E02-D/E03 sensitive
+   attributes and formal metric mappings remain separate. E05/E06 and rich maps/routing follow.
 
 - [x] Record the metric data-readiness matrix, question register and staged experiment design.
-- [ ] Implement EP01's independent oracle and hand-checked expected results.
-- [ ] Export private suppression/binding-constraint diagnostics with explicit denominators.
-- [ ] Freeze the EP02/EP03 scenario and parameter manifest before running the study.
-- [ ] Choose EP04 replication and uncertainty reporting from the pilot and target precision.
+- [x] Implement EP01's independent oracle and hand-checked expected results; bounded model
+  references and 162 exhaustive depth-2 patterns distinguish compliance from model loss.
+- [x] Implement seeded paired data, public export, held-out calibrated attack and controls.
+- [x] Run three predeclared configurations and report 3,360 independent compliance audits,
+  108 fitted attack comparisons, uncertainty and fixed-query utility with explicit limits.
+- [ ] Export expanded private suppression/binding-constraint diagnostics with denominators.
+- [ ] Freeze the broader EP02/EP03 regional scenario and parameter manifest.
+- [ ] Choose expanded EP04 replication and uncertainty scope from pilot variability.
 
 
 ### N01 — Canonical scientific terminology and notation — implemented reference
@@ -418,8 +420,9 @@ first; sensitive-attribute/privacy contracts may be clarified now, with experime
 - [ ] Extend this reference first whenever a new metric, sensor capability, independent
   cell-window model, privacy representation or publication model is adopted.
 
-**Execution priority clarified, 2026-10-19:** implement EP01's independent reference first,
-then a small prescribed street fixture and its regional utility queries. Rich environment
+**Execution priority updated, 2026-10-19:** EP01 and the first synthetic E02 path are
+implemented. Next: the targeted coordination gap, controlled regional-policy fixture and
+its regional utility queries. Rich environment
 import, destination-demand processes, global/local motion planning and avoidance remain
 later X04/X03/X05 work. A demonstrated aggregation limitation may justify targeted
 cell-local coordination or A07 before increasing environment realism.
@@ -461,32 +464,35 @@ Baseline contract: [METRICS.md](docs/METRICS.md#first-utility-question-e01-basel
 **Acceptance:** a fixed question and its GT answer are defined. Coarsening the reference
 must not automatically eliminate error. Do not label record retention as data fidelity without justification.
 
-### E02 — Define attacker and privacy evaluation — P1, planning active
+### E02 — Define attacker and privacy evaluation — P1, first synthetic slice implemented
 
-**Scope clarification, 2026-10-19:** utility/policy implementation remains first. The user
-reopened privacy design; the empirical study is an explicit subsequent milestone. Existing
-stress-test definitions are not a realistic empirical attack result. Detailed proposed
-contracts and entry/exit criteria: [PRIVACY_EVALUATION.md](docs/PRIVACY_EVALUATION.md).
+**Implemented, 2026-10-19:** after the independent baseline checks, the user authorized
+the full first empirical path. Controlled synthetic E02-A–C is now executed; real-world
+protection and later E02-D remain open. See [implementation](docs/EMPIRICAL_PRIVACY_IMPLEMENTATION.md),
+[test report](docs/TEST_REPORT_2026-10-19.md) and [threat model](docs/PRIVACY_EVALUATION.md).
 
 - [x] Specify the historical whole-recorded-trajectory membership diagnostic under complete
   deterministic background knowledge, including its balanced prior and public transcript.
 - [x] Implement/test transcript equality and its derived ideal-observer success; retain
   no-output/exact-count controls and historical evidence separately from empirical attacks.
 - [x] Record the E02-A–D roadmap and proposed bounded-knowledge contribution-membership study.
-- [ ] **E02-A:** finalize unit/horizon, secret, inclusion assumptions, recipient-visible schema,
+- [x] **E02-A:** finalize unit/horizon, secret, inclusion assumptions, recipient-visible schema,
   auxiliary/reference source, partial-trace knowledge levels and membership prior.
-- [ ] Verify recipient access excludes raw MongoDB/GT, private candidates/journal and debug
-  overlays; document logical-time/transport scope and all jointly visible application views.
-- [ ] **E02-B:** after EP01/minimal controlled utility checks, generate independent paired
+- [x] Enforce offline public-only field allowlists, candidate knowledge and fixed protocol
+  constants; exclude IDs, private totals/windows/runtime and labels from attack features.
+- [ ] Verify actual external-recipient MongoDB/GT/debug access controls before live deployment;
+  offline field separation does not certify permissions. Joint application views remain later.
+- [x] **E02-B:** after EP01/minimal controlled utility checks, generate independent paired
   frozen IN/OUT cases and a grouped training/calibration/test manifest; validate background
   equality, avoid copied-trace/split leakage and sample targets before release outcomes.
-- [ ] **E02-C:** implement a transparent public-only membership attack, declared count/
+- [x] **E02-C:** implement a transparent public-only membership attack, declared count/
   geometry/time features, missing-data masks and fair mechanism-specific training budgets.
-- [ ] Select operating thresholds on calibration only; report ROC-AUC, test TPR/FPR and
-  declared-prior interpretation with independent-run uncertainty and adequate negatives.
-- [ ] Compare legal fixed/spatial/Temporal First/Spatial First releases on identical cases;
+- [x] Select operating thresholds on calibration only; report ROC-AUC, test TPR/FPR and
+  declared-prior interpretation with independent-run uncertainty and explicit finite-sample
+  resolution; larger low-FPR studies remain future work.
+- [x] Compare legal fixed/spatial/Temporal First/Spatial First releases on identical cases;
   pair attack results with occupancy error, coverage, retained contributions and age.
-- [ ] Retain prior-only, exact-count and no-output controls; test whether adaptive geometry/
+- [x] Retain prior-only, exact-count and no-output controls; test whether adaptive geometry/
   timing adds usable information. Do not count projection differences as additive leakage.
 - [ ] **E02-D/E03, later:** define sensitive-visit/attribute/linking secrets and justified
   QI/group/reference models before adding k/l/t/entropy criteria or a new attack target.
@@ -1218,7 +1224,8 @@ runtime cost. Correct S02 safety/lifetime defects before evaluating a replacemen
 
 Data prerequisites and future sensitive-attribute design are recorded in
 [RESEARCH_QUESTIONS_AND_EXPERIMENTS.md](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md).
-Planning is active; privacy metric/attack implementation follows the utility/policy milestone.
+The first synthetic membership attack is implemented. Sensitive-attribute and formal-metric
+extensions still require separate contracts; see the October 19 implementation/test report.
 
 - [x] Separate additional attributes, background/reference distributions and independent
   experimental realizations; more sensor rows alone do not satisfy those requirements.
@@ -1413,3 +1420,22 @@ policy milestone, ahead of optional rich map/routing work. The proposed first se
 contribution membership, with limited auxiliary knowledge, grouped independent splits and
 calibrated public-only attacks. Sensitive attributes and formal k/l/t/DP choices remain
 separate research decisions. This update changes documentation only, not execution or results.
+
+## Implementation record — independent oracle and first empirical privacy, 2026-10-19
+
+- Implemented EP01 raw compliance checks, bounded whole-sibling/partial-rescue references,
+  explicit endpoint enumeration and a private JSON CLI with budget/overwrite checks.
+- Implemented seeded modal-path populations, exact IN/OUT source-inclusion neighbours,
+  grouped independent splits, target knowledge, clone detection and provenance validation.
+- Implemented strict public transcript export, 18/31-feature projections, deterministic
+  training-only-scaled logistic regression, calibration and held-out attack metrics.
+- Added real-core seven-mode study orchestration, controls, scenario-stratified paired
+  bootstrap, conditional/common-support occupancy utility and complete private artifacts.
+- Release build, all 23 CTest suites and 126 Python methods passed. Three fixed protocols
+  ran on 160 unique realizations / 240 group-configuration pairs; 3,360 audited replay results
+  and 46,901 released cells passed independent compliance; all 108 fitted models converged.
+- Tiny cases demonstrate current retention 0 versus relaxed A07 retention 6 of 9 contributions.
+  This is a coordination-model gap, not an established violation of the implemented contract.
+- Evidence, formulas, reproduction commands, figure and limitations are in
+  [TEST_REPORT_2026-10-19.md](docs/TEST_REPORT_2026-10-19.md). No general privacy guarantee,
+  new live movement engine or independent local-window scheduler was introduced.

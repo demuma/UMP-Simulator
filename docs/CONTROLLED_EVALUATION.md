@@ -4,6 +4,13 @@ Status: 2026-10-14. Current user-selected scope: utility and policy fulfilment f
 The original implementation contract preceded the first comparison; privacy evaluation
 is now deferred. Existing exploratory artifacts remain preserved.
 
+**October 19 follow-through:** the first independent oracle and controlled synthetic
+empirical membership study are now implemented. See
+[EMPIRICAL_PRIVACY_IMPLEMENTATION.md](EMPIRICAL_PRIVACY_IMPLEMENTATION.md) and the
+[test report](TEST_REPORT_2026-10-19.md). This dated October 14 contract and its optional
+`--privacy-targets` helper remain separate from that new calibrated study.
+
+
 ## Research question
 
 Under which observation and regional-policy conditions does bounded adaptive aggregation
