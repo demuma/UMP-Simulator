@@ -74,6 +74,8 @@ coordinator and repeat identical inputs. Then add seeded continuous-flow street
 scenarios and meaningful type-count/hotspot queries, retaining strong legal
 uniform-grid/window baselines and cases where adaptation has no advantage.
 
-The [repository data package](REPLAY_DATA_PACKAGE.md) preserves compact frozen
-sources and comparison evidence for review. Restore commands must work on a
-fresh checkout without the original developer's absolute paths or MongoDB.
+The [repository results package](REPLAY_DATA_PACKAGE.md) preserves compact
+comparison tables, policy configurations and verification summaries for review.
+Generated movement recordings remain local. A fresh checkout can regenerate
+the small analytical fixture; exact historical moving-data replays require the
+excluded local observations. Hash-only provenance does not reconstruct them.

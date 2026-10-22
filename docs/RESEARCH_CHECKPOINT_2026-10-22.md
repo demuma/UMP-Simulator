@@ -2,7 +2,7 @@
 
 Date: 2026-10-22. This checkpoint makes the previously uncommitted research
 work reviewable and adds cell inspection, leaf-scale policy examples and a
-portable synthetic replay data package. All project documentation remains
+small results-only package. All project documentation remains
 English. The user's attached taxonomy specification is discussion material;
 its embedded implementation instructions do not authorize the complete v2
 taxonomy/ORCA migration.
@@ -41,9 +41,9 @@ Source and prose whitespace checks remain enabled.
    with unchanged observations across uniform/regional policy variants.
    Inspect intermediate category generalization, sibling merging, suppression
    and policy inheritance through a cell intersecting an empty strict patch.
-3. Package frozen simulator observations, policies, outputs, audits and summaries
-   as compact, verified repository artifacts. Store shared source observations
-   once and reconstruct usable comparison directories on restore.
+3. Package compact aggregate result tables, policies, audit totals and hash-only
+   provenance. Generated observations, recorded movement datasets and full replay
+   streams remain local and are excluded from the repository package.
 4. Correct an explicit replay-mode override that retained a semantic-only setting.
    Validate the original policy before the override; preserve metric bounds.
    The default local-policy result remains scientifically identical to the frozen output.
@@ -71,7 +71,15 @@ implemented by this checkpoint. Existing source files, external paper PDFs and
 the 29-GB ignored results tree are not interchangeable with the curated data
 package. The latter explicitly lists what can be restored and reproduced.
 
-The public GitHub repository receives synthetic research observations and
-their synthetic tracking IDs. No recording of real individuals is represented
-by this package. An inspector's recipient view models a filtered product; the
-research package itself retains privileged source evidence for auditing.
+The final GitHub package contains compact synthetic-study result summaries, not
+recorded movement inputs. The user requested that generated movement datasets
+remain outside Git to keep the repository small. A first 47-MB package had
+already been pushed when that clarification arrived; its just-created data
+commit was replaced rather than retaining those recordings in the main branch's
+reachable history. The tested source checkpoint is preserved. Original local
+recordings and the preliminary archive remain in ignored `results/` storage.
+
+Small analytical examples and regression fixtures are maintained as code/test
+inputs. They are distinct from the generated simulator recordings excluded by
+the package. Complete local replay bundles still contain privileged source
+evidence; the recipient display is a filter, not a sanitized export.

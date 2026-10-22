@@ -22,7 +22,8 @@ remain deferred. October 18 is historical.**
   Full modifier-based population generation, regional attribute restrictions and
   arbitrary/overlapping map geometry remain later work.
 - [x] Inventory the 162 existing changed paths and prepare a compact, integrity-checked
-  synthetic replay package, excluding the 29-GB raw result tree and external papers.
+  results-only package. Keep generated movement recordings, full replay streams,
+  the 29-GB raw result tree and external papers out of Git.
   [Checkpoint](docs/RESEARCH_CHECKPOINT_2026-10-22.md), [package](docs/REPLAY_DATA_PACKAGE.md).
 - [x] Complete the integrated build, 60-entry CTest run, real-artifact group checks,
   browser inspection and portable-data verification. See the

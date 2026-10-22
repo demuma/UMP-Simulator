@@ -1,0 +1,15 @@
+{
+  "schema": "ump.result-summary-publication-scan.v1",
+  "status": "passed",
+  "scanned_archived_files": 110,
+  "scanned_uncompressed_bytes": 773357,
+  "patterns": [
+    "private_key",
+    "github_access_token",
+    "aws_access_key_id",
+    "credential_uri",
+    "literal_credential_assignment"
+  ],
+  "findings_paths_and_counts_only": [],
+  "limitations": "Pattern-based inspection, not proof that arbitrary secret formats are absent."
+}

@@ -168,19 +168,29 @@ The next algorithm gate remains semantic-aware independent cell windows.
 162 previously uncommitted paths; the [verification report](docs/REPLAY_LOCAL_POLICY_TEST_REPORT_2026-10-22.md)
 records the integrated checks.
 
-Frozen synthetic observations and recorded comparison results are included as a
-[compact verified data package](docs/REPLAY_DATA_PACKAGE.md). A fresh checkout can
-restore and open the small local-policy replay without MongoDB:
+Only compact result summaries, policy configurations and verification totals
+(about 141 KiB for the complete data folder) are included in the [results package](docs/REPLAY_DATA_PACKAGE.md). Generated simulation
+recordings and full replay streams remain in the ignored local `results/` tree.
+The package does not reconstruct the original moving observations from their hashes.
 
 ```sh
 python3 -B tools/evaluation/replay_data.py verify
 mkdir -p results
-python3 -B tools/evaluation/replay_data.py restore --output results/replay-studies
-python3 -B tools/replay_viewer/serve.py --bundle results/replay-studies/local-policies --port 8772
+python3 -B tools/evaluation/replay_data.py restore --output results/result-summaries
 ```
 
-The package documentation lists exact scope and omissions. The original ignored
-`results/` tree remains on this machine; it is not uploaded wholesale.
+To generate and inspect the small analytical local-policy demo on a fresh checkout:
+
+```sh
+cmake -S simulator -B simulator/build
+cmake --build simulator/build --target AggregationReplay -j 4
+python3 -B tools/evaluation/run_local_policy_replay.py --output results/local-policy-demo
+python3 -B tools/replay_viewer/serve.py --bundle results/local-policy-demo --port 8772
+```
+
+This generates local files and does not add them to Git. Existing recorded moving
+replays remain available on the development machine. Original moving captures are
+stochastic; exact reruns of those historical comparisons need the local frozen inputs.
 
 ## 1. Start here
 

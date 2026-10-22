@@ -1,0 +1,16 @@
+{
+  "schema": "ump.result-summary-package-verification.v1",
+  "status": "passed",
+  "scope": "Aggregate result summaries only; no movement datasets or replay bundles",
+  "manifest_sha256": "fb86de6deba5a7b19921f36da3c83d00770b94c6cc66e9c5ff3dd77e6617ba08",
+  "archives": 3,
+  "verified_restored_files": 110,
+  "compressed_bytes": 105688,
+  "uncompressed_bytes": 773357,
+  "observation_records": 0,
+  "restored_viewer_bundles": 0,
+  "canonical_input_copies": 0,
+  "forbidden_record_key_findings": [],
+  "synthetic_tracking_uuid_findings": 0,
+  "fixture_test_cases": 5
+}

@@ -2,7 +2,7 @@
 
 Date: 2026-10-22. Repository: UMP-Simulator. The checkpoint accounts for the
 162 previously uncommitted paths and adds inspectable road-user groups,
-finest-leaf regional-policy fixtures and portable synthetic replay evidence.
+finest-leaf regional-policy fixtures and compact result summaries.
 The [checkpoint inventory](RESEARCH_CHECKPOINT_2026-10-22.md) separates previous
 work from the additions. No normal Simulator run or production database reset
 was used for this verification.
@@ -68,7 +68,7 @@ unsupported-mode guard remains in place.
 ## Real-data-artifact and browser inspection
 
 The portable [source-group verifier](../tools/replay_viewer/verify_source_groups.js)
-passed on all 17 restored bundles / 165 variants, checking **555 sampled public
+passed on 17 complete local comparison bundles / 165 variants, checking **555 sampled public
 cells**. It independently scans raw XY/time observations and deduplicates
 identities; it does not use the viewer's spatial-hit helper as its oracle.
 It checks first/last cells of first/last nonempty releases, with duplicate
@@ -76,7 +76,7 @@ selections removed. This is a declared sample, not an exhaustive audit of every
 historical cell. It also checks pre-seal and private-opt-in gates.
 
 ```sh
-node tools/replay_viewer/verify_source_groups.js results/replay-data
+node tools/replay_viewer/verify_source_groups.js PATH_TO_LOCAL_COMPLETE_BUNDLES
 ```
 
 Chrome inspection at 600 ms verified actual rendered controls, selected-cell
@@ -90,31 +90,36 @@ interval: `[0,400)` versus `[0,600)`; unequal observation totals are expected.
 Each private group table uses its own displayed interval, not the current
 position sample.
 
-## Repository data package
+## Small results-only repository package
 
-The [package documentation](REPLAY_DATA_PACKAGE.md) and
-[manifest](../data/replay-studies/manifest.json) specify six deterministic
-archives, 702 original files and **47,073,268 compressed bytes**. Full archive
-and member verification passed on the repository copy. Full restoration
-verified all 702 original hashes and 16 canonical input copies; all 17 viewer
-bundles / 165 variants validate. A separate root invocation also validated the
-restored local-policy bundle. These files work without the historical absolute
-paths or MongoDB.
+The [package documentation](REPLAY_DATA_PACKAGE.md),
+[manifest](../data/replay-studies/manifest.json),
+[verification record](../data/replay-studies/verification.json) and
+[publication scan](../data/replay-studies/publication-scan.json) describe the
+final compact result summaries: 110 files in three archives totaling 105,688
+compressed bytes (144,527 bytes for the complete data folder). Root independently
+verified and restored all 110 files and reran all five helper tests successfully.
+There are zero observation copies and zero viewer bundles in this package.
+Generated movement recordings, observations,
+full release/replay streams, raw MongoDB exports and binaries are excluded.
+Policies, aggregate tables, audit totals and hash-only provenance remain
+reviewable. Package verification and exact restoration were rerun after this
+scope reduction. The generic verifier/restore helper and its five integrity
+test methods are unchanged.
 
-Package manifest SHA-256:
-`c7fb0661292863e9013a44b878c75dc51e8fe0e36b46d476a1c6e7d28b93fdfe`.
+The user clarified the size constraint after a first full-data package had
+already reached GitHub. The new data commit was replaced to remove that
+47-MB package from main's reachable history. Preliminary full-archive checks
+and the 17-bundle inspection above were performed locally; they do not imply
+that those source observations or replay streams are included in the final
+repository. All local original results are retained in ignored storage.
 
-The [package verification](../data/replay-studies/verification.json) and
-[publication scan](../data/replay-studies/publication-scan.json) preserve the
-scope. Credential patterns yielded zero findings across all 1,761,468,021
-uncompressed archived bytes. This is a focused pattern scan, not a formal
-confidentiality proof. All included road-user records are synthetic.
-
-The approximately 29-GB ignored results tree remains local. Raw MongoDB exports,
-compiled binaries, verbose query dumps and external paper content are excluded.
 Hashes establish consistency with the supplied manifest, not independent
-provenance or privacy. Previous attack studies were regression-tested through
-their test suites; their large experiments were not rerun for this checkpoint.
+provenance or privacy. They cannot recover the excluded motion inputs. A
+fresh checkout can regenerate the analytical leaf-policy fixture; exact replay
+of the recorded moving-data comparisons requires the local frozen observations.
+Previous attack studies were regression-tested through their test suites;
+their large experiments were not rerun for this checkpoint.
 
 ## Remaining scope
 
