@@ -353,8 +353,15 @@ and immutable publication run together. The asynchronous replay gate is implemen
 and verified. Scope-aware semantic fixed-query utility is also implemented and
 verified on the unchanged analytical fixture. Its [results and test report](docs/SCOPED_SEMANTIC_UTILITY_TEST_REPORT_2026-10-22.md)
 show a conditional local-window benefit and persistent unknown queries from missing
-spatial support or crossing intervals. Next compare the same existing moving input
-against legal fixed raster/window settings. Review the aggregator's agreed
+spatial support or crossing intervals. The [moving-input fixed-baseline comparison](docs/MOVING_SCOPED_COMPARISON_REPORT_2026-10-22.md)
+is now complete: ten variants, four deterministic repeats, forty evaluations and
+24 pairs under an explicit 400–1,000-ms duration bound. Local windows reduce mean
+logical delay from 547.5 to 251.1 ms versus common coordination, with retention
+93.28% versus 93.91%. Matched fixed grids answer more of the declared exact queries;
+there is no general adaptive utility win. Local native processing also exceeds
+this source's 20-s horizon. The [new replay](http://127.0.0.1:8774/) compares the same
+500-initial-Road-User capture. Review the recipient's time-bin/coverage requirements
+and the high remaining semantic loss before changing the mechanism. Review the aggregator's agreed
 requirements and remaining limits at every gate. Privacy evaluation then follows with a declared protected secret and
 recipient model; its policies and scenarios need explicit design. A new utility
 optimizer, movement generator or attack matrix is not started automatically.

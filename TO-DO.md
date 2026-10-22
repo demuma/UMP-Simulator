@@ -46,10 +46,26 @@ remain deferred. October 18 is historical.**
   [test/results report](docs/SCOPED_SEMANTIC_UTILITY_TEST_REPORT_2026-10-22.md) record
   48 frozen evaluations, 24 comparisons and a byte-identical repeat. Local windows
   help some regional tasks; larger queries and crossing intervals remain unknown.
-- [ ] Next compare common/local adaptation with legal fixed raster/window settings
-  on the same existing moving input and hard policy. Declare minimum duration,
-  query masks, EOF scope and release-event costs; common-window adaptive
-  coordination is an ablation, not the fixed baseline.
+- [x] Compare common/local adaptation against six legal fixed raster/window settings
+  on the same existing n500 moving input, with explicit 400–1,000-ms duration bounds.
+  Ten outputs, four deterministic repeats, forty evaluations and 24 pairs pass;
+  [results and test report](docs/MOVING_SCOPED_COMPARISON_REPORT_2026-10-22.md).
+  Local has lower delay than common but no exact-query coverage advantage over
+  the matched fixed baseline. Raw input/releases remain outside Git; the compact
+  results package is about 525 kB. New private replay: http://127.0.0.1:8774/.
+- [ ] **Next review gate:** define the intended recipient time bins and treatment of
+  unknown spatial support before changing the controller. Independent 400-ms
+  releases cannot generally answer exact 1-s queries; matched fixed grids also
+  expose this mismatch. An estimator or public coverage/empty statement requires
+  a separate accuracy and disclosure contract, not private zero imputation.
+- [ ] Predeclare a bounded policy/scenario sensitivity matrix for semantic detail,
+  local constraints and feasibility; retain the uniform moving pilot as a negative
+  reference. Here 95.04% of locally retained observations are generalized to Road
+  User. More source retention is not the same as preserving category information.
+- [ ] Keep native throughput as a separate open measurement: local replay takes
+  25.7–25.9 s per 20-s source here (about 0.78x), despite low simulated delay.
+  Review required workload/latency before optimization; no cache/controller
+  optimization is introduced by the current comparison gate.
 - [ ] Review agreed aggregator requirements at each gate: hard eligibility versus
   preference, intermediate tiers, regional bounds, independent starts, current
   merges/future handoffs, irreversible publication, complete source retirement,
@@ -2197,7 +2213,8 @@ causal evaluation reuses that repaired controller unchanged.
   captures. The 20-identity leaf fixture deliberately keeps positions in their leaves;
   it cannot support claims about realistic walking, density or collision behavior.
 
-- [ ] Separate base probe cadence from hard minimum duration in the next comparison.
+- [x] Separate base probe cadence from hard minimum duration in the moving comparison.
   The 400-ms base probe allows current legal parent rescues with shorter intervals
-  at other owners' endpoints; compare an explicit `window_duration_ms.min` without
-  retrospectively changing the frozen October 22 fixture.
+  at other owners' endpoints. The [new protocol](docs/MOVING_SCOPED_COMPARISON_PROTOCOL_2026-10-22.md)
+  explicitly sets `window_duration_ms.min: 400` for all ten variants; the earlier
+  frozen October 22 fixture remains unchanged.

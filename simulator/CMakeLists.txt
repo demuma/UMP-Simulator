@@ -238,7 +238,7 @@ if(UMP_BUILD_REPLAY)
     set_tests_properties(replay_regression PROPERTIES LABELS "unit;replay;evaluation" TIMEOUT 30)
     find_package(Python3 3.9 COMPONENTS Interpreter REQUIRED)
     foreach(evaluation occupancy privacy comparison capture oracle privacy_dataset empirical_privacy privacy_study coordination coordination_metrics coordination_scenarios coordination_study plot_coordination_study
-        compare_coordination_studies plot_privacy_coordination robustness_attacks run_privacy_robustness plot_privacy_robustness privacy_repair causal_privacy online_occupancy run_privacy_prefix_study selective_suppression semantic_adaptation semantic_tradeoffs semantic_queries scoped_semantic_queries run_scoped_semantic_utility run_semantic_priority_study semantic_first moving_comparison cell_size_caps four_second_window semantic_release local_policy_replay semantic_local_policy replay_data)
+        compare_coordination_studies plot_privacy_coordination robustness_attacks run_privacy_robustness plot_privacy_robustness privacy_repair causal_privacy online_occupancy run_privacy_prefix_study selective_suppression semantic_adaptation semantic_tradeoffs semantic_queries scoped_semantic_queries run_scoped_semantic_utility run_semantic_priority_study semantic_first moving_comparison moving_scoped_audit run_moving_scoped_comparison cell_size_caps four_second_window semantic_release local_policy_replay semantic_local_policy replay_data)
         add_test(NAME ${evaluation}_evaluation COMMAND ${Python3_EXECUTABLE} -m unittest discover
             -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/evaluation -p test_${evaluation}.py)
         set_tests_properties(${evaluation}_evaluation PROPERTIES LABELS "unit;evaluation"
