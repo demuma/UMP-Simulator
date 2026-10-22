@@ -232,16 +232,29 @@ void CellLocalAggregation::refineDue(AggregationTime endpoint, const Aggregation
 
 bool CellLocalAggregation::canMerge(const Frontier& cut, const CellGeometry& domain,
     AggregationTime end, AggregationTime& start) const {
+    // A proper enclosing owner has not been refined to this domain. Prefix
+    // lookup rejects it before inspecting descendants, as the former full scan
+    // did: every shallower canonical ID precedes every deeper canonical ID.
+    for (int id = domain.id >> 2, depth = domain.depth - 1; depth >= 1; id >>= 2, --depth)
+        if (cut.find(id) != cut.end()) return false;
     bool found = false;
     std::uint64_t covered = 0;
     const auto units = std::uint64_t{1} << (2 * (config.coverage.leafDepth - domain.depth));
-    for (const auto& [id, window] : cut) {
-        const auto& cell = window.publicState.cell;
-        if (containsCell(cell, domain) && cell.depth < domain.depth) return false;
-        if (!containsCell(domain, cell)) continue;
-        if (!found) { start = window.publicState.startMs; found = true; }
-        if (window.publicState.startMs != start || end <= start) return false;
-        covered += std::uint64_t{1} << (2 * (config.coverage.leafDepth - cell.depth));
+    // At a fixed depth, descendants occupy one contiguous numeric ID range.
+    // Depth bands never overlap, so these ranges preserve the old ascending-ID
+    // visitation order even for a mixed-depth frontier. Grid validation caps
+    // depth at 14; the largest exclusive bound below is 2^30 and fits in int.
+    // Only the domain's owners are visited: O(D log F + K), rather than O(F).
+    for (int depth = domain.depth; depth <= config.coverage.leafDepth; ++depth) {
+        const int shift = 2 * (depth - domain.depth);
+        const int beginId = domain.id << shift;
+        const int endId = (domain.id + 1) << shift;
+        for (auto owner = cut.lower_bound(beginId); owner != cut.end() && owner->first < endId; ++owner) {
+            const auto& window = owner->second.publicState;
+            if (!found) { start = window.startMs; found = true; }
+            if (window.startMs != start || end <= start) return false;
+            covered += std::uint64_t{1} << (2 * (config.coverage.leafDepth - window.cell.depth));
+        }
     }
     return found && covered == units;
 }

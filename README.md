@@ -30,7 +30,8 @@ release immediately under the default trigger. The earlier
 [27-case comparison](docs/SEMANTIC_FIRST_RESULTS_2026-10-21.md) record its exact scope.
 Membership attacks remain deferred. The recipient-contract and runtime-diagnostic
 gates below are complete. Prefix-based ownership lookup and dedicated occupied-leaf
-history discovery are implemented and verified with unchanged full logical output;
+history discovery, sorted history ranges and targeted merge ownership lookup are
+implemented and verified with unchanged full logical output;
 paced/live latency validation remains open. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
@@ -92,6 +93,15 @@ three detailed profiles have p95 76.92–77.60 ms and maxima 87.25–96.36 ms, w
 0/597 input services above 100 ms. See the
 [occupied-query runtime report](docs/OCCUPIED_LEAF_QUERY_RUNTIME_REPORT_2026-10-23.md)
 for repeats, complete-output checks, separate EOF and instrumented timing limits.
+The next [sequential history/merge gate](docs/HISTORY_MERGE_OPTIMIZATION_TEST_REPORT_2026-10-23.md)
+now sorts private sample rows once for exact binary-search cell queries, then uses
+per-depth ID ranges for merge feasibility. Each stage passes all 70 CTest suites;
+all 27 native output comparisons pass. History-only native improvement is small
+and not established beyond run variability. With both changes, local core time is
+9.448–9.501 s versus a fresh 11.430-s baseline (about 17% less). Detailed final p95
+is 66.02–68.04 ms, while maxima remain variable at 77.34–86.19 ms. No policy,
+publication or threading changes. See the
+[stage-by-stage runtime report](docs/HISTORY_MERGE_OPTIMIZATION_RUNTIME_REPORT_2026-10-23.md).
 Paced/live queue and receipt measurements remain necessary; this does not establish
 a hard per-tick deadline, end-to-end real-time operation or measured privacy improvement.
 
@@ -282,6 +292,8 @@ stochastic; exact reruns of those historical comparisons need the local frozen i
 | [Semantic release control](docs/SEMANTIC_RELEASE_CONTROL.md) | Configurable secondary priority, default policy eligibility, deliberate waiting and common/local scope |
 | [Asynchronous local replay](docs/ASYNC_LOCAL_REPLAY_CONTRACT_2026-10-22.md) | Independent historical intervals, clipped original-cell provenance, public/private separation and verification contract |
 | [Recipient contract, results and tests](docs/RECIPIENT_CONTRACT_REPORT_2026-10-23.md) | Exact versus estimated occupancy, disjoint support restrictions, paired fixed/adaptive results and unchanged releases |
+| [History/merge optimization and tests](docs/HISTORY_MERGE_OPTIMIZATION_TEST_REPORT_2026-10-23.md) | Two sequential 70-suite gates, 7,728 independent history queries and 120 coordination cases |
+| [History/merge runtime comparison](docs/HISTORY_MERGE_OPTIMIZATION_RUNTIME_REPORT_2026-10-23.md) | Per-stage timings, unchanged 27 complete outputs, targeted scan reduction and conservative throughput claims |
 | [Occupied-leaf query and tests](docs/OCCUPIED_LEAF_QUERY_TEST_REPORT_2026-10-23.md) | Sparse refinement geometry, unchanged history/semantic validation and 69-suite regression gate |
 | [Occupied-query runtime comparison](docs/OCCUPIED_LEAF_QUERY_RUNTIME_REPORT_2026-10-23.md) | Full-output equality, three profiles below 100 ms on the measured input, remaining hotspots and reproduction |
 | [Per-tick peak diagnosis](docs/TICK_RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) | Historical 132-ms peak not reproduced in three profiles, CPU/scope evidence and repeated history-reconstruction cost |
@@ -416,7 +428,9 @@ an explicit decision before changing controller objectives. A separate
 [prefix-based lookup](docs/PREFIX_OWNER_LOOKUP_TEST_REPORT_2026-10-23.md), preserving
 all ten full logical outputs while reducing local runtime. The subsequent
 [occupied-leaf query](docs/OCCUPIED_LEAF_QUERY_RUNTIME_REPORT_2026-10-23.md) reduces
-refinement reconstruction further, without changing policies or output. Validate longer paced
+refinement reconstruction further, without changing policies or output. Subsequent
+[history/merge range lookup](docs/HISTORY_MERGE_OPTIMIZATION_RUNTIME_REPORT_2026-10-23.md)
+reduces local core time further to 9.448–9.501 s on the same 20-s input. Validate longer paced
 and live operation before a real-time claim; keep application/semantic-cap studies
 separate from implementation throughput.
 Review the aggregator's agreed requirements and remaining limits at every gate. Privacy evaluation then follows with a declared protected secret and

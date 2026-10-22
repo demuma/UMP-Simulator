@@ -120,6 +120,14 @@ void AggregationHistory::append(const ObservationBatch& batch) {
     validateAppend(batch);
     // Own the payload before advancing/pruning; retain no references to the caller's batch.
     Bin incoming{batch.observedAtMs, batch.status, batch.observations, payloadBytes(batch)};
+    // Quadtree descendants occupy a contiguous finest-cell ID interval. Sort
+    // only the private copy once so repeated cell queries can skip unrelated
+    // observations without retaining another index. Identity uniqueness within
+    // each sample makes its row order immaterial to identity/type accounting.
+    std::sort(incoming.observations.begin(), incoming.observations.end(),
+        [](const CellObservation& left, const CellObservation& right) {
+            return left.cell.id < right.cell.id;
+        });
     advance(batch.observedAtMs);
     bins.push_back(std::move(incoming));
     retainedObservations += batch.observations.size();
@@ -164,13 +172,22 @@ HistoryQuery AggregationHistory::query(const CellGeometry& cell, AggregationTime
     std::optional<SemanticAccumulator> semantic;
     if (config.semanticTaxonomy) semantic.emplace(config.semanticTaxonomy);
     const int shift = 2 * (config.coverage.leafDepth - cell.depth);
+    // Validated depths are at most 14, so even the final exclusive bound is
+    // representable as an int (2^30). No geometric tolerance enters ownership.
+    const int firstLeafId = cell.id << shift;
+    const int afterLastLeafId = (cell.id + 1) << shift;
     for (const auto& bin : bins) {
         if (bin.timeMs < startMs) continue;
         if (bin.timeMs >= endMs) break;
         if (bin.status == ObservationStatus::Unavailable) { ++result.unavailableSamples; continue; }
         ++result.measuredSamples; // Empty/other-cell observations still establish coverage here.
-        for (const auto& observation : bin.observations) {
-            if ((observation.cell.id >> shift) != cell.id) continue;
+        const auto lower = [](const CellObservation& observation, int id) {
+            return observation.cell.id < id;
+        };
+        const auto first = std::lower_bound(bin.observations.begin(), bin.observations.end(), firstLeafId, lower);
+        const auto last = std::lower_bound(first, bin.observations.end(), afterLastLeafId, lower);
+        for (auto it = first; it != last; ++it) {
+            const auto& observation = *it;
             ++result.counts.observationContributions;
             ++result.counts.typeObservationContributions[observation.type];
             contributors.insert(observation.contributorId);

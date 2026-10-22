@@ -149,6 +149,9 @@ if(UMP_BUILD_HISTORY_TESTS)
     add_executable(OccupiedHistoryTests tests/OccupiedHistoryTests.cpp src/AggregationHistory.cpp)
     add_test(NAME occupied_history COMMAND OccupiedHistoryTests)
     set_tests_properties(occupied_history PROPERTIES LABELS "unit;aggregation;history;semantic" TIMEOUT 30)
+    add_executable(HistoryQueryRangeTests tests/HistoryQueryRangeTests.cpp src/AggregationHistory.cpp)
+    add_test(NAME history_query_range COMMAND HistoryQueryRangeTests)
+    set_tests_properties(history_query_range PROPERTIES LABELS "unit;aggregation;history;semantic" TIMEOUT 30)
 endif()
 
 option(UMP_BUILD_SPATIAL_TESTS "Build fixed-window spatial selection tests (standard C++ only)" ON)
@@ -325,7 +328,7 @@ if(UMP_BUILD_PUBLICATION_STORE_TESTS)
 endif()
 
 foreach(core_target Simulator SensorRegressionTests AggregationRegressionTests MetricRegressionTests
-    PolicyRegressionTests PolicyConfigurationTests HistoryRegressionTests OccupiedHistoryTests SpatialRegressionTests
+    PolicyRegressionTests PolicyConfigurationTests HistoryRegressionTests OccupiedHistoryTests HistoryQueryRangeTests SpatialRegressionTests
     SelectiveSuppressionRegressionTests PublicationRegressionTests AdaptiveAggregationRegressionTests
     PublicationStoreRegressionTests PublicationPipelineRegressionTests AggregationPresentationTests
     AggregationReplay ReplayRegressionTests CoordinationRegressionTests CoordinationStressTests

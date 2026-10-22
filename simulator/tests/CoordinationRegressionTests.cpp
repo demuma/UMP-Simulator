@@ -4,6 +4,7 @@
 #include <cmath>
 #include <functional>
 #include <iostream>
+#include <random>
 #include <set>
 #include <stdexcept>
 #include <tuple>
@@ -886,6 +887,76 @@ void explicitTakeoverHandlesDescendantFrontierThenExactOwner() {
     f.finish(400);auditFrontier(f.engine,config.coverage);audit(f.outputs,f.raw,400,true);
 }
 
+void parentTakeoverMatchesIndependentGeometryAndClockOracle() {
+    // Public API comparison: derive eligibility from rectangle intersections and
+    // original starts, not cell-ID ancestry/ranges or the private canMerge helper.
+    // Unrelated roots, sparse mixed depths and asynchronous retirements remain in
+    // the frontier. The depth-14 fixtures include the maximum supported cell ID.
+    std::mt19937 random(104729);
+    std::size_t accepted=0,rejected=0,unequalStarts=0,coarseOwners=0;
+    for (int depth : {1,2,4,6,14}) for (int trial=0;trial<24;++trial) {
+        auto config=settings(depth,400);
+        Fixture f(config,policy(config,1,40),
+            {AdaptationStrategy::SpatialFirst,100,800,32},{1,4096});
+        std::vector<int> leaves;
+        std::vector<CellObservation> rows;
+        for (int root=12;root<=15;++root) for (int path=0;path<4;++path) {
+            int leaf=root;
+            for (int level=2;level<=depth;++level)
+                leaf=4*leaf+((root==15 && path==3)?3:static_cast<int>(random()%4));
+            leaves.push_back(leaf);
+            rows.push_back(f.observation("person-"+std::to_string(root)+"-"+std::to_string(path),leaf));
+        }
+        f.sample(100,rows);f.sample(200,rows);
+        require(f.outputs.empty(),"Merge oracle fixture published before its first configured endpoint");
+        const auto chosenLeaf=historyCell(config.coverage,leaves.at(trial%leaves.size()),depth);
+        const int selectedDepth=trial%4==0?1:trial%4==1?depth:1+static_cast<int>(random()%depth);
+        const auto domain=historyAncestor(config.coverage,chosenLeaf,depth-selectedDepth);
+        if (trial%3) {
+            // Alternate retiring a narrower descendant and the whole root, so
+            // later queries exercise mismatched starts and proper coarse owners.
+            const auto retired=trial%3==1?chosenLeaf:historyAncestor(config.coverage,chosenLeaf,depth-1);
+            require(f.engine.requestMerge(retired,200,f.history),
+                "Merge oracle could not retire its initially aligned private prefix");
+        }
+        f.sample(300,rows,false);
+        const auto before=state(f.engine);
+        const auto outputCount=f.outputs.size();
+        std::optional<AggregationTime> originalStart;
+        bool aligned=true;
+        for (const auto& owner:f.engine.windows()) if (intersects(owner.cell,domain)) {
+            if (!originalStart) originalStart=owner.startMs;
+            else if (*originalStart!=owner.startMs) aligned=false;
+            if (owner.cell.depth<domain.depth) ++coarseOwners;
+        }
+        require(originalStart.has_value(),"Merge oracle found a hole in the current ownership frontier");
+        if (!aligned) ++unequalStarts;
+        bool observed=false;
+        for (const auto& batch:f.raw) if (batch.observedAtMs>=*originalStart && batch.observedAtMs<300)
+            for (const auto& observation:batch.observations)
+                observed=observed||contains(domain,observation.cell);
+        const bool expected=aligned && *originalStart<300 && observed;
+        const bool actual=f.engine.requestMerge(domain,300,f.history);
+        require(actual==expected,"Parent takeover differs from the independent rectangle/start oracle");
+        if (actual) {
+            ++accepted;
+            require(f.outputs.size()==outputCount+1
+                && f.outputs.back().coordinationCell->id==domain.id
+                && f.outputs.back().candidate.startMs==*originalStart
+                && f.outputs.back().candidate.endMs==300,
+                "Accepted parent takeover changed its domain, original start or endpoint");
+        } else {
+            ++rejected;
+            require(f.outputs.size()==outputCount && state(f.engine)==before,
+                "A rejected parent takeover changed clocks, ownership or publication");
+        }
+        auditFrontier(f.engine,config.coverage);
+        audit(f.outputs,f.raw,300,false);
+    }
+    require(accepted && rejected && unequalStarts && coarseOwners,
+        "Merge oracle omitted aligned, asynchronous, rejected or enclosing-owner cases");
+}
+
 void partiallyRefinedBudgetFailureLeavesTheWholeFrontierUnchanged() {
     auto config=settings(3,400);
     Fixture f(config,policy(config,1,40),
@@ -1039,6 +1110,7 @@ int main() {
         sparseDeepOwnersCoverEveryQuadrantWithoutDenseInitialization();
         retiredCoarseOwnerIgnoresAnotherStartsHistoricalFineSupport();
         explicitTakeoverHandlesDescendantFrontierThenExactOwner();
+        parentTakeoverMatchesIndependentGeometryAndClockOracle();
         partiallyRefinedBudgetFailureLeavesTheWholeFrontierUnchanged();
         freshOwnerCompactionSurvivesMovementEmptyPeriodsAndNewData();
         idleAlignmentClosesEmptyOutOfPhasePrefixesBeforeCompaction();

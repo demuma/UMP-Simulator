@@ -73,6 +73,7 @@ private:
     struct Bin {
         AggregationTime timeMs;
         ObservationStatus status;
+        // Owned payload sorted by finest cell ID; descendant rows are contiguous.
         std::vector<CellObservation> observations;
         std::size_t identityBytes;
     };
