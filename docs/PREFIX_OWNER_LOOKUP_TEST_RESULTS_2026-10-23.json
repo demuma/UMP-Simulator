@@ -1,0 +1,19 @@
+{
+  "schema": "ump.prefix-owner-test-verification.v1",
+  "ctest_suites_passed": 68,
+  "ctest_suites_failed": 0,
+  "ctest_wall_seconds": 18.03,
+  "new_behavioral_cases": 4,
+  "baseline_behavior_pass": true,
+  "rejected_mutations": [
+    "missing_original_start_guard",
+    "excluded_depth_one_owner",
+    "mutating_frontier_before_refinement_success"
+  ],
+  "last_test_log_sha256": "a35172f68bf29f08c85148ac02eac205f1f6310d638bf74d723dde3e6f03b14a",
+  "source_sha256": {
+    "simulator/src/CellLocalAggregation.cpp": "483465e9c1055ee28999d3874164d057e21e4160281803f0fae49c9bcd18020a",
+    "simulator/include/CellLocalAggregation.hpp": "8ec49ef189e81af8b46aba86cceddb3464bf6dccf28a1f6a00e390407702d191",
+    "simulator/tests/CoordinationRegressionTests.cpp": "ba8c94d4e376f451d306f35a7015e83212cf08c3026f80502d62ebf8639ba2af"
+  }
+}

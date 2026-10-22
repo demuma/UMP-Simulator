@@ -71,13 +71,13 @@ struct Fixture {
     CellLocalAggregation engine;
     Fixture(AggregationConfig config, MetricEvaluator metrics,
         TemporalAdaptationConfig temporal = {AdaptationStrategy::SpatialFirst,100,800,32},
-        SpatialSelectionConfig spatial = {2,4096})
+        SpatialSelectionConfig spatial = {2,4096}, std::size_t maxActiveCells = 16384)
         : config(std::move(config)),history(this->config,*this->config.history),
           engine(this->config,temporal,spatial,std::move(metrics),
               [this](const SpatialSelection& output) {
                   if (beforeOutput) beforeOutput(output);
                   outputs.push_back(output);
-              }) {}
+              }, maxActiveCells) {}
     CellObservation observation(std::string id,int cell) const {
         return {std::move(id),"pedestrian",historyCell(config.coverage,cell,config.coverage.leafDepth)};
     }
@@ -795,6 +795,117 @@ void explicitTakeoverRespectsTheActiveFrontierBudget() {
     auditFrontier(engine,config.coverage);
 }
 
+void sparseDeepOwnersCoverEveryQuadrantWithoutDenseInitialization() {
+    auto config=settings(14,400);
+    // Four sparse depth-14 paths need 4 + 4 * 13 * 3 = 160 owners, not
+    // 4^14 leaves. Include the largest supported cell ID and varying child bits.
+    Fixture f(config,policy(config,1,40),
+        {AdaptationStrategy::SpatialFirst,100,800,32},{2,4096},160);
+    std::vector<int> leaves;
+    std::vector<CellObservation> rows;
+    for(int root=12;root<=15;++root) {
+        int leaf=root;
+        for(int depth=2;depth<=14;++depth)leaf=4*leaf+(root==15?3:(root+depth)%4);
+        leaves.push_back(leaf);
+        rows.push_back(f.observation("quadrant-"+std::to_string(root),leaf));
+    }
+    require(leaves.back()==1073741823,"Deep fixture does not exercise the maximum valid cell ID");
+    f.sample(100,rows);f.sample(200,rows);
+    require(f.engine.windows().size()==160 && f.outputs.empty(),
+        "Sparse deep refinement escaped its exact active-owner budget or published too early");
+    const auto first=state(f.engine);
+    f.engine.advance(200,f.history);
+    require(state(f.engine)==first && f.outputs.empty(),
+        "An already represented deepest domain was refined or advanced again");
+    for(int leaf:leaves) {
+        int owners=0;
+        const auto cell=historyCell(config.coverage,leaf,14);
+        for(const auto& window:f.engine.windows())if(contains(window.cell,cell)) {
+            ++owners;
+            require(window.cell.id==leaf && window.cell.depth==14 && window.startMs==0,
+                "Sparse refinement selected an unrelated or shallower owner");
+        }
+        require(owners==1,"A sparse deep cell has no unique enclosing owner");
+    }
+    auditFrontier(f.engine,config.coverage);
+    f.sample(300,rows);f.advance(400);
+    for(int leaf:leaves) {
+        const auto* output=find(f.outputs,leaf,0,400);
+        require(output && output->selectedCells==1 && output->candidate.counts.observationContributions==3,
+            "A deepest cell did not preserve its exact source support when published");
+    }
+    f.finish(400);auditFrontier(f.engine,config.coverage);audit(f.outputs,f.raw,400,true);
+}
+
+void retiredCoarseOwnerIgnoresAnotherStartsHistoricalFineSupport() {
+    auto config=settings(3,400);
+    Fixture f(config,policy(config,1,40),
+        {AdaptationStrategy::SpatialFirst,100,800,32},{2,4096},10);
+    f.sample(100,{f.observation("retired",192),f.observation("pending",196)},false);
+    f.sample(200,{},false);
+    require(f.engine.requestMerge(historyCell(config.coverage,48,2),200,f.history),
+        "Different-start fixture could not retire its coarse prefix");
+    // 48 now starts at 200; neighbouring 49 still starts at 0. The query for
+    // start 0 returns both old leaves. Only 196 is still privately owned at 0.
+    // Refining 192 as well would exceed this deliberately exact owner budget.
+    f.engine.advance(200,f.history);
+    bool preserved=false,refined=false;
+    for(const auto& window:f.engine.windows()) {
+        if(window.cell.id==48)preserved=window.startMs==200 && window.cell.depth==2;
+        if(window.cell.id==196)refined=window.startMs==0 && window.cell.depth==3;
+        require(window.cell.id!=192,"Retired fine history refined a successor with a different original start");
+    }
+    require(preserved && refined && f.engine.windows().size()==10 && f.outputs.size()==1,
+        "Mixed-start refinement changed the retired owner or skipped its pending neighbour");
+    auditFrontier(f.engine,config.coverage);
+    f.finish(300);auditFrontier(f.engine,config.coverage);audit(f.outputs,f.raw,300,true);
+}
+
+void explicitTakeoverHandlesDescendantFrontierThenExactOwner() {
+    auto config=settings(3,400);
+    Fixture f(config,policy(config,1,40));
+    const auto rows=std::vector<CellObservation>{f.observation("A",192),f.observation("B",193)};
+    f.sample(100,rows);f.sample(200,rows);
+    const auto parent=historyCell(config.coverage,48,2);
+    bool fine=false;
+    for(const auto& window:f.engine.windows()) {
+        require(window.cell.id!=48,"Descendant-frontier fixture unexpectedly has an exact parent owner");
+        if(contains(parent,window.cell))fine|=window.cell.depth==3;
+    }
+    require(fine && f.engine.requestMerge(parent,200,f.history),
+        "An explicit parent without an enclosing owner could not collect its complete descendant frontier");
+    f.sample(300,{},false);
+    require(f.engine.requestMerge(parent,300,f.history),
+        "An exact existing owner was incorrectly treated as needing a strict enclosing ancestor");
+    for(const auto interval:{std::pair<int,int>{0,200},{200,300}}) {
+        const auto* output=find(f.outputs,48,interval.first,interval.second);
+        require(output && output->selectedCells==1 && output->candidate.counts.observationContributions==2,
+            "Exact-owner takeover changed the source interval or reused a retired prefix");
+    }
+    require(!f.engine.requestMerge(parent,300,f.history),"An equal-domain request published a retired interval twice");
+    f.finish(400);auditFrontier(f.engine,config.coverage);audit(f.outputs,f.raw,400,true);
+}
+
+void partiallyRefinedBudgetFailureLeavesTheWholeFrontierUnchanged() {
+    auto config=settings(3,400);
+    Fixture f(config,policy(config,1,40),
+        {AdaptationStrategy::SpatialFirst,100,800,32},{2,4096},7);
+    f.sample(100,{f.observation("A",192)},false);f.sample(200,{},false);
+    const auto before=state(f.engine);
+    // The first split fits; the second must fail on the private candidate cut.
+    // Retrying must not inherit the first attempt's partial path expansion.
+    for(int attempt=0;attempt<2;++attempt) {
+        rejects([&]{f.engine.advance(200,f.history);});
+        require(state(f.engine)==before && f.outputs.empty(),
+            "An automatic refinement budget failure committed a partial frontier or publication");
+    }
+    require(f.engine.requestMerge(historyCell(config.coverage,48,2),200,f.history),
+        "A failed deeper refinement prevented a later legal bounded takeover");
+    require(f.outputs.size()==1 && f.outputs.front().candidate.counts.observationContributions==1,
+        "Recovery after a refinement budget failure omitted or duplicated source evidence");
+    f.finish(300);auditFrontier(f.engine,config.coverage);audit(f.outputs,f.raw,300,true);
+}
+
 void freshOwnerCompactionSurvivesMovementEmptyPeriodsAndNewData() {
     auto config=settings(4);
     Fixture f(config,policy(config,1,40));
@@ -925,10 +1036,15 @@ int main() {
         explicitTakeoverCannotExceedTheConfiguredTemporalMaximum();
         aLateRetryCannotAcknowledgeAnExpiredPrivateProposal();
         explicitTakeoverRespectsTheActiveFrontierBudget();
+        sparseDeepOwnersCoverEveryQuadrantWithoutDenseInitialization();
+        retiredCoarseOwnerIgnoresAnotherStartsHistoricalFineSupport();
+        explicitTakeoverHandlesDescendantFrontierThenExactOwner();
+        partiallyRefinedBudgetFailureLeavesTheWholeFrontierUnchanged();
         freshOwnerCompactionSurvivesMovementEmptyPeriodsAndNewData();
         idleAlignmentClosesEmptyOutOfPhasePrefixesBeforeCompaction();
         failedSinkPreservesExactTakeoverAndRetry();
         std::cout << "PASS: independent local windows, mixed-depth takeover, private prefix/suffix conservation, "
-            "publication barriers, incompatible policies, unavailable history, sink retries and raw-data oracle.\n";
+            "publication barriers, depth-14 sparse ownership, original-start refinement, atomic split budgets, "
+            "incompatible policies, unavailable history, sink retries and raw-data oracle.\n";
     } catch (const std::exception& error) { std::cerr << "FAIL: " << error.what() << '\n'; return 1; }
 }

@@ -85,6 +85,7 @@ private:
     void emit(SpatialSelection selection, Frontier replacements, std::vector<int> retiredIds,
         std::vector<int> cancelledHandoffs = {}, HandoffIntents handoffIntents = {});
     void refineDue(AggregationTime endpoint, const AggregationHistory& history);
+    static Frontier::iterator enclosingOwner(Frontier& cut, const CellGeometry& domain);
     void refineToDomain(Frontier& cut, const CellGeometry& domain) const;
     bool canMerge(const Frontier& cut, const CellGeometry& domain,
         AggregationTime endMs, AggregationTime& startMs) const;

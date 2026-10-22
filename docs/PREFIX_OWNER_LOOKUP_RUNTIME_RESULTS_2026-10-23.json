@@ -1,0 +1,666 @@
+{
+  "authenticated_study_artifacts_sha256": {
+    "AggregationReplay.frozen": "0ade9da4b2ca424420ec8d045484b59ba2fa022a6f643f13d02ff6dd4155143e",
+    "cell_local_spatial_first/policy.json": "89d9319f24cea9339551d2597ab2d86082a926e5eeb195466cc039d26ec42767",
+    "cell_local_spatial_first/result.json": "3e770a9afbb039065dcf768cdadd357ccea7ecc96d4d38b3610166ef7d35befa",
+    "cell_local_temporal_first/policy.json": "5c21a59e5bec746aac92433ab9c3378f9dba5d9f678da48d3e37f9ba8b85b949",
+    "cell_local_temporal_first/result.json": "04efa2a082ba27ce00658afd12a678eac9351811e9915e56ae5a0b613afd7f33",
+    "common_window_spatial_first/policy.json": "3b47b07ac490aa4d6e614f1fe4199d65ce9e6af1ba0b56a9e3bcb1c7cde1b02c",
+    "common_window_spatial_first/result.json": "7132b978ffa04d27703a55fbf91afd956c8b8b83af265c1b3a3437e10964ca6f",
+    "common_window_temporal_first/policy.json": "74e4d3cf2f7e0a4cfdc0ad9aace7958323e72415f6c635e78c67bbcfb4e8542e",
+    "common_window_temporal_first/result.json": "621b8627a7f5b931557e28d48604efcdab0fb3a49f7421cc4096b53f322e0514",
+    "fixed_10m_1000ms/policy.json": "3e5e0af140614dd67b5e3a1fcecd1ec3126597f08e055f2a6bec85df5500ee1b",
+    "fixed_10m_1000ms/result.json": "35253b32d3829a75ccd0684bea9e7d7c10486cb9df81d890cc7425c5a115fabf",
+    "fixed_10m_400ms/policy.json": "74e4d3cf2f7e0a4cfdc0ad9aace7958323e72415f6c635e78c67bbcfb4e8542e",
+    "fixed_10m_400ms/result.json": "49a040ba2ddd60b1163072e4194b7689f1b2ffcf1e90a04cf6f4ed8376a2c4d8",
+    "fixed_2p5m_1000ms/policy.json": "3e5e0af140614dd67b5e3a1fcecd1ec3126597f08e055f2a6bec85df5500ee1b",
+    "fixed_2p5m_1000ms/result.json": "54c127a26f7f35c119978e23edea5bb85d56ec25b33bb1c3156184369be19a93",
+    "fixed_2p5m_400ms/policy.json": "74e4d3cf2f7e0a4cfdc0ad9aace7958323e72415f6c635e78c67bbcfb4e8542e",
+    "fixed_2p5m_400ms/result.json": "80bdc01f0a5d5a3c84d0bfcb62a4ec41fef258fbb675be9dc650e217e8e31c06",
+    "fixed_5m_1000ms/policy.json": "3e5e0af140614dd67b5e3a1fcecd1ec3126597f08e055f2a6bec85df5500ee1b",
+    "fixed_5m_1000ms/result.json": "c253a4a6c161adfb4be0250e16c924bf5cbab1cd4b3c20670855d4e9da3074ae",
+    "fixed_5m_400ms/policy.json": "74e4d3cf2f7e0a4cfdc0ad9aace7958323e72415f6c635e78c67bbcfb4e8542e",
+    "fixed_5m_400ms/result.json": "bd5dcf3bd1c4c72683c6784ffba3afaedb6052283cfa5d9d1c9b105c6da77f69"
+  },
+  "harness_sha256": "5c170a3b18ee178499acccaa53b192a7d15e51ab4a7f098175223ef907256ced",
+  "historical_profile_comparison": {
+    "first_instrumentation_fifo": {
+      "completion_delay_above_100ms_count": 191,
+      "initial_queue_empty": true,
+      "last_input_completion_delay_ms": 6979.811910000002,
+      "live_paced_measurement": false,
+      "max_input_completion_delay_ms": 6979.811910000002,
+      "max_wait_before_service_ms": 6821.972744000002
+    },
+    "first_instrumentation_tick_service": {
+      "count": 199,
+      "eof_service_ms": 201.819,
+      "max_ms": 205.909208,
+      "mean_ms": 132.54469720603018,
+      "p50_ms": 134.6165,
+      "p95_ms": 176.842459,
+      "p99_ms": 204.811833,
+      "service_above_100ms_count": 171
+    },
+    "note": "Historical scoped baseline, not a fresh paired instrumentation run. Old map entries visited and new map find calls are different units.",
+    "old_owner_search_calls": 1272742,
+    "old_owner_search_nodes_visited": 2182123527,
+    "refinement_core_ms": 27208.755667,
+    "refinement_scopes": {
+      "history_finest": {
+        "calls": 10160,
+        "inclusive_ms": 5419.9338
+      },
+      "history_query": {
+        "calls": 692866,
+        "inclusive_ms": 2031.027863
+      },
+      "local_refine": {
+        "calls": 398,
+        "inclusive_ms": 17109.975133
+      },
+      "refine_copy": {
+        "calls": 397,
+        "inclusive_ms": 31.483578
+      },
+      "refine_owners": {
+        "calls": 397,
+        "inclusive_ms": 11297.202496
+      },
+      "refine_to_domain": {
+        "calls": 209102,
+        "inclusive_ms": 2023.361738
+      }
+    },
+    "source_report": "RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md"
+  },
+  "input_sha256": {
+    "AggregationReplay.frozen": "0ade9da4b2ca424420ec8d045484b59ba2fa022a6f643f13d02ff6dd4155143e",
+    "cell_local_spatial_first/policy.json": "89d9319f24cea9339551d2597ab2d86082a926e5eeb195466cc039d26ec42767",
+    "cell_local_spatial_first/result.json": "3e770a9afbb039065dcf768cdadd357ccea7ecc96d4d38b3610166ef7d35befa",
+    "cell_local_temporal_first/policy.json": "5c21a59e5bec746aac92433ab9c3378f9dba5d9f678da48d3e37f9ba8b85b949",
+    "cell_local_temporal_first/result.json": "04efa2a082ba27ce00658afd12a678eac9351811e9915e56ae5a0b613afd7f33",
+    "common_window_spatial_first/policy.json": "3b47b07ac490aa4d6e614f1fe4199d65ce9e6af1ba0b56a9e3bcb1c7cde1b02c",
+    "common_window_spatial_first/result.json": "7132b978ffa04d27703a55fbf91afd956c8b8b83af265c1b3a3437e10964ca6f",
+    "common_window_temporal_first/policy.json": "74e4d3cf2f7e0a4cfdc0ad9aace7958323e72415f6c635e78c67bbcfb4e8542e",
+    "common_window_temporal_first/result.json": "621b8627a7f5b931557e28d48604efcdab0fb3a49f7421cc4096b53f322e0514",
+    "fixed_10m_1000ms/policy.json": "3e5e0af140614dd67b5e3a1fcecd1ec3126597f08e055f2a6bec85df5500ee1b",
+    "fixed_10m_1000ms/result.json": "35253b32d3829a75ccd0684bea9e7d7c10486cb9df81d890cc7425c5a115fabf",
+    "fixed_10m_400ms/policy.json": "74e4d3cf2f7e0a4cfdc0ad9aace7958323e72415f6c635e78c67bbcfb4e8542e",
+    "fixed_10m_400ms/result.json": "49a040ba2ddd60b1163072e4194b7689f1b2ffcf1e90a04cf6f4ed8376a2c4d8",
+    "fixed_2p5m_1000ms/policy.json": "3e5e0af140614dd67b5e3a1fcecd1ec3126597f08e055f2a6bec85df5500ee1b",
+    "fixed_2p5m_1000ms/result.json": "54c127a26f7f35c119978e23edea5bb85d56ec25b33bb1c3156184369be19a93",
+    "fixed_2p5m_400ms/policy.json": "74e4d3cf2f7e0a4cfdc0ad9aace7958323e72415f6c635e78c67bbcfb4e8542e",
+    "fixed_2p5m_400ms/result.json": "80bdc01f0a5d5a3c84d0bfcb62a4ec41fef258fbb675be9dc650e217e8e31c06",
+    "fixed_5m_1000ms/policy.json": "3e5e0af140614dd67b5e3a1fcecd1ec3126597f08e055f2a6bec85df5500ee1b",
+    "fixed_5m_1000ms/result.json": "c253a4a6c161adfb4be0250e16c924bf5cbab1cd4b3c20670855d4e9da3074ae",
+    "fixed_5m_400ms/policy.json": "74e4d3cf2f7e0a4cfdc0ad9aace7958323e72415f6c635e78c67bbcfb4e8542e",
+    "fixed_5m_400ms/result.json": "bd5dcf3bd1c4c72683c6784ffba3afaedb6052283cfa5d9d1c9b105c6da77f69",
+    "optimization_protocol": "745d3879f835416d6218caf79652f082ba01e1ab2a46e81bdc948c3eb37ad87c",
+    "optimized_binary": "162f080f351b80287b3e6fabb4e17bbd4a3dad7313c24564e7682d9248069dfe",
+    "source": "ab4fadf254bfb5432018ff4bd305cd16d82a7475ae3d934c14c4f9af67dd5cf1",
+    "study_manifest": "e81b724b673ac5f8e77ddd483b41b4ec2756206fbd32ccf2455e14bd234dc83f"
+  },
+  "instrumented_binary_sha256": "3633a8dbbc517755718dd7b294078dacf540cd87bbebb250740b80c3a45f39b2",
+  "logical_output_equality_count": 15,
+  "notes": [
+    "Inclusive scopes overlap and must not be summed.",
+    "Map lookup probes count find calls, not internal map key comparisons.",
+    "Timing differences include instrumentation perturbation and uncontrolled run-to-run variation.",
+    "Tick timing is unpaced replay service time; FIFO calculations are a model, not a live benchmark.",
+    "Peak RSS includes whole-input parsing and private output retention, not only online history.",
+    "One movement realization; native repetitions do not create scientific replicates."
+  ],
+  "optimized_binary_sha256": "162f080f351b80287b3e6fabb4e17bbd4a3dad7313c24564e7682d9248069dfe",
+  "optimized_sources_unchanged": true,
+  "original_inputs_unchanged": true,
+  "patch_sha256": "81c4ec4971ef489f231f52ec8f48b0d4135b3bcdb18ac7db1cf1e3e23ed176cb",
+  "pinned_study_manifest_sha256": "e81b724b673ac5f8e77ddd483b41b4ec2756206fbd32ccf2455e14bd234dc83f",
+  "reproduction_validation": {
+    "authenticated_artifact_count": 21,
+    "changed_manifest_rejected": true,
+    "changed_policy_rejected": true,
+    "fifo_empty_queue_fixture_passed": true,
+    "fifo_overload_fixture_passed": true,
+    "frozen_variant_override_count_checked": 10,
+    "missing_tick_rejected": true,
+    "python_syntax_valid": true,
+    "source_changes_from_historical_profile": [
+      "simulator/include/CellLocalAggregation.hpp",
+      "simulator/src/CellLocalAggregation.cpp"
+    ]
+  },
+  "rows": [
+    {
+      "build_kind": "frozen_control",
+      "core_processing_ms": 25594.011125,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "dcd56e1312756d2a3ccce3bc28b94c6c284af83ee13cd5eeadb163682443f84c",
+      "process_maxrss_bytes": 599408640,
+      "process_system_s": 0.32891699999999996,
+      "process_user_s": 26.587391,
+      "process_wall_s": 26.945455917000004,
+      "variant": "cell_local_temporal_first"
+    },
+    {
+      "build_kind": "optimized",
+      "core_processing_ms": 996.482083,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "35e8dda33005e236902558140897c44234d48fe79775152fea75433bdcd6599f",
+      "process_maxrss_bytes": 616185856,
+      "process_system_s": 0.10096899999999999,
+      "process_user_s": 2.240249,
+      "process_wall_s": 2.471308666999988,
+      "variant": "fixed_2p5m_400ms"
+    },
+    {
+      "build_kind": "optimized",
+      "core_processing_ms": 544.749708,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "0e90cbf6456a8b466653af0611f8a358159cb3782b6c580f448a3ee85c0001c8",
+      "process_maxrss_bytes": 591085568,
+      "process_system_s": 0.086242,
+      "process_user_s": 1.757631,
+      "process_wall_s": 1.8507599590000154,
+      "variant": "fixed_2p5m_1000ms"
+    },
+    {
+      "build_kind": "optimized",
+      "core_processing_ms": 654.136709,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "8af4505fa27a2f1c5203d635be8cf64c5ddae17239a73a475c3a8bb4eaea8ce2",
+      "process_maxrss_bytes": 543850496,
+      "process_system_s": 0.08486099999999999,
+      "process_user_s": 1.870185,
+      "process_wall_s": 1.9621589580000034,
+      "variant": "fixed_5m_400ms"
+    },
+    {
+      "build_kind": "optimized",
+      "core_processing_ms": 366.458333,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "d4a2bac6f1b92c1a208501e12fbfddd5a0465a652912522119181b4db005e8df",
+      "process_maxrss_bytes": 607764480,
+      "process_system_s": 0.078125,
+      "process_user_s": 1.577145,
+      "process_wall_s": 1.6599448340000151,
+      "variant": "fixed_5m_1000ms"
+    },
+    {
+      "build_kind": "optimized",
+      "core_processing_ms": 426.20525,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "7193cba694a5defa5f1778ac4c40eaa1e239735c5f877c1f37f803451b5668e9",
+      "process_maxrss_bytes": 590954496,
+      "process_system_s": 0.076872,
+      "process_user_s": 1.64797,
+      "process_wall_s": 1.7300280419999865,
+      "variant": "fixed_10m_400ms"
+    },
+    {
+      "build_kind": "optimized",
+      "core_processing_ms": 267.457041,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "4bf7a8dac5818ed6fe7eb3490d843f2c27c7ef52b8cbb03a51e02b72200228ef",
+      "process_maxrss_bytes": 560922624,
+      "process_system_s": 0.06770899999999999,
+      "process_user_s": 1.458626,
+      "process_wall_s": 1.531060540999988,
+      "variant": "fixed_10m_1000ms"
+    },
+    {
+      "build_kind": "optimized",
+      "core_processing_ms": 6522.643042,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "f6b57242e7db64306045b33e3814d1f7b5ad467978aaa6ae013ff71212508199",
+      "process_maxrss_bytes": 608043008,
+      "process_system_s": 0.25581699999999996,
+      "process_user_s": 7.564397,
+      "process_wall_s": 7.832699582999993,
+      "variant": "common_window_temporal_first"
+    },
+    {
+      "build_kind": "optimized",
+      "core_processing_ms": 6471.048458,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "f09417c5f96d2ee0d56ab511e2cbd606b60e97a3b8978ecbd2cdd078df68f479",
+      "process_maxrss_bytes": 608043008,
+      "process_system_s": 0.268077,
+      "process_user_s": 7.50731,
+      "process_wall_s": 7.783301292000004,
+      "variant": "common_window_spatial_first"
+    },
+    {
+      "build_kind": "optimized",
+      "core_processing_ms": 14880.647833,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "b043c8f3d586e276ba1ea66ff2e2e1b860cfd1be1b6da24283dbe0b6755a64a9",
+      "process_maxrss_bytes": 543653888,
+      "process_system_s": 0.287703,
+      "process_user_s": 15.906211,
+      "process_wall_s": 16.241282499999983,
+      "variant": "cell_local_temporal_first"
+    },
+    {
+      "build_kind": "optimized",
+      "core_processing_ms": 14807.14975,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "b52d77131df1f93f9e75d2912f92776b876cef0b87772dc318fd7d78d6eb7de1",
+      "process_maxrss_bytes": 599572480,
+      "process_system_s": 0.296715,
+      "process_user_s": 15.838357,
+      "process_wall_s": 16.148318250000017,
+      "variant": "cell_local_spatial_first"
+    },
+    {
+      "build_kind": "optimized_instrumented",
+      "core_processing_ms": 433.246375,
+      "instrumentation": {
+        "history_finest_rows_scanned": 99140,
+        "history_query_rows_scanned": 6249508,
+        "hypothetical_fifo_100ms_arrivals": {
+          "completion_delay_above_100ms_count": 0,
+          "initial_queue_empty": true,
+          "last_input_completion_delay_ms": 0.17687500000101863,
+          "live_paced_measurement": false,
+          "max_input_completion_delay_ms": 8.876083000000108,
+          "max_wait_before_service_ms": 0.0
+        },
+        "inclusive_nonadditive": true,
+        "input_tick_service": {
+          "count": 199,
+          "eof_service_ms": 7.81875,
+          "max_ms": 8.876083,
+          "mean_ms": 2.1378002613065323,
+          "p50_ms": 0.198208,
+          "p95_ms": 8.318875,
+          "p99_ms": 8.724541,
+          "quantile_definition": "nearest rank, ceil(p*n)",
+          "service_above_100ms_count": 0
+        },
+        "occupied_leaf_owner_search_calls": 0,
+        "owner_prefix_map_lookups": 0,
+        "schema": "ump.scoped-runtime-instrumentation.v1",
+        "scopes": {
+          "common_evaluate": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "history_finest": {
+            "calls": 50,
+            "inclusive_ms": 102.061041
+          },
+          "history_query": {
+            "calls": 3152,
+            "inclusive_ms": 41.04241
+          },
+          "local_can_merge": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_compact": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_make_window": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_merge": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_process": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_refine": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_selection": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "metric_evaluate": {
+            "calls": 200,
+            "inclusive_ms": 75.362963
+          },
+          "owner_lookup": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "publication_deliver": {
+            "calls": 50,
+            "inclusive_ms": 30.021377
+          },
+          "publication_seal": {
+            "calls": 50,
+            "inclusive_ms": 11.168916
+          },
+          "refine_copy": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "refine_owners": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "refine_to_domain": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "serialize_release": {
+            "calls": 50,
+            "inclusive_ms": 21.199585
+          },
+          "serialize_window": {
+            "calls": 50,
+            "inclusive_ms": 76.418839
+          },
+          "spatial_propose": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "terminal": {
+            "calls": 50,
+            "inclusive_ms": 117.614296
+          }
+        }
+      },
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "bc0146a33da717b861f5be86d3ea8968ff78dee8042b3c71ec454ffc2d1dc7bc",
+      "process_maxrss_bytes": 599932928,
+      "process_system_s": 0.080162,
+      "process_user_s": 1.70102,
+      "process_wall_s": 1.993373958999996,
+      "variant": "fixed_10m_400ms"
+    },
+    {
+      "build_kind": "optimized_instrumented",
+      "core_processing_ms": 6622.041917,
+      "instrumentation": {
+        "history_finest_rows_scanned": 583893,
+        "history_query_rows_scanned": 1038811065,
+        "hypothetical_fifo_100ms_arrivals": {
+          "completion_delay_above_100ms_count": 0,
+          "initial_queue_empty": true,
+          "last_input_completion_delay_ms": 53.33770799999911,
+          "live_paced_measurement": false,
+          "max_input_completion_delay_ms": 63.566249999999854,
+          "max_wait_before_service_ms": 0.0
+        },
+        "inclusive_nonadditive": true,
+        "input_tick_service": {
+          "count": 199,
+          "eof_service_ms": 59.084458,
+          "max_ms": 63.56625,
+          "mean_ms": 32.97957074371858,
+          "p50_ms": 42.107709,
+          "p95_ms": 59.589625,
+          "p99_ms": 63.528917,
+          "quantile_definition": "nearest rank, ceil(p*n)",
+          "service_above_100ms_count": 0
+        },
+        "occupied_leaf_owner_search_calls": 0,
+        "owner_prefix_map_lookups": 0,
+        "schema": "ump.scoped-runtime-instrumentation.v1",
+        "scopes": {
+          "common_evaluate": {
+            "calls": 140,
+            "inclusive_ms": 6459.32267
+          },
+          "history_finest": {
+            "calls": 190,
+            "inclusive_ms": 524.742209
+          },
+          "history_query": {
+            "calls": 297886,
+            "inclusive_ms": 2211.931395
+          },
+          "local_can_merge": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_compact": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_make_window": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_merge": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_process": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_refine": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "local_selection": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "metric_evaluate": {
+            "calls": 298907,
+            "inclusive_ms": 1373.615892
+          },
+          "owner_lookup": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "publication_deliver": {
+            "calls": 20,
+            "inclusive_ms": 12.795124
+          },
+          "publication_seal": {
+            "calls": 20,
+            "inclusive_ms": 4.908251
+          },
+          "refine_copy": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "refine_owners": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "refine_to_domain": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "serialize_release": {
+            "calls": 20,
+            "inclusive_ms": 9.146211
+          },
+          "serialize_window": {
+            "calls": 20,
+            "inclusive_ms": 32.410252
+          },
+          "spatial_propose": {
+            "calls": 420,
+            "inclusive_ms": 4979.784716
+          },
+          "terminal": {
+            "calls": 20,
+            "inclusive_ms": 50.118502
+          }
+        }
+      },
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "8b4956bcce02931218dd8261545f3e230c34ffe8d873e00eeb41fb5c3d84689e",
+      "process_maxrss_bytes": 607977472,
+      "process_system_s": 0.28415599999999996,
+      "process_user_s": 7.683849,
+      "process_wall_s": 7.978507915999984,
+      "variant": "common_window_temporal_first"
+    },
+    {
+      "build_kind": "optimized_instrumented",
+      "core_processing_ms": 15020.130125,
+      "instrumentation": {
+        "history_finest_rows_scanned": 34688262,
+        "history_query_rows_scanned": 960035498,
+        "hypothetical_fifo_100ms_arrivals": {
+          "completion_delay_above_100ms_count": 7,
+          "initial_queue_empty": true,
+          "last_input_completion_delay_ms": 79.25524999999834,
+          "live_paced_measurement": false,
+          "max_input_completion_delay_ms": 132.6854999999996,
+          "max_wait_before_service_ms": 32.68549999999959
+        },
+        "inclusive_nonadditive": true,
+        "input_tick_service": {
+          "count": 199,
+          "eof_service_ms": 117.972209,
+          "max_ms": 132.6855,
+          "mean_ms": 74.88498138190955,
+          "p50_ms": 74.098333,
+          "p95_ms": 98.286917,
+          "p99_ms": 106.610333,
+          "quantile_definition": "nearest rank, ceil(p*n)",
+          "service_above_100ms_count": 7
+        },
+        "occupied_leaf_owner_search_calls": 1272742,
+        "owner_prefix_map_lookups": 2098200,
+        "schema": "ump.scoped-runtime-instrumentation.v1",
+        "scopes": {
+          "common_evaluate": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "history_finest": {
+            "calls": 10160,
+            "inclusive_ms": 5102.98428
+          },
+          "history_query": {
+            "calls": 692866,
+            "inclusive_ms": 1884.158122
+          },
+          "local_can_merge": {
+            "calls": 161394,
+            "inclusive_ms": 1655.226979
+          },
+          "local_compact": {
+            "calls": 397,
+            "inclusive_ms": 875.553701
+          },
+          "local_make_window": {
+            "calls": 293319,
+            "inclusive_ms": 268.849884
+          },
+          "local_merge": {
+            "calls": 2554,
+            "inclusive_ms": 565.308482
+          },
+          "local_process": {
+            "calls": 200,
+            "inclusive_ms": 14856.079919
+          },
+          "local_refine": {
+            "calls": 398,
+            "inclusive_ms": 5567.727585
+          },
+          "local_selection": {
+            "calls": 7863,
+            "inclusive_ms": 235.760558
+          },
+          "metric_evaluate": {
+            "calls": 871229,
+            "inclusive_ms": 1199.670834
+          },
+          "owner_lookup": {
+            "calls": 1514046,
+            "inclusive_ms": 29.25975
+          },
+          "publication_deliver": {
+            "calls": 7863,
+            "inclusive_ms": 57.52888
+          },
+          "publication_seal": {
+            "calls": 7863,
+            "inclusive_ms": 23.545101
+          },
+          "refine_copy": {
+            "calls": 397,
+            "inclusive_ms": 29.183535
+          },
+          "refine_owners": {
+            "calls": 397,
+            "inclusive_ms": 181.80804
+          },
+          "refine_to_domain": {
+            "calls": 209102,
+            "inclusive_ms": 134.336196
+          },
+          "serialize_release": {
+            "calls": 2554,
+            "inclusive_ms": 39.384569
+          },
+          "serialize_window": {
+            "calls": 7863,
+            "inclusive_ms": 294.09191
+          },
+          "spatial_propose": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "terminal": {
+            "calls": 7863,
+            "inclusive_ms": 375.766598
+          }
+        }
+      },
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "993291b67eaaf73d37843892f8aa4cb5535eed2efbbb00404e32533174a484b9",
+      "process_maxrss_bytes": 557662208,
+      "process_system_s": 0.296801,
+      "process_user_s": 16.051264,
+      "process_wall_s": 16.37806599999999,
+      "variant": "cell_local_temporal_first"
+    },
+    {
+      "build_kind": "optimized_repeat",
+      "core_processing_ms": 14772.829041,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "3f36a6c64a33fcb1214b1896b37b13ebb613036cbd74a49f32e1b407db9d9aea",
+      "process_maxrss_bytes": 633307136,
+      "process_system_s": 0.285749,
+      "process_user_s": 15.817482,
+      "process_wall_s": 16.122127917,
+      "variant": "cell_local_temporal_first"
+    }
+  ],
+  "same_gate_local_comparison": {
+    "control_core_ms": 25594.011125,
+    "core_time_reduction_fraction": 0.41858867840903935,
+    "instrumented_core_change_relative_to_optimized_fraction": 0.009373401854902985,
+    "optimized_20s_input_core_speedup": 1.3440275063594402,
+    "optimized_core_ms": 14880.647833,
+    "relative_core_throughput_ratio": 1.7199527475034762,
+    "repeat_core_ms": 14772.829041
+  },
+  "schema": "ump.prefix-runtime-results.v1",
+  "source_manifest_sha256": "1a71dbbb4004c34b8b3126f5550f8736f1ae57efbf69e0f7178a83db30b183a2",
+  "verified_complete": true
+}

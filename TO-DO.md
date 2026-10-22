@@ -4,9 +4,9 @@
 A07 common-window valid-descendant rescue and A08 semantic common/local coordination
 are implemented and verified within their reports. Review the full aggregator
 requirements and stated limits before broadening the mechanism. Membership attacks
-remain deferred. Recipient-contract diagnosis and runtime
-profiling are complete; optimize the measured ownership-lookup cost next without
-changing policy, coordination or publication semantics. October 18 is historical.**
+remain deferred. Recipient-contract diagnosis, runtime profiling and prefix-based
+ownership lookup are complete, with unchanged policy/coordination/publication output.
+Next validate longer paced/live latency and predeclare the semantic-cap comparison. October 18 is historical.**
 
 **October 22–23 checkpoint:**
 
@@ -76,10 +76,14 @@ changing policy, coordination or publication semantics. October 18 is historical
   query bins, acceptable estimation error, required coverage and receipt deadlines.
   Acceptance of estimates does not authorize a public empty statement or private
   zero imputation; missing support and unresolved categories remain unknown.
-- [ ] Predeclare a bounded policy/scenario sensitivity matrix for semantic detail,
-  local constraints and feasibility; retain the uniform moving pilot as a negative
-  reference. Here 95.04% of locally retained observations are generalized to Road
-  User. More source retention is not the same as preserving category information.
+- [ ] Predeclare a bounded semantic-cap comparison (proposed caps 1 / 0.5 / 0)
+  on identical observations and identical constraints for fixed and adaptive methods.
+  Preserve intermediate taxonomy groups; report semantic detail, retained data,
+  exact/estimated category-query coverage, paired error and delay together. A lower
+  cap can create useful adaptive alternatives or cause more suppression; no monotone
+  relative advantage is assumed. Then vary local constraints/scenarios separately.
+  Keep the uniform pilot as an unfavorable reference: 95.04% of locally retained
+  observations are generalized to Road User. Retention is not category preservation.
 - [x] Profile native work separately from logical policy delay. Nine bounded
   executions preserve full output except runtime. Local refinement performs
   2,182,123,527 ownership-map visits; its instrumented tick p95 is 176.84 ms and
@@ -87,20 +91,26 @@ changing policy, coordination or publication semantics. October 18 is historical
   [runtime report](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) and isolated reproducer
   in `tools/profiling/`. JSON serialization and frontier copying are not the main
   measured local costs in this source.
-- [ ] **Next implementation gate — owner lookup:** replace linear enclosing-owner
-  scans in `refineDue` and `refineToDomain` with lookup along the cell-ID ancestry.
-  Preserve original starts, iteration/split order, independent windows, regional
-  rules, handoffs, coverage and immutable publication. No shared-window fallback,
-  disabled checks or altered sampling to obtain speedups. Add adversarial ownership
-  tests and require all ten frozen outputs equal excluding runtime, plus existing
-  accounting/policy/expiry/missing-sample/retry regressions.
-- [ ] Measure optimized release-build service p50/p95/max, FIFO backlog at the real
-  100-ms sensor cadence, and memory before/after. Then run longer paced and live
-  sensor/renderer/database paths, measuring actual receipt time and queue growth.
-  Keep logical window age separate from wall-clock service/queue/transport delay;
-  state overload/backpressure behavior explicitly. A shorter average replay time
-  is not yet an end-to-end real-time guarantee. Only profile-supported remaining
-  history work should motivate a later bounded indexing/cache gate.
+- [x] **Prefix owner-lookup gate:** `refineDue` and `refineToDomain` now search the
+  existing cell-ID ancestry with `id >> 2`, preserving original starts, split order,
+  independent windows, regional checks, handoffs and immutable publication. Four
+  public-API regressions cover depth 14/all quadrants, mismatched starts, exact/finer
+  ownership and atomic budget failure. All 68 CTest suites pass; all ten optimized
+  outputs equal their frozen originals except runtime. See the
+  [implementation/test report](docs/PREFIX_OWNER_LOOKUP_TEST_REPORT_2026-10-23.md).
+- [x] Measure optimized release-build throughput and instrumented service/backlog.
+  Fresh local core time falls from 25.594 s to 14.881 s for 20 s of input. Tick p95
+  is 98.29 ms, maximum 132.69 ms, with 7/199 services above 100 ms. Maximum modelled
+  waiting is 32.69 ms; logical results are unchanged. See the
+  [runtime report](docs/PREFIX_OWNER_LOOKUP_RUNTIME_REPORT_2026-10-23.md) for all runs,
+  memory, instrumentation limits and reproduction. No policy/sampling reduction.
+- [ ] **Next real-time verification gate:** use longer paced input and then the live
+  sensor/renderer/database path, measuring actual receipt latency, queue growth and
+  memory over time. Preserve logical window age separately from wall-clock service,
+  queue and transport delay; define overload/backpressure behavior. Current maxima
+  still exceed the 100-ms cadence, so mean throughput is not a hard deadline claim.
+  Only measured remaining history reconstruction should motivate a later bounded
+  indexing/cache change; preserve exact identity unions, expiry and retry checks.
 - [ ] Review agreed aggregator requirements at each gate: hard eligibility versus
   preference, intermediate tiers, regional bounds, independent starts, current
   merges/future handoffs, irreversible publication, complete source retirement,

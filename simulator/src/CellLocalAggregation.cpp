@@ -166,13 +166,25 @@ void CellLocalAggregation::emit(SpatialSelection selection, Frontier replacement
     retryPending(pending->selection.candidate.closedAtMs);
 }
 
+CellLocalAggregation::Frontier::iterator CellLocalAggregation::enclosingOwner(
+    Frontier& cut, const CellGeometry& domain) {
+    // Canonical cell IDs append two quadrant bits per level, as in Quadtree.
+    // The disjoint frontier has at most one owner containing this domain. Check
+    // the domain itself, then its ancestors; stop at the four depth-1 base cells
+    // (IDs 12..15), never at the non-owning sentinel 3. If the domain is already
+    // partitioned among finer owners, none of these IDs is present.
+    // At most domain.depth map lookups replace a scan over the entire frontier.
+    for (int id = domain.id, depth = domain.depth; depth >= 1; id >>= 2, --depth) {
+        const auto owner = cut.find(id);
+        if (owner != cut.end()) return owner;
+    }
+    return cut.end();
+}
+
 void CellLocalAggregation::refineToDomain(Frontier& cut, const CellGeometry& domain) const {
     for (;;) {
-        auto enclosing = cut.end();
-        for (auto it = cut.begin(); it != cut.end(); ++it)
-            if (it->second.publicState.cell.depth < domain.depth
-                && containsCell(it->second.publicState.cell, domain)) { enclosing = it; break; }
-        if (enclosing == cut.end()) return;
+        const auto enclosing = enclosingOwner(cut, domain);
+        if (enclosing == cut.end() || enclosing->second.publicState.cell.depth == domain.depth) return;
         if (cut.size() > maxActiveCells - 3)
             throw std::length_error("Cell-local active ownership budget exceeded");
         const auto old = enclosing->second;
@@ -211,11 +223,11 @@ void CellLocalAggregation::refineDue(AggregationTime endpoint, const Aggregation
     auto after = frontier;
     for (const auto& [start, cells] : observed)
         for (const auto& cell : cells) {
-            auto owner = after.end();
-            for (auto it = after.begin(); it != after.end(); ++it)
-                if (it->second.publicState.startMs == start
-                    && containsCell(it->second.publicState.cell, cell)) { owner = it; break; }
-            if (owner != after.end()) refineToDomain(after, cell);
+            const auto owner = enclosingOwner(after, cell);
+            // A geometrically enclosing owner may already have retired this
+            // historical prefix. Its original start must still match exactly.
+            if (owner != after.end() && owner->second.publicState.startMs == start)
+                refineToDomain(after, cell);
         }
     frontier.swap(after);
 }

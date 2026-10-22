@@ -29,8 +29,8 @@ release immediately under the default trigger. The earlier
 [52-entry verification](docs/SEMANTIC_FIRST_TEST_REPORT_2026-10-21.md) and the
 [27-case comparison](docs/SEMANTIC_FIRST_RESULTS_2026-10-21.md) record its exact scope.
 Membership attacks remain deferred. The recipient-contract and runtime-diagnostic
-gates below are complete; prefix-based ownership lookup is the next bounded
-performance change, subject to unchanged full logical output. Shared sampling
+gates below are complete. Prefix-based ownership lookup is now implemented and
+verified with unchanged full logical output; paced/live latency validation remains open. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
 bounded, nonblocking renderer consumption are implemented (S04/S01). S05 now paces
@@ -72,9 +72,15 @@ requirements remain open; producer policies and releases are unchanged.
 The [runtime diagnosis](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) identifies
 linear ownership searches in refinement: 2.18 billion map-entry visits on this
 20-s recording. Instrumented local tick p95 is 176.84 ms against a 100-ms input
-cadence. The next performance gate replaces that search with cell-ID ancestor
-lookup while requiring identical outputs; it does not change release policy.
-No live end-to-end real-time claim or measured privacy improvement follows.
+cadence. The subsequent [prefix owner-lookup implementation](docs/PREFIX_OWNER_LOOKUP_TEST_REPORT_2026-10-23.md)
+now removes those linear refinement searches. All ten optimized outputs equal the
+originals except runtime, and all 68 CTest suites pass. The fresh local control
+takes 25.594 s core versus 14.881 s after optimization (about 42% less time).
+Instrumented local tick p95 falls to 98.29 ms, but maximum service is 132.69 ms
+and 7/199 ticks exceed 100 ms. See the
+[runtime results](docs/PREFIX_OWNER_LOOKUP_RUNTIME_REPORT_2026-10-23.md).
+Paced/live queue and receipt measurements remain necessary; this does not establish
+a hard per-tick deadline, end-to-end real-time operation or measured privacy improvement.
 
 The bounded [recorded moving-data pilot](docs/MOVING_REPLAY.md) uses the existing C++
 Simulator with its seven maintained Road User profiles, verified GT/AGBS capture and
@@ -263,6 +269,8 @@ stochastic; exact reruns of those historical comparisons need the local frozen i
 | [Semantic release control](docs/SEMANTIC_RELEASE_CONTROL.md) | Configurable secondary priority, default policy eligibility, deliberate waiting and common/local scope |
 | [Asynchronous local replay](docs/ASYNC_LOCAL_REPLAY_CONTRACT_2026-10-22.md) | Independent historical intervals, clipped original-cell provenance, public/private separation and verification contract |
 | [Recipient contract, results and tests](docs/RECIPIENT_CONTRACT_REPORT_2026-10-23.md) | Exact versus estimated occupancy, disjoint support restrictions, paired fixed/adaptive results and unchanged releases |
+| [Prefix owner lookup and tests](docs/PREFIX_OWNER_LOOKUP_TEST_REPORT_2026-10-23.md) | Existing cell-ID ancestry, equivalent ownership search, adversarial depth/start/budget cases and full regression gate |
+| [Optimized runtime comparison](docs/PREFIX_OWNER_LOOKUP_RUNTIME_REPORT_2026-10-23.md) | Ten unchanged variant outputs, fresh controls, per-tick latency/backlog and reproducible isolated instrumentation |
 | [Frozen runtime diagnosis](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) | Native timings, owner-lookup hotspot, input-tick service/backlog, reproducible isolated instrumentation and next acceptance gate |
 | [Scoped semantic utility](docs/SCOPED_SEMANTIC_UTILITY_PROTOCOL_2026-10-22.md) | Exact category-count query contract for independent cells/windows, fixed cohorts and sparse public support |
 | [Semantic utility results and tests](docs/SCOPED_SEMANTIC_UTILITY_TEST_REPORT_2026-10-22.md) | 48 frozen evaluations, matched coverage/error, conditional local-window benefit and alignment limits |
@@ -388,8 +396,11 @@ now separates exact and estimated occupancy: crossing intervals explain much of
 the exact-query loss, but matched fixed output remains strong under estimation.
 Application error/coverage/deadline requirements and high semantic loss still need
 an explicit decision before changing controller objectives. A separate
-[runtime measurement](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) makes prefix-based
-owner lookup the next bounded optimization; full logical output must be preserved.
+[runtime measurement](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) led to the completed
+[prefix-based lookup](docs/PREFIX_OWNER_LOOKUP_TEST_REPORT_2026-10-23.md), preserving
+all ten full logical outputs while reducing local runtime. Validate longer paced
+and live operation before a real-time claim; keep application/semantic-cap studies
+separate from implementation throughput.
 Review the aggregator's agreed requirements and remaining limits at every gate. Privacy evaluation then follows with a declared protected secret and
 recipient model; its policies and scenarios need explicit design. A new utility
 optimizer, movement generator or attack matrix is not started automatically.
