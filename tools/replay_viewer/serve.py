@@ -9,6 +9,7 @@ anonymized export service.
 from __future__ import annotations
 
 import argparse
+from bisect import bisect_left, insort
 import hashlib
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -85,6 +86,124 @@ def validate_policy_regions(variant: dict, coverage: dict):
                 raise ValueError('Policy region minimum cannot exceed its maximum')
 
 
+def canonical_cell(cell: dict, coverage: dict) -> tuple[int, int, int, int]:
+    """Validate an ID-derived rectangle and return its finest Morton interval."""
+    if not isinstance(cell, dict):
+        raise ValueError('Result cells and coordination scopes must be objects')
+    identity, depth = cell.get('cell_id'), cell.get('depth')
+    if (type(identity) is not int or type(depth) is not int or not 1 <= depth <= coverage['leaf_depth']
+            or identity >> (2 * depth) != 3):
+        raise ValueError('Invalid canonical quadtree cell ID or depth')
+    x, y, width, height = (coverage[key] for key in ('x', 'y', 'width', 'height'))
+    for level in range(1, depth + 1):
+        width /= 2
+        height /= 2
+        quadrant = (identity >> (2 * (depth - level))) & 3
+        x += (quadrant & 1) * width
+        y += (quadrant >> 1) * height
+    for key, expected in (('x', x), ('y', y), ('width', width), ('height', height)):
+        numeric(cell.get(key), 'cell '+key, -1e12 if key in ('x', 'y') else 0)
+        tolerance = min(min(coverage['width'], coverage['height']) / 2**coverage['leaf_depth'] * 1e-4,
+                        1e-6 * max(1, abs(expected), abs(cell[key])))
+        if abs(cell[key] - expected) > tolerance:
+            raise ValueError('Result cell geometry disagrees with its quadtree ID')
+    shift = 2 * (coverage['leaf_depth'] - depth)
+    return identity, depth, identity << shift, (identity + 1) << shift
+
+
+def disjoint_space_time(records: list[tuple], description: str) -> None:
+    """Sweep exact half-open time/Morton intervals; touching boundaries are legal."""
+    events = []
+    for index, (start, end, lo, hi) in enumerate(records):
+        events.extend(((start, 1, lo, hi, index), (end, 0, lo, hi, index)))
+    active = []
+    for _, opening, lo, hi, index in sorted(events):
+        token = (lo, hi, index)
+        at = bisect_left(active, token)
+        if not opening:
+            if at == len(active) or active[at] != token:
+                raise ValueError('Invalid '+description+' sweep state')
+            active.pop(at)
+            continue
+        if (at and active[at-1][1] > lo) or (at < len(active) and active[at][0] < hi):
+            raise ValueError('Overlapping space-time '+description)
+        insort(active, token)
+
+
+def validate_result_events(result: dict, coverage: dict, horizon, variant: str) -> None:
+    parameters = result.get('parameters', {})
+    if not isinstance(parameters, dict) or parameters.get('coordination', 'common_window') not in ('common_window', 'cell_local'):
+        raise ValueError('Unsupported replay coordination mode')
+    local = parameters.get('coordination', 'common_window') == 'cell_local'
+    retirement, public_support, private, public_keys = [], [], {}, set()
+    for collection, event in [('windows', 'evaluated_at_ms'), ('releases', 'sealed_at_ms')]:
+        rows = result.get(collection)
+        if not isinstance(rows, list):
+            raise ValueError(f'{variant}: missing {collection}')
+        previous = -1
+        for row in rows:
+            if not isinstance(row, dict):
+                raise ValueError('Result event must be an object')
+            stamp, start, end = row.get(event), row.get('start_ms'), row.get('end_ms')
+            for value, name in ((stamp, event), (start, 'interval start'), (end, 'interval end')):
+                numeric(value, name)
+            if stamp < previous or stamp > horizon or not 0 <= start < end <= stamp:
+                raise ValueError(f'{variant}: unordered, future-dated or invalid {collection}')
+            previous = stamp
+            scope = row.get('coordination_cell')
+            if local:
+                scope_id, scope_depth, scope_lo, scope_hi = canonical_cell(scope, coverage)
+                key = (scope_id, scope_depth, start, end)
+            elif scope is not None:
+                raise ValueError('Common-window events cannot carry local coordination scopes')
+            cells = row.get('cells')
+            if not isinstance(cells, list):
+                raise ValueError('Missing result cells')
+            if local and collection == 'releases' and not cells:
+                raise ValueError('Local public releases require selected cells')
+            checked_cells, cut = {}, []
+            for cell in cells:
+                identity, depth, lo, hi = canonical_cell(cell, coverage)
+                for name in ('observation_contributions', 'distinct_road_users'):
+                    if name in cell and (type(cell[name]) is not int or cell[name] < 0):
+                        raise ValueError('Recorded cell counts must be nonnegative integers')
+                if cell.get('mean_sample_occupancy') is not None:
+                    numeric(cell['mean_sample_occupancy'], 'mean sample occupancy')
+                if local and not (scope_lo <= lo < hi <= scope_hi):
+                    raise ValueError('Result cell lies outside its coordination scope')
+                cut.append((lo, hi))
+                checked_cells[identity] = cell
+                if collection == 'releases':
+                    public_support.append((start, end, lo, hi))
+            cut.sort()
+            if any(cut[index-1][1] > cut[index][0] for index in range(1, len(cut))):
+                raise ValueError('Result cell cut contains duplicate or overlapping cells')
+            if not local:
+                continue
+            if collection == 'windows':
+                retirement.append((start, end, scope_lo, scope_hi))
+                if key in private or any(type(cell.get('selected')) is not bool for cell in cells):
+                    raise ValueError('Local private windows need unique scopes and Boolean selection flags')
+                private[key] = (stamp, {identity: cell for identity, cell in checked_cells.items() if cell['selected']})
+            else:
+                expected = private.get(key)
+                if expected is None or stamp < expected[0] or set(checked_cells) != set(expected[1]):
+                    raise ValueError('Local release does not match its private selected scope/interval')
+                if key in public_keys:
+                    raise ValueError('Duplicate local public scope/interval')
+                public_keys.add(key)
+                for identity, cell in checked_cells.items():
+                    diagnostic = expected[1][identity]
+                    for name in ('observation_contributions', 'distinct_road_users', 'mean_sample_occupancy', 'semantic'):
+                        if (name in cell) != (name in diagnostic) or cell.get(name) != diagnostic.get(name):
+                            raise ValueError('Local release changed approved selected cell counts or semantics')
+    if local:
+        if any(selected and key not in public_keys for key, (_, selected) in private.items()):
+            raise ValueError('Selected local private window has no corresponding public release')
+        disjoint_space_time(retirement, 'private retirement')
+        disjoint_space_time(public_support, 'public support')
+
+
 def validate_bundle(root: Path) -> tuple[dict, dict[str, Path]]:
     root = root.resolve()
     manifest = read_json(root / 'bundle.json')
@@ -105,6 +224,8 @@ def validate_bundle(root: Path) -> tuple[dict, dict[str, Path]]:
         numeric(coverage.get(key), key, -1e12 if key in ('x', 'y') else 0)
     if coverage['width'] <= 0 or coverage['height'] <= 0:
         raise ValueError('Coverage must have positive dimensions')
+    if type(coverage['leaf_depth']) is not int or not 1 <= coverage['leaf_depth'] <= 14:
+        raise ValueError('Coverage requires an integer leaf depth in [1,14]')
     previous = -1
     if not isinstance(replay.get('batches'), list):
         raise ValueError('Missing replay batches')
@@ -137,30 +258,9 @@ def validate_bundle(root: Path) -> tuple[dict, dict[str, Path]]:
         paths[variant['result']] = path
         result = read_json(path)
         source = result.get('source', {})
-        if result.get('parameters', {}).get('coordination', 'common_window') != 'common_window':
-            raise ValueError('The snapshot viewer supports common-window results only')
         if result.get('schema') != 'ump.replay-result.v1' or any(source.get(k) != replay.get(k) for k in ('run_id', 'sensor_id', 'sampling_period_ms', 'end_ms', 'coverage')):
             raise ValueError(f'{variant["id"]}: result belongs to different observations')
-        for collection, event in [('releases', 'sealed_at_ms'), ('windows', 'evaluated_at_ms')]:
-            rows = result.get(collection)
-            if not isinstance(rows, list):
-                raise ValueError(f'{variant["id"]}: missing {collection}')
-            previous = -1
-            for row in rows:
-                stamp = row.get(event)
-                numeric(stamp, event)
-                numeric(row.get('start_ms'), 'window start')
-                numeric(row.get('end_ms'), 'window end')
-                if stamp < previous or stamp > replay['end_ms'] or not 0 <= row['start_ms'] < row['end_ms'] <= stamp:
-                    raise ValueError(f'{variant["id"]}: unordered, future-dated or invalid {collection}')
-                previous = stamp
-                if not isinstance(row.get('cells'), list):
-                    raise ValueError('Missing result cells')
-                for cell in row['cells']:
-                    for key in ('x', 'y', 'width', 'height'):
-                        numeric(cell.get(key), 'cell '+key, -1e12 if key in ('x', 'y') else 0)
-                    if cell['width'] <= 0 or cell['height'] <= 0 or cell['x'] < coverage['x'] or cell['y'] < coverage['y'] or cell['x']+cell['width'] > coverage['x']+coverage['width'] or cell['y']+cell['height'] > coverage['y']+coverage['height']:
-                        raise ValueError('Result cell outside declared coverage')
+        validate_result_events(result, coverage, replay['end_ms'], variant['id'])
     # Optional hashes make copied result packages auditable. They are not a
     # cryptographic trust assertion: users can edit both data and manifest.
     for relative, expected in manifest.get('sha256', {}).items():

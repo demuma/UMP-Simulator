@@ -9,6 +9,7 @@ const readable = name => name.replaceAll('_',' ');
 const element = (tag,text,className) => {const item=document.createElement(tag);if(text!=null)item.textContent=text;if(className)item.className=className;return item;};
 let replay, manifest, variants, events, allTypes, sourceIndex, time=0, playing=false, lastTick=0;
 const selections = {A:null,B:null};
+const selectionCellIds = {A:null,B:null};
 const selectorRows = {A:undefined,B:undefined};
 const layouts = {};
 function stats(id, entries) {const parent=$(id);parent.replaceChildren();for(const [label,value]of entries){const item=element('div',null,'stat');item.append(element('strong',value,'mono'),document.createTextNode(label));parent.append(item);}}
@@ -33,7 +34,8 @@ function baseMap(id,g=replay.coverage) {
 function motion() {
  const frame=M.observationAt(replay,time),focus=$('referenceFocus').value;
  const selected=focus==='A'||focus==='B'?displayed(focus):null;
- const chosen=selected?M.selectCell(selected.cells,selections[focus]):null;
+ const chosenEntry=selected?M.selectEntry(selected.entries,selections[focus],selectionCellIds[focus]):null;
+ const chosen=chosenEntry?.cell;
  const g=chosen||replay.coverage,{ctx,left,top,scale,w,h}=baseMap('reference',g);
  const sample=M.referenceSample(frame.visible,g),types=new Map();
  for(const observation of frame.visible){if(!types.has(observation.type))types.set(observation.type,{total:0,shown:0});types.get(observation.type).total++;}
@@ -49,7 +51,7 @@ function motion() {
  ctx.restore();
  const labels={not_yet_sampled:'No sensor sample has arrived yet.',unavailable:'The most recent scheduled measurement is unavailable.',missing_sample:'No current sensor sample is available. Previous positions are cleared.'};
  const positionText=frame.status==='measured'?`Current recorded sample at ${seconds(frame.batch.observed_at_ms)} · held for ${seconds(frame.age)} until the next expected sample. Positions are not interpolated.`:labels[frame.status];
- const focusText=chosen?` Viewport: comparison ${focus}, cell ${chosen.cell_id}, ${number(chosen.width)} × ${number(chosen.height)} m. This footprint comes from historical [${seconds(selected.row.start_ms)}, ${seconds(selected.row.end_ms)}); the dots above remain the current sample.`:focus!=='full'?' The selected comparison has no finalized cell yet; the full area is shown.':' Full recorded area.';
+ const focusText=chosen?` Viewport: comparison ${focus}, cell ${chosen.cell_id}, ${number(chosen.width)} × ${number(chosen.height)} m. This footprint comes from historical [${seconds(chosenEntry.row.start_ms)}, ${seconds(chosenEntry.row.end_ms)}); the dots above remain the current sample.${chosenEntry.partial?' This is the original whole footprint of a partially covered historical aggregate.':''}`:focus!=='full'?' The selected comparison has no finalized cell yet; the full area is shown.':' Full recorded area.';
  $('referenceCaption').textContent=positionText+focusText;
  stats('referenceStats',[['road-user IDs in full sample',number(sample.totalCount)],['distinct XY in full sample',number(sample.totalPositions)],['road-user IDs in this viewport',number(sample.visibleCount)]]);
  const detail=$('referenceDetail');detail.replaceChildren(element('h3','Current sample · recorded road-user types'));
@@ -67,22 +69,26 @@ function motion() {
 function variant(side) {return variants[Number($('variant'+side).value)];}
 function displayed(side) {
  const v=variant(side),privateMode=$('private').checked;
- const row=privateMode?M.diagnosticAt(v.result,time):M.releaseAt(v.result,time);
- return {v,row,privateMode,cells:row?.cells||[]};
+ return {v,privateMode,...M.mosaicAt(v.result,time,privateMode)};
 }
 function releaseMap(side) {
- const {v,row,privateMode,cells}=displayed(side),id='map'+side;
- const chosen=M.selectCell(cells,selections[side]);selections[side]=chosen?.cell_id??null;
- const g=$('focus'+side).checked&&chosen?chosen:replay.coverage,{ctx,left,top,scale,w:mapWidth,h:mapHeight}=baseMap(id,g);
- const selected=selections[side];
+ const view=displayed(side),{v,entries,privateMode,local,latestEvent}=view,id='map'+side;
+ const chosen=M.selectEntry(entries,selections[side],selectionCellIds[side]);selections[side]=chosen?.key??null;selectionCellIds[side]=chosen?.cell.cell_id??null;
+ const g=$('focus'+side).checked&&chosen?chosen.cell:replay.coverage,{ctx,left,top,scale,w:mapWidth,h:mapHeight}=baseMap(id,g);
  ctx.save();ctx.beginPath();ctx.rect(left,top,mapWidth,mapHeight);ctx.clip();
- for(const cell of cells){
-   const suppressed=privateMode&&!cell.selected, x=left+(cell.x-g.x)*scale,y=top+(cell.y-g.y)*scale,w=cell.width*scale,h=cell.height*scale;
-   const loss=cell.semantic?.semantic_max_loss??0;
-   ctx.fillStyle=suppressed?'#edb4a1':`hsl(${166-loss*21} ${39+loss*4}% ${80-loss*9}%)`;ctx.fillRect(x,y,w,h);
-   ctx.strokeStyle=cell.cell_id===selected?'#16529e':suppressed?'#bb654d':'#4b7f81';ctx.lineWidth=cell.cell_id===selected?2.6:1;ctx.strokeRect(x+.5,y+.5,Math.max(0,w-1),Math.max(0,h-1));
-   if(suppressed){ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();ctx.strokeStyle='#ba604a';ctx.lineWidth=.7;for(let a=-h;a<w;a+=8){ctx.beginPath();ctx.moveTo(x+a,y);ctx.lineTo(x+a+h,y+h);ctx.stroke();}ctx.restore();}
-   if(w>28&&h>22){ctx.fillStyle='#23464c';ctx.font=`${w>55?13:10}px -apple-system,sans-serif`;ctx.textAlign='center';ctx.fillText(suppressed?'×':number(cell.mean_sample_occupancy),x+w/2,y+h/2+4);}
+ for(const entry of entries){
+   const cell=entry.cell,suppressed=privateMode&&!cell.selected,loss=cell.semantic?.semantic_max_loss??0;
+   for(const fragment of entry.fragments){
+     const x=left+(fragment.x-g.x)*scale,y=top+(fragment.y-g.y)*scale,w=fragment.width*scale,h=fragment.height*scale;
+     ctx.fillStyle=suppressed?'#edb4a1':`hsl(${166-loss*21} ${39+loss*4}% ${80-loss*9}%)`;ctx.fillRect(x,y,w,h);
+     ctx.strokeStyle=entry.key===selections[side]?'#16529e':suppressed?'#bb654d':'#4b7f81';ctx.lineWidth=entry.key===selections[side]?2.6:1;
+     if(entry.partial)ctx.setLineDash([4,3]);
+     ctx.strokeRect(x+.5,y+.5,Math.max(0,w-1),Math.max(0,h-1));ctx.setLineDash([]);
+     if(suppressed||entry.partial){ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();ctx.strokeStyle=suppressed?'#ba604a':'#648a8c';ctx.lineWidth=.7;for(let a=-h;a<w;a+=10){ctx.beginPath();ctx.moveTo(x+a,y);ctx.lineTo(x+a+h,y+h);ctx.stroke();}ctx.restore();}
+     // A mask is not a newly measured cell. Whole-cell counts must not be
+     // repeated or apportioned into the visible remnants of an older parent.
+     if(w>28&&h>22&&!entry.partial){ctx.fillStyle='#23464c';ctx.font=`${w>55?13:10}px -apple-system,sans-serif`;ctx.textAlign='center';ctx.fillText(suppressed?'×':number(cell.mean_sample_occupancy),x+w/2,y+h/2+4);}
+   }
  }
  if(privateMode)for(const region of policyRegions(v)){
    const x=left+(region.x-g.x)*scale,y=top+(region.y-g.y)*scale,w=region.width*scale,h=region.height*scale;
@@ -90,27 +96,31 @@ function releaseMap(side) {
    if(w>30&&h>18){ctx.fillStyle='#523277';ctx.font='10px -apple-system,sans-serif';ctx.textAlign='left';ctx.fillText(region.id,x+3,y+12);}
  }
  ctx.restore();
+ $('map'+side).setAttribute('aria-label',`${privateMode?'Finalized decision':'Released aggregation'} mosaic ${side}`);
  const title=$('variant'+side).previousElementSibling;
- title.textContent=`Comparison ${side} · ${privateMode?'Private finalized decision':'Recipient cut'}`;
- if(!row) $('caption'+side).textContent=`No ${privateMode?'finalized decision':'release'} is available yet. Blank areas are unknown; they do not mean zero traffic.`;
- else {
-   const eventTime=privateMode?row.evaluated_at_ms:row.sealed_at_ms;
-   $('caption'+side).textContent=`[${seconds(row.start_ms)}, ${seconds(row.end_ms)}) · ${privateMode?'evaluated':'sealed'} at ${seconds(eventTime)} · ${seconds(time-row.end_ms)} since window end. ${privateMode?'Private diagnostics; suppressed cells are hatched.':'Latest released historical aggregate, retained on screen until another release. This is not a current occupancy measurement.'}`;
+ title.textContent=`Comparison ${side} · ${privateMode?'Private finalized decisions':'Published history'}${local?' · local windows':' · common window'}`;
+ if(!latestEvent)$('caption'+side).textContent=`No ${privateMode?'finalized decision':'release'} is available yet. Blank areas are unknown; they do not mean zero traffic.`;
+ else if(local){
+   const stamp=privateMode?latestEvent.evaluated_at_ms:latestEvent.sealed_at_ms;
+   $('caption'+side).textContent=`Historical mosaic of ${number(entries.length)} original aggregates with independent intervals. Latest ${privateMode?'decision':'publication'} at ${seconds(stamp)}. Select a cell for its own interval and age. ${privateMode?'Empty private retirements clear only this diagnostic view.':'Last published values remain visible without a newer publication; they are not current occupancy.'}`;
+ } else {
+   const stamp=privateMode?latestEvent.evaluated_at_ms:latestEvent.sealed_at_ms;
+   $('caption'+side).textContent=`[${seconds(latestEvent.start_ms)}, ${seconds(latestEvent.end_ms)}) · ${privateMode?'evaluated':'sealed'} at ${seconds(stamp)} · ${seconds(time-latestEvent.end_ms)} since window end. ${privateMode?'Private diagnostics; suppressed cells are hatched.':'Latest released historical aggregate, retained on screen until another release. This is not a current occupancy measurement.'}`;
  }
- const released=M.cumulativeReleased(v.result,time),published=privateMode?cells.filter(c=>c.selected):cells;
- stats('stats'+side,[['cells in shown cut',number(published.length)],['released / total run observations',number(released.contributions)+' / '+number(v.result.input_observation_contributions)],['release events so far',number(released.count)]]);
- updateCellSelector(side,row,cells);
+ const released=M.cumulativeReleased(v.result,time);
+ stats('stats'+side,[[privateMode?'visible finalized footprints':'visible historical aggregates',number(entries.length)],['released / total run observations',number(released.contributions)+' / '+number(v.result.input_observation_contributions)],['release events so far',number(released.count)]]);
+ updateCellSelector(side,entries);
  details(side);
 }
-function updateCellSelector(side,row,cells) {
+function updateCellSelector(side,entries) {
  const select=$('cell'+side);
- if(selectorRows[side]!==row){
+ if(selectorRows[side]!==entries){
    select.replaceChildren();
-   if(!cells.length){const option=element('option','No finalized cells at this timestamp');option.value='';select.append(option);}
-   for(const cell of cells){const option=element('option',`${cell.cell_id} · d${cell.depth} · ${number(cell.width)} × ${number(cell.height)} m · (${number(cell.x)}, ${number(cell.y)})${cell.selected===false?' · suppressed':''}`);option.value=String(cell.cell_id);select.append(option);}
-   selectorRows[side]=row;
+   if(!entries.length){const option=element('option','No visible aggregates at this timestamp');option.value='';select.append(option);}
+   for(const entry of entries){const cell=entry.cell,row=entry.row;const option=element('option',`${cell.cell_id} · d${cell.depth} · ${number(cell.width)} × ${number(cell.height)} m · [${seconds(row.start_ms)}, ${seconds(row.end_ms)})${cell.selected===false?' · suppressed':''}${entry.partial?' · partially covered':''}`);option.value=entry.key;select.append(option);}
+   selectorRows[side]=entries;
  }
- select.disabled=!cells.length;select.value=selections[side]==null?'':String(selections[side]);
+ select.disabled=!entries.length;select.value=selections[side]??'';
 }
 function groupTable(headers,rows) {
  const table=element('table'),caption=element('caption');caption.className='sr-only';caption.textContent=headers[0]+' breakdown';table.append(caption);
@@ -122,10 +132,13 @@ function policyRegions(v) {
 }
 function intersects(a,b) {return a.x<b.x+b.width&&b.x<a.x+a.width&&a.y<b.y+b.height&&b.y<a.y+a.height;}
 function details(side) {
- const {v,row,cells,privateMode}=displayed(side),detail=$('detail'+side),cell=cells.find(c=>c.cell_id===selections[side]);detail.replaceChildren();
+ const {v,entries,privateMode}=displayed(side),detail=$('detail'+side),entry=entries.find(e=>e.key===selections[side]),cell=entry?.cell,row=entry?.row;detail.replaceChildren();
  if(!cell){detail.append(element('h3','No cell to inspect'),element('p','Seek to a release event. A suppressed or absent recipient footprint is unknown, not a released zero.','muted'));return;}
  detail.append(element('h3',`Cell ${cell.cell_id} · depth ${cell.depth} · ${number(cell.width)} × ${number(cell.height)} m`));
  detail.append(element('p',`x ∈ [${number(cell.x)}, ${number(cell.x+cell.width)}) m · y ∈ [${number(cell.y)}, ${number(cell.y+cell.height)}) m · source interval [${seconds(row.start_ms)}, ${seconds(row.end_ms)})`,'scope'));
+ const finalized=privateMode?row.evaluated_at_ms:row.sealed_at_ms;
+ detail.append(element('p',`${privateMode?'Evaluated':'Published'} at ${seconds(finalized)} · ${seconds(time-row.end_ms)} since this interval ended · ${seconds(finalized-row.start_ms)} interval-start age at ${privateMode?'evaluation':'release'}. Historical values, not a synchronized current measurement.`,'scope'));
+ if(entry.partial)detail.append(element('p',`Partially covered by newer ${privateMode?'decisions':'publications'}: ${number(entry.fragments.length)} visible fragment(s) remain. All counts and groups below belong to the entire original ${number(cell.width)} × ${number(cell.height)} m cell and its original interval. Counts for the visible fragments alone are unknown.`,'notice'));
  detail.append(element('p',`${number(cell.observation_contributions)} observations · ${number(cell.distinct_road_users)} distinct road users · mean occupancy ${number(cell.mean_sample_occupancy)}`));
  if(privateMode)detail.append(element('p',`${cell.selected?'Selected':'Suppressed'} · ${readable(cell.reason||'')} · ${readable(row.completion_reason||'')}`,'scope'));
  if(privateMode){const regions=policyRegions(v).filter(region=>intersects(region,cell));if(regions.length){detail.append(element('h4','Intersecting policy regions · private'));for(const region of regions){detail.append(element('p',`${region.id}${region.type?' · '+region.type:''} · (${number(region.x)}, ${number(region.y)}) · ${number(region.width)} × ${number(region.height)} m`));if(Array.isArray(region.requirements))for(const requirement of region.requirements){if(typeof requirement.metric!=='string')continue;const bounds=[requirement.min!=null?'≥ '+number(requirement.min):'',requirement.max!=null?'≤ '+number(requirement.max):''].filter(Boolean).join(' · ');detail.append(element('p',`${readable(requirement.metric)} ${bounds}`,'scope'));}}detail.append(element('p','Region metadata describes declared local rules. The effective recorded checks below determine this cell’s decision.','scope'));}}
@@ -147,11 +160,15 @@ function details(side) {
  else detail.append(element('p','Regional constraints and failed candidates are private diagnostics. Enable the diagnostic overlay to inspect their recorded checks.','scope'));
 }
 function history() {
- const {ctx,width,height}=canvasContext('lanes'),left=85,w=width-left-12;
- for(const [i,side]of ['A','B'].entries()){const y=19+i*27,v=variant(side);ctx.font='11px -apple-system,sans-serif';ctx.fillStyle='#536574';ctx.textAlign='left';ctx.fillText('Comparison '+side,0,y+4);ctx.strokeStyle='#dce4ea';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(left+w,y);ctx.stroke();for(const release of v.result.releases){const x=left+w*release.sealed_at_ms/replay.end_ms;ctx.fillStyle=release.sealed_at_ms<=time?'#258b87':'#b9c9d4';ctx.fillRect(x-1,y-5,2,10);}}
+ const {ctx,width,height}=canvasContext('lanes'),left=85,w=width-left-12,privateMode=$('private').checked;
+ $('lanes').setAttribute('aria-label',privateMode?'Private finalized decision timeline':'Release event timeline');
+ $('historyTitle').textContent=privateMode?'Finalized decision events · private':'Actual release events';
+ $('historyHint').textContent=privateMode?'Marks are evaluation times, including empty and suppressed retirements.':'Marks are sealing times, not measurement times. Click the timeline to seek.';
+ for(const [i,side]of ['A','B'].entries()){const y=19+i*27,v=variant(side),rows=privateMode?v.result.windows:v.result.releases;ctx.font='11px -apple-system,sans-serif';ctx.fillStyle='#536574';ctx.textAlign='left';ctx.fillText('Comparison '+side,0,y+4);ctx.strokeStyle='#dce4ea';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(left+w,y);ctx.stroke();for(const row of rows){const stamp=privateMode?row.evaluated_at_ms:row.sealed_at_ms,x=left+w*stamp/replay.end_ms;ctx.fillStyle=stamp<=time?'#258b87':'#b9c9d4';ctx.fillRect(x-1,y-5,2,10);}}
  const marker=left+w*time/replay.end_ms;ctx.strokeStyle='#215984';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(marker,2);ctx.lineTo(marker,height-3);ctx.stroke();layouts.lanes={left,w};
 }
-function render(){time=Math.max(0,Math.min(replay.end_ms,time));if(!playing)$('play').textContent=time>=replay.end_ms?'↺ Replay':'▶ Play';$('clock').textContent=seconds(time);$('timeline').value=time;motion();releaseMap('A');releaseMap('B');history();$('previous').disabled=time<=0;$('next').disabled=time>=replay.end_ms;}
+function renderFrame(){time=Math.max(0,Math.min(replay.end_ms,time));if(!playing)$('play').textContent=time>=replay.end_ms?'↺ Replay':'▶ Play';$('clock').textContent=seconds(time);$('timeline').value=time;motion();releaseMap('A');releaseMap('B');history();$('previous').disabled=time<=0;$('next').disabled=time>=replay.end_ms;}
+function render(){try{renderFrame();}catch(error){pause();$('application').hidden=true;$('error').hidden=false;$('error').textContent='Replay display stopped: '+error.message;}}
 function pause(){playing=false;$('play').textContent=time>=replay.end_ms?'↺ Replay':'▶ Play';}
 function tick(timestamp){if(playing){if(lastTick)time+=Math.min(250,timestamp-lastTick)*Number($('speed').value);if(time>=replay.end_ms){time=replay.end_ms;pause();}render();}lastTick=timestamp;requestAnimationFrame(tick);}
 async function fetchJSON(path){const response=await fetch(path);if(!response.ok)throw new Error(`${response.status}: ${path}`);return response.json();}
@@ -167,10 +184,10 @@ async function start(){
  $('duration').textContent=seconds(replay.end_ms)+' recorded';$('timeline').max=replay.end_ms;
  $('source').textContent=`${replay.run_id} · ${number(replay.coverage.width)} × ${number(replay.coverage.height)} m · leaf depth ${replay.coverage.leaf_depth}`;
  $('provenance').textContent=`${variants.length} frozen result variants · shared observations`;
- for(const side of ['A','B']){const select=$('variant'+side);for(const [index,v]of variants.entries()){const option=element('option',v.label);option.value=index;select.append(option);}select.value=side==='A'?0:Math.min(1,variants.length-1);select.addEventListener('change',()=>{selections[side]=null;render();});$('cell'+side).addEventListener('change',event=>{selections[side]=event.target.value;render();});$('focus'+side).addEventListener('change',render);$('map'+side).addEventListener('click',event=>{const l=layouts['map'+side],r=event.currentTarget.getBoundingClientRect(),x=(event.clientX-r.left-l.left)/l.scale+l.viewport.x,y=(event.clientY-r.top-l.top)/l.scale+l.viewport.y;const cell=displayed(side).cells.find(c=>M.contains(c,x,y));selections[side]=cell?.cell_id??null;render();});}
+ for(const side of ['A','B']){const select=$('variant'+side);for(const [index,v]of variants.entries()){const option=element('option',v.label);option.value=index;select.append(option);}select.value=side==='A'?0:Math.min(1,variants.length-1);select.addEventListener('change',()=>{selections[side]=null;selectionCellIds[side]=null;render();});$('cell'+side).addEventListener('change',event=>{selections[side]=event.target.value;selectionCellIds[side]=displayed(side).entries.find(e=>e.key===event.target.value)?.cell.cell_id??null;render();});$('focus'+side).addEventListener('change',render);$('map'+side).addEventListener('click',event=>{const l=layouts['map'+side],r=event.currentTarget.getBoundingClientRect(),x=(event.clientX-r.left-l.left)/l.scale+l.viewport.x,y=(event.clientY-r.top-l.top)/l.scale+l.viewport.y;const entry=displayed(side).entries.find(e=>M.entryContains(e,x,y));selections[side]=entry?.key??null;selectionCellIds[side]=entry?.cell.cell_id??null;render();});}
  $('play').addEventListener('click',()=>{if(playing){pause();return;}if(time>=replay.end_ms)time=0;playing=true;lastTick=0;$('play').textContent='Ⅱ Pause';});
  $('previous').addEventListener('click',()=>{pause();time=M.eventBefore(events,time);render();});$('next').addEventListener('click',()=>{pause();time=M.eventAfter(events,time);render();});
- $('timeline').addEventListener('input',event=>{pause();time=Number(event.target.value);render();});$('private').addEventListener('change',render);$('sourceGroups').addEventListener('change',render);$('referenceFocus').addEventListener('change',render);
+ $('timeline').addEventListener('input',event=>{pause();time=Number(event.target.value);render();});$('private').addEventListener('change',()=>{events=M.eventTimes(variants,replay.end_ms,$('private').checked);selections.A=null;selections.B=null;selectionCellIds.A=null;selectionCellIds.B=null;render();});$('sourceGroups').addEventListener('change',render);$('referenceFocus').addEventListener('change',render);
  $('lanes').addEventListener('click',event=>{pause();const r=event.currentTarget.getBoundingClientRect(),l=layouts.lanes;time=(event.clientX-r.left-l.left)/l.w*replay.end_ms;render();});
  window.addEventListener('resize',render);$('application').hidden=false;render();requestAnimationFrame(tick);
 }

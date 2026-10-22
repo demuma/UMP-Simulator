@@ -1,9 +1,9 @@
 # TO-DO — UMP-Simulator
 
 **Status: 2026-10-22. Current priority: sequential algorithm and policy-compliance work.
-A07 common-window valid-descendant rescue and the first A08 common-window semantic
-adaptation slice are implemented and verified. Review their stated metrics and limits
-before broadening the mechanism. Membership attacks and computation/cache optimization
+A07 common-window valid-descendant rescue and A08 semantic common/local coordination
+are implemented and verified within their reports. Review the full aggregator
+requirements and stated limits before broadening the mechanism. Membership attacks and computation/cache optimization
 remain deferred. October 18 is historical.**
 
 **October 22 checkpoint:**
@@ -15,9 +15,9 @@ remain deferred. October 18 is historical.**
 - [x] Run the bounded [16-leaf regional-policy experiment](docs/LOCAL_LEAF_POLICY_RESULTS_2026-10-22.md)
   on identical observations: intermediate semantic groups, sibling merge, infeasible
   support, unchanged controls and a coarse footprint intersecting an empty strict patch.
-- [x] Record common-window temporal coupling explicitly. A regional 600-ms limit
-  currently constrains the complete semantic window; valid unrelated branches can
-  wait for failing neighbors. No independent semantic-window claim is made.
+- [x] Record the historical common-window temporal coupling explicitly. In that
+  baseline a regional 600-ms limit constrains the complete semantic interval; the
+  subsequent semantic local gate verifies independent owner windows instead.
 - [x] Integrate these checks into the [four-step taxonomy/policy roadmap](docs/TAXONOMY_POLICY_ROADMAP_2026-10-22.md).
   Full modifier-based population generation, regional attribute restrictions and
   arbitrary/overlapping map geometry remain later work.
@@ -35,12 +35,27 @@ remain deferred. October 18 is historical.**
 - [x] Clarify analytical replay provenance and add reference-cell zoom, full-sample /
   viewport identity counts and exact-coordinate multiplicities. Four identities in
   cell 12300 are distinct even when their markers overlap at full-area scale.
-- [ ] Next visualization gate: implement an asynchronous historical interval mosaic
-  before enabling local-mode results in the HTML replay. Preserve explicit source
-  intervals, sealing times, unknown areas and no historical support reuse.
-- [ ] Design the next seeded moving-data local-policy comparison after reviewing the
-  [local semantic results](docs/SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md). Keep
-  mechanism acceptance distinct from empirical privacy effectiveness.
+- [x] Implement and verify the
+  [asynchronous historical mosaic](docs/ASYNC_LOCAL_REPLAY_CONTRACT_2026-10-22.md)
+  in the HTML replay: original cell/window provenance under clipping, event-time
+  causality, independent public/private histories, empty scope retirement, rewind
+  and bounded masks. See the [viewer test report](docs/ASYNC_LOCAL_REPLAY_TEST_REPORT_2026-10-22.md).
+- [ ] Next: implement scope-aware semantic fixed-query utility. Preserve original
+  cell/interval statistics and taxonomy semantics, unknown support, fixed query and
+  deadline cohorts, and coverage alongside conditional error. The viewer is not
+  this evaluator and does not complete it.
+- [ ] Then compare common/local adaptation with legal fixed raster/window settings
+  on the same existing moving input and hard policy. Declare minimum duration,
+  query masks, EOF scope and release-event costs; common-window adaptive
+  coordination is an ablation, not the fixed baseline.
+- [ ] Review agreed aggregator requirements at each gate: hard eligibility versus
+  preference, intermediate tiers, regional bounds, independent starts, current
+  merges/future handoffs, irreversible publication, complete source retirement,
+  missing measurements, budgets and retries. Separate verified cases from open scope.
+- [ ] After those gates, design privacy evaluation with protected unit/secret,
+  recipient information, measured privacy objective and appropriate policies/scenarios.
+  No new utility optimizer, movement generator or attack matrix is started by
+  the current visualization task.
 
 **Current execution order (supersedes older next-step notes below):**
 
@@ -120,22 +135,28 @@ remain deferred. October 18 is historical.**
    immutable publication, recovery, identity unions and source retirement are tested.
    See the [contract](docs/SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md) and
    [controlled comparison](docs/SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md).
-   Next review actual local losses and develop the asynchronous viewer; do not infer
-   global mean-loss optimality or privacy gains from policy compliance.
+   The [asynchronous viewer gate](docs/ASYNC_LOCAL_REPLAY_TEST_REPORT_2026-10-22.md)
+   is now implemented and verified. Next adapt scoped semantic query utility, then
+   compare the same moving input against legal fixed baselines, reviewing aggregator
+   requirements at every gate. Privacy evaluation follows; do not infer global
+   mean-loss optimality or privacy gains from policy compliance.
 10. **MR02, presentation gate (narrative drafted, slide editing/rehearsal open):** prepare one coherent 20-minute narrative: question and
    conditional answer first; policy model, three adaptation dimensions, controlled
    trade-off, recorded replay and validated fixed-baseline comparison. Put simulator
    implementation, extra metric catalogs and old attack studies in backup. Mark
    future scenarios explicitly. Use the [18-minute narrative plus buffer](docs/PRESENTATION_NARRATIVE_20MIN_2026-10-21.md).
-11. **MR03, subsequent experiment design:** independently replicate captures; then vary
-   density/identity turnover, heterogeneous regions and class-query utility one factor
-   at a time. Diagnose the common-window requirement for a complete early cut
-   before changing the scheduler: one unsupported branch can hold valid neighbors
-   until the terminal partial-release fallback. Compare selective independent
-   releases only with an explicit publication/merge accounting contract. A
-   one-type/seven-type ablation on the same XY/IDs remains separate; the present
-   fixed-mix study does not estimate a causal type-count effect. ALOQ reproduction is a separate later external comparison with different
-   privacy guarantees; first verify adapter/units/seeds/output geometry.
+11. **MR03, subsequent evaluation design:** first adapt scoped semantic fixed-query
+   utility and compare the same existing moving input with legal fixed baselines.
+   Review aggregator requirements and evidence at each gate. Then specify the privacy
+   objective, suitable policies and controlled scenarios before a new privacy matrix.
+   Later consider independent captures, density/turnover and heterogeneous regions
+   one factor at a time. Keep the
+   same source, hard constraints and query/deadline cohort across legal fixed and
+   adaptive comparisons. Scoped semantic queries are not implemented by the local
+   mechanism gate. A one-type/seven-type control remains separate; the current
+   fixed mix does not estimate a causal type-count effect. ALOQ reproduction is a
+   later external comparison with different privacy guarantees, requiring a verified
+   adapter, units, seeds and geometry. Do not automatically start these experiments.
 12. Keep finest observation depth 6 unchanged. Maximum output size is a separate
    hard policy bound. Individual/type suppression, per-class utility priorities and
    broader simulation realism remain separate decisions.
@@ -1107,7 +1128,8 @@ future common-boundary handoffs and scoped publication. Comparative effectivenes
   Keep matched-point age, retention and empirical privacy separate; do not interpret
   the current heuristic as a globally optimal scheduler.
 - [ ] Extend whole-domain feasibility enumeration to a justified asynchronous reference class.
-- [ ] Add a persistent renderer mosaic of latest decisions from every local domain.
+- [ ] Add a persistent live-renderer mosaic of latest decisions from every local
+  domain. This remains separate from the HTML replay's asynchronous historical view.
 - [ ] Implement E05 precomputed statistic caches separately from ownership/coordination holds.
 
 See [CELL_LOCAL_COORDINATION.md](docs/CELL_LOCAL_COORDINATION.md) for exact semantics and
@@ -1177,12 +1199,16 @@ Do not interpret tiny fixed-interval oracle agreement as globally optimal online
   loss, then finer weighted cell size and canonical IDs. Mean remains a hard constraint/report.
 - [x] Verify source accounting, unavailable coverage, EOF, budgets/rollback, original-policy
   publication/recovery, legacy compatibility and the max-versus-mean counterexample.
-- [ ] Review the recorded trade-offs before Semantic First + Spatial First, mean-loss
-  optimization, predictive waiting or regional strategy overrides. These are not implemented.
+- [x] Add and verify Semantic First + Spatial First, then semantic cell-local
+  coordination under their separate acceptance contracts and reports.
+- [ ] Review trade-offs before mean-loss optimization, predictive waiting or regional
+  strategy overrides. These extensions remain unimplemented.
 - [ ] Define application preferences before adding a joint utility scheduler or
   per-category release priorities; fixed-interval nondominance is not online optimality.
-- [ ] Implement cell-local semantic coordination only after a separate scope/acceptance
-  review; current enabled use rejects explicitly.
+- [x] Implement semantic cell-local coordination after the separate
+  [scope/acceptance review](docs/SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md);
+  the [test report](docs/SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md) records the
+  completed gate. The historical common-only rejection no longer describes current code.
 - [ ] Study individual contribution/type suppression and complementary suppression as
   separate actions. Do not falsify labels or silently discard a rare semantic remainder.
 - [ ] Expand to independent age/mode/vehicle classification dimensions only when justified;

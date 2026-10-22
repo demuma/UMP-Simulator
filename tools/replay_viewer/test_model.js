@@ -118,4 +118,174 @@ test('Declared scripted tag is explicit provenance, other titles do not imply si
  assert.equal(M.inputProvenance({title:'Not a scripted mechanism test'}).kind,'unspecified');
  assert.equal(M.inputProvenance({}).kind,'unspecified');
 });
+
+const geometry=(cell_id,x,y,width,height)=>({cell_id,x,y,width,height,observation_contributions:80,distinct_road_users:8});
+const scopedRelease=(cell,start,end,sealed,cells=[cell])=>({start_ms:start,end_ms:end,sealed_at_ms:sealed,coordination_cell:geometry(cell.cell_id,cell.x,cell.y,cell.width,cell.height),cells});
+const scopedWindow=(scope,start,end,evaluated,cells=[])=>({start_ms:start,end_ms:end,evaluated_at_ms:evaluated,coordination_cell:scope,cells});
+const localResult=(releases,windows=[])=>({parameters:{coordination:'cell_local'},releases,windows});
+const coarse=geometry(3,0,0,8,8),child=geometry(12,2,2,2,2),sibling=geometry(13,8,0,8,8);
+const rootEvent=scopedRelease(coarse,0,200,200),childEvent=scopedRelease(child,200,400,450),siblingEvent=scopedRelease(sibling,0,400,400);
+const overlapResult=localResult([rootEvent,siblingEvent,childEvent]);
+const area=fragment=>fragment.width*fragment.height;
+const directContains=(rectangle,x,y)=>x>=rectangle.x&&x<rectangle.x+rectangle.width&&y>=rectangle.y&&y<rectangle.y+rectangle.height;
+const overlapping=(a,b)=>a.x<b.x+b.width&&b.x<a.x+a.width&&a.y<b.y+b.height&&b.y<a.y+a.height;
+test('Common-window mosaic retains the legacy whole latest released snapshot',()=>{
+ const input={releases:[first,second],windows:result.windows};
+ assert.equal(M.mosaicAt(input,249).entries.length,0);
+ const old=M.mosaicAt(input,399);assert.equal(old.local,false);assert.equal(old.latestEvent,first);assert.equal(old.eventCount,1);
+ assert.equal(old.entries[0].cell,first.cells[0]);assert.equal(old.entries[0].row,first);assert.equal(old.entries[0].partial,false);
+ const next=M.mosaicAt(input,400);assert.equal(next.latestEvent,second);assert.equal(next.entries.length,2);assert.equal(next.eventCount,2);
+});
+test('Independent local releases retain differently timed neighboring cells',()=>{
+ const mosaic=M.mosaicAt(overlapResult,400);
+ assert.equal(mosaic.local,true);assert.equal(mosaic.entries.length,2);assert.equal(mosaic.latestEvent,siblingEvent);
+ assert.equal(mosaic.entries.find(e=>e.cell===coarse).row,rootEvent);assert.equal(mosaic.entries.find(e=>e.cell===sibling).row,siblingEvent);
+ assert.equal(mosaic.asOfMs,400);assert.equal(mosaic.eventCount,2);
+});
+test('A local release is invisible one millisecond before sealing',()=>{
+ assert.equal(M.mosaicAt(overlapResult,449).entries.some(e=>e.cell===child),false);
+ assert.equal(M.mosaicAt(overlapResult,450).entries.some(e=>e.cell===child),true);
+});
+test('Fine overwrite clips only visible geometry and keeps coarse original counts',()=>{
+ const mosaic=M.mosaicAt(overlapResult,450),entry=mosaic.entries.find(e=>e.cell===coarse);
+ assert.equal(entry.partial,true);assert.equal(entry.fragments.length,4);
+ assert.equal(entry.fragments.reduce((sum,f)=>sum+area(f),0),60);
+ assert.equal(entry.cell,coarse);assert.equal(entry.row,rootEvent);assert.equal(entry.cell.observation_contributions,80);
+ assert.equal(entry.cell.width,8);assert.equal(entry.cell.height,8);
+ for(const fragment of entry.fragments){assert.ok(!overlapping(fragment,child));assert.ok(fragment.width>0&&fragment.height>0);}
+ for(const [i,a]of entry.fragments.entries())for(const b of entry.fragments.slice(i+1))assert.ok(!overlapping(a,b));
+});
+test('Mosaic hit-testing uses visible half-open fragments rather than original support',()=>{
+ const mosaic=M.mosaicAt(overlapResult,450),old=mosaic.entries.find(e=>e.cell===coarse),newer=mosaic.entries.find(e=>e.cell===child);
+ assert.equal(M.entryContains(old,3,3),false);assert.equal(M.entryContains(newer,3,3),true);
+ assert.equal(M.entryContains(old,4,3),true);assert.equal(M.entryContains(newer,4,3),false);
+ assert.equal(M.entryContains(old,8,3),false);
+});
+test('Touching sibling scopes do not partially mask each other',()=>{
+ const entries=M.mosaicAt(localResult([rootEvent,siblingEvent]),450).entries;
+ assert.equal(entries.length,2);assert.ok(entries.every(e=>!e.partial&&e.fragments.length===1));
+});
+test('A later coarse release replaces older finer entries only within its scope',()=>{
+ const fineFirst=scopedRelease(child,0,100,100),coarseLater=scopedRelease(coarse,100,200,200);
+ const mosaic=M.mosaicAt(localResult([fineFirst,siblingEvent,coarseLater]),500);
+ assert.deepEqual(mosaic.entries.map(e=>e.cell.cell_id),[3,13]);assert.ok(mosaic.entries.every(e=>!e.partial));
+});
+test('Late publication wins by sealing time even with an older source interval',()=>{
+ const fine=scopedRelease(child,100,300,400),late=scopedRelease(coarse,0,100,600),input=localResult([late,fine]);
+ assert.equal(M.mosaicAt(input,500).entries[0].cell,child);
+ assert.equal(M.mosaicAt(input,600).entries[0].cell,coarse);
+ assert.equal(M.mosaicAt(input,600).entries[0].row.end_ms,100);
+});
+test('Simultaneous overlapping events follow their authoritative array order',()=>{
+ const a=scopedRelease(coarse,0,100,500),b=scopedRelease(child,100,200,500);
+ const input=localResult([a,b]),mosaic=M.mosaicAt(input,500);
+ assert.equal(mosaic.entries[0].partial,true);assert.equal(mosaic.entries[1].cell,child);assert.equal(mosaic.latestEvent,b);
+ const reverse=M.mosaicAt(localResult([b,a]),500);assert.equal(reverse.entries.length,1);assert.equal(reverse.entries[0].cell,coarse);
+});
+test('Reverse seek rebuilds a deterministic mosaic instead of retaining future masks',()=>{
+ const firstView=M.mosaicAt(overlapResult,200),key=firstView.entries[0].key;
+ M.mosaicAt(overlapResult,500);const reverse=M.mosaicAt(overlapResult,200);
+ assert.equal(reverse.entries.length,1);assert.equal(reverse.entries[0].key,key);assert.equal(reverse.entries[0].partial,false);
+ assert.equal(reverse.entries[0].fragments.reduce((sum,f)=>sum+area(f),0),64);
+ assert.equal(M.mosaicAt(overlapResult,199).entries.length,0);
+});
+test('Recipient mosaics never inspect private window arrays or empty retirements',()=>{
+ const input=localResult([rootEvent]);Object.defineProperty(input,'windows',{get(){throw new Error('Private array accessed');}});
+ assert.equal(M.mosaicAt(input,500,false).entries.length,1);
+ assert.deepEqual(M.eventTimes([{result:input}],600),[0,200,600]);
+});
+test('Private mosaics never inspect recipient arrays',()=>{
+ const input=localResult([],[scopedWindow(coarse,0,200,200,[coarse])]);
+ Object.defineProperty(input,'releases',{get(){throw new Error('Recipient array accessed');}});
+ assert.equal(M.mosaicAt(input,500,true).entries.length,1);
+});
+test('An empty private retirement clears its scope only in the private channel',()=>{
+ const initial=scopedWindow(coarse,0,200,200,[coarse]),retirement=scopedWindow(child,200,400,400,[]);
+ const input=localResult([rootEvent],[initial,retirement]);
+ assert.equal(M.mosaicAt(input,399,true).entries[0].partial,false);
+ const privateView=M.mosaicAt(input,400,true);assert.equal(privateView.entries.length,1);assert.equal(privateView.entries[0].partial,true);
+ assert.equal(M.entryContains(privateView.entries[0],3,3),false);assert.equal(privateView.latestEvent,retirement);assert.equal(privateView.eventCount,2);
+ assert.equal(M.mosaicAt(input,500,false).entries[0].partial,false);
+});
+test('Whole-scope private retirement removes the old entry without inventing a zero cell',()=>{
+ const input=localResult([],[scopedWindow(coarse,0,200,200,[coarse]),scopedWindow(coarse,200,400,400,[])]);
+ const mosaic=M.mosaicAt(input,400,true);assert.deepEqual(mosaic.entries,[]);assert.equal(mosaic.eventCount,2);
+});
+test('Private-only events join the optional private event timeline',()=>{
+ const input=localResult([rootEvent],[scopedWindow(coarse,0,200,200,[coarse]),scopedWindow(child,200,400,400)]);
+ assert.deepEqual(M.eventTimes([{result:input}],600),[0,200,600]);
+ assert.deepEqual(M.eventTimes([{result:input}],600,true),[0,200,400,600]);
+});
+test('Mosaic entry keys persist through geometry masks and selection uses those keys',()=>{
+ const input=localResult([rootEvent,childEvent]),before=M.mosaicAt(input,200).entries[0];
+ const entries=M.mosaicAt(input,450).entries;assert.equal(M.selectEntry(entries,before.key).cell,coarse);
+ assert.equal(M.selectEntry(entries,'stale').cell,coarse);assert.equal(M.selectEntry([],before.key),null);
+ assert.equal(entries[0].eventIndex,0);assert.equal(entries[1].eventIndex,1);assert.equal(entries[1].eventTime,450);
+});
+test('Inspecting a cell follows its new publication key and original new interval',()=>{
+ const replacement={...coarse,observation_contributions:120,distinct_road_users:12};
+ const next=scopedRelease(replacement,200,400,500),input=localResult([rootEvent,siblingEvent,next]);
+ const selected=M.mosaicAt(input,200).entries.find(entry=>entry.cell===coarse);
+ const entries=M.mosaicAt(input,500).entries;assert.equal(entries[0].cell,sibling);
+ const followed=M.selectEntry(entries,selected.key,coarse.cell_id);
+ assert.notEqual(followed.key,selected.key);assert.equal(followed.cell,replacement);assert.equal(followed.row,next);
+ assert.equal(followed.row.start_ms,200);assert.equal(followed.cell.observation_contributions,120);
+});
+test('An exact surviving historical key wins before a preferred cell ID',()=>{
+ const entries=M.mosaicAt(overlapResult,450).entries,old=entries.find(entry=>entry.cell===coarse);
+ assert.equal(old.partial,true);assert.equal(M.selectEntry(entries,old.key,child.cell_id),old);
+});
+test('Missing preferred cell falls back safely and string IDs can follow numeric cells',()=>{
+ const entries=M.mosaicAt(overlapResult,450).entries;
+ assert.equal(M.selectEntry(entries,'stale',String(child.cell_id)).cell,child);
+ assert.equal(M.selectEntry(entries,'stale',99999),entries[0]);
+ assert.equal(M.selectEntry([],null,coarse.cell_id),null);
+});
+test('A mosaic entry retains its own source window for private source grouping',()=>{
+ const left={...inspectedCell,observation_contributions:3,distinct_road_users:2},right=geometry(13,4,0,4,4);
+ const leftEvent=scopedRelease(left,0,300,350),rightEvent=scopedRelease(right,0,200,500),input=localResult([leftEvent,rightEvent]);
+ const entry=M.mosaicAt(input,500).entries.find(e=>e.cell===left);
+ const source=M.sourceGroups(sourceIndex,entry.cell,entry.row,500,true);
+ assert.equal(entry.row,leftEvent);assert.equal(source.observations,3);assert.equal(source.distinctRoadUsers,2);
+});
+test('Mosaic construction never mutates original result cells or events',()=>{
+ const input=localResult([rootEvent,childEvent]),before=JSON.stringify(input);
+ M.mosaicAt(input,500);M.mosaicAt(input,100);M.mosaicAt(input,500,true);
+ assert.equal(JSON.stringify(input),before);assert.equal(Object.isFrozen(coarse),false);
+});
+test('Mosaic rejects nonfinite playhead times and missing local scope',()=>{
+ for(const stamp of [NaN,Infinity,-Infinity])assert.throws(()=>M.mosaicAt(overlapResult,stamp),/finite/);
+ const input=localResult([{start_ms:0,end_ms:100,sealed_at_ms:100,cells:[coarse]}]);
+ assert.throws(()=>M.mosaicAt(input,100),/scope/);
+});
+test('Mosaic has a visible-fragment cap and can rebuild safely after a rejected view',()=>{
+ const cells=Array.from({length:M.MAX_VISIBLE_FRAGMENTS+1},(_,i)=>geometry(i,i,0,1,1));
+ const huge=scopedRelease(geometry(1,0,0,cells.length,1),100,200,200,cells),input=localResult([rootEvent,huge]);
+ assert.equal(M.mosaicAt(input,100).entries.length,0);
+ assert.throws(()=>M.mosaicAt(input,200),/visible-fragment limit/);
+ assert.equal(M.mosaicAt(input,199).entries.length,0);
+});
+/* Optional real-artifact check: no generated dataset is required by the normal
+   regression suite or stored in this test. Pass a local replay-result filename. */
+if(process.argv[2]) {
+ const fs=require('node:fs'),actual=JSON.parse(fs.readFileSync(process.argv[2],'utf8'));
+ test('Optional frozen local artifact mosaics agree with an independent pointwise event scan',()=>{
+  assert.equal(actual.parameters.coordination,'cell_local');
+  const coverage=actual.source.coverage,grid=Math.min(64,2**actual.source.coverage.leaf_depth);
+  for(const privateMode of [false,true]){
+   const field=privateMode?'windows':'releases',stamp=privateMode?'evaluated_at_ms':'sealed_at_ms';
+   const events=actual[field].map((row,index)=>({row,index,time:row[stamp]})).sort((a,b)=>a.time-b.time||a.index-b.index);
+   const ascending=[...new Set([0,actual.source.end_ms,...events.map(e=>e.time),...events.map(e=>Math.max(0,e.time-1)),...events.map(e=>Math.min(actual.source.end_ms,e.time+1))])].sort((a,b)=>a-b);
+   for(const now of [...ascending,...ascending.slice().reverse()]){
+    const mosaic=M.mosaicAt(actual,now,privateMode);
+    for(let y=0;y<grid;y++)for(let x=0;x<grid;x++){
+     const px=coverage.x+(x+.5)/grid*coverage.width,py=coverage.y+(y+.5)/grid*coverage.height;let expected=null;
+     for(const event of events){if(event.time>now)break;if(directContains(event.row.coordination_cell,px,py))expected=event.row.cells.find(cell=>directContains(cell,px,py))||null;}
+     const found=mosaic.entries.filter(entry=>entry.fragments.some(fragment=>directContains(fragment,px,py)));
+     assert.ok(found.length<=1,'Visible geometry cannot overlap');assert.equal(found[0]?.cell??null,expected);
+    }
+   }
+  }
+ });
+}
 process.stdout.write(passed+' model tests passed\n');

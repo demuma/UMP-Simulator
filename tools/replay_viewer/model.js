@@ -34,8 +34,9 @@
     }
     return {contributions, count};
   }
-  function eventTimes(variants, end) {
-    return [...new Set([0,end,...variants.flatMap(v => v.result.releases.map(r => r.sealed_at_ms))])].sort((a,b)=>a-b);
+  function eventTimes(variants, end, privateMode=false) {
+    const rows=privateMode?'windows':'releases',stamp=privateMode?'evaluated_at_ms':'sealed_at_ms';
+    return [...new Set([0,end,...variants.flatMap(v => v.result[rows].map(r => r[stamp]))])].sort((a,b)=>a-b);
   }
   function eventAfter(times, now) { return times.find(t => t > now) ?? times[times.length-1]; }
   function eventBefore(times, now) { return [...times].reverse().find(t => t < now) ?? times[0]; }
@@ -65,6 +66,73 @@
   function selectCell(cells, selectedId) {
     return cells.find(cell => String(cell.cell_id) === String(selectedId)) || cells[0] || null;
   }
+  const MAX_VISIBLE_FRAGMENTS=65536,mosaicCache=new WeakMap();
+  function rectangle(cell) {return {x:cell.x,y:cell.y,width:cell.width,height:cell.height};}
+  function sameRectangle(a,b) {return a.x===b.x&&a.y===b.y&&a.width===b.width&&a.height===b.height;}
+  function subtractRectangle(fragment,scope) {
+    const left=Math.max(fragment.x,scope.x),top=Math.max(fragment.y,scope.y);
+    const right=Math.min(fragment.x+fragment.width,scope.x+scope.width),bottom=Math.min(fragment.y+fragment.height,scope.y+scope.height);
+    if(left>=right||top>=bottom)return [fragment];
+    const remaining=[];
+    if(top>fragment.y)remaining.push({x:fragment.x,y:fragment.y,width:fragment.width,height:top-fragment.y});
+    if(left>fragment.x)remaining.push({x:fragment.x,y:top,width:left-fragment.x,height:bottom-top});
+    if(right<fragment.x+fragment.width)remaining.push({x:right,y:top,width:fragment.x+fragment.width-right,height:bottom-top});
+    if(bottom<fragment.y+fragment.height)remaining.push({x:fragment.x,y:bottom,width:fragment.width,height:fragment.y+fragment.height-bottom});
+    return remaining;
+  }
+  function frozenEntry(entry,fragments) {
+    return Object.freeze({...entry,fragments:Object.freeze(fragments.map(fragment=>Object.freeze(fragment))),
+      partial:fragments.length!==1||!sameRectangle(fragments[0],entry.cell)});
+  }
+  function resetMosaic(channel) {channel.entries=Object.freeze([]);channel.applied=0;channel.latestEvent=null;channel.lastTime=-Infinity;}
+  /* A mosaic contains visible geometry and original immutable event references.
+     Geometry fragments are display masks, never new cells or redistributed
+     statistics. The original cell and its full source interval remain intact.
+
+     Inputs are frozen replay artifacts. One incremental state per result and
+     channel is retained; seeking backwards rebuilds it, without caching an
+     unbounded series of historical mosaics or expanding the finest grid. */
+  function mosaicAt(result,time,privateMode=false) {
+    if(!Number.isFinite(time))throw new TypeError('Replay mosaic time must be finite');
+    const coordination=result.parameters?.coordination??'common_window';
+    if(coordination!=='common_window'&&coordination!=='cell_local')throw new Error('Unsupported replay coordination');
+    const local=coordination==='cell_local',name=privateMode?'private':'recipient',stamp=privateMode?'evaluated_at_ms':'sealed_at_ms';
+    const rows=privateMode?result.windows:result.releases;
+    let cache=mosaicCache.get(result);if(!cache){cache={};mosaicCache.set(result,cache);}
+    let channel=cache[name];
+    if(!channel||channel.rows!==rows||channel.length!==rows.length||channel.local!==local){
+      channel={rows,length:rows.length,local,events:rows.map((row,eventIndex)=>({row,eventIndex,eventTime:row[stamp]}))
+        .sort((a,b)=>a.eventTime-b.eventTime||a.eventIndex-b.eventIndex)};
+      resetMosaic(channel);cache[name]=channel;
+    }
+    if(time<channel.lastTime)resetMosaic(channel);
+    while(channel.applied<channel.events.length&&channel.events[channel.applied].eventTime<=time){
+      const event=channel.events[channel.applied],{row,eventTime,eventIndex}=event;
+      let entries=[];
+      if(local){
+        if(!row.coordination_cell)throw new Error('Local replay event lacks a coordination scope');
+        for(const entry of channel.entries){
+          const fragments=entry.fragments.flatMap(fragment=>subtractRectangle(fragment,row.coordination_cell));
+          if(fragments.length)entries.push(frozenEntry(entry,fragments));
+        }
+      }
+      for(const [cellIndex,cell]of row.cells.entries())entries.push(frozenEntry({
+        key:`${name}:${eventIndex}:${cellIndex}`,cell,row,eventTime,eventIndex},[rectangle(cell)]));
+      let fragments=0;
+      for(const entry of entries){fragments+=entry.fragments.length;if(fragments>MAX_VISIBLE_FRAGMENTS){
+        resetMosaic(channel);throw new RangeError('Replay mosaic exceeds the visible-fragment limit; clear the view');
+      }}
+      channel.entries=Object.freeze(entries);channel.latestEvent=row;channel.applied++;
+    }
+    channel.lastTime=time;
+    return {local,entries:channel.entries,latestEvent:channel.latestEvent,eventCount:channel.applied,asOfMs:time};
+  }
+  function selectEntry(entries,key,preferredCellId=null) {
+    return entries.find(entry=>entry.key===key)
+      ||(preferredCellId==null?null:entries.find(entry=>String(entry.cell.cell_id)===String(preferredCellId)))
+      ||entries[0]||null;
+  }
+  function entryContains(entry,x,y) {return entry.fragments.some(fragment=>contains(fragment,x,y));}
   function firstAtOrAfter(rows, time, key) {
     let lo=0,hi=rows.length;
     while(lo<hi){const mid=(lo+hi)>>>1;if(key(rows[mid])<time)lo=mid+1;else hi=mid;}
@@ -116,5 +184,5 @@
     if(index.cache.size>=32)index.cache.delete(index.cache.keys().next().value);
     index.cache.set(key,summary);return summary;
   }
-  return {lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,referenceSample,inputProvenance,selectCell,buildSourceIndex,sourceGroups};
+  return {lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,referenceSample,inputProvenance,selectCell,mosaicAt,selectEntry,entryContains,MAX_VISIBLE_FRAGMENTS,buildSourceIndex,sourceGroups};
 }));

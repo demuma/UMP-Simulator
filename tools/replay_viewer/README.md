@@ -1,6 +1,6 @@
 # Recorded motion and release viewer
 
-This local, dependency-free viewer synchronizes sampled simulator observations with actual `AggregationReplay` outputs. It neither runs a simulator nor connects to MongoDB. It adds no interpolated positions, inferred cells or fabricated merge/split transitions.
+This local, dependency-free viewer synchronizes recorded sampled observations with actual `AggregationReplay` outputs. It neither runs a simulator nor connects to MongoDB. It adds no interpolated positions, inferred cells or fabricated merge/split transitions.
 
 From the repository root:
 
@@ -9,6 +9,35 @@ python3 tools/replay_viewer/serve.py --bundle results/YOUR_RUN/viewer --port 876
 ```
 
 Open `http://127.0.0.1:8765/`. Stop the server with Ctrl+C. The server binds to localhost only and serves only its three viewer assets plus the explicitly declared bundle JSON files. It does not expose the repository directory.
+
+## Common versus local semantic comparison
+
+On the development machine the prepared comparison uses
+`results/semantic-local-viewer-2026-10-22` and port 8773:
+
+```sh
+python3 -B tools/replay_viewer/prepare_local_bundle.py \
+  --study results/semantic-cell-local-2026-10-22 \
+  --output results/semantic-local-viewer-2026-10-22
+python3 -B tools/replay_viewer/serve.py \
+  --bundle results/semantic-local-viewer-2026-10-22 --check
+python3 -B tools/replay_viewer/serve.py \
+  --bundle results/semantic-local-viewer-2026-10-22 --port 8773
+```
+
+Open `http://127.0.0.1:8773/`. The preparation step requires a **new** output
+directory; skip it when that bundle already exists and is validated. It checks
+the frozen study manifest before copying observations and all eight actual result
+variants. It does not run the Simulator, open MongoDB or modify the frozen study.
+The first pair is regional common/local coordination with Temporal secondary;
+other choices include Spatial secondary and uniform policies. The input is the
+stationary scripted analytical fixture, not a moving street simulation.
+
+On a fresh checkout, first reproduce that small study into a new directory with
+`python3 -B tools/evaluation/run_semantic_local_policy.py --output results/semantic-cell-local-demo`,
+then pass that directory as `--study` and a different new directory as `--output`.
+The [viewer test report](../../docs/ASYNC_LOCAL_REPLAY_TEST_REPORT_2026-10-22.md)
+is the completion record for this gate; commands alone are not proof of acceptance.
 
 ## Bundle contract
 
@@ -42,21 +71,31 @@ The viewer references existing JSON files rather than embedding large data in HT
 - **Reference viewport** selects the full recorded area or the currently selected cell of comparison A/B. Its axes use that cell’s true geometry. The positions and type counts remain those of the **current recorded sample**, not the historical aggregation interval from which the footprint was selected. Before a finalized cell exists, focus safely falls back to the full area. No zoom alters coordinates, interpolates movement or adds jitter.
 - Reference statistics distinguish the full sample’s road-user IDs, exact distinct XY coordinates and the IDs within the current viewport. Its type table gives full-sample and viewport counts. A numbered marker represents IDs with exactly coincident recorded positions; colored sectors show their types. Nearby distinct positions remain separate observations even when their markers overlap on screen. Small deterministic movements can be invisible on a large full-area map and become visible under cell focus.
 - Positions are held until the next expected sample, with the sample timestamp and age shown. A missing or unavailable current sample clears old positions; a measured-empty sample is displayed as measured empty. There is no interpolation.
-- Comparison A and B independently select a recorded result variant. The recipient view shows only the most recent release whose `sealed_at_ms` is at or before the playhead. The entire previous snapshot is replaced at the next sealing event.
-- The displayed recipient cut is a **historical aggregate**, explicitly retained on screen until a later release. Its half-open source interval, sealing time and age since window end are shown. The cell label is mean sample occupancy over that interval, not current occupancy.
+- Comparison A and B independently select a recorded result variant. Common-window variants keep their complete latest-snapshot behavior. Cell-local variants use a historical spatial mosaic: only releases whose `sealed_at_ms` is at or before the playhead can update their declared `coordination_cell`. Other areas retain their own dated historical entries. The local extension is implemented; its [test report](../../docs/ASYNC_LOCAL_REPLAY_TEST_REPORT_2026-10-22.md) records model, server and browser verification, including independent local updates and rewind.
+- The displayed recipient data are **historical aggregates**, retained until a newer public event updates their scope. Every local entry has its own half-open source interval, sealing time and age since window end. These intervals need not coincide. Labels on complete cells describe mean sample occupancy over their original intervals, not current occupancy. No whole-cell count is assigned to a clipped display fragment.
 - A blank recipient footprint is unknown. It is never interpreted as zero traffic or as proof that a person was absent.
-- The private overlay switches each comparison to its latest **finalized diagnostic window**, gated by `evaluated_at_ms`. It displays selected cells, hatched suppressed footprints, completion reason and recorded policy checks. It does not mix private suppressed footprints from a newer window with an older recipient snapshot.
-- Click a map cell or use the keyboard-accessible **Inspect cell** list for each comparison. The list identifies cell ID, depth, dimensions and lower-left XY coordinates. The blue outline follows the selected cell; a stale selection moves to the first cell of the newly shown cut. **Focus selected cell** magnifies that footprint so even 1.25 m leaves can be inspected. The source positions panel keeps its full-area view.
-- The cell inspector gives the exact half-open spatial bounds and source interval, recorded total observations, distinct road users, mean sample occupancy and a table of **released** semantic categories. A missing category breakdown is explicitly unknown; it is never reconstructed into the recipient section. The observed smallest category support and declared semantic loss are shown. Category support is an operational condition, not a demonstrated anonymity guarantee.
+- The private overlay displays **finalized diagnostic windows**, gated by `evaluated_at_ms`, with selected cells, hatched suppressed footprints, completion reasons and recorded policy checks. Common mode shows its latest whole snapshot; local mode replaces only each finalized private scope. A private empty scope clears its earlier private display. Suppression or empty retirement never clears recipient history, and toggling the overlay does not mutate recipient state.
+- Click a visible map fragment or use the keyboard-accessible **Inspect cell** list for each comparison. Selection identifies the original event/cell, including its interval; a repeated cell ID in another interval is a different entry. The blue outline follows the selection, and a stale selection moves to an available entry. **Focus selected cell** uses the original footprint. **Reference viewport** can follow that original A/B footprint while still showing the current recorded position sample.
+- The cell inspector gives the original half-open spatial bounds and source interval, recorded total observations, distinct road users, mean sample occupancy and a table of **released** semantic categories. For a clipped historical cell, these values belong to the whole original footprint; visible fragments are masks only, and their counts are unknown. A missing category breakdown is explicitly unknown; it is never reconstructed into the recipient section. The observed smallest category support and declared semantic loss are shown. Category support is an operational condition, not a demonstrated anonymity guarantee.
 - **Inspect private source groups** is a separate, initially disabled research control. It adds an amber table of the exact recorded input types **within the same selected cell and full half-open window**, before semantic generalization. It never uses the current position sample as a proxy for the window. Distinct users are deduplicated within each type and across the footprint; raw identities are not rendered. A person whose classification changes can occur in multiple type rows, so their distinct counts cannot be summed.
 - Source group averages divide by the measured samples in that interval, including measured-empty samples. Explicitly unavailable samples are counted separately. Missing scheduled samples are not reconstructed. These input averages and categories are private diagnostics, not published category estimates or additional recipient knowledge. They remain hidden before the displayed release seals or the diagnostic window finalizes, including after seeking backwards.
 - Policy checks are shown only in the private diagnostic view. Optional `variants[].policy_regions` metadata draws dashed purple local-rule footprints there and lists intersecting region declarations in the inspector. A region has `id`, finite `x`, `y`, `width`, `height`, optional `type`, and optional `requirements: [{metric, min?, max?}]`. Metadata describes declared regions; the recorded effective checks determine actual decisions. Region metadata is validated before serving: at most 4096 regions per variant, unique nonempty IDs, finite positive rectangles inside coverage, and at most 64 well-formed finite requirement bounds per region. Lowercase metric identifiers describe declarations; they do not activate a metric implementation. Older bundles without this metadata keep their existing behavior.
-- Event buttons and timeline lanes use actual sealing timestamps. Spatial cuts change at recorded output events. There is no claim that every geometric difference is an explicitly logged merge or split operation.
+- Event buttons and timeline lanes use actual availability timestamps; private-only finalizations are diagnostic events when that overlay is selected. Spatial displays change at recorded output events. There is no claim that every geometric difference is an explicitly logged merge or split operation.
 - Cumulative released observations are shown against the **whole run's** input observation count. The denominator includes later data when the playhead is earlier; this is a replay progress summary, not a time-local retention estimate.
 
 The whole bundle remains **private research material**, even when the recipient display filter is selected. It contains identities, raw positions and diagnostic thresholds. A sanitized recipient export is a different artifact.
 
-This viewer currently compares common-window snapshot streams. A global “latest snapshot” is not a correct visualization of independently finalized cell-local windows; those need a separate validity/coverage view before being added here.
+## Local mosaic interpretation
+
+The [asynchronous replay contract](../../docs/ASYNC_LOCAL_REPLAY_CONTRACT_2026-10-22.md) defines `mosaicAt(result, time, privateMode)`. Local entries retain original cells and release/diagnostic rows plus clipped display fragments. A child update can cover part of an older parent while the rest of that parent remains visible with its original interval and whole-cell counts. A later parent update can replace the child entries. Boundary-only contact does not replace an adjacent footprint.
+
+Latest means **available event time, then original array index**, not the greatest source-window end. Rewind reconstructs the earlier event prefix. The model never changes input geometry, divides parent counts by visible area, or creates synthetic child bins. A clipped parent is an old whole-cell aggregate with part of its drawing hidden; its remaining fragment is not an independently measured subcell.
+
+Private source-group inspection uses the original cell and full source interval, even when only a fragment remains visible. Current reference positions are a separate sample. Cumulative observation/release statistics count original records once, not once per display fragment; asynchronous occupancies are not summed into a claimed current population. Blank areas remain unknown.
+
+The model bounds visible masks with `MAX_VISIBLE_FRAGMENTS = 65536`. Exceeding that limit raises `RangeError` and resets the channel cache; the failed view must clear instead of showing stale or truncated data. Only one incremental state per result/channel is retained, and rewind rebuilds its event prefix. There is no expansion to every possible finest-depth leaf. Completed acceptance checks belong in the [test report](../../docs/ASYNC_LOCAL_REPLAY_TEST_REPORT_2026-10-22.md).
+
+This extension is visualization only. It does not change local release schedules, policy bounds, the aggregation controller or stored observations. Review aggregator requirements and evidence at every gate. Next implement scope-aware semantic fixed-query utility, then compare adaptive coordination with legal fixed raster/window settings on the same existing moving input and policy; common-window adaptive coordination is a separate ablation. That query adapter remains unfinished. Privacy evaluation follows with a declared protection objective. No new scenario generator, utility optimizer or attack matrix is started by this viewer.
 
 ## Verification
 
@@ -66,6 +105,6 @@ python3 -B -m unittest discover -s tools/replay_viewer -p 'test_viewer.py' -v
 node tools/replay_viewer/verify_source_groups.js PATH_TO_REPLAY_BUNDLES
 ```
 
-The 35 pure-JavaScript tests cover timeline behavior plus cell selection, explicit private opt-in, seal/evaluation gating even after cache reuse, exact half-open spatial and temporal grouping, distinct identity deduplication, observed sample averages, empty footprints and bounded summary caching. A one-time spatial/time index retains references to the existing observations. Its grid is capped at 256 × 256 buckets and its summary cache at 32 count-only entries; it does not retain additional identity sets or rescan the whole run on every render. The 28 Python tests cover source compatibility, malformed/non-finite inputs, window timing, coverage, digests, path/symlink rejection, accessible cell controls, default-private opt-in, optional region metadata shape/geometry/bound limits, truthful reference provenance, reference-focus accessibility and the real HTTP allowlist. The HTTP test starts a short-lived localhost server.
+The pure-JavaScript model tests cover timeline behavior plus cell selection, explicit private opt-in, seal/evaluation gating even after cache reuse, exact half-open spatial and temporal grouping, distinct identity deduplication, observed sample averages, empty footprints and bounded summary caching. A one-time spatial/time index retains references to the existing observations. Its grid is capped at 256 × 256 buckets and its summary cache at 32 count-only entries; it does not retain additional identity sets or rescan the whole run on every render. The Python server tests cover source compatibility, malformed/non-finite inputs, window timing, coverage, digests, path/symlink rejection, accessible cell controls, default-private opt-in, optional region metadata shape/geometry/bound limits, truthful reference provenance, reference-focus accessibility and the real HTTP allowlist. The HTTP test starts a short-lived localhost server. Local-mode acceptance additionally checks scope replacement, clipping provenance, event order, independent public/private state, rewind and budget failure; final counts are recorded in the dated test report.
 
 `verify_source_groups.js` recursively finds viewer bundles below the required directory argument. It independently scans raw XY observations for the first/last cells of each variant’s first/last nonempty recipient release, removing duplicate selections. It compares exact per-type observations, distinct users and measured-sample means with the indexed inspector, checks recorded public cell totals, and checks private opt-in and sealing gates. This is a sampled real-artifact check, not an exhaustive audit of every cell. It has no hardcoded repository or data paths.

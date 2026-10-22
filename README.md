@@ -168,11 +168,17 @@ tests independent owners on exactly the same input.
 The [four-step roadmap](docs/TAXONOMY_POLICY_ROADMAP_2026-10-22.md) orders taxonomy
 contracts, observation/release semantics, local numeric policies and cell inspection.
 Semantic-aware independent windows are now available through opt-in
-`temporal_adaptation.coordination: cell_local`. The common-window HTML viewer
-still rejects these asynchronous result streams until a correct historical
-interval mosaic is implemented. Its new **Reference viewport** zoom and explicit
-ID/coordinate counts clarify the stationary analytical fixture, including four
-closely spaced identities in cell 12300; no observations were moved or invented.
+`temporal_adaptation.coordination: cell_local`. The HTML viewer's
+[asynchronous historical mosaic](docs/ASYNC_LOCAL_REPLAY_CONTRACT_2026-10-22.md)
+now supports independently timed local results, with model, server and browser
+verification recorded in its report. Each local entry keeps its own interval
+and sealing time. A clipped old parent
+retains its original whole-cell counts; fragments do not become new measurements.
+Private suppression never erases recipient history. **Reference viewport** zoom
+and explicit ID/coordinate counts clarify the stationary analytical fixture,
+including four closely spaced identities in cell 12300; no observations are
+moved or invented. Final acceptance is recorded in the
+[viewer test report](docs/ASYNC_LOCAL_REPLAY_TEST_REPORT_2026-10-22.md).
 [Checkpoint inventory](docs/RESEARCH_CHECKPOINT_2026-10-22.md) accounts for the
 162 previously uncommitted paths; the [verification report](docs/REPLAY_LOCAL_POLICY_TEST_REPORT_2026-10-22.md)
 records the integrated checks.
@@ -197,6 +203,25 @@ python3 -B tools/evaluation/run_local_policy_replay.py --output results/local-po
 python3 -B tools/replay_viewer/serve.py --bundle results/local-policy-demo --port 8772
 ```
 
+For the new common/local semantic comparison, generate a separate small study
+and prepare a historical-mosaic bundle. Every output directory must be new:
+
+```sh
+python3 -B tools/evaluation/run_semantic_local_policy.py \
+  --output results/semantic-cell-local-demo
+python3 -B tools/replay_viewer/prepare_local_bundle.py \
+  --study results/semantic-cell-local-demo --output results/semantic-local-viewer-demo
+python3 -B tools/replay_viewer/serve.py \
+  --bundle results/semantic-local-viewer-demo --port 8773
+```
+
+The existing development-machine bundle is
+`results/semantic-local-viewer-2026-10-22`; while its server is running,
+[port 8773](http://127.0.0.1:8773/) shows regional common/local outputs on the same
+scripted observations. This visualization neither runs the live Simulator nor
+changes its aggregation algorithm. Its acceptance status is recorded in the
+[asynchronous replay report](docs/ASYNC_LOCAL_REPLAY_TEST_REPORT_2026-10-22.md).
+
 This generates local files and does not add them to Git. Existing recorded moving
 replays remain available on the development machine. Original moving captures are
 stochastic; exact reruns of those historical comparisons need the local frozen inputs.
@@ -215,6 +240,7 @@ stochastic; exact reruns of those historical comparisons need the local frozen i
 | [Maximum output-cell sizes](docs/CELL_SIZE_CAPS.md) | Optional hard 10 m/5 m policy bounds, valid fixed baselines and paired replay use |
 | [Cell-size cap results](docs/CELL_SIZE_CAP_RESULTS_2026-10-21.md) | Same-input 40/10/5 m policy sensitivity, retained data, fixed-query coverage and acceptance evidence |
 | [Semantic release control](docs/SEMANTIC_RELEASE_CONTROL.md) | Configurable secondary priority, default policy eligibility, deliberate waiting and common/local scope |
+| [Asynchronous local replay](docs/ASYNC_LOCAL_REPLAY_CONTRACT_2026-10-22.md) | Independent historical intervals, clipped original-cell provenance, public/private separation and verification contract |
 | [Semantic release tests and results](docs/SEMANTIC_RELEASE_TEST_REPORT_2026-10-21.md) | Native/replay acceptance, exact hierarchy examples and same-source trigger comparison |
 | [Camera-ready ALOG comparison](docs/CAMERA_READY_COMPARISON_2026-10-21.md) | Attached ALOG versus ALOQ distinction, frequency RMSE, LDP and semantic-loss comparability |
 | [Four-second windows](docs/FOUR_SECOND_WINDOWS.md) | Optional coupled policy/controller limits, bounded history and direct 1 s / 4 s replay |
@@ -321,14 +347,24 @@ reduction in empirical attack success.
 
 **Next milestone: October 25 conference evidence; October 18 is historical.**
 Input, metrics, regional policies, bounded history, common/local space-time adaptation
-and immutable publication run together. Independent utility/policy and controlled
-membership studies, causal recipient-prefix evaluation and logical deadline utility are
-complete. The immediate research work is to present the conditional timeliness benefit
-and residual privacy limits, then predeclare matched-representation and calibration
-follow-ups. Semantic visits require a separately justified protected-secret contract;
-wall-clock recipient instrumentation remains open. Realistic maps/routing remain optional validity improvements rather
-than prerequisites for those controlled studies. Implementation demonstrates mechanics;
-mathematical feasibility and empirical effectiveness are separately evidenced.
+and immutable publication run together. The asynchronous replay gate is implemented
+and verified. Next comes scope-aware semantic fixed-query utility, followed by a
+comparison on the same existing moving input against legal fixed raster/window
+settings. Review the aggregator's agreed requirements and remaining limits at
+every gate. Privacy evaluation then follows with a declared protected secret and
+recipient model; its policies and scenarios need explicit design. A new utility
+optimizer, movement generator or attack matrix is not started automatically.
+
+Earlier utility, membership and causal-prefix studies remain evidence for their
+stated historical configurations. They do not establish the effectiveness of the
+new semantic local release policy. In particular, scoped semantic fixed-query
+utility is not yet adapted or verified. The fixed raster/fixed window with identical
+input and hard policy is an existing baseline; common-window adaptive coordination
+is an ablation, not a replacement for that baseline. A support pass and declared
+category loss are operational measures, not demonstrated privacy-risk reduction.
+Semantic visits require a protected-secret contract; live receipt timing remains
+open. Maps/routing are later scenario choices. Mechanism verification, mathematical
+feasibility and privacy effectiveness require distinct evidence.
 
 The [delivery plan in TO-DO](TO-DO.md#3-delivery-plan-october-14-18-and-25) preserves
 the historical milestones and tracks the remaining publication/evaluation work.
