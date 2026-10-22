@@ -1,0 +1,43 @@
+{
+  "application_id": "occupancy-selective-example",
+  "window_ms": 400,
+  "max_observations_per_window": 1000000,
+  "history": {
+    "retention_ms": 2000,
+    "max_bins": 32,
+    "max_observations": 100000,
+    "max_identity_bytes": 16000000,
+    "max_buckets": 128
+  },
+  "spatial_selection": {
+    "min_depth": 1,
+    "max_evaluations": 64,
+    "preserve_valid_descendants": true
+  },
+  "policy_tree": {
+    "id": "selective-example",
+    "version": "1",
+    "max_nodes": 65536,
+    "execution": {
+      "publication_model": "private_final_snapshot",
+      "strategy": "spatial_first"
+    },
+    "root": {
+      "distinct_contributors": {
+        "min": 2
+      },
+      "cell_side_m": {
+        "min": 1.25,
+        "max": 20
+      },
+      "window_duration_ms": {
+        "max": 1000
+      },
+      "age_at_evaluation_ms": {
+        "max": 1000
+      }
+    },
+    "regions": []
+  },
+  "policy_regions": []
+}

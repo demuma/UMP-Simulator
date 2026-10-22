@@ -1,0 +1,2 @@
+# Preserve generated plot bytes; SVG path commands retain trailing spaces.
+docs/figures/*.svg -whitespace

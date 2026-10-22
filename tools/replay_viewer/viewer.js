@@ -1,0 +1,153 @@
+/* Research UI: all dynamic labels are text, and all result cells come from recorded output. */
+'use strict';
+const $ = id => document.getElementById(id);
+const M = UMPReplay;
+const palette = ['#236594','#a95f27','#438360','#925fa3','#b14f6c','#8b8330','#4a7e82','#755f4a'];
+const seconds = ms => (ms / 1000).toFixed(2) + ' s';
+const number = value => value == null ? '—' : Number(value).toLocaleString('en-US',{maximumFractionDigits:3});
+const readable = name => name.replaceAll('_',' ');
+const element = (tag,text,className) => {const item=document.createElement(tag);if(text!=null)item.textContent=text;if(className)item.className=className;return item;};
+let replay, manifest, variants, events, allTypes, sourceIndex, time=0, playing=false, lastTick=0;
+const selections = {A:null,B:null};
+const selectorRows = {A:undefined,B:undefined};
+const layouts = {};
+function stats(id, entries) {const parent=$(id);parent.replaceChildren();for(const [label,value]of entries){const item=element('div',null,'stat');item.append(element('strong',value,'mono'),document.createTextNode(label));parent.append(item);}}
+function canvasContext(id) {
+ const canvas=$(id), bounds=canvas.getBoundingClientRect(), ratio=window.devicePixelRatio||1;
+ const width=Math.max(120,bounds.width),height=Math.max(65,bounds.height);
+ canvas.width=Math.round(width*ratio);canvas.height=Math.round(height*ratio);
+ const ctx=canvas.getContext('2d');ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,width,height);
+ return {ctx,width,height};
+}
+function baseMap(id,g=replay.coverage) {
+ const {ctx,width,height}=canvasContext(id);
+ const scale=Math.min((width-57)/g.width,(height-45)/g.height),w=g.width*scale,h=g.height*scale;
+ const left=39+(width-49-w)/2,top=12+(height-42-h)/2;
+ const layout={left,top,scale,w,h,width,height,ctx,viewport:g};layouts[id]=layout;
+ ctx.fillStyle='#f0f3f5';ctx.fillRect(left,top,w,h);ctx.strokeStyle='#d3dce3';ctx.lineWidth=1;ctx.strokeRect(left,top,w,h);
+ ctx.fillStyle='#657886';ctx.font='10px -apple-system, sans-serif';
+ for(let i=0;i<=4;i++) {ctx.textAlign='center';ctx.fillText(number(g.x+g.width*i/4),left+w*i/4,top+h+17);ctx.textAlign='right';ctx.fillText(number(g.y+g.height*i/4),left-6,top+h*i/4+3);}
+ ctx.textAlign='right';ctx.fillText('x / y (m)',left+w,top+h+31);
+ return layout;
+}
+function motion() {
+ const {ctx,left,top,scale}=baseMap('reference'),g=replay.coverage,frame=M.observationAt(replay,time),types=new Map();
+ for(const roadUser of frame.visible){const color=palette[allTypes.indexOf(roadUser.type)%palette.length];ctx.beginPath();ctx.arc(left+(roadUser.x-g.x)*scale,top+(roadUser.y-g.y)*scale,2.6,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();types.set(roadUser.type,(types.get(roadUser.type)||0)+1);}
+ const labels={not_yet_sampled:'No sensor sample has arrived yet.',unavailable:'The most recent scheduled measurement is unavailable.',missing_sample:'No current sensor sample is available. Previous positions are cleared.'};
+ $('referenceCaption').textContent=frame.status==='measured'?`Recorded sample at ${seconds(frame.batch.observed_at_ms)} · held for ${seconds(frame.age)} until the next expected sample. Positions are not interpolated.`:labels[frame.status];
+ stats('referenceStats',[['road users in sample',number(frame.visible.length)],['sample interval',seconds(replay.sampling_period_ms)],['finest cell side',number(g.width/2**g.leaf_depth)+' m']]);
+ const detail=$('referenceDetail');detail.replaceChildren(element('h3','Recorded road-user types'));
+ if(!types.size)detail.append(element('p','No measured positions are displayed at this timestamp.','muted'));
+ for(const [type,count]of [...types].sort((a,b)=>a[0].localeCompare(b[0]))){const item=element('div');const dot=element('i',null,'dot');dot.style.background=palette[allTypes.indexOf(type)%palette.length];item.append(dot,document.createTextNode(`${type}: ${number(count)}`));detail.append(item);}
+ detail.append(element('p','Counts describe one observed sample. Release cells describe a whole time window; these numbers have different meanings.','scope'));
+}
+function variant(side) {return variants[Number($('variant'+side).value)];}
+function displayed(side) {
+ const v=variant(side),privateMode=$('private').checked;
+ const row=privateMode?M.diagnosticAt(v.result,time):M.releaseAt(v.result,time);
+ return {v,row,privateMode,cells:row?.cells||[]};
+}
+function releaseMap(side) {
+ const {v,row,privateMode,cells}=displayed(side),id='map'+side;
+ const chosen=M.selectCell(cells,selections[side]);selections[side]=chosen?.cell_id??null;
+ const g=$('focus'+side).checked&&chosen?chosen:replay.coverage,{ctx,left,top,scale,w:mapWidth,h:mapHeight}=baseMap(id,g);
+ const selected=selections[side];
+ ctx.save();ctx.beginPath();ctx.rect(left,top,mapWidth,mapHeight);ctx.clip();
+ for(const cell of cells){
+   const suppressed=privateMode&&!cell.selected, x=left+(cell.x-g.x)*scale,y=top+(cell.y-g.y)*scale,w=cell.width*scale,h=cell.height*scale;
+   const loss=cell.semantic?.semantic_max_loss??0;
+   ctx.fillStyle=suppressed?'#edb4a1':`hsl(${166-loss*21} ${39+loss*4}% ${80-loss*9}%)`;ctx.fillRect(x,y,w,h);
+   ctx.strokeStyle=cell.cell_id===selected?'#16529e':suppressed?'#bb654d':'#4b7f81';ctx.lineWidth=cell.cell_id===selected?2.6:1;ctx.strokeRect(x+.5,y+.5,Math.max(0,w-1),Math.max(0,h-1));
+   if(suppressed){ctx.save();ctx.beginPath();ctx.rect(x,y,w,h);ctx.clip();ctx.strokeStyle='#ba604a';ctx.lineWidth=.7;for(let a=-h;a<w;a+=8){ctx.beginPath();ctx.moveTo(x+a,y);ctx.lineTo(x+a+h,y+h);ctx.stroke();}ctx.restore();}
+   if(w>28&&h>22){ctx.fillStyle='#23464c';ctx.font=`${w>55?13:10}px -apple-system,sans-serif`;ctx.textAlign='center';ctx.fillText(suppressed?'×':number(cell.mean_sample_occupancy),x+w/2,y+h/2+4);}
+ }
+ if(privateMode)for(const region of policyRegions(v)){
+   const x=left+(region.x-g.x)*scale,y=top+(region.y-g.y)*scale,w=region.width*scale,h=region.height*scale;
+   ctx.strokeStyle='#704ca0';ctx.lineWidth=2;ctx.setLineDash([5,3]);ctx.strokeRect(x,y,w,h);ctx.setLineDash([]);
+   if(w>30&&h>18){ctx.fillStyle='#523277';ctx.font='10px -apple-system,sans-serif';ctx.textAlign='left';ctx.fillText(region.id,x+3,y+12);}
+ }
+ ctx.restore();
+ const title=$('variant'+side).previousElementSibling;
+ title.textContent=`Comparison ${side} · ${privateMode?'Private finalized decision':'Recipient cut'}`;
+ if(!row) $('caption'+side).textContent=`No ${privateMode?'finalized decision':'release'} is available yet. Blank areas are unknown; they do not mean zero traffic.`;
+ else {
+   const eventTime=privateMode?row.evaluated_at_ms:row.sealed_at_ms;
+   $('caption'+side).textContent=`[${seconds(row.start_ms)}, ${seconds(row.end_ms)}) · ${privateMode?'evaluated':'sealed'} at ${seconds(eventTime)} · ${seconds(time-row.end_ms)} since window end. ${privateMode?'Private diagnostics; suppressed cells are hatched.':'Latest released historical aggregate, retained on screen until another release. This is not a current occupancy measurement.'}`;
+ }
+ const released=M.cumulativeReleased(v.result,time),published=privateMode?cells.filter(c=>c.selected):cells;
+ stats('stats'+side,[['cells in shown cut',number(published.length)],['released / total run observations',number(released.contributions)+' / '+number(v.result.input_observation_contributions)],['release events so far',number(released.count)]]);
+ updateCellSelector(side,row,cells);
+ details(side);
+}
+function updateCellSelector(side,row,cells) {
+ const select=$('cell'+side);
+ if(selectorRows[side]!==row){
+   select.replaceChildren();
+   if(!cells.length){const option=element('option','No finalized cells at this timestamp');option.value='';select.append(option);}
+   for(const cell of cells){const option=element('option',`${cell.cell_id} · d${cell.depth} · ${number(cell.width)} × ${number(cell.height)} m · (${number(cell.x)}, ${number(cell.y)})${cell.selected===false?' · suppressed':''}`);option.value=String(cell.cell_id);select.append(option);}
+   selectorRows[side]=row;
+ }
+ select.disabled=!cells.length;select.value=selections[side]==null?'':String(selections[side]);
+}
+function groupTable(headers,rows) {
+ const table=element('table'),caption=element('caption');caption.className='sr-only';caption.textContent=headers[0]+' breakdown';table.append(caption);
+ const head=element('thead'),heading=element('tr');for(const name of headers){const th=element('th',name);th.scope='col';heading.append(th);}head.append(heading);table.append(head);
+ const body=element('tbody');for(const values of rows){const tr=element('tr');for(const value of values)tr.append(element('td',value));body.append(tr);}table.append(body);return table;
+}
+function policyRegions(v) {
+ return (Array.isArray(v.policy_regions)?v.policy_regions:[]).filter(region=>typeof region.id==='string'&&['x','y','width','height'].every(key=>Number.isFinite(region[key]))&&region.width>0&&region.height>0);
+}
+function intersects(a,b) {return a.x<b.x+b.width&&b.x<a.x+a.width&&a.y<b.y+b.height&&b.y<a.y+a.height;}
+function details(side) {
+ const {v,row,cells,privateMode}=displayed(side),detail=$('detail'+side),cell=cells.find(c=>c.cell_id===selections[side]);detail.replaceChildren();
+ if(!cell){detail.append(element('h3','No cell to inspect'),element('p','Seek to a release event. A suppressed or absent recipient footprint is unknown, not a released zero.','muted'));return;}
+ detail.append(element('h3',`Cell ${cell.cell_id} · depth ${cell.depth} · ${number(cell.width)} × ${number(cell.height)} m`));
+ detail.append(element('p',`x ∈ [${number(cell.x)}, ${number(cell.x+cell.width)}) m · y ∈ [${number(cell.y)}, ${number(cell.y+cell.height)}) m · source interval [${seconds(row.start_ms)}, ${seconds(row.end_ms)})`,'scope'));
+ detail.append(element('p',`${number(cell.observation_contributions)} observations · ${number(cell.distinct_road_users)} distinct road users · mean occupancy ${number(cell.mean_sample_occupancy)}`));
+ if(privateMode)detail.append(element('p',`${cell.selected?'Selected':'Suppressed'} · ${readable(cell.reason||'')} · ${readable(row.completion_reason||'')}`,'scope'));
+ if(privateMode){const regions=policyRegions(v).filter(region=>intersects(region,cell));if(regions.length){detail.append(element('h4','Intersecting policy regions · private'));for(const region of regions){detail.append(element('p',`${region.id}${region.type?' · '+region.type:''} · (${number(region.x)}, ${number(region.y)}) · ${number(region.width)} × ${number(region.height)} m`));if(Array.isArray(region.requirements))for(const requirement of region.requirements){if(typeof requirement.metric!=='string')continue;const bounds=[requirement.min!=null?'≥ '+number(requirement.min):'',requirement.max!=null?'≤ '+number(requirement.max):''].filter(Boolean).join(' · ');detail.append(element('p',`${readable(requirement.metric)} ${bounds}`,'scope'));}}detail.append(element('p','Region metadata describes declared local rules. The effective recorded checks below determine this cell’s decision.','scope'));}}
+ detail.append(element('h4',privateMode&&!cell.selected?'Recorded candidate groups · private':'Released road-user groups'));
+ if(cell.semantic){const s=cell.semantic;detail.append(groupTable(['Category','Observations','Distinct users'],s.categories.map(b=>[readable(b.category_id),number(b.observation_contributions),number(b.distinct_contributors)])));detail.append(element('p',`Smallest category support ${number(s.min_category_distinct_contributors)} · semantic loss max ${number(s.semantic_max_loss)}, mean ${number(s.semantic_mean_loss)} · taxonomy ${s.taxonomy_id} v${s.taxonomy_version}`,'scope'));}
+ else detail.append(element('p','No semantic category breakdown was recorded for this cell. Total counts do not identify its road-user types.','muted'));
+ if($('sourceGroups').checked){
+   const source=M.sourceGroups(sourceIndex,cell,row,time,true),box=element('section',null,'private-source');box.append(element('h4','Private source groups · same cell and window'));
+   box.append(element('p','Exact recorded input types before semantic generalization. This information is not part of the recipient release.','scope'));
+   if(source){
+     if(source.groups.length)box.append(groupTable(['Recorded type','Observations','Distinct users','Mean / measured sample'],source.groups.map(g=>[g.type,number(g.observations),number(g.distinctRoadUsers),number(g.meanMeasuredSampleOccupancy)])));
+     else box.append(element('p','No measured input observations lie in this footprint and interval.'));
+     box.append(element('p',`${number(source.observations)} input observations · ${number(source.distinctRoadUsers)} distinct users · ${number(source.measuredSamples)} measured samples · ${number(source.unavailableSamples)} explicitly unavailable samples. Coverage: means use recorded measured samples only; unavailable or absent scheduled samples are not reconstructed.`,'scope'));
+     box.append(element('p','Counts cover the entire displayed interval, not the current position sample. A user can contribute to multiple types if its recorded classification changes; per-type distinct counts must not be summed.','scope'));
+   }else box.append(element('p','No finalized cell interval is available for private inspection.'));
+   detail.append(box);
+ }
+ if(privateMode&&cell.checks?.length){const table=element('table'),head=element('tr');for(const name of ['Policy metric','Observed','Required'])head.append(element('th',name));table.append(head);for(const check of cell.checks){const tr=element('tr',null,check.status==='pass'?'':'fail'),bounds=(check.min!=null?'≥ '+number(check.min):'')+(check.min!=null&&check.max!=null?' · ':'')+(check.max!=null?'≤ '+number(check.max):'');tr.append(element('td',readable(check.metric)),element('td',number(check.observed)),element('td',bounds+' · '+check.status));table.append(tr);}detail.append(table);}
+ else detail.append(element('p','Regional constraints and failed candidates are private diagnostics. Enable the diagnostic overlay to inspect their recorded checks.','scope'));
+}
+function history() {
+ const {ctx,width,height}=canvasContext('lanes'),left=85,w=width-left-12;
+ for(const [i,side]of ['A','B'].entries()){const y=19+i*27,v=variant(side);ctx.font='11px -apple-system,sans-serif';ctx.fillStyle='#536574';ctx.textAlign='left';ctx.fillText('Comparison '+side,0,y+4);ctx.strokeStyle='#dce4ea';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(left+w,y);ctx.stroke();for(const release of v.result.releases){const x=left+w*release.sealed_at_ms/replay.end_ms;ctx.fillStyle=release.sealed_at_ms<=time?'#258b87':'#b9c9d4';ctx.fillRect(x-1,y-5,2,10);}}
+ const marker=left+w*time/replay.end_ms;ctx.strokeStyle='#215984';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(marker,2);ctx.lineTo(marker,height-3);ctx.stroke();layouts.lanes={left,w};
+}
+function render(){time=Math.max(0,Math.min(replay.end_ms,time));if(!playing)$('play').textContent=time>=replay.end_ms?'↺ Replay':'▶ Play';$('clock').textContent=seconds(time);$('timeline').value=time;motion();releaseMap('A');releaseMap('B');history();$('previous').disabled=time<=0;$('next').disabled=time>=replay.end_ms;}
+function pause(){playing=false;$('play').textContent=time>=replay.end_ms?'↺ Replay':'▶ Play';}
+function tick(timestamp){if(playing){if(lastTick)time+=Math.min(250,timestamp-lastTick)*Number($('speed').value);if(time>=replay.end_ms){time=replay.end_ms;pause();}render();}lastTick=timestamp;requestAnimationFrame(tick);}
+async function fetchJSON(path){const response=await fetch(path);if(!response.ok)throw new Error(`${response.status}: ${path}`);return response.json();}
+async function start(){
+ manifest=await fetchJSON('/bundle/bundle.json');if(manifest.schema!=='ump.replay-viewer.v1')throw new Error('Unsupported viewer bundle schema');
+ replay=await fetchJSON('/bundle/'+manifest.observations);
+ sourceIndex=M.buildSourceIndex(replay);
+ allTypes=[...new Set(replay.batches.flatMap(b=>b.observations.map(o=>o.type)))].sort();
+ variants=await Promise.all(manifest.variants.map(async v=>({...v,result:await fetchJSON('/bundle/'+v.result)})));
+ if(manifest.title)$('title').textContent=manifest.title;
+ events=M.eventTimes(variants,replay.end_ms);
+ $('duration').textContent=seconds(replay.end_ms)+' recorded';$('timeline').max=replay.end_ms;
+ $('source').textContent=`${replay.run_id} · ${number(replay.coverage.width)} × ${number(replay.coverage.height)} m · leaf depth ${replay.coverage.leaf_depth}`;
+ $('provenance').textContent=`${variants.length} frozen result variants · shared observations`;
+ for(const side of ['A','B']){const select=$('variant'+side);for(const [index,v]of variants.entries()){const option=element('option',v.label);option.value=index;select.append(option);}select.value=side==='A'?0:Math.min(1,variants.length-1);select.addEventListener('change',()=>{selections[side]=null;render();});$('cell'+side).addEventListener('change',event=>{selections[side]=event.target.value;render();});$('focus'+side).addEventListener('change',render);$('map'+side).addEventListener('click',event=>{const l=layouts['map'+side],r=event.currentTarget.getBoundingClientRect(),x=(event.clientX-r.left-l.left)/l.scale+l.viewport.x,y=(event.clientY-r.top-l.top)/l.scale+l.viewport.y;const cell=displayed(side).cells.find(c=>M.contains(c,x,y));selections[side]=cell?.cell_id??null;render();});}
+ $('play').addEventListener('click',()=>{if(playing){pause();return;}if(time>=replay.end_ms)time=0;playing=true;lastTick=0;$('play').textContent='Ⅱ Pause';});
+ $('previous').addEventListener('click',()=>{pause();time=M.eventBefore(events,time);render();});$('next').addEventListener('click',()=>{pause();time=M.eventAfter(events,time);render();});
+ $('timeline').addEventListener('input',event=>{pause();time=Number(event.target.value);render();});$('private').addEventListener('change',render);$('sourceGroups').addEventListener('change',render);
+ $('lanes').addEventListener('click',event=>{pause();const r=event.currentTarget.getBoundingClientRect(),l=layouts.lanes;time=(event.clientX-r.left-l.left)/l.w*replay.end_ms;render();});
+ window.addEventListener('resize',render);$('application').hidden=false;render();requestAnimationFrame(tick);
+}
+start().catch(error=>{$('application').hidden=true;$('error').hidden=false;$('error').textContent='Replay could not be loaded: '+error.message;});

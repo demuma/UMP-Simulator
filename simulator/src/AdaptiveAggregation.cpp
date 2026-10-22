@@ -1,16 +1,84 @@
 #include "AdaptiveAggregation.hpp"
 #include <algorithm>
+#include <cmath>
 #include <limits>
 #include <stdexcept>
 #include <utility>
 
 namespace ump {
+namespace {
+struct SemanticCutQuality {
+    std::uint64_t retained = 0;
+    std::optional<double> maxLoss;
+    // At equal retained support, this sum orders the observation-weighted
+    // mean cell side without an extra floating-point division.
+    long double weightedSide = 0;
+    std::vector<int> selectedCellIds;
+};
+
+SemanticCutQuality semanticCutQuality(const SpatialSelection& selection,
+    std::uint64_t originalContributions) {
+    if (selection.decisions.size() != selection.candidate.cells.size()
+        || selection.assessment.cells.size() != selection.candidate.cells.size())
+        throw std::logic_error("Semantic preference proposal has inconsistent cell accounting");
+    SemanticCutQuality quality;
+    for (std::size_t i = 0; i < selection.decisions.size(); ++i) {
+        if (!selection.decisions[i].selected) continue;
+        const auto& cell = selection.candidate.cells[i];
+        const auto& assessment = selection.assessment.cells[i];
+        if (selection.decisions[i].cellId != cell.cell.id || assessment.cellId != cell.cell.id
+            || assessment.status != AssessmentStatus::Pass || !assessment.semantic
+            || cell.counts.observationContributions > originalContributions - quality.retained)
+            throw std::logic_error("Semantic preference selected invalid or duplicated observed support");
+        quality.retained += cell.counts.observationContributions;
+        quality.maxLoss = std::max(quality.maxLoss.value_or(0), assessment.semantic->maxLoss);
+        quality.weightedSide += static_cast<long double>(cell.counts.observationContributions) * cell.cell.width;
+        quality.selectedCellIds.push_back(cell.cell.id);
+    }
+    return quality;
+}
+
+bool completeSemanticCut(const SpatialSelection& selection, const SemanticCutQuality& quality,
+    const AggregationCandidate& finest) {
+    return finest.coverage == WindowCoverage::Complete && selection.suppressedCells == 0
+        && quality.retained == finest.counts.observationContributions
+        && (selection.assessment.status == AssessmentStatus::Pass
+            || selection.assessment.status == AssessmentStatus::NoCandidates);
+}
+
+bool betterSemanticPartial(const SemanticCutQuality& candidate, const SemanticCutQuality& previous) {
+    if (candidate.retained != previous.retained) return candidate.retained > previous.retained;
+    const double candidateLoss = candidate.maxLoss.value_or(std::numeric_limits<double>::infinity());
+    const double previousLoss = previous.maxLoss.value_or(std::numeric_limits<double>::infinity());
+    if (candidateLoss != previousLoss) return candidateLoss < previousLoss;
+    if (candidate.weightedSide != previous.weightedSide) return candidate.weightedSide < previous.weightedSide;
+    return candidate.selectedCellIds < previous.selectedCellIds;
+}
+}
+
 const char* adaptationStrategyName(AdaptationStrategy strategy) {
     switch (strategy) {
         case AdaptationStrategy::TemporalFirst: return "temporal_first";
         case AdaptationStrategy::SpatialFirst: return "spatial_first";
+        case AdaptationStrategy::SemanticFirst: return "semantic_first";
     }
     throw std::invalid_argument("Unknown adaptation strategy");
+}
+
+const char* semanticSecondaryStrategyName(SemanticSecondaryStrategy strategy) {
+    switch (strategy) {
+        case SemanticSecondaryStrategy::TemporalFirst: return "temporal_first";
+        case SemanticSecondaryStrategy::SpatialFirst: return "spatial_first";
+    }
+    throw std::invalid_argument("Unknown semantic secondary strategy");
+}
+
+const char* releaseTriggerName(ReleaseTrigger trigger) {
+    switch (trigger) {
+        case ReleaseTrigger::PolicySatisfied: return "policy_satisfied";
+        case ReleaseTrigger::PrioritySatisfied: return "priority_satisfied";
+    }
+    throw std::invalid_argument("Unknown semantic release trigger");
 }
 
 AdaptiveAggregation::AdaptiveAggregation(AggregationConfig settings,
@@ -19,8 +87,13 @@ AdaptiveAggregation::AdaptiveAggregation(AggregationConfig settings,
     : config(std::move(settings)), temporal(timeSettings), evaluator(std::move(metrics)),
       selector(config, spatial), sink(std::move(output)), durationCapMs(temporal.maxWindowMs) {
     adaptationStrategyName(temporal.strategy);
+    semanticSecondaryStrategyName(temporal.semanticSecondaryStrategy);
+    releaseTriggerName(temporal.releaseTrigger);
     if (temporal.coordination != CoordinationMode::CommonWindow)
         throw std::invalid_argument("Cell-local configuration requires CellLocalAggregation");
+    if (temporal.strategy == AdaptationStrategy::SemanticFirst
+        && (!config.semanticTaxonomy || config.semanticTaxonomy != evaluator.semanticTaxonomy()))
+        throw std::invalid_argument("Semantic First requires the same immutable taxonomy in configuration and evaluator");
     if (!sink || config.samplingPeriodMs <= 0 || config.windowMs <= 0
         || config.windowMs % config.samplingPeriodMs || temporal.extensionStepMs <= 0
         || temporal.extensionStepMs % config.samplingPeriodMs
@@ -114,14 +187,70 @@ void AdaptiveAggregation::evaluate(AggregationTime endMs, AggregationTime nowMs,
     const bool deadlineReached = nowMs >= hardEnd;
     const bool terminal = final || atLimit || deadlineReached || !complete;
     std::optional<SpatialSelection> proposal;
-    if (finestPass || terminal || temporal.strategy == AdaptationStrategy::TemporalFirst) {
-        if (!finestPass)
+    bool selectedAll = false;
+    if (temporal.strategy == AdaptationStrategy::SemanticFirst) {
+        const bool finestPreferred = finestPass && std::all_of(checked.cells.begin(), checked.cells.end(),
+            [](const auto& cell) { return cell.semantic && cell.semantic->maxLoss == 0; });
+        const bool immediatePolicy = temporal.releaseTrigger == ReleaseTrigger::PolicySatisfied;
+        // Immediate policy release searches all legal spatial cuts now. With
+        // explicit preference waiting, Spatial secondary protects the finest
+        // geometry until the deadline; Temporal secondary merges before waiting.
+        // Neither choice rewrites the immutable regional metric requirements.
+        const bool allowMerges = immediatePolicy || terminal
+            || temporal.semanticSecondaryStrategy == SemanticSecondaryStrategy::TemporalFirst;
+        if (!finestPreferred && allowMerges)
             next.decisions.push_back({TemporalAction::CoarsenSpatially, next.startMs, endMs, nowMs, checked.status});
-        proposal = selector.propose(finest, history, evaluator);
+        proposal = selector.propose(finest, history, evaluator, 0.0, allowMerges);
+        auto quality = semanticCutQuality(*proposal, finest.counts.observationContributions);
+        selectedAll = completeSemanticCut(*proposal, quality, finest);
+        double selectedCeiling = 0;
+        std::size_t attemptedCeilings = 1;
+        bool terminalFallback = false;
+        if ((terminal || immediatePolicy) && complete && !selectedAll) {
+            std::vector<double> ceilings;
+            for (const auto& node : config.semanticTaxonomy->nodes())
+                if (node.loss > 0) ceilings.push_back(node.loss);
+            std::sort(ceilings.begin(), ceilings.end());
+            ceilings.erase(std::unique(ceilings.begin(), ceilings.end()), ceilings.end());
+            // Each proposal has the existing independent spatial budget; the
+            // validated catalog bounds this loop to at most 256 total ceilings.
+            // Proposals do not mutate selector history or publication state.
+            for (double ceiling : ceilings) {
+                auto alternative = selector.propose(finest, history, evaluator, ceiling);
+                ++attemptedCeilings;
+                terminalFallback = terminal;
+                auto alternativeQuality = semanticCutQuality(alternative, finest.counts.observationContributions);
+                const bool alternativeFull = completeSemanticCut(alternative, alternativeQuality, finest);
+                // Prefer the first full cut in ascending loss ceilings. If no
+                // full cut exists, retain as much observed support as possible,
+                // then prefer lower worst loss and finer spatial detail. This
+                // is a bounded proposal comparison, not global cut optimization.
+                if (alternativeFull || betterSemanticPartial(alternativeQuality, quality)) {
+                    proposal = std::move(alternative);
+                    quality = std::move(alternativeQuality);
+                    selectedCeiling = ceiling;
+                }
+                if (alternativeFull) {
+                    selectedAll = true;
+                    break;
+                }
+            }
+        }
+        proposal->semanticPriority = SemanticPrioritySelection{
+            selectedCeiling, quality.maxLoss, attemptedCeilings, terminalFallback,
+            semanticSecondaryStrategyName(temporal.semanticSecondaryStrategy),
+            releaseTriggerName(temporal.releaseTrigger), selectedAll && immediatePolicy};
+    } else {
+        // Keep the legacy TF/SF branch and its diagnostic output unchanged.
+        if (finestPass || terminal || temporal.strategy == AdaptationStrategy::TemporalFirst) {
+            if (!finestPass)
+                next.decisions.push_back({TemporalAction::CoarsenSpatially, next.startMs, endMs, nowMs, checked.status});
+            proposal = selector.propose(finest, history, evaluator);
+        }
+        selectedAll = proposal && proposal->suppressedCells == 0 && complete
+            && (proposal->assessment.status == AssessmentStatus::Pass
+                || proposal->assessment.status == AssessmentStatus::NoCandidates);
     }
-    const bool selectedAll = proposal && proposal->suppressedCells == 0 && complete
-        && (proposal->assessment.status == AssessmentStatus::Pass
-            || proposal->assessment.status == AssessmentStatus::NoCandidates);
     if (selectedAll || terminal) {
         auto& result = *proposal;
         result.strategy = adaptationStrategyName(temporal.strategy);

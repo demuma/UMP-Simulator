@@ -34,6 +34,7 @@ void appendOptional(bsoncxx::builder::basic::document& document, const char* key
 bsoncxx::document::value metricDocument(const std::vector<ump::MetricValue>& values) {
     bsoncxx::builder::basic::document metrics;
     for (const auto& metric : values) {
+        if (metric.unavailableReason == "semantic_not_enabled") continue;
         const auto& definition = ump::metricDefinition(metric.id);
         bsoncxx::builder::basic::document value;
         value.append(kvp("unit", std::string(definition.unit)));
@@ -59,6 +60,19 @@ bsoncxx::array::value checkArray(const std::vector<ump::MetricCheck>& checks) {
     return results.extract();
 }
 
+bsoncxx::document::value semanticDocument(const ump::SemanticRepresentation& semantic) {
+    bsoncxx::builder::basic::array categories;
+    for (const auto& bin : semantic.bins)
+        categories.append(make_document(kvp("category_id", bin.categoryId),
+            kvp("observation_contributions", static_cast<std::int64_t>(bin.observationContributions)),
+            kvp("distinct_contributors", static_cast<std::int64_t>(bin.distinctContributors))));
+    return make_document(kvp("schema", "ump.semantic-release.v1"),
+        kvp("taxonomy_id", semantic.taxonomyId), kvp("taxonomy_version", semantic.taxonomyVersion),
+        kvp("min_category_distinct_contributors", semantic.minimumDistinctContributors),
+        kvp("semantic_max_loss", semantic.maxLoss), kvp("semantic_mean_loss", semantic.meanLoss),
+        kvp("categories", categories));
+}
+
 bsoncxx::document::value cellDocument(const ump::AggregatedCell& cell,
     const ump::CellMetricAssessment& evaluated, const ump::SpatialCellDecision* decision = nullptr) {
     bsoncxx::builder::basic::document appliedPolicy;
@@ -76,6 +90,7 @@ bsoncxx::document::value cellDocument(const ump::AggregatedCell& cell,
         kvp("metrics", metricDocument(evaluated.metrics)),
         kvp("threshold_status", std::string(ump::assessmentStatusName(evaluated.status))),
         kvp("checks", checkArray(evaluated.checks)));
+    if (evaluated.semantic) row.append(kvp("semantic", semanticDocument(*evaluated.semantic)));
     if (decision) {
         bsoncxx::builder::basic::array triggers;
         for (const auto id : decision->triggerCells) triggers.append(id);
@@ -143,6 +158,19 @@ static DetailedSink makeDetailedSink(const std::string& directory,
             kvp("counts", countDocument(candidate.counts)),
             kvp("assessment", assessmentDocument(assessment)), kvp("cells", cells));
         if (spatial) {
+            if (spatial->semanticPriority) {
+                const auto& preference = *spatial->semanticPriority;
+                bsoncxx::builder::basic::document semanticPriority;
+                semanticPriority.append(kvp("schema", "ump.semantic-priority.v1"),
+                    kvp("secondary_strategy", preference.secondaryStrategy), kvp("preferred_max_loss", 0.0),
+                    kvp("release_trigger", preference.releaseTrigger),
+                    kvp("policy_satisfied_release", preference.policySatisfiedRelease),
+                    kvp("selected_max_loss_ceiling", preference.lossCeiling),
+                    kvp("attempted_ceilings", static_cast<std::int64_t>(preference.attemptedCeilings)),
+                    kvp("terminal_fallback", preference.terminalFallback));
+                appendOptional(semanticPriority, "actual_max_loss", preference.actualMaxLoss);
+                row.append(kvp("semantic_priority", semanticPriority));
+            }
             if (spatial->coordinationCell) {
                 const auto& c = *spatial->coordinationCell;
                 row.append(kvp("coordination_cell", make_document(kvp("cell_id", c.id), kvp("depth", c.depth),

@@ -1,0 +1,19 @@
+{
+  "status": "verified",
+  "scope": "Post-study CLI-only fix leaves entire default local semantic output unchanged except runtime; frozen study untouched.",
+  "command": [
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/build/AggregationReplay",
+    "--input",
+    "/Users/maxdemu/Developer/UMP-Simulator/results/local-leaf-policy-2026-10-22/observations.json",
+    "--config",
+    "/Users/maxdemu/Developer/UMP-Simulator/results/local-leaf-policy-2026-10-22/local_temporal-policy.json",
+    "--mode",
+    "semantic_first",
+    "--output",
+    "/private/tmp/ump-replay-local-20261022/cli-override/local-temporal-new-binary.json"
+  ],
+  "scientific_output_equal": true,
+  "frozen_study_hashes_verified": true,
+  "new_binary_sha256": "b96ebbf351df6b4e66c3e1778c352dc3e31387483010a90e6ccd62bf4d405d66",
+  "frozen_binary_sha256": "29702cd35146491b8aee4721c892fa01d8c7d917fba5017d90990d03c9eecb99"
+}

@@ -3,11 +3,14 @@
 #include <cstdint>
 #include <cstddef>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
 
 namespace ump {
+
+class SemanticTaxonomy;
 
 // Milliseconds relative to this run's simulation origin, never wall-clock elapsed time.
 using AggregationTime = std::int64_t;
@@ -57,6 +60,16 @@ struct AggregationConfig {
     std::uint64_t maxObservationsPerWindow = 1000000;
     InputCapabilities capabilities = InputCapabilities::IdentityCellObservations;
     std::optional<HistoryLimits> history = std::nullopt;
+    std::shared_ptr<const SemanticTaxonomy> semanticTaxonomy = nullptr;
+};
+
+// Private exact taxonomy-node evidence. No contributor IDs leave the accumulator.
+struct SemanticNodeCounts {
+    std::uint64_t observationContributions = 0, distinctContributors = 0;
+};
+struct SemanticEvidence {
+    std::string taxonomyId, taxonomyVersion;
+    std::map<std::string, SemanticNodeCounts> nodes;
 };
 
 struct AggregateCounts {
@@ -64,6 +77,7 @@ struct AggregateCounts {
     std::uint64_t distinctContributors = 0;
     std::map<std::string, std::uint64_t> typeObservationContributions;
     std::optional<double> meanSampleOccupancy;
+    std::optional<SemanticEvidence> semanticEvidence = std::nullopt;
 };
 
 struct AggregatedCell {

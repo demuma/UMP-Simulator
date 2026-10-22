@@ -1,0 +1,95 @@
+{
+  "application_id": "density-controlled",
+  "history": {
+    "max_bins": 32,
+    "max_buckets": 128,
+    "max_identity_bytes": 16000000,
+    "max_observations": 100000,
+    "retention_ms": 2000
+  },
+  "max_observations_per_window": 1000000,
+  "policy_regions": [],
+  "policy_tree": {
+    "execution": {
+      "publication_model": "private_final_snapshot",
+      "release_trigger": "priority_satisfied",
+      "strategy": "semantic_first"
+    },
+    "id": "density-controlled-policy",
+    "max_nodes": 65536,
+    "regions": [],
+    "root": {
+      "age_at_evaluation_ms": {
+        "max": 800
+      },
+      "cell_side_m": {
+        "max": 40,
+        "min": 1.25
+      },
+      "distinct_contributors": {
+        "min": 1
+      },
+      "min_category_distinct_contributors": {
+        "min": 5
+      },
+      "semantic_max_loss": {
+        "max": 1
+      },
+      "window_duration_ms": {
+        "max": 800
+      }
+    },
+    "version": "density-m2/k5/l1/s40/t800/semantic_first"
+  },
+  "semantic_taxonomy": {
+    "id": "semantic-priority",
+    "nodes": [
+      {
+        "id": "road_user",
+        "loss": 1
+      },
+      {
+        "id": "pedestrian",
+        "input_types": [
+          "pedestrian"
+        ],
+        "loss": 0,
+        "parent": "road_user"
+      },
+      {
+        "id": "cyclist",
+        "loss": 0.5,
+        "parent": "road_user"
+      },
+      {
+        "id": "adult_cyclist",
+        "input_types": [
+          "adult_cyclist"
+        ],
+        "loss": 0,
+        "parent": "cyclist"
+      },
+      {
+        "id": "child_cyclist",
+        "input_types": [
+          "child_cyclist"
+        ],
+        "loss": 0,
+        "parent": "cyclist"
+      }
+    ],
+    "version": "1"
+  },
+  "spatial_selection": {
+    "max_evaluations": 4096,
+    "min_depth": 1,
+    "preserve_valid_descendants": true
+  },
+  "temporal_adaptation": {
+    "coordination": "common_window",
+    "extension_step_ms": 100,
+    "max_evaluations": 16,
+    "max_window_ms": 800
+  },
+  "window_ms": 400
+}

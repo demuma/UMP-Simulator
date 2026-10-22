@@ -60,6 +60,7 @@ void AgentBasedSensor::update(std::vector<Agent>& agents, float timeStep, std::c
 
 // Assemble one output batch from consecutive observations of the same agents.
 void AgentBasedSensor::captureAgentData(std::vector<Agent>& agents) {
+
     std::vector<AgentData> observations;
     currentPositions.clear();
 

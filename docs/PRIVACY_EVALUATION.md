@@ -1,33 +1,74 @@
 # Privacy evaluation roadmap and membership stress-test contract
 
-Status: 2026-10-19. **The first controlled synthetic empirical path is implemented.**
-The user authorized the complete independent-check/data/attack implementation. The selected
-E02-A–C contract, code and reproduction are in
-[EMPIRICAL_PRIVACY_IMPLEMENTATION.md](EMPIRICAL_PRIVACY_IMPLEMENTATION.md); actual results
-are in [TEST_REPORT_2026-10-19.md](TEST_REPORT_2026-10-19.md). Real-world attacker realism,
-sensitive-attribute studies and formal guarantees remain open. E02-D is future work.
+Status: 2026-10-20. **Controlled synthetic source-membership attacks, causal recipient prefixes
+and logical deadline utility are implemented and complete.** The E02-A–C contract and
+first reproduction remain in
+[EMPIRICAL_PRIVACY_IMPLEMENTATION.md](EMPIRICAL_PRIVACY_IMPLEMENTATION.md). Sensitive-attribute
+and visit inference, realistic city semantics, a live recipient service and formal privacy
+guarantees remain open. E02-D is a separate future research contract.
 
-The roadmap below preserves the design rationale and initial proposal. Its first empirical
-instantiation is now fixed: source-contribution inclusion, exact partial candidate knowledge,
-independent seeded reference realizations, grouped splits, logistic classifier, calibration
-and public-only held-out testing. The historical deterministic diagnostic remains separate.
+The roadmap preserves the initial design rationale. Its first instantiation fixed source
+contribution inclusion, partial candidate knowledge, independent seeded source realizations,
+grouped splits, calibration and public-only held-out attacks. The deterministic diagnostic
+with complete background knowledge below remains separate historical evidence.
 
-**Current focus after coordination refinement:** a fixed 184-realization common/local
-source-membership comparison now uses the corrected controller and spatially scoped public
-features. See [the protocol and results](PRIVACY_COORDINATION_STUDY_2026-10-19.md). Its exact
-candidate knowledge and synthetic background limit any real-world interpretation.
+The [184-realization coordination comparison](PRIVACY_COORDINATION_STUDY_2026-10-19.md)
+and subsequent [16-second robustness study](PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md) are completed,
+versioned assessments. The latter adds uncertain candidate knowledge, a held-out background
+population-count shift and a second fixed attack family. Keep the earlier four-second
+results scoped to their own population: they are not a controlled horizon-effect comparison.
+The robustness study found no general local privacy advantage, with utility costs and a
+pointwise contrast toward greater attack success; retain those scoped negative findings.
 
-**Latest independent extension:** the [16-second robustness study](PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md)
-adds uncertain knowledge, a held-out background population-count shift and a second
-fixed attack family. All 2080 audits and 28 model fits complete. It provides no general
-local privacy advantage, with explicit utility costs and one pointwise contrast toward
-higher attack success. Keep the earlier four-second result scoped to its own population;
-this is not a controlled horizon-effect comparison. QI/SA roles and future semantic/online
-games are defined in the [attribute/context contract](PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
+## Completed causal-prefix and deadline extension
 
-## What already exists and what remains open
+The latest [October 20 report](CAUSAL_PRIVACY_REPORT_2026-10-20.md),
+[implementation](CAUSAL_PRIVACY_IMPLEMENTATION.md),
+[predeclared protocol](CAUSAL_PRIVACY_PROTOCOL_2026-10-20.md) and
+[test report](CAUSAL_PRIVACY_TEST_REPORT_2026-10-20.md) document a fresh 208-group,
+16-second source-membership assessment. It fits 360 checkpoint models forming 60 fixed
+attack strategies over six looks. Earlier attacks already inspected the entire final
+publication history. This extension asks when evidence becomes available and how two
+bounded recent/history representations perform; it does not introduce source membership
+or whole-history observation for the first time.
 
-| Requirement | Existing diagnostic | Remaining empirical-study work |
+The secret remains inclusion of the candidate's **whole recorded source contribution**
+over the fixed horizon. Both worlds retain the physical candidate and identical background;
+OUT removes only its source observations. Public records and auxiliary sightings are gated
+by their declared availability at each checkpoint. Exact/noisy profiles share independent
+Bernoulli selection at each timestamp; auxiliary-only and no-output controls are label invariant.
+
+All 16 held-out local history-minus-recent AUC contrast intervals include zero. This supplies
+no resolved history advantage under these fixed representations and learners, and does not
+prove equivalence or privacy against a stronger attacker. At the first look, recent and
+cumulative records are identical; the history vector duplicates that public feature block.
+For logistic regression, duplication can halve the public block's effective L2 penalty
+despite unchanged information.
+Later contrasts also combine representation and fitting effects, so they are not an isolated
+causal estimate of memory's information value. A nested history view lets an unrestricted
+attacker ignore extra coordinates; lower fitted AUC is not evidence that receiving more
+history improves privacy.
+
+Each predeclared attack strategy chooses one threshold on CAL maximum scores over all
+six looks and freezes it for both TEST cohorts. The empirical CAL ever-positive FPR cap of 0.1 is not a TEST or deployment guarantee;
+report observed TEST FPR alongside TPR. Grouped, pointwise intervals condition on the fitted
+models and frozen thresholds, without simultaneous coverage or training uncertainty.
+
+Deadline utility uses fixed 10-m/1-s occupancy queries and lags of 0/200/500/1000 ms. Every
+lag uses the same primary query cohort, with deadlines strictly before EOF; boundary and
+censored queries remain separate. A query needs complete public spatial/time support by its
+own deadline; late reconstruction does not repair a deadline miss. Availability assumes
+instantaneous receipt at logical sealing. This is an offline causal replay assessment,
+not a live service or a wall-clock latency measurement. Relaxing query deadlines does not
+change the published stream and therefore does not establish a causal privacy/latency
+mechanism frontier.
+
+QI/SA roles and the separate semantic-visit/live-application requirements remain in
+[the attribute/context contract](PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
+
+## Original readiness gaps and their implemented first instantiation
+
+| Requirement | Original diagnostic | Initial empirical requirement |
 |---|---|---|
 | Attacker model | Complete background and candidate-trace knowledge, deterministic algorithm | Limited and reproducible auxiliary knowledge; explicit public-only attack input |
 | Protected unit | One simulated road user's complete recorded trace in the declared horizon | Freeze the horizon/sensor/application scope; do not reinterpret a vehicle as its occupants |
@@ -42,9 +83,9 @@ supplies bounded knowledge, grouped splits, a calibrated attack and empirical me
 the linked implementation contract. The stronger diagnostic and its historical results
 below remain separate evidence; neither study validates real-world protection.
 
-## Proposed primary study: contribution membership
+## Primary empirical question: contribution membership
 
-**Proposed research question:** under which scenario and attacker-knowledge conditions does
+**Research question:** under which scenario and attacker-knowledge conditions does
 adaptive aggregation reduce contribution-membership inference relative to legal fixed
 aggregation, and at what cost in application utility, availability and age?
 
@@ -52,7 +93,7 @@ This is a hypothesis to test. Larger cells, longer windows and larger support th
 are not assumed to improve empirical protection monotonically. Data-dependent selection
 can change what the output geometry and timing reveal.
 
-| Contract field | Proposed first empirical setting |
+| Contract field | Initial controlled setting |
 |---|---|
 | Observer | External recipient of one application's approved AGBS aggregate stream |
 | Protected unit | One simulated road user's entire recorded contribution within a fixed, predeclared evaluation horizon |
@@ -161,7 +202,7 @@ not by itself justify a DP claim. DP is not currently implemented or required by
 ## Existing diagnostic contract
 
 The remaining sections document the implemented deterministic stress test. They are kept
-separate from the proposed empirical study above.
+separate from the completed empirical studies above.
 
 ## Question and protected unit
 
@@ -260,16 +301,19 @@ independent simulation runs.
    privacy stress test. Suppressing more data must not be described as an overall
    improvement without its utility cost.
 
-## Subsequent empirical attack study
+## Subsequent empirical attacks: implemented, with scoped interpretation
 
-A weaker, more realistic attacker will need an explicit auxiliary-data model: for
-example, a partial target trace plus independently collected background traces.
-A trained classifier needs disjoint training/calibration/test scenarios, with all
-related windows and paired variants of one run kept in the same split. Thresholds
-must be selected without the test labels. Report ROC-AUC and operating-point TPR/FPR,
-together with the prior-only baseline, the target distribution and uncertainty over
-independent runs. Such a classifier study remains future work. Its accuracy cannot be
-inferred from the deterministic neighbour comparison.
+The originally proposed bounded-knowledge classifier study is now implemented. Its
+versioned auxiliary-data models, independent grouped TRAIN/CAL/TEST splits, public-only
+features, frozen thresholds, controls and empirical uncertainty are documented in the
+linked implementation and study reports. The October 20 extension also implements causal
+recipient-prefix attacks and deadline-aware occupancy under logical availability.
+
+These are synthetic attacks under declared knowledge and source populations. They do not
+validate every real recipient's auxiliary data or turn a classifier's measured performance
+into a formal privacy bound. Their AUC and operating-point performance cannot be inferred
+from the deterministic neighbour comparison. A semantic-visit secret or an actual online
+service still requires the separate contract and instrumentation described above.
 
 ## Primary research context
 

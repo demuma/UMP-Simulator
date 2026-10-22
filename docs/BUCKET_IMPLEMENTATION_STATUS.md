@@ -1,6 +1,9 @@
 # Bucket and history implementation status
 
-Reviewed: 2026-10-19. This document resolves the distinction between implemented logical
+Reviewed: 2026-10-21. Optional common-window A07 descendant rescue is now implemented;
+see [its contract](SELECTIVE_DESCENDANT_RESCUE.md). It is not proactive preparation
+or selective suppression of individual road users. Computation optimization is deferred.
+This document resolves the distinction between implemented logical
 bucket APIs, the actual adaptive controller, and planned proactive aggregation.
 
 ## Direct answer
@@ -175,8 +178,9 @@ explicit instrumentation.
    compliance/utility/empirical-attack results with their denominators and limitations.
 3. Add credible duration/cadence/end-state evidence and distinguish simulation time,
    wall-clock processing, renderer playback and aggregation waiting age.
-4. Prioritize targeted A07 partial-child rescue and one controlled functional-region/query
-   scenario with a clear visual effect. They address demonstrated utility/model limits.
+4. Review the implemented optional A07 common-window partial-child rescue and its
+   verification gate, then specify one controlled functional-region/query scenario
+   with a clear visual effect. They address demonstrated utility/model limits.
 5. Evaluate the implemented cell-local coordination against common windows before claiming improved local retention/latency.
    Otherwise explicitly present the current common-window baseline.
 6. If proactive preemptive preparation is claimed as an implemented contribution, implement

@@ -1,11 +1,17 @@
 """Pure capture-adapter tests: no simulator process or MongoDB access."""
 
 import copy
+import json
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import unittest
+import tempfile
+from types import SimpleNamespace
+from unittest import mock
 
-from capture_simulator import capture_config, cell_for, utc_milliseconds, verify_and_replay
+from capture_simulator import (MIXED_TYPE_PROBABILITIES, behavior_taxonomy, capture_parameters,
+                               capture_config, cell_for, export_collection, utc_milliseconds,
+                               verify_and_replay, write_json)
 
 
 ORIGIN = datetime(2026, 10, 14, 9, 30, tzinfo=timezone.utc)
@@ -16,13 +22,13 @@ def timestamp(milliseconds):
     return (ORIGIN + timedelta(milliseconds=milliseconds)).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
-def raw_capture():
+def raw_capture(end_ms=8000):
     agents = [{"data_type": "metadata", "timestamp": timestamp(0), "frame_rate": 20,
                "simulation_area": {"width": 80, "height": 80}}]
     sensor = [{"data_type": "metadata", "timestamp": timestamp(0), "frame_rate": 10,
                "sensor_id": "temporal-aggregation-agbs", "max_depth": 6, "cell_size": 40,
                "position": {"x": 0, "y": 0}, "detection_area": {"width": 80, "height": 80}}]
-    for time in range(0, 8000, 50):
+    for time in range(0, end_ms, 50):
         agents.append({"data_type": "agent data", "timestamp": timestamp(time),
                        "agent_id": "road-user-A", "type": "pedestrian", "position": {"x": .5, "y": .5}})
         if time and time % 100 == 0:
@@ -55,6 +61,119 @@ class CaptureTests(unittest.TestCase):
                 capture_config(changed, DATABASE)
         with self.assertRaises(ValueError):
             capture_config(original, "Simulation")
+
+    def test_requested_population_duration_and_mixed_profiles_are_explicit(self):
+        repository = Path(__file__).resolve().parents[2]
+        original = (repository / "simulator/examples/temporal-aggregation/config.yaml").read_text()
+        source = (repository / "simulator/config.yaml").read_text()
+        mixed = behavior_taxonomy(source)
+        for population in (200, 500, 1000):
+            configured = capture_config(original, DATABASE, num_agents=population,
+                                        duration_seconds=20, mixed_taxonomy=mixed)
+            self.assertIn(f"  num_agents: {population}\n", configured)
+            self.assertIn("  duration_seconds: 20\n", configured)
+            self.assertIn(mixed, configured)
+            self.assertEqual(configured.count(DATABASE), 2)
+            self.assertNotIn("db_name: Simulation", configured)
+            self.assertNotIn("clear_database: true", configured)
+            self.assertNotIn("publication:", configured)
+            for name in MIXED_TYPE_PROBABILITIES:
+                self.assertEqual(configured.count(f"    - type: {name}\n"), 1)
+        self.assertEqual((repository / "simulator/config.yaml").read_text(), source)
+
+    def test_mixed_source_edits_and_parameter_errors_fail_closed(self):
+        source = (Path(__file__).resolve().parents[2] / "simulator/config.yaml").read_text()
+        for changed in (source.replace("      probability: 0.35", "      probability: 0.34"),
+                        source.replace("    - type: Adult Cyclist", "    - type: Car"),
+                        source + "\nagents:\n  num_agents: 2\n"):
+            with self.subTest(changed=changed[-40:]), self.assertRaises(ValueError):
+                behavior_taxonomy(changed)
+        for population, duration in ((0, 8), (5001, 8), (True, 8), (1.5, 8),
+                                     (200, 0), (200, 601), (200, True), (200, 2.5)):
+            with self.subTest(population=population, duration=duration), self.assertRaises(ValueError):
+                capture_parameters(population, duration)
+        self.assertEqual(capture_parameters(200, 20), 20000)
+        self.assertEqual(capture_parameters(), 8000)
+
+    def test_duration_changes_expected_complete_cadence_and_population_summary(self):
+        agents, sensor = raw_capture(20000)
+        # One extra initialized participant leaves after 100 ms; the remaining
+        # identity proves subsequent complete frames without pretending density
+        # stays equal to the requested initial population.
+        agents.extend({"data_type": "agent data", "timestamp": timestamp(time),
+                       "agent_id": "departing", "type": "cyclist",
+                       "position": {"x": 80.1, "y": .5}} for time in (0, 50, 100))
+        replay, proof = verify_and_replay(agents, sensor, "long-frozen", 20000)
+        self.assertEqual(replay["end_ms"], 20000)
+        self.assertEqual(len(replay["batches"]), 199)
+        self.assertEqual(proof["gt_frames"], 400)
+        self.assertEqual(proof["population"], {
+            "initial_road_users": 2, "final_road_users": 1,
+            "min_road_users": 1, "max_road_users": 2, "distinct_road_users": 2,
+            "initial_type_counts": {"cyclist": 1, "pedestrian": 1},
+            "final_type_counts": {"pedestrian": 1},
+        })
+        with self.assertRaises(ValueError):
+            verify_and_replay(agents, sensor, "wrong-default-horizon")
+        for end in (0, 8001, 600001, True):
+            with self.subTest(end=end), self.assertRaises(ValueError):
+                verify_and_replay(agents, sensor, "invalid-end", end)
+
+    def test_late_global_extinction_is_not_inferred_as_empty_measurement(self):
+        agents, sensor = raw_capture(1000)
+        agents = [row for row in agents if row["data_type"] == "metadata"
+                  or utc_milliseconds(row["timestamp"]) < utc_milliseconds(timestamp(900))]
+        with self.assertRaisesRegex(ValueError, "population extinction"):
+            verify_and_replay(agents, sensor, "extinct", 1000)
+
+    def test_json_artifact_budget_counts_utf8_and_preserves_no_overwrite(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "capture.json"
+            write_json(path, {"x": "ä"}, max_bytes=11)
+            self.assertEqual(json.loads(path.read_text()), {"x": "ä"})
+            self.assertEqual(path.stat().st_size, 11)
+            with self.assertRaises(FileExistsError):
+                write_json(path, {"other": 1})
+            oversized = Path(directory) / "large.json"
+            with self.assertRaisesRegex(ValueError, "exceeds 10 bytes"):
+                write_json(oversized, {"x": "ä"}, max_bytes=10)
+            self.assertLessEqual(oversized.stat().st_size, 10)
+
+    def test_raw_export_streams_bounded_cursor_and_validates_complete_array(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "raw.json"
+            def run(command, **kwargs):
+                script = command[-1]
+                self.assertNotIn(".toArray()", script)
+                self.assertIn("while (cursor.hasNext())", script)
+                self.assertIn("Buffer.byteLength", script)
+                self.assertIn("const maximum = 100;", script)
+                kwargs["stdout"].write('[\n{"agent_id":"A"}\n]\n')
+                return SimpleNamespace(returncode=0)
+            with mock.patch("capture_simulator.subprocess.run", side_effect=run):
+                self.assertEqual(export_collection("mongosh", DATABASE, "Agents", path, max_bytes=100),
+                                 [{"agent_id": "A"}])
+                with self.assertRaises(FileExistsError):
+                    export_collection("mongosh", DATABASE, "Agents", path)
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+
+    def test_raw_export_error_budget_invalid_array_and_destination_fail_closed(self):
+        cases = [("[]", 1, 0, "exceeds"), ("[", 100, 0, "complete JSON array"),
+                 ("{}", 100, 0, "not an array"), ("[", 100, 1, "Raw Agents export failed")]
+        with tempfile.TemporaryDirectory() as directory:
+            for index, (payload, budget, returncode, reason) in enumerate(cases):
+                def run(command, **kwargs):
+                    kwargs["stdout"].write(payload)
+                    kwargs["stderr"].write("bounded export test")
+                    return SimpleNamespace(returncode=returncode)
+                with self.subTest(reason=reason), mock.patch("capture_simulator.subprocess.run", side_effect=run):
+                    with self.assertRaisesRegex((ValueError, RuntimeError), reason):
+                        export_collection("mongosh", DATABASE, "Agents", Path(directory) / f"raw{index}.json", max_bytes=budget)
+            with mock.patch("capture_simulator.subprocess.run") as called:
+                for database, collection in (("Simulation", "Agents"), (DATABASE, "other")):
+                    with self.assertRaises(ValueError):
+                        export_collection("mongosh", database, collection, Path(directory) / "unsafe.json")
+                called.assert_not_called()
 
     def test_quadtree_prefix_and_half_open_boundaries(self):
         self.assertEqual(cell_for(0, 0), (12288, 0, 0, 1.25))

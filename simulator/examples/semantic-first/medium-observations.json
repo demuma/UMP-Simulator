@@ -1,0 +1,5329 @@
+{
+  "batches": [
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 100,
+      "sequence": 1,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 200,
+      "sequence": 2,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 300,
+      "sequence": 3,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 400,
+      "sequence": 4,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 500,
+      "sequence": 5,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 600,
+      "sequence": 6,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 700,
+      "sequence": 7,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 800,
+      "sequence": 8,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 900,
+      "sequence": 9,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 1000,
+      "sequence": 10,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 1100,
+      "sequence": 11,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 1200,
+      "sequence": 12,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 1300,
+      "sequence": 13,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 1400,
+      "sequence": 14,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 1500,
+      "sequence": 15,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 1600,
+      "sequence": 16,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 1700,
+      "sequence": 17,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 1800,
+      "sequence": 18,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 1900,
+      "sequence": 19,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 2000,
+      "sequence": 20,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 2100,
+      "sequence": 21,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 2200,
+      "sequence": 22,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "density/m2/48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 49,
+          "id": "density/m2/49/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 1
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/0",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/1",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/2",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/pedestrian/3",
+          "type": "pedestrian",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 50,
+          "id": "density/m2/50/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/0",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/1",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/2",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/pedestrian/3",
+          "type": "pedestrian",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        },
+        {
+          "cell_id": 51,
+          "id": "density/m2/51/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 21,
+          "y": 21
+        }
+      ],
+      "observed_at_ms": 2300,
+      "sequence": 23,
+      "status": "measured"
+    }
+  ],
+  "coverage": {
+    "height": 80,
+    "leaf_depth": 2,
+    "width": 80,
+    "x": 0,
+    "y": 0
+  },
+  "end_ms": 2400,
+  "run_id": "density-controlled-m2",
+  "sampling_period_ms": 100,
+  "schema": "ump.observation-replay.v1",
+  "sensor_id": "agbs"
+}

@@ -1,0 +1,133 @@
+{
+  "application_id": "local-leaf-policy-contract",
+  "history": {
+    "max_bins": 32,
+    "max_buckets": 128,
+    "max_identity_bytes": 16000000,
+    "max_observations": 100000,
+    "retention_ms": 2000
+  },
+  "max_observations_per_window": 1000000,
+  "policy_regions": [],
+  "policy_tree": {
+    "execution": {
+      "publication_model": "private_final_snapshot",
+      "release_trigger": "policy_satisfied",
+      "semantic_secondary_strategy": "temporal_first",
+      "strategy": "semantic_first"
+    },
+    "id": "uniform-leaf-policy",
+    "max_nodes": 65536,
+    "regions": [],
+    "root": {
+      "age_at_evaluation_ms": {
+        "max": 1000
+      },
+      "cell_side_m": {
+        "max": 5,
+        "min": 1.25
+      },
+      "distinct_contributors": {
+        "min": 1
+      },
+      "min_category_distinct_contributors": {
+        "min": 2
+      },
+      "semantic_max_loss": {
+        "max": 1
+      },
+      "window_duration_ms": {
+        "max": 1000
+      }
+    },
+    "version": "1"
+  },
+  "semantic_taxonomy": {
+    "id": "ump-seven-profile-release",
+    "nodes": [
+      {
+        "id": "road_user",
+        "loss": 1
+      },
+      {
+        "id": "pedestrian",
+        "loss": 0.5,
+        "parent": "road_user"
+      },
+      {
+        "id": "cyclist",
+        "loss": 0.5,
+        "parent": "road_user"
+      },
+      {
+        "id": "escooter",
+        "input_types": [
+          "Adult E-Scooter Driver"
+        ],
+        "loss": 0,
+        "parent": "road_user"
+      },
+      {
+        "id": "child_pedestrian",
+        "input_types": [
+          "Child Pedestrian"
+        ],
+        "loss": 0,
+        "parent": "pedestrian"
+      },
+      {
+        "id": "senior_pedestrian",
+        "input_types": [
+          "Senior Pedestrian"
+        ],
+        "loss": 0,
+        "parent": "pedestrian"
+      },
+      {
+        "id": "adult_pedestrian",
+        "input_types": [
+          "Adult Pedestrian"
+        ],
+        "loss": 0,
+        "parent": "pedestrian"
+      },
+      {
+        "id": "senior_cyclist",
+        "input_types": [
+          "Senior Cyclist"
+        ],
+        "loss": 0,
+        "parent": "cyclist"
+      },
+      {
+        "id": "adult_cyclist",
+        "input_types": [
+          "Adult Cyclist"
+        ],
+        "loss": 0,
+        "parent": "cyclist"
+      },
+      {
+        "id": "adult_cargo_cyclist",
+        "input_types": [
+          "Adult Cargo Cyclist"
+        ],
+        "loss": 0,
+        "parent": "cyclist"
+      }
+    ],
+    "version": "1"
+  },
+  "spatial_selection": {
+    "max_evaluations": 8192,
+    "min_depth": 4,
+    "preserve_valid_descendants": true
+  },
+  "temporal_adaptation": {
+    "coordination": "common_window",
+    "extension_step_ms": 100,
+    "max_evaluations": 16,
+    "max_window_ms": 1000
+  },
+  "window_ms": 400
+}

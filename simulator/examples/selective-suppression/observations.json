@@ -1,0 +1,100 @@
+{
+  "schema": "ump.observation-replay.v1",
+  "run_id": "selective-suppression-example",
+  "sensor_id": "agbs",
+  "coverage": {
+    "x": 0,
+    "y": 0,
+    "width": 80,
+    "height": 80,
+    "leaf_depth": 2
+  },
+  "sampling_period_ms": 100,
+  "end_ms": 400,
+  "batches": [
+    {
+      "sequence": 1,
+      "observed_at_ms": 100,
+      "status": "measured",
+      "observations": [
+        {
+          "id": "road-user-a",
+          "type": "Adult Pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "road-user-b",
+          "type": "Adult Pedestrian",
+          "cell_id": 48,
+          "x": 2,
+          "y": 1
+        },
+        {
+          "id": "road-user-c",
+          "type": "Adult Pedestrian",
+          "cell_id": 49,
+          "x": 21,
+          "y": 1
+        }
+      ]
+    },
+    {
+      "sequence": 2,
+      "observed_at_ms": 200,
+      "status": "measured",
+      "observations": [
+        {
+          "id": "road-user-a",
+          "type": "Adult Pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "road-user-b",
+          "type": "Adult Pedestrian",
+          "cell_id": 48,
+          "x": 2,
+          "y": 1
+        },
+        {
+          "id": "road-user-c",
+          "type": "Adult Pedestrian",
+          "cell_id": 49,
+          "x": 21,
+          "y": 1
+        }
+      ]
+    },
+    {
+      "sequence": 3,
+      "observed_at_ms": 300,
+      "status": "measured",
+      "observations": [
+        {
+          "id": "road-user-a",
+          "type": "Adult Pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "road-user-b",
+          "type": "Adult Pedestrian",
+          "cell_id": 48,
+          "x": 2,
+          "y": 1
+        },
+        {
+          "id": "road-user-c",
+          "type": "Adult Pedestrian",
+          "cell_id": 49,
+          "x": 21,
+          "y": 1
+        }
+      ]
+    }
+  ]
+}

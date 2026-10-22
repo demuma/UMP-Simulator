@@ -394,6 +394,7 @@ void Simulation::initializeMetricPolicies() {
         ump::AggregationConfig settings{aggregationRunId, id, applicationId, coverage, period,
             aggregation["window_ms"].as<ump::AggregationTime>(), static_cast<std::uint64_t>(budget)};
         settings.history = readHistoryLimits(aggregation["history"]);
+        settings.semanticTaxonomy = readSemanticTaxonomy(aggregation);
         AdaptiveGridBasedSensor::validateAggregationConfig(settings, timeStep,
             sensor["frame_rate"].as<float>(),
             sf::FloatRect({area["x"].as<float>(), area["y"].as<float>()},
@@ -401,7 +402,7 @@ void Simulation::initializeMetricPolicies() {
             sensor["grid"]["cell_size"].as<float>(), coverage.leafDepth);
         AggregationManager checked(settings, [](const auto&) {});
         const auto spatial = readSpatialSelection(aggregation, coverage.leafDepth);
-        auto evaluator = makeMetricEvaluator(aggregation, coverage, applicationId, regions);
+        auto evaluator = makeMetricEvaluator(aggregation, coverage, applicationId, regions, settings.semanticTaxonomy);
         const auto temporal = readTemporalAdaptation(aggregation);
         if (spatial) { ump::SpatialSelector checkedSelector(settings, *spatial); }
         if (temporal) {
@@ -548,6 +549,7 @@ void Simulation::initializeSensors() {
                     aggregation["window_ms"].as<ump::AggregationTime>(), static_cast<std::uint64_t>(budget)};
                 settings.history = readHistoryLimits(aggregation["history"]);
                 auto evaluator = std::move(metricEvaluators.at(sensor->sensorId));
+                settings.semanticTaxonomy = evaluator.semanticTaxonomy();
                 auto diagnostics = makeAggregationDiagnosticsSink(
                     aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp);
                 const auto spatialSettings = readSpatialSelection(aggregation, maxDepth);

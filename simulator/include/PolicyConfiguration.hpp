@@ -7,4 +7,5 @@
 // Configuration/Region adaptation is outside the standard-C++ policy core.
 std::vector<ump::MetricRequirement> readMetricRequirements(const YAML::Node& node, bool allowEmpty = false);
 ump::MetricEvaluator makeMetricEvaluator(const YAML::Node& aggregation, const ump::GridCoverage& grid,
-    const std::string& applicationId, const std::vector<Region>& regions);
+    const std::string& applicationId, const std::vector<Region>& regions,
+    std::shared_ptr<const ump::SemanticTaxonomy> taxonomy = nullptr);

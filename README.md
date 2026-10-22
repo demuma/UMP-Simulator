@@ -3,8 +3,30 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
-**Status: 2026-10-19. Current work: empirical privacy evaluation after verified cell-local
-coordination refinement, alongside utility and policy compliance. Shared sampling
+**Status: 2026-10-22. Current work: sequential algorithm/policy-compliance verification.
+The first A07 slice now optionally preserves valid whole descendants after a failed
+common-window spatial merge. Its [contract](docs/SELECTIVE_DESCENDANT_RESCUE.md) and
+[test report](docs/SELECTIVE_DESCENDANT_RESCUE_TEST_REPORT_2026-10-21.md) define the gate
+before further implementation. A08 now adds optional common-window semantic adaptation:
+exact category support, versioned hierarchy loss and truthful category cuts enter the
+same regional metric checks. Approved bins survive immutable publication and recovery;
+see the [semantic contract](docs/SEMANTIC_ADAPTATION.md) and
+[test report](docs/SEMANTIC_ADAPTATION_TEST_REPORT_2026-10-21.md).
+The first [semantic decision-order study](docs/SEMANTIC_PRIORITY_STUDY_2026-10-21.md)
+now audits 360 configurations and 1,929 actual intervals without changing the controller.
+It exposes spatial/category/query trade-offs; see its
+[test report](docs/SEMANTIC_PRIORITY_TEST_REPORT_2026-10-21.md).
+The opt-in [Semantic First controller](docs/SEMANTIC_FIRST_IMPLEMENTATION.md) is now
+implemented initially with Temporal First secondary priority, bounded waiting and loss-tier fallback.
+The [semantic release update](docs/SEMANTIC_RELEASE_CONTROL.md) now adds Spatial First
+secondary and defaults the semantic controller to release a complete legal cut at
+the first eligible endpoint. Explicit `priority_satisfied` retains preference waiting.
+This does not yet add taxonomy support to independent cell-local windows.
+[Acceptance and same-source results](docs/SEMANTIC_RELEASE_TEST_REPORT_2026-10-21.md)
+separate that remaining integration gap from the new release behavior.
+[52-entry verification](docs/SEMANTIC_FIRST_TEST_REPORT_2026-10-21.md) and the
+[27-case comparison](docs/SEMANTIC_FIRST_RESULTS_2026-10-21.md) record its exact scope.
+Membership attacks and computation/cache optimization are deferred. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
 bounded, nonblocking renderer consumption are implemented (S04/S01). S05 now paces
@@ -30,7 +52,30 @@ public-only calibrated empirical membership benchmark are now implemented. Contr
 synthetic results and verification are recorded in the October 19 test report. The historical
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
-**Latest measured coordination result:** the refined endpoint planner closes the proven
+
+The bounded [recorded moving-data pilot](docs/MOVING_REPLAY.md) uses the existing C++
+Simulator with its seven maintained Road User profiles, verified GT/AGBS capture and
+one frozen source per requested population. It compares six policy-checked fixed
+raster/window settings with Temporal First, Spatial First and Semantic First. The
+[protocol](docs/MOVING_REPLAY_PROTOCOL_2026-10-21.md) fixes the matrix and task before
+results. A local viewer synchronizes recorded observations and actual releases; it
+does not require MongoDB for playback. The [results](docs/MOVING_REPLAY_RESULTS_2026-10-21.md) and
+[test report](docs/MOVING_REPLAY_TEST_REPORT_2026-10-21.md) record 27 audited outputs
+and 55 passing CTest entries; tool availability alone is not evidence of an adaptive win.
+The [maximum output-cell study](docs/CELL_SIZE_CAPS.md) now reuses those same
+captures with separate hard 10 m and 5 m limits. Its [results and verification](docs/CELL_SIZE_CAP_RESULTS_2026-10-21.md)
+record 54 additional audited outputs and six deterministic repeats. The source
+area and finest 1.25 m cells remain unchanged. A [paired cap replay](http://127.0.0.1:8768/)
+shows the actual output/suppression differences while its local server is running.
+The [four-second follow-up](docs/FOUR_SECOND_WINDOWS.md) permits longer windows
+under separate duration/age policies. Its [results and test report](docs/FOUR_SECOND_WINDOW_RESULTS_2026-10-21.md)
+record 72 audited outputs and six repeats: at the 5 m cap, retention increases
+from 4.95/28.31/65.48% to 10.90/49.26/81.66% for N=200/500/1000, with later
+availability. [Why the two priorities coincide](docs/SEMANTIC_SPATIAL_EQUALITY_2026-10-21.md)
+distinguishes total support from type-specific detail. A direct [1 s / 4 s replay](http://127.0.0.1:8769/)
+uses the same recorded motion and shows the original release intervals.
+
+**Previous measured coordination refinement:** the refined endpoint planner closes the proven
 hold/publication counterexamples. The same 30-case matrix passes 270 independent audits
 and 120 repeats; all 210 untouched reference outputs are identical. Mixed-density local
 retention now matches common for Spatial First and differs by only -0.0732 percentage
@@ -43,19 +88,99 @@ public-only attacks. Local SF lowers this attack's pooled AUC from 0.6561 to 0.6
 with small availability/retention costs; residual signal and scenario dependence remain.
 [Threat model, protocol and results](docs/PRIVACY_COORDINATION_STUDY_2026-10-19.md).
 
-**Latest robustness result:** a new independent 208-group / 16-second study completes
+**Previous robustness result (seed 20261021):** a new independent 208-group / 16-second study completes
 2080 valid audits and 28 fitted attack models, with exact/uncertain candidate knowledge
 and a held-out background population-count shift. There is no general local privacy
 advantage: 15 of 16 paired intervals contain zero, while one indicates higher attack
 success. Local retention and query availability are also lower on this population.
 All models, negative findings and uncertainty are in the [robustness study](docs/PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md).
 All 36 CTest suites and 228 Python methods pass in the complete optional environment.
+A subsequent [post-hoc diagnosis](docs/LOCAL_COORDINATION_DIAGNOSIS_2026-10-19.md)
+finds a real TF freshness/deadline benefit, concentrated mixed-mode retention losses
+and one confirmed reservation-induced missed merge. “No general privacy advantage”
+does not mean no usefulness. The targeted coordination correction is now implemented;
+see the [handoff repair report](docs/HANDOFF_REPAIR_REPORT_2026-10-19.md).
 [Attribute/context and online contracts](docs/PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md)
-define the next research questions without claiming those features are implemented.
+distinguish implemented causal logical-time evaluation from future semantic visits and a live client.
+[Scenario inventory and GT-loss scope](docs/SCENARIO_INVENTORY_AND_GT_LOSS_2026-10-19.md)
+records actual populations, the three-label fixture versus seven-type production config,
+and why source retention is not total ground-truth information retention.
+A subsequent [hold/reservation investigation](docs/LOCAL_WINDOW_HOLD_PRIVACY_ANALYSIS_2026-10-19.md)
+adds 2048 independently audited diagnostic replays: the previous future handoffs reduce retention
+on this population, while both early passing-cell release and private-empty retirement
+can close merge options. A label-only one-versus-seven-type control leaves public data
+unchanged. That diagnostic did not change production; the subsequent targeted repair is
+now implemented and independently assessed below.
+
+**Implemented handoff repair:** endpoint-consistent intents, redundant-plan reconciliation and
+ACK-committed contained-plan supersession are implemented. All 37 CTest suites, 236 Python
+methods, 27 focused coordination functions and 240 sanitizer stress scenarios pass.
+The original matrix passes 270 audits/120 repeats/210 unchanged references. A minimal
+42-observation witness now retains 33 observations instead of zero. The predeclared fresh
+seed20261022 assessment completes 2912 audits and 36 models/72 cohort assessments.
+Retention improves by 2.72–5.21 percentage points and query coverage rises. TF shared-source
+age increases by 8.54–10.28 ms and matched-query error rises slightly. There is **no general
+privacy improvement**: 14/16 repair intervals include zero; two shifted SF/exact-knowledge
+contrasts indicate higher attack AUC. All 16 local-versus-common intervals include zero,
+which does not establish equivalence. Independent raw-data and attack recomputations pass.
+[Implementation/evidence](docs/HANDOFF_REPAIR_REPORT_2026-10-19.md),
+[test report](docs/HANDOFF_REPAIR_TEST_REPORT_2026-10-19.md),
+[fixed protocol](docs/HANDOFF_REPAIR_PROTOCOL_2026-10-19.md).
+
+**Latest causal evaluation:** a fresh 208-group / 16-second study completes 2080 audited
+mechanism executions, 360 checkpoint attack models and 120 held-out cohort assessments.
+Logical recipient views now exclude future releases and future auxiliary sightings;
+occupancy queries use their own deadlines. Local Temporal First improves immediate query
+coverage by **2.38 pp base / 5.15 pp under population-count shift**, but this advantage
+vanishes with a one-second deadline lag. Local Spatial First has lower coverage than
+common Spatial First at every tested lag. All 16 local history-minus-recent AUC intervals
+include zero; the comparison also changes representation/regularization, so it does not
+isolate the information value of memory. CAL ever-FPR stays below 10%, while held-out
+FPR reaches 40.63%: there is no population guarantee or general privacy improvement.
+All **40 CTest suites / 285 Python methods** and separate source/score/deadline audits pass.
+[Results and figures](docs/CAUSAL_PRIVACY_REPORT_2026-10-20.md),
+[test report](docs/CAUSAL_PRIVACY_TEST_REPORT_2026-10-20.md),
+[implementation](docs/CAUSAL_PRIVACY_IMPLEMENTATION.md).
 
 All maintained project documentation is written in English. The conversation may remain
 in German. The historical implementation plan is kept as an English reference translation;
 its original external file remains unchanged.
+
+## October 22 checkpoint: inspectable cells and small local policies
+
+The replay now offers **Inspect cell** and **Focus selected cell** in each comparison
+panel. Released category counts are separate from opt-in **Inspect private source
+groups**, reconstructed for the selected cell and its actual historical interval.
+Private diagnostics also show the declared local policy footprints and failed checks.
+See the [viewer guide](tools/replay_viewer/README.md).
+
+The [local-policy experiment](docs/LOCAL_LEAF_POLICY_RESULTS_2026-10-22.md) affects
+16 of 4096 finest leaves. It demonstrates truthful Pedestrian generalization,
+a Cyclist sibling merge, suppression and untouched fine control cells on the same
+scripted observations. Uniform/local retention is 100%/75% in this diagnostic fixture;
+this is not a real-traffic effectiveness result. It exposes a remaining limitation:
+a strict regional temporal bound still caps the entire common semantic window.
+
+The [four-step roadmap](docs/TAXONOMY_POLICY_ROADMAP_2026-10-22.md) orders taxonomy
+contracts, observation/release semantics, local numeric policies and cell inspection.
+The next algorithm gate remains semantic-aware independent cell windows.
+[Checkpoint inventory](docs/RESEARCH_CHECKPOINT_2026-10-22.md) accounts for the
+162 previously uncommitted paths; the [verification report](docs/REPLAY_LOCAL_POLICY_TEST_REPORT_2026-10-22.md)
+records the integrated checks.
+
+Frozen synthetic observations and recorded comparison results are included as a
+[compact verified data package](docs/REPLAY_DATA_PACKAGE.md). A fresh checkout can
+restore and open the small local-policy replay without MongoDB:
+
+```sh
+python3 -B tools/evaluation/replay_data.py verify
+mkdir -p results
+python3 -B tools/evaluation/replay_data.py restore --output results/replay-studies
+python3 -B tools/replay_viewer/serve.py --bundle results/replay-studies/local-policies --port 8772
+```
+
+The package documentation lists exact scope and omissions. The original ignored
+`results/` tree remains on this machine; it is not uploaded wholesale.
 
 ## 1. Start here
 
@@ -66,13 +191,30 @@ its original external file remains unchanged.
 | [Terminology and notation](docs/TERMINOLOGY_AND_NOTATION.md) | Canonical language, symbols, units, cell/region distinction, equations and code mapping |
 | [Functional regions and evidence](docs/FUNCTIONAL_REGIONS_AND_EVIDENCE.md) | October 19 review: street/shop corridors, actual region support, missing pieces and proof/experiment scope |
 | [Research questions and experiment plan](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md) | Current answers, data prerequisites, feasibility oracle and staged utility/policy experiments |
+| [Recorded moving-data replay](docs/MOVING_REPLAY.md) | Existing-simulator capture, six fixed baselines/three adaptive strategies, verification gates, query interpretation and local playback |
+| [Moving pilot protocol](docs/MOVING_REPLAY_PROTOCOL_2026-10-21.md) | Predeclared population levels, shared policy/taxonomy, fixed query task, budgets and limitations |
+| [Maximum output-cell sizes](docs/CELL_SIZE_CAPS.md) | Optional hard 10 m/5 m policy bounds, valid fixed baselines and paired replay use |
+| [Cell-size cap results](docs/CELL_SIZE_CAP_RESULTS_2026-10-21.md) | Same-input 40/10/5 m policy sensitivity, retained data, fixed-query coverage and acceptance evidence |
+| [Semantic release control](docs/SEMANTIC_RELEASE_CONTROL.md) | Configurable secondary priority, default policy eligibility, deliberate waiting and common/local scope |
+| [Semantic release tests and results](docs/SEMANTIC_RELEASE_TEST_REPORT_2026-10-21.md) | Native/replay acceptance, exact hierarchy examples and same-source trigger comparison |
+| [Camera-ready ALOG comparison](docs/CAMERA_READY_COMPARISON_2026-10-21.md) | Attached ALOG versus ALOQ distinction, frequency RMSE, LDP and semantic-loss comparability |
+| [Four-second windows](docs/FOUR_SECOND_WINDOWS.md) | Optional coupled policy/controller limits, bounded history and direct 1 s / 4 s replay |
+| [Four-second results and tests](docs/FOUR_SECOND_WINDOW_RESULTS_2026-10-21.md) | Paired retention, eventual/deadline task availability, delay and independent acceptance checks |
+| [Why priorities coincide at 5 m](docs/SEMANTIC_SPATIAL_EQUALITY_2026-10-21.md) | Exact release equality, pooled identity support and the role of seven input profiles |
 | [Controlled evaluation](docs/CONTROLLED_EVALUATION.md) | Frozen input, seven comparable configurations, fixed-query utility and reproduction commands |
 | [First comparison results](docs/EVALUATION_RESULTS_2026-10-14.md) | Measured results, interpretation, reproducibility artifacts and limitations |
+| [Causal privacy and deadline results](docs/CAUSAL_PRIVACY_REPORT_2026-10-20.md) | Fresh causal membership study, conditional TF timeliness benefit, uncertainty and calibration limits |
+| [Causal evaluation test report](docs/CAUSAL_PRIVACY_TEST_REPORT_2026-10-20.md) | 40 suites, 285 Python methods and independent source/score/deadline reconstruction |
+| [Causal evaluation implementation](docs/CAUSAL_PRIVACY_IMPLEMENTATION.md) | Recipient prefixes, auxiliary arrival, repeated decisions, compact deadline utility and reproduction |
+| [Causal fixed protocol](docs/CAUSAL_PRIVACY_PROTOCOL_2026-10-20.md) | Predeclared unchanged whole-source secret, six checkpoints, cohorts, controls and deadlines |
+| [Complete causal aggregate tables](docs/CAUSAL_PRIVACY_TABLES_2026-10-20.md) | All 120 outcomes, paired contrasts, deadline/matched utility and EOF censoring |
 | [Privacy roadmap and diagnostic](docs/PRIVACY_EVALUATION.md) | Threat model, implemented first synthetic study, later extensions and the historical deterministic stress test |
 | [Empirical evaluation implementation](docs/EMPIRICAL_PRIVACY_IMPLEMENTATION.md) | Independent oracle, seeded pairs/splits, public features, classifier, controls and reproduction |
 | [October 19 test report](docs/TEST_REPORT_2026-10-19.md) | Actual regression results, independent hand cases, synthetic pilot evidence and limitations |
 | [Refinement/privacy test report](docs/REFINEMENT_PRIVACY_TEST_REPORT_2026-10-19.md) | 33 CTest suites, 196 Python methods, sanitizer checks and independent experiment validation |
 | [Coordination refinement](docs/COORDINATION_REFINEMENT_2026-10-19.md) | Endpoint planning, feasible holds, same-input before/after comparison and accuracy trade-offs |
+| [Handoff repair and independent evidence](docs/HANDOFF_REPAIR_REPORT_2026-10-19.md) | Corrected future planning, atomic supersession, fresh before/after utility/privacy results and limits |
+| [Handoff repair test report](docs/HANDOFF_REPAIR_TEST_REPORT_2026-10-19.md) | 37 suites, 236 Python methods, old failing regressions, sanitizer/stress and independent evidence checks |
 | [Privacy robustness study](docs/PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md) | New independent 16-second groups, two attack families, uncertain knowledge, shift, all results and aggregate tables |
 | [Privacy robustness test report](docs/PRIVACY_ROBUSTNESS_TEST_REPORT_2026-10-19.md) | 36 CTest suites, 228 Python methods and independent numeric/hash verification |
 | [Attribute/context and online contract](docs/PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md) | QI/SA roles, semantic-visit prerequisites, causal recipient prefixes and deadline-aware utility |
@@ -88,6 +230,12 @@ its original external file remains unchanged.
 | [Temporal adaptation](docs/TEMPORAL_AGGREGATION.md) | Implemented Temporal First/Spatial First, shared-history windows, deadlines and runnable example |
 | [Adaptive pipeline validation](docs/ADAPTIVE_PUBLICATION_VALIDATION.md) | Regression coverage and real headless simulator evidence |
 | [Spatial selection and live demo](docs/SPATIAL_SELECTION.md) | Actual private parent/child selection, live overlay, recorded replay, configuration and tested limits |
+| [Selective descendant rescue](docs/SELECTIVE_DESCENDANT_RESCUE.md) | A07 opt-in common-window fallback, hard invariants and hand-worked acceptance cases |
+| [Selective rescue test report](docs/SELECTIVE_DESCENDANT_RESCUE_TEST_REPORT_2026-10-21.md) | Independent oracle, baseline compatibility, publication/deadline checks and remaining limits |
+| [Semantic adaptation](docs/SEMANTIC_ADAPTATION.md) | Versioned truthful class generalization, regional category-support/loss bounds, exact queries and storage |
+| [Semantic First controller](docs/SEMANTIC_FIRST_IMPLEMENTATION.md) | Implemented maximum-loss preference, TF secondary order, waiting/fallback, runnable examples and verification |
+| [Semantic First and controlled density](docs/SEMANTIC_FIRST_AND_DENSITY_2026-10-21.md) | Adopted preservation terminology, 18 isolated density cases and the next action-selection gate |
+| [Semantic test report](docs/SEMANTIC_ADAPTATION_TEST_REPORT_2026-10-21.md) | Independent category/cut audit, common-window pipeline, Mongo recovery and compatibility |
 | [Aggregation inspector](docs/AGGREGATION_INSPECTOR.md) | Ready-to-open meeting demo, recorded cell metrics/thresholds, timeline, optional MongoDB debug copy and reproduction |
 | [Bounded history and buckets](docs/AGGREGATION_HISTORY.md) | Implemented A02 private reconstruction, logical windows, resource limits, deadlines and verification |
 | [Regional policy tree](docs/POLICY_TREE.md) | Implemented root/type/region inheritance, sparse compilation, conflict semantics and runnable example |
@@ -123,15 +271,21 @@ priority comparisons; E05 tracks preparation cost. Publication models may be sel
 application policy once their behavior is implemented and tested.
 
 **Aggregation terminology:** candidates are cell/interval pairs. Functional regions supply
-their constraints; they are not aggregation-cell or bucket boundaries. Future independent
-windows are cell-local and require coordinated merge groups. The current controller still
-uses a common whole-grid interval. The terminology reference is authoritative for new
+their constraints; they are not aggregation-cell or bucket boundaries. Independent
+cell-local windows and coordinated merge groups are implemented in the opt-in controller.
+The default controller uses a common whole-grid interval. The terminology reference is authoritative for new
 presentation, paper and dissertation text.
 
-**Adopted strategy terminology:** Temporal First prioritizes temporal detail/freshness and
-tries spatial aggregation first. Spatial First prioritizes spatial detail and tries temporal
-aggregation first. The name identifies the dimension to preserve. Hard bounds still apply;
-both action orders are implemented and included in the initial frozen-input comparison.
+**Adopted strategy terminology:** Temporal First preserves temporal detail/freshness;
+Spatial First preserves spatial detail; **Semantic First preserves semantic accuracy**.
+The name identifies the dimension to preserve, not the first coarsening action. TF tries
+spatial aggregation before temporal extension; SF tries temporal extension before spatial
+aggregation. All three are implemented, with `semantic_first` currently restricted to
+common-window taxonomy-enabled runs and Temporal First secondary priority. It seeks a
+zero-loss spatial cut before waiting, then permits bounded loss-tier fallback at a terminal
+endpoint. Ordinary TF/SF still attempt early semantic generalization inside each candidate.
+Hard bounds apply to every choice; mean loss remains a constraint/report, not an optimized
+objective in the first Semantic First mode.
 
 The first application query is now mean sampled occupancy on a fixed 10-m reference grid
 over 1-second intervals; [METRICS.md](docs/METRICS.md) defines its reference, reconstruction
@@ -147,9 +301,11 @@ reduction in empirical attack success.
 **Next milestone: October 25 conference evidence; October 18 is historical.**
 Input, metrics, regional policies, bounded history, common/local space-time adaptation
 and immutable publication run together. Independent utility/policy and controlled
-membership studies are complete. The immediate research work is to explain measured
-strengths and failures, justify the next protected semantic secret and define a causal
-online evaluation. Realistic maps/routing remain optional validity improvements rather
+membership studies, causal recipient-prefix evaluation and logical deadline utility are
+complete. The immediate research work is to present the conditional timeliness benefit
+and residual privacy limits, then predeclare matched-representation and calibration
+follow-ups. Semantic visits require a separately justified protected-secret contract;
+wall-clock recipient instrumentation remains open. Realistic maps/routing remain optional validity improvements rather
 than prerequisites for those controlled studies. Implementation demonstrates mechanics;
 mathematical feasibility and empirical effectiveness are separately evidenced.
 
@@ -229,10 +385,10 @@ reverted test results do not establish correctness of the current implementation
 | GBS | Fixed cells, class counts and total count per observation | No full temporal aggregation or privacy-based release decision |
 | AGBS | Fine observation quadtree, position mapping, counts and cell IDs; optional reusable aggregation pipeline | Input geometry follows positions/max depth; adaptive publication uses a separately selected cut |
 | Aggregation pipeline | AGBS ingestion, bounded history, regional checks, spatial/temporal selection and immutable policy-approved MongoDB releases | Default common-window plus opt-in cell-local coordination; alternative publication models and automatic restart remain open |
-| Regional rules | Immutable sparse PolicyTree; root/type/region metric inheritance, footprint conflicts and stream-level Temporal First/Spatial First selection | Aligned, non-overlapping rectangles only; legacy granularity/k/l fields inactive; no regional strategy overrides or live updates |
+| Regional rules | Immutable sparse PolicyTree; root/type/region metric inheritance, footprint conflicts and stream-level Temporal First/Spatial First/Semantic First selection | Aligned, non-overlapping rectangles only; legacy granularity/k/l fields inactive; no regional strategy overrides or live updates |
 | Temporal history | Bounded sample history, exact ancestor/time queries, logical active/preemptive windows, bounded extension and coordinated retirement | No automatic precomputed ancestor statistic caches; cell-local coordination is opt-in |
 | Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry and independent playback pacing; four V3 DB renderers | Independent input/completed/active-window displays implemented; broader lifecycle inspection and long-run tests remain open |
-| Evaluation | Nine online measures, fixed-query occupancy MAE/coverage/age, seven-mode frozen replay and known-background neighbour stress test | Realistic trained attacks, independent scenario/seed sweeps, further utility tasks and formal guarantees remain open |
+| Evaluation | Online candidate measures, fixed/deadline occupancy utility, common/local frozen replay, independent grouped membership studies and causal repeated-alarm attacks | Synthetic bounded attackers; semantic visits, stronger matched controls, robust population calibration, live receipt timing and formal guarantees remain open |
 | Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |
 
@@ -528,6 +684,25 @@ cmake -S simulator -B simulator/build -DCMAKE_BUILD_TYPE=Release
 cmake --build simulator/build -j4
 ```
 
+### VS Code diagnostics
+
+Open `UMP-Simulator.code-workspace` from this repository. The simulator CMake
+project exports `simulator/build/compile_commands.json` during configuration.
+Point the C/C++ extension's `compileCommands` setting to
+`${workspaceFolder}/simulator/build/compile_commands.json` so editor diagnostics
+use the same compiler, architecture and dependency headers as the build. The
+local `.vscode/` directory and generated compilation database remain ignored.
+
+On this Apple Silicon machine, use an arm64 fallback configuration,
+`/usr/bin/clang++` and Homebrew headers under `/opt/homebrew`, including the
+versioned `mongocxx/v_noabi` and `bsoncxx/v_noabi` include directories. Headers
+under `/usr/local` can belong to a different installed MongoDB driver version.
+Keep fallback project include paths limited to `simulator/include` and the renderer
+`include` directories. A recursive repository-wide include path also discovers
+frozen source/header copies under `results/` and unnecessary build directories.
+After changing the configuration, run **C/C++: Reset IntelliSense Database**
+if old diagnostics remain.
+
 ### Build a database renderer
 
 ```sh
@@ -734,6 +909,55 @@ the whole common window, including requirements in empty areas. Only selected sc
 are released. Current metrics and support thresholds are unchanged; no empirical privacy
 improvement is claimed. See the [temporal guide](docs/TEMPORAL_AGGREGATION.md) and
 [publication guide](docs/PUBLICATION_COORDINATION.md) for storage and recovery limits.
+
+### Preserve valid cells when a common-window merge fails
+
+A07 is optional and defaults to the original whole-candidate suppression baseline:
+
+```yaml
+aggregation:
+  spatial_selection:
+    min_depth: 1
+    max_evaluations: 4096
+    preserve_valid_descendants: true
+```
+
+This preserves independently passing whole descendants when a parent fails. A valid
+higher parent still takes precedence when it rescues the complete footprint. Failed
+branches remain private suppression diagnostics; no parent/global total is released
+with the surviving descendants. Temporal First/Spatial First keep extending when
+permitted, and use a partial cut only at the existing terminal condition.
+
+The option applies to common-window spatial/TF/SF selection. Enabled cell-local use
+is explicitly rejected; local ownership already preserves passing sibling owners in
+the reference examples. Uniform `--mode fixed` remains a separate baseline. This does
+not implement individual/type suppression, semantic generalization or a new privacy
+metric. The existing default configuration and observation depth are unchanged.
+
+A deterministic, MongoDB-free example is in
+[`simulator/examples/selective-suppression`](simulator/examples/selective-suppression/README.md).
+It retains six of nine observation contributions instead of zero under identical
+requirements. See the [acceptance contract](docs/SELECTIVE_DESCENDANT_RESCUE.md) and
+[verification report](docs/SELECTIVE_DESCENDANT_RESCUE_TEST_REPORT_2026-10-21.md).
+
+### Enable the semantic release product
+
+Within a history-enabled common-window aggregation stream, supply a versioned
+`semantic_taxonomy` and explicit root `min_category_distinct_contributors.min` and
+`semantic_max_loss.max` requirements. Regions may strengthen them. The hierarchy maps
+existing source labels to terminal categories; behavior profiles remain unchanged.
+See the complete [configuration and formulas](docs/SEMANTIC_ADAPTATION.md).
+
+The mechanism chooses a truthful complete category cut for each spatial/time candidate.
+If its semantic support/loss or another hard bound fails, TF/SF/A07 continues normally.
+It never emits a hidden rare category beside an unchanged total or relabels a cyclist
+as a pedestrian. The default scalar-only mode remains unchanged. Enabled cell-local
+semantics reject explicitly; there is no implicit fallback to unassessed class counts.
+
+The [five MongoDB-free examples](simulator/examples/semantic-adaptation/README.md)
+show whole-group generalization, intermediate cyclist classes, exact labels and
+incompatible support/detail limits. New output is opt-in and versioned. This step
+adds quantitative category support and representation loss, not a new attack estimate.
 
 ### Configuration and startup
 

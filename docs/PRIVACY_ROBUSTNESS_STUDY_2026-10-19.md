@@ -147,6 +147,10 @@ the lock file records the entire tested optional plotting/attack environment. Th
 records actual Python, platform and relevant package versions. The study never starts
 the interactive simulator or clears MongoDB.
 
+A later [post-hoc coordination diagnosis](LOCAL_COORDINATION_DIAGNOSIS_2026-10-19.md)
+adds exact freshness and logical-deadline utility, and identifies a contained-handoff
+reservation limitation. It leaves this primary membership comparison unchanged.
+
 ## Results
 
 The fixed run completed successfully: **2080/2080 independent policy/ownership audits**,
@@ -303,3 +307,13 @@ map realism. Attack resistance and policy compliance remain separate measured re
 also includes rankings across scenario strata, so retain scenario-specific metrics.
 A less-than-perfect exact-count control attack would expose limitations of the
 learner/features or population knowledge, not protection by the unprotected control.
+
+## Subsequent implementation and new independent assessment
+
+The diagnosed future-handoff conflict has now been repaired. A separately generated
+seed20261022 assessment compares frozen old/new mechanisms with fresh TRAIN/CAL/TEST
+groups and attacks. Retention rises 2.72–5.21 percentage points, with explicit age/error
+costs; no general privacy improvement is established and two shifted SF/exact comparisons
+have increased AUC. See the [complete repair evidence](HANDOFF_REPAIR_REPORT_2026-10-19.md)
+and [test report](HANDOFF_REPAIR_TEST_REPORT_2026-10-19.md). The present seed20261021 study
+and its conclusions remain preserved rather than replaced by the newer data.

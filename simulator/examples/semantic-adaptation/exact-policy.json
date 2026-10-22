@@ -1,0 +1,98 @@
+{
+  "application_id": "semantic-acceptance",
+  "window_ms": 400,
+  "max_observations_per_window": 1000000,
+  "history": {
+    "retention_ms": 2000,
+    "max_bins": 32,
+    "max_observations": 100000,
+    "max_identity_bytes": 16000000,
+    "max_buckets": 128
+  },
+  "spatial_selection": {
+    "min_depth": 2,
+    "max_evaluations": 4096,
+    "preserve_valid_descendants": true
+  },
+  "temporal_adaptation": {
+    "extension_step_ms": 100,
+    "max_window_ms": 1000,
+    "max_evaluations": 16,
+    "coordination": "common_window"
+  },
+  "semantic_taxonomy": {
+    "id": "semantic-replay",
+    "version": "1",
+    "nodes": [
+      {
+        "id": "road_user",
+        "loss": 1
+      },
+      {
+        "id": "pedestrian",
+        "parent": "road_user",
+        "loss": 0,
+        "input_types": [
+          "pedestrian",
+          "Adult Pedestrian"
+        ]
+      },
+      {
+        "id": "cyclist",
+        "parent": "road_user",
+        "loss": 0.5
+      },
+      {
+        "id": "adult_cyclist",
+        "parent": "cyclist",
+        "loss": 0,
+        "input_types": [
+          "adult_cyclist",
+          "Adult alias",
+          "Adult Cyclist"
+        ]
+      },
+      {
+        "id": "child_cyclist",
+        "parent": "cyclist",
+        "loss": 0,
+        "input_types": [
+          "child_cyclist",
+          "Child Cyclist"
+        ]
+      }
+    ]
+  },
+  "policy_tree": {
+    "id": "semantic-policy",
+    "version": "1",
+    "max_nodes": 65536,
+    "execution": {
+      "publication_model": "private_final_snapshot",
+      "strategy": "spatial_first"
+    },
+    "root": {
+      "distinct_contributors": {
+        "min": 1
+      },
+      "cell_side_m": {
+        "min": 1.25,
+        "max": 20
+      },
+      "window_duration_ms": {
+        "max": 1000
+      },
+      "age_at_evaluation_ms": {
+        "max": 1000
+      },
+      "min_category_distinct_contributors": {
+        "min": 2
+      },
+      "semantic_max_loss": {
+        "max": 0
+      }
+    },
+    "regions": []
+  },
+  "policy_regions": []
+}

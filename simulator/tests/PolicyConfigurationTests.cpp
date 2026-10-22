@@ -66,6 +66,17 @@ policy_tree:
         const std::string selectionPrefix = "history: {}\nmetric_policy: {}\nspatial_selection: ";
         auto selection = readSpatialSelection(YAML::Load(selectionPrefix + "{min_depth: 1, max_evaluations: 64}"), 3);
         require(selection && selection->minDepth == 1 && selection->maxEvaluations == 64, "Selection options not parsed");
+        require(!selection->preserveValidDescendants, "Legacy selection must retain whole-candidate suppression");
+        auto preserve = readSpatialSelection(YAML::Load(selectionPrefix
+            + "{min_depth: 1, max_evaluations: 64, preserve_valid_descendants: true}"), 3);
+        require(preserve->preserveValidDescendants, "Selective descendant fallback was not parsed");
+        auto disabled = readSpatialSelection(YAML::Load(selectionPrefix
+            + "{min_depth: 1, max_evaluations: 64, preserve_valid_descendants: false}"), 3);
+        require(!disabled->preserveValidDescendants, "Explicit false changed the baseline");
+        rejects([&] { readSpatialSelection(YAML::Load(selectionPrefix
+            + "{min_depth: 1, max_evaluations: 64, preserve_valid_descendants: invalid}"), 3); }, "conversion");
+        rejects([&] { readSpatialSelection(YAML::Load(selectionPrefix
+            + "{min_depth: 1, max_evaluations: 64, preserve_valid_descendants: true, preserve_valid_descendants: false}"), 3); }, "duplicate");
         require(!readSpatialSelection(YAML::Load("{}"), 3), "Absent spatial selection must stay disabled");
         rejects([&] { readSpatialSelection(YAML::Load(selectionPrefix + "{min_depth: 0, max_evaluations: 64}"), 3); }, "Invalid");
         rejects([&] { readSpatialSelection(YAML::Load(selectionPrefix + "{min_depth: 4, max_evaluations: 64}"), 3); }, "Invalid");
@@ -97,11 +108,101 @@ policy_tree:
         spatialFirst["policy_tree"]["execution"]["strategy"] = "spatial_first";
         require(readTemporalAdaptation(spatialFirst)->strategy == ump::AdaptationStrategy::SpatialFirst,
             "Spatial First strategy was relabeled as Temporal First");
+        require(temporal->releaseTrigger == ump::ReleaseTrigger::PolicySatisfied
+            && temporal->semanticSecondaryStrategy == ump::SemanticSecondaryStrategy::TemporalFirst,
+            "Policy-satisfied release and the compatible semantic secondary must be the defaults");
+        const std::string semanticFixture = R"(
+history: {}
+spatial_selection: {}
+semantic_taxonomy:
+  id: configuration-fixture
+  version: '1'
+  nodes:
+    - {id: road_user, loss: 1}
+    - {id: pedestrian, parent: road_user, loss: 0.5}
+    - {id: adult_pedestrian, parent: pedestrian, loss: 0, input_types: [Adult_Pedestrian]}
+    - {id: child_pedestrian, parent: pedestrian, loss: 0, input_types: [Child_Pedestrian]}
+policy_tree:
+  id: semantic-policy
+  version: '1'
+  root: {min_category_distinct_contributors: {min: 5}, semantic_max_loss: {max: 1}}
+  execution: {strategy: semantic_first}
+temporal_adaptation: {extension_step_ms: 100, max_window_ms: 4000, max_evaluations: 64}
+)";
+        auto semantic = YAML::Load(semanticFixture);
+        const auto taxonomy = readSemanticTaxonomy(semantic);
+        require(taxonomy && taxonomy->leafForType("Adult_Pedestrian") == "adult_pedestrian"
+            && taxonomy->node("pedestrian").loss == 0.5, "Minimal semantic fixture was not parsed");
+        const auto semanticDefaults = readTemporalAdaptation(semantic);
+        require(semanticDefaults->strategy == ump::AdaptationStrategy::SemanticFirst
+            && semanticDefaults->semanticSecondaryStrategy == ump::SemanticSecondaryStrategy::TemporalFirst
+            && semanticDefaults->releaseTrigger == ump::ReleaseTrigger::PolicySatisfied,
+            "Semantic First defaults must release on policy satisfaction with Temporal First secondary");
+        for (const auto* secondary : {"temporal_first", "spatial_first"}) {
+            for (const auto* trigger : {"policy_satisfied", "priority_satisfied"}) {
+                auto selected = YAML::Load(semanticFixture);
+                selected["policy_tree"]["execution"]["semantic_secondary_strategy"] = secondary;
+                selected["policy_tree"]["execution"]["release_trigger"] = trigger;
+                const auto settings = readTemporalAdaptation(selected);
+                require(settings->semanticSecondaryStrategy == (std::string(secondary) == "spatial_first"
+                    ? ump::SemanticSecondaryStrategy::SpatialFirst : ump::SemanticSecondaryStrategy::TemporalFirst),
+                    "Semantic secondary strategy was not parsed");
+                require(settings->releaseTrigger == (std::string(trigger) == "priority_satisfied"
+                    ? ump::ReleaseTrigger::PrioritySatisfied : ump::ReleaseTrigger::PolicySatisfied),
+                    "Semantic release trigger was not parsed");
+            }
+        }
+        for (const auto* strategy : {"temporal_first", "spatial_first"}) {
+            for (const auto* trigger : {"policy_satisfied", "priority_satisfied"}) {
+                auto selected = YAML::Load(adaptivePrefix + temporalOptions);
+                selected["policy_tree"]["execution"]["strategy"] = strategy;
+                selected["policy_tree"]["execution"]["release_trigger"] = trigger;
+                require(readTemporalAdaptation(selected)->releaseTrigger == (std::string(trigger) == "priority_satisfied"
+                    ? ump::ReleaseTrigger::PrioritySatisfied : ump::ReleaseTrigger::PolicySatisfied),
+                    "Explicit trigger must be accepted for the existing Temporal/Spatial First controllers");
+            }
+            auto misplaced = YAML::Load(adaptivePrefix + temporalOptions);
+            misplaced["policy_tree"]["execution"]["strategy"] = strategy;
+            misplaced["policy_tree"]["execution"]["semantic_secondary_strategy"] = "spatial_first";
+            rejects([&] { readTemporalAdaptation(misplaced); }, "requires semantic_first");
+        }
+        for (const auto* key : {"semantic_secondary_strategy", "release_trigger"}) {
+            for (const auto* malformed : {"null", "[]", "{}"}) {
+                auto invalid = YAML::Load(semanticFixture);
+                invalid["policy_tree"]["execution"][key] = YAML::Load(malformed);
+                rejects([&] { readTemporalAdaptation(invalid); }, "must be a string");
+            }
+            for (const auto* unsupported : {"true", "5", "unknown"}) {
+                auto invalid = YAML::Load(semanticFixture);
+                invalid["policy_tree"]["execution"][key] = YAML::Load(unsupported);
+                rejects([&] { readTemporalAdaptation(invalid); }, "Unsupported");
+            }
+            auto duplicate = YAML::Load(semanticFixture);
+            duplicate["policy_tree"]["execution"] = YAML::Load(std::string("{strategy: semantic_first, ")
+                + key + ": policy_satisfied, " + key + ": priority_satisfied}");
+            rejects([&] { readTemporalAdaptation(duplicate); }, "duplicate");
+        }
+        auto noStrategy = YAML::Load(semanticFixture);
+        noStrategy["policy_tree"]["execution"].remove("strategy");
+        noStrategy["policy_tree"]["execution"]["release_trigger"] = "policy_satisfied";
+        rejects([&] { validatePolicyExecution(noStrategy); }, "requires policy_tree.execution.strategy");
+        noStrategy["policy_tree"]["execution"].remove("release_trigger");
+        noStrategy["policy_tree"]["execution"]["semantic_secondary_strategy"] = "spatial_first";
+        rejects([&] { validatePolicyExecution(noStrategy); }, "requires semantic_first");
+        auto unsupportedLocalSemantic = YAML::Load(semanticFixture);
+        unsupportedLocalSemantic["temporal_adaptation"]["coordination"] = "cell_local";
+        rejects([&] { readTemporalAdaptation(unsupportedLocalSemantic); }, "common_window only");
+        auto missingTaxonomy = YAML::Load(semanticFixture);
+        missingTaxonomy.remove("semantic_taxonomy");
+        rejects([&] { readTemporalAdaptation(missingTaxonomy); }, "requires semantic_taxonomy");
         auto local = YAML::Load(adaptivePrefix + temporalOptions);
         local["temporal_adaptation"]["coordination"] = "cell_local";
         local["temporal_adaptation"]["max_active_cells"] = 128;
         require(readTemporalAdaptation(local)->coordination == ump::CoordinationMode::CellLocal
             && readTemporalAdaptation(local)->maxActiveCells == 128, "Cell-local coordination settings were lost");
+        local["spatial_selection"]["preserve_valid_descendants"] = true;
+        rejects([&] { readTemporalAdaptation(local); }, "common_window only");
+        local["spatial_selection"]["preserve_valid_descendants"] = false;
         local["temporal_adaptation"]["max_active_cells"] = 3;
         rejects([&] { readTemporalAdaptation(local); }, "four base cells");
         local["temporal_adaptation"]["max_active_cells"] = 128;

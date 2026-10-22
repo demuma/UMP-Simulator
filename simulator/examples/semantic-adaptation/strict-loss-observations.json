@@ -1,0 +1,457 @@
+{
+  "schema": "ump.observation-replay.v1",
+  "run_id": "semantic-example-strict-loss",
+  "sensor_id": "agbs",
+  "coverage": {
+    "x": 0,
+    "y": 0,
+    "width": 80,
+    "height": 80,
+    "leaf_depth": 2
+  },
+  "sampling_period_ms": 100,
+  "end_ms": 400,
+  "batches": [
+    {
+      "sequence": 1,
+      "observed_at_ms": 100,
+      "status": "measured",
+      "observations": [
+        {
+          "id": "pedestrian-0",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-1",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-2",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-3",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-4",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-5",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-6",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-7",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-8",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-9",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-10",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-11",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-12",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-13",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-14",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-15",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-16",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-17",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-18",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "adult_cyclist-0",
+          "type": "adult_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        }
+      ]
+    },
+    {
+      "sequence": 2,
+      "observed_at_ms": 200,
+      "status": "measured",
+      "observations": [
+        {
+          "id": "pedestrian-0",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-1",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-2",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-3",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-4",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-5",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-6",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-7",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-8",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-9",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-10",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-11",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-12",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-13",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-14",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-15",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-16",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-17",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-18",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "adult_cyclist-0",
+          "type": "adult_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        }
+      ]
+    },
+    {
+      "sequence": 3,
+      "observed_at_ms": 300,
+      "status": "measured",
+      "observations": [
+        {
+          "id": "pedestrian-0",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-1",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-2",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-3",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-4",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-5",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-6",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-7",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-8",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-9",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-10",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-11",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-12",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-13",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-14",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-15",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-16",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-17",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-18",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "adult_cyclist-0",
+          "type": "adult_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        }
+      ]
+    }
+  ]
+}

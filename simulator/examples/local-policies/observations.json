@@ -1,0 +1,2809 @@
+{
+  "batches": [
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.8049667332698762,
+          "y": 2.824501664446031
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.8783009771491805,
+          "y": 2.8490589438619165
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.9302124100954896,
+          "y": 2.865287472068616
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.96354064641431,
+          "y": 2.895042630605131
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.304966733269877,
+          "y": 10.324501664446032
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.37830097714918,
+          "y": 10.349058943861916
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.304966733269877,
+          "y": 10.324501664446032
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.37830097714918,
+          "y": 10.349058943861916
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.30496673326988,
+          "y": 10.324501664446032
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.37830097714918,
+          "y": 10.349058943861916
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.60496673326988,
+          "y": 10.324501664446032
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.67830097714918,
+          "y": 10.349058943861916
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.30496673326988,
+          "y": 10.324501664446032
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.37830097714918,
+          "y": 10.349058943861916
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.43021241009549,
+          "y": 10.365287472068617
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.80496673326987,
+          "y": 10.324501664446032
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.30496673326987,
+          "y": 12.824501664446032
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.30496673326987,
+          "y": 10.324501664446032
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.37830097714918,
+          "y": 10.349058943861916
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.430212410095486,
+          "y": 10.365287472068617
+        }
+      ],
+      "observed_at_ms": 100,
+      "sequence": 1,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.809735458557716,
+          "y": 2.823026524850072
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.8796362432497116,
+          "y": 2.8442491785725057
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.9268865795137784,
+          "y": 2.861565157111469
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.958611472449329,
+          "y": 2.8958300451855132
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.309735458557716,
+          "y": 10.323026524850073
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.379636243249712,
+          "y": 10.344249178572506
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.309735458557716,
+          "y": 10.323026524850073
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.379636243249712,
+          "y": 10.344249178572506
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.309735458557718,
+          "y": 10.323026524850073
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.379636243249713,
+          "y": 10.344249178572506
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.60973545855772,
+          "y": 10.323026524850073
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.679636243249714,
+          "y": 10.344249178572506
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.309735458557718,
+          "y": 10.323026524850073
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.379636243249713,
+          "y": 10.344249178572506
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.42688657951378,
+          "y": 10.36156515711147
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.80973545855771,
+          "y": 10.323026524850073
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.30973545855771,
+          "y": 12.823026524850073
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.30973545855771,
+          "y": 10.323026524850073
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.379636243249706,
+          "y": 10.344249178572506
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.42688657951378,
+          "y": 10.36156515711147
+        }
+      ],
+      "observed_at_ms": 200,
+      "sequence": 2,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.8141160618348757,
+          "y": 2.8206333903727416
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.8799893400760377,
+          "y": 2.8392700119424674
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.9228875342955365,
+          "y": 2.858577781165776
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.9539369889176283,
+          "y": 2.897581039591646
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.314116061834877,
+          "y": 10.320633390372743
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.379989340076039,
+          "y": 10.339270011942467
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.314116061834877,
+          "y": 10.320633390372743
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.379989340076039,
+          "y": 10.339270011942467
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.314116061834877,
+          "y": 10.320633390372743
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.379989340076037,
+          "y": 10.339270011942467
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.614116061834878,
+          "y": 10.320633390372743
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.679989340076038,
+          "y": 10.339270011942467
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.314116061834877,
+          "y": 10.320633390372743
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.379989340076037,
+          "y": 10.339270011942467
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.422887534295537,
+          "y": 10.358577781165778
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.81411606183487,
+          "y": 10.320633390372743
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.31411606183487,
+          "y": 12.820633390372743
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.31411606183487,
+          "y": 10.320633390372743
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.37998934007604,
+          "y": 10.339270011942467
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.42288753429553,
+          "y": 10.358577781165778
+        }
+      ],
+      "observed_at_ms": 300,
+      "sequence": 3,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.817933902272488,
+          "y": 2.817417667733679
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.8793461907719546,
+          "y": 2.8343199476326726
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.9183747037538974,
+          "y": 2.8564444414832835
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.9497035527264317,
+          "y": 2.9002258072021396
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.31793390227249,
+          "y": 10.31741766773368
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.379346190771955,
+          "y": 10.334319947632673
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.31793390227249,
+          "y": 10.31741766773368
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.379346190771955,
+          "y": 10.334319947632673
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.31793390227249,
+          "y": 10.31741766773368
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.379346190771955,
+          "y": 10.334319947632673
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.61793390227249,
+          "y": 10.31741766773368
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.679346190771955,
+          "y": 10.334319947632673
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.31793390227249,
+          "y": 10.31741766773368
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.379346190771955,
+          "y": 10.334319947632673
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.418374703753898,
+          "y": 10.356444441483283
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.817933902272486,
+          "y": 10.31741766773368
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.317933902272486,
+          "y": 12.81741766773368
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.317933902272486,
+          "y": 10.31741766773368
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.379346190771955,
+          "y": 10.334319947632673
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.41837470375389,
+          "y": 10.356444441483283
+        }
+      ],
+      "observed_at_ms": 400,
+      "sequence": 4,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.821036774620197,
+          "y": 2.8135075576467035
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.877732435670642,
+          "y": 2.8295963290863213
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.9135280002014965,
+          "y": 2.8552501875849887
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.9460799376173017,
+          "y": 2.9036589094784095
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.321036774620199,
+          "y": 10.313507557646703
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.377732435670643,
+          "y": 10.329596329086321
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.321036774620199,
+          "y": 10.313507557646703
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.377732435670643,
+          "y": 10.329596329086321
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.321036774620197,
+          "y": 10.313507557646703
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.37773243567064,
+          "y": 10.329596329086321
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.621036774620197,
+          "y": 10.313507557646703
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.67773243567064,
+          "y": 10.329596329086321
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.321036774620197,
+          "y": 10.313507557646703
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.37773243567064,
+          "y": 10.329596329086321
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.413528000201495,
+          "y": 10.35525018758499
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.8210367746202,
+          "y": 10.313507557646703
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.3210367746202,
+          "y": 12.813507557646703
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.3210367746202,
+          "y": 10.313507557646703
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.37773243567064,
+          "y": 10.329596329086321
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.413528000201495,
+          "y": 10.35525018758499
+        }
+      ],
+      "observed_at_ms": 500,
+      "sequence": 5,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.8233009771491804,
+          "y": 2.8090589438619165
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.87521241009549,
+          "y": 2.825287472068616
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.90854064641431,
+          "y": 2.855042630605131
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.9432106056896603,
+          "y": 2.9077434794664825
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.32330097714918,
+          "y": 10.309058943861917
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.37521241009549,
+          "y": 10.325287472068617
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.32330097714918,
+          "y": 10.309058943861917
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.37521241009549,
+          "y": 10.325287472068617
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.32330097714918,
+          "y": 10.309058943861917
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.37521241009549,
+          "y": 10.325287472068617
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.62330097714918,
+          "y": 10.309058943861917
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.67521241009549,
+          "y": 10.325287472068617
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.32330097714918,
+          "y": 10.309058943861917
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.37521241009549,
+          "y": 10.325287472068617
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.40854064641431,
+          "y": 10.355042630605132
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.82330097714918,
+          "y": 10.309058943861917
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.32330097714918,
+          "y": 12.809058943861917
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.32330097714918,
+          "y": 10.309058943861917
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.375212410095486,
+          "y": 10.325287472068617
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.40854064641431,
+          "y": 10.355042630605132
+        }
+      ],
+      "observed_at_ms": 600,
+      "sequence": 6,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.8246362432497114,
+          "y": 2.8042491785725057
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.8718865795137787,
+          "y": 2.821565157111469
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.9036114724493287,
+          "y": 2.855830045185513
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.941209948152762,
+          "y": 2.9123166782505394
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.324636243249712,
+          "y": 10.304249178572507
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.37188657951378,
+          "y": 10.321565157111468
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.324636243249712,
+          "y": 10.304249178572507
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.37188657951378,
+          "y": 10.321565157111468
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.324636243249714,
+          "y": 10.304249178572507
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.37188657951378,
+          "y": 10.321565157111468
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.624636243249714,
+          "y": 10.304249178572507
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.67188657951378,
+          "y": 10.321565157111468
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.324636243249714,
+          "y": 10.304249178572507
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.37188657951378,
+          "y": 10.321565157111468
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.40361147244933,
+          "y": 10.355830045185515
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.82463624324971,
+          "y": 10.304249178572507
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.32463624324971,
+          "y": 12.804249178572507
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.32463624324971,
+          "y": 10.304249178572507
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.37188657951378,
+          "y": 10.321565157111468
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.40361147244933,
+          "y": 10.355830045185515
+        }
+      ],
+      "observed_at_ms": 700,
+      "sequence": 7,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.8249893400760375,
+          "y": 2.7992700119424674
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.8678875342955368,
+          "y": 2.818577781165776
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.898936988917628,
+          "y": 2.857581039591646
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.940157724909163,
+          "y": 2.9171961868266236
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.324989340076039,
+          "y": 10.299270011942468
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.367887534295537,
+          "y": 10.318577781165777
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.324989340076039,
+          "y": 10.299270011942468
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.367887534295537,
+          "y": 10.318577781165777
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.324989340076037,
+          "y": 10.299270011942468
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.367887534295537,
+          "y": 10.318577781165777
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.624989340076038,
+          "y": 10.299270011942468
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.667887534295538,
+          "y": 10.318577781165777
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.324989340076037,
+          "y": 10.299270011942468
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.367887534295537,
+          "y": 10.318577781165777
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.39893698891763,
+          "y": 10.357581039591647
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.82498934007604,
+          "y": 10.299270011942468
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.32498934007604,
+          "y": 12.799270011942468
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.32498934007604,
+          "y": 10.299270011942468
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.367887534295534,
+          "y": 10.318577781165777
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.398936988917626,
+          "y": 10.357581039591647
+        }
+      ],
+      "observed_at_ms": 800,
+      "sequence": 8,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.824346190771955,
+          "y": 2.7943199476326726
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.8633747037538977,
+          "y": 2.8164444414832834
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.8947035527264315,
+          "y": 2.8602258072021396
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.9400958847791037,
+          "y": 2.922187474585986
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.324346190771955,
+          "y": 10.294319947632674
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.363374703753898,
+          "y": 10.316444441483283
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.324346190771955,
+          "y": 10.294319947632674
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.363374703753898,
+          "y": 10.316444441483283
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.324346190771955,
+          "y": 10.294319947632674
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.363374703753898,
+          "y": 10.316444441483283
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.624346190771956,
+          "y": 10.294319947632674
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.6633747037539,
+          "y": 10.316444441483283
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.324346190771955,
+          "y": 10.294319947632674
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.363374703753898,
+          "y": 10.316444441483283
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.394703552726433,
+          "y": 10.36022580720214
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.824346190771955,
+          "y": 10.294319947632674
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.324346190771955,
+          "y": 12.794319947632674
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.324346190771955,
+          "y": 10.294319947632674
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.36337470375389,
+          "y": 10.316444441483283
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.394703552726426,
+          "y": 10.36022580720214
+        }
+      ],
+      "observed_at_ms": 900,
+      "sequence": 9,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.822732435670642,
+          "y": 2.7895963290863213
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.8585280002014968,
+          "y": 2.8152501875849887
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.8910799376173015,
+          "y": 2.8636589094784095
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.9410268931334214,
+          "y": 2.9270915546365806
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.322732435670643,
+          "y": 10.289596329086322
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.358528000201497,
+          "y": 10.315250187584988
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.322732435670643,
+          "y": 10.289596329086322
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.358528000201497,
+          "y": 10.315250187584988
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.32273243567064,
+          "y": 10.289596329086322
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.358528000201495,
+          "y": 10.315250187584988
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.622732435670642,
+          "y": 10.289596329086322
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.658528000201496,
+          "y": 10.315250187584988
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.32273243567064,
+          "y": 10.289596329086322
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.358528000201495,
+          "y": 10.315250187584988
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.391079937617302,
+          "y": 10.36365890947841
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.82273243567064,
+          "y": 10.289596329086322
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.32273243567064,
+          "y": 12.789596329086322
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.32273243567064,
+          "y": 10.289596329086322
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.358528000201495,
+          "y": 10.315250187584988
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.3910799376173,
+          "y": 10.36365890947841
+        }
+      ],
+      "observed_at_ms": 1000,
+      "sequence": 10,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.8202124100954897,
+          "y": 2.785287472068616
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.8535406464143103,
+          "y": 2.815042630605131
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.88821060568966,
+          "y": 2.8677434794664824
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.942913633606996,
+          "y": 2.9317129167825096
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.32021241009549,
+          "y": 10.285287472068617
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.353540646414311,
+          "y": 10.31504263060513
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.32021241009549,
+          "y": 10.285287472068617
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.353540646414311,
+          "y": 10.31504263060513
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.32021241009549,
+          "y": 10.285287472068617
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.35354064641431,
+          "y": 10.31504263060513
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.62021241009549,
+          "y": 10.285287472068617
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.65354064641431,
+          "y": 10.31504263060513
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.32021241009549,
+          "y": 10.285287472068617
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.35354064641431,
+          "y": 10.31504263060513
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.38821060568966,
+          "y": 10.367743479466483
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.820212410095486,
+          "y": 10.285287472068617
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.320212410095486,
+          "y": 12.785287472068617
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.320212410095486,
+          "y": 10.285287472068617
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.35354064641431,
+          "y": 10.31504263060513
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.38821060568966,
+          "y": 10.367743479466483
+        }
+      ],
+      "observed_at_ms": 1100,
+      "sequence": 11,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.8168865795137785,
+          "y": 2.781565157111469
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.848611472449329,
+          "y": 2.815830045185513
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.8862099481527617,
+          "y": 2.8723166782505394
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.9456808878111,
+          "y": 2.9358673218985656
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.31688657951378,
+          "y": 10.28156515711147
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.34861147244933,
+          "y": 10.315830045185514
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.31688657951378,
+          "y": 10.28156515711147
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.34861147244933,
+          "y": 10.315830045185514
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.31688657951378,
+          "y": 10.28156515711147
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.34861147244933,
+          "y": 10.315830045185514
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.616886579513782,
+          "y": 10.28156515711147
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.648611472449332,
+          "y": 10.315830045185514
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.31688657951378,
+          "y": 10.28156515711147
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.34861147244933,
+          "y": 10.315830045185514
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.38620994815276,
+          "y": 10.37231667825054
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.81688657951378,
+          "y": 10.28156515711147
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.31688657951378,
+          "y": 12.78156515711147
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.31688657951378,
+          "y": 10.28156515711147
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.34861147244933,
+          "y": 10.315830045185514
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.38620994815276,
+          "y": 10.37231667825054
+        }
+      ],
+      "observed_at_ms": 1200,
+      "sequence": 12,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.8128875342955366,
+          "y": 2.778577781165776
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.8439369889176285,
+          "y": 2.817581039591646
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.885157724909163,
+          "y": 2.8771961868266236
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.949218334053192,
+          "y": 2.939389146962756
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.312887534295538,
+          "y": 10.278577781165778
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.34393698891763,
+          "y": 10.317581039591646
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.312887534295538,
+          "y": 10.278577781165778
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.34393698891763,
+          "y": 10.317581039591646
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.312887534295538,
+          "y": 10.278577781165778
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.34393698891763,
+          "y": 10.317581039591646
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.612887534295538,
+          "y": 10.278577781165778
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.64393698891763,
+          "y": 10.317581039591646
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.312887534295538,
+          "y": 10.278577781165778
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.34393698891763,
+          "y": 10.317581039591646
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.385157724909163,
+          "y": 10.377196186826625
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.812887534295534,
+          "y": 10.278577781165778
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.312887534295534,
+          "y": 12.778577781165778
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.312887534295534,
+          "y": 10.278577781165778
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.343936988917626,
+          "y": 10.317581039591646
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.38515772490916,
+          "y": 10.377196186826625
+        }
+      ],
+      "observed_at_ms": 1300,
+      "sequence": 13,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.8083747037538975,
+          "y": 2.7764444414832834
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.839703552726432,
+          "y": 2.8202258072021396
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.8850958847791035,
+          "y": 2.882187474585986
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.953384945514656,
+          "y": 2.942137987923533
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.308374703753898,
+          "y": 10.276444441483283
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.339703552726432,
+          "y": 10.320225807202139
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.308374703753898,
+          "y": 10.276444441483283
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.339703552726432,
+          "y": 10.320225807202139
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.3083747037539,
+          "y": 10.276444441483283
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.339703552726434,
+          "y": 10.320225807202139
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.6083747037539,
+          "y": 10.276444441483283
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.639703552726434,
+          "y": 10.320225807202139
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.3083747037539,
+          "y": 10.276444441483283
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.339703552726434,
+          "y": 10.320225807202139
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.385095884779105,
+          "y": 10.382187474585987
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.80837470375389,
+          "y": 10.276444441483283
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.30837470375389,
+          "y": 12.776444441483283
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.30837470375389,
+          "y": 10.276444441483283
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.33970355272643,
+          "y": 10.320225807202139
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.3850958847791,
+          "y": 10.382187474585987
+        }
+      ],
+      "observed_at_ms": 1400,
+      "sequence": 14,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.8035280002014966,
+          "y": 2.7752501875849886
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.836079937617302,
+          "y": 2.8236589094784095
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.886026893133421,
+          "y": 2.8870915546365805
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.9580146125450266,
+          "y": 2.944004257166259
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.303528000201498,
+          "y": 10.275250187584989
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.336079937617303,
+          "y": 10.323658909478409
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.303528000201498,
+          "y": 10.275250187584989
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.336079937617303,
+          "y": 10.323658909478409
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.303528000201496,
+          "y": 10.275250187584989
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.336079937617303,
+          "y": 10.323658909478409
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.603528000201496,
+          "y": 10.275250187584989
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.636079937617303,
+          "y": 10.323658909478409
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.303528000201496,
+          "y": 10.275250187584989
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.336079937617303,
+          "y": 10.323658909478409
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.386026893133423,
+          "y": 10.387091554636582
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.803528000201496,
+          "y": 10.275250187584989
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.303528000201496,
+          "y": 12.775250187584989
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.303528000201496,
+          "y": 10.275250187584989
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.3360799376173,
+          "y": 10.323658909478409
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.38602689313342,
+          "y": 10.387091554636582
+        }
+      ],
+      "observed_at_ms": 1500,
+      "sequence": 15,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.79854064641431,
+          "y": 2.775042630605131
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.8332106056896604,
+          "y": 2.8277434794664824
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.887913633606996,
+          "y": 2.8917129167825095
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.9629227649295626,
+          "y": 2.9449135524255805
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.298540646414311,
+          "y": 10.275042630605132
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.333210605689661,
+          "y": 10.327743479466482
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.298540646414311,
+          "y": 10.275042630605132
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.333210605689661,
+          "y": 10.327743479466482
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.29854064641431,
+          "y": 10.275042630605132
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.33321060568966,
+          "y": 10.327743479466482
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.59854064641431,
+          "y": 10.275042630605132
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.633210605689662,
+          "y": 10.327743479466482
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.29854064641431,
+          "y": 10.275042630605132
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.33321060568966,
+          "y": 10.327743479466482
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.387913633606995,
+          "y": 10.39171291678251
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.79854064641431,
+          "y": 10.275042630605132
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.29854064641431,
+          "y": 12.775042630605132
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.29854064641431,
+          "y": 10.275042630605132
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.33321060568966,
+          "y": 10.327743479466482
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.38791363360699,
+          "y": 10.39171291678251
+        }
+      ],
+      "observed_at_ms": 1600,
+      "sequence": 16,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.793611472449329,
+          "y": 2.775830045185513
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.831209948152762,
+          "y": 2.8323166782505393
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.8906808878111,
+          "y": 2.8958673218985655
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.9679137301212624,
+          "y": 2.9448296229689546
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.29361147244933,
+          "y": 10.275830045185515
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.331209948152763,
+          "y": 10.332316678250539
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.29361147244933,
+          "y": 10.275830045185515
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.331209948152763,
+          "y": 10.332316678250539
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.29361147244933,
+          "y": 10.275830045185515
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.33120994815276,
+          "y": 10.332316678250539
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.593611472449332,
+          "y": 10.275830045185515
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.63120994815276,
+          "y": 10.332316678250539
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.29361147244933,
+          "y": 10.275830045185515
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.33120994815276,
+          "y": 10.332316678250539
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.3906808878111,
+          "y": 10.395867321898567
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.79361147244933,
+          "y": 10.275830045185515
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.29361147244933,
+          "y": 12.775830045185515
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.29361147244933,
+          "y": 10.275830045185515
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.33120994815276,
+          "y": 10.332316678250539
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.390680887811094,
+          "y": 10.395867321898567
+        }
+      ],
+      "observed_at_ms": 1700,
+      "sequence": 17,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.7889369889176283,
+          "y": 2.777581039591646
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.830157724909163,
+          "y": 2.8371961868266236
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.8942183340531917,
+          "y": 2.899389146962756
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.9727885340878344,
+          "y": 2.9437558147989633
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.28893698891763,
+          "y": 10.277581039591647
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.330157724909164,
+          "y": 10.337196186826624
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.28893698891763,
+          "y": 10.277581039591647
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.330157724909164,
+          "y": 10.337196186826624
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.28893698891763,
+          "y": 10.277581039591647
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.330157724909164,
+          "y": 10.337196186826624
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.58893698891763,
+          "y": 10.277581039591647
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.630157724909164,
+          "y": 10.337196186826624
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.28893698891763,
+          "y": 10.277581039591647
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.330157724909164,
+          "y": 10.337196186826624
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.394218334053193,
+          "y": 10.399389146962758
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.78893698891763,
+          "y": 10.277581039591647
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.28893698891763,
+          "y": 12.777581039591647
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.28893698891763,
+          "y": 10.277581039591647
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.330157724909164,
+          "y": 10.337196186826624
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.394218334053186,
+          "y": 10.399389146962758
+        }
+      ],
+      "observed_at_ms": 1800,
+      "sequence": 18,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 12300,
+          "id": "control-west-0",
+          "type": "Adult Pedestrian",
+          "x": 2.7847035527264317,
+          "y": 2.7802258072021395
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-1",
+          "type": "Adult Pedestrian",
+          "x": 2.830095884779104,
+          "y": 2.842187474585986
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-2",
+          "type": "Adult Pedestrian",
+          "x": 2.898384945514656,
+          "y": 2.902137987923533
+        },
+        {
+          "cell_id": 12300,
+          "id": "control-west-3",
+          "type": "Adult Pedestrian",
+          "x": 2.977352833778465,
+          "y": 2.9417349372587456
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-0",
+          "type": "Adult Pedestrian",
+          "x": 10.284703552726432,
+          "y": 10.28022580720214
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-adult-1",
+          "type": "Adult Pedestrian",
+          "x": 10.330095884779105,
+          "y": 10.342187474585986
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-0",
+          "type": "Child Pedestrian",
+          "x": 10.284703552726432,
+          "y": 10.28022580720214
+        },
+        {
+          "cell_id": 12480,
+          "id": "semantic-child-1",
+          "type": "Child Pedestrian",
+          "x": 10.330095884779105,
+          "y": 10.342187474585986
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-0",
+          "type": "Adult Cyclist",
+          "x": 20.284703552726434,
+          "y": 10.28022580720214
+        },
+        {
+          "cell_id": 12672,
+          "id": "spatial-adult-1",
+          "type": "Adult Cyclist",
+          "x": 20.330095884779105,
+          "y": 10.342187474585986
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-0",
+          "type": "Senior Cyclist",
+          "x": 21.584703552726435,
+          "y": 10.28022580720214
+        },
+        {
+          "cell_id": 12673,
+          "id": "spatial-senior-1",
+          "type": "Senior Cyclist",
+          "x": 21.630095884779106,
+          "y": 10.342187474585986
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-0",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.284703552726434,
+          "y": 10.28022580720214
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-1",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.330095884779105,
+          "y": 10.342187474585986
+        },
+        {
+          "cell_id": 12736,
+          "id": "infeasible-scooter-2",
+          "type": "Adult E-Scooter Driver",
+          "x": 30.398384945514657,
+          "y": 10.402137987923533
+        },
+        {
+          "cell_id": 13444,
+          "id": "guard-east-0",
+          "type": "Adult Cyclist",
+          "x": 42.78470355272643,
+          "y": 10.28022580720214
+        },
+        {
+          "cell_id": 13448,
+          "id": "guard-south-0",
+          "type": "Adult Cyclist",
+          "x": 40.28470355272643,
+          "y": 12.78022580720214
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-0",
+          "type": "Adult Pedestrian",
+          "x": 50.28470355272643,
+          "y": 10.28022580720214
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-1",
+          "type": "Adult Pedestrian",
+          "x": 50.3300958847791,
+          "y": 10.342187474585986
+        },
+        {
+          "cell_id": 13504,
+          "id": "control-east-2",
+          "type": "Adult Pedestrian",
+          "x": 50.39838494551465,
+          "y": 10.402137987923533
+        }
+      ],
+      "observed_at_ms": 1900,
+      "sequence": 19,
+      "status": "measured"
+    }
+  ],
+  "coverage": {
+    "height": 80,
+    "leaf_depth": 6,
+    "width": 80,
+    "x": 0,
+    "y": 0
+  },
+  "end_ms": 2000,
+  "run_id": "local-leaf-policy-contract-v1",
+  "sampling_period_ms": 100,
+  "schema": "ump.observation-replay.v1",
+  "sensor_id": "scripted-ideal-agbs"
+}

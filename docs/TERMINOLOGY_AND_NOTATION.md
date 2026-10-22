@@ -1,6 +1,6 @@
 # Terminology, notation and mathematical contract
 
-Version 1.4 — 2026-10-19. This is the project's canonical terminology for the presentation,
+Version 1.10 — 2026-10-21. This is the project's canonical terminology for the presentation,
 paper, dissertation and new documentation. It describes the implemented baseline and marks
 future extensions explicitly. Earlier reviews retain historical/local notation; use this
 reference when translating them into publication text. Code identifiers are mapped below;
@@ -364,15 +364,40 @@ roles with a fully implemented precomputation algorithm.
 
 Canonical strategy names identify the dimension to preserve:
 
-| Strategy | Priority | Action order after a failing finest candidate |
+| Strategy | Dimension to preserve | Meaning and implementation status |
 |---|---|---|
-| Temporal First | Temporal detail/freshness | Try spatial aggregation, then extend time when needed and permitted. |
-| Spatial First | Spatial detail | Try temporal extension, then spatial aggregation at the bound/deadline/final flush. |
+| Temporal First | Temporal detail/freshness | Implemented: try spatial aggregation before temporal extension when the finest candidate fails. |
+| Spatial First | Spatial detail | Implemented: try temporal extension before spatial aggregation, subject to bounds/deadlines/finalization. |
+| Semantic First | Semantic detail/classification accuracy | Implemented for common windows: zero-cost spatial preference, bounded waiting, maximum-loss tier fallback; Temporal First is the fixed secondary priority. |
 
-Both first assess the finest candidate, permit early successful completion and enforce all
-hard bounds. pi denotes this deterministic action rule; it is not a learned RL policy,
+“First” ALWAYS names the information dimension to preserve, never the first dimension
+whose representation is coarsened. Semantic First is therefore a valid canonical name.
+The first Semantic First mode fixes Temporal First as its secondary preference. Semantic
+First + Spatial First remains a separate unimplemented combination, with no configuration
+switch implied by the term alone.
+
+The ordinary TF/SF strategies first assess the finest space/time candidate, permit early
+successful completion and enforce every hard bound. With the taxonomy enabled, they already
+attempt allowed generalization INSIDE each assessed candidate. Call this implementation
+step **early semantic generalization**, not Semantic First: it can sacrifice class detail
+to retain fine space/time. Historical protocol text using lowercase “semantic-first” refers
+to that earlier processing-order description, not to the adopted preservation strategy.
+
+A hard semantic loss maximum of zero prohibits positive-cost generalization. In the
+current example catalog, every nonterminal has positive cost, so this requires terminal
+categories. The general taxonomy API also permits zero-cost internal nodes. It is not a soft
+Semantic First preference and supplies no generalized fallback. A preference never weakens
+a hard maximum, minimum or deadline. The first implemented Semantic First rule uses maximum loss, zero-cost waiting preference
+and terminal retention-first partial fallback, as formalized in section 27. Mean remains
+a hard bound/report. These specific rules do not define every possible Semantic First
+optimizer or combination.
+
+pi denotes the implemented deterministic action rule; it is not a learned RL policy,
 a formal optimizer or the Policy Tree itself. Execution strategy is currently application-
-root-level. Numeric region constraints are resolved separately for each candidate cell.
+root-level. temporal_first/spatial_first are accepted as before; semantic_first requires
+taxonomy-enabled common windows. Numeric region constraints are resolved separately for
+each candidate cell. Regional strategy overrides and local semantic coordination are
+not implemented by this root-level strategy.
 
 ## 11. Publication geometry and scope of guarantees
 
@@ -750,7 +775,8 @@ For one current closed endpoint, freeze the unresolved owner assessments and eff
 policies before any release. For each nonempty failed owner f, let r(f) be its nearest
 passing proper ancestor with compatible common unpublished support and a permitted
 spatial action. Owners without such an ancestor contribute no proposal. Spatial First
-retains temporal priority until the candidate's deadline pressure permits fallback.
+prefers temporal extension to preserve spatial detail until the candidate's deadline
+pressure permits spatial fallback.
 
 $$
 \mathcal A=\{r(f):r(f)\ \text{exists}\},\qquad
@@ -808,3 +834,381 @@ chosen inference game. They are roles, not mutually exclusive permanent column t
 The present membership experiment needs no fabricated SA. A future visit game preserves
 candidate source inclusion in both secret worlds and changes the withheld visit; it
 is not the membership IN/OUT game. See the [attribute/environment/online contract](PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
+
+
+## 23. Causal public views, repeated alarms and deadline utility
+
+Version 1.5 defines the causal-prefix evaluation in the
+[October 20 fixed protocol](CAUSAL_PRIVACY_PROTOCOL_2026-10-20.md). The secret and paired
+source unit remain those of section 18. These are empirical evaluation definitions,
+not additional policy guarantees or changes to the aggregation algorithm.
+
+Let $H$ be the declared public horizon, $t_1^*<\cdots<t_m^*\le H$ the fixed attack
+checkpoints, $w$ the recent-release memory width, and $a_r$ recipient availability of
+public record $r$. This replay assumes $a_r=t_{\mathrm{seal}}(r)$:
+
+$$
+\mathcal V_{\le t}=\{r:a_r\le t\},\qquad
+\mathcal V_{w,t}=\{r:t-w<a_r\le t\}.
+$$
+
+Keep entire records and the fixed public H; never clip aggregate intervals/counts or
+normalize by future-dependent run statistics. Recent memory restricts releases, not
+auxiliary sightings. For selected sighting j let $t_j^{\mathrm{acq}}$ be its actual acquisition time
+and $\widetilde t_j$ its reported time. With $\widetilde z_j$ the public reported
+position/time/cell tuple, the implemented conservative arrival rule is
+
+$$
+a_j^{\mathcal K}=\max(t_j^{\mathrm{acq}},\widetilde t_j),\qquad
+\mathcal K_{\le t}=\operatorname{deduplicate}
+\{\widetilde z_j:a_j^{\mathcal K}\le t\}.
+$$
+
+Actual acquisition times remain private gating provenance and are excluded from features.
+Independent Bernoulli selection per source timestamp prevents future trace extension from
+altering earlier selection. The same permitted knowledge is used in IN/OUT and all release
+mechanisms. The noisy profile changes both precision and sometimes arrival time.
+
+Let $k(\mathcal K)$ be the declared 9 auxiliary features and $f(\mathcal V,\mathcal K;H)$
+the existing 31 count/geometry/time matching features, with fixed public H. The nested
+representations are
+
+$$
+\begin{aligned}
+x_t^{\mathrm{aux}}&=k(\mathcal K_{\le t}),\\
+x_t^{\mathrm{recent}}&=\bigl(k(\mathcal K_{\le t}),
+ f(\mathcal V_{w,t},\mathcal K_{\le t};H)\bigr),\\
+x_t^{\mathrm{history}}&=\bigl(x_t^{\mathrm{recent}},
+ f(\mathcal V_{\le t},\mathcal K_{\le t};H)\bigr).
+\end{aligned}
+$$
+
+Their dimensions are 9, 40 and 71. Nesting does not ensure that finite trained classifiers
+have ordered AUCs. For a fixed mechanism/view/knowledge/family let $s_j$ denote the
+TRAIN-fitted score at checkpoint $t_j^*$. Use one CAL-selected threshold tau across all
+checkpoints:
+
+$$
+S_j^{\max}=\max_{1\le i\le j}s_i,\qquad
+D_j=\mathbf1[S_j^{\max}\ge\tau],\qquad
+T_{\mathrm{alarm}}=\inf\{t_j^*:D_j=1\}.
+$$
+
+No alarm has $T_{\mathrm{alarm}}=+\infty$. The candidate threshold set consists of CAL
+max-score decision boundaries, with the existing deterministic tie rule. Choose
+
+$$
+\tau\in\operatorname*{arg\,max}_{v:\widehat{\mathrm{FPR}}_{\mathrm{CAL}}(S_m^{\max},v)\le0.10}
+\widehat{\mathrm{TPR}}_{\mathrm{CAL}}(S_m^{\max},v).
+$$
+
+The prefix ever-alarm advantage is
+
+$$
+\widehat{\mathrm{Adv}}_{\le t_j^*}
+=\widehat{\Pr}(T_{\mathrm{alarm}}\le t_j^*\mid\mathrm{IN})
+-\widehat{\Pr}(T_{\mathrm{alarm}}\le t_j^*\mid\mathrm{OUT}).
+$$
+
+TPR/FPR are cumulative and nondecreasing; advantage and score AUC need not be. This is a
+finite-checkpoint empirical CAL constraint, not a population bound, joint calibration
+across attack families, a runtime protection metric or differential privacy. Report raw
+checkpoint-score AUC and max-score AUC separately. Paired history-minus-recent AUC uses
+$S_m^{\max}$, resampling complete paired source groups within each scenario/cohort.
+The final H checkpoint includes EOF; earlier checkpoints do not force a truncated EOF.
+
+For fixed application query $Q_i=(F_i,J_i)$ with end $e_i$, deadline lag lambda>=0 and
+answer reconstruction $\widehat y_i(\mathcal V)$, define
+
+$$
+d_i(\lambda)=e_i+\lambda,\qquad
+A_i(\lambda)=\mathbf1[\widehat y_i(\mathcal V_{\le d_i(\lambda)})\ne\bot].
+$$
+
+The primary interior query set is fixed over the declared lag set Lambda:
+
+$$
+\mathcal Q^{\circ}=\{i:e_i+\max\Lambda<H\},\qquad
+\operatorname{Coverage}^{\circ}(\lambda)=
+\frac{\sum_{i\in\mathcal Q^{\circ}} A_i(\lambda)}{|\mathcal Q^{\circ}|}.
+$$
+
+A valid answer requires complete declared spatial/time observation support, not merely
+one overlapping release. An explicit measured zero is valid; missing or null-valued
+support is unknown. Query deadlines after H are right-censored, not observed failures.
+For checkpoint summaries include only deadlines already reached. On the fixed interior
+query set coverage cannot decrease with a relaxed deadline. Conditional MAE can change
+with its answered subset; compare methods on common answered queries as well. Logical
+availability assumes immediate delivery and is not wall-clock latency.
+
+Code mapping: `causal_privacy.knowledge_events`, `knowledge_at`, `public_view` and
+`feature_views`; `run_privacy_prefix_study` fits/calibrates/evaluates fixed score paths;
+`online_occupancy` implements query deadlines and censoring. The study protocol declares
+all constants, statistical units and unsupported interpretations.
+
+
+## 24. Semantic release hierarchy and quantitative constraints
+
+Let T_sem be the immutable public category hierarchy. It is distinct from the data
+quadtree and the regional Policy Tree. A raw type maps explicitly to terminal tau(o).
+K is an antichain of published category nodes covering every observation exactly once.
+Write v >= tau for ancestry (including equality). For the same C,I as the existing
+aggregation definitions, define
+
+$$
+\mathcal O_v(C,I)=\{o\in\mathcal O(C,I):v\succeq\tau(o)\},\qquad
+\mathcal U_v(C,I)=\bigcup_{o\in\mathcal O_v(C,I)}\{\operatorname{uid}(o)\}.
+$$
+
+The current candidate-domain/interval contract requires one terminal per identity.
+Thus observation and distinct-person counts both partition over the approved K:
+
+$$
+\sum_{v\in K}|\mathcal O_v(C,I)|=N_{\mathrm{obs}}(C,I),\qquad
+\sum_{v\in K}|\mathcal U_v(C,I)|=n(C,I).
+$$
+
+This additivity is within one cell/window under stable terminal classification. It
+does not permit summing distinct people across different spatial cells or intervals.
+The minimum category support is
+
+$$
+n_{\mathrm{cat,min}}(C,I,K)=\min_{v\in K}|\mathcal U_v(C,I)|.
+$$
+
+Let gamma_sem(v) in [0,1] be a declared, versioned category cost: 0 at terminals, 1 at
+root, nondecreasing toward ancestors. It is not quadtree depth or an empirical attack
+probability. Define
+
+$$
+L_{\mathrm{sem,max}}(K)=\max_{v\in K}\gamma_{\mathrm{sem}}(v),\qquad
+L_{\mathrm{sem,mean}}(C,I,K)=
+\frac{\sum_{v\in K}|\mathcal O_v(C,I)|\gamma_{\mathrm{sem}}(v)}
+{N_{\mathrm{obs}}(C,I)}.
+$$
+
+Public nonempty cells require nonempty K. Empty source support has no public semantic
+release; internal zero evidence is a distinct diagnostic case. An effective regional
+policy supplies a positive support minimum and loss maxima, alongside all original
+hard bounds. Class queries straddled by a generalized node are unknown, never a guessed
+split. Code mappings: `MinCategoryDistinctContributors`, `SemanticMaxLoss`,
+`SemanticMeanLoss`, `SemanticTaxonomy`, `SemanticEvidence` and `SemanticRepresentation`.
+See [the semantic contract](SEMANTIC_ADAPTATION.md) for selection order and limits.
+
+## 25. Constraint impact versus mechanism search gap (study contract)
+
+For identical input and a declared candidate/action class R, let F(P;R) contain exactly
+the policy-feasible representations. If P' strengthens P over that same class,
+
+$$
+P'\succeq P\quad\Longrightarrow\quad
+\mathcal F(P';\mathcal R)\subseteq\mathcal F(P;\mathcal R).
+$$
+
+This is a feasible-set statement, not monotonicity of an online heuristic's actual
+utility. Its earlier releases can change later candidates. E07 will report feasibility,
+compliance, retention, timely query coverage/error, detail and age, with a justified
+bounded reference to separate unavoidable constraint cost from a search gap. Source
+coverage failure and invalid input remain separate causes. Quantitative empirical
+privacy gain is a subsequent outcome, not inferred solely from these support bounds.
+
+
+## 26. Semantic query answerability and conditional candidate comparison
+
+Status: implemented bounded offline evaluation, 2026-10-21. This section extends a
+fixed query Q_i=(F_i,J_i) with requested taxonomy category v_i. It does not change
+the online metric registry or production controller. Counts below are observation
+contributions, not distinct road users or an assumed continuous-time density.
+
+Write the typed query as Q_i^sem=(F_i,J_i,v_i), with J_i=[s_i,e_i). Its discrete
+reference and deadline are
+
+$$
+N_i^{\mathrm{ref}}=
+\left|\{o\in\mathcal O(F_i,J_i):\operatorname{type}(o)\preceq v_i\}\right|,
+\qquad t_i^{\mathrm{ddl}}=e_i+\lambda.
+$$
+
+Here type(o) precedes v_i when its terminal category is v_i or a descendant. The
+reference is unavailable if a required source measurement is missing/unavailable.
+It never supplies a missing public answer. This study fixes v_i to RoadUser, Cyclist,
+AdultCyclist or ChildCyclist and samples to the public 100-ms cadence.
+
+Let ans_cert(Q_i^sem,t;Y) be 1 only when approved outputs in Y, sealed by t, supply
+complete nonoverlapping coverage of every query sample/spatial tile, their whole
+aggregate intervals/footprints fit inside the query, and their semantic bins resolve
+v_i exactly. Sum observation counts only in that case; otherwise the public prediction
+is bottom. This is a conservative specified reconstruction rule, not every possible
+inference from Y. It excludes proportional splitting, zero specialization of crossing
+aggregates and equation/subtraction solvers.
+
+$$
+\widehat N_i^{\mathrm{cert}}(t;\mathcal Y)=
+\begin{cases}
+\displaystyle\sum_{b\in\mathcal B_i(t)}\sum_{v\in K_b:\,v\preceq v_i}
+N_{\mathrm{obs},v}(C_b,I_b),
+&\operatorname{ans}_{\mathrm{cert}}(Q_i^{\mathrm{sem}},t;\mathcal Y)=1,\\
+\bot,&\text{otherwise}.
+\end{cases}
+$$
+
+Here N_obs,v(C,I)=|O_v(C,I)| is the number of observations assigned to public category
+v. B_i(t) contains exactly the complete eligible public partition for that query.
+A proper ancestor bin straddling v_i makes the query unknown. A disjoint class in
+an otherwise complete public partition supplies known zero. Absent spatial support
+is unknown regardless of a privately known empty area.
+
+The primary fixed cohort obeys e_i+lambda_max<H for all evaluated lags, where H
+is the observation horizon. A deadline at H is observed and marked EOF; deadlines
+beyond H are censored and excluded from observed coverage denominators. For a fixed
+reference-available observed cohort Q, certified coverage is
+
+$$
+\operatorname{Cov}_{\mathrm{cert}}(\mathcal Q,\lambda;\mathcal Y)=
+\frac{\sum_{i\in\mathcal Q}
+\operatorname{ans}_{\mathrm{cert}}(Q_i^{\mathrm{sem}},e_i+\lambda;\mathcal Y)}
+{|\mathcal Q|}.
+$$
+
+A zero denominator is unavailable, not zero coverage. Report category, positive-reference
+and known-zero strata as well as the full bank. Answered-only error is a correctness
+check for exact reconstruction; it does not replace missing-query coverage.
+
+At a fixed actual interval I and evaluation time t, define F_ref(I,t) as the declared
+bounded set of legal spatial/category cuts. The current implementation enumerates only
+parent12 or subsets of its four depth-2 children, plus complete semantic antichains.
+Every selected spatial cell retains its whole original semantic population. It neither
+revises earlier committed intervals nor evaluates later endpoints with future evidence.
+
+The six comparison coordinates are
+
+$$
+\mathbf z(Y;I,t)=
+\bigl(N_{\mathrm{ret}}(Y),\operatorname{Cov}_{20}(Y),
+\operatorname{Cov}_{40}(Y),-L_{\mathrm{sem,mean}}(Y),
+-L_{\mathrm{sem,max}}(Y),-\bar h_{\mathrm{obs}}(Y)\bigr).
+$$
+
+In this comparison, N_ret(Y)=sum_b N_obs(C_b,I_b), and mean cell side is
+sum_b N_obs(C_b,I_b) h(C_b) / N_ret(Y). Mean semantic loss uses the same weights.
+These means are unavailable when N_ret(Y)=0. Query coverage
+uses the same four class queries on the same I in this CONDITIONAL comparison; it is
+not the separate cross-run fixed query bank above. Candidate Y' dominates Y only if all
+six coordinates are at least as good and at least one is strictly better, within the
+documented numeric tolerance. Empty output has undefined detail and is excluded from
+the useful frontier whenever a nonempty candidate exists. It remains a valid suppression
+action, never evidence of useful release. Nondominance at (I,t) is not optimality over
+time endpoints, future observations, changing workloads or global online schedules.
+
+The [protocol](SEMANTIC_PRIORITY_PROTOCOL_2026-10-21.md) and
+[study](SEMANTIC_PRIORITY_STUDY_2026-10-21.md) fix all units, cohorts and current limits.
+
+
+## 27. First Semantic First controller
+
+Historical preference-waiting baseline. Section 28 extends the implementation;
+this section applies with explicit `priority_satisfied` and Temporal secondary.
+
+Status: implemented/verified 2026-10-21. Semantic First preserves declared semantic
+accuracy; Temporal First is fixed as secondary. The [contract](SEMANTIC_FIRST_IMPLEMENTATION.md)
+is authoritative for the bounded search and its [verification](SEMANTIC_FIRST_TEST_REPORT_2026-10-21.md).
+For approved selected cells of a candidate cut Y define the worst semantic loss
+
+$$
+L_{\mathrm{sem,worst}}(Y)=
+\max_{b\in Y}L_{\mathrm{sem,max}}(K_b).
+$$
+
+It is unavailable when no cell is selected. Let P_c(I,t) denote the existing bounded
+spatial proposal with an ADDITIONAL eligibility preference ceiling c. All original
+requirements Theta_a(C), their IDs and provenance remain unchanged. c is not a policy
+threshold or a privacy guarantee. A selected cell must pass its hard checks and satisfy
+L_sem,max(K_b)<=c. A rejected preference can coexist with passing hard metrics.
+
+For each scheduled endpoint, query exactly the received observations of the original
+half-open I. A complete proposal requires complete measurement coverage, no observed
+suppression footprints, and retained observations equal to all original observations:
+
+$$
+\operatorname{full}(P_c;I,t)=
+\operatorname{complete\_measurements}(I)\ \land\
+N_{\mathrm{suppr,footprints}}(P_c)=0\ \land\
+N_{\mathrm{ret}}(P_c)=N_{\mathrm{obs}}(\Omega,I).
+$$
+
+Every selected cell must also pass all original hard requirements. Equality of selected
+and finest CELL counts is not required: merging changes that number. An actually measured
+empty interval may close vacuously with no public record and no privacy conclusion.
+
+At a nonterminal endpoint evaluate only P_0. Release if full, otherwise extend the
+original interval by the existing schedule without resetting start. This prefers
+available zero-cost spatial merges over waiting. Zero cost can include internal nodes.
+At terminal complete endpoints evaluate unique declared cost levels in ascending order.
+Let V_sem denote the node set of the immutable category hierarchy T_sem (section 24):
+
+$$
+\mathcal C_{\mathrm{sem}}=
+\{0\}\cup\{\gamma_{\mathrm{sem}}(v):v\in\mathcal V_{\mathrm{sem}},\ \gamma_{\mathrm{sem}}(v)>0\},
+\qquad
+c^*=\min\{c\in\mathcal C_{\mathrm{sem}}:\operatorname{full}(P_c;I,t)\}.
+$$
+
+The algorithm takes the first full proposal. This minimum is among the tested bounded
+proposals, not all conceivable mixed space/time/category cuts. All hard per-cell maximum
+and mean loss limits still apply. Incomplete measurement coverage is terminal without
+positive-cost fallback and cannot generate a valid partial release.
+
+If no full proposal exists, select among the assessed cuts by maximum retained
+observation count, then minimum actual worst loss, then minimum observation-weighted
+cell side, then lexicographically smallest sorted selected-cell-ID vector. This explicitly
+prioritizes retention before semantic detail when full release is impossible. Empty
+output has undefined loss and cannot obtain a fictitious cost 0 advantage.
+
+Waiting may have no benefit for static identities. The rule does not use future arrivals,
+optimize mean loss or guarantee that every application query becomes better. In a verified
+315-observation example, maximum loss decreases 1→0.5 while mean loss increases 0.04762→0.48095.
+The hard mean-loss constraint remains available to exclude such a representation.
+
+Catalog bounds permit at most 256 ceiling trials at a terminal endpoint; each uses the
+existing spatial budget. The existing temporal schedule bounds repeated endpoints.
+Trial proposals do not change published/reserved coverage or selector transition state.
+Only the chosen successful sink commits it. Private semantic_priority metadata records
+the chosen ceiling, actual worst loss, trial count and fallback flag. Public releases
+contain approved bins only and are independently checked against the original policy.
+
+
+## 28. Semantic release trigger and secondary priority
+
+Status: implemented 2026-10-21 for common-window semantics. The [execution
+contract](SEMANTIC_RELEASE_CONTROL.md) separates eligibility from optional waiting.
+New semantic execution defaults to `policy_satisfied`. With original interval
+start s, scheduled endpoints E_s and actual evaluation time t_e, define
+
+$$
+e_{\mathrm{rel}}=\min\{e\in\mathcal E_s:\exists c\in\mathcal C_{\mathrm{sem}},\quad
+\operatorname{full}(P_c;[s,e),t_e)\}.
+$$
+
+At that endpoint choose the smallest tested ceiling c admitting a full proposal,
+as defined in section 27, and publish. This minimum concerns the bounded selector's
+proposals at actual received endpoints, not all possible global schedules. All
+original metric bounds remain mandatory. If this set remains empty, the terminal
+legal partial fallback of section 27 applies; passing neighbors are still private
+until then. Incomplete measurements cannot pass.
+
+`semantic_secondary_strategy` accepts `temporal_first` or `spatial_first`. With
+explicit `priority_satisfied`, Temporal secondary tries zero-loss spatial merges
+before extending, while Spatial secondary restricts nonterminal trials to finest
+observation cells and extends before merging. At terminal endpoints both consider
+all legal spatial levels and then positive ceilings. The immediate policy trigger
+overrides this preference waiting and can make both secondaries identical.
+
+The setting currently governs the semantic controller only. Nonsemantic TF/SF
+reference scheduling is unchanged. Local semantic ownership, unlike nonsemantic
+local windows, remains an explicit unsupported integration gate.
+
+A policy maximum semantic loss of 1 permits the Road User ancestor. A measured
+maximum 1 means at least one positive-support published bin reaches that declared
+cost; it does not imply that all bins do. Mean loss 1 means all positive-weight
+published contributions have cost 1 in the current catalog. These category costs
+measure declared type abstraction, not loss of counts/space/time or privacy risk.

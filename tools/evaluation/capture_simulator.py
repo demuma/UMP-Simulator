@@ -21,6 +21,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import uuid
 
 
@@ -31,6 +32,50 @@ END_MS = 8000
 PERIOD_MS = 100
 STEP_MS = 50
 DATABASE_PREFIX = "UMP_Capture_"
+MAX_ARTIFACT_BYTES = 256 * 1024 * 1024
+# These are the actual seven behavior labels/weights, not the release taxonomy.
+MIXED_TYPE_PROBABILITIES = {
+    "Child Pedestrian": .1, "Senior Pedestrian": .1, "Adult Pedestrian": .35,
+    "Senior Cyclist": .1, "Adult Cyclist": .1,
+    "Adult E-Scooter Driver": .2, "Adult Cargo Cyclist": .05,
+}
+
+
+def capture_parameters(num_agents: int = 200, duration_seconds: int = 8) -> int:
+    if type(num_agents) is not int or not 1 <= num_agents <= 5000:
+        raise ValueError("num_agents must be an integer in [1, 5000]")
+    if type(duration_seconds) is not int or not 1 <= duration_seconds <= 600:
+        raise ValueError("duration_seconds must be an integer in [1, 600]")
+    return duration_seconds * 1000
+
+
+def behavior_taxonomy(source: str) -> str:
+    """Copy the maintained behavior block verbatim; reject changed type weights.
+
+    No third-party YAML parser is needed. This intentionally supports the checked
+    indentation of simulator/config.yaml rather than arbitrary YAML documents.
+    """
+    sections = re.findall(r"(?ms)^agents:[ \t]*\n(.*?)(?=^\S|\Z)", source)
+    if len(sections) != 1:
+        raise ValueError("Expected one active agents section in simulator/config.yaml")
+    section = sections[0]
+    if section.count("  road_user_taxonomy:\n") != 1:
+        raise ValueError("Expected one maintained behavior taxonomy")
+    block = section.split("  road_user_taxonomy:\n", 1)[1]
+    if any(line.strip() and not line.lstrip().startswith("#") and not line.startswith("    ")
+           for line in block.splitlines()):
+        raise ValueError("Unexpected field after maintained behavior taxonomy")
+    entries = re.split(r"(?m)^    - type: ", block)[1:]
+    found = {}
+    for entry in entries:
+        name = entry.splitlines()[0].strip()
+        weights = re.findall(r"^      probability: ([0-9.]+)[ \t]*(?:#.*)?$", entry, re.MULTILINE)
+        if name in found or len(weights) != 1:
+            raise ValueError("Duplicate type or missing behavior weight")
+        found[name] = float(weights[0])
+    if found != MIXED_TYPE_PROBABILITIES:
+        raise ValueError("Maintained seven-type behavior labels/weights changed; review the capture protocol")
+    return "  road_user_taxonomy:\n" + block.rstrip() + "\n"
 
 
 def digest(path: Path) -> str:
@@ -41,11 +86,20 @@ def digest(path: Path) -> str:
     return value.hexdigest()
 
 
-def write_json(path: Path, value: object) -> None:
-    with path.open("x", encoding="utf-8") as file:
-        json.dump(value, file, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
-        file.write("\n")
-    path.chmod(0o600)
+def write_json(path: Path, value: object, max_bytes: int = MAX_ARTIFACT_BYTES) -> None:
+    # Keep a failed partial artifact as evidence; never silently truncate or
+    # overwrite an existing capture. The replay parser has the same 256 MiB cap.
+    encoder = json.JSONEncoder(ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+    with path.open("xb") as file:
+        path.chmod(0o600)
+        count = 0
+        for chunk in encoder.iterencode(value):
+            encoded = chunk.encode("utf-8")
+            count += len(encoded)
+            if count + 1 > max_bytes:
+                raise ValueError(f"Artifact {path.name} exceeds {max_bytes} bytes; capture is not verified")
+            file.write(encoded)
+        file.write(b"\n")
 
 
 def replace_once(text: str, old: str, new: str, expected: int = 1) -> str:
@@ -54,7 +108,9 @@ def replace_once(text: str, old: str, new: str, expected: int = 1) -> str:
     return text.replace(old, new)
 
 
-def capture_config(template: str, database: str) -> str:
+def capture_config(template: str, database: str, *, num_agents: int = 200,
+                   duration_seconds: int = 8, mixed_taxonomy: str | None = None) -> str:
+    capture_parameters(num_agents, duration_seconds)
     # These assertions make a future example edit fail closed instead of silently
     # capturing another footprint, cadence, database or simulator configuration.
     if not re.fullmatch(r"UMP_Capture_[0-9a-f]{32}", database):
@@ -72,7 +128,14 @@ def capture_config(template: str, database: str) -> str:
         if template.count(expected) != 1:
             raise ValueError(f"Maintained example no longer has the verified capture setting {expected!r}")
     text = replace_once(template, "  show_renderer: true\n", "  show_renderer: false\n")
-    text = replace_once(text, "  duration_seconds: 30\n", "  duration_seconds: 8\n")
+    text = replace_once(text, "  duration_seconds: 30\n", f"  duration_seconds: {duration_seconds}\n")
+    text = replace_once(text, "  num_agents: 200\n", f"  num_agents: {num_agents}\n")
+    if mixed_taxonomy is not None:
+        # Validate even direct API callers, before copying any source text.
+        validated = behavior_taxonomy("agents:\n" + mixed_taxonomy)
+        start = text.index("  road_user_taxonomy:\n")
+        end = text.index("database:\n", start)
+        text = text[:start] + validated + text[end:]
     text = replace_once(text, "UMP_Temporal_Demo_Raw", database, expected=2)
     lines = text.splitlines(keepends=True)
     starts = [i for i, line in enumerate(lines) if line == "    aggregation:\n"]
@@ -106,6 +169,48 @@ def mongo(shell: str, script: str, timeout: int = 60) -> object:
         raise RuntimeError("mongosh did not return exactly one JSON value") from error
 
 
+def export_collection(shell: str, database: str, collection: str, path: Path,
+                      timeout: int = 120, max_bytes: int = MAX_ARTIFACT_BYTES) -> list[dict]:
+    """Stream a bounded raw JSON array to disk, without a mongosh toArray buffer."""
+    if not re.fullmatch(r"UMP_Capture_[0-9a-f]{32}", database) or collection not in {"Agents", "AGB_Sensor_Data_V3"}:
+        raise ValueError("Raw export requires an owned capture database and known collection")
+    script = f"""
+const cursor = db.getSiblingDB({json.dumps(database)}).getCollection({json.dumps(collection)}).find().sort({{timestamp:1,_id:1}});
+const maximum = {max_bytes};
+let bytes = 4;
+let first = true;
+print('[');
+while (cursor.hasNext()) {{
+  const line = (first ? '' : ',') + JSON.stringify(cursor.next());
+  bytes += Buffer.byteLength(line, 'utf8') + 1;
+  if (bytes > maximum) throw new Error('Raw export exceeds configured byte budget; no verified capture produced');
+  print(line);
+  first = false;
+}}
+print(']');
+"""
+    with path.open("x", encoding="utf-8") as output, tempfile.TemporaryFile(mode="w+t") as errors:
+        path.chmod(0o600)
+        completed = subprocess.run(
+            [shell, "mongodb://localhost:27017/?serverSelectionTimeoutMS=5000", "--quiet", "--eval", script],
+            stdout=output, stderr=errors, text=True, timeout=timeout, check=False,
+        )
+        errors.seek(0)
+        diagnostic = errors.read(4096).strip()
+    if completed.returncode:
+        raise RuntimeError(f"Raw {collection} export failed ({completed.returncode}): {diagnostic}")
+    if path.stat().st_size > max_bytes:
+        raise ValueError(f"Raw {collection} export exceeds {max_bytes} bytes")
+    with path.open(encoding="utf-8") as file:
+        try:
+            rows = json.load(file)
+        except json.JSONDecodeError as error:
+            raise RuntimeError(f"Raw {collection} export was not one complete JSON array") from error
+    if not isinstance(rows, list):
+        raise RuntimeError(f"Raw {collection} export was not an array")
+    return rows
+
+
 def utc_milliseconds(text: str) -> int:
     stamp = datetime.fromisoformat(text.replace("Z", "+00:00"))
     if stamp.tzinfo is None:
@@ -136,7 +241,10 @@ def cell_for(x: float, y: float) -> tuple[int, float, float, float]:
     return cell_id, left, top, side
 
 
-def verify_and_replay(agents: list[dict], sensor: list[dict], run_id: str) -> tuple[dict, dict]:
+def verify_and_replay(agents: list[dict], sensor: list[dict], run_id: str,
+                      end_ms: int = END_MS) -> tuple[dict, dict]:
+    if type(end_ms) is not int or end_ms < 1000 or end_ms > 600000 or end_ms % 1000:
+        raise ValueError("Capture end_ms must be a whole number of seconds in [1000, 600000]")
     gt_meta = [row for row in agents if row.get("data_type") == "metadata"]
     sensor_meta = [row for row in sensor if row.get("data_type") == "metadata"]
     if len(gt_meta) != 1 or len(sensor_meta) != 1:
@@ -157,15 +265,15 @@ def verify_and_replay(agents: list[dict], sensor: list[dict], run_id: str) -> tu
         if row.get("data_type") != "agent data":
             raise ValueError("Unexpected GT document type")
         time = utc_milliseconds(row["timestamp"]) - origin
-        if time < 0 or time >= END_MS or time % STEP_MS:
+        if time < 0 or time >= end_ms or time % STEP_MS:
             raise ValueError(f"Unexpected GT timestamp {time}")
         by_time[time].append(row)
-    if sorted(by_time) != list(range(0, END_MS, STEP_MS)):
-        raise ValueError("GT frame coverage is incomplete; missing rows cannot prove measured-empty frames")
+    if sorted(by_time) != list(range(0, end_ms, STEP_MS)):
+        raise ValueError("GT frame coverage is incomplete (including possible population extinction); missing rows cannot prove measured-empty frames")
     expected: dict[tuple[int, int], dict] = {}
     batches = []
     sampled_outside = 0
-    for time in range(0, END_MS, STEP_MS):
+    for time in range(0, end_ms, STEP_MS):
         rows = by_time[time]
         identities: set[str] = set()
         for row in rows:
@@ -200,7 +308,7 @@ def verify_and_replay(agents: list[dict], sensor: list[dict], run_id: str) -> tu
             raise ValueError("Unexpected AGBS document type or sensor")
         time = utc_milliseconds(row["timestamp"]) - origin
         key = (time, row["cell_id"])
-        if time <= 0 or time >= END_MS or time % PERIOD_MS or key in actual:
+        if time <= 0 or time >= end_ms or time % PERIOD_MS or key in actual:
             raise ValueError("Off-cadence or duplicate raw AGBS cell record")
         types: dict[str, int] = {}
         for item in row["agent_type_count"]:
@@ -219,7 +327,7 @@ def verify_and_replay(agents: list[dict], sensor: list[dict], run_id: str) -> tu
             raise ValueError(f"GT/AGBS count, type or geometry mismatch at {key}: {expected[key]} != {actual[key]}")
     proof = {
         "schema": "ump.capture-proof.v1", "status": "verified", "origin_utc": gt_meta[0]["timestamp"],
-        "origin_epoch_ms": origin, "end_ms": END_MS, "gt_cadence_ms": STEP_MS,
+        "origin_epoch_ms": origin, "end_ms": end_ms, "gt_cadence_ms": STEP_MS,
         "sensor_cadence_ms": PERIOD_MS, "gt_frames": len(by_time), "sensor_frames": len(batches),
         "gt_records": len(agents) - 1, "agbs_records": len(actual),
         "sampled_observation_contributions": sum(len(batch["observations"]) for batch in batches),
@@ -228,22 +336,38 @@ def verify_and_replay(agents: list[dict], sensor: list[dict], run_id: str) -> tu
         "checks": ["clean simulator exit", "complete GT cadence", "unique identity per GT timestamp",
                    "shared metadata origin", "sensor cadence", "unique AGBS cell per timestamp",
                    "exact GT-derived per-cell counts", "exact per-cell type counts", "canonical cell ID and geometry"],
+        "population": {
+            "initial_road_users": len(by_time[0]),
+            "final_road_users": len(by_time[end_ms - STEP_MS]),
+            "min_road_users": min(map(len, by_time.values())),
+            "max_road_users": max(map(len, by_time.values())),
+            "distinct_road_users": len({row["agent_id"] for rows in by_time.values() for row in rows}),
+            "initial_type_counts": dict(sorted(Counter(row["type"] for row in by_time[0]).items())),
+            "final_type_counts": dict(sorted(Counter(row["type"] for row in by_time[end_ms - STEP_MS]).items())),
+        },
         "per_frame": [{"observed_at_ms": batch["observed_at_ms"], "road_users": len(batch["observations"]),
                        "occupied_cells": sum(time == batch["observed_at_ms"] for time, _ in expected)} for batch in batches],
         "empty_frame_evidence": "Complete scheduled sensor execution plus full GT frame; raw AGBS does not persist empty cells.",
     }
     replay = {"schema": SCHEMA, "run_id": run_id, "sensor_id": SENSOR_ID, "coverage": GRID,
-              "sampling_period_ms": PERIOD_MS, "end_ms": END_MS, "batches": batches}
+              "sampling_period_ms": PERIOD_MS, "end_ms": end_ms, "batches": batches}
     return replay, proof
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--num-agents", type=int, default=200, help="Requested starting population, 1..5000 (default: 200)")
+    parser.add_argument("--duration-seconds", type=int, default=8, help="Whole simulated seconds, 1..600 (default: 8)")
+    parser.add_argument("--mixed-types", action="store_true", help="Copy all seven existing simulator/config.yaml behavior types and weights")
     parser.add_argument("--output", type=Path, required=True, help="New private capture directory")
     parser.add_argument("--simulator", type=Path, help="Defaults to this repository's simulator/build/Simulator")
     parser.add_argument("--keep-database", action="store_true", help="Keep this capture's owned UUID database after verification")
     parser.add_argument("--timeout", type=int, default=120, help="Simulator wall-time limit in seconds")
     args = parser.parse_args(argv)
+    try:
+        end_ms = capture_parameters(args.num_agents, args.duration_seconds)
+    except ValueError as error:
+        parser.error(str(error))
     repository = Path(__file__).resolve().parents[2]
     template = repository / "simulator/examples/temporal-aggregation/config.yaml"
     executable = (args.simulator or repository / "simulator/build/Simulator").resolve()
@@ -257,13 +381,22 @@ def main(argv: list[str] | None = None) -> int:
     database = DATABASE_PREFIX + token
     if not re.fullmatch(r"UMP_Capture_[0-9a-f]{32}", database):
         raise ValueError("Invalid owned database name")
-    configuration = capture_config(template.read_text(encoding="utf-8"), database)
+    behavior_source = repository / "simulator/config.yaml"
+    mixed_taxonomy = behavior_taxonomy(behavior_source.read_text(encoding="utf-8")) if args.mixed_types else None
+    probabilities = MIXED_TYPE_PROBABILITIES if args.mixed_types else {"Adult Pedestrian": 1.0}
+    expected_initial_types = {name: int(args.num_agents * probability) for name, probability in probabilities.items()}
+    configuration = capture_config(template.read_text(encoding="utf-8"), database,
+                                   num_agents=args.num_agents, duration_seconds=args.duration_seconds,
+                                   mixed_taxonomy=mixed_taxonomy)
     output.mkdir(parents=True, mode=0o700)
     output.chmod(0o700)
     (output / "config.yaml").write_text(configuration, encoding="utf-8")
     (output / "config.yaml").chmod(0o600)
     shutil.copyfile(template, output / "source-example-config.yaml")
     (output / "source-example-config.yaml").chmod(0o600)
+    if args.mixed_types:
+        shutil.copyfile(behavior_source, output / "source-behavior-config.yaml")
+        (output / "source-behavior-config.yaml").chmod(0o600)
     ownership_created = False
     database_dropped = False
     started = datetime.now(timezone.utc).isoformat()
@@ -294,12 +427,18 @@ print(JSON.stringify({{database:name,token}}));
             raise RuntimeError(f"Unexpected capture collections: {collections}")
         exports = {}
         for collection, name in (("Agents", "raw-agents.json"), ("AGB_Sensor_Data_V3", "raw-agbs.json")):
-            rows = mongo(shell, f"print(JSON.stringify(db.getSiblingDB({json.dumps(database)}).getCollection({json.dumps(collection)}).find().sort({{timestamp:1,_id:1}}).toArray()));")
-            if not isinstance(rows, list):
-                raise RuntimeError("Collection export was not an array")
-            write_json(output / name, rows)
-            exports[collection] = rows
-        replay, proof = verify_and_replay(exports["Agents"], exports["AGB_Sensor_Data_V3"], "simulator-capture-" + token)
+            exports[collection] = export_collection(shell, database, collection, output / name, timeout=args.timeout)
+        replay, proof = verify_and_replay(exports["Agents"], exports["AGB_Sensor_Data_V3"], "simulator-capture-" + token, end_ms)
+        actual_initial_types = proof["population"]["initial_type_counts"]
+        if actual_initial_types != {name: count for name, count in expected_initial_types.items() if count}:
+            raise ValueError(f"Initial GT type counts do not match simulator floor(N*p): {actual_initial_types} != {expected_initial_types}")
+        proof["scenario"] = {
+            "requested_num_agents": args.num_agents, "duration_seconds": args.duration_seconds,
+            "mixed_types": args.mixed_types, "type_probabilities": probabilities,
+            "initial_type_count_rule": "floor(requested_num_agents * configured_type_probability), independently for each type",
+            "expected_initial_type_counts": expected_initial_types,
+            "max_artifact_bytes": MAX_ARTIFACT_BYTES,
+        }
         configured_time = re.findall(r"^  datetime: '([^']+)'$", configuration, re.MULTILINE)
         proof["configured_datetime"] = configured_time[0] if len(configured_time) == 1 else None
         proof["timestamp_origin_note"] = (
@@ -320,9 +459,13 @@ print(JSON.stringify({{database:name,token}}));
             "source_code_sha256": {str(path.relative_to(repository)): digest(path)
                                    for path in sorted((repository / "simulator/src").glob("*.cpp"))},
             "artifacts_sha256": {path.name: digest(path) for path in sorted(output.iterdir()) if path.is_file()},
-            "origin_utc": proof["origin_utc"], "end_ms": END_MS,
+            "origin_utc": proof["origin_utc"], "end_ms": end_ms,
+            "scenario": proof["scenario"], "population": proof["population"],
             "sampling_period_ms": PERIOD_MS, "simulation_step_ms": STEP_MS,
-            "limitations": ["One stochastic simulator realization; rerunning does not reproduce positions.",
+            "limitations": ["One stochastic simulator realization; random_device seeds are not fixed and rerunning does not reproduce positions.",
+                            "Movement noise uses real elapsed time; a seed alone would not reproduce motion.",
+                            "No participants are spawned after initialization; population can decrease as participants leave the area.",
+                            "Initial type counts use floor(N*p), so requested and actual total populations can differ.",
                             "Frozen observations.json is the common replay input for subsequent comparisons.",
                             "GT positions provide privileged identities; the AGBS count export itself has no identities.",
                             "The simulator binary hash records the executed artifact; source hashes do not prove a clean rebuild."],
@@ -350,7 +493,7 @@ print(JSON.stringify({{dropped:name}}));
         print(json.dumps({"status": "verified", "output": str(output), "database": database,
                           "database_dropped": database_dropped,
                           "gt_frames": proof["gt_frames"], "sensor_frames": proof["sensor_frames"],
-                          "agbs_cell_records": proof["agbs_records"],
+                          "agbs_cell_records": proof["agbs_records"], "population": proof["population"],
                           "observation_contributions": proof["sampled_observation_contributions"]}, indent=2))
         return 0
     except Exception as error:

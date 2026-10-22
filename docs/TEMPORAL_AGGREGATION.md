@@ -1,5 +1,14 @@
 # Bounded temporal aggregation
 
+**October 21 update:** common-window selection optionally accepts
+`spatial_selection.preserve_valid_descendants: true`. A partial proposal does not
+finish an interval while temporal extension remains legal; the existing start,
+checks and deadline are preserved. At a terminal condition, valid whole descendants
+may be published while the remainder is suppressed. Default false preserves the
+baseline. This option is rejected for cell-local coordination. See the
+[A07 contract](SELECTIVE_DESCENDANT_RESCUE.md) and
+[test report](SELECTIVE_DESCENDANT_RESCUE_TEST_REPORT_2026-10-21.md).
+
 **October 19 implementation update:** the descriptions of a single common interval below
 refer to the retained baseline. The opt-in cell-local controller, scoped publication and
 independent space-time audit are documented in [CELL_LOCAL_COORDINATION.md](CELL_LOCAL_COORDINATION.md).
@@ -341,9 +350,11 @@ differential privacy, reduced re-identification risk, measured utility gains, or
 improvements. The example thresholds demonstrate behavior and are not validated privacy
 parameters.
 
-Independent sibling/region windows, smaller coordination domains, early child publication,
-region-specific strategy conflicts, concurrent policy contexts, selective descendant rescue,
-and alternative publication models remain future work. Automatic ancestor prewarming,
+Independent sibling windows and smaller coordination domains are available in the
+separate opt-in cell-local controller. Common-window selective descendant rescue is
+available under the October 21 A07 option. Region-specific strategy conflicts,
+concurrent policy contexts, more general descendant scheduling and alternative
+publication models remain future work. Automatic ancestor prewarming,
 selective/full preemptive caches, and spatial history indexes are also deferred. They need
 bounded equivalence and cost tests before adoption. Strategy, privacy, utility, latency, and
 prepare-cost comparisons require controlled experiments; no experimental outcome is claimed

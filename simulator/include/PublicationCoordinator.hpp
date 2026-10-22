@@ -17,6 +17,7 @@ struct PublicationLimits {
 struct ReleasedCell {
     AggregatedCell aggregate;
     std::string effectivePolicyId;
+    std::optional<SemanticRepresentation> semantic = std::nullopt;
 };
 
 // Recipient payload: only approved cells. No suppressed counts, global totals, private

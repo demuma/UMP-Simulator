@@ -183,3 +183,132 @@ q_p=\min\left\{z:\sum_{i:z_i\le z}w_i\ge p\sum_iw_i\right\},\qquad 0<p\le1.
 \widetilde{y}_j=\operatorname{clip}_{[0,80)}(y_j+\epsilon_{yj}),\quad
 \widetilde{t}_j=\operatorname{clip}_{[1,H-1]}(t_j+\eta_j),
 \end{equation}
+
+\begin{equation}
+\mathcal V_{\le t}=\{r:a_r\le t\},\qquad
+\mathcal V_{w,t}=\{r:t-w<a_r\le t\}.
+\end{equation}
+
+\begin{equation}
+a_j^{\mathcal K}=\max(t_j^{\mathrm{acq}},\widetilde t_j),\qquad
+\mathcal K_{\le t}=\operatorname{deduplicate}
+\{\widetilde z_j:a_j^{\mathcal K}\le t\}.
+\end{equation}
+
+\begin{equation}
+\begin{aligned}
+x_t^{\mathrm{aux}}&=k(\mathcal K_{\le t}),\\
+x_t^{\mathrm{recent}}&=\bigl(k(\mathcal K_{\le t}),
+ f(\mathcal V_{w,t},\mathcal K_{\le t};H)\bigr),\\
+x_t^{\mathrm{history}}&=\bigl(x_t^{\mathrm{recent}},
+ f(\mathcal V_{\le t},\mathcal K_{\le t};H)\bigr).
+\end{aligned}
+\end{equation}
+
+\begin{equation}
+S_j^{\max}=\max_{1\le i\le j}s_i,\qquad
+D_j=\mathbf1[S_j^{\max}\ge\tau],\qquad
+T_{\mathrm{alarm}}=\inf\{t_j^*:D_j=1\}.
+\end{equation}
+
+\begin{equation}
+\tau\in\operatorname*{arg\,max}_{v:\widehat{\mathrm{FPR}}_{\mathrm{CAL}}(S_m^{\max},v)\le0.10}
+\widehat{\mathrm{TPR}}_{\mathrm{CAL}}(S_m^{\max},v).
+\end{equation}
+
+\begin{equation}
+\widehat{\mathrm{Adv}}_{\le t_j^*}
+=\widehat{\Pr}(T_{\mathrm{alarm}}\le t_j^*\mid\mathrm{IN})
+-\widehat{\Pr}(T_{\mathrm{alarm}}\le t_j^*\mid\mathrm{OUT}).
+\end{equation}
+
+\begin{equation}
+d_i(\lambda)=e_i+\lambda,\qquad
+A_i(\lambda)=\mathbf1[\widehat y_i(\mathcal V_{\le d_i(\lambda)})\ne\bot].
+\end{equation}
+
+\begin{equation}
+\mathcal Q^{\circ}=\{i:e_i+\max\Lambda<H\},\qquad
+\operatorname{Coverage}^{\circ}(\lambda)=
+\frac{\sum_{i\in\mathcal Q^{\circ}} A_i(\lambda)}{|\mathcal Q^{\circ}|}.
+\end{equation}
+
+\begin{equation}
+\mathcal O_v(C,I)=\{o\in\mathcal O(C,I):v\succeq\tau(o)\},\qquad
+\mathcal U_v(C,I)=\bigcup_{o\in\mathcal O_v(C,I)}\{\operatorname{uid}(o)\}.
+\end{equation}
+
+\begin{equation}
+\sum_{v\in K}|\mathcal O_v(C,I)|=N_{\mathrm{obs}}(C,I),\qquad
+\sum_{v\in K}|\mathcal U_v(C,I)|=n(C,I).
+\end{equation}
+
+\begin{equation}
+n_{\mathrm{cat,min}}(C,I,K)=\min_{v\in K}|\mathcal U_v(C,I)|.
+\end{equation}
+
+\begin{equation}
+L_{\mathrm{sem,max}}(K)=\max_{v\in K}\gamma_{\mathrm{sem}}(v),\qquad
+L_{\mathrm{sem,mean}}(C,I,K)=
+\frac{\sum_{v\in K}|\mathcal O_v(C,I)|\gamma_{\mathrm{sem}}(v)}
+{N_{\mathrm{obs}}(C,I)}.
+\end{equation}
+
+\begin{equation}
+P'\succeq P\quad\Longrightarrow\quad
+\mathcal F(P';\mathcal R)\subseteq\mathcal F(P;\mathcal R).
+\end{equation}
+
+\begin{equation}
+N_i^{\mathrm{ref}}=
+\left|\{o\in\mathcal O(F_i,J_i):\operatorname{type}(o)\preceq v_i\}\right|,
+\qquad t_i^{\mathrm{ddl}}=e_i+\lambda.
+\end{equation}
+
+\begin{equation}
+\widehat N_i^{\mathrm{cert}}(t;\mathcal Y)=
+\begin{cases}
+\displaystyle\sum_{b\in\mathcal B_i(t)}\sum_{v\in K_b:\,v\preceq v_i}
+N_{\mathrm{obs},v}(C_b,I_b),
+&\operatorname{ans}_{\mathrm{cert}}(Q_i^{\mathrm{sem}},t;\mathcal Y)=1,\\
+\bot,&\text{otherwise}.
+\end{cases}
+\end{equation}
+
+\begin{equation}
+\operatorname{Cov}_{\mathrm{cert}}(\mathcal Q,\lambda;\mathcal Y)=
+\frac{\sum_{i\in\mathcal Q}
+\operatorname{ans}_{\mathrm{cert}}(Q_i^{\mathrm{sem}},e_i+\lambda;\mathcal Y)}
+{|\mathcal Q|}.
+\end{equation}
+
+\begin{equation}
+\mathbf z(Y;I,t)=
+\bigl(N_{\mathrm{ret}}(Y),\operatorname{Cov}_{20}(Y),
+\operatorname{Cov}_{40}(Y),-L_{\mathrm{sem,mean}}(Y),
+-L_{\mathrm{sem,max}}(Y),-\bar h_{\mathrm{obs}}(Y)\bigr).
+\end{equation}
+
+\begin{equation}
+L_{\mathrm{sem,worst}}(Y)=
+\max_{b\in Y}L_{\mathrm{sem,max}}(K_b).
+\end{equation}
+
+\begin{equation}
+\operatorname{full}(P_c;I,t)=
+\operatorname{complete\_measurements}(I)\ \land\
+N_{\mathrm{suppr,footprints}}(P_c)=0\ \land\
+N_{\mathrm{ret}}(P_c)=N_{\mathrm{obs}}(\Omega,I).
+\end{equation}
+
+\begin{equation}
+\mathcal C_{\mathrm{sem}}=
+\{0\}\cup\{\gamma_{\mathrm{sem}}(v):v\in\mathcal V_{\mathrm{sem}},\ \gamma_{\mathrm{sem}}(v)>0\},
+\qquad
+c^*=\min\{c\in\mathcal C_{\mathrm{sem}}:\operatorname{full}(P_c;I,t)\}.
+\end{equation}
+
+\begin{equation}
+e_{\mathrm{rel}}=\min\{e\in\mathcal E_s:\exists c\in\mathcal C_{\mathrm{sem}},\quad
+\operatorname{full}(P_c;[s,e),t_e)\}.
+\end{equation}

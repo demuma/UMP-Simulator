@@ -1,4 +1,5 @@
 #include "AggregationHistory.hpp"
+#include "SemanticTaxonomy.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -105,6 +106,9 @@ void AggregationHistory::validateAppend(const ObservationBatch& batch) const {
         if (observation.contributorId.empty() || observation.type.empty()
             || !ids.insert(observation.contributorId).second)
             throw std::invalid_argument("History requires nonempty, unique contributor identities and types per sample");
+        // Unknown labels must be rejected before advancing the watermark, evicting
+        // earlier samples or closing any manager window at this timestamp.
+        if (config.semanticTaxonomy) (void)config.semanticTaxonomy->leafForType(observation.type);
         if (observation.cell.depth != config.coverage.leafDepth)
             throw std::invalid_argument("History observations must use the declared finest depth");
         validateCell(config.coverage, observation.cell);
@@ -156,6 +160,8 @@ HistoryQuery AggregationHistory::query(const CellGeometry& cell, AggregationTime
         startMs, endMs, watermarkMs, false, before(endMs) - before(startMs), 0, 0, 0,
         WindowCoverage::NoScheduledSamples, {}, {}};
     std::unordered_set<std::string> contributors;
+    std::optional<SemanticAccumulator> semantic;
+    if (config.semanticTaxonomy) semantic.emplace(config.semanticTaxonomy);
     const int shift = 2 * (config.coverage.leafDepth - cell.depth);
     for (const auto& bin : bins) {
         if (bin.timeMs < startMs) continue;
@@ -167,10 +173,12 @@ HistoryQuery AggregationHistory::query(const CellGeometry& cell, AggregationTime
             ++result.counts.observationContributions;
             ++result.counts.typeObservationContributions[observation.type];
             contributors.insert(observation.contributorId);
+            if (semantic) semantic->add(observation.contributorId, observation.type);
         }
     }
     result.missingSamples = result.expectedSamples - result.measuredSamples - result.unavailableSamples;
     result.counts.distinctContributors = contributors.size();
+    if (semantic) result.counts.semanticEvidence = semantic->evidence();
     if (result.measuredSamples)
         result.counts.meanSampleOccupancy = static_cast<double>(result.counts.observationContributions) / result.measuredSamples;
     result.coverage = !result.expectedSamples ? WindowCoverage::NoScheduledSamples
@@ -197,8 +205,11 @@ HistoryQuery AggregationHistory::queryFinest(AggregationTime startMs, Aggregatio
     struct CellEvidence {
         AggregateCounts counts;
         std::unordered_set<std::string> identities;
+        std::optional<SemanticAccumulator> semantic;
     };
     std::unordered_set<std::string> identities;
+    std::optional<SemanticAccumulator> semantic;
+    if (config.semanticTaxonomy) semantic.emplace(config.semanticTaxonomy);
     std::map<int, CellEvidence> cells;
     for (const auto& bin : bins) {
         if (bin.timeMs < startMs) continue;
@@ -209,12 +220,19 @@ HistoryQuery AggregationHistory::queryFinest(AggregationTime startMs, Aggregatio
             if (domain && (observation.cell.id >> (2 * (config.coverage.leafDepth - domain->depth))) != domain->id)
                 continue;
             auto& cell = cells[observation.cell.id];
+            if (config.semanticTaxonomy && !cell.semantic) cell.semantic.emplace(config.semanticTaxonomy);
             ++cell.counts.observationContributions;
             ++cell.counts.typeObservationContributions[observation.type];
             cell.identities.insert(observation.contributorId);
             ++result.counts.observationContributions;
             ++result.counts.typeObservationContributions[observation.type];
             identities.insert(observation.contributorId);
+            if (semantic) {
+                // Both accumulators consume raw identities. Neither distinct-node
+                // support nor parent support may be summed from child counts.
+                semantic->add(observation.contributorId, observation.type);
+                cell.semantic->add(observation.contributorId, observation.type);
+            }
         }
     }
     result.missingSamples = result.expectedSamples - result.measuredSamples - result.unavailableSamples;
@@ -224,8 +242,10 @@ HistoryQuery AggregationHistory::queryFinest(AggregationTime startMs, Aggregatio
             counts.meanSampleOccupancy = static_cast<double>(counts.observationContributions) / result.measuredSamples;
     };
     finalize(result.counts, identities.size());
+    if (semantic) result.counts.semanticEvidence = semantic->evidence();
     for (auto& [id, cell] : cells) {
         finalize(cell.counts, cell.identities.size());
+        if (cell.semantic) cell.counts.semanticEvidence = cell.semantic->evidence();
         result.cells.push_back({historyCell(config.coverage, id, config.coverage.leafDepth), std::move(cell.counts)});
     }
     result.coverage = !result.expectedSamples ? WindowCoverage::NoScheduledSamples

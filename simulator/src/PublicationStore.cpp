@@ -124,18 +124,71 @@ Document releaseDocument(const ReleaseSnapshot& release, std::size_t maxBytes) {
                 throw std::invalid_argument("Publication selected geometry differs from coordination footprint");
         }
         accountString(released.effectivePolicyId);
-        // Per-type breakdowns have no independent threshold assessment and are not releasable.
-        if (!counts.typeObservationContributions.empty())
-            throw std::invalid_argument("Publication may contain only approved scalar counts, not type breakdowns");
+        // Raw evidence is never a recipient channel. Semantic output is the separately
+        // approved representation below, not a serialized copy of its private input.
+        if (!counts.typeObservationContributions.empty() || counts.semanticEvidence)
+            throw std::invalid_argument("Publication may not contain private type or semantic evidence");
         bsoncxx::builder::basic::document countDocument;
         countDocument.append(kvp("observation_contributions", countValue(counts.observationContributions)),
             kvp("distinct_contributors", countValue(counts.distinctContributors)));
         if (counts.meanSampleOccupancy)
             countDocument.append(kvp("mean_sample_occupancy", *counts.meanSampleOccupancy));
         else countDocument.append(kvp("mean_sample_occupancy", bsoncxx::types::b_null{}));
-        cells.append(make_document(kvp("cell_id", cell.id), kvp("depth", cell.depth),
+        bsoncxx::builder::basic::document selected;
+        selected.append(kvp("cell_id", cell.id), kvp("depth", cell.depth),
             kvp("x", cell.x), kvp("y", cell.y), kvp("width", cell.width), kvp("height", cell.height),
-            kvp("counts", countDocument), kvp("effective_policy_id", released.effectivePolicyId)));
+            kvp("counts", countDocument), kvp("effective_policy_id", released.effectivePolicyId));
+        if (released.semantic) {
+            // This store verifies the structural boundary only. The coordinator must
+            // assess the category cut against its trusted versioned taxonomy first.
+            // Keeping this optional extension inside v1 preserves every legacy byte
+            // when no semantic representation was requested.
+            if (release.coordinationCell)
+                throw std::invalid_argument("Semantic publication requires common-window coordination");
+            const auto& semantic = *released.semantic;
+            if (counts.observationContributions > 9007199254740991ULL
+                || semantic.taxonomyId.empty() || semantic.taxonomyVersion.empty() || semantic.bins.empty()
+                || !std::isfinite(semantic.minimumDistinctContributors)
+                || semantic.minimumDistinctContributors <= 0
+                || !std::isfinite(semantic.maxLoss) || semantic.maxLoss < 0 || semantic.maxLoss > 1
+                || !std::isfinite(semantic.meanLoss) || semantic.meanLoss < 0
+                || semantic.meanLoss > semantic.maxLoss)
+                throw std::invalid_argument("Publication semantic representation has invalid metadata or loss");
+            accountString(semantic.taxonomyId);
+            accountString(semantic.taxonomyVersion);
+            if (semantic.bins.size() > maxBytes / 64)
+                throw std::length_error("Publication BSON semantic category size limit exceeded");
+            std::set<std::string> categoryIds;
+            std::uint64_t observations = 0, distinct = 0;
+            auto minimum = std::numeric_limits<std::uint64_t>::max();
+            bsoncxx::builder::basic::array categories;
+            for (const auto& bin : semantic.bins) {
+                if (bin.categoryId.empty() || !categoryIds.insert(bin.categoryId).second
+                    || bin.observationContributions == 0 || bin.distinctContributors == 0
+                    || bin.distinctContributors > bin.observationContributions
+                    || bin.observationContributions > counts.observationContributions - observations
+                    || bin.distinctContributors > counts.distinctContributors - distinct)
+                    throw std::invalid_argument("Publication semantic categories have invalid counts or identities");
+                accountString(bin.categoryId);
+                observations += bin.observationContributions;
+                distinct += bin.distinctContributors;
+                minimum = std::min(minimum, bin.distinctContributors);
+                categories.append(make_document(kvp("category_id", bin.categoryId),
+                    kvp("observation_contributions", countValue(bin.observationContributions)),
+                    kvp("distinct_contributors", countValue(bin.distinctContributors))));
+                if (categories.view().length() > maxBytes)
+                    throw std::length_error("Publication BSON semantic category size limit exceeded");
+            }
+            if (observations != counts.observationContributions || distinct != counts.distinctContributors
+                || semantic.minimumDistinctContributors != static_cast<double>(minimum))
+                throw std::invalid_argument("Publication semantic categories disagree with approved scalar counts");
+            selected.append(kvp("semantic", make_document(kvp("schema", "ump.semantic-release.v1"),
+                kvp("taxonomy_id", semantic.taxonomyId), kvp("taxonomy_version", semantic.taxonomyVersion),
+                kvp("min_category_distinct_contributors", semantic.minimumDistinctContributors),
+                kvp("semantic_max_loss", semantic.maxLoss), kvp("semantic_mean_loss", semantic.meanLoss),
+                kvp("categories", categories))));
+        }
+        cells.append(selected.extract());
         if (cells.view().length() > maxBytes)
             throw std::length_error("Publication BSON size limit exceeded");
     }
@@ -212,6 +265,24 @@ ReleaseSnapshot parseRelease(View document) {
         counts.distinctContributors = nonnegative(values["distinct_contributors"].get_int64().value);
         if (values["mean_sample_occupancy"].type() != bsoncxx::type::k_null)
             counts.meanSampleOccupancy = values["mean_sample_occupancy"].get_double().value;
+        if (row["semantic"]) {
+            const auto semantic = row["semantic"].get_document().view();
+            if (scoped || stringField(semantic, "schema") != "ump.semantic-release.v1")
+                throw PublicationConflict("Publication journal semantic schema or coordination is invalid");
+            SemanticRepresentation representation;
+            representation.taxonomyId = stringField(semantic, "taxonomy_id");
+            representation.taxonomyVersion = stringField(semantic, "taxonomy_version");
+            representation.minimumDistinctContributors = semantic["min_category_distinct_contributors"].get_double().value;
+            representation.maxLoss = semantic["semantic_max_loss"].get_double().value;
+            representation.meanLoss = semantic["semantic_mean_loss"].get_double().value;
+            for (auto category : semantic["categories"].get_array().value) {
+                const auto bin = category.get_document().view();
+                representation.bins.push_back({stringField(bin, "category_id"),
+                    nonnegative(bin["observation_contributions"].get_int64().value),
+                    nonnegative(bin["distinct_contributors"].get_int64().value)});
+            }
+            released.semantic = std::move(representation);
+        }
         release.cells.push_back(std::move(released));
     }
     return release;

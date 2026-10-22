@@ -1,7 +1,9 @@
 # Candidate metrics and threshold assessment
 
-Status: 2026-10-14. Nine online measures and the offline E01 occupancy evaluator are
-implemented. This extends the [fixed aggregation contract](FIXED_AGGREGATION.md); A04
+Status: 2026-10-21. Nine baseline online measures, three optional semantic measures
+and the offline E01 occupancy evaluator are implemented. The new semantic product and
+its exact interpretation are specified in [SEMANTIC_ADAPTATION.md](SEMANTIC_ADAPTATION.md).
+Disabled scalar-only exports remain unchanged. This extends the [fixed aggregation contract](FIXED_AGGREGATION.md); A04
 supplies requirements through [POLICY_TREE.md](POLICY_TREE.md). Spatial/temporal selection
 and immutable publication are integrated. [Controlled evaluation](CONTROLLED_EVALUATION.md)
 now compares identical inputs; [PRIVACY_EVALUATION.md](PRIVACY_EVALUATION.md) defines the
@@ -44,6 +46,9 @@ and `k_anonymity`/`l_diversity` settings are not reinterpreted as registered met
 | post_window_delay_ms | ms | evaluation time - window end. |
 | measured_sample_fraction | fraction | Measured / expected samples, in [0,1]. Undefined when no sample was scheduled. Unavailable/missing samples never count as measured. |
 | occupancy_mae | agents | Offline error for the fixed occupancy query below. Unavailable in the online evaluator because it has no reference input. |
+| min_category_distinct_contributors | road_users | Minimum exact distinct road-user support across nonempty released semantic categories; requires a configured taxonomy and private node evidence. Positive lower bound only. |
+| semantic_max_loss | fraction | Maximum declared taxonomy-node loss among released categories; 0 exact leaves, 1 root. Upper bound in [0,1] only. |
+| semantic_mean_loss | fraction | Observation-weighted mean declared node loss; upper bound in [0,1] only. Does not replace the maximum or a task-specific utility measure. |
 
 Contributor IDs identify simulated agents, not necessarily individual humans (for example,
 one vehicle agent does not count its occupants). Support is not a justified anonymity set.
@@ -58,6 +63,22 @@ inclusive. Policies are immutable for the initial run and carry an ID and versio
 Contradictory inherited root/type/instance requirements are configuration errors. A coarse
 footprint combining individually valid regions can instead be infeasible; its conflicting
 check reports `contradictory_policy_bounds`, without invalidating those regions' children.
+
+## Semantic candidate assessment
+
+An enabled versioned hierarchy requires root category-support and maximum-loss bounds.
+Regions strengthen the same numeric requirements through the existing Policy Tree.
+The evaluator first resolves that cell's effective requirements, reconstructs the finest
+complete semantic cut meeting the support minimum, then assesses its losses and every
+scalar constraint together. Missing private evidence is unavailable. Malformed evidence,
+unknown labels or contradictory raw-class/node counts reject explicitly.
+
+These quantitative support/detail values are first-stage operational outcomes. A semantic
+class is not automatically a sensitive attribute or an anonymity equivalence class.
+Exact class queries are available only when the public cut resolves the requested class;
+a generalized straddling bin gives unknown. The complete-partition contract prevents
+inventing a zero for that unresolved class. See the semantic contract and E07 in TO-DO
+for subsequent task-utility and constraint-impact evaluation.
 
 ## Assessment semantics
 
@@ -225,3 +246,13 @@ exercise the actual policy/selection/adaptation/publication cores, all modes, st
 regional inheritance, exact count conservation, determinism and invalid-input rejection.
 See [the comparison report](EVALUATION_RESULTS_2026-10-14.md) for the measured pilot; these
 are descriptive cases, not a completed privacy/utility benchmark.
+
+## Bounded semantic query and candidate-choice evaluation
+
+The [completed E07/A08 study](SEMANTIC_PRIORITY_STUDY_2026-10-21.md) adds offline
+exact-query coverage for a declared class-count bank and same-interval nondominated
+candidate inspection. These are evaluation quantities, not new online release metrics.
+All 360 configurations and 1,929 actual intervals audit. Detailed support/QI meaning,
+fixed cohorts, conservative answerability and limits are specified in that report
+and notation section 26. Zero answered-only error must be reported alongside query
+coverage; no source observations fill missing recipient support.

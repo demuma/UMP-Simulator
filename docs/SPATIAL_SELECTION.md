@@ -4,6 +4,14 @@ The initial fixed-window scope below was implemented for the 2026-10-14 supervis
 The same selector now also serves [temporal adaptation](TEMPORAL_AGGREGATION.md) and
 [durable publication](PUBLICATION_COORDINATION.md) in separate opt-in examples.
 
+**October 21 update:** optional `preserve_valid_descendants: true` implements A07 for
+common-window selection. After a failed parent, preserve its passing whole descendants
+and suppress the remaining branches. The default false retains the original baseline.
+A temporal partial proposal stays private until the existing terminal condition;
+a legal higher parent can still rescue all support. See the
+[acceptance contract](SELECTIVE_DESCENDANT_RESCUE.md) and
+[test report](SELECTIVE_DESCENDANT_RESCUE_TEST_REPORT_2026-10-21.md).
+
 ## Contract before implementation
 
 - Select a non-overlapping spatial cut for each already-closed, common fixed window.
@@ -12,7 +20,8 @@ The same selector now also serves [temporal adaptation](TEMPORAL_AGGREGATION.md)
 - Use retained identity-bearing history for parent counts; never sum distinct child counts.
 - Reapply the regional policy to each entire candidate footprint, including empty parts.
 - Stop coarsening at an explicit minimum depth, within the four existing base-cell domains.
-  Suppress the entire unresolved domain at that cap; selective fallback remains A07.
+  The default baseline suppresses the unresolved domain at that cap. Optional A07
+  preserves valid whole descendants and suppresses only the unreleasable remainder.
 - Missing coverage and unavailable required metrics cannot select an eligible candidate.
 - Reassess each new window from finest cells. A smaller chosen cell in a later window is
   refinement at a common boundary; no historical output is edited.
@@ -82,9 +91,11 @@ aggregation:
   spatial_selection:
     min_depth: 1
     max_evaluations: 4096
+    preserve_valid_descendants: true  # Optional; default false, common-window only.
 ```
 
-Both settings are required. `min_depth` is the coarsest allowed search depth (one through
+The first two settings are required; `preserve_valid_descendants` is optional.
+Enabled use with cell-local coordination is rejected explicitly. `min_depth` is the coarsest allowed search depth (one through
 the sensor's leaf depth). Policy bounds can be stricter; every candidate is checked again.
 There is no representable depth-zero data root. An explicit uniform or regional metric
 policy and bounded history are mandatory. Invalid selection settings fail in startup
@@ -171,7 +182,8 @@ behavior, not a measured privacy benefit or general real-time performance guaran
 Next: integrate the initial standalone [A05 coordinator](PUBLICATION_COORDINATION.md) with
 policy configuration and a durable sink, then temporal extension and policy-selected strategy
 comparison. Automatic prewarming, committed-output invalidation, hysteresis, selective
-suppression fallback and the separate MongoDB AGBS renderer remain open. The private spatial
+suppression beyond the optional common-window A07 fallback and the separate MongoDB
+AGBS renderer remain open. The private spatial
 baseline is the spatial branch of Temporal First; a full Temporal First implementation also
 needs the remaining legal temporal fallback. Spatial First is not implemented here.
 

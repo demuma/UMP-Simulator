@@ -4,7 +4,7 @@ display:
   width: 1600 # 800
   height: 640 # 800
   pixels_per_meter: 8
-  title: 'Urban Mobility Simulator V3'
+  title: 'Urban Mobility Simulator V4'
 
 renderer:
   show_renderer: true
@@ -29,7 +29,7 @@ simulation:
   playback_speed: 1.0
   # num_threads: 8
   # scenario: random # not used
-  datetime: '2025-04-09T10:30:00'
+  datetime: '2026-10-13T10:30:00'
 
 collision:
   grid:

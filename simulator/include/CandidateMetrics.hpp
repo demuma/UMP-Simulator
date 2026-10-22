@@ -1,6 +1,7 @@
 #pragma once
 
 #include "AggregationInput.hpp"
+#include "SemanticTaxonomy.hpp"
 #include <array>
 #include <string_view>
 #include <memory>
@@ -10,7 +11,7 @@ namespace ump {
 enum class MetricId {
     ObservationContributions, DistinctContributors, MeanSampleOccupancy,
     CellSideM, CellAreaM2, WindowDurationMs, AgeAtEvaluationMs, PostWindowDelayMs,
-    MeasuredSampleFraction, OccupancyMae, Count
+    MeasuredSampleFraction, OccupancyMae, MinCategoryDistinctContributors, SemanticMaxLoss, SemanticMeanLoss, Count
 };
 
 struct MetricDefinition {
@@ -43,6 +44,7 @@ struct MetricPolicy {
 };
 
 void validateMetricRequirements(const std::vector<MetricRequirement>& requirements, bool allowEmpty = false);
+void validateSemanticMetricRequirements(const std::vector<MetricRequirement>& requirements);
 
 // Compiled requirements may be infeasible for a cross-region footprint. Keep the
 // contradictory bounds visible so assessment can fail explicitly without losing children.
@@ -72,6 +74,7 @@ struct CellMetricAssessment {
     std::optional<std::string> effectivePolicyId = std::nullopt;
     std::vector<std::string> policySources = {};
     bool policyFeasible = true;
+    std::optional<SemanticRepresentation> semantic = std::nullopt;
 };
 
 struct WindowMetricAssessment {
@@ -88,13 +91,17 @@ struct WindowMetricAssessment {
 // Uniform requirements or an immutable regional tree supply the cell-specific bounds.
 class MetricEvaluator {
 public:
-    explicit MetricEvaluator(std::optional<MetricPolicy> policy = std::nullopt);
-    explicit MetricEvaluator(std::shared_ptr<const PolicyTree> tree);
+    explicit MetricEvaluator(std::optional<MetricPolicy> policy = std::nullopt,
+        std::shared_ptr<const SemanticTaxonomy> taxonomy = nullptr);
+    explicit MetricEvaluator(std::shared_ptr<const PolicyTree> tree,
+        std::shared_ptr<const SemanticTaxonomy> taxonomy = nullptr);
+    const std::shared_ptr<const SemanticTaxonomy>& semanticTaxonomy() const { return taxonomy; }
     WindowMetricAssessment evaluate(const AggregationCandidate& candidate, AggregationTime evaluatedAtMs) const;
 
 private:
     std::optional<MetricPolicy> policy;
     std::shared_ptr<const PolicyTree> tree;
+    std::shared_ptr<const SemanticTaxonomy> taxonomy;
 };
 
 } // namespace ump

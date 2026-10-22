@@ -1,4 +1,5 @@
 #include "AggregationManager.hpp"
+#include "SemanticTaxonomy.hpp"
 #include <algorithm>
 #include <cmath>
 #include <limits>
@@ -35,6 +36,8 @@ AggregationManager::AggregationManager(ump::AggregationConfig settings, Sink out
         throw std::invalid_argument("Invalid aggregation grid coverage");
     if (config.capabilities != ump::InputCapabilities::IdentityCellObservations)
         throw std::invalid_argument("Distinct contributors require identity-bearing input");
+    if (config.semanticTaxonomy && !config.history)
+        throw std::invalid_argument("Semantic aggregation requires bounded private history");
     if (config.history) retainedHistory = std::make_unique<ump::AggregationHistory>(config, *config.history);
 }
 
@@ -65,6 +68,7 @@ void AggregationManager::validate(const ump::ObservationBatch& batch) const {
         if (observation.contributorId.empty() || observation.type.empty()
             || !batchIds.insert(observation.contributorId).second)
             throw std::invalid_argument("Empty or duplicate contributor identity/type in aggregation batch");
+        if (config.semanticTaxonomy) (void)config.semanticTaxonomy->leafForType(observation.type);
         if (c.id < 0 || c.depth != g.leafDepth || !validRectangle(c.x, c.y, c.width, c.height)
             || c.x < g.x || c.y < g.y || c.x + c.width > g.x + g.width
             || c.y + c.height > g.y + g.height)
@@ -142,16 +146,28 @@ void AggregationManager::closeWindow(ump::AggregationTime endMs, ump::Aggregatio
     ump::AggregationCandidate output{config.runId, config.sensorId, config.applicationId,
         config.coverage, windowStartMs, endMs, closedAtMs, truncated,
         expected, measuredSamples, unavailableSamples, missing, coverage, counts, {}};
-    finalizeCounts(output.counts, contributors.size(), measuredSamples);
-    output.cells.reserve(cells.size());
-    for (const auto& [id, cell] : cells) {
-        auto result = cell.counts;
-        finalizeCounts(result, cell.contributors.size(), measuredSamples);
-        output.cells.push_back({cell.geometry, std::move(result)});
+    if (config.semanticTaxonomy) {
+        // Reconstruct the identical private interval rather than introducing a
+        // second incremental identity-by-category cache. This shares the exact
+        // union and stable-class contract with later ancestor/history queries.
+        auto reconstructed = retainedHistory->queryFinest(windowStartMs, endMs);
+        if (!reconstructed.candidate)
+            throw std::runtime_error("Semantic aggregation interval is unavailable from bounded private history");
+        output = std::move(*reconstructed.candidate);
+        output.closedAtMs = closedAtMs;
+        output.truncated = truncated;
+    } else {
+        finalizeCounts(output.counts, contributors.size(), measuredSamples);
+        output.cells.reserve(cells.size());
+        for (const auto& [id, cell] : cells) {
+            auto result = cell.counts;
+            finalizeCounts(result, cell.contributors.size(), measuredSamples);
+            output.cells.push_back({cell.geometry, std::move(result)});
+        }
+        std::sort(output.cells.begin(), output.cells.end(), [](const auto& a, const auto& b) {
+            return a.cell.id < b.cell.id;
+        });
     }
-    std::sort(output.cells.begin(), output.cells.end(), [](const auto& a, const auto& b) {
-        return a.cell.id < b.cell.id;
-    });
     sink(output); // Fatal on failure; no retries or reentrant calls are supported.
     windowStartMs = endMs;
     measuredSamples = unavailableSamples = 0;

@@ -6,10 +6,14 @@
 
 namespace ump {
 
-enum class AdaptationStrategy { TemporalFirst, SpatialFirst };
+enum class AdaptationStrategy { TemporalFirst, SpatialFirst, SemanticFirst };
 const char* adaptationStrategyName(AdaptationStrategy strategy);
 
 enum class CoordinationMode { CommonWindow, CellLocal };
+enum class SemanticSecondaryStrategy { TemporalFirst, SpatialFirst };
+enum class ReleaseTrigger { PolicySatisfied, PrioritySatisfied };
+const char* semanticSecondaryStrategyName(SemanticSecondaryStrategy strategy);
+const char* releaseTriggerName(ReleaseTrigger trigger);
 
 struct TemporalAdaptationConfig {
     AdaptationStrategy strategy = AdaptationStrategy::TemporalFirst;
@@ -18,6 +22,10 @@ struct TemporalAdaptationConfig {
     std::size_t maxEvaluations = 1024;
     CoordinationMode coordination = CoordinationMode::CommonWindow;
     std::size_t maxActiveCells = 16384;
+    // Semantic controller only: secondary order and hard-eligibility versus
+    // intentional preference waiting. Appended for aggregate-initializer safety.
+    SemanticSecondaryStrategy semanticSecondaryStrategy = SemanticSecondaryStrategy::TemporalFirst;
+    ReleaseTrigger releaseTrigger = ReleaseTrigger::PolicySatisfied;
 };
 
 struct AdaptiveAggregationDebugState {

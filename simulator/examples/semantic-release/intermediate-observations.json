@@ -1,0 +1,800 @@
+{
+  "batches": [
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/0",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/1",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/0",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/1",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/2",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/2",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/0",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/1",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/0",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/1",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/2",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "observed_at_ms": 100,
+      "sequence": 1,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/0",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/1",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/0",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/1",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/2",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/2",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/0",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/1",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/0",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/1",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/2",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "observed_at_ms": 200,
+      "sequence": 2,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/0",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/1",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/0",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/1",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/2",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/2",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/0",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/1",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/0",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/1",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/2",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "observed_at_ms": 300,
+      "sequence": 3,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/0",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/1",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/0",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/1",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/2",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/2",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/0",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/1",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/0",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/1",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/2",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "observed_at_ms": 400,
+      "sequence": 4,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/0",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/1",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/0",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/1",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/2",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/2",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/0",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/1",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/0",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/1",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/2",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "observed_at_ms": 500,
+      "sequence": 5,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/0",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/1",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/0",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/1",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/2",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/2",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/0",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/1",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/0",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/1",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/2",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "observed_at_ms": 600,
+      "sequence": 6,
+      "status": "measured"
+    },
+    {
+      "observations": [
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/0",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_pedestrian/1",
+          "type": "adult_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/0",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/1",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_pedestrian/2",
+          "type": "child_pedestrian",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/0",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_cyclist/1",
+          "type": "adult_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/0",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/1",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_cyclist/2",
+          "type": "child_cyclist",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/0",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/adult_scooter/1",
+          "type": "adult_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/0",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/1",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        },
+        {
+          "cell_id": 48,
+          "id": "48/child_scooter/2",
+          "type": "child_scooter",
+          "x": 1,
+          "y": 1
+        }
+      ],
+      "observed_at_ms": 700,
+      "sequence": 7,
+      "status": "measured"
+    }
+  ],
+  "coverage": {
+    "height": 80,
+    "leaf_depth": 2,
+    "width": 80,
+    "x": 0,
+    "y": 0
+  },
+  "end_ms": 800,
+  "run_id": "semantic-release-contract",
+  "sampling_period_ms": 100,
+  "schema": "ump.observation-replay.v1",
+  "sensor_id": "agbs"
+}

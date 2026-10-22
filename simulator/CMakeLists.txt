@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.12)
 # Set the project name
 project(Simulator)
 
+# Keep editor diagnostics aligned with the compiler flags and dependency headers.
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Determine the Homebrew prefix based on the system architecture (for M4 Mac and Homebrew)
 if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
     set(HOMEBREW_PREFIX "/opt/homebrew/opt")
@@ -25,15 +28,21 @@ find_package(bsoncxx REQUIRED)
 # Add the include directories for the libraries
 include_directories(include)
 
+# Reusable semantic model shared by aggregation, metrics and release tests.
+add_library(ump_semantic STATIC src/SemanticTaxonomy.cpp)
+target_compile_features(ump_semantic PUBLIC cxx_std_17)
+target_include_directories(ump_semantic PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 # Add the source files to the executable
 file(GLOB_RECURSE SOURCES "src/*.cpp")
+list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/SemanticTaxonomy.cpp")
 
 # Create the executable
 add_executable(Simulator ${SOURCES})
 
 # Link libraries to the executable
 # target_link_libraries(Simulator sfml-graphics sfml-window sfml-system yaml-cpp::yaml-cpp mongo::mongocxx_shared mongo::bsoncxx_shared) # for macOS
-target_link_libraries(Simulator SFML::Graphics SFML::Window SFML::System yaml-cpp::yaml-cpp mongo::mongocxx_shared mongo::bsoncxx_shared) # for macOS SFML 3.0.0
+target_link_libraries(Simulator PRIVATE SFML::Graphics SFML::Window SFML::System yaml-cpp::yaml-cpp mongo::mongocxx_shared mongo::bsoncxx_shared) # for macOS SFML 3.0.0
 #target_link_libraries(Simulator sfml-graphics sfml-window sfml-system uuid yaml-cpp mongo::mongocxx_shared mongo::bsoncxx_shared) # for Linux
 
 # Additional CMake options for the executable
@@ -147,6 +156,15 @@ if(UMP_BUILD_SPATIAL_TESTS)
     target_compile_features(SpatialRegressionTests PRIVATE cxx_std_17)
     add_test(NAME spatial_regression COMMAND SpatialRegressionTests)
     set_tests_properties(spatial_regression PROPERTIES LABELS "unit;aggregation;spatial" TIMEOUT 15)
+
+    add_executable(SelectiveSuppressionRegressionTests tests/SelectiveSuppressionRegressionTests.cpp
+        src/SpatialSelection.cpp src/AdaptiveAggregation.cpp src/CellLocalAggregation.cpp
+        src/PublicationCoordinator.cpp src/AggregationManager.cpp src/AggregationHistory.cpp
+        src/CandidateMetrics.cpp src/PolicyTree.cpp)
+    target_compile_features(SelectiveSuppressionRegressionTests PRIVATE cxx_std_17)
+    add_test(NAME selective_suppression_regression COMMAND SelectiveSuppressionRegressionTests)
+    set_tests_properties(selective_suppression_regression PROPERTIES
+        LABELS "unit;aggregation;spatial;publication" TIMEOUT 30)
 endif()
 
 option(UMP_BUILD_PUBLICATION_TESTS "Build fixed-window publication coordination tests (standard C++ only)" ON)
@@ -220,15 +238,25 @@ if(UMP_BUILD_REPLAY)
     set_tests_properties(replay_regression PROPERTIES LABELS "unit;replay;evaluation" TIMEOUT 30)
     find_package(Python3 3.9 COMPONENTS Interpreter REQUIRED)
     foreach(evaluation occupancy privacy comparison capture oracle privacy_dataset empirical_privacy privacy_study coordination coordination_metrics coordination_scenarios coordination_study plot_coordination_study
-        compare_coordination_studies plot_privacy_coordination robustness_attacks run_privacy_robustness plot_privacy_robustness)
+        compare_coordination_studies plot_privacy_coordination robustness_attacks run_privacy_robustness plot_privacy_robustness privacy_repair causal_privacy online_occupancy run_privacy_prefix_study selective_suppression semantic_adaptation semantic_tradeoffs semantic_queries run_semantic_priority_study semantic_first moving_comparison cell_size_caps four_second_window semantic_release local_policy_replay replay_data)
         add_test(NAME ${evaluation}_evaluation COMMAND ${Python3_EXECUTABLE} -m unittest discover
             -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/evaluation -p test_${evaluation}.py)
         set_tests_properties(${evaluation}_evaluation PROPERTIES LABELS "unit;evaluation"
             ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;UMP_REPLAY_BINARY=$<TARGET_FILE:AggregationReplay>" TIMEOUT 30)
-        if(evaluation STREQUAL "privacy_study" OR evaluation STREQUAL "coordination" OR evaluation STREQUAL "coordination_study" OR evaluation STREQUAL "run_privacy_robustness")
+        if(evaluation STREQUAL "privacy_study" OR evaluation STREQUAL "coordination" OR evaluation STREQUAL "coordination_study" OR evaluation STREQUAL "run_privacy_robustness" OR evaluation STREQUAL "privacy_repair" OR evaluation STREQUAL "run_privacy_prefix_study" OR evaluation STREQUAL "selective_suppression")
             set_tests_properties(${evaluation}_evaluation PROPERTIES TIMEOUT 120)
         endif()
     endforeach()
+    add_test(NAME replay_viewer_evaluation COMMAND ${Python3_EXECUTABLE} -m unittest discover
+        -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/replay_viewer -p test_viewer.py)
+    set_tests_properties(replay_viewer_evaluation PROPERTIES LABELS "unit;evaluation;viewer"
+        ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1" TIMEOUT 30)
+    find_program(UMP_NODE_EXECUTABLE node)
+    if(UMP_NODE_EXECUTABLE)
+        add_test(NAME replay_viewer_model COMMAND ${UMP_NODE_EXECUTABLE}
+            ${CMAKE_CURRENT_SOURCE_DIR}/../tools/replay_viewer/test_model.js)
+        set_tests_properties(replay_viewer_model PROPERTIES LABELS "unit;viewer" TIMEOUT 30)
+    endif()
 endif()
 
 # Cell-local space-time coordination and scoped recipient retirement.
@@ -253,3 +281,47 @@ if(UMP_BUILD_COORDINATION_TESTS)
     add_test(NAME scoped_publication COMMAND ScopedPublicationRegressionTests)
     set_tests_properties(scoped_publication PROPERTIES LABELS "unit;publication;coordination" TIMEOUT 30)
 endif()
+
+
+# Sequential semantic adaptation acceptance gates; no window/database for core tests.
+if(UMP_BUILD_METRIC_TESTS AND UMP_BUILD_SPATIAL_TESTS)
+    add_executable(SemanticTaxonomyTests tests/SemanticTaxonomyTests.cpp)
+    add_test(NAME semantic_taxonomy COMMAND SemanticTaxonomyTests)
+    add_executable(SemanticHistoryTests tests/SemanticHistoryTests.cpp
+        src/AggregationHistory.cpp src/AggregationManager.cpp)
+    add_test(NAME semantic_history COMMAND SemanticHistoryTests)
+    add_executable(SemanticPipelineTests tests/SemanticPipelineTests.cpp
+        src/AggregationManager.cpp src/AggregationHistory.cpp src/CandidateMetrics.cpp
+        src/PolicyTree.cpp src/SpatialSelection.cpp src/AdaptiveAggregation.cpp
+        src/PublicationCoordinator.cpp)
+    add_test(NAME semantic_pipeline COMMAND SemanticPipelineTests)
+    add_executable(SemanticFirstTests tests/SemanticFirstTests.cpp
+        src/AdaptiveAggregation.cpp src/SpatialSelection.cpp src/AggregationHistory.cpp
+        src/CandidateMetrics.cpp src/PolicyTree.cpp src/PublicationCoordinator.cpp)
+    add_test(NAME semantic_first_core COMMAND SemanticFirstTests)
+    set_tests_properties(semantic_first_core PROPERTIES LABELS "unit;aggregation;semantic" TIMEOUT 30)
+    set_tests_properties(semantic_taxonomy semantic_history semantic_pipeline PROPERTIES
+        LABELS "unit;aggregation;semantic" TIMEOUT 30)
+endif()
+
+if(UMP_BUILD_PUBLICATION_STORE_TESTS)
+    add_executable(SemanticPublicationStoreTests tests/SemanticPublicationStoreTests.cpp src/PublicationStore.cpp
+        src/AdaptiveAggregation.cpp src/AggregationManager.cpp src/AggregationHistory.cpp src/CandidateMetrics.cpp
+        src/PolicyTree.cpp src/SpatialSelection.cpp src/PublicationCoordinator.cpp)
+    target_link_libraries(SemanticPublicationStoreTests PRIVATE mongo::mongocxx_shared mongo::bsoncxx_shared)
+    add_test(NAME semantic_publication_store COMMAND SemanticPublicationStoreTests)
+    set_tests_properties(semantic_publication_store PROPERTIES LABELS "integration;mongodb;semantic" TIMEOUT 60)
+endif()
+
+foreach(core_target Simulator SensorRegressionTests AggregationRegressionTests MetricRegressionTests
+    PolicyRegressionTests PolicyConfigurationTests HistoryRegressionTests SpatialRegressionTests
+    SelectiveSuppressionRegressionTests PublicationRegressionTests AdaptiveAggregationRegressionTests
+    PublicationStoreRegressionTests PublicationPipelineRegressionTests AggregationPresentationTests
+    AggregationReplay ReplayRegressionTests CoordinationRegressionTests CoordinationStressTests
+    ScopedPublicationRegressionTests SemanticTaxonomyTests SemanticHistoryTests SemanticPipelineTests
+    SemanticPublicationStoreTests SemanticFirstTests)
+    if(TARGET ${core_target})
+        target_compile_features(${core_target} PRIVATE cxx_std_17)
+        target_link_libraries(${core_target} PRIVATE ump_semantic)
+    endif()
+endforeach()

@@ -1,0 +1,163 @@
+{
+  "schema": "ump.observation-replay.v1",
+  "run_id": "semantic-example-exact",
+  "sensor_id": "agbs",
+  "coverage": {
+    "x": 0,
+    "y": 0,
+    "width": 80,
+    "height": 80,
+    "leaf_depth": 2
+  },
+  "sampling_period_ms": 100,
+  "end_ms": 400,
+  "batches": [
+    {
+      "sequence": 1,
+      "observed_at_ms": 100,
+      "status": "measured",
+      "observations": [
+        {
+          "id": "pedestrian-0",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-1",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "adult_cyclist-0",
+          "type": "adult_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "adult_cyclist-1",
+          "type": "adult_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "child_cyclist-0",
+          "type": "child_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "child_cyclist-1",
+          "type": "child_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        }
+      ]
+    },
+    {
+      "sequence": 2,
+      "observed_at_ms": 200,
+      "status": "measured",
+      "observations": [
+        {
+          "id": "pedestrian-0",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-1",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "adult_cyclist-0",
+          "type": "adult_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "adult_cyclist-1",
+          "type": "adult_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "child_cyclist-0",
+          "type": "child_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "child_cyclist-1",
+          "type": "child_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        }
+      ]
+    },
+    {
+      "sequence": 3,
+      "observed_at_ms": 300,
+      "status": "measured",
+      "observations": [
+        {
+          "id": "pedestrian-0",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "pedestrian-1",
+          "type": "pedestrian",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "adult_cyclist-0",
+          "type": "adult_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "adult_cyclist-1",
+          "type": "adult_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "child_cyclist-0",
+          "type": "child_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        },
+        {
+          "id": "child_cyclist-1",
+          "type": "child_cyclist",
+          "cell_id": 48,
+          "x": 1,
+          "y": 1
+        }
+      ]
+    }
+  ]
+}

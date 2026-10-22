@@ -13,6 +13,11 @@ std::string keyPart(const std::string& value) {
 PublicationCoordinator::PublicationCoordinator(AggregationConfig settings, MetricEvaluator metrics,
     PublicationLimits bounds, std::optional<AggregationTime> maximum, bool scoped)
     : config(std::move(settings)), evaluator(std::move(metrics)), limits(bounds), maximumWindowMs(maximum), cellLocal(scoped) {
+    if (config.semanticTaxonomy != evaluator.semanticTaxonomy())
+        throw std::invalid_argument("Publication requires the same immutable semantic taxonomy as its evaluator");
+    if (cellLocal && config.semanticTaxonomy)
+        throw std::invalid_argument("Semantic taxonomy currently supports common_window only");
+
     historyCell(config.coverage, 12, 1);
     if (config.runId.empty() || config.sensorId.empty() || config.applicationId.empty()
         || config.windowMs <= 0 || !limits.maxCells || !limits.maxTypeEntries || !limits.maxTypeBytes)
@@ -126,7 +131,8 @@ std::shared_ptr<const ReleaseSnapshot> PublicationCoordinator::seal(
         auto publicCell = candidate.cells[i];
         // Type-level support has no separate disclosure policy in this first output model.
         publicCell.counts.typeObservationContributions.clear();
-        output->cells.push_back({std::move(publicCell), *check.effectivePolicyId});
+        publicCell.counts.semanticEvidence.reset();
+        output->cells.push_back({std::move(publicCell), *check.effectivePolicyId, check.semantic});
     }
     // Reserve before exposing any payload. Exceptions above leave the interval available.
     pending.emplace(Pending{candidate, std::move(indices), output,

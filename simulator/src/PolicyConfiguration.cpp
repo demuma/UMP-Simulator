@@ -35,14 +35,16 @@ std::vector<ump::MetricRequirement> readMetricRequirements(const YAML::Node& nod
 }
 
 ump::MetricEvaluator makeMetricEvaluator(const YAML::Node& aggregation, const ump::GridCoverage& grid,
-    const std::string& applicationId, const std::vector<Region>& regions) {
+    const std::string& applicationId, const std::vector<Region>& regions,
+    std::shared_ptr<const ump::SemanticTaxonomy> taxonomy) {
+    if (!taxonomy && aggregation["semantic_taxonomy"]) taxonomy = readSemanticTaxonomy(aggregation);
     const auto uniform = aggregation["metric_policy"], tree = aggregation["policy_tree"];
     if (uniform && tree) throw std::invalid_argument("Select metric_policy or policy_tree, not both");
     validatePolicyExecution(aggregation);
     if (uniform) {
         allowedKeys(uniform, {"id", "version", "requirements"}, "metric_policy");
         return ump::MetricEvaluator(ump::MetricPolicy{uniform["id"].as<std::string>(),
-            uniform["version"].as<std::string>(), readMetricRequirements(uniform["requirements"])});
+            uniform["version"].as<std::string>(), readMetricRequirements(uniform["requirements"])}, taxonomy);
     }
     if (!tree) return ump::MetricEvaluator{};
     allowedKeys(tree, {"id", "version", "root", "regions", "max_nodes", "execution"}, "policy_tree");
@@ -65,8 +67,9 @@ ump::MetricEvaluator makeMetricEvaluator(const YAML::Node& aggregation, const um
         selected.push_back({found->id, found->type, area.position.x, area.position.y,
             area.size.x, area.size.y, found->attributes.metricRequirements, found->metricRequirements});
     }
+    if (taxonomy) ump::validateSemanticMetricRequirements(settings.rootRequirements);
     auto compiled = std::make_shared<const ump::PolicyTree>(std::move(settings), std::move(selected));
     std::cout << "Regional policy " << compiled->id() << ": " << compiled->nodeCount()
         << " nodes, " << compiled->effectivePolicyCount() << " effective policies\n";
-    return ump::MetricEvaluator(std::move(compiled));
+    return ump::MetricEvaluator(std::move(compiled), std::move(taxonomy));
 }

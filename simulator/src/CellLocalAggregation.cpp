@@ -25,6 +25,12 @@ CellLocalAggregation::CellLocalAggregation(AggregationConfig settings,
       evaluator(std::move(metrics)), sink(std::move(output)), maxActiveCells(maximum) {
     historyCell(config.coverage, 12, 1);
     adaptationStrategyName(temporal.strategy);
+    if (temporal.strategy == AdaptationStrategy::SemanticFirst)
+        throw std::invalid_argument("semantic_first currently supports common_window only");
+    if (config.semanticTaxonomy || evaluator.semanticTaxonomy())
+        throw std::invalid_argument("Semantic taxonomy currently supports common_window only");
+    if (spatial.preserveValidDescendants)
+        throw std::invalid_argument("preserve_valid_descendants supports common_window only; cell_local already uses independent descendant owners");
     if (!sink || config.samplingPeriodMs <= 0 || config.windowMs <= 0
         || config.windowMs % config.samplingPeriodMs || temporal.extensionStepMs <= 0
         || temporal.extensionStepMs % config.samplingPeriodMs
@@ -119,11 +125,14 @@ void CellLocalAggregation::retryPending(AggregationTime now) {
     // All allocations, policy checks and successor construction precede disclosure.
     for (int id : pending->retiredIds) frontier.erase(id);
     frontier.merge(pending->replacements); // Transfers preallocated map nodes.
+    for (int id : pending->cancelledHandoffs) handoffs.erase(id);
+    handoffIntents.merge(pending->handoffIntents);
     pending.reset();
     ++completedWindows;
 }
 
-void CellLocalAggregation::emit(SpatialSelection selection, Frontier replacements, std::vector<int> retiredIds) {
+void CellLocalAggregation::emit(SpatialSelection selection, Frontier replacements, std::vector<int> retiredIds,
+    std::vector<int> cancelledHandoffs, HandoffIntents intents) {
     if (pending) throw std::logic_error("A cell-local immutable output is already reserved");
     std::set<int> retired(retiredIds.begin(), retiredIds.end());
     if (retired.size() != retiredIds.size() || retiredIds.size() > frontier.size()
@@ -134,7 +143,24 @@ void CellLocalAggregation::emit(SpatialSelection selection, Frontier replacement
     for (const auto& [id, window] : replacements)
         if (frontier.count(id) && !retired.count(id))
             throw std::logic_error("Cell-local replacement collides with an unaffected owner");
-    pending.emplace(Pending{std::move(selection), std::move(replacements), std::move(retiredIds)});
+    // A redundant plan must not become restrictive again after one successor
+    // advances its start. Remove overlapping obsolete plans with the same ACK,
+    // never before the immutable selection has actually been accepted.
+    for (const auto& [id, request] : handoffs) {
+        if (!redundantHandoff(request)) continue;
+        for (int retiredId : retiredIds) {
+            const auto& cell = frontier.at(retiredId).publicState.cell;
+            if (containsCell(cell, request.cell) || containsCell(request.cell, cell)) {
+                if (std::find(cancelledHandoffs.begin(), cancelledHandoffs.end(), id) == cancelledHandoffs.end())
+                    cancelledHandoffs.push_back(id);
+                break;
+            }
+        }
+    }
+    for (const auto& [key, choices] : intents)
+        if (handoffIntents.count(key)) throw std::logic_error("A failed prefix already has a deferred handoff intent");
+    pending.emplace(Pending{std::move(selection), std::move(replacements), std::move(retiredIds),
+        std::move(cancelledHandoffs), std::move(intents)});
     retryPending(pending->selection.candidate.closedAtMs);
 }
 
@@ -256,10 +282,16 @@ SpatialSelection CellLocalAggregation::selectionFor(const Window& source,
 bool CellLocalAggregation::tryMerge(const CellGeometry& domain, AggregationTime end,
     const AggregationHistory& history, bool final) {
     if (domain.depth < spatial.minDepth) return false;
-    // A future handoff reserves its complete domain. No old-prefix promotion
-    // inside, across or above it may bypass the agreed boundary.
-    for (const auto& [id, request] : handoffs)
-        if (containsCell(domain, request.first) || containsCell(request.first, domain)) return false;
+    // A strict enclosing plan still protects its entire rendezvous domain. A
+    // passing parent may replace plans completely inside its private footprint;
+    // those plans are cancelled only with this selection's successful sink ACK.
+    std::vector<int> cancelledHandoffs;
+    for (const auto& [id, request] : handoffs) {
+        const bool inside = containsCell(domain, request.cell);
+        const bool enclosing = containsCell(request.cell, domain);
+        if (!inside && enclosing && !redundantHandoff(request)) return false;
+        if (inside || enclosing) cancelledHandoffs.push_back(id);
+    }
     Frontier refined;
     const Frontier* cut = &frontier;
     std::optional<CellGeometry> enclosing;
@@ -302,7 +334,7 @@ bool CellLocalAggregation::tryMerge(const CellGeometry& domain, AggregationTime 
             if (containsCell(domain, window.publicState.cell)) retired.push_back(id);
     }
     replacements.emplace(domain.id, makeWindow(domain, end, domain));
-    emit(std::move(selected), std::move(replacements), std::move(retired));
+    emit(std::move(selected), std::move(replacements), std::move(retired), std::move(cancelledHandoffs));
     return true;
 }
 
@@ -329,40 +361,89 @@ bool CellLocalAggregation::requestMerge(const CellGeometry& domain, AggregationT
 }
 
 bool CellLocalAggregation::scheduleMerge(const CellGeometry& domain) {
+    return scheduleMergeAt(domain, lastNowMs, lastNowMs, false);
+}
+
+bool CellLocalAggregation::scheduleMergeAt(const CellGeometry& domain,
+    AggregationTime endpoint, AggregationTime evaluatedAt, bool requireDifferentStarts) {
     if (finished || emitting || pending)
         throw std::logic_error("Cannot schedule a handoff while finished, delivering, or reserved");
     validateDomain(domain);
     if (domain.depth < spatial.minDepth) return false;
+    std::vector<int> obsolete;
     for (const auto& [id, request] : handoffs)
-        if (containsCell(domain, request.first) || containsCell(request.first, domain)) return false;
+        if (containsCell(domain, request.cell) || containsCell(request.cell, domain)) {
+            if (!redundantHandoff(request)) return false;
+            obsolete.push_back(id);
+        }
+    // A domain already owned by one common clock needs no automatic rendezvous.
+    // Explicit requests retain their original ability to protect a future cut.
+    if (requireDifferentStarts)
+        for (const auto& [id, owner] : frontier)
+            if (containsCell(owner.publicState.cell, domain)) return false;
     auto after = frontier;
     refineToDomain(after, domain);
-    AggregationTime boundary = lastNowMs;
+    AggregationTime start = 0;
+    const bool aligned = canMerge(after, domain, std::numeric_limits<AggregationTime>::max(), start);
+    if (requireDifferentStarts && aligned) return false;
+    AggregationTime boundary = endpoint;
     for (const auto& [id, window] : after)
         if (containsCell(domain, window.publicState.cell))
             boundary = std::max(boundary, window.publicState.nextEndMs);
-    if (boundary <= lastNowMs) return false;
+    if (boundary <= endpoint) return false;
     for (auto& [id, window] : after)
         if (containsCell(domain, window.publicState.cell))
             window.decisions.push_back({TemporalAction::RequestHandoff, window.publicState.startMs,
-                boundary, lastNowMs, AssessmentStatus::NotConfigured});
+                boundary, evaluatedAt, AssessmentStatus::NotConfigured});
     auto nextRequests = handoffs;
-    nextRequests.emplace(domain.id, std::make_pair(domain, boundary));
+    for (int id : obsolete) nextRequests.erase(id);
+    nextRequests.emplace(domain.id, Handoff{domain, boundary, !aligned});
     frontier.swap(after);
     handoffs.swap(nextRequests);
     return true;
 }
 
+bool CellLocalAggregation::redundantHandoff(const Handoff& request) const {
+    if (!request.initiallyNeedsAlignment) return false;
+    AggregationTime start = 0;
+    return canMerge(frontier, request.cell, request.boundaryMs, start);
+}
+
+void CellLocalAggregation::reconcileHandoffs() {
+    // Keep every window's checks, progress, next endpoint and deadline intact.
+    // Alignment acquired before the rendezvous makes the private request obsolete;
+    // it does not create a new interval or permit reopening any retired prefix.
+    for (auto request = handoffs.begin(); request != handoffs.end();)
+        if (redundantHandoff(request->second)) request = handoffs.erase(request);
+        else ++request;
+}
+
+void CellLocalAggregation::drainHandoffIntents(AggregationTime now) {
+    while (!handoffIntents.empty()) {
+        const auto intent = handoffIntents.begin();
+        const auto endpoint = intent->first.first;
+        if (endpoint > now) return;
+        // On a sink retry, finish the unprocessed owners from this endpoint first.
+        // Held owners have already moved their next check beyond the endpoint.
+        for (const auto& [id, owner] : frontier)
+            if (owner.publicState.startMs < endpoint && owner.publicState.nextEndMs <= endpoint) return;
+        for (const auto& domain : intent->second)
+            if (scheduleMergeAt(domain, endpoint, now, true)) break;
+        handoffIntents.erase(intent);
+    }
+}
+
 std::optional<AggregationTime> CellLocalAggregation::handoffBoundary(const CellGeometry& cell) const {
     for (const auto& [id, request] : handoffs)
-        if (containsCell(request.first, cell)) return request.second;
+        if (containsCell(request.cell, cell) && !redundantHandoff(request)) return request.boundaryMs;
     return std::nullopt;
 }
 
 void CellLocalAggregation::applyHandoffs() {
     for (auto request = handoffs.begin(); request != handoffs.end();) {
-        const auto domain = request->second.first;
-        const auto time = request->second.second;
+        if (redundantHandoff(request->second)) { ++request; continue; }
+        const auto domain = request->second.cell;
+        const auto time = request->second.boundaryMs;
         AggregationTime start = 0;
         const bool allReady = canMerge(frontier, domain, time + 1, start) && start == time;
         if (!allReady) { ++request; continue; }
@@ -397,7 +478,7 @@ void CellLocalAggregation::compactFreshOwners(AggregationTime boundary, const Ag
             const auto parent = historyCell(config.coverage, parentId, reference.cell.depth - 1);
             bool eligible = true, sameClock = true;
             for (const auto& [id, request] : handoffs)
-                if (containsCell(parent, request.first) || containsCell(request.first, parent)) {
+                if (containsCell(parent, request.cell) || containsCell(request.cell, parent)) {
                     eligible = false;
                     break;
                 }
@@ -471,6 +552,7 @@ void CellLocalAggregation::compactFreshOwners(AggregationTime boundary, const Ag
 
 void CellLocalAggregation::process(AggregationTime now, const AggregationHistory& history, bool final) {
     retryPending(now);
+    drainHandoffIntents(now);
     // A retry may have completed the last empty alignment in a prior endpoint.
     // Resume coalescing at the latest closed sampling boundary before new work.
     compactFreshOwners(now - now % config.samplingPeriodMs, history);
@@ -529,7 +611,8 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
             const auto known = parents.find(domain.id);
             if (known != parents.end()) return known->second;
             for (const auto& [requestId, request] : handoffs)
-                if (containsCell(domain, request.first) || containsCell(request.first, domain))
+                if (request.cell.id != domain.id && containsCell(request.cell, domain)
+                    && !redundantHandoff(request))
                     return parents.emplace(domain.id, std::nullopt).first->second;
             AggregationTime start = 0;
             if (!canMerge(frontier, domain, endpoint, start)
@@ -587,6 +670,9 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
                         // no future passing assessment is assumed or fabricated.
                         break;
                     case MetricId::OccupancyMae:
+                    case MetricId::MinCategoryDistinctContributors:
+                    case MetricId::SemanticMaxLoss:
+                    case MetricId::SemanticMeanLoss:
                     case MetricId::Count:
                         futurePossible = false;
                         break;
@@ -634,6 +720,55 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
                 }
             if (!enclosed) planned.push_back(domain);
         }
+        // Future handoff choices depend on immutable policy geometry/time bounds,
+        // not on a partially advanced ownership cut. Preflight them before output;
+        // only a genuinely unresolved failed prefix will commit an intent on ACK.
+        std::map<int, std::vector<CellGeometry>> futureChoices;
+        std::map<int, bool> futurePolicy;
+        const auto futureFeasible = [&](const CellGeometry& domain) {
+            const auto known = futurePolicy.find(domain.id);
+            if (known != futurePolicy.end()) return known->second;
+            AggregationCandidate footprint{config.runId, config.sensorId, config.applicationId,
+                config.coverage, endpoint, endpoint + 1, endpoint + 1, false, 0, 0, 0, 0,
+                WindowCoverage::NoScheduledSamples, {}, {{domain, {}}}};
+            const auto assessed = evaluator.evaluate(footprint, endpoint + 1);
+            bool feasible = assessed.cells.at(0).policyFeasible;
+            AggregationTime minimum = config.samplingPeriodMs, maximum = temporal.maxWindowMs;
+            for (const auto& check : assessed.cells.at(0).checks) {
+                if ((check.requirement.id == MetricId::CellSideM || check.requirement.id == MetricId::CellAreaM2)
+                    && check.status != AssessmentStatus::Pass) feasible = false;
+                if (check.requirement.id == MetricId::WindowDurationMs && check.requirement.min) {
+                    if (*check.requirement.min > static_cast<double>(maximum)) feasible = false;
+                    else minimum = std::max(minimum, static_cast<AggregationTime>(*check.requirement.min));
+                }
+                if ((check.requirement.id == MetricId::WindowDurationMs || check.requirement.id == MetricId::AgeAtEvaluationMs)
+                    && check.requirement.max && *check.requirement.max < static_cast<double>(maximum))
+                    maximum = static_cast<AggregationTime>(*check.requirement.max);
+            }
+            if (minimum % config.samplingPeriodMs)
+                minimum += config.samplingPeriodMs - minimum % config.samplingPeriodMs;
+            maximum -= maximum % config.samplingPeriodMs;
+            return futurePolicy.emplace(domain.id, feasible && minimum <= maximum).first->second;
+        };
+        for (int id : due) {
+            const auto& cell = frontier.at(id).publicState.cell;
+            if (std::any_of(planned.begin(), planned.end(), [&](const auto& domain) {
+                    return containsCell(domain, cell);
+                })) continue; // This prefix will be consumed by a validated current rescue.
+            const auto& check = checks.at(id);
+            const auto& state = frontier.at(id).publicState;
+            const bool terminal = terminalEnd || endpoint >= state.hardDeadlineMs || now >= state.hardDeadlineMs
+                || (check.candidate.coverage != WindowCoverage::Complete && check.candidate.expectedSamples);
+            if (!check.failed || !terminal || terminalEnd || handoffBoundary(state.cell)) continue;
+            auto& choices = futureChoices[id];
+            std::size_t proposals = 0;
+            for (int depth = state.cell.depth - 1; depth >= spatial.minDepth; --depth) {
+                if (++proposals > spatial.maxEvaluations)
+                    throw std::length_error("Cell-local future handoff proposal budget exceeded");
+                const auto domain = historyAncestor(config.coverage, state.cell, state.cell.depth - depth);
+                if (futureFeasible(domain)) choices.push_back(domain);
+            }
+        }
         for (const auto& domain : planned)
             if (!tryMerge(domain, endpoint, history, terminalEnd))
                 throw std::logic_error("A prevalidated cell-local endpoint merge lost its private ownership");
@@ -658,42 +793,14 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
             const bool atHandoff = boundary && endpoint >= *boundary;
             const bool atLimit = endpoint >= state.hardDeadlineMs || now >= state.hardDeadlineMs;
             const bool terminal = terminalEnd || atLimit || atHandoff || (!complete && candidate.expectedSamples);
-            std::size_t proposals = 0;
-            // A published sibling can close an old parent option. Resolve the old
-            // failed prefix, then explicitly align future windows rather than
-            // waiting indefinitely or reusing the previously public support.
-            if (!empty && !eligible && terminal && !terminalEnd && !boundary) {
-                for (int depth = state.cell.depth - 1; depth >= spatial.minDepth; --depth) {
-                    if (++proposals > spatial.maxEvaluations)
-                        throw std::length_error("Cell-local spatial proposal budget exceeded");
-                    const auto parent = historyAncestor(config.coverage, state.cell, state.cell.depth - depth);
-                    AggregationTime commonStart = 0;
-                    if (canMerge(frontier, parent, endpoint, commonStart)) continue;
-                    const auto hypothetical = query(parent, state.startMs, endpoint, history);
-                    const auto assessed = evaluator.evaluate(hypothetical, now);
-                    bool feasible = assessed.cells.at(0).policyFeasible;
-                    AggregationTime minimum = config.samplingPeriodMs, maximum = temporal.maxWindowMs;
-                    for (const auto& check : assessed.cells.at(0).checks) {
-                        if ((check.requirement.id == MetricId::CellSideM
-                                || check.requirement.id == MetricId::CellAreaM2)
-                            && check.status != AssessmentStatus::Pass) feasible = false;
-                        if (check.requirement.id == MetricId::WindowDurationMs && check.requirement.min)
-                            minimum = std::max(minimum, static_cast<AggregationTime>(*check.requirement.min));
-                        if ((check.requirement.id == MetricId::WindowDurationMs
-                                || check.requirement.id == MetricId::AgeAtEvaluationMs) && check.requirement.max)
-                            maximum = std::min(maximum, static_cast<AggregationTime>(*check.requirement.max));
-                    }
-                    if (minimum % config.samplingPeriodMs)
-                        minimum += config.samplingPeriodMs - minimum % config.samplingPeriodMs;
-                    maximum -= maximum % config.samplingPeriodMs;
-                    if (feasible && minimum <= maximum && scheduleMerge(parent)) {
-                        boundary = handoffBoundary(state.cell);
-                        current.decisions.push_back({TemporalAction::RequestHandoff, state.startMs,
-                            *boundary, now, assessed.status});
-                        break;
-                    }
-                }
-            }
+            // Future alignment is decided only after every owner due at this
+            // endpoint has produced its complete successor. The preflighted intent
+            // survives an interrupted sink through Pending, then resumes after ACK.
+            HandoffIntents intents;
+            const auto choices = futureChoices.find(id);
+            if (!eligible && !empty && terminal && !terminalEnd && !boundary
+                && choices != futureChoices.end() && !choices->second.empty())
+                intents.emplace(std::make_pair(endpoint, id), choices->second);
             bool hold = false;
             if (!terminal && (eligible || empty))
                 for (int parentId : holdDomains) {
@@ -731,8 +838,10 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
             if (boundary && endpoint < *boundary)
                 next.publicState.nextEndMs = std::min(next.publicState.nextEndMs, *boundary);
             replacements.emplace(id, std::move(next));
-            emit(std::move(selected), std::move(replacements), {id});
+            emit(std::move(selected), std::move(replacements), {id}, {}, std::move(intents));
         }
+        reconcileHandoffs();
+        drainHandoffIntents(now);
         // Resolve the complete endpoint batch before coalescing: no due sibling
         // can disappear behind a newly compressed owner while awaiting its ACK.
         compactFreshOwners(endpoint, history);
@@ -752,6 +861,7 @@ void CellLocalAggregation::finish(AggregationTime end, const AggregationHistory&
         if (window.publicState.startMs != end)
             throw std::logic_error("Cell-local finalization left an unresolved spatial prefix");
     handoffs.clear();
+    handoffIntents.clear();
     lastNowMs = end;
     finished = true;
 }

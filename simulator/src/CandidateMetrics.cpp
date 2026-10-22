@@ -19,7 +19,10 @@ const std::array<MetricDefinition, static_cast<std::size_t>(MetricId::Count)>& m
         {MetricId::AgeAtEvaluationMs, "age_at_evaluation_ms", "ms", true},
         {MetricId::PostWindowDelayMs, "post_window_delay_ms", "ms", true},
         {MetricId::MeasuredSampleFraction, "measured_sample_fraction", "fraction", false},
-        {MetricId::OccupancyMae, "occupancy_mae", "agents", false}
+        {MetricId::OccupancyMae, "occupancy_mae", "agents", false},
+        {MetricId::MinCategoryDistinctContributors, "min_category_distinct_contributors", "road_users", true},
+        {MetricId::SemanticMaxLoss, "semantic_max_loss", "fraction", false},
+        {MetricId::SemanticMeanLoss, "semantic_mean_loss", "fraction", false}
     }};
     return definitions;
 }
@@ -47,14 +50,20 @@ const char* assessmentStatusName(AssessmentStatus status) {
     throw std::invalid_argument("Unknown assessment status");
 }
 
-MetricEvaluator::MetricEvaluator(std::optional<MetricPolicy> configured) : policy(std::move(configured)) {
+MetricEvaluator::MetricEvaluator(std::optional<MetricPolicy> configured,
+    std::shared_ptr<const SemanticTaxonomy> catalog)
+    : policy(std::move(configured)), taxonomy(std::move(catalog)) {
+    if (taxonomy && !policy) throw std::invalid_argument("Semantic release requires an explicit metric policy");
     if (!policy) return;
     if (policy->id.empty() || policy->version.empty())
         throw std::invalid_argument("Metric policy requires ID and version");
     validateMetricRequirements(policy->requirements);
+    if (taxonomy) validateSemanticMetricRequirements(policy->requirements);
 }
 
-MetricEvaluator::MetricEvaluator(std::shared_ptr<const PolicyTree> compiled) : tree(std::move(compiled)) {
+MetricEvaluator::MetricEvaluator(std::shared_ptr<const PolicyTree> compiled,
+    std::shared_ptr<const SemanticTaxonomy> catalog)
+    : tree(std::move(compiled)), taxonomy(std::move(catalog)) {
     if (!tree) throw std::invalid_argument("Regional metric evaluator requires a policy tree");
 }
 
@@ -71,12 +80,29 @@ void validateMetricRequirements(const std::vector<MetricRequirement>& requiremen
             if (!bound) continue;
             if (!std::isfinite(*bound) || *bound < 0 || (definition.integral && std::floor(*bound) != *bound)
                 || (definition.integral && *bound > 9007199254740991.0)
-                || (requirement.id == MetricId::MeasuredSampleFraction && *bound > 1))
+                || ((requirement.id == MetricId::MeasuredSampleFraction
+                    || requirement.id == MetricId::SemanticMaxLoss || requirement.id == MetricId::SemanticMeanLoss) && *bound > 1))
                 throw std::invalid_argument("Invalid bound for metric: " + std::string(definition.name));
         }
+        if (requirement.id == MetricId::MinCategoryDistinctContributors
+            && (!requirement.min || *requirement.min < 1 || requirement.max))
+            throw std::invalid_argument("min_category_distinct_contributors requires a positive minimum only");
+        if ((requirement.id == MetricId::SemanticMaxLoss || requirement.id == MetricId::SemanticMeanLoss)
+            && (requirement.min || !requirement.max))
+            throw std::invalid_argument("Semantic loss requires an upper bound only");
         if (requirement.min && requirement.max && *requirement.min > *requirement.max)
             throw std::invalid_argument("Contradictory bounds for metric: " + std::string(definition.name));
     }
+}
+
+void validateSemanticMetricRequirements(const std::vector<MetricRequirement>& requirements) {
+    bool support = false, maximumLoss = false;
+    for (const auto& r : requirements) {
+        support |= r.id == MetricId::MinCategoryDistinctContributors && r.min && *r.min >= 1;
+        maximumLoss |= r.id == MetricId::SemanticMaxLoss && r.max.has_value();
+    }
+    if (!support || !maximumLoss)
+        throw std::invalid_argument("Semantic taxonomy requires min_category_distinct_contributors.min and semantic_max_loss.max");
 }
 
 namespace {
@@ -151,6 +177,9 @@ std::vector<MetricValue> measure(const AggregationCandidate& candidate, const Ag
         add(MetricId::MeasuredSampleFraction, static_cast<double>(candidate.measuredSamples) / candidate.expectedSamples);
     else absent(MetricId::MeasuredSampleFraction, "no_scheduled_samples");
     absent(MetricId::OccupancyMae, "offline_reference_required");
+    absent(MetricId::MinCategoryDistinctContributors, "semantic_not_enabled");
+    absent(MetricId::SemanticMaxLoss, "semantic_not_enabled");
+    absent(MetricId::SemanticMeanLoss, "semantic_not_enabled");
     return values;
 }
 }
@@ -182,6 +211,46 @@ WindowMetricAssessment MetricEvaluator::evaluate(const AggregationCandidate& can
                 requirements = &policy->requirements;
                 result.effectivePolicyId = policy->id;
                 result.policySources = {"uniform:" + policy->id};
+            }
+            if (taxonomy) {
+                validateSemanticMetricRequirements(*requirements);
+                for (const auto id : {MetricId::MinCategoryDistinctContributors,
+                        MetricId::SemanticMaxLoss, MetricId::SemanticMeanLoss})
+                    result.metrics.at(static_cast<std::size_t>(id)).unavailableReason = "semantic_evidence_unavailable";
+                if (cell.counts.semanticEvidence) {
+                    // Check the raw-class contribution accounting before choosing a
+                    // truthful representation. This cannot reconstruct identities,
+                    // but it rejects inconsistent type/evidence snapshots.
+                    std::map<std::string, std::uint64_t> leafObservations;
+                    std::uint64_t total = 0;
+                    for (const auto& entry : cell.counts.typeObservationContributions) {
+                        if (entry.second > cell.counts.observationContributions - total)
+                            throw std::invalid_argument("Semantic raw type counts exceed candidate support");
+                        total += entry.second;
+                        leafObservations[taxonomy->leafForType(entry.first)] += entry.second;
+                    }
+                    if (total != cell.counts.observationContributions)
+                        throw std::invalid_argument("Semantic raw type counts omit candidate observations");
+                    for (const auto& node : taxonomy->nodes()) if (!node.inputTypes.empty()) {
+                        const auto at = cell.counts.semanticEvidence->nodes.find(node.id);
+                        if (at == cell.counts.semanticEvidence->nodes.end()
+                            || at->second.observationContributions != leafObservations[node.id])
+                            throw std::invalid_argument("Semantic evidence contradicts raw type observations");
+                    }
+                    std::uint64_t support = 1;
+                    for (const auto& required : *requirements)
+                        if (required.id == MetricId::MinCategoryDistinctContributors && required.min)
+                            support = static_cast<std::uint64_t>(*required.min);
+                    result.semantic = taxonomy->select(*cell.counts.semanticEvidence,
+                        cell.counts.observationContributions, cell.counts.distinctContributors, support);
+                    const auto set = [&](MetricId id, double value) {
+                        auto& measured = result.metrics.at(static_cast<std::size_t>(id));
+                        measured.value = value; measured.unavailableReason.clear();
+                    };
+                    set(MetricId::MinCategoryDistinctContributors, result.semantic->minimumDistinctContributors);
+                    set(MetricId::SemanticMaxLoss, result.semantic->maxLoss);
+                    set(MetricId::SemanticMeanLoss, result.semantic->meanLoss);
+                }
             }
             for (const auto& required : *requirements) {
                 const auto& metric = result.metrics.at(static_cast<std::size_t>(required.id));

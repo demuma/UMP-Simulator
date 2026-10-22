@@ -291,9 +291,12 @@ may still be legal. Conversely, changing geometry must not reset the original wi
 release deadline or retention budget. Once the selected search has no remaining permitted
 extension, distinguish a failed candidate from an entirely unreleasable coordination domain.
 
-Recommended extension after the basic whole-candidate suppression path: choose an eligible
-non-overlapping set of descendant cells over the same unpublished interval, and suppress
-only its uncovered remainder. Search the tree for valid release candidates, not for one
+**October 21 implementation:** the optional common-window A07 fallback now chooses an
+eligible non-overlapping set of descendant cells over the same unpublished interval,
+and suppresses only its unreleasable remainder. The default whole-candidate baseline
+is retained. See [the contract](SELECTIVE_DESCENDANT_RESCUE.md) and
+[test report](SELECTIVE_DESCENDANT_RESCUE_TEST_REPORT_2026-10-21.md). More general
+asynchronous descendant rescue remains a separate extension. Search the tree for valid release candidates, not for one
 presumed "guilty" leaf. Group-level failure may have no single causal leaf.
 
 Evaluate child/parent alternatives using complete history and their own effective policies.

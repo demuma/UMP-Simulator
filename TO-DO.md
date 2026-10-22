@@ -1,6 +1,137 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-19. Current priority: interpret completed privacy robustness evidence and define semantic-visit/online evaluation contracts before implementation; prepare October 25 evidence. October 18 remains a historical milestone.**
+**Status: 2026-10-22. Current priority: sequential algorithm and policy-compliance work.
+A07 common-window valid-descendant rescue and the first A08 common-window semantic
+adaptation slice are implemented and verified. Review their stated metrics and limits
+before broadening the mechanism. Membership attacks and computation/cache optimization
+remain deferred. October 18 is historical.**
+
+**October 22 checkpoint:**
+
+- [x] Make replay cell inspection explicit: keyboard-selectable cell list, selected
+  outline, focus zoom, released categories and opt-in private original groups for
+  exactly the displayed cell/window. Show local policy geometry separately from
+  the effective checks. See [viewer guide](tools/replay_viewer/README.md).
+- [x] Run the bounded [16-leaf regional-policy experiment](docs/LOCAL_LEAF_POLICY_RESULTS_2026-10-22.md)
+  on identical observations: intermediate semantic groups, sibling merge, infeasible
+  support, unchanged controls and a coarse footprint intersecting an empty strict patch.
+- [x] Record common-window temporal coupling explicitly. A regional 600-ms limit
+  currently constrains the complete semantic window; valid unrelated branches can
+  wait for failing neighbors. No independent semantic-window claim is made.
+- [x] Integrate these checks into the [four-step taxonomy/policy roadmap](docs/TAXONOMY_POLICY_ROADMAP_2026-10-22.md).
+  Full modifier-based population generation, regional attribute restrictions and
+  arbitrary/overlapping map geometry remain later work.
+- [x] Inventory the 162 existing changed paths and prepare a compact, integrity-checked
+  synthetic replay package, excluding the 29-GB raw result tree and external papers.
+  [Checkpoint](docs/RESEARCH_CHECKPOINT_2026-10-22.md), [package](docs/REPLAY_DATA_PACKAGE.md).
+- [x] Complete the integrated build, 60-entry CTest run, real-artifact group checks,
+  browser inspection and portable-data verification. See the
+  [October 22 test report](docs/REPLAY_LOCAL_POLICY_TEST_REPORT_2026-10-22.md).
+- [ ] Next: design semantic-aware cell-local ownership and deadlines before removing
+  the existing taxonomy/local-mode guard; repeat this exact leaf-policy fixture.
+  Separate expected scope tests from policy/privacy effectiveness experiments.
+
+**Current execution order (supersedes older next-step notes below):**
+
+1. **Completed:** A07 preserves valid whole descendants after failed spatial merging.
+2. **Completed:** A08 adds exact category support, declared semantic loss and complete
+   truthful category cuts, regional checks and immutable recipient storage/recovery.
+3. **Completed bounded review:** the [semantic priority study](docs/SEMANTIC_PRIORITY_STUDY_2026-10-21.md)
+   audits 360 configurations / 1,929 actual intervals plus 12 repeats. Legal trade-offs
+   remain between spatial detail, class detail and fixed-query answerability; production
+   selection is unchanged. Support remains an operational minimum, not a completed QI model.
+4. **Completed:** first [Semantic First controller](docs/SEMANTIC_FIRST_IMPLEMENTATION.md),
+   with TF secondary priority, zero-loss preference and bounded terminal fallback. The
+   [27-case comparison](docs/SEMANTIC_FIRST_RESULTS_2026-10-21.md) and
+   [test report](docs/SEMANTIC_FIRST_TEST_REPORT_2026-10-21.md) pass: 52 CTest entries,
+   361 passed Python methods/12 existing optional skips, 13 native cases and 30 unchanged
+   legacy pairs. Its first waiting rule remains a historical baseline; the later
+   semantic release update and next local-semantic gate below supersede this
+   earlier fixed-secondary limitation.
+5. **Completed - MR01, recorded moving-data comparison:** use the existing C++
+   Simulator, verified GT/AGBS capture and the same frozen observations for all methods.
+   Requested populations 200/500/1000, initially 20 simulated seconds, seven maintained
+   profiles, 80 m x 80 m and depth 6. Compare six fixed settings (10/20/40 m crossed
+   with 400/1000 ms) against TF/SF/Semantic First under the identical uniform-root
+   requirements. See the [implementation/how-to](docs/MOVING_REPLAY.md) and
+   [predeclared protocol](docs/MOVING_REPLAY_PROTOCOL_2026-10-21.md).
+   - [x] Complete system verification: input evidence, scalar/semantic raw-data audits,
+     source accounting, deterministic frozen-input repeat and viewer time gating.
+   - [x] Record actual population/type evolution, retained observations, query coverage
+     and conditional MAE, spatial/semantic detail and interval age. Separate system
+     acceptance from measured effectiveness; no favorable-result promise.
+   - [x] Inspect synchronized recorded motion/release replays and save a presentation
+     fallback image or recording. No new live/network latency claim.
+   Acceptance: 55/55 CTest entries; 27 independently audited method outputs, three
+   deterministic repeats and browser playback inspection. See the [results](docs/MOVING_REPLAY_RESULTS_2026-10-21.md)
+   and [test report](docs/MOVING_REPLAY_TEST_REPORT_2026-10-21.md).
+6. **Completed - MR01b, maximum output-cell sensitivity:** hard 10 m and 5 m
+   caps are available through `--max-cell-side-m`, with matching search depths and
+   distinct policies. Reused all three frozen sources; no new motion or source-area
+   change. The [protocol](docs/CELL_SIZE_CAP_PROTOCOL_2026-10-21.md) precedes all
+   54 new method outputs; six deterministic repeats and independent cap/source/
+   scalar/semantic checks pass. Seven focused CTest entries pass, including 81
+   actual C++ cap regressions. The original 40 m data are unchanged.
+   [Results](docs/CELL_SIZE_CAP_RESULTS_2026-10-21.md) record suppression and unknown
+   task support explicitly. At N=500, retained contributions are 93.91%/28.31%
+   for 10 m/5 m; the latter answers no complete fixed 10 m/1 s query.
+   [Commands and replay](docs/CELL_SIZE_CAPS.md) include direct cross-cap views.
+7. **Completed - MR01c, four-second window sensitivity and priority diagnosis:**
+   separate `--max-window-ms 4000` policies couple duration, age and controller
+   limits, with 5 s history and adequate bounded evaluation/bin capacity. The
+   [protocol](docs/FOUR_SECOND_WINDOW_PROTOCOL_2026-10-21.md) predates 72 new outputs
+   and six repeats; nine regression methods run the actual C++ core 23 times,
+   and seven focused CTest entries pass. Independent reconstruction verifies
+   40,239 public cells / 41,554 semantic bins, all 540 artifact hashes and
+   36 overlapping fixed controls. Prior pilot/cap artifact hashes are unchanged.
+   At the 5 m cap, SF retention rises 4.95 -> 10.90%, 28.31 -> 49.26%, and
+   65.48 -> 81.66%; release age and short-deadline losses remain explicit.
+   [Results and test report](docs/FOUR_SECOND_WINDOW_RESULTS_2026-10-21.md),
+   [exact-equality diagnosis](docs/SEMANTIC_SPATIAL_EQUALITY_2026-10-21.md) and
+   [paired playback](docs/FOUR_SECOND_WINDOWS.md) distinguish support below five
+   from inability to retain detailed classes. Root pooling permits support five
+   across all seven types; repeated samples of one identity count once.
+8. **Completed - semantic release control:** `semantic_secondary_strategy` now
+   supports Temporal First or Spatial First. Semantic `release_trigger` defaults
+   to `policy_satisfied`; explicit `priority_satisfied` retains preference waiting.
+   Both default secondaries can coincide because immediate legal release wins
+   over optional waiting. Hierarchy intermediates remain truthful categories;
+   max loss 1 permits Root but does not force every bin to Root. See the
+   [contract](docs/SEMANTIC_RELEASE_CONTROL.md) and
+   [test/result report](docs/SEMANTIC_RELEASE_TEST_REPORT_2026-10-21.md).
+   Old experiment runners explicitly retain their historical preference trigger;
+   frozen captures/results/protocols are unchanged.
+9. **Next algorithm gate - integrate semantics with cell-local coordination:**
+   individual windows, immutable publication and future parent handoffs already
+   exist for nonsemantic TF/SF, but taxonomy-enabled cell-local input/publication
+   is still rejected. Plan and test semantic-aware ownership, independent hard
+   regional deadlines, sibling takeover/partial release, reservation conflicts,
+   source accounting and retry before enabling it. A valid cell should not wait
+   merely for an unrelated failing branch; released support must never re-enter
+   a later merge. Define how early eligible release trades future merge options
+   against latency. Do not remove the guard without this integration.
+10. **MR02, presentation gate (narrative drafted, slide editing/rehearsal open):** prepare one coherent 20-minute narrative: question and
+   conditional answer first; policy model, three adaptation dimensions, controlled
+   trade-off, recorded replay and validated fixed-baseline comparison. Put simulator
+   implementation, extra metric catalogs and old attack studies in backup. Mark
+   future scenarios explicitly. Use the [18-minute narrative plus buffer](docs/PRESENTATION_NARRATIVE_20MIN_2026-10-21.md).
+11. **MR03, subsequent experiment design:** independently replicate captures; then vary
+   density/identity turnover, heterogeneous regions and class-query utility one factor
+   at a time. Diagnose the common-window requirement for a complete early cut
+   before changing the scheduler: one unsupported branch can hold valid neighbors
+   until the terminal partial-release fallback. Compare selective independent
+   releases only with an explicit publication/merge accounting contract. A
+   one-type/seven-type ablation on the same XY/IDs remains separate; the present
+   fixed-mix study does not estimate a causal type-count effect. ALOQ reproduction is a separate later external comparison with different
+   privacy guarantees; first verify adapter/units/seeds/output geometry.
+12. Keep finest observation depth 6 unchanged. Maximum output size is a separate
+   hard policy bound. Individual/type suppression, per-class utility priorities and
+   broader simulation realism remain separate decisions.
+
+The pre-implementation [A07 acceptance contract](docs/SELECTIVE_DESCENDANT_RESCUE.md)
+defines the exact rule, examples and required verification. Existing privacy studies
+remain historical evidence; new attacks, map realism, taxonomy redesign and caching
+are not prerequisites for this bounded step.
 
 This is the central task backlog. README describes current behavior; this file tracks
 pending changes. The historical IMPLEMENTATION_PLAN remains a reference, not an instruction
@@ -24,14 +155,56 @@ untouched references match. Mixed-density SF retention matches common, TF differ
 -0.0732 pp on average. The user now prioritizes the [empirical privacy comparison](docs/PRIVACY_COORDINATION_STUDY_2026-10-19.md).
 See the [refinement report](docs/COORDINATION_REFINEMENT_2026-10-19.md) for accuracy trade-offs.
 
-**Latest completed milestone:** the independent 208-group robustness study passes
+**Previous completed milestone:** the independent 208-group robustness study passes
 2080 audits and four repeats, with 28 fixed attack models and separate base/shift tests.
 It does not establish a general local privacy advantage: 15/16 paired intervals contain
 zero and one indicates greater attack success. Local retention/availability also fall.
 [All results](docs/PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md); [36-suite / 228-method test report](docs/PRIVACY_ROBUSTNESS_TEST_REPORT_2026-10-19.md).
-The next ordered discussion is the protected semantic secret and auxiliary knowledge,
-then causal online-prefix/deadline evaluation; further coordinator tuning follows
-explicitly measured needs.
+The causal-prefix/deadline follow-up is now complete (October 20, below). Further
+coordinator tuning follows explicitly measured needs; a semantic-visit experiment needs
+a separate protection objective and ground-truth contract.
+
+**Current diagnosis:** [local coordination follow-up](docs/LOCAL_COORDINATION_DIAGNOSIS_2026-10-19.md)
+shows TF freshness benefits on the same retained observations and better coverage at
+strict logical deadlines, alongside eventual retention/availability losses. One passing
+parent is blocked solely by a contained future handoff reservation. This measured
+coordination limitation is now repaired and regression-tested. The fresh before/after
+assessment follows the [fixed protocol](docs/HANDOFF_REPAIR_PROTOCOL_2026-10-19.md);
+see the [repair report](docs/HANDOFF_REPAIR_REPORT_2026-10-19.md) and
+[37-suite / 236-method test report](docs/HANDOFF_REPAIR_TEST_REPORT_2026-10-19.md).
+
+**Previous completed milestone:** the [handoff repair](docs/HANDOFF_REPAIR_REPORT_2026-10-19.md)
+passes 37 suites/236 Python methods, 27 focused functions and 240 sanitizer stress cases.
+The fresh 208-group study confirms higher retention and query coverage with small utility
+costs and no general privacy improvement. These measured limits, including two increased
+attack-success contrasts, motivated the subsequent causal evaluation without changing
+the protected whole-source membership fact.
+
+**Latest completed milestone, October 20:** [causal privacy and deadline utility](docs/CAUSAL_PRIVACY_REPORT_2026-10-20.md)
+passes 40 CTest suites, 285 Python methods and independent source/score/deadline audits.
+The fresh 208-group study contains 2080 audited executions and 360 checkpoint models.
+Local TF improves zero-lag coverage by 2.38/5.15 pp (base/shift), but not at a one-second
+lag; local SF has lower coverage at every tested lag. All 16 local history-minus-recent
+AUC intervals include zero, and their representation/regularization difference prevents
+a pure memory-effect claim. The empirical CAL alarm cap does not guarantee TEST FPR.
+The [test report](docs/CAUSAL_PRIVACY_TEST_REPORT_2026-10-20.md) records verification scope.
+No new C++ controller change, semantic secret or live service was introduced.
+
+**Editor diagnostic repair, October 20:** a fresh C++17 syntax check of
+`simulator/src/Simulation.cpp` and the simulator build pass. The local VS Code
+configuration selected x64 and `/usr/local` MongoDB driver headers, while CMake
+uses arm64 and `/opt/homebrew`. The local C/C++ configuration now follows the
+CMake compilation database, with matching Apple Silicon fallback paths. CMake
+exports that database by default; README documents setup and cache reset.
+The reported line-394 coverage initialization and line-406/409/411 constructor
+calls match the current declarations and pass a fresh compiler syntax check.
+Fallback include paths now name only source include directories, excluding frozen
+header copies under `results/`. Editor cache refresh remains necessary if its
+diagnostics continue to disagree with the compiler.
+This changes build/editor configuration only; simulation behavior is unchanged.
+Verification: fresh configuration, simulator build, compiler syntax check and
+generated compile-command inspection. Remaining editor diagnostics require
+their exact message/line to distinguish stale cache from another problem.
 
 ## 1. Status and priorities
 
@@ -455,15 +628,51 @@ The [question register](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md),
 - [x] Document QI/SA roles and environmental-context risks, semantic-visit prerequisites
   and the online-prefix contract in the [new reference](docs/PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
   These are research/interface definitions, not implemented semantic labels or an online client.
-- [ ] **Next discussion, E02-D:** choose a defensible semantic secret and visit ground truth
+- [x] Complete the predeclared seed20261022 old/new handoff assessment: 208 fresh groups,
+  separate old/new TRAIN fits and CAL thresholds, 2912 audited mechanism executions,
+  36 models/72 cohort assessments, paired membership contrasts, matched-query MAE and
+  exact shared-observation ages. No seeds, models or scenarios were selected after results.
+  All 2912 audits/six repeats/three shared controls pass; independent reconstruction verifies
+  512 held-out utility pairs and all 72 attack assessments. Retention rises 2.72–5.21 pp,
+  TF shared-age rises 8.54–10.28 ms, and two pointwise SF/shift/exact AUC contrasts worsen.
+  No general privacy gain or local/common equivalence is established.
+- [x] Persist checkpoint CAL score rows in the new prefix bundles. Independently verify
+  LR/HGB maximum-score threshold selection without estimator deserialization/refitting;
+  do not claim that HGB inference itself was independently rerun.
+- [x] **E02 causal-prefix extension, completed 2026-10-20:** retain whole-source membership
+  and the fixed repaired controller. Freeze the [protocol](docs/CAUSAL_PRIVACY_PROTOCOL_2026-10-20.md)
+  before the fresh seed20261023 data: six causal checkpoints, exact/noisy Bernoulli
+  knowledge, auxiliary/recent/history controls, whole-path CAL thresholds, persisted
+  score paths and grouped uncertainty. Complete all 360 models / 120 cohort assessments,
+  with no TEST-based tuning. All 16 local history-minus-recent intervals include zero.
+- [x] **E01 causal deadline utility:** fixed 10 m/1 s queries at lags 0/200/500/1000 ms;
+  complete public support, own-deadline readiness, fixed 896-query/world interior cohort,
+  matched-query error and explicit EOF censoring. Independently reconstruct all
+  7,340,032 query-deadline and 2,097,152 matched projections; report the conditional TF
+  benefit alongside SF losses. This changes utility scoring, not publication or privacy.
+- [x] Update canonical notation to v1.5, add causal/deadline equations and compile the
+  LaTeX export. Save complete aggregate tables, four PNG/SVG figure pairs and
+  [implementation](docs/CAUSAL_PRIVACY_IMPLEMENTATION.md)/results/test documentation.
+- [ ] **Next, E02 presentation/protection objective:** state the application, whole-source
+  secret and accepted privacy/utility criteria before selecting any further mechanism
+  change. Present operational policy compliance separately from empirical attack success.
+- [ ] **Next empirical control:** predeclare equal-representation/regularization memory
+  comparisons using new independent groups. At 1 s recent and cumulative releases
+  coincide; duplicated public features change LR's effective L2 penalty. The completed
+  comparison does not isolate the information value of retaining history.
+- [ ] **Next calibration study:** increase independent CAL negatives and quantify
+  operating-point uncertainty/transfer under declared shifts. Current 32 negative CAL
+  groups permit at most three false alarms, but TEST FPR reaches 0.40625. Preserve the
+  current TEST cohorts and never retune a threshold on their outcomes.
+- [ ] **After the prefix evidence, E02-D discussion:** choose a defensible semantic secret and visit ground truth
   (entry/dwell rather than building proximity); keep candidate source participation in
   both visit worlds, freeze backgrounds and withhold secret/guard intervals from knowledge.
 - [ ] **Then, E02-D implementation:** build a minimal synthetic destination/access-path
   fixture and auxiliary-only/release-plus-knowledge controls, independent splits and
   frozen attack protocol. Real city maps remain a separate realism extension.
-- [ ] **Then, online evaluation:** implement recipient-prefix features and deadline-aware
-  fixed-query utility with no future releases/knowledge. Distinguish assumed instantaneous
-  logical delivery from measured wall-clock processing, queues and end-to-end availability.
+- [ ] **After logical-time evaluation, online prototype:** instrument measured wall-clock
+  processing, queues and actual recipient receipt. Logical sealing under assumed immediate
+  delivery does not establish network latency or bounded real-time processing.
 - [ ] Test noise-aware matching/trajectory smoothing or probabilistic localization on a
   newly declared assessment; current uncertain points use direct matching. Preserve all
   completed test sets and avoid tuning these methods on their outcomes.
@@ -486,10 +695,10 @@ The [question register](docs/RESEARCH_QUESTIONS_AND_EXPERIMENTS.md),
 - [ ] Extend this reference first whenever a new metric, sensor capability, independent
   cell-window model, privacy representation or publication model is adopted.
 
-**Execution priority updated again, 2026-10-19:** EP01, the first synthetic E02 path,
-cell-local coordination and targeted refinement are implemented. The user now prioritizes
-empirical privacy: finish the predeclared common/local source-membership comparison and
-interpret attack/utility trade-offs before more controller optimization. Controlled
+**Execution priority updated, 2026-10-20:** EP01, cell-local coordination, targeted handoff
+repair, independent membership comparisons and causal deadline evaluation are complete.
+Present the measured conditional utility benefits and remaining privacy/calibration
+limits, then predeclare the next attack controls before more controller optimization. Controlled
 functional-region scenarios and regional utility extensions follow. Rich environment
 import, destination-demand processes, global/local motion planning and avoidance remain
 later X04/X03/X05 work. A demonstrated aggregation limitation may justify targeted
@@ -870,9 +1079,21 @@ future common-boundary handoffs and scoped publication. Comparative effectivenes
   14 versus descendant 56); plan competing nearest rescues before output and restrict
   holds to feasible common-start ancestor opportunities. Seven focused cases plus
   240 stress cases, fresh ASan/UBSan and same-input 30-case comparison pass.
-- [ ] Keep further coordination optimization behind the current privacy milestone. Explain
-  remaining losses with distinct publication/private-retirement/history/deadline causes;
-  do not interpret the current heuristic as a globally optimal scheduler.
+- [x] **P0 — Handoff correction, completed 2026-10-19:** repair the proven
+  future-handoff conflict with endpoint-consistent planning, redundant-plan reconciliation
+  and atomic supersession of compatible private plans. Preserve immutable publication,
+  deadlines, unrelated plans, budgets and retry/rollback guarantees. Add the exact passing
+  parent witness and nested/sink-failure regressions; this is A03/A05, not A07.
+  Six new functions pass; the previous core fails five. The 42-observation automatic
+  witness retains 33 instead of zero. All 27 focused cases/240 sanitizer stress cases,
+  37 suites/236 Python methods and original 30-case comparison pass.
+- [ ] Distinguish passing-owner holds from private measured-empty ownership retention.
+  Test a certified-empty alignment contract before changing retirement semantics; never
+  reopen published, unavailable or terminal nonempty support. Current empty compaction
+  does not resolve an extending nonempty sibling beside an advanced empty owner.
+- [ ] Compare bounded holds with earliest eligible release under application deadlines.
+  Keep matched-point age, retention and empirical privacy separate; do not interpret
+  the current heuristic as a globally optimal scheduler.
 - [ ] Extend whole-domain feasibility enumeration to a justified asynchronous reference class.
 - [ ] Add a persistent renderer mosaic of latest decisions from every local domain.
 - [ ] Implement E05 precomputed statistic caches separately from ownership/coordination holds.
@@ -885,24 +1106,79 @@ better privacy/utility trade-off rather than assuming it.
 
 ### A07 — Selective suppression after permitted adaptation is exhausted — P1
 
-- [ ] Check remaining temporal options when the coarsest spatial cell fails; never reset
-  window start/deadline. Define final fallback before marking the whole region suppressed.
-- [ ] Select valid whole descendant cells over the same unpublished interval; recheck their
-  policies, metric inputs, completeness, fine-resolution bounds and publication history.
-- [ ] Suppress only the unreleasable remainder; mark abandoned parents SUPERSEDED. Do not
-  remove observations from a parent while retaining its original full-area semantics.
-- [ ] Define deterministic selection/ties and the coverage/detail objective. Do not claim
-  globally minimal suppression from a greedy traversal without a supporting argument.
-- [ ] Prune only with valid metric-specific bounds: under a uniform support threshold,
-  a parent with too few distinct people implies its descendants also fail for that interval.
-- [ ] Test heterogeneous regional thresholds where the parent fails but some children pass;
-  require no overlapping totals that reveal the suppressed part.
-- [ ] Evaluate missing coverage separately from zero occupancy, selection bias, utility error
-  and disclosure through the visible suppression/geometry pattern.
+**Initial common-window slice implemented and verified, 2026-10-21.**
+The optional `spatial_selection.preserve_valid_descendants` flag defaults false,
+retaining the original baseline. See the [acceptance contract](docs/SELECTIVE_DESCENDANT_RESCUE.md)
+and [test report](docs/SELECTIVE_DESCENDANT_RESCUE_TEST_REPORT_2026-10-21.md).
 
-**Acceptance:** uniform-threshold failure suppresses the infeasible subtree; the documented
-10/2/2/2 threshold example preserves eligible children; no output silently changes support.
-Keep whole-candidate suppression as a correct simpler baseline until this fallback is tested.
+- [x] Preserve remaining temporal options and the original start/deadline; a partial
+  proposal remains private until the existing terminal condition.
+- [x] Preserve valid whole descendants over the same unpublished common interval;
+  recheck effective policy, metric inputs, completeness, geometry and publication age.
+- [x] Keep a legal higher-parent rescue available. If it fails, publish selected descendants
+  only; retain failed parent assessments privately and suppress the remaining branches.
+  Do not remove observations from a parent while retaining its full-area semantics.
+- [x] Keep the disjoint private cut complete for contribution accounting. Exact distinct
+  support remains an identity union; no parent/global total accompanies suppressed parts.
+- [x] Specify deterministic finer-cut preference when all children pass, whole-parent
+  rescue when needed and legal, and partial fallback only when that parent fails.
+- [x] Verify 9-input/6-retained and regional 21-input/18-retained examples, passing internal
+  descendants, uniform support impossibility, missing/unavailable/expired evidence,
+  budget/history rollback, temporal opportunity, sink retries and publication barriers.
+- [x] Keep cell-local planning unchanged; it already preserves passing leaf owners in
+  the reference cases. Reject enabling this common-window-only flag for cell-local use.
+- [ ] Evaluate broader query utility, class/region selection bias and disclosure through
+  the visible suppression/geometry pattern. More retained data is not a privacy guarantee.
+- [ ] Add metric-specific pruning only if justified later; no computation optimization now.
+- [ ] Generalize asynchronous coarse-owner fallback only after demonstrating a separate
+  reachable gap, with original coordination scope and atomic complete-scope retirement.
+
+**Gate:** the common-window slice is verified. Review its behavior and metric adequacy
+before starting semantic generalization, road-user/type suppression or a utility scheduler.
+Do not interpret tiny fixed-interval oracle agreement as globally optimal online scheduling.
+
+### A08 — Semantic resolution under regional constraints — P1
+
+**First common-window slice implemented and verified, 2026-10-21.**
+[Model/formulas](docs/SEMANTIC_ADAPTATION.md),
+[test report](docs/SEMANTIC_ADAPTATION_TEST_REPORT_2026-10-21.md).
+
+- [x] Add an immutable versioned release hierarchy with explicit raw-label aliases;
+  preserve existing behavior profiles and default scalar output.
+- [x] Reconstruct exact per-node identity support privately, including moving/repeated
+  road users; reject unknown/conflicting terminal classifications within queried windows.
+- [x] Register `min_category_distinct_contributors`, `semantic_max_loss` and
+  `semantic_mean_loss`; enforce strict regional support/loss bounds with every scalar gate.
+- [x] Select a complete truthful category antichain within each spatial/time candidate;
+  semantic failure continues through existing TF/SF/A07 without resetting time.
+- [x] Independently reassess approved bins at publication; remove private node/type counts.
+  Persist/recover the exact versioned product, including lost acknowledgement handling.
+- [x] Add exact/unknown class-query semantics, five frozen examples, independent raw-data
+  and exhaustive antichain checks, sanitizer and disabled-mode compatibility evidence.
+- [x] Review class-specific query utility and early semantic generalization in a bounded
+  independent candidate study (360 cases, same actual intervals, fixed receiver bank).
+- [x] Adopt **Semantic First = preserve semantic accuracy**, matching Temporal First and
+  Spatial First. Rename current processing-order descriptions to early semantic generalization.
+- [x] Implement first Semantic First mode: TF secondary, zero-cost preference until terminal,
+  ascending maximum-loss ceilings at terminal, original hard bounds, private diagnostics.
+- [x] Specify partial fallback: highest retained observation count, then lowest actual maximum
+  loss, then finer weighted cell size and canonical IDs. Mean remains a hard constraint/report.
+- [x] Verify source accounting, unavailable coverage, EOF, budgets/rollback, original-policy
+  publication/recovery, legacy compatibility and the max-versus-mean counterexample.
+- [ ] Review the recorded trade-offs before Semantic First + Spatial First, mean-loss
+  optimization, predictive waiting or regional strategy overrides. These are not implemented.
+- [ ] Define application preferences before adding a joint utility scheduler or
+  per-category release priorities; fixed-interval nondominance is not online optimality.
+- [ ] Implement cell-local semantic coordination only after a separate scope/acceptance
+  review; current enabled use rejects explicitly.
+- [ ] Study individual contribution/type suppression and complementary suppression as
+  separate actions. Do not falsify labels or silently discard a rare semantic remainder.
+- [ ] Expand to independent age/mode/vehicle classification dimensions only when justified;
+  the current rooted release taxonomy does not complete behavioral taxonomy redesign X01.
+
+**Gate:** 47 CTest entries pass; Python reports 312 methods: 300 passed and 12 optional
+skips. All 15 new semantic methods execute and pass. This verifies the tested bounded
+cases and measured representation/support values, not a general privacy-risk reduction.
 
 ### A06 — Aggregation inspection and live state overlay — P1, after S04
 
@@ -1015,6 +1291,40 @@ velocity comparisons. Keep reference data unchanged. One checked agent does not 
 
 **Acceptance:** reproducible table/figure with configuration and explicit limits. A complete
 policy tree or real city map is not required for this first comparison.
+
+### E07 — Policy constraints and mechanism effectiveness — P1 design, then evaluation
+
+**First bounded common-window study completed, 2026-10-21:**
+[protocol](docs/SEMANTIC_PRIORITY_PROTOCOL_2026-10-21.md),
+[results](docs/SEMANTIC_PRIORITY_STUDY_2026-10-21.md),
+[test report](docs/SEMANTIC_PRIORITY_TEST_REPORT_2026-10-21.md).
+360 configurations, 1,929 legal actual-interval cuts, 12 identical repeats;
+50 CTest entries pass (345 Python passes, 12 optional skips). No controller change.
+This completes the initial bounded review; the broader tasks below remain open.
+
+- [x] Freeze five paired deterministic scenarios, class-count query bank and protocol.
+- [x] Sweep category support/semantic loss/spatial bound/duration-age cap in this scope.
+- [x] Enumerate legal same-interval candidates and expose nondominated query/detail choices.
+- [x] Separate receiver missing/unknown/known-zero values and logical deadline cohorts.
+- [x] Isolate density at fixed 2:1:1 class ratio and static identities in 18 real replays.
+  Verify the fine-space/coarse-semantics transition and that repeated sampling alone
+  adds no distinct support. Hard loss-zero is not a Semantic First mode.
+
+- [ ] Predeclare input replays, query workload, action/candidate class and policy versions.
+- [ ] Sweep support minima, spatial/temporal/age bounds and semantic loss separately,
+  then predeclared combinations; hold all unrelated settings and source data fixed.
+- [ ] Record binding/conflicting requirements, unavailable evidence and invalid inputs.
+- [ ] Quantify feasible-case fraction under a justified reference, compliance, retention,
+  timely query coverage/error, spatial/temporal/semantic detail and release age.
+- [ ] Separate policy-imposed infeasibility from bounded-reference search/coordination gaps.
+  Do not treat all-suppression as useful fulfillment or automatically relax constraints.
+- [ ] Evaluate the quantitative privacy gain separately on those fixed mechanism/policy
+  versions; support proxies and representation loss remain explicit first-stage metrics.
+
+**Scope:** mechanism effectiveness under constraints, not current computational optimization.
+The broad sensitivity study is not yet run. The bounded completed study couples age
+and duration maxima; vary them independently in the broader experiment. Fixed-interval
+feasibility is not global schedule feasibility, and no actual privacy gain is inferred.
 
 ### R01 — Generate or reuse a reproducible measurement stream — P0
 
@@ -1274,6 +1584,10 @@ object lifetime; it does not establish recovery from network or partial-write fa
 
 - [ ] Design/test retry ownership and idempotent writes for failed or partially successful batches.
 - [ ] Decide whether a new capture may replace an unsent batch or requires a bounded queue.
+- [ ] Audit arbitrary allocation failure after external acknowledgement: the current common
+  controller calls `selector.commit()` after its sink returns, and that method allocates
+  a vector. A07 sink-retry tests do not establish process-wide allocation-failure recovery.
+  Keep this pre-existing F03 limit explicit; no such recovery claim is made.
 
 **Current limit:** legacy sensor persistence still has no general durable batch recovery.
 The separate A05 release sink now implements whole-document idempotency, private intent/
@@ -1288,6 +1602,8 @@ Brainstorm and define acceptance criteria before selecting libraries or algorith
 
 ### X01 — Flexible taxonomy: brainstorm and redesign — P2
 
+- [x] Add a separate versioned release hierarchy and explicit source-label mapping under
+  A08. This does not change behavior-profile composition or complete the tasks below.
 - [ ] Identify what makes new agent types and combinations difficult in the current YAML.
 - [ ] Discuss separating identity/classification, age, transport mode, accessories,
   appearance, behavior and distributions; compare composition, defaults and inheritance.
@@ -1653,3 +1969,175 @@ formal privacy and sensitive-attribute definitions remain separate research cont
   [QI/SA/environment/online contract](docs/PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
 - Next are the explicit semantic-secret and online-prefix discussions; maps, SA labels,
   noise-aware attacks and an online application are still unimplemented.
+
+
+## Local coordination diagnosis — later October 19
+
+- [x] Distinguish causal aggregation during replay from post-run utility and full-history
+  attack evaluation; record immediate-ACK, EOF and wall-clock limitations.
+- [x] Attribute 76–93% of current net retention loss to mixed-mode cases; inspect source
+  types and identical retained points rather than comparing unpaired release batches.
+- [x] Measure TF shared-point mean age gains of 117/88 ms and p95 800→400 ms, plus
+  exploratory deadline coverage. Preserve original primary study and all its results.
+- [x] Prove the passing parent13/[1800,2100) reservation conflict in test-00015 using
+  actual production checks and an instrumented copy with identical scientific output.
+- [x] **A03/A05 — Subsequently completed handoff repair:** regression for a passing broad parent blocked
+  by a contained future handoff. Atomically supersede compatible contained future plans;
+  preserve immutable recipient commitments, unrelated reservations and rollback safety.
+  Recheck both assessParent and tryMerge; audit ownership/conservation/deadlines.
+- [x] **E01 — Subsequently completed:** exact shared-observation sealing age (repair study)
+  and causal deadline occupancy (October 20), with predeclared deadlines and EOF scope.
+- [ ] **E05 — Remaining live timing:** measure processing/transport separately before
+  end-to-end real-time claims.
+- [ ] **EP02/EP03:** new independent before/after comparison and uniform/regional deadline
+  factorial study, with both utility and membership outcomes; preserve current held-out
+  evidence and avoid tuning against it. Full city/visit semantics remain separate work.
+- [x] Save a local HTML viewer, PNG/SVG figures, scenario tables, independent prefix
+  checks and private source-hashed evidence in the ignored diagnostic directory.
+
+
+## Scenario and ground-truth scope audit — later October 19
+
+- [x] Inventory all 208 source PRESENT cases: threshold 3 is a cell/window requirement,
+  peaks reach 82 observed road users; turnover reaches 351 distinct IDs across a run.
+  Record exact per-family ranges, cohort/split scope and source-loss denominators in
+  [the inventory](docs/SCENARIO_INVENTORY_AND_GT_LOSS_2026-10-19.md).
+- [x] Audit fixture versus production types: fixture uses three hardcoded labels; only
+  mixed-mode cases contain bicycle/car. The active 100-agent config has seven named
+  types, no cars, and is not imported by this privacy generator. Public releases omit
+  type breakdowns; existing utility evaluates total occupancy only.
+- [ ] **EP02/EP03 — Production-type adapter:** versioned generator/capture settings with
+  the existing seven type names/profiles and actual-count assertions. Keep this separate
+  from the later X01 flexible taxonomy redesign; explicitly record any coarse mapping.
+- [ ] **D01/E01 — Loss decomposition:** aligned sensor coverage/cadence; eligible GT → source
+  matching→released support. Add per-type/region/person completeness and resolution/task
+  metrics; do not call source-contribution retention a percentage of all GT information.
+- [ ] **EP03/R01 — Capture extension:** configurable duration/population/taxonomy, common
+  GT/AGBS area, verified private identity correspondence and isolated capture provenance.
+  Existing capture remains 8 seconds/200 Adult Pedestrians; do not silently broaden it.
+- [ ] **EP04/B01 — Density and scale:** predeclare below/near/above support, regional
+  deadlines and crossings; longer flows/warm-up/interior; separate N-density from area
+  scalability with fixed physical cell width. Recheck initialization rounding and actual
+  population before accepting requested counts such as 100/300/1000.
+
+
+## Local holds, reservations and privacy investigation — later October 19
+
+- [x] Audit the uniform numeric policy, sequential future-handoff scheduling and
+  exact-boundary reservation veto; distinguish public disclosure, private empty retirement
+  and future plans. Document the known two-car geometry/support infeasibility separately.
+- [x] Run 1536 policy-fixed diagnostic interventions on all prior held-out source worlds:
+  optional holds off, future handoffs off and both off. Every independent audit passes;
+  eight unmodified relinks reproduce frozen scientific output. Full results stay private.
+- [x] Separate passing versus empty holds with 512 additional base-cohort interventions
+  and eight relink controls. SF retention is 91.32% current, 73.34% without passing holds,
+  and 4.68% without empty holds. TF passing-hold removal preserves retained sets and ages.
+- [x] Check nominal type diversity with eight audited runs: one versus seven labels,
+  fixed 22 identities and kinematics, exactly identical recipient output and 31 features.
+- [x] **A03/A05:** targeted handoff repair implemented and independently assessed; blanket
+  handoff/hold deletion was not adopted. Certified-empty support remains a separate proposal.
+- [ ] **EP02/EP03:** freeze corrected code and compare on independent source groups with
+  mechanism-specific TRAIN/CAL attacks, full-history and deadline-prefix outcomes,
+  uniform/heterogeneous regional deadlines and sensible common-window references.
+  Include utility/retention/freshness; a support pass or higher retention is not privacy.
+- [ ] **E06:** isolate fixed payload delay from interval extension and distinguish private
+  coordination from global pending-output backpressure. Measure actual online delivery.
+
+[Analysis, controlled comparisons and verification scope](docs/LOCAL_WINDOW_HOLD_PRIVACY_ANALYSIS_2026-10-19.md).
+A07 remains selective descendant suppression; the previous diary label for the future
+handoff repair has been corrected to A03/A05. The diagnosis itself left production
+unchanged; the later documented handoff repair changed the controller. The October 20
+causal evaluation reuses that repaired controller unchanged.
+
+
+## Causal membership and deadline utility — completed October 20
+
+- [x] Keep the original whole-source secret and unchanged repaired C++ mechanism; freeze
+  fresh seed20261023 groups before outcomes, with no pair/background overlap against the
+  previous two primary datasets. All 2080 release audits and four repeats pass.
+- [x] Implement causal public/knowledge gates and repeated-look calibration. Complete
+  360 models, 60 strategies, 120 cohort and 720 checkpoint assessments; retain every
+  model/control/outcome, including negative or inconclusive findings.
+- [x] Independently verify source geometry/counts/identity unions, LR probabilities,
+  saved-score threshold selection and grouped uncertainty, all deadline and matched
+  utility projections. All 40 CTest suites and 285 Python methods pass.
+- [x] Document the real conditional TF timeliness benefit, absence of an isolated
+  history advantage, first-look representation confounding and CAL-to-TEST FPR transfer
+  limitation. Do not equate operational support with measured privacy protection.
+- [x] Archive protocol, complete English results/test reports, aggregate tables,
+  notation and four PNG/SVG figures. Primary scientific bundles remain immutable/private.
+- [ ] Finish presentation integration, then predeclare the matched-memory and
+  calibration follow-ups listed under E02. Semantic visits, heterogeneous deadline
+  factorials and actual recipient timing remain separately scoped work.
+
+
+## Sequential algorithm gate — A07 common-window fallback, 2026-10-21
+
+- Recorded the rule and invariants before implementation; introduced one optional action
+  only, preserving the existing baseline and all hard requirements.
+- Independent references confirm retained contributions increase from 0 to 6 of 9 and
+  from 0 to 18 of 21; a valid parent still retains all 9. These are mechanism tests.
+- 42 CTest suites / 297 Python methods pass, including 194 bounded exhaustive spatial
+  cases, plus independent pre/post compatibility and sanitizer checks.
+- Stop at this review gate. Next discuss semantic products, exact metric meanings and
+  allowed actions; membership, mapping, taxonomy implementation and caching remain deferred.
+
+
+## Sequential semantic gate — A08, 2026-10-21
+
+- The acceptance contract preceded implementation. Added one bounded common-window
+  semantic action: truthful complete category generalization with all contributions kept
+  inside a released spatial cell. No individual/type suppression or false relabeling.
+- Online regional bounds now use exact minimum category support and maximum/mean declared
+  semantic loss. Other scalar constraints, TF/SF, A07 and publication remain binding.
+- 47 CTest entries; 300 passed Python methods and 12 optional skips; all 15 semantic
+  methods passed; 81 exhaustive semantic cases, actual MongoDB recovery,
+  sanitizer and 24 unchanged before/after baseline pairs pass. Five audited examples show
+  the effects of permitting/forbidding semantic detail loss and insufficient support.
+- E07 records the user's requested constraint-impact study. Stop at the review gate before
+  broadening coordination, action selection, simulation realism or privacy attacks.
+
+
+## Semantic priority review gate — E07/A08, 2026-10-21
+
+- Completed a predeclared bounded candidate-choice study with independent raw-data
+  enumeration and fixed receiver-only exact queries. No production policy weakening.
+- All 360 configurations pass; all 1,929 actual cuts are legal; all 12 repeats match.
+  There are 252 actual intervals with no nonempty legal candidate, not 252 impossible
+  online schedules. None is dominated on all six declared conditional criteria.
+- Fine occupancy and coarse exact class totals are incomparable without task priorities.
+  Longer windows can retain all observations while losing exact short-window answers.
+- 50 CTest entries pass; Python: 345 passed, 12 existing optional skips. All 45 new
+  methods executed. Source/protocol/binary snapshots and detailed results are preserved.
+- Next: choose application requirements/preferences before any priority-controller change.
+  Local semantics, empirical attacks, maps and computation optimization remain deferred.
+
+
+## Semantic First terminology and density isolation — 2026-10-21
+
+- Adopted Semantic First = preserve semantic accuracy, consistent with TF/SF. Current
+  early semantic generalization is explicitly distinguished; parser/controller unchanged.
+- Completed 18 real cases plus 3 exact repeats, 90 independent legal-cut interval audits,
+  six conditionally infeasible intervals and 127 checked artifact hashes. No new CTest
+  methods or production behavior were added. See the controlled density report.
+- At equal policy, more density can yield finer space while initially losing type detail;
+  high enough per-class support then retains both. Static waiting produces no new support.
+- Next gate: secondary TF/SF preference, bounded waiting/fallback and partial-output rules
+  before Semantic First implementation. Identity-turnover isolation precedes map realism.
+
+
+## Semantic First implementation gate — 2026-10-21
+
+- Added opt-in common-window semantic_first with Temporal First secondary priority.
+  Required catalog/history/policy bounds remain explicit; default configuration unchanged.
+- Full 52-entry build/regression passes: 361 Python passes, 12 existing optional skips;
+  all 16 new Python methods and 13 native cases execute, including ASan/UBSan.
+- Actual MongoDB new-mode parent with 96 observations/32 IDs pipeline survives lost ACK,
+  reconciliation, commit and recovery without exposing preferences or private evidence.
+- All 30 frozen legacy pairs match outside runtime, including 6 semantic old-mode pairs;
+  60 independent scalar audits pass. Additional 27 controlled strategy/density cases
+  pass 135 actual-interval audits and retain the 18 old outputs byte-for-byte outside runtime.
+- Maximum-loss priority can increase mean loss; static waiting can add delay without gain.
+  These measured limitations are part of the gate, not hidden tuning targets.
+- Next is review of application priorities and turnover/waiting costs. No second Semantic
+  First combination, local-semantic controller, map work or new attacks begins automatically.

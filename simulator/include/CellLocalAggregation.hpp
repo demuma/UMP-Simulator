@@ -42,6 +42,8 @@ public:
         const AggregationHistory& history);
     // Bring all current descendants to a bounded future common boundary. Earlier
     // prefixes resolve under their own deadlines; no old support is resurrected.
+    // This private plan may be superseded by a passing parent that completely
+    // contains it. An enclosing nonredundant plan still protects its full domain.
     bool scheduleMerge(const CellGeometry& domain);
 
 private:
@@ -52,10 +54,23 @@ private:
         std::optional<CellGeometry> previousSelected;
     };
     using Frontier = std::map<int, Window>;
+    struct Handoff {
+        CellGeometry cell;
+        AggregationTime boundaryMs;
+        // Already-aligned explicit requests intentionally protect a future cut.
+        // Only requests originally needing alignment become redundant when all
+        // private starts converge before the chosen rendezvous boundary.
+        bool initiallyNeedsAlignment;
+    };
+    // Preflighted ancestor choices for an acknowledged failed prefix. Allocation
+    // precedes its sink; map-node transfer after ACK cannot lose an intent on retry.
+    using HandoffIntents = std::map<std::pair<AggregationTime, int>, std::vector<CellGeometry>>;
     struct Pending {
         SpatialSelection selection;
         Frontier replacements;
         std::vector<int> retiredIds;
+        std::vector<int> cancelledHandoffs;
+        HandoffIntents handoffIntents;
     };
     Window makeWindow(const CellGeometry& cell, AggregationTime startMs,
         std::optional<CellGeometry> previous = std::nullopt) const;
@@ -64,7 +79,8 @@ private:
     void validateTime(AggregationTime nowMs, const AggregationHistory& history) const;
     void validateDomain(const CellGeometry& cell) const;
     void retryPending(AggregationTime nowMs);
-    void emit(SpatialSelection selection, Frontier replacements, std::vector<int> retiredIds);
+    void emit(SpatialSelection selection, Frontier replacements, std::vector<int> retiredIds,
+        std::vector<int> cancelledHandoffs = {}, HandoffIntents handoffIntents = {});
     void refineDue(AggregationTime endpoint, const AggregationHistory& history);
     void refineToDomain(Frontier& cut, const CellGeometry& domain) const;
     bool canMerge(const Frontier& cut, const CellGeometry& domain,
@@ -75,6 +91,11 @@ private:
     bool tryMerge(const CellGeometry& domain, AggregationTime endMs,
         const AggregationHistory& history, bool final);
     void process(AggregationTime nowMs, const AggregationHistory& history, bool final);
+    bool scheduleMergeAt(const CellGeometry& domain, AggregationTime endpointMs,
+        AggregationTime evaluatedAtMs, bool requireDifferentStarts);
+    bool redundantHandoff(const Handoff& handoff) const;
+    void reconcileHandoffs();
+    void drainHandoffIntents(AggregationTime nowMs);
     void applyHandoffs();
     void compactFreshOwners(AggregationTime nowMs, const AggregationHistory& history);
     std::optional<AggregationTime> handoffBoundary(const CellGeometry& cell) const;
@@ -85,7 +106,8 @@ private:
     Sink sink;
     std::size_t maxActiveCells;
     Frontier frontier;
-    std::map<int, std::pair<CellGeometry, AggregationTime>> handoffs;
+    std::map<int, Handoff> handoffs;
+    HandoffIntents handoffIntents;
     std::optional<Pending> pending;
     AggregationTime lastNowMs = 0;
     std::uint64_t completedWindows = 0;

@@ -1,0 +1,30 @@
+{
+  "id": "semantic-replay",
+  "version": "1",
+  "nodes": [
+    {
+      "id": "road_user",
+      "loss": 1
+    },
+    {
+      "id": "pedestrian",
+      "parent": "road_user",
+      "loss": 0
+    },
+    {
+      "id": "cyclist",
+      "parent": "road_user",
+      "loss": 0.5
+    },
+    {
+      "id": "adult_cyclist",
+      "parent": "cyclist",
+      "loss": 0
+    },
+    {
+      "id": "child_cyclist",
+      "parent": "cyclist",
+      "loss": 0
+    }
+  ]
+}

@@ -1,0 +1,146 @@
+Test project /Users/maxdemu/Developer/UMP-Simulator/simulator/build
+      Start 38: run_privacy_prefix_study_evaluation
+      Start 39: selective_suppression_evaluation
+      Start 46: cell_size_caps_evaluation
+      Start 35: privacy_repair_evaluation
+ 1/60 Test #46: cell_size_caps_evaluation .................   Passed    3.32 sec
+      Start 24: privacy_study_evaluation
+ 2/60 Test #35: privacy_repair_evaluation .................   Passed    6.06 sec
+      Start 40: semantic_adaptation_evaluation
+ 3/60 Test #39: selective_suppression_evaluation ..........   Passed    7.63 sec
+      Start 48: semantic_release_evaluation
+ 4/60 Test #48: semantic_release_evaluation ...............   Passed    1.65 sec
+      Start 33: run_privacy_robustness_evaluation
+ 5/60 Test #38: run_privacy_prefix_study_evaluation .......   Passed    9.29 sec
+      Start 44: semantic_first_evaluation
+ 6/60 Test #40: semantic_adaptation_evaluation ............   Passed    3.94 sec
+      Start 47: four_second_window_evaluation
+ 7/60 Test #47: four_second_window_evaluation .............   Passed    1.07 sec
+      Start 28: coordination_study_evaluation
+ 8/60 Test #44: semantic_first_evaluation .................   Passed    2.01 sec
+      Start 45: moving_comparison_evaluation
+ 9/60 Test #45: moving_comparison_evaluation ..............   Passed    1.33 sec
+      Start 49: local_policy_replay_evaluation
+10/60 Test #49: local_policy_replay_evaluation ............   Passed    0.38 sec
+      Start 43: run_semantic_priority_study_evaluation
+11/60 Test #43: run_semantic_priority_study_evaluation ....   Passed    1.11 sec
+      Start  5: playback_regression
+12/60 Test #33: run_privacy_robustness_evaluation .........   Passed    4.88 sec
+      Start 51: replay_viewer_evaluation
+13/60 Test #28: coordination_study_evaluation .............   Passed    3.33 sec
+      Start 22: privacy_dataset_evaluation
+14/60 Test #51: replay_viewer_evaluation ..................   Passed    0.62 sec
+      Start 25: coordination_evaluation
+15/60 Test #25: coordination_evaluation ...................   Passed    0.92 sec
+      Start 54: cell_local_coordination_stress
+16/60 Test #24: privacy_study_evaluation ..................   Passed   12.52 sec
+      Start 19: comparison_evaluation
+17/60 Test #22: privacy_dataset_evaluation ................   Passed    1.87 sec
+      Start 27: coordination_scenarios_evaluation
+18/60 Test #54: cell_local_coordination_stress ............   Passed    0.82 sec
+      Start 30: compare_coordination_studies_evaluation
+19/60 Test #19: comparison_evaluation .....................   Passed    0.81 sec
+      Start 60: semantic_publication_store
+20/60 Test #27: coordination_scenarios_evaluation .........   Passed    0.48 sec
+      Start 21: oracle_evaluation
+21/60 Test #60: semantic_publication_store ................   Passed    0.10 sec
+      Start 50: replay_data_evaluation
+22/60 Test #50: replay_data_evaluation ....................   Passed    0.05 sec
+      Start 36: causal_privacy_evaluation
+23/60 Test #30: compare_coordination_studies_evaluation ...   Passed    0.43 sec
+      Start 52: replay_viewer_model
+24/60 Test #36: causal_privacy_evaluation .................   Passed    0.16 sec
+      Start 42: semantic_queries_evaluation
+25/60 Test #52: replay_viewer_model .......................   Passed    0.03 sec
+      Start  1: sensor_regression
+26/60 Test #42: semantic_queries_evaluation ...............   Passed    0.06 sec
+      Start 41: semantic_tradeoffs_evaluation
+27/60 Test #41: semantic_tradeoffs_evaluation .............   Passed    0.05 sec
+      Start 37: online_occupancy_evaluation
+28/60 Test  #1: sensor_regression .........................   Passed    0.14 sec
+      Start 14: publication_pipeline_regression
+29/60 Test #37: online_occupancy_evaluation ...............   Passed    0.05 sec
+      Start 20: capture_evaluation
+30/60 Test  #5: playback_regression .......................   Passed    3.03 sec
+      Start 32: robustness_attacks_evaluation
+31/60 Test #32: robustness_attacks_evaluation .............   Passed    0.05 sec
+      Start  2: frame_regression
+32/60 Test #14: publication_pipeline_regression ...........   Passed    0.09 sec
+      Start 13: publication_store_regression
+33/60 Test #20: capture_evaluation ........................   Passed    0.09 sec
+      Start 34: plot_privacy_robustness_evaluation
+34/60 Test #34: plot_privacy_robustness_evaluation ........   Passed    0.03 sec
+      Start 29: plot_coordination_study_evaluation
+35/60 Test #21: oracle_evaluation .........................   Passed    0.53 sec
+      Start 31: plot_privacy_coordination_evaluation
+36/60 Test #13: publication_store_regression ..............   Passed    0.08 sec
+      Start 16: replay_regression
+37/60 Test #29: plot_coordination_study_evaluation ........   Passed    0.04 sec
+      Start 23: empirical_privacy_evaluation
+38/60 Test #31: plot_privacy_coordination_evaluation ......   Passed    0.03 sec
+      Start 26: coordination_metrics_evaluation
+39/60 Test  #2: frame_regression ..........................   Passed    0.12 sec
+      Start  7: policy_configuration
+40/60 Test #16: replay_regression .........................   Passed    0.05 sec
+      Start 17: occupancy_evaluation
+41/60 Test #26: coordination_metrics_evaluation ...........   Passed    0.03 sec
+      Start 59: semantic_first_core
+42/60 Test #23: empirical_privacy_evaluation ..............   Passed    0.04 sec
+      Start 18: privacy_evaluation
+43/60 Test #59: semantic_first_core .......................   Passed    0.01 sec
+      Start 53: cell_local_coordination
+44/60 Test  #7: policy_configuration ......................   Passed    0.03 sec
+      Start 56: semantic_taxonomy
+45/60 Test #56: semantic_taxonomy .........................   Passed    0.00 sec
+      Start 58: semantic_pipeline
+46/60 Test #58: semantic_pipeline .........................   Passed    0.00 sec
+      Start 10: selective_suppression_regression
+47/60 Test #53: cell_local_coordination ...................   Passed    0.01 sec
+      Start 57: semantic_history
+48/60 Test #10: selective_suppression_regression ..........   Passed    0.00 sec
+      Start 55: scoped_publication
+49/60 Test #57: semantic_history ..........................   Passed    0.00 sec
+      Start  6: policy_regression
+50/60 Test  #6: policy_regression .........................   Passed    0.00 sec
+      Start 12: adaptive_aggregation_regression
+51/60 Test #17: occupancy_evaluation ......................   Passed    0.04 sec
+      Start  8: history_regression
+52/60 Test #55: scoped_publication ........................   Passed    0.01 sec
+      Start 11: publication_regression
+53/60 Test  #8: history_regression ........................   Passed    0.00 sec
+      Start  3: aggregation_regression
+54/60 Test #12: adaptive_aggregation_regression ...........   Passed    0.00 sec
+      Start  9: spatial_regression
+55/60 Test #11: publication_regression ....................   Passed    0.00 sec
+      Start 15: aggregation_presentation
+56/60 Test #15: aggregation_presentation ..................   Passed    0.00 sec
+      Start  4: metric_regression
+57/60 Test  #3: aggregation_regression ....................   Passed    0.00 sec
+58/60 Test  #9: spatial_regression ........................   Passed    0.00 sec
+59/60 Test  #4: metric_regression .........................   Passed    0.00 sec
+60/60 Test #18: privacy_evaluation ........................   Passed    0.03 sec
+
+100% tests passed out of 60
+
+Label Time Summary:
+aggregation     =   0.87 sec*proc (12 tests)
+coordination    =   0.84 sec*proc (3 tests)
+evaluation      =  65.00 sec*proc (36 tests)
+frames          =   0.13 sec*proc (2 tests)
+history         =   0.00 sec*proc (1 test)
+integration     =   0.41 sec*proc (4 tests)
+metrics         =   0.00 sec*proc (1 test)
+mongodb         =   0.41 sec*proc (4 tests)
+playback        =   3.03 sec*proc (1 test)
+policies        =   0.04 sec*proc (2 tests)
+presentation    =   0.00 sec*proc (1 test)
+publication     =   0.18 sec*proc (5 tests)
+replay          =   0.05 sec*proc (1 test)
+semantic        =   0.12 sec*proc (5 tests)
+spatial         =   0.01 sec*proc (2 tests)
+stress          =   0.82 sec*proc (1 test)
+temporal        =   0.10 sec*proc (2 tests)
+unit            =  69.09 sec*proc (56 tests)
+viewer          =   0.65 sec*proc (2 tests)
+
+Total Test time (real) =  17.39 sec

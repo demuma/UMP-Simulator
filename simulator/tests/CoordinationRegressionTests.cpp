@@ -2,6 +2,7 @@
 #include "PolicyTree.hpp"
 #include <algorithm>
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <set>
 #include <stdexcept>
@@ -66,13 +67,17 @@ struct Fixture {
     AggregationHistory history;
     std::vector<ObservationBatch> raw;
     std::vector<SpatialSelection> outputs;
+    std::function<void(const SpatialSelection&)> beforeOutput;
     CellLocalAggregation engine;
     Fixture(AggregationConfig config, MetricEvaluator metrics,
         TemporalAdaptationConfig temporal = {AdaptationStrategy::SpatialFirst,100,800,32},
         SpatialSelectionConfig spatial = {2,4096})
         : config(std::move(config)),history(this->config,*this->config.history),
           engine(this->config,temporal,spatial,std::move(metrics),
-              [this](const SpatialSelection& output) { outputs.push_back(output); }) {}
+              [this](const SpatialSelection& output) {
+                  if (beforeOutput) beforeOutput(output);
+                  outputs.push_back(output);
+              }) {}
     CellObservation observation(std::string id,int cell) const {
         return {std::move(id),"pedestrian",historyCell(config.coverage,cell,config.coverage.leafDepth)};
     }
@@ -453,14 +458,290 @@ void scheduledSubtreeCannotEscapeThroughAnAncestor() {
     require(f.engine.scheduleMerge(historyCell(config.coverage,48,2)),
         "A subtree inside an existing private owner could not schedule a handoff");
     auditFrontier(f.engine,config.coverage);
-    // 48 has only two identities and fails. Ancestor12 has three and passes,
-    // but taking it here would absorb the pending handoff's exclusive domain.
+    // 48 has only two identities and fails. Ancestor12 has three and passes.
+    // A valid broader supersession may now replace the contained private intent;
+    // either outcome must preserve the full-domain ownership and exact support.
     for (int time : {200,300}) {
         f.sample(time,{f.observation("A",192),f.observation("B",193),f.observation("C",196)});
         auditFrontier(f.engine,config.coverage);
     }
     f.finish(400); auditFrontier(f.engine,config.coverage); audit(f.outputs,f.raw,400,true);
 }
+
+// Future alignment requests reserve private intentions, not recipient-visible
+// data. A genuinely passing broader current prefix may replace contained plans;
+// it must still cover every mixed-depth/empty descendant with one common start.
+void passingParentCanReplaceContainedFuturePlans() {
+    for (const auto strategy : {AdaptationStrategy::TemporalFirst, AdaptationStrategy::SpatialFirst})
+        for (bool regionalDeadline : {false,true}) {
+            auto config=settings(4,400);
+            std::vector<PolicyRegion> regions;
+            if (regionalDeadline) regions.push_back(regional(config,768,4,
+                {{MetricId::WindowDurationMs,{},300}}));
+            Fixture f(config,policy(config,2,40,std::move(regions)),{strategy,100,800,32},{1,4096});
+            const auto parent=historyCell(config.coverage,48,2);
+            const auto finePlan=historyCell(config.coverage,768,4);
+            const auto secondPlan=historyCell(config.coverage,193,3);
+            const auto unrelated=historyCell(config.coverage,196,3);
+            require(f.engine.scheduleMerge(finePlan) && f.engine.scheduleMerge(secondPlan)
+                && f.engine.scheduleMerge(unrelated),"The supersession fixture failed to reserve disjoint future plans");
+            bool fine=false,coarse=false;
+            for (const auto& window : f.engine.windows()) if (contains(parent,window.cell)) {
+                fine|=window.cell.depth==4; coarse|=window.cell.depth==3;
+            }
+            require(fine && coarse,"The future-plan fixture did not retain mixed-depth private ownership");
+            f.sample(100,{f.observation("A",768),f.observation("B",772)},false);
+            f.history.advance(200);
+            require(f.engine.requestMerge(parent,200,f.history),
+                "Contained future plans blocked an already passing common private parent prefix");
+            const auto* selected=find(f.outputs,48,0,200);
+            require(selected && selected->selectedCells==1 && selected->suppressedCells==0
+                && selected->candidate.counts.distinctContributors==2
+                && selected->candidate.counts.observationContributions==2,
+                "Superseding future plans changed the parent support or failed to include its empty siblings");
+            if (regionalDeadline) require(selected->candidate.endMs-selected->candidate.startMs<=300,
+                "A passing supersession bypassed an intersecting regional temporal maximum");
+            auditFrontier(f.engine,config.coverage);
+            const auto emitted=f.outputs.size(); const auto after=state(f.engine);
+            require(!f.engine.requestMerge(parent,200,f.history)
+                && f.outputs.size()==emitted && state(f.engine)==after,
+                "A superseding parent reopened its acknowledged historical support");
+            require(!f.engine.scheduleMerge(unrelated),
+                "A parent takeover canceled a disjoint future alignment request");
+            // This new explicit parent request would overlap either old contained
+            // reservation if it had survived the successful ACK.
+            require(f.engine.scheduleMerge(parent),
+                "A successful parent ACK left one of its superseded descendant plans live");
+            for (int time : {200,300}) f.sample(time,{f.observation("A",768),f.observation("B",772)},false);
+            f.finish(400); auditFrontier(f.engine,config.coverage); audit(f.outputs,f.raw,400,true);
+        }
+}
+
+void anEnclosingFuturePlanStillBlocksANarrowerTakeover() {
+    auto config=settings(4,400);
+    Fixture f(config,policy(config,2,40),{AdaptationStrategy::TemporalFirst,100,800,32},{1,4096});
+    const auto enclosing=historyCell(config.coverage,48,2);
+    const auto child=historyCell(config.coverage,192,3);
+    require(f.engine.scheduleMerge(enclosing),"The enclosing future-plan fixture did not reserve its domain");
+    f.sample(100,{f.observation("A",768),f.observation("B",769)},false);
+    f.history.advance(200);
+    const auto before=state(f.engine);
+    require(!f.engine.requestMerge(child,200,f.history) && state(f.engine)==before && f.outputs.empty(),
+        "A narrower passing child escaped a strictly enclosing future alignment request");
+    require(!f.engine.scheduleMerge(enclosing),"A rejected child takeover erased its enclosing reservation");
+    require(f.engine.requestMerge(enclosing,200,f.history),
+        "An enclosing reservation prevented its own genuinely passing current-prefix replacement");
+    for (int time : {200,300}) f.sample(time,{},false);
+    f.finish(400); audit(f.outputs,f.raw,400,true);
+}
+
+void aFailedParentDoesNotCancelContainedAlignmentRequests() {
+    for (bool incomplete : {false,true}) {
+        auto config=settings(4,400);
+        Fixture f(config,policy(config,2,incomplete ? 40 : 10),
+            {AdaptationStrategy::TemporalFirst,100,800,32},{1,4096});
+        const auto plan=historyCell(config.coverage,768,4);
+        require(f.engine.scheduleMerge(plan),"The failed-parent fixture could not reserve its future plan");
+        if (incomplete) f.sample(100,{},false,ObservationStatus::Unavailable);
+        else f.sample(100,{f.observation("A",768),f.observation("B",772)},false);
+        f.history.advance(200);
+        const auto before=state(f.engine); const auto decisions=f.engine.debugState().retainedDecisions;
+        require(!f.engine.requestMerge(historyCell(config.coverage,48,2),200,f.history),
+            "An infeasible or incompletely measured parent superseded a private future plan");
+        require(state(f.engine)==before && f.outputs.empty()
+            && f.engine.debugState().retainedDecisions==decisions,
+            "A failed superseding candidate changed private ownership, progress or output");
+        require(!f.engine.scheduleMerge(plan),
+            "A failed parent proposal canceled a contained alignment request before acceptance");
+        f.sample(200,{},false); f.sample(300,{},false);
+        f.finish(400); auditFrontier(f.engine,config.coverage); audit(f.outputs,f.raw,400,true);
+    }
+}
+
+bool sameReservedProposal(const SpatialSelection& a,const SpatialSelection& b) {
+    const auto counts=[](const AggregateCounts& x,const AggregateCounts& y) {
+        return x.observationContributions==y.observationContributions
+            && x.distinctContributors==y.distinctContributors
+            && x.typeObservationContributions==y.typeObservationContributions
+            && x.meanSampleOccupancy==y.meanSampleOccupancy;
+    };
+    if (a.candidate.startMs!=b.candidate.startMs || a.candidate.endMs!=b.candidate.endMs
+        || a.candidate.closedAtMs!=b.candidate.closedAtMs || a.candidate.truncated!=b.candidate.truncated
+        || a.candidate.expectedSamples!=b.candidate.expectedSamples
+        || a.candidate.measuredSamples!=b.candidate.measuredSamples
+        || a.candidate.unavailableSamples!=b.candidate.unavailableSamples
+        || a.candidate.missingSamples!=b.candidate.missingSamples
+        || a.candidate.coverage!=b.candidate.coverage || !counts(a.candidate.counts,b.candidate.counts)
+        || a.candidate.cells.size()!=b.candidate.cells.size() || a.selectedCells!=b.selectedCells
+        || a.suppressedCells!=b.suppressedCells || a.completionReason!=b.completionReason
+        || a.strategy!=b.strategy || a.temporalExtensions!=b.temporalExtensions
+        || a.decisions.size()!=b.decisions.size() || a.temporalDecisions.size()!=b.temporalDecisions.size()
+        || a.assessment.cells.size()!=b.assessment.cells.size()
+        || bool(a.coordinationCell)!=bool(b.coordinationCell)) return false;
+    if (a.coordinationCell && (a.coordinationCell->id!=b.coordinationCell->id
+        || a.coordinationCell->depth!=b.coordinationCell->depth)) return false;
+    for (std::size_t i=0;i<a.candidate.cells.size();++i)
+        if (a.candidate.cells[i].cell.id!=b.candidate.cells[i].cell.id
+            || !counts(a.candidate.cells[i].counts,b.candidate.cells[i].counts)) return false;
+    for (std::size_t i=0;i<a.decisions.size();++i)
+        if (a.decisions[i].cellId!=b.decisions[i].cellId || a.decisions[i].selected!=b.decisions[i].selected
+            || a.decisions[i].reason!=b.decisions[i].reason || a.decisions[i].transition!=b.decisions[i].transition
+            || a.decisions[i].triggerCells!=b.decisions[i].triggerCells) return false;
+    for (std::size_t i=0;i<a.temporalDecisions.size();++i) {
+        const auto& x=a.temporalDecisions[i]; const auto& y=b.temporalDecisions[i];
+        if (x.action!=y.action || x.startMs!=y.startMs || x.endMs!=y.endMs
+            || x.evaluatedAtMs!=y.evaluatedAtMs || x.status!=y.status) return false;
+    }
+    for (std::size_t i=0;i<a.assessment.cells.size();++i) {
+        const auto& x=a.assessment.cells[i]; const auto& y=b.assessment.cells[i];
+        if (x.status!=y.status || x.effectivePolicyId!=y.effectivePolicyId
+            || x.policySources!=y.policySources || x.policyFeasible!=y.policyFeasible
+            || x.metrics.size()!=y.metrics.size() || x.checks.size()!=y.checks.size()) return false;
+        for (std::size_t j=0;j<x.metrics.size();++j)
+            if (x.metrics[j].id!=y.metrics[j].id || x.metrics[j].value!=y.metrics[j].value
+                || x.metrics[j].unavailableReason!=y.metrics[j].unavailableReason) return false;
+        for (std::size_t j=0;j<x.checks.size();++j)
+            if (x.checks[j].requirement.id!=y.checks[j].requirement.id
+                || x.checks[j].requirement.min!=y.checks[j].requirement.min
+                || x.checks[j].requirement.max!=y.checks[j].requirement.max
+                || x.checks[j].observed!=y.checks[j].observed || x.checks[j].status!=y.checks[j].status
+                || x.checks[j].reason!=y.checks[j].reason) return false;
+    }
+    return true;
+}
+
+void futurePlanSupersessionCommitsOnlyAfterAnIdenticalAcknowledgedRetry() {
+    auto config=settings(4,400);
+    Fixture f(config,policy(config,2,40),{AdaptationStrategy::TemporalFirst,100,800,32},{1,4096});
+    const auto parent=historyCell(config.coverage,48,2);
+    const auto plan=historyCell(config.coverage,768,4);
+    const auto unrelated=historyCell(config.coverage,196,3);
+    require(f.engine.scheduleMerge(plan) && f.engine.scheduleMerge(unrelated),
+        "The retry/supersession fixture failed to reserve its future domains");
+    f.sample(100,{f.observation("A",768),f.observation("B",772)},false);
+    f.history.advance(200);
+    const auto before=state(f.engine); const auto decisions=f.engine.debugState().retainedDecisions;
+    bool fail=true;
+    std::vector<SpatialSelection> attempts;
+    f.beforeOutput=[&](const SpatialSelection& proposal) {
+        attempts.push_back(proposal);
+        if (fail) throw std::runtime_error("Controlled supersession sink failure");
+    };
+    rejects([&] { f.engine.requestMerge(parent,200,f.history); });
+    require(attempts.size()==1 && f.outputs.empty() && state(f.engine)==before
+        && f.engine.debugState().retainedDecisions==decisions,
+        "A failed sink committed a proposed future-plan supersession");
+    rejects([&] { f.engine.requestMerge(historyCell(config.coverage,49,2),200,f.history); });
+    rejects([&] { f.engine.scheduleMerge(parent); });
+    require(attempts.size()==1 && state(f.engine)==before,
+        "Later work bypassed an unacknowledged superseding reservation");
+    fail=false;
+    require(f.engine.requestMerge(parent,200,f.history),"An identical superseding parent could not resume after sink failure");
+    require(attempts.size()==2 && f.outputs.size()==1 && sameReservedProposal(attempts[0],attempts[1]),
+        "Retrying future-plan supersession changed its immutable candidate or policy evidence");
+    require(!f.engine.scheduleMerge(unrelated),"ACK canceled an unrelated future handoff");
+    require(f.engine.scheduleMerge(parent),"ACK did not atomically retire the contained superseded request");
+    f.beforeOutput={};
+    for (int time : {200,300}) f.sample(time,{},false);
+    f.finish(400); auditFrontier(f.engine,config.coverage); audit(f.outputs,f.raw,400,true);
+}
+
+void expiredSupersessionCannotReachTheSinkOrCommitItsReplacement() {
+    auto config=settings(4,400);
+    MetricEvaluator metrics(MetricPolicy{"age","1",{{MetricId::DistinctContributors,2,{}},
+        {MetricId::CellSideM,{},40},{MetricId::AgeAtEvaluationMs,{},300}}});
+    Fixture f(config,std::move(metrics),{AdaptationStrategy::TemporalFirst,100,800,32},{1,4096});
+    const auto parent=historyCell(config.coverage,48,2);
+    require(f.engine.scheduleMerge(historyCell(config.coverage,768,4)),
+        "The expiration fixture failed to reserve its future descendant");
+    f.sample(100,{f.observation("A",768),f.observation("B",772)},false);
+    f.history.advance(200); const auto before=state(f.engine);
+    std::size_t calls=0;
+    f.beforeOutput=[&](const SpatialSelection&) { ++calls; throw std::runtime_error("Controlled sink failure"); };
+    rejects([&] { f.engine.requestMerge(parent,200,f.history); });
+    require(calls==1 && state(f.engine)==before && f.outputs.empty(),
+        "Initial supersession sink failure changed private support");
+    f.history.advance(400);
+    rejects([&] { f.engine.requestMerge(parent,200,f.history); });
+    rejects([&] { f.engine.advance(400,f.history); });
+    require(calls==1 && state(f.engine)==before && f.outputs.empty(),
+        "An expired superseding proposal reached the sink or committed its successor/plan cancellation");
+    rejects([&] { f.engine.scheduleMerge(historyCell(config.coverage,49,2)); });
+    auditFrontier(f.engine,config.coverage);
+}
+
+
+// Three synthetic identities cross a few finest cells. A's sparse earlier
+// prefixes reach their deadline at 1800. B and C then make a legal root-13
+// parent possible at the next regular check, 2200. No coordinates, source identities or external data
+// are embedded: this is an explicit cell/time counterexample to stale intents.
+std::vector<CellObservation> automaticHandoffObservations(const Fixture& f,int time) {
+    std::vector<CellObservation> result;
+    if (time>=900) {
+        const int cell=time<1200 ? 13952 : time<1500 ? 13953 : time<1800 ? 13956
+            : time<2100 ? 13957 : 13968;
+        result.push_back(f.observation("A",cell));
+    }
+    if (time>=1900) result.push_back(f.observation("B",time<2100 ? 13866 : 13867));
+    if (time>=2000) result.push_back(f.observation("C",13440));
+    return result;
+}
+
+std::vector<SpatialSelection> runAutomaticHandoffWitness(bool failDuringIntentGeneration) {
+    auto config=settings(6,400);
+    Fixture f(config,policy(config,3,40),{AdaptationStrategy::TemporalFirst,100,1000,32},{1,4096});
+    bool failed=false,retried=false;
+    std::optional<SpatialSelection> reserved;
+    f.beforeOutput=[&](const SpatialSelection& proposal) {
+        if (failDuringIntentGeneration && !failed && proposal.candidate.closedAtMs==1800
+            && proposal.candidate.counts.observationContributions) {
+            failed=true; reserved=proposal;
+            throw std::runtime_error("Controlled endpoint-intent sink failure");
+        }
+        if (failed && !retried) {
+            require(reserved && sameReservedProposal(*reserved,proposal),
+                "A resumed endpoint changed its immutable proposal before applying automatic intents");
+            retried=true;
+        }
+    };
+    for (int time=100;time<=2200;time+=100) {
+        try { f.sample(time,automaticHandoffObservations(f,time)); }
+        catch (...) {
+            if (!failDuringIntentGeneration || time!=1800 || !failed || retried) throw;
+            const auto held=state(f.engine);
+            rejects([&] { f.engine.scheduleMerge(historyCell(config.coverage,12,1)); });
+            require(state(f.engine)==held,"An endpoint retry bypass allowed new alignment work before ACK");
+            f.engine.advance(time,f.history);
+            require(retried,"The failed endpoint did not retry its reserved proposal first");
+        }
+        auditFrontier(f.engine,config.coverage);
+    }
+    if (failDuringIntentGeneration) require(failed && retried,
+        "The automatic-intent regression did not exercise an acknowledged sink retry");
+    bool released=false;
+    for (const auto& output : f.outputs) if (output.coordinationCell->id==13
+        && output.candidate.startMs==1800 && output.candidate.endMs==2200 && output.candidate.closedAtMs==2200) {
+        released=true;
+        require(output.selectedCells==1 && output.candidate.counts.distinctContributors==3
+            && output.candidate.counts.observationContributions==9,
+            "The timely ancestor failed its actual observed support check");
+    }
+    require(released,
+        "An obsolete future handoff blocked a passing private ancestor at its regular 2200-ms check");
+    f.finish(2300); auditFrontier(f.engine,config.coverage); audit(f.outputs,f.raw,2300,true);
+    return f.outputs;
+}
+
+void automaticHandoffPlanningUsesTheCompletedEndpointAndSurvivesRetry() {
+    const auto baseline=runAutomaticHandoffWitness(false);
+    const auto retried=runAutomaticHandoffWitness(true);
+    require(baseline.size()==retried.size(),
+        "A transient sink failure lost deferred endpoint intents or changed terminal retirement count");
+    for (std::size_t i=0;i<baseline.size();++i)
+        require(sameReservedProposal(baseline[i],retried[i]),
+            "A transient sink failure changed later automatic handoffs, release geometry or private support");
+}
+
 void explicitTakeoverCannotExceedTheConfiguredTemporalMaximum() {
     auto config=settings(3,400);
     Fixture f(config,policy(config,2,40)); // No policy duration/age bound duplicates the engine limit.
@@ -635,6 +916,12 @@ int main() {
         futureHandoffResolvesPrefixesBeforeCommonParentStart();
         sparseDepthSixInitializationHonorsAnExplicitFrontierBudget();
         scheduledSubtreeCannotEscapeThroughAnAncestor();
+        passingParentCanReplaceContainedFuturePlans();
+        anEnclosingFuturePlanStillBlocksANarrowerTakeover();
+        aFailedParentDoesNotCancelContainedAlignmentRequests();
+        futurePlanSupersessionCommitsOnlyAfterAnIdenticalAcknowledgedRetry();
+        expiredSupersessionCannotReachTheSinkOrCommitItsReplacement();
+        automaticHandoffPlanningUsesTheCompletedEndpointAndSurvivesRetry();
         explicitTakeoverCannotExceedTheConfiguredTemporalMaximum();
         aLateRetryCannotAcknowledgeAnExpiredPrivateProposal();
         explicitTakeoverRespectsTheActiveFrontierBudget();

@@ -7,6 +7,7 @@
 // Parse opt-in history limits; stream/geometry compatibility is validated by the core.
 std::optional<ump::HistoryLimits> readHistoryLimits(const YAML::Node& node);
 // Opt-in, internal fixed-window spatial decisions; validated before database initialization.
+std::shared_ptr<const ump::SemanticTaxonomy> readSemanticTaxonomy(const YAML::Node& aggregation);
 std::optional<ump::SpatialSelectionConfig> readSpatialSelection(const YAML::Node& aggregation, int leafDepth);
 
 // Execution choices belong to the stream policy tree, never individual regions.

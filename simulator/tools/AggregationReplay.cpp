@@ -171,7 +171,7 @@ MetricEvaluator evaluatorFrom(const YAML::Node& config, const AggregationConfig&
         if (config["policy_regions"] && config["policy_regions"].size())
             throw std::invalid_argument("policy_regions requires policy_tree");
         return MetricEvaluator(MetricPolicy{nonempty(uniform, "id"), nonempty(uniform, "version"),
-            readMetricRequirements(uniform["requirements"])});
+            readMetricRequirements(uniform["requirements"])}, settings.semanticTaxonomy);
     }
     keys(tree, {"id", "version", "root", "regions", "max_nodes", "execution"}, "policy_tree");
     const auto budget = tree["max_nodes"].as<std::int64_t>(65536);
@@ -195,9 +195,11 @@ MetricEvaluator evaluatorFrom(const YAML::Node& config, const AggregationConfig&
         selected.push_back(definitions.at(id));
     }
     if (seen.size() != definitions.size()) throw std::invalid_argument("Unreferenced policy_regions are not applied");
+    const auto rootRequirements = readMetricRequirements(tree["root"]);
+    if (settings.semanticTaxonomy) validateSemanticMetricRequirements(rootRequirements);
     return MetricEvaluator(std::make_shared<const PolicyTree>(PolicyTreeConfig{
         nonempty(tree, "id"), nonempty(tree, "version"), settings.applicationId, settings.coverage,
-        readMetricRequirements(tree["root"]), static_cast<std::size_t>(budget)}, std::move(selected)));
+        rootRequirements, static_cast<std::size_t>(budget)}, std::move(selected)), settings.semanticTaxonomy);
 }
 
 struct Options {
@@ -216,9 +218,10 @@ struct Settings {
 };
 Settings parseSettings(YAML::Node node, const Input& input, const Options& options) {
     keys(node, {"application_id", "window_ms", "max_observations_per_window", "history", "spatial_selection",
-        "temporal_adaptation", "metric_policy", "policy_tree", "policy_regions"}, "replay configuration");
-    if (options.mode != "fixed" && options.mode != "spatial" && options.mode != "temporal_first" && options.mode != "spatial_first")
-        throw std::invalid_argument("mode must be fixed, spatial, temporal_first or spatial_first");
+        "temporal_adaptation", "metric_policy", "policy_tree", "policy_regions", "semantic_taxonomy"}, "replay configuration");
+    if (options.mode != "fixed" && options.mode != "spatial" && options.mode != "temporal_first"
+        && options.mode != "spatial_first" && options.mode != "semantic_first")
+        throw std::invalid_argument("mode must be fixed, spatial, temporal_first, spatial_first or semantic_first");
     if (options.mode != "fixed" && (options.fixedDepth || options.fixedWindowMs))
         throw std::invalid_argument("Fixed-grid overrides require --mode fixed");
     validatePolicyExecution(node); // Reject malformed execution settings before an explicit mode override.
@@ -229,16 +232,23 @@ Settings parseSettings(YAML::Node node, const Input& input, const Options& optio
     if (maxObservations <= 0) throw std::invalid_argument("max_observations_per_window must be positive");
     settings.maxObservationsPerWindow = static_cast<std::uint64_t>(maxObservations);
     settings.history = readHistoryLimits(node["history"]);
+    settings.semanticTaxonomy = readSemanticTaxonomy(node);
     if (!settings.history) throw std::invalid_argument("Replay requires explicit bounded history");
     const auto spatial = readSpatialSelection(node, input.grid.leafDepth);
     if (!spatial) throw std::invalid_argument("Replay requires explicit spatial_selection limits");
-    const bool adaptive = options.mode == "temporal_first" || options.mode == "spatial_first";
+    const bool adaptive = options.mode == "temporal_first" || options.mode == "spatial_first"
+        || options.mode == "semantic_first";
     // The CLI changes execution order only. It never changes a metric threshold.
     std::optional<TemporalAdaptationConfig> temporal;
     if (adaptive) {
         if (!node["policy_tree"] || !node["temporal_adaptation"])
             throw std::invalid_argument("Adaptive replay requires policy_tree and temporal_adaptation");
         node["policy_tree"]["execution"]["strategy"] = options.mode;
+        // The original execution contract was validated above. A CLI override
+        // to TF/SF replaces semantic ordering, so its secondary no longer applies.
+        // Keep the taxonomy and every hard regional metric bound unchanged.
+        if (options.mode != "semantic_first")
+            node["policy_tree"]["execution"].remove("semantic_secondary_strategy");
         temporal = readTemporalAdaptation(node);
     } else {
         // Validate optional adaptation configuration even when this baseline does not use it.
@@ -278,6 +288,19 @@ SpatialSelection fixedSelection(const AggregationCandidate& finest, const Aggreg
     return result;
 }
 
+std::string serializeSemantic(const SemanticRepresentation& value) {
+    std::vector<std::string> bins;
+    for (const auto& bin : value.bins)
+        bins.push_back(object({{"category_id", quoted(bin.categoryId)},
+            {"observation_contributions", number(bin.observationContributions)},
+            {"distinct_contributors", number(bin.distinctContributors)}}));
+    return object({{"schema", quoted("ump.semantic-release.v1")},
+        {"taxonomy_id", quoted(value.taxonomyId)}, {"taxonomy_version", quoted(value.taxonomyVersion)},
+        {"min_category_distinct_contributors", number(value.minimumDistinctContributors)},
+        {"semantic_max_loss", number(value.maxLoss)}, {"semantic_mean_loss", number(value.meanLoss)},
+        {"categories", array(bins)}});
+}
+
 std::string serializeWindow(const SpatialSelection& selection) {
     const auto& c = selection.candidate;
     std::vector<std::string> cells, decisions;
@@ -289,8 +312,12 @@ std::string serializeWindow(const SpatialSelection& selection) {
         fields.emplace_back("assessment_status", quoted(assessmentStatusName(selection.assessment.cells[i].status)));
         Fields metrics;
         std::vector<std::string> checks;
-        for (const auto& metric : selection.assessment.cells[i].metrics)
+        for (const auto& metric : selection.assessment.cells[i].metrics) {
+            if (metric.unavailableReason == "semantic_not_enabled") continue;
             metrics.emplace_back(metricDefinition(metric.id).name, optionalNumber(metric.value));
+        }
+        if (selection.assessment.cells[i].semantic)
+            fields.emplace_back("semantic", serializeSemantic(*selection.assessment.cells[i].semantic));
         for (const auto& check : selection.assessment.cells[i].checks)
             checks.push_back(object({{"metric", quoted(metricDefinition(check.requirement.id).name)},
                 {"min", optionalNumber(check.requirement.min)}, {"max", optionalNumber(check.requirement.max)},
@@ -304,7 +331,7 @@ std::string serializeWindow(const SpatialSelection& selection) {
         decisions.push_back(object({{"action", quoted(temporalActionName(decision.action))},
             {"start_ms", number(decision.startMs)}, {"end_ms", number(decision.endMs)},
             {"evaluated_at_ms", number(decision.evaluatedAtMs)}, {"status", quoted(assessmentStatusName(decision.status))}}));
-    return scopedObject({{"start_ms", number(c.startMs)}, {"end_ms", number(c.endMs)},
+    Fields windowFields = {{"start_ms", number(c.startMs)}, {"end_ms", number(c.endMs)},
         {"evaluated_at_ms", number(c.closedAtMs)}, {"truncated", c.truncated ? "true" : "false"},
         {"expected_samples", number(c.expectedSamples)}, {"measured_samples", number(c.measuredSamples)},
         {"unavailable_samples", number(c.unavailableSamples)}, {"missing_samples", number(c.missingSamples)},
@@ -314,13 +341,28 @@ std::string serializeWindow(const SpatialSelection& selection) {
         {"input_observation_contributions", number(c.counts.observationContributions)},
         {"policy_id", quoted(selection.assessment.policyId.value_or(""))},
         {"policy_version", quoted(selection.assessment.policyVersion.value_or(""))},
-        {"cells", array(cells)}, {"temporal_decisions", array(decisions)}}, selection.coordinationCell);
+        {"cells", array(cells)}, {"temporal_decisions", array(decisions)}};
+    if (selection.semanticPriority) {
+        const auto& preference = *selection.semanticPriority;
+        windowFields.emplace_back("semantic_priority", object({
+            {"schema", quoted("ump.semantic-priority.v1")},
+            {"secondary_strategy", quoted(preference.secondaryStrategy)},
+            {"release_trigger", quoted(preference.releaseTrigger)},
+            {"policy_satisfied_release", preference.policySatisfiedRelease ? "true" : "false"},
+            {"preferred_max_loss", number(0)},
+            {"selected_max_loss_ceiling", number(preference.lossCeiling)},
+            {"actual_max_loss", optionalNumber(preference.actualMaxLoss)},
+            {"attempted_ceilings", number(preference.attemptedCeilings)},
+            {"terminal_fallback", preference.terminalFallback ? "true" : "false"}}));
+    }
+    return scopedObject(std::move(windowFields), selection.coordinationCell);
 }
 std::string serializeRelease(const ReleaseSnapshot& release) {
     std::vector<std::string> cells;
     for (const auto& cell : release.cells) {
         auto fields = geometry(cell.aggregate.cell); counts(fields, cell.aggregate.counts);
         fields.emplace_back("effective_policy_id", quoted(cell.effectivePolicyId));
+        if (cell.semantic) fields.emplace_back("semantic", serializeSemantic(*cell.semantic));
         cells.push_back(object(fields));
     }
     return scopedObject({{"release_id", quoted(release.releaseId)}, {"start_ms", number(release.startMs)},
@@ -398,6 +440,17 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
         throw std::runtime_error("Replay failed interval retirement or observation conservation");
     const auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - started).count();
     const auto& g = input.grid;
+    std::vector<std::pair<std::string, std::string>> parameters{
+        {"coordination", quoted(localMode ? "cell_local" : "common_window")},
+        {"window_ms", number(config.windowMs)}, {"fixed_depth", options.mode == "fixed" ? number(settings.fixedDepth) : "null"},
+        {"min_depth", number(settings.spatial.minDepth)},
+        {"extension_step_ms", settings.temporal ? number(settings.temporal->extensionStepMs) : "null"},
+        {"max_window_ms", settings.temporal ? number(settings.temporal->maxWindowMs) : number(config.windowMs)}};
+    if (settings.temporal && settings.temporal->strategy == AdaptationStrategy::SemanticFirst) {
+        parameters.emplace_back("semantic_secondary_strategy", quoted(semanticSecondaryStrategyName(
+            settings.temporal->semanticSecondaryStrategy)));
+        parameters.emplace_back("release_trigger", quoted(releaseTriggerName(settings.temporal->releaseTrigger)));
+    }
     return object({{"schema", quoted("ump.replay-result.v1")}, {"classification", quoted("private_research_diagnostics")},
         {"mode", quoted(options.mode)},
         {"configuration_yaml", quoted(settings.configurationYaml)},
@@ -406,11 +459,7 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
             {"end_ms", number(input.endMs)}, {"all_observations_have_coordinates", input.hasCoordinates ? "true" : "false"},
             {"coverage", object({{"x", number(g.x)}, {"y", number(g.y)}, {"width", number(g.width)},
                 {"height", number(g.height)}, {"leaf_depth", number(g.leafDepth)}})}})},
-        {"parameters", object({{"coordination", quoted(localMode ? "cell_local" : "common_window")},
-            {"window_ms", number(config.windowMs)}, {"fixed_depth", options.mode == "fixed" ? number(settings.fixedDepth) : "null"},
-            {"min_depth", number(settings.spatial.minDepth)},
-            {"extension_step_ms", settings.temporal ? number(settings.temporal->extensionStepMs) : "null"},
-            {"max_window_ms", settings.temporal ? number(settings.temporal->maxWindowMs) : number(config.windowMs)}})},
+        {"parameters", object(parameters)},
         {"runtime", object({{"processing_ms", number(elapsed)}, {"clock", quoted("steady_clock")},
             {"scope", quoted("core replay and in-memory result serialization; excludes input validation and file I/O")}})},
         {"input_observation_contributions", number(inputContributions)},
@@ -471,7 +520,7 @@ Options arguments(int argc, char** argv) {
         } else throw std::invalid_argument("Unknown CLI option: " + key);
     }
     if (result.input.empty() || result.config.empty() || result.output.empty() || result.mode.empty())
-        throw std::invalid_argument("Required: --input FILE --config FILE --mode fixed|spatial|temporal_first|spatial_first --output NEW_FILE");
+        throw std::invalid_argument("Required: --input FILE --config FILE --mode fixed|spatial|temporal_first|spatial_first|semantic_first --output NEW_FILE");
     if (std::filesystem::exists(result.output)) throw std::invalid_argument("Output already exists");
     return result;
 }

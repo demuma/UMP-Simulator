@@ -199,6 +199,17 @@ def feature_vector(public: dict, knowledge: list[dict], include_geometry: bool =
     semantics, not wall-clock/transport performance.
     """
     _validated_public(public)
+    return _feature_vector_validated(public, knowledge, include_geometry)
+
+
+def _feature_vector_validated(public: dict, knowledge: list[dict], include_geometry: bool = True) -> list[float]:
+    """Read a proven public view without repeating whole-transcript validation.
+
+    Private seam for the causal batch evaluator: its caller must first validate
+    the complete public transcript and only select whole immutable releases,
+    preserving the header, record order and sequential aliases. Knowledge still
+    crosses the full strict validation below. Feature arithmetic is unchanged.
+    """
     names = feature_names(include_geometry)
     if not isinstance(knowledge, list):
         raise ValueError("knowledge must be an array")

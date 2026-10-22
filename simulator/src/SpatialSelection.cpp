@@ -42,8 +42,14 @@ SpatialSelection SpatialSelector::select(const AggregationCandidate& finest,
 }
 
 SpatialSelection SpatialSelector::propose(const AggregationCandidate& finest,
-    const AggregationHistory& history, const MetricEvaluator& evaluator) const {
+    const AggregationHistory& history, const MetricEvaluator& evaluator,
+    std::optional<double> semanticLossCeiling, bool allowSpatialMerges) const {
+    if (semanticLossCeiling && (!std::isfinite(*semanticLossCeiling)
+            || *semanticLossCeiling < 0 || *semanticLossCeiling > 1
+            || !config.semanticTaxonomy || config.semanticTaxonomy != evaluator.semanticTaxonomy()))
+        throw std::invalid_argument("A semantic preference ceiling needs a finite [0,1] value and the same immutable taxonomy");
     const auto& g = finest.grid;
+    const int minimumDepth = allowSpatialMerges ? limits.minDepth : g.leafDepth;
     const auto& expected = config.coverage;
     if (finest.runId != config.runId || finest.sensorId != config.sensorId
         || finest.applicationId != config.applicationId || g.x != expected.x || g.y != expected.y
@@ -54,7 +60,7 @@ SpatialSelection SpatialSelector::propose(const AggregationCandidate& finest,
     if (finest.cells.size() > limits.maxEvaluations)
         throw std::length_error("Spatial selection evaluation budget exceeded");
     auto evaluated = evaluator.evaluate(finest, finest.closedAtMs);
-    SpatialSelection result{finest, evaluated, finest, evaluated, {}, {}, limits.minDepth};
+    SpatialSelection result{finest, evaluated, finest, evaluated, {}, {}, minimumDepth};
     result.candidate.cells.clear();
     // Build only paths that contain observed support, not an exponential full tree.
     std::set<std::pair<int, int>> occupied;
@@ -76,10 +82,10 @@ SpatialSelection SpatialSelector::propose(const AggregationCandidate& finest,
         if (cache.size() >= limits.maxEvaluations)
             throw std::length_error("Spatial selection evaluation budget exceeded");
         cache.emplace(cell.cell.id, SpatialAttempt{cell, evaluated.cells[i]});
-        for (int depth = g.leafDepth; depth >= limits.minDepth; --depth) {
+        for (int depth = g.leafDepth; depth >= minimumDepth; --depth) {
             const int id = cell.cell.id >> (2 * (g.leafDepth - depth));
             occupied.emplace(id, depth);
-            if (depth == limits.minDepth) domains.insert(id);
+            if (depth == minimumDepth) domains.insert(id);
         }
     }
 
@@ -114,19 +120,41 @@ SpatialSelection SpatialSelector::propose(const AggregationCandidate& finest,
             if (failingChildren.empty()) return {true, std::move(children)};
         }
         const auto& attempt = assess(id, depth);
-        const bool eligible = finest.coverage == WindowCoverage::Complete
+        const bool hardPass = finest.coverage == WindowCoverage::Complete
             && attempt.assessment.status == AssessmentStatus::Pass;
+        const bool semanticAvailable = attempt.assessment.semantic.has_value();
+        const bool preferencePass = !semanticLossCeiling || (semanticAvailable
+            && attempt.assessment.semantic->maxLoss <= *semanticLossCeiling);
+        const bool eligible = hardPass && preferencePass;
         const std::string reason = eligible ? (depth == g.leafDepth ? "finest_requirements_met" : "sibling_failure_parent_passed")
+            : hardPass && semanticLossCeiling && !semanticAvailable ? "semantic_preference_unavailable"
+            : hardPass && semanticLossCeiling && !preferencePass ? "semantic_preference_exceeded"
             : attempt.assessment.status == AssessmentStatus::Unavailable ? "assessment_unavailable"
             : attempt.assessment.status == AssessmentStatus::NotConfigured ? "policy_not_configured"
             : "requirements_failed_at_depth_cap";
-        // A failed subtree is provisional until its parent is tried. Even passing siblings
-        // are replaced as a group; none have been released while the private cut is built.
+        // A passing parent always replaces its complete child footprint, rescuing
+        // failed support without dropping anyone from the parent's statistics.
+        // If that merge fails, A07 may retain the already-assessed disjoint child
+        // cut. Keep its failed branches too: they account for the suppressed input
+        // and prevent a provisional partial cut from looking fully eligible.
+        if (!eligible && limits.preserveValidDescendants
+            && std::any_of(children.begin(), children.end(),
+                [](const auto& child) { return child.selected; })) {
+            for (auto& child : children)
+                if (child.selected) child.reason = hardPass && semanticLossCeiling && !preferencePass
+                    ? "valid_descendant_after_preference_rejected_merge"
+                    : "valid_descendant_after_failed_merge";
+            // Still partially ineligible: a higher legal parent must get its chance
+            // before the terminal controller settles for selective suppression.
+            return {false, std::move(children)};
+        }
+        // No eligible descendant (or baseline mode): retain one compact failed
+        // footprint. Nothing is published during this private traversal.
         return {eligible, {{id, eligible, reason, std::move(failingChildren), "initial"}}};
     };
 
     for (int domain : domains) {
-        auto branch = visit(domain, limits.minDepth);
+        auto branch = visit(domain, minimumDepth);
         for (auto& decision : branch.cells) {
             const auto& attempt = cache.at(decision.cellId);
             const auto& cell = attempt.cell.cell;

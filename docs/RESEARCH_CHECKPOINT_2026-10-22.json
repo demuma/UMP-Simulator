@@ -1,0 +1,819 @@
+{
+  "base_commit": "4f41865c80c5874b8134c247f6e18b42234ef6a4",
+  "changed_paths": 162,
+  "date": "2026-10-22",
+  "inventory_note": "The initial 162 path/status entries are separated from the new October 22 experiment files. Byte hashes were read during checkpoint preparation; they are not a claim to recover earlier versions of concurrently edited files.",
+  "paths": [
+    {
+      "path": "README.md",
+      "sha256_at_inventory": "9776024970213031c491b8047299b165f50c086e9193e1415ba0884c81cadde8",
+      "status": " M"
+    },
+    {
+      "path": "TO-DO.md",
+      "sha256_at_inventory": "f208cb171188cd51a3e776cc999f0acac5ae7c40c111b20bc362128bac665690",
+      "status": " M"
+    },
+    {
+      "path": "UMP-Simulator.code-workspace",
+      "sha256_at_inventory": "90f7fa14b6afa8fa98c97fe61861709ccc9ed8466d9b0cba356069070ba8e761",
+      "status": " M"
+    },
+    {
+      "path": "docs/BUCKET_IMPLEMENTATION_STATUS.md",
+      "sha256_at_inventory": "6303269726ce7fa45cc55709bd0fc6abf77134c5c050aed3f960d73442548570",
+      "status": " M"
+    },
+    {
+      "path": "docs/BUCKET_LIFECYCLE.md",
+      "sha256_at_inventory": "582072317a48ecbae2d019b0b761f7dbe0c42f4dece6090215c4cf5894280a14",
+      "status": " M"
+    },
+    {
+      "path": "docs/CELL_LOCAL_COORDINATION.md",
+      "sha256_at_inventory": "bcd0509ac9c0380d3dcf9caa9bc076dfddfe14e00f8cdddab2490a25ca4d0a66",
+      "status": " M"
+    },
+    {
+      "path": "docs/METRICS.md",
+      "sha256_at_inventory": "e73545f6ef07243993d1cbbc303ce87c9d4608a0e2b203e4ef7379a58fb01ce7",
+      "status": " M"
+    },
+    {
+      "path": "docs/PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md",
+      "sha256_at_inventory": "722a2138d35b53b3e8b2a5c71ed538da40b732b9e212445274b667384325bd04",
+      "status": " M"
+    },
+    {
+      "path": "docs/PRIVACY_EVALUATION.md",
+      "sha256_at_inventory": "dada980f57795fa7f3bd2ce8d300c951a083fad233a9ae49da5ab85b7adcbf92",
+      "status": " M"
+    },
+    {
+      "path": "docs/PRIVACY_ROBUSTNESS_STUDY_2026-10-19.md",
+      "sha256_at_inventory": "c0816c24b4d1b50ecf193f72d921b58359c1f09aa1bf484540352374a9438ba5",
+      "status": " M"
+    },
+    {
+      "path": "docs/SPATIAL_SELECTION.md",
+      "sha256_at_inventory": "d56b45fc25b106fcd616cd9877cdb56b06cb88fdf6eca71c433296705f574605",
+      "status": " M"
+    },
+    {
+      "path": "docs/TEMPORAL_AGGREGATION.md",
+      "sha256_at_inventory": "2f21b7f2fdd69caa53dca3de06060d380afa1eab0f74f7db415adfc7cf6f5254",
+      "status": " M"
+    },
+    {
+      "path": "docs/TERMINOLOGY_AND_NOTATION.md",
+      "sha256_at_inventory": "f539c05f7822272db6ca7acde295cf29de9101d2e77abadb64c5e7ca35545047",
+      "status": " M"
+    },
+    {
+      "path": "docs/notation/ump_equations.tex",
+      "sha256_at_inventory": "22a1d863fd8d716e806ba8126e2c4ea6f4657a1fc59f257786be067f5ca2d4ad",
+      "status": " M"
+    },
+    {
+      "path": "simulator/CMakeLists.txt",
+      "sha256_at_inventory": "2a444f3b39b1f0ba13820ff407ea047b509d3f725849679147b4f981002e7f93",
+      "status": " M"
+    },
+    {
+      "path": "simulator/config.yaml",
+      "sha256_at_inventory": "63de259e14240abe5ae6d07bae2960b6ad2969158e2c2205858f4a3b2a289aa7",
+      "status": " M"
+    },
+    {
+      "path": "simulator/include/AdaptiveAggregation.hpp",
+      "sha256_at_inventory": "9a1aa3a6043c698f10bf1484da6c5af62903541abbb95868dded6804ae50af38",
+      "status": " M"
+    },
+    {
+      "path": "simulator/include/AggregationConfiguration.hpp",
+      "sha256_at_inventory": "bd622a19e9dcc7e0f8e714fec661518b01888c2091693230c646a4853837673f",
+      "status": " M"
+    },
+    {
+      "path": "simulator/include/AggregationInput.hpp",
+      "sha256_at_inventory": "ac7baef85aba864c368a060e342a813f48fe55ef6ec6a7f6d486c0d14b437646",
+      "status": " M"
+    },
+    {
+      "path": "simulator/include/CandidateMetrics.hpp",
+      "sha256_at_inventory": "63d4fee50b20538e1a97f2734d643d96c45114bbe44af03bb503d1f5c1ae64e1",
+      "status": " M"
+    },
+    {
+      "path": "simulator/include/CellLocalAggregation.hpp",
+      "sha256_at_inventory": "f725b01d22ddab8d85a8a2b906fb08fb5d3f85396aabcd21c70ab063567e8d1d",
+      "status": " M"
+    },
+    {
+      "path": "simulator/include/PolicyConfiguration.hpp",
+      "sha256_at_inventory": "dbffb09ffed390c47e632059c3abbb7f709cdecb989addabdb42df1f4ec5424e",
+      "status": " M"
+    },
+    {
+      "path": "simulator/include/PublicationCoordinator.hpp",
+      "sha256_at_inventory": "92b3b35963eea5e464579133e949ba2516b08269a2812b3a0c9933849fcfb552",
+      "status": " M"
+    },
+    {
+      "path": "simulator/include/SpatialSelection.hpp",
+      "sha256_at_inventory": "bad7a94a7230d2625747ca66b38d47b939a3cf8e0ba413ce5f32b6eb17d1d746",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/AdaptiveAggregation.cpp",
+      "sha256_at_inventory": "ef68658d2b6cdc1fa1de624fa076c9d4c3b8d52b73b89ce38eb799e4096ea2eb",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/AgentBasedSensor.cpp",
+      "sha256_at_inventory": "ab78fa7b42a540b6109bae2632295dd3ed55c85fc570c2dce1764cbc7d25076a",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/AggregationConfiguration.cpp",
+      "sha256_at_inventory": "45857bfcebe91d941316bce96242a468d7d2627c6a8fc53eed651d82a4af8840",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/AggregationDiagnostics.cpp",
+      "sha256_at_inventory": "81e372623410e0e3e6f042a4bc7a4c0a65332232a74e0e6c419592c3e03c97eb",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/AggregationHistory.cpp",
+      "sha256_at_inventory": "009f53af98baa5c3ca5abb33ff2d20a34db098c933efe83b9d3a52a842c06125",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/AggregationManager.cpp",
+      "sha256_at_inventory": "864aff1db7678da8a2e5ae38db2c43b7825b6f60c7efb1b26797b462db65ecb9",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/CandidateMetrics.cpp",
+      "sha256_at_inventory": "22ac9e5840b6c164f132555b76c80986735e68467967d756768aaef899ea9f19",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/CellLocalAggregation.cpp",
+      "sha256_at_inventory": "cfeed1d239f6f844e26f4bb5075fc988f867aaef7fe66209a538ab75d7a974ba",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/PolicyConfiguration.cpp",
+      "sha256_at_inventory": "8b5b7009808d79a306c982e81e5b37f1f85ecdbd5739401e8733aadcd3f4fac6",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/PublicationCoordinator.cpp",
+      "sha256_at_inventory": "f6b7fc2de46f461354da28024f4db6cf9611a1ef85f341f419a61edff05c0986",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/PublicationStore.cpp",
+      "sha256_at_inventory": "04da4145920bc128b19e144505ba9d8fb1da9dc13835b040d141e070aa51d800",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/Simulation.cpp",
+      "sha256_at_inventory": "b48b62dfc930a4c28648641a42fb8f9f46bd3614b1a57f8fce4b1b82dbd5ff94",
+      "status": " M"
+    },
+    {
+      "path": "simulator/src/SpatialSelection.cpp",
+      "sha256_at_inventory": "3fe08bb88815b76c9336f53b38fb772ba66c7031208bd5cbf0aec493bf5ddf95",
+      "status": " M"
+    },
+    {
+      "path": "simulator/tests/CoordinationRegressionTests.cpp",
+      "sha256_at_inventory": "c808b860ce5ec53eaba7204d26fc97cf44d6ff1259425b54640744ab01b92a3c",
+      "status": " M"
+    },
+    {
+      "path": "simulator/tests/PolicyConfigurationTests.cpp",
+      "sha256_at_inventory": "f392ed440ade4e34c7192c59b7687f8163e16b25f73812be58d60dd39c367e88",
+      "status": " M"
+    },
+    {
+      "path": "simulator/tools/AggregationReplay.cpp",
+      "sha256_at_inventory": "59ef5da48844be90c38e94267613e902006eb51ab74e5d889bbc44eedcc58704",
+      "status": " M"
+    },
+    {
+      "path": "tools/evaluation/capture_simulator.py",
+      "sha256_at_inventory": "737ce1d2113054fa6dfa47f2879629dbaa64e53cfb44a825e6d0c0d6ae7ed9de",
+      "status": " M"
+    },
+    {
+      "path": "tools/evaluation/empirical_privacy.py",
+      "sha256_at_inventory": "b21d36bfdcfbfa1978ad6a70db9c72a423944372e8b3c3fd34c894da4572c796",
+      "status": " M"
+    },
+    {
+      "path": "tools/evaluation/run_privacy_robustness.py",
+      "sha256_at_inventory": "7171bdd0728416b2c993a61b6ec4b0ab7cbd88931d95ef3e68ca9a0aa522e773",
+      "status": " M"
+    },
+    {
+      "path": "tools/evaluation/test_capture.py",
+      "sha256_at_inventory": "556915541154dce4ab81a31a91b6feed6f150ad88e38d4eb30e9d1fa9e1dca83",
+      "status": " M"
+    },
+    {
+      "path": "docs/ALOQ_COMPARISON_REVIEW_2026-10-21.md",
+      "sha256_at_inventory": "48c99d365ee90d26237e7c27cbf3961536b8bb3c5639546f2304323030f4ef6b",
+      "status": "??"
+    },
+    {
+      "path": "docs/CAMERA_READY_COMPARISON_2026-10-21.md",
+      "sha256_at_inventory": "34d4ffd70a3da401582c96056904c105a9a6d7ffc5d08d21d7c50a3e067d927b",
+      "status": "??"
+    },
+    {
+      "path": "docs/CAUSAL_PRIVACY_IMPLEMENTATION.md",
+      "sha256_at_inventory": "43b4a93df7c7cef11e8c63d56ca21c1c046ed9e90ab1556ef3d13e8a4a2bf4bd",
+      "status": "??"
+    },
+    {
+      "path": "docs/CAUSAL_PRIVACY_PROTOCOL_2026-10-20.md",
+      "sha256_at_inventory": "bfcd391bb06f6c2400b469b8e60d7b6de9638efe9a0a1fee2a95bcdf6136a2d0",
+      "status": "??"
+    },
+    {
+      "path": "docs/CAUSAL_PRIVACY_REPORT_2026-10-20.md",
+      "sha256_at_inventory": "85c46f60789e85b43db3fbb799b44288636e41a5fb2a214adad36bfce7a05ef6",
+      "status": "??"
+    },
+    {
+      "path": "docs/CAUSAL_PRIVACY_TABLES_2026-10-20.md",
+      "sha256_at_inventory": "5448736556e2c395ba3e4930e7a58f23950b449807bff932158e6044d63949ae",
+      "status": "??"
+    },
+    {
+      "path": "docs/CAUSAL_PRIVACY_TEST_REPORT_2026-10-20.md",
+      "sha256_at_inventory": "2932ea81fc5b7581a313709ab987d1bd51dc7ba318de0f7590fc6241e7d081a5",
+      "status": "??"
+    },
+    {
+      "path": "docs/CELL_SIZE_CAPS.md",
+      "sha256_at_inventory": "8b013f3ceb6ca0f83d9bf3f29973bbc94a02811c56ee57a890b32b38788a0479",
+      "status": "??"
+    },
+    {
+      "path": "docs/CELL_SIZE_CAP_PROTOCOL_2026-10-21.md",
+      "sha256_at_inventory": "603a9df961495bf200b9dd383677b1f001a28ec21b567be3a167c33f825d1f6b",
+      "status": "??"
+    },
+    {
+      "path": "docs/CELL_SIZE_CAP_RESULTS_2026-10-21.md",
+      "sha256_at_inventory": "5758d6b5131b7607a396bda3b7503e935565c71afaa4cf238405b4d9f74157cd",
+      "status": "??"
+    },
+    {
+      "path": "docs/FOUR_SECOND_WINDOWS.md",
+      "sha256_at_inventory": "55d88a823641743e3e0bfe2a58a5f259be3822f02c2b19065687ce490745ed40",
+      "status": "??"
+    },
+    {
+      "path": "docs/FOUR_SECOND_WINDOW_PROTOCOL_2026-10-21.md",
+      "sha256_at_inventory": "cb153df9529e0c15d7b4207c08c6f5bcc0bc34baf6f0b6df7ad13d62392d251a",
+      "status": "??"
+    },
+    {
+      "path": "docs/FOUR_SECOND_WINDOW_RESULTS_2026-10-21.md",
+      "sha256_at_inventory": "8a763b9e5ce3e352aa175358cb543a7d636e00b6cb8e3ec86d0990989e982397",
+      "status": "??"
+    },
+    {
+      "path": "docs/HANDOFF_REPAIR_PROTOCOL_2026-10-19.md",
+      "sha256_at_inventory": "132ea6d8fa31f794f68da2cf99a2ac2be141712c952885096e5805b4ef085f66",
+      "status": "??"
+    },
+    {
+      "path": "docs/HANDOFF_REPAIR_REPORT_2026-10-19.md",
+      "sha256_at_inventory": "75c3d73528e75a8e6a298e2134729c005e5c1914a48fe7ade5c59b76ae2c93dc",
+      "status": "??"
+    },
+    {
+      "path": "docs/HANDOFF_REPAIR_TEST_REPORT_2026-10-19.md",
+      "sha256_at_inventory": "392a6aea1369361d0afaea54bc730a8f3063c7d259ffe7fcdaebc0bc3d073647",
+      "status": "??"
+    },
+    {
+      "path": "docs/LOCAL_COORDINATION_DIAGNOSIS_2026-10-19.md",
+      "sha256_at_inventory": "0f06f838bf3c7fa7df562cb79cc5b93cd33f6a0f9e424b2cd06380be1a1553f9",
+      "status": "??"
+    },
+    {
+      "path": "docs/LOCAL_WINDOW_HOLD_PRIVACY_ANALYSIS_2026-10-19.md",
+      "sha256_at_inventory": "ae3a48bdb8d183f70aa174ed186dce48132dd732b37ac4a3667cb3c88d99cf91",
+      "status": "??"
+    },
+    {
+      "path": "docs/MOVING_REPLAY.md",
+      "sha256_at_inventory": "ef41075e725ca0d9fe504b078441effef773bf4bacc878f42c010d359ecdbe09",
+      "status": "??"
+    },
+    {
+      "path": "docs/MOVING_REPLAY_PROTOCOL_2026-10-21.md",
+      "sha256_at_inventory": "0a833306ca8bb7a3991fe2deb8dd3a9c20f13029a8b8d7d8d302299914200d1f",
+      "status": "??"
+    },
+    {
+      "path": "docs/MOVING_REPLAY_RESULTS_2026-10-21.md",
+      "sha256_at_inventory": "09a215a4d145226bc5a836ea76f94103e2a3111e5ffb35ef8ad6b591a02d5f78",
+      "status": "??"
+    },
+    {
+      "path": "docs/MOVING_REPLAY_TEST_REPORT_2026-10-21.md",
+      "sha256_at_inventory": "ec201f2b48415849239e8177a57da33c34d327593a45e4b80cf879bf84bf1058",
+      "status": "??"
+    },
+    {
+      "path": "docs/PRESENTATION_NARRATIVE_20MIN_2026-10-21.md",
+      "sha256_at_inventory": "42863117008412930a7f2d966cfa35ed59e0fca4c42ab120725c47fa1e242284",
+      "status": "??"
+    },
+    {
+      "path": "docs/SCENARIO_INVENTORY_AND_GT_LOSS_2026-10-19.md",
+      "sha256_at_inventory": "f0237187b9bd2481a1469f008ca146ed68b7dcb536fb2b5c49a48a0cdd4e4f89",
+      "status": "??"
+    },
+    {
+      "path": "docs/SELECTIVE_DESCENDANT_RESCUE.md",
+      "sha256_at_inventory": "25f14a7c9791198a51534c397cd63667fd74fc6051c1cf43d4838733ab8fc388",
+      "status": "??"
+    },
+    {
+      "path": "docs/SELECTIVE_DESCENDANT_RESCUE_TEST_REPORT_2026-10-21.md",
+      "sha256_at_inventory": "29050e3a6afa3179ec64ec81dd38973fdf02ed61c1ff303fad718dff82873d4d",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_ADAPTATION.md",
+      "sha256_at_inventory": "500f51e10ed8bf6216c8dbfb97255c75342c2582869cc45836ee3edf0a6d8ae2",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_ADAPTATION_TEST_REPORT_2026-10-21.md",
+      "sha256_at_inventory": "fefc57697283259963fbf45019b08f974f78aa027858a2d78474ddc35d68b065",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_FIRST_AND_DENSITY_2026-10-21.md",
+      "sha256_at_inventory": "73cb4c2c5a541665139acb731a5048c71eb4d4b045c9d6abcbd803f80c061bed",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_FIRST_IMPLEMENTATION.md",
+      "sha256_at_inventory": "16b569e6e02a50c87f81410f4bc8bba1a0c8fdcd22139f35680c3e5b0a3fa7f7",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_FIRST_RESULTS_2026-10-21.md",
+      "sha256_at_inventory": "6688768efd4be77a50b5edd98741d85a98e6d05f43af31c635d39b8ce03e4e49",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_FIRST_TEST_REPORT_2026-10-21.md",
+      "sha256_at_inventory": "3eb72ff56528020a1ba89bb143686b8a065aedddf3539b9467e5419142d7cbe2",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_PRIORITY_PROTOCOL_2026-10-21.md",
+      "sha256_at_inventory": "b3b6b279ebee813f48a7d6382da0756f6bbb31dab7fa241ab7229619f1b0a3a5",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_PRIORITY_STUDY_2026-10-21.md",
+      "sha256_at_inventory": "3b598ec7c62cc3c4d0d9c4425ff89472ed11214bdb68a9365e73324fa3d6b966",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_PRIORITY_TEST_REPORT_2026-10-21.md",
+      "sha256_at_inventory": "d2c2a9fcb0e12fcdd08fcc4217c804a437c488fb251ce6158a31ffc4a14386f1",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_RELEASE_CONTROL.md",
+      "sha256_at_inventory": "1801d4de2a7d49755a1bc44f46ae1f339cfbace3b8685613c0c2d5b4b182cfb4",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_RELEASE_PROTOCOL_2026-10-21.md",
+      "sha256_at_inventory": "12c7bb17be59025cec323d1cc0f57fa7b37e9919ac8dba738fe78956fd45b727",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_RELEASE_TEST_REPORT_2026-10-21.md",
+      "sha256_at_inventory": "38c644bfdc2e30b1adbc99f19b9f3a477091809a4f9b07781044d2905967e6f2",
+      "status": "??"
+    },
+    {
+      "path": "docs/SEMANTIC_SPATIAL_EQUALITY_2026-10-21.md",
+      "sha256_at_inventory": "1ce6d44386660527e8c6ca0cf753f922700f16716c4387a30045682b46deab41",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/causal-prefix-deadline-utility-2026-10-20.png",
+      "sha256_at_inventory": "a7286c2adb4acfe181581cb1a3e62ff80960375718cfe750b0d37a289484c70d",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/causal-prefix-deadline-utility-2026-10-20.svg",
+      "sha256_at_inventory": "b7a5cd3f70836786fb23797ce2eaeab7d486c787f2bf8a3ad93b0463c29670fd",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/causal-prefix-history-base-2026-10-20.png",
+      "sha256_at_inventory": "1e5c8bc24dd59b759700b188d26c2325ed77cb2e436d9abe151ff601002f4ee7",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/causal-prefix-history-base-2026-10-20.svg",
+      "sha256_at_inventory": "7ca6f9465d16e64c92f3bbf25baefd40d82443db325a08a568434f277befe1c6",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/causal-prefix-history-recent-2026-10-20.png",
+      "sha256_at_inventory": "752f1e73b8936f31f766126dfa2f950f67d2099055f81f16b7a5747a56ae956a",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/causal-prefix-history-recent-2026-10-20.svg",
+      "sha256_at_inventory": "c26dbde4b4384156d6e4d52f4128059c3fad976d354f5d18ff8f202d3bde5023",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/causal-prefix-history-shift-2026-10-20.png",
+      "sha256_at_inventory": "28893194ce2c2d4fd494a6b4ed6afdf45a6c0078b77c6c860dbe8272c3d61f98",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/causal-prefix-history-shift-2026-10-20.svg",
+      "sha256_at_inventory": "8ca3ab7b28bdb57bbe8deb5e4df84aa52099a47aac800a1929910144a8be10fe",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/cell-caps-500-at4s-2026-10-21.jpg",
+      "sha256_at_inventory": "1f4e70e80569faaa23e87c408c4b2893f31ccdf9d9a6844b8a0a71448fa43463",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/handoff-repair-2026-10-19.png",
+      "sha256_at_inventory": "6c69fcbe6e061e8f3f86b85942075e12768f243271843458270aa007d98b752f",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/handoff-repair-2026-10-19.svg",
+      "sha256_at_inventory": "1487f8f5081085f2a5e15b0d305e6f05004fce015f157db45f08864b63ce86a3",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/local-window-ablation-2026-10-19.png",
+      "sha256_at_inventory": "892b077f832d6481161b6f0e43ec2b63e4db493a027bd0a32fb827c978e4561d",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/local-window-ablation-2026-10-19.svg",
+      "sha256_at_inventory": "d7d16ffa0b3c3c82e6af804746bcc3e5ebbe1b403fc1f3e393c28d77f3d183b0",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/moving-replay-500-at4s-2026-10-21.jpg",
+      "sha256_at_inventory": "f7104d958f51fe51dcc38c194baeb4a89d2fd971dcfce4ddeda5a6234e27ecf1",
+      "status": "??"
+    },
+    {
+      "path": "docs/figures/windows-500-at8s-2026-10-21.jpg",
+      "sha256_at_inventory": "1735235458755996da1a9ea4922d78f596d46952764b42ff4efbc1aed3d12f55",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/selective-suppression/README.md",
+      "sha256_at_inventory": "1c90b6cb5f9fcf0fc82c01a6d6c0bcabb2fd6260d804ea1725f520813babd648",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/selective-suppression/observations.json",
+      "sha256_at_inventory": "355a7c1b4e0e1c460ccd5aa2cb0e6c9c7717a013459c931c07c004e873bed421",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/selective-suppression/policy.json",
+      "sha256_at_inventory": "ef9f6c531503e84cbe15725b5f815f1ec833c49b257317ae436593ecadad9ba7",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/README.md",
+      "sha256_at_inventory": "0c65f158a6a14fd6e8e088085ac59a2cc5a1c3d545bad5b13310e66fcc410d00",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/cyclists-observations.json",
+      "sha256_at_inventory": "1376644167415ced6accafa37ed6a14aa269c592c018e1e750214ca853d910fd",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/cyclists-policy.json",
+      "sha256_at_inventory": "5be7fe7d584dcbde8cc6b5190ca62f89c5511270c9fdde2165f7fa451d3481c0",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/exact-observations.json",
+      "sha256_at_inventory": "cc652bb31c5a062943f79da76e8223a8ac942cc5bf09a5a960f4e19ad0ba47cf",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/exact-policy.json",
+      "sha256_at_inventory": "28df63fe0e8f1f2e494cfa7064dfa79565ee17c84a36fbbdf139cc66e6771cca",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/public-taxonomy.json",
+      "sha256_at_inventory": "6b48257e40946519b844d36c49daaf15a0cf03bdc91b5acad65bf85a95637ef1",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/rare-observations.json",
+      "sha256_at_inventory": "ecf6f46cbc33def36e24cb635b0c8d2e83920f85b4795050f1d22e7347679746",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/rare-policy.json",
+      "sha256_at_inventory": "043106b025ce13ee8124fa7f021a1132a6626380815de754cd44410dafcfa803",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/strict-loss-observations.json",
+      "sha256_at_inventory": "89d81698485df1e1969844ec5e4bb0a6f4478b3c71d620743e3dd5dfd587389a",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/strict-loss-policy.json",
+      "sha256_at_inventory": "d74205c15be3fd904bf0960f641c4e04f0a6c6a5d513dbbf9b5e43a652b3eef7",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/strict-support-observations.json",
+      "sha256_at_inventory": "f0e552614e1a33706250c6c6ab000845514c847cec655508f36485365b72cecd",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-adaptation/strict-support-policy.json",
+      "sha256_at_inventory": "043106b025ce13ee8124fa7f021a1132a6626380815de754cd44410dafcfa803",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-first/README.md",
+      "sha256_at_inventory": "6207592914707acff28efbfe91b3d1ff45aba226ae1a38341d1cc555f71e910c",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-first/high-observations.json",
+      "sha256_at_inventory": "9aa6021e0aa189516a5c5cf004b545c54f8f86b27a1d56ce943344826cede300",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-first/high-policy.json",
+      "sha256_at_inventory": "1a8216d8a9dc73f98f6f9394a742403901f244fa9d19cea58400078c2984c9b2",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-first/low-observations.json",
+      "sha256_at_inventory": "52c13054c7c5418d503d02f1eedc377e395a23a64af729cb2c03eb9cb32d06cf",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-first/low-policy.json",
+      "sha256_at_inventory": "c80d8666672f9af28fbf51b546d67bac0f1ee866d57cf501e4f73cf9673fcad8",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-first/medium-observations.json",
+      "sha256_at_inventory": "58d3766682cfba547cee10074f2a8b8db42d501eba2a860e08737d837e3ecbfd",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-first/medium-policy.json",
+      "sha256_at_inventory": "0154498e2ef72708d9b61baed435f4992cdfda55f58e772d91df9694f9147e33",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-release/README.md",
+      "sha256_at_inventory": "b867f6e6beab5204c5e351e1bbd075dc0793c74136f2fd3a5570f276aff00abd",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-release/intermediate-observations.json",
+      "sha256_at_inventory": "e879ba4cd4724a3d114d6787ce0a61d706dc5645b95584e0e649496f2efdb18a",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-release/intermediate-policy.json",
+      "sha256_at_inventory": "08cca3e12c993553fff422def52163e43faeaa869c7cbabd1862500295fa1aa7",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-release/turnover-observations.json",
+      "sha256_at_inventory": "2f995ec5ed45c0a4ed6b88a51b2b15a07f1e9895948daba5a8702b8889dfbf6c",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-release/turnover-spatial_first-policy.json",
+      "sha256_at_inventory": "184ce4f6bfd3afd46235ba284a17389ab1dcba0dee5f2cffffb3a18a34bbd41d",
+      "status": "??"
+    },
+    {
+      "path": "simulator/examples/semantic-release/turnover-temporal_first-policy.json",
+      "sha256_at_inventory": "6b2ae07456818644611cd40d35c82c2f375bd8a1fd2b000d1400bb1c7cf031ed",
+      "status": "??"
+    },
+    {
+      "path": "simulator/include/SemanticTaxonomy.hpp",
+      "sha256_at_inventory": "c963709b53c240eff5683477437050af80935a21b89cf1b3bee2f50fb92d9c6c",
+      "status": "??"
+    },
+    {
+      "path": "simulator/src/SemanticTaxonomy.cpp",
+      "sha256_at_inventory": "4345f1519eaaeae3501366a225fa89ddf0e80bc78497011dcc19f5879e4b7342",
+      "status": "??"
+    },
+    {
+      "path": "simulator/tests/SelectiveSuppressionRegressionTests.cpp",
+      "sha256_at_inventory": "8883402245ee992e32a3d2524dc63c31c6a45f884efe4a74b4ff892e8e44992c",
+      "status": "??"
+    },
+    {
+      "path": "simulator/tests/SemanticFirstTests.cpp",
+      "sha256_at_inventory": "f15f71c1d6a7554b2726459ab7ea95f7770b3f78e3d6b498f2854cf3cf690687",
+      "status": "??"
+    },
+    {
+      "path": "simulator/tests/SemanticHistoryTests.cpp",
+      "sha256_at_inventory": "100a748f8f3c972bbaf0e5969ea2bd13b3e04d58258f0c0cbc4b6b8ec3385666",
+      "status": "??"
+    },
+    {
+      "path": "simulator/tests/SemanticPipelineTests.cpp",
+      "sha256_at_inventory": "11ad3c1ef45f42b33b17b9c49236789a5f2ce6bf96df181e7cfb612e84177d54",
+      "status": "??"
+    },
+    {
+      "path": "simulator/tests/SemanticPublicationStoreTests.cpp",
+      "sha256_at_inventory": "acb48a926ec3440c220195e884adfb7a1734b77946a684575d923fed86ef529b",
+      "status": "??"
+    },
+    {
+      "path": "simulator/tests/SemanticTaxonomyTests.cpp",
+      "sha256_at_inventory": "1afd0e1ead5fdc4d8c48ae909205f68224c97f4137bee0fe4a71c7fc7e760157",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/causal_privacy.py",
+      "sha256_at_inventory": "1ba96ed5346cc680dd59a85de2e29b9888403b35529cdc6edfee902fb10ced60",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/online_occupancy.py",
+      "sha256_at_inventory": "f80b3b1070d695be70fccb73cbdcb115621346be0c58152de0dc9b23f18f881e",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/run_moving_comparison.py",
+      "sha256_at_inventory": "9bc0bbb96e488c607274151428bceabc3db7c21465ff456cdcd767b9eb95b303",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/run_privacy_prefix_study.py",
+      "sha256_at_inventory": "63f3e0fafb19dd78074791713bd0a1d32b380f68ccb935a3739dd3ea9a9e23f6",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/run_semantic_priority_study.py",
+      "sha256_at_inventory": "187ada1330d3961f7e17513b7b3d176008bcb81da360ecd2260470fccb68fe18",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/semantic_queries.py",
+      "sha256_at_inventory": "d187d8d86b034ad391e524f263d24b72c40024759947b2b282c7531386ba9605",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/semantic_tradeoffs.py",
+      "sha256_at_inventory": "ab2f93e5528318c3954da544ee89fdf16955fdab114e83f7f2ec9b7211b9d959",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_causal_privacy.py",
+      "sha256_at_inventory": "da8358ab4f73bea51a7bdbcbbcae561c1cbb473dd1cb3eb2bb15b06629c06dfb",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_cell_size_caps.py",
+      "sha256_at_inventory": "3aad113e7385ed50dcf28baa8c54b934fc4af3407c129183e0e6884170bca4dd",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_four_second_window.py",
+      "sha256_at_inventory": "61d03720da382d7899755004855b7c85eef296e43d78b09d937d7e9240eeefe8",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_moving_comparison.py",
+      "sha256_at_inventory": "aea34a03835f66de373b9e1cff5a3867b8ef7986903c7471be93ad8da33a38fa",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_online_occupancy.py",
+      "sha256_at_inventory": "efed155487b0f8254a756c5545d4f17b4f3b7dbfafe86972e153785b27bbb715",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_privacy_repair.py",
+      "sha256_at_inventory": "f76b3bfc32fdf155ea6754d29fcfbc73e0d8d0b1be369a007f47116c98451a21",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_run_privacy_prefix_study.py",
+      "sha256_at_inventory": "34954e6fb87debb1d57121f7b39febb80693c3324d8cc236e2d3751e91d53042",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_run_semantic_priority_study.py",
+      "sha256_at_inventory": "92dbd8c8372367fbe890b3b070083186096241640485b401cd9e2877c4bd870a",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_selective_suppression.py",
+      "sha256_at_inventory": "ca6aafc4ff8b65a84cc8415fa10f2404250a357bc93424b1348aecaddd4f7c36",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_semantic_adaptation.py",
+      "sha256_at_inventory": "b7e833d06eb174c5cef43cced51a14ca38307454c9bf83bc266239a1ab26c30d",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_semantic_first.py",
+      "sha256_at_inventory": "f7ba72aa7e310cb2407ff22eda2045e3ca3f2e8b508fce70c6a0a3f1773aa347",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_semantic_queries.py",
+      "sha256_at_inventory": "a0429525a0c0da0df6e3ec122d4b460f1d9c1a9a63b4f0ece6f76db9c57063f2",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_semantic_release.py",
+      "sha256_at_inventory": "830946fba0a353e56745eb8f43e31ffa07df97df51c0299d0941f836a4cb16b3",
+      "status": "??"
+    },
+    {
+      "path": "tools/evaluation/test_semantic_tradeoffs.py",
+      "sha256_at_inventory": "81542bf96a59d9822ae22f88aade62496b0b8f578596603d724b3749b8e74f55",
+      "status": "??"
+    },
+    {
+      "path": "tools/replay_viewer/README.md",
+      "sha256_at_inventory": "bbe87a05bc6c7b8fed7e53fffcf65cab3806b032128e7be6839422eacd4194b8",
+      "status": "??"
+    },
+    {
+      "path": "tools/replay_viewer/index.html",
+      "sha256_at_inventory": "0a915efafedcfd799fa4766755bd4011aa50a4e869b5447c9fe4a788e7afb0bf",
+      "status": "??"
+    },
+    {
+      "path": "tools/replay_viewer/model.js",
+      "sha256_at_inventory": "8c11860056bdb97562202289e05e6d25ca7bfa6fe920c7301137c60a87e50284",
+      "status": "??"
+    },
+    {
+      "path": "tools/replay_viewer/serve.py",
+      "sha256_at_inventory": "296c38b22a8ddb842d089699f955697577e59729ba41de689d013a9b2b5247d2",
+      "status": "??"
+    },
+    {
+      "path": "tools/replay_viewer/test_model.js",
+      "sha256_at_inventory": "140102d4037153cba2a349d1e59e5c30c8bb6650bf32b8b79158b94d424ec64f",
+      "status": "??"
+    },
+    {
+      "path": "tools/replay_viewer/test_viewer.py",
+      "sha256_at_inventory": "9edc6f17baef138abc7fce73d80ba40d7453a1f55f8bd43ceb815be6a9da086c",
+      "status": "??"
+    },
+    {
+      "path": "tools/replay_viewer/viewer.js",
+      "sha256_at_inventory": "043f07aa5ace21feab64277ecadb08c4ee6b0f670b007bf35e4a9d6cbc4ce348",
+      "status": "??"
+    }
+  ],
+  "schema": "ump.research-checkpoint-input.v1"
+}

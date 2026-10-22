@@ -1,13 +1,18 @@
 # Privacy attributes, environmental context and the online evaluation contract
 
-Date: 2026-10-19. Status: research and interface contract. This document distinguishes
-implemented source-membership experiments from proposed semantic-visit and online
-experiments. It does not implement a map importer, visit generator, online client,
-new release mechanism or sensitive-attribute metric.
+Date: 2026-10-20. Status: research and interface contract, updated after the completed
+causal-prefix study and logical deadline utility. Source-membership attacks and causal
+logical-time replay are implemented. Semantic-visit inference and an instrumented live
+recipient service remain separate future experiments. This document adds no map importer,
+visit generator, online client, release mechanism or sensitive-attribute metric.
 
 Read alongside [the notation contract](TERMINOLOGY_AND_NOTATION.md),
-[the empirical membership implementation](EMPIRICAL_PRIVACY_IMPLEMENTATION.md) and
-[the completed coordination/privacy assessment](PRIVACY_COORDINATION_STUDY_2026-10-19.md).
+[the empirical membership implementation](EMPIRICAL_PRIVACY_IMPLEMENTATION.md),
+[the coordination/privacy assessment](PRIVACY_COORDINATION_STUDY_2026-10-19.md) and
+[the completed causal-prefix report](CAUSAL_PRIVACY_REPORT_2026-10-20.md).
+The [causal implementation](CAUSAL_PRIVACY_IMPLEMENTATION.md),
+[predeclared protocol](CAUSAL_PRIVACY_PROTOCOL_2026-10-20.md) and
+[test report](CAUSAL_PRIVACY_TEST_REPORT_2026-10-20.md) define the completed logical-time boundary.
 Use the notation contract for established symbols; in particular, $\phi_u(t)$ denotes
 the realized position trajectory of road user $u$.
 
@@ -34,7 +39,7 @@ It is a research design, not a claim that every field is already released or sim
 | Information | Possible linkage role | Possible protected fact | UMP treatment |
 |---|---|---|---|
 | Internal road-user ID | Persistent linkage across raw observations; identifying if an external mapping exists | Source participation or linkage to a named person | Private research identity; exclude from recipient exports and attack features. A random ID alone does not establish anonymity. |
-| Road-user type or movement mode | Can narrow a candidate set when an observer knows that a person cycles or drives | A person's transport mode, if that is the declared secret | Existing generator has pedestrian/bicycle/car labels. They are synthetic movement classes, not an already justified sensitive category. |
+| Road-user type or movement mode | Can narrow a candidate set when an observer knows that a person cycles or drives | A person's transport mode, if that is the declared secret | The privacy-fixture generator uses pedestrian/bicycle/car labels; it bypasses the live simulator taxonomy. These synthetic movement classes are not an already justified sensitive category. |
 | Timestamp or visit schedule | Links an observed event to an external sighting or known routine | Attendance at a place or time | Declare timestamp precision, uncertainty and permissible knowledge intervals. |
 | Cell ID, position and cell size | Cell ID implies public location and scale; combinations with time can support matching | A person's location or route | Public aggregate geometry is observable, although individual positions are not recipient records. Include adaptive geometry in the attack surface. |
 | Realized trajectory $\phi_u$ | Several observations can narrow candidate trajectories | Unobserved route segment, source membership or destination | Current auxiliary knowledge is sampled candidate positions; it is not a named-person reidentification benchmark. |
@@ -60,6 +65,23 @@ candidate observations model uncertain auxiliary knowledge, and its independent
 background-density test cohort examines one specified distribution shift. Longer
 paths and a nonlinear classifier strengthen the assessment within that contract; they
 do not introduce sensitive visits, named-person linkage or realistic city semantics.
+
+The October 20 causal-prefix extension keeps exactly this whole-source secret over a
+fixed 16-second horizon. It evaluates six declared recipient looks on fresh independent
+groups. Whole releases become visible at logical sealing; candidate sightings are selected
+with per-timestamp Bernoulli probability 0.25 and become usable only after both acquisition
+and reported time. The recent and cumulative views share the same causally acquired
+auxiliary knowledge. No withheld sensitive visit, map semantics or different membership
+unit is introduced after observing earlier attack results.
+
+The completed study does not establish a general privacy benefit from the history
+representation: all 16 local history-minus-recent AUC intervals include zero. These are
+pointwise conditional intervals, not an equivalence result. At the first look, recent and
+cumulative public records coincide, and history duplicates their feature block; logistic
+regression's effective L2 penalty on that public block can be halved without extra information.
+The contrast therefore includes representation/fitting effects. An unrestricted observer
+can ignore extra coordinates, so a lower fitted history AUC is not improved privacy from
+receiving more data. A matched redundant-block control would be a separate follow-up.
 
 Environmental structure can matter before a full city model exists. A known walkway,
 entrance or obstacle can rule out possible paths, while land use can turn a geometric
@@ -152,8 +174,10 @@ visit classifier succeeds.
 
 ## Online recipient-prefix contract
 
-The present attacks inspect the complete final recipient transcript. An online
-application needs a different observation boundary. At logical time $t$, define
+Earlier membership attacks inspect the complete final recipient transcript. The
+completed October 20 study now evaluates causal recipient prefixes offline, using a
+fixed public clock and an explicit logical availability assumption. A live application
+must additionally establish actual receipt. At logical time $t$, define
 
 $$
 \mathcal V_{\le t}
@@ -169,18 +193,43 @@ future candidate observations, private bucket state and full-run statistics used
 normalize a prefix. Reveal a fixed public horizon only if the recipient actually
 knows it in advance.
 
-A first replay experiment may explicitly assume instantaneous delivery and set
-$t^{\mathrm{available}}_r=\texttt{sealed\_at\_ms}$. That measures a logical-time system
-under the assumption. `sealed_at_ms` alone is not evidence of actual recipient receipt
-or a wall-clock latency measurement. Transport delays, failures and schedules require
-separate observations or a declared model.
+The implemented replay study assumes instantaneous delivery and sets
+$t^{\mathrm{available}}_r=\texttt{sealed\_at\_ms}$. Complete immutable records are selected
+at that boundary; neither counts nor source intervals are clipped to a checkpoint.
+The six looks are 1000, 2000, 4000, 8000, 12000 and 16000 ms. Recent releases arrive in
+$(t-1000,t]$; the history view retains earlier releases as well. The final look includes
+EOF behavior and is distinguished from interior checkpoints.
 
-Freeze prefix checkpoints and application query deadlines before examining outcomes.
-At each checkpoint, report attack success and useful answered queries *available by
-that deadline*. Retrospective occupancy reconstruction from later releases must not
-count as timely availability. Missing sparse output remains unknown, and a period
-without releases is still part of the recipient view when a public clock is known.
-An observer may save every earlier release: later database deletion cannot retract
+Each checkpoint model is fitted on TRAIN only. Each predeclared stream/view/profile/family
+strategy calibrates one threshold on CAL candidates' maximum scores over all six looks,
+then freezes it for both independent TEST cohorts. First-alarm TPR/FPR keep the paired source-group denominator; six looks are not
+six independent opportunities at FPR 0.1. The empirical CAL cap is neither a TEST FPR cap
+nor a deployment guarantee. Report observed TEST false alarms, the balanced evaluation
+prior and pointwise grouped uncertainty. Failed bounded attacks do not prove formal
+protection or rule out other families, features or observation schedules.
+
+This measures a logical-time system under its assumption. `sealed_at_ms` alone is not
+evidence of actual recipient receipt or a wall-clock latency measurement. Transport delays,
+failures and schedules still require separate observations or a declared model. The prefix
+study is not an implemented online service or an online privacy-enforcement mechanism.
+
+Prefix checkpoints and application query deadlines are fixed before outcomes. The
+completed study reports attack scores/first-alarm curves at the declared looks and,
+separately, occupancy availability/error at each query's own deadline. It uses 10-m/1-s
+queries with 0/200/500/1000-ms lags. The primary cohort contains query ends from 1 through
+14 seconds so every declared lag remains strictly before EOF. Boundary queries are
+separate; deadlines after the horizon are censored instead of counted as misses.
+
+A query requires complete released spatial support at every scheduled source sample.
+Unknown/absent sparse output is not zero; explicit released zero is usable. A late
+aggregate cannot retrospectively repair a missed deadline. The default study reports
+per-lag utility, rather than additional utility checkpoint curves; a tested helper can
+summarize only then-due query deadlines. Changing an application's accepted lag changes
+the evaluation, not the published stream or an attacker's access, and supplies no causal
+privacy/latency mechanism frontier.
+
+A period without releases remains part of the recipient view when a public clock is
+known. An observer may save every earlier release: later database deletion cannot retract
 information it already received.
 
 Use a concrete application, such as occupancy for a specified road region, with a
@@ -208,9 +257,19 @@ views.
 
 ## Implementation boundary and next decision
 
-The immediate robustness study can proceed without infrastructure semantics. The
-next semantic milestone needs a small explicit visit-event contract and an auxiliary-
-knowledge baseline before more renderer or route-planning detail. The next online
-milestone needs public-prefix replay and deadline-aware occupancy scoring before a
-network service or browser application can support quantitative latency claims.
-Neither milestone is implemented by this document.
+Robustness, causal public-prefix replay and deadline-aware occupancy scoring are now
+implemented and evaluated without infrastructure semantics. Their completed reports
+retain the whole-source inclusion secret and the logical availability assumption. They
+do not supply a sensitive-visit result, a calibrated live privacy guard or a formal
+privacy guarantee.
+
+The optional semantic milestone still needs the explicit visit-event/hidden-interval
+contract above, a feasible environment and an auxiliary-knowledge-only baseline before
+renderer or route-planning detail. It is a separate secret and dataset, not a replacement
+membership label chosen because an earlier privacy contrast was inconclusive. Existing
+membership test sets remain frozen.
+
+A future live application must instrument capture, processing, queues, storage and
+recipient receipt before claiming end-to-end latency or real-time deadline compliance.
+The completed logical-time evaluation is a foundation for that work, not evidence that
+its transport, wall-clock behavior or multi-application privacy is already validated.

@@ -120,7 +120,23 @@ what a recipient already learned.
 their earlier prefixes under their own policies and deadlines. Prefixes that cannot legally
 be published are explicitly suppressed. Only after every part has reached the boundary
 can the domain begin a common new interval. The future parent does not repair suppression
-of an older prefix. Requests cannot overlap or escape their reserved domain.
+of an older prefix. Active requests do not overlap. A nonredundant strict enclosing request protects
+its domain against a narrower takeover. A passing parent may supersede a request wholly
+inside that parent, provided the whole parent interval remains privately owned and passes
+all current checks. Cancellation occurs with the same successful sink acknowledgement as
+the parent takeover; a failed or expired publication keeps the immutable reservation.
+
+Automatic requests are now prepared from policy-feasible ancestor choices before output,
+committed as intents with the failed prefix acknowledgement, and scheduled only after all
+owners due at that endpoint have advanced. This avoids mixing old sibling clocks with
+already advanced successors. The intents survive a sink exception and resume after retry.
+
+A request originally needed to align different starts becomes redundant when all of its
+private descendants already share a start before its rendezvous boundary. Reconciliation
+does not reset the owners' checks, extensions, next endpoints or absolute deadlines.
+Explicit requests made while already aligned retain their intentional guard. Passing and
+measured-empty holds are preserved. The exact contract and evidence are recorded in the
+[handoff repair report](HANDOFF_REPAIR_REPORT_2026-10-19.md).
 
 The controller can refine a new parent ownership domain again to inspect finer output;
 refinement preserves the shared start. A later passing parent can therefore still replace
