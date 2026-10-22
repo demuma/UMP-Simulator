@@ -1,0 +1,3863 @@
+{
+  "full_logical_equality_count": 4,
+  "inclusive_scopes_are_nonadditive": true,
+  "instrumentation_only": true,
+  "instrumentation_patch_sha256": "a3d17514539d73fd921f82d0f5d776835b6a23c7bf7d64b0e74fc3b247a84b04",
+  "notes": [
+    "All measurements use the same frozen 20 s source; repeats are not independent mobility realizations.",
+    "Scope clocks are inclusive wall-clock and cannot distinguish preemption inside a scope.",
+    "CPU clock sampled only at tick boundaries; tick wall excludes snapshot and result serialization overhead.",
+    "The original 132.6855 ms sample cannot be retrospectively assigned to a precise cause."
+  ],
+  "original_maximum": {
+    "logical_ms": 15200,
+    "per_tick_cpu_or_scopes_available": false,
+    "service_ms": 132.6855
+  },
+  "production_commit": "a304870",
+  "rows": [
+    {
+      "build_kind": "optimized_control",
+      "core_processing_ms": 14376.769916,
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "1330a7998b05c2544671301bf861406876f25e64da64436c64c69d96615d8bd3",
+      "process_maxrss_bytes": 591167488,
+      "process_system_s": 0.289348,
+      "process_user_s": 15.407405,
+      "process_wall_s": 15.895858042,
+      "variant": "cell_local_temporal_first"
+    },
+    {
+      "build_kind": "detailed_instrumentation",
+      "core_processing_ms": 14665.7695,
+      "instrumentation": {
+        "history_finest_rows_scanned": 34688262,
+        "history_query_rows_scanned": 960035498,
+        "hypothetical_fifo_100ms_arrivals": {
+          "completion_delay_above_100ms_count": 6,
+          "initial_queue_empty": true,
+          "last_input_completion_delay_ms": 73.39374999999927,
+          "live_paced_measurement": false,
+          "max_input_completion_delay_ms": 111.9395829999994,
+          "max_wait_before_service_ms": 11.939582999999402
+        },
+        "inclusive_nonadditive": true,
+        "input_tick_service": {
+          "count": 199,
+          "eof_service_ms": 110.568792,
+          "max_ms": 111.939583,
+          "mean_ms": 73.13952039698489,
+          "p50_ms": 72.625834,
+          "p95_ms": 96.464291,
+          "p99_ms": 110.156792,
+          "quantile_definition": "nearest rank, ceil(p*n)",
+          "service_above_100ms_count": 6
+        },
+        "occupied_leaf_owner_search_calls": 1272742,
+        "owner_prefix_map_lookups": 2098200,
+        "schema": "ump.scoped-runtime-instrumentation.v1",
+        "scopes": {
+          "common_evaluate": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "history_finest": {
+            "calls": 10160,
+            "inclusive_ms": 4921.796572
+          },
+          "history_query": {
+            "calls": 692866,
+            "inclusive_ms": 1849.563517
+          },
+          "local_can_merge": {
+            "calls": 161394,
+            "inclusive_ms": 1628.934746
+          },
+          "local_compact": {
+            "calls": 397,
+            "inclusive_ms": 844.553993
+          },
+          "local_make_window": {
+            "calls": 293319,
+            "inclusive_ms": 260.889123
+          },
+          "local_merge": {
+            "calls": 2554,
+            "inclusive_ms": 552.772303
+          },
+          "local_process": {
+            "calls": 200,
+            "inclusive_ms": 14504.201123
+          },
+          "local_refine": {
+            "calls": 398,
+            "inclusive_ms": 5361.824003
+          },
+          "local_selection": {
+            "calls": 7863,
+            "inclusive_ms": 230.573557
+          },
+          "metric_evaluate": {
+            "calls": 871229,
+            "inclusive_ms": 1172.585097
+          },
+          "owner_lookup": {
+            "calls": 1514046,
+            "inclusive_ms": 28.081542
+          },
+          "publication_deliver": {
+            "calls": 7863,
+            "inclusive_ms": 56.261281
+          },
+          "publication_seal": {
+            "calls": 7863,
+            "inclusive_ms": 22.996704
+          },
+          "refine_copy": {
+            "calls": 397,
+            "inclusive_ms": 27.954709
+          },
+          "refine_history": {
+            "calls": 2247,
+            "inclusive_ms": 4714.127589
+          },
+          "refine_owners": {
+            "calls": 397,
+            "inclusive_ms": 176.401829
+          },
+          "refine_to_domain": {
+            "calls": 209102,
+            "inclusive_ms": 130.717137
+          },
+          "serialize_release": {
+            "calls": 2554,
+            "inclusive_ms": 38.637264
+          },
+          "serialize_window": {
+            "calls": 7863,
+            "inclusive_ms": 285.228905
+          },
+          "spatial_propose": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "terminal": {
+            "calls": 7863,
+            "inclusive_ms": 365.077821
+          }
+        }
+      },
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "d85d389954e815d9df4998af0b64c84d2897557837abce4d10b8e72fa51bc3ee",
+      "previous_max_tick": {
+        "distinct_starts_peak": 6,
+        "distinct_starts_total": 12,
+        "eof": false,
+        "finest_rows_scanned": 716124,
+        "frontier_peak": 1990,
+        "logical_ms": 15200,
+        "occupied_cells_total": 6606,
+        "owner_searches": 6606,
+        "prefix_lookups": 8763,
+        "query_rows_scanned": 6300198,
+        "scopes": {
+          "common_evaluate": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "history_finest": {
+            "calls": 179,
+            "inclusive_ms": 29.990292
+          },
+          "history_query": {
+            "calls": 3377,
+            "inclusive_ms": 11.264055
+          },
+          "local_can_merge": {
+            "calls": 802,
+            "inclusive_ms": 6.904222
+          },
+          "local_compact": {
+            "calls": 2,
+            "inclusive_ms": 4.228417
+          },
+          "local_make_window": {
+            "calls": 1105,
+            "inclusive_ms": 1.064094
+          },
+          "local_merge": {
+            "calls": 42,
+            "inclusive_ms": 8.682373
+          },
+          "local_process": {
+            "calls": 1,
+            "inclusive_ms": 87.104666
+          },
+          "local_refine": {
+            "calls": 2,
+            "inclusive_ms": 28.631458
+          },
+          "local_selection": {
+            "calls": 166,
+            "inclusive_ms": 3.998841
+          },
+          "metric_evaluate": {
+            "calls": 4581,
+            "inclusive_ms": 6.562279
+          },
+          "owner_lookup": {
+            "calls": 7773,
+            "inclusive_ms": 0.131544
+          },
+          "publication_deliver": {
+            "calls": 166,
+            "inclusive_ms": 0.968495
+          },
+          "publication_seal": {
+            "calls": 166,
+            "inclusive_ms": 0.444503
+          },
+          "refine_copy": {
+            "calls": 2,
+            "inclusive_ms": 0.155501
+          },
+          "refine_history": {
+            "calls": 12,
+            "inclusive_ms": 25.984333
+          },
+          "refine_owners": {
+            "calls": 2,
+            "inclusive_ms": 0.403501
+          },
+          "refine_to_domain": {
+            "calls": 1130,
+            "inclusive_ms": 0.185133
+          },
+          "serialize_release": {
+            "calls": 42,
+            "inclusive_ms": 0.632708
+          },
+          "serialize_window": {
+            "calls": 166,
+            "inclusive_ms": 6.139075
+          },
+          "spatial_propose": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "terminal": {
+            "calls": 166,
+            "inclusive_ms": 7.572293
+          }
+        },
+        "service_ms": 89.704417,
+        "thread_cpu_ms": 89.684333
+      },
+      "process_maxrss_bytes": 633225216,
+      "process_system_s": 0.31735399999999997,
+      "process_user_s": 15.641403,
+      "process_wall_s": 16.119616291,
+      "top_ticks": [
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 695392,
+          "frontier_peak": 1987,
+          "logical_ms": 18000,
+          "occupied_cells_total": 7830,
+          "owner_searches": 7830,
+          "prefix_lookups": 9777,
+          "query_rows_scanned": 6509504,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 172,
+              "inclusive_ms": 41.803373
+            },
+            "history_query": {
+              "calls": 3347,
+              "inclusive_ms": 14.318848
+            },
+            "local_can_merge": {
+              "calls": 813,
+              "inclusive_ms": 8.507618
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 4.239666
+            },
+            "local_make_window": {
+              "calls": 1027,
+              "inclusive_ms": 1.009063
+            },
+            "local_merge": {
+              "calls": 38,
+              "inclusive_ms": 9.005832
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 109.698292
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 41.904042
+            },
+            "local_selection": {
+              "calls": 157,
+              "inclusive_ms": 4.20784
+            },
+            "metric_evaluate": {
+              "calls": 4459,
+              "inclusive_ms": 8.104074
+            },
+            "owner_lookup": {
+              "calls": 8977,
+              "inclusive_ms": 0.154446
+            },
+            "publication_deliver": {
+              "calls": 157,
+              "inclusive_ms": 0.916291
+            },
+            "publication_seal": {
+              "calls": 157,
+              "inclusive_ms": 0.399548
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.169
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 37.93725
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.426374
+            },
+            "refine_to_domain": {
+              "calls": 1120,
+              "inclusive_ms": 0.149907
+            },
+            "serialize_release": {
+              "calls": 38,
+              "inclusive_ms": 0.606047
+            },
+            "serialize_window": {
+              "calls": 157,
+              "inclusive_ms": 5.894533
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 157,
+              "inclusive_ms": 7.220748
+            }
+          },
+          "service_ms": 111.939583,
+          "thread_cpu_ms": 109.052583
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 36852,
+          "frontier_peak": 1990,
+          "logical_ms": 12700,
+          "occupied_cells_total": 7636,
+          "owner_searches": 7636,
+          "prefix_lookups": 9920,
+          "query_rows_scanned": 5113464,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 17,
+              "inclusive_ms": 55.076417
+            },
+            "history_query": {
+              "calls": 3293,
+              "inclusive_ms": 11.986211
+            },
+            "local_can_merge": {
+              "calls": 792,
+              "inclusive_ms": 8.759466
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 9.242292
+            },
+            "local_make_window": {
+              "calls": 888,
+              "inclusive_ms": 1.749095
+            },
+            "local_merge": {
+              "calls": 3,
+              "inclusive_ms": 0.726834
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 109.889667
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 60.100457
+            },
+            "local_selection": {
+              "calls": 3,
+              "inclusive_ms": 0.205375
+            },
+            "metric_evaluate": {
+              "calls": 3535,
+              "inclusive_ms": 6.069762
+            },
+            "owner_lookup": {
+              "calls": 8714,
+              "inclusive_ms": 0.32071
+            },
+            "publication_deliver": {
+              "calls": 3,
+              "inclusive_ms": 0.068333
+            },
+            "publication_seal": {
+              "calls": 3,
+              "inclusive_ms": 0.017584
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.16275
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 54.984541
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 1.116041
+            },
+            "refine_to_domain": {
+              "calls": 1022,
+              "inclusive_ms": 0.641289
+            },
+            "serialize_release": {
+              "calls": 3,
+              "inclusive_ms": 0.052584
+            },
+            "serialize_window": {
+              "calls": 3,
+              "inclusive_ms": 0.132709
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 3,
+              "inclusive_ms": 0.219126
+            }
+          },
+          "service_ms": 110.156792,
+          "thread_cpu_ms": 102.210959
+        },
+        {
+          "distinct_starts_peak": 5,
+          "distinct_starts_total": 10,
+          "eof": false,
+          "finest_rows_scanned": 902000,
+          "frontier_peak": 2179,
+          "logical_ms": 3000,
+          "occupied_cells_total": 6166,
+          "owner_searches": 6166,
+          "prefix_lookups": 8360,
+          "query_rows_scanned": 5913500,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 186,
+              "inclusive_ms": 24.603882
+            },
+            "history_query": {
+              "calls": 4763,
+              "inclusive_ms": 11.644485
+            },
+            "local_can_merge": {
+              "calls": 871,
+              "inclusive_ms": 10.165132
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 10.472917
+            },
+            "local_make_window": {
+              "calls": 2191,
+              "inclusive_ms": 2.092037
+            },
+            "local_merge": {
+              "calls": 1,
+              "inclusive_ms": 0.232417
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 103.997417
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 26.305916
+            },
+            "local_selection": {
+              "calls": 176,
+              "inclusive_ms": 1.607955
+            },
+            "metric_evaluate": {
+              "calls": 5968,
+              "inclusive_ms": 6.606656
+            },
+            "owner_lookup": {
+              "calls": 7389,
+              "inclusive_ms": 0.146803
+            },
+            "publication_deliver": {
+              "calls": 176,
+              "inclusive_ms": 0.27175
+            },
+            "publication_seal": {
+              "calls": 176,
+              "inclusive_ms": 0.314617
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.210959
+            },
+            "refine_history": {
+              "calls": 10,
+              "inclusive_ms": 23.724584
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.372791
+            },
+            "refine_to_domain": {
+              "calls": 1203,
+              "inclusive_ms": 0.141459
+            },
+            "serialize_release": {
+              "calls": 1,
+              "inclusive_ms": 0.024125
+            },
+            "serialize_window": {
+              "calls": 176,
+              "inclusive_ms": 6.348615
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 176,
+              "inclusive_ms": 6.946576
+            }
+          },
+          "service_ms": 104.250708,
+          "thread_cpu_ms": 104.156875
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 652878,
+          "frontier_peak": 2095,
+          "logical_ms": 9000,
+          "occupied_cells_total": 8692,
+          "owner_searches": 8692,
+          "prefix_lookups": 10858,
+          "query_rows_scanned": 5960064,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 138,
+              "inclusive_ms": 35.871965
+            },
+            "history_query": {
+              "calls": 4449,
+              "inclusive_ms": 10.871533
+            },
+            "local_can_merge": {
+              "calls": 886,
+              "inclusive_ms": 9.760005
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 8.907458
+            },
+            "local_make_window": {
+              "calls": 1875,
+              "inclusive_ms": 1.74852
+            },
+            "local_merge": {
+              "calls": 3,
+              "inclusive_ms": 0.774417
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 103.438542
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 39.010917
+            },
+            "local_selection": {
+              "calls": 124,
+              "inclusive_ms": 1.330754
+            },
+            "metric_evaluate": {
+              "calls": 5280,
+              "inclusive_ms": 6.076463
+            },
+            "owner_lookup": {
+              "calls": 9832,
+              "inclusive_ms": 0.156087
+            },
+            "publication_deliver": {
+              "calls": 124,
+              "inclusive_ms": 0.236419
+            },
+            "publication_seal": {
+              "calls": 124,
+              "inclusive_ms": 0.229543
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.156251
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 35.177084
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.372708
+            },
+            "refine_to_domain": {
+              "calls": 1131,
+              "inclusive_ms": 0.087338
+            },
+            "serialize_release": {
+              "calls": 3,
+              "inclusive_ms": 0.0515
+            },
+            "serialize_window": {
+              "calls": 124,
+              "inclusive_ms": 4.475127
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 124,
+              "inclusive_ms": 4.949004
+            }
+          },
+          "service_ms": 103.647,
+          "thread_cpu_ms": 103.500208
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 482064,
+          "frontier_peak": 2095,
+          "logical_ms": 11000,
+          "occupied_cells_total": 8210,
+          "owner_searches": 8210,
+          "prefix_lookups": 10077,
+          "query_rows_scanned": 6125400,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 106,
+              "inclusive_ms": 35.216294
+            },
+            "history_query": {
+              "calls": 4402,
+              "inclusive_ms": 11.662368
+            },
+            "local_can_merge": {
+              "calls": 942,
+              "inclusive_ms": 11.940419
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 8.621417
+            },
+            "local_make_window": {
+              "calls": 1793,
+              "inclusive_ms": 1.617105
+            },
+            "local_merge": {
+              "calls": 5,
+              "inclusive_ms": 1.196291
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 102.720375
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 38.395667
+            },
+            "local_selection": {
+              "calls": 92,
+              "inclusive_ms": 1.048166
+            },
+            "metric_evaluate": {
+              "calls": 5037,
+              "inclusive_ms": 6.205144
+            },
+            "owner_lookup": {
+              "calls": 9292,
+              "inclusive_ms": 0.165941
+            },
+            "publication_deliver": {
+              "calls": 92,
+              "inclusive_ms": 0.217122
+            },
+            "publication_seal": {
+              "calls": 92,
+              "inclusive_ms": 0.171833
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.182959
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 34.668958
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.377542
+            },
+            "refine_to_domain": {
+              "calls": 1071,
+              "inclusive_ms": 0.095576
+            },
+            "serialize_release": {
+              "calls": 5,
+              "inclusive_ms": 0.083042
+            },
+            "serialize_window": {
+              "calls": 92,
+              "inclusive_ms": 3.236255
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 92,
+              "inclusive_ms": 3.630999
+            }
+          },
+          "service_ms": 102.972375,
+          "thread_cpu_ms": 102.893042
+        },
+        {
+          "distinct_starts_peak": 6,
+          "distinct_starts_total": 12,
+          "eof": false,
+          "finest_rows_scanned": 860544,
+          "frontier_peak": 2125,
+          "logical_ms": 11200,
+          "occupied_cells_total": 7056,
+          "owner_searches": 7056,
+          "prefix_lookups": 9317,
+          "query_rows_scanned": 7077576,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 202,
+              "inclusive_ms": 33.729165
+            },
+            "history_query": {
+              "calls": 3446,
+              "inclusive_ms": 12.087292
+            },
+            "local_can_merge": {
+              "calls": 930,
+              "inclusive_ms": 8.415886
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 3.714292
+            },
+            "local_make_window": {
+              "calls": 1001,
+              "inclusive_ms": 1.017212
+            },
+            "local_merge": {
+              "calls": 39,
+              "inclusive_ms": 9.593961
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 98.657916
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 32.293291
+            },
+            "local_selection": {
+              "calls": 189,
+              "inclusive_ms": 4.782494
+            },
+            "metric_evaluate": {
+              "calls": 4775,
+              "inclusive_ms": 7.057356
+            },
+            "owner_lookup": {
+              "calls": 8292,
+              "inclusive_ms": 0.139008
+            },
+            "publication_deliver": {
+              "calls": 189,
+              "inclusive_ms": 0.991086
+            },
+            "publication_seal": {
+              "calls": 189,
+              "inclusive_ms": 0.463747
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.16525
+            },
+            "refine_history": {
+              "calls": 12,
+              "inclusive_ms": 29.330041
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.408125
+            },
+            "refine_to_domain": {
+              "calls": 1205,
+              "inclusive_ms": 0.170566
+            },
+            "serialize_release": {
+              "calls": 39,
+              "inclusive_ms": 0.638086
+            },
+            "serialize_window": {
+              "calls": 189,
+              "inclusive_ms": 7.032418
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 189,
+              "inclusive_ms": 8.499454
+            }
+          },
+          "service_ms": 101.188333,
+          "thread_cpu_ms": 100.742416
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 530868,
+          "frontier_peak": 2089,
+          "logical_ms": 10000,
+          "occupied_cells_total": 8424,
+          "owner_searches": 8424,
+          "prefix_lookups": 10402,
+          "query_rows_scanned": 6746406,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 137,
+              "inclusive_ms": 36.92383
+            },
+            "history_query": {
+              "calls": 3334,
+              "inclusive_ms": 11.08087
+            },
+            "local_can_merge": {
+              "calls": 917,
+              "inclusive_ms": 8.346229
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 3.268208
+            },
+            "local_make_window": {
+              "calls": 838,
+              "inclusive_ms": 0.832742
+            },
+            "local_merge": {
+              "calls": 39,
+              "inclusive_ms": 8.868416
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 94.6995
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 36.415083
+            },
+            "local_selection": {
+              "calls": 122,
+              "inclusive_ms": 3.823336
+            },
+            "metric_evaluate": {
+              "calls": 4224,
+              "inclusive_ms": 6.707335
+            },
+            "owner_lookup": {
+              "calls": 9621,
+              "inclusive_ms": 0.155702
+            },
+            "publication_deliver": {
+              "calls": 122,
+              "inclusive_ms": 0.862124
+            },
+            "publication_seal": {
+              "calls": 122,
+              "inclusive_ms": 0.342375
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.16775
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 33.254959
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.441833
+            },
+            "refine_to_domain": {
+              "calls": 1168,
+              "inclusive_ms": 0.160002
+            },
+            "serialize_release": {
+              "calls": 39,
+              "inclusive_ms": 0.591416
+            },
+            "serialize_window": {
+              "calls": 122,
+              "inclusive_ms": 4.502328
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 122,
+              "inclusive_ms": 5.715039
+            }
+          },
+          "service_ms": 97.119417,
+          "thread_cpu_ms": 97.053
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 264936,
+          "frontier_peak": 2155,
+          "logical_ms": 8800,
+          "occupied_cells_total": 8568,
+          "owner_searches": 8568,
+          "prefix_lookups": 10803,
+          "query_rows_scanned": 6867420,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 86,
+              "inclusive_ms": 37.665958
+            },
+            "history_query": {
+              "calls": 3400,
+              "inclusive_ms": 11.326545
+            },
+            "local_can_merge": {
+              "calls": 997,
+              "inclusive_ms": 8.793506
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 3.081792
+            },
+            "local_make_window": {
+              "calls": 793,
+              "inclusive_ms": 0.782779
+            },
+            "local_merge": {
+              "calls": 43,
+              "inclusive_ms": 9.644002
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 94.522791
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 37.383875
+            },
+            "local_selection": {
+              "calls": 71,
+              "inclusive_ms": 3.618333
+            },
+            "metric_evaluate": {
+              "calls": 4004,
+              "inclusive_ms": 6.817198
+            },
+            "owner_lookup": {
+              "calls": 9749,
+              "inclusive_ms": 0.162035
+            },
+            "publication_deliver": {
+              "calls": 71,
+              "inclusive_ms": 0.863458
+            },
+            "publication_seal": {
+              "calls": 71,
+              "inclusive_ms": 0.285416
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.167083
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 34.117543
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.483667
+            },
+            "refine_to_domain": {
+              "calls": 1141,
+              "inclusive_ms": 0.192461
+            },
+            "serialize_release": {
+              "calls": 43,
+              "inclusive_ms": 0.636872
+            },
+            "serialize_window": {
+              "calls": 71,
+              "inclusive_ms": 2.712124
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 71,
+              "inclusive_ms": 3.865706
+            }
+          },
+          "service_ms": 96.83325,
+          "thread_cpu_ms": 96.6975
+        },
+        {
+          "distinct_starts_peak": 3,
+          "distinct_starts_total": 6,
+          "eof": false,
+          "finest_rows_scanned": 933500,
+          "frontier_peak": 2182,
+          "logical_ms": 1000,
+          "occupied_cells_total": 3892,
+          "owner_searches": 3892,
+          "prefix_lookups": 6009,
+          "query_rows_scanned": 5838000,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 210,
+              "inclusive_ms": 15.90412
+            },
+            "history_query": {
+              "calls": 4742,
+              "inclusive_ms": 11.24187
+            },
+            "local_can_merge": {
+              "calls": 874,
+              "inclusive_ms": 10.096362
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 9.78475
+            },
+            "local_make_window": {
+              "calls": 2195,
+              "inclusive_ms": 1.96299
+            },
+            "local_merge": {
+              "calls": 1,
+              "inclusive_ms": 0.265291
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 96.465917
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 16.632042
+            },
+            "local_selection": {
+              "calls": 204,
+              "inclusive_ms": 1.880044
+            },
+            "metric_evaluate": {
+              "calls": 6120,
+              "inclusive_ms": 6.493214
+            },
+            "owner_lookup": {
+              "calls": 5112,
+              "inclusive_ms": 0.098606
+            },
+            "publication_deliver": {
+              "calls": 204,
+              "inclusive_ms": 0.318829
+            },
+            "publication_seal": {
+              "calls": 204,
+              "inclusive_ms": 0.370295
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.164792
+            },
+            "refine_history": {
+              "calls": 6,
+              "inclusive_ms": 14.947291
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.263791
+            },
+            "refine_to_domain": {
+              "calls": 1202,
+              "inclusive_ms": 0.126966
+            },
+            "serialize_release": {
+              "calls": 1,
+              "inclusive_ms": 0.020708
+            },
+            "serialize_window": {
+              "calls": 204,
+              "inclusive_ms": 7.16022
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 204,
+              "inclusive_ms": 7.863427
+            }
+          },
+          "service_ms": 96.686208,
+          "thread_cpu_ms": 96.657541
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 686464,
+          "frontier_peak": 2020,
+          "logical_ms": 19000,
+          "occupied_cells_total": 7968,
+          "owner_searches": 7968,
+          "prefix_lookups": 10367,
+          "query_rows_scanned": 5535856,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 149,
+              "inclusive_ms": 31.254085
+            },
+            "history_query": {
+              "calls": 4293,
+              "inclusive_ms": 10.834973
+            },
+            "local_can_merge": {
+              "calls": 792,
+              "inclusive_ms": 9.196754
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 8.792792
+            },
+            "local_make_window": {
+              "calls": 1993,
+              "inclusive_ms": 1.834418
+            },
+            "local_merge": {
+              "calls": 6,
+              "inclusive_ms": 1.385625
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 96.235
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 33.793749
+            },
+            "local_selection": {
+              "calls": 135,
+              "inclusive_ms": 1.475712
+            },
+            "metric_evaluate": {
+              "calls": 5360,
+              "inclusive_ms": 6.217667
+            },
+            "owner_lookup": {
+              "calls": 9102,
+              "inclusive_ms": 0.159976
+            },
+            "publication_deliver": {
+              "calls": 135,
+              "inclusive_ms": 0.291009
+            },
+            "publication_seal": {
+              "calls": 135,
+              "inclusive_ms": 0.242535
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.179083
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 30.479999
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.507959
+            },
+            "refine_to_domain": {
+              "calls": 1085,
+              "inclusive_ms": 0.229124
+            },
+            "serialize_release": {
+              "calls": 6,
+              "inclusive_ms": 0.099709
+            },
+            "serialize_window": {
+              "calls": 135,
+              "inclusive_ms": 4.786792
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 135,
+              "inclusive_ms": 5.329245
+            }
+          },
+          "service_ms": 96.464291,
+          "thread_cpu_ms": 96.359833
+        }
+      ],
+      "variant": "cell_local_temporal_first"
+    },
+    {
+      "build_kind": "detailed_instrumentation",
+      "core_processing_ms": 14637.997625,
+      "instrumentation": {
+        "history_finest_rows_scanned": 34688262,
+        "history_query_rows_scanned": 960035498,
+        "hypothetical_fifo_100ms_arrivals": {
+          "completion_delay_above_100ms_count": 3,
+          "initial_queue_empty": true,
+          "last_input_completion_delay_ms": 76.4305830000012,
+          "live_paced_measurement": false,
+          "max_input_completion_delay_ms": 103.34300000000076,
+          "max_wait_before_service_ms": 3.3430000000007567
+        },
+        "inclusive_nonadditive": true,
+        "input_tick_service": {
+          "count": 199,
+          "eof_service_ms": 114.527125,
+          "max_ms": 103.343,
+          "mean_ms": 72.9801641407035,
+          "p50_ms": 72.421792,
+          "p95_ms": 95.511375,
+          "p99_ms": 101.587792,
+          "quantile_definition": "nearest rank, ceil(p*n)",
+          "service_above_100ms_count": 3
+        },
+        "occupied_leaf_owner_search_calls": 1272742,
+        "owner_prefix_map_lookups": 2098200,
+        "schema": "ump.scoped-runtime-instrumentation.v1",
+        "scopes": {
+          "common_evaluate": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "history_finest": {
+            "calls": 10160,
+            "inclusive_ms": 4926.004511
+          },
+          "history_query": {
+            "calls": 692866,
+            "inclusive_ms": 1848.151496
+          },
+          "local_can_merge": {
+            "calls": 161394,
+            "inclusive_ms": 1614.711371
+          },
+          "local_compact": {
+            "calls": 397,
+            "inclusive_ms": 849.707793
+          },
+          "local_make_window": {
+            "calls": 293319,
+            "inclusive_ms": 260.333382
+          },
+          "local_merge": {
+            "calls": 2554,
+            "inclusive_ms": 549.670962
+          },
+          "local_process": {
+            "calls": 200,
+            "inclusive_ms": 14476.702284
+          },
+          "local_refine": {
+            "calls": 398,
+            "inclusive_ms": 5370.998906
+          },
+          "local_selection": {
+            "calls": 7863,
+            "inclusive_ms": 228.931916
+          },
+          "metric_evaluate": {
+            "calls": 871229,
+            "inclusive_ms": 1169.115757
+          },
+          "owner_lookup": {
+            "calls": 1514046,
+            "inclusive_ms": 27.79209
+          },
+          "publication_deliver": {
+            "calls": 7863,
+            "inclusive_ms": 56.168797
+          },
+          "publication_seal": {
+            "calls": 7863,
+            "inclusive_ms": 22.864287
+          },
+          "refine_copy": {
+            "calls": 397,
+            "inclusive_ms": 28.108003
+          },
+          "refine_history": {
+            "calls": 2247,
+            "inclusive_ms": 4718.839081
+          },
+          "refine_owners": {
+            "calls": 397,
+            "inclusive_ms": 174.662334
+          },
+          "refine_to_domain": {
+            "calls": 209102,
+            "inclusive_ms": 129.16401
+          },
+          "serialize_release": {
+            "calls": 2554,
+            "inclusive_ms": 38.483026
+          },
+          "serialize_window": {
+            "calls": 7863,
+            "inclusive_ms": 286.35109
+          },
+          "spatial_propose": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "terminal": {
+            "calls": 7863,
+            "inclusive_ms": 365.976652
+          }
+        }
+      },
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "5309b0758e7b1cd28cc29583df5a5e1a416c49744ae30d5dc3300a3c09715c8e",
+      "previous_max_tick": {
+        "distinct_starts_peak": 6,
+        "distinct_starts_total": 12,
+        "eof": false,
+        "finest_rows_scanned": 716124,
+        "frontier_peak": 1990,
+        "logical_ms": 15200,
+        "occupied_cells_total": 6606,
+        "owner_searches": 6606,
+        "prefix_lookups": 8763,
+        "query_rows_scanned": 6300198,
+        "scopes": {
+          "common_evaluate": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "history_finest": {
+            "calls": 179,
+            "inclusive_ms": 29.253501
+          },
+          "history_query": {
+            "calls": 3377,
+            "inclusive_ms": 11.150227
+          },
+          "local_can_merge": {
+            "calls": 802,
+            "inclusive_ms": 7.133468
+          },
+          "local_compact": {
+            "calls": 2,
+            "inclusive_ms": 4.232999
+          },
+          "local_make_window": {
+            "calls": 1105,
+            "inclusive_ms": 1.040423
+          },
+          "local_merge": {
+            "calls": 42,
+            "inclusive_ms": 8.964708
+          },
+          "local_process": {
+            "calls": 1,
+            "inclusive_ms": 86.51325
+          },
+          "local_refine": {
+            "calls": 2,
+            "inclusive_ms": 27.987125
+          },
+          "local_selection": {
+            "calls": 166,
+            "inclusive_ms": 4.069292
+          },
+          "metric_evaluate": {
+            "calls": 4581,
+            "inclusive_ms": 6.521718
+          },
+          "owner_lookup": {
+            "calls": 7773,
+            "inclusive_ms": 0.1316
+          },
+          "publication_deliver": {
+            "calls": 166,
+            "inclusive_ms": 0.981911
+          },
+          "publication_seal": {
+            "calls": 166,
+            "inclusive_ms": 0.444627
+          },
+          "refine_copy": {
+            "calls": 2,
+            "inclusive_ms": 0.140874
+          },
+          "refine_history": {
+            "calls": 12,
+            "inclusive_ms": 25.294791
+          },
+          "refine_owners": {
+            "calls": 2,
+            "inclusive_ms": 0.427417
+          },
+          "refine_to_domain": {
+            "calls": 1130,
+            "inclusive_ms": 0.195377
+          },
+          "serialize_release": {
+            "calls": 42,
+            "inclusive_ms": 0.637624
+          },
+          "serialize_window": {
+            "calls": 166,
+            "inclusive_ms": 6.004662
+          },
+          "spatial_propose": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "terminal": {
+            "calls": 166,
+            "inclusive_ms": 7.443916
+          }
+        },
+        "service_ms": 89.027375,
+        "thread_cpu_ms": 89.005
+      },
+      "process_maxrss_bytes": 591429632,
+      "process_system_s": 0.313838,
+      "process_user_s": 15.627964,
+      "process_wall_s": 15.976911207999997,
+      "top_ticks": [
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 652878,
+          "frontier_peak": 2095,
+          "logical_ms": 9000,
+          "occupied_cells_total": 8692,
+          "owner_searches": 8692,
+          "prefix_lookups": 10858,
+          "query_rows_scanned": 5960064,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 138,
+              "inclusive_ms": 36.953208
+            },
+            "history_query": {
+              "calls": 4449,
+              "inclusive_ms": 11.209462
+            },
+            "local_can_merge": {
+              "calls": 886,
+              "inclusive_ms": 9.542867
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 8.977249
+            },
+            "local_make_window": {
+              "calls": 1875,
+              "inclusive_ms": 1.654879
+            },
+            "local_merge": {
+              "calls": 3,
+              "inclusive_ms": 0.762334
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 103.113625
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 39.810625
+            },
+            "local_selection": {
+              "calls": 124,
+              "inclusive_ms": 1.248667
+            },
+            "metric_evaluate": {
+              "calls": 5280,
+              "inclusive_ms": 6.046091
+            },
+            "owner_lookup": {
+              "calls": 9832,
+              "inclusive_ms": 0.168273
+            },
+            "publication_deliver": {
+              "calls": 124,
+              "inclusive_ms": 0.23125
+            },
+            "publication_seal": {
+              "calls": 124,
+              "inclusive_ms": 0.210085
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.170333
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 36.278873
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.375625
+            },
+            "refine_to_domain": {
+              "calls": 1131,
+              "inclusive_ms": 0.085333
+            },
+            "serialize_release": {
+              "calls": 3,
+              "inclusive_ms": 0.053665
+            },
+            "serialize_window": {
+              "calls": 124,
+              "inclusive_ms": 4.384967
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 124,
+              "inclusive_ms": 4.834962
+            }
+          },
+          "service_ms": 103.343,
+          "thread_cpu_ms": 103.262125
+        },
+        {
+          "distinct_starts_peak": 5,
+          "distinct_starts_total": 10,
+          "eof": false,
+          "finest_rows_scanned": 902000,
+          "frontier_peak": 2179,
+          "logical_ms": 3000,
+          "occupied_cells_total": 6166,
+          "owner_searches": 6166,
+          "prefix_lookups": 8360,
+          "query_rows_scanned": 5913500,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 186,
+              "inclusive_ms": 23.896052
+            },
+            "history_query": {
+              "calls": 4763,
+              "inclusive_ms": 11.750729
+            },
+            "local_can_merge": {
+              "calls": 871,
+              "inclusive_ms": 9.817735
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 9.899292
+            },
+            "local_make_window": {
+              "calls": 2191,
+              "inclusive_ms": 1.949169
+            },
+            "local_merge": {
+              "calls": 1,
+              "inclusive_ms": 0.249125
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 101.361
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 26.273875
+            },
+            "local_selection": {
+              "calls": 176,
+              "inclusive_ms": 1.604294
+            },
+            "metric_evaluate": {
+              "calls": 5968,
+              "inclusive_ms": 6.611945
+            },
+            "owner_lookup": {
+              "calls": 7389,
+              "inclusive_ms": 0.144289
+            },
+            "publication_deliver": {
+              "calls": 176,
+              "inclusive_ms": 0.273089
+            },
+            "publication_seal": {
+              "calls": 176,
+              "inclusive_ms": 0.305046
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.158917
+            },
+            "refine_history": {
+              "calls": 10,
+              "inclusive_ms": 23.006584
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.377459
+            },
+            "refine_to_domain": {
+              "calls": 1203,
+              "inclusive_ms": 0.151242
+            },
+            "serialize_release": {
+              "calls": 1,
+              "inclusive_ms": 0.028542
+            },
+            "serialize_window": {
+              "calls": 176,
+              "inclusive_ms": 6.375748
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 176,
+              "inclusive_ms": 6.965591
+            }
+          },
+          "service_ms": 101.587792,
+          "thread_cpu_ms": 101.415791
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 482064,
+          "frontier_peak": 2095,
+          "logical_ms": 11000,
+          "occupied_cells_total": 8210,
+          "owner_searches": 8210,
+          "prefix_lookups": 10077,
+          "query_rows_scanned": 6125400,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 106,
+              "inclusive_ms": 36.292625
+            },
+            "history_query": {
+              "calls": 4402,
+              "inclusive_ms": 11.622508
+            },
+            "local_can_merge": {
+              "calls": 942,
+              "inclusive_ms": 10.510761
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 8.8745
+            },
+            "local_make_window": {
+              "calls": 1793,
+              "inclusive_ms": 1.681687
+            },
+            "local_merge": {
+              "calls": 5,
+              "inclusive_ms": 1.212709
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 100.794834
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 39.285708
+            },
+            "local_selection": {
+              "calls": 92,
+              "inclusive_ms": 1.077296
+            },
+            "metric_evaluate": {
+              "calls": 5037,
+              "inclusive_ms": 5.934331
+            },
+            "owner_lookup": {
+              "calls": 9292,
+              "inclusive_ms": 0.16092
+            },
+            "publication_deliver": {
+              "calls": 92,
+              "inclusive_ms": 0.230003
+            },
+            "publication_seal": {
+              "calls": 92,
+              "inclusive_ms": 0.173714
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.177833
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 35.743832
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.369958
+            },
+            "refine_to_domain": {
+              "calls": 1071,
+              "inclusive_ms": 0.091498
+            },
+            "serialize_release": {
+              "calls": 5,
+              "inclusive_ms": 0.089292
+            },
+            "serialize_window": {
+              "calls": 92,
+              "inclusive_ms": 3.253169
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 92,
+              "inclusive_ms": 3.663213
+            }
+          },
+          "service_ms": 101.018416,
+          "thread_cpu_ms": 100.998292
+        },
+        {
+          "distinct_starts_peak": 6,
+          "distinct_starts_total": 12,
+          "eof": false,
+          "finest_rows_scanned": 860544,
+          "frontier_peak": 2125,
+          "logical_ms": 11200,
+          "occupied_cells_total": 7056,
+          "owner_searches": 7056,
+          "prefix_lookups": 9317,
+          "query_rows_scanned": 7077576,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 202,
+              "inclusive_ms": 33.050287
+            },
+            "history_query": {
+              "calls": 3446,
+              "inclusive_ms": 11.743818
+            },
+            "local_can_merge": {
+              "calls": 930,
+              "inclusive_ms": 8.250131
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 3.764333
+            },
+            "local_make_window": {
+              "calls": 1001,
+              "inclusive_ms": 0.947325
+            },
+            "local_merge": {
+              "calls": 39,
+              "inclusive_ms": 8.54954
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 97.034083
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 32.130959
+            },
+            "local_selection": {
+              "calls": 189,
+              "inclusive_ms": 4.406537
+            },
+            "metric_evaluate": {
+              "calls": 4775,
+              "inclusive_ms": 6.971473
+            },
+            "owner_lookup": {
+              "calls": 8292,
+              "inclusive_ms": 0.141409
+            },
+            "publication_deliver": {
+              "calls": 189,
+              "inclusive_ms": 0.938209
+            },
+            "publication_seal": {
+              "calls": 189,
+              "inclusive_ms": 0.466586
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.184708
+            },
+            "refine_history": {
+              "calls": 12,
+              "inclusive_ms": 28.958042
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.402417
+            },
+            "refine_to_domain": {
+              "calls": 1205,
+              "inclusive_ms": 0.164946
+            },
+            "serialize_release": {
+              "calls": 39,
+              "inclusive_ms": 0.564918
+            },
+            "serialize_window": {
+              "calls": 189,
+              "inclusive_ms": 6.944921
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 189,
+              "inclusive_ms": 8.362545
+            }
+          },
+          "service_ms": 99.478083,
+          "thread_cpu_ms": 99.465375
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 507462,
+          "frontier_peak": 2041,
+          "logical_ms": 12000,
+          "occupied_cells_total": 7942,
+          "owner_searches": 7942,
+          "prefix_lookups": 9964,
+          "query_rows_scanned": 6539238,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 137,
+              "inclusive_ms": 37.121246
+            },
+            "history_query": {
+              "calls": 3379,
+              "inclusive_ms": 11.807344
+            },
+            "local_can_merge": {
+              "calls": 849,
+              "inclusive_ms": 8.202092
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 4.107208
+            },
+            "local_make_window": {
+              "calls": 976,
+              "inclusive_ms": 0.955615
+            },
+            "local_merge": {
+              "calls": 41,
+              "inclusive_ms": 8.961207
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 96.048708
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 36.553291
+            },
+            "local_selection": {
+              "calls": 122,
+              "inclusive_ms": 3.805625
+            },
+            "metric_evaluate": {
+              "calls": 4300,
+              "inclusive_ms": 6.692809
+            },
+            "owner_lookup": {
+              "calls": 9094,
+              "inclusive_ms": 0.155204
+            },
+            "publication_deliver": {
+              "calls": 122,
+              "inclusive_ms": 0.878291
+            },
+            "publication_seal": {
+              "calls": 122,
+              "inclusive_ms": 0.341917
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.165375
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 33.057875
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.46075
+            },
+            "refine_to_domain": {
+              "calls": 1116,
+              "inclusive_ms": 0.187952
+            },
+            "serialize_release": {
+              "calls": 41,
+              "inclusive_ms": 0.602417
+            },
+            "serialize_window": {
+              "calls": 122,
+              "inclusive_ms": 4.416421
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 122,
+              "inclusive_ms": 5.64516
+            }
+          },
+          "service_ms": 98.874541,
+          "thread_cpu_ms": 98.857208
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 530868,
+          "frontier_peak": 2089,
+          "logical_ms": 10000,
+          "occupied_cells_total": 8424,
+          "owner_searches": 8424,
+          "prefix_lookups": 10402,
+          "query_rows_scanned": 6746406,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 137,
+              "inclusive_ms": 37.315665
+            },
+            "history_query": {
+              "calls": 3334,
+              "inclusive_ms": 11.282154
+            },
+            "local_can_merge": {
+              "calls": 917,
+              "inclusive_ms": 8.00324
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 3.296125
+            },
+            "local_make_window": {
+              "calls": 838,
+              "inclusive_ms": 0.820237
+            },
+            "local_merge": {
+              "calls": 39,
+              "inclusive_ms": 8.854878
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 95.254958
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 37.049458
+            },
+            "local_selection": {
+              "calls": 122,
+              "inclusive_ms": 3.917966
+            },
+            "metric_evaluate": {
+              "calls": 4224,
+              "inclusive_ms": 6.61289
+            },
+            "owner_lookup": {
+              "calls": 9621,
+              "inclusive_ms": 0.161346
+            },
+            "publication_deliver": {
+              "calls": 122,
+              "inclusive_ms": 0.830838
+            },
+            "publication_seal": {
+              "calls": 122,
+              "inclusive_ms": 0.342627
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.167
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 33.553999
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.471709
+            },
+            "refine_to_domain": {
+              "calls": 1168,
+              "inclusive_ms": 0.176158
+            },
+            "serialize_release": {
+              "calls": 39,
+              "inclusive_ms": 0.56479
+            },
+            "serialize_window": {
+              "calls": 122,
+              "inclusive_ms": 4.542657
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 122,
+              "inclusive_ms": 5.725496
+            }
+          },
+          "service_ms": 97.656708,
+          "thread_cpu_ms": 97.645334
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 686464,
+          "frontier_peak": 2020,
+          "logical_ms": 19000,
+          "occupied_cells_total": 7968,
+          "owner_searches": 7968,
+          "prefix_lookups": 10367,
+          "query_rows_scanned": 5535856,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 149,
+              "inclusive_ms": 31.055832
+            },
+            "history_query": {
+              "calls": 4293,
+              "inclusive_ms": 10.539929
+            },
+            "local_can_merge": {
+              "calls": 792,
+              "inclusive_ms": 9.786658
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 8.633332
+            },
+            "local_make_window": {
+              "calls": 1993,
+              "inclusive_ms": 1.8067
+            },
+            "local_merge": {
+              "calls": 6,
+              "inclusive_ms": 1.417373
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 97.057417
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 33.880125
+            },
+            "local_selection": {
+              "calls": 135,
+              "inclusive_ms": 1.494038
+            },
+            "metric_evaluate": {
+              "calls": 5360,
+              "inclusive_ms": 6.013326
+            },
+            "owner_lookup": {
+              "calls": 9102,
+              "inclusive_ms": 0.144111
+            },
+            "publication_deliver": {
+              "calls": 135,
+              "inclusive_ms": 0.280507
+            },
+            "publication_seal": {
+              "calls": 135,
+              "inclusive_ms": 0.23304
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.172292
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 30.275628
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.489416
+            },
+            "refine_to_domain": {
+              "calls": 1085,
+              "inclusive_ms": 0.22333
+            },
+            "serialize_release": {
+              "calls": 6,
+              "inclusive_ms": 0.096083
+            },
+            "serialize_window": {
+              "calls": 135,
+              "inclusive_ms": 4.720799
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 135,
+              "inclusive_ms": 5.245007
+            }
+          },
+          "service_ms": 97.281083,
+          "thread_cpu_ms": 97.255
+        },
+        {
+          "distinct_starts_peak": 5,
+          "distinct_starts_total": 10,
+          "eof": false,
+          "finest_rows_scanned": 884000,
+          "frontier_peak": 2191,
+          "logical_ms": 2000,
+          "occupied_cells_total": 6052,
+          "owner_searches": 6052,
+          "prefix_lookups": 7943,
+          "query_rows_scanned": 7338500,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 214,
+              "inclusive_ms": 27.853912
+            },
+            "history_query": {
+              "calls": 3374,
+              "inclusive_ms": 11.793232
+            },
+            "local_can_merge": {
+              "calls": 924,
+              "inclusive_ms": 9.135821
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 2.737916
+            },
+            "local_make_window": {
+              "calls": 789,
+              "inclusive_ms": 0.776876
+            },
+            "local_merge": {
+              "calls": 53,
+              "inclusive_ms": 10.794374
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 93.744916
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 26.218292
+            },
+            "local_selection": {
+              "calls": 203,
+              "inclusive_ms": 4.973209
+            },
+            "metric_evaluate": {
+              "calls": 4713,
+              "inclusive_ms": 7.294599
+            },
+            "owner_lookup": {
+              "calls": 7380,
+              "inclusive_ms": 0.120717
+            },
+            "publication_deliver": {
+              "calls": 203,
+              "inclusive_ms": 1.163462
+            },
+            "publication_seal": {
+              "calls": 203,
+              "inclusive_ms": 0.535214
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.201416
+            },
+            "refine_history": {
+              "calls": 10,
+              "inclusive_ms": 23.515752
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.309166
+            },
+            "refine_to_domain": {
+              "calls": 1315,
+              "inclusive_ms": 0.109883
+            },
+            "serialize_release": {
+              "calls": 53,
+              "inclusive_ms": 0.749417
+            },
+            "serialize_window": {
+              "calls": 203,
+              "inclusive_ms": 7.496076
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 203,
+              "inclusive_ms": 9.208795
+            }
+          },
+          "service_ms": 96.392334,
+          "thread_cpu_ms": 96.32975
+        },
+        {
+          "distinct_starts_peak": 6,
+          "distinct_starts_total": 12,
+          "eof": false,
+          "finest_rows_scanned": 615528,
+          "frontier_peak": 2176,
+          "logical_ms": 8000,
+          "occupied_cells_total": 7248,
+          "owner_searches": 7248,
+          "prefix_lookups": 9397,
+          "query_rows_scanned": 7046700,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 157,
+              "inclusive_ms": 31.675381
+            },
+            "history_query": {
+              "calls": 3453,
+              "inclusive_ms": 11.775506
+            },
+            "local_can_merge": {
+              "calls": 934,
+              "inclusive_ms": 8.189259
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 3.355708
+            },
+            "local_make_window": {
+              "calls": 895,
+              "inclusive_ms": 0.862995
+            },
+            "local_merge": {
+              "calls": 45,
+              "inclusive_ms": 9.614623
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 93.03125
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 31.526375
+            },
+            "local_selection": {
+              "calls": 144,
+              "inclusive_ms": 4.182922
+            },
+            "metric_evaluate": {
+              "calls": 4508,
+              "inclusive_ms": 7.05764
+            },
+            "owner_lookup": {
+              "calls": 8481,
+              "inclusive_ms": 0.148558
+            },
+            "publication_deliver": {
+              "calls": 144,
+              "inclusive_ms": 0.982331
+            },
+            "publication_seal": {
+              "calls": 144,
+              "inclusive_ms": 0.400913
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.17675
+            },
+            "refine_history": {
+              "calls": 12,
+              "inclusive_ms": 27.650794
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.443334
+            },
+            "refine_to_domain": {
+              "calls": 1198,
+              "inclusive_ms": 0.181995
+            },
+            "serialize_release": {
+              "calls": 45,
+              "inclusive_ms": 0.671832
+            },
+            "serialize_window": {
+              "calls": 144,
+              "inclusive_ms": 5.315443
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 144,
+              "inclusive_ms": 6.707789
+            }
+          },
+          "service_ms": 95.641542,
+          "thread_cpu_ms": 95.624625
+        },
+        {
+          "distinct_starts_peak": 6,
+          "distinct_starts_total": 12,
+          "eof": false,
+          "finest_rows_scanned": 433260,
+          "frontier_peak": 1945,
+          "logical_ms": 14200,
+          "occupied_cells_total": 6608,
+          "owner_searches": 6608,
+          "prefix_lookups": 8545,
+          "query_rows_scanned": 5057688,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 97,
+              "inclusive_ms": 35.944251
+            },
+            "history_query": {
+              "calls": 4206,
+              "inclusive_ms": 11.118328
+            },
+            "local_can_merge": {
+              "calls": 719,
+              "inclusive_ms": 7.699295
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 8.808417
+            },
+            "local_make_window": {
+              "calls": 1864,
+              "inclusive_ms": 1.708418
+            },
+            "local_merge": {
+              "calls": 6,
+              "inclusive_ms": 1.300334
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 95.267791
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 40.840708
+            },
+            "local_selection": {
+              "calls": 85,
+              "inclusive_ms": 1.037952
+            },
+            "metric_evaluate": {
+              "calls": 4871,
+              "inclusive_ms": 5.681056
+            },
+            "owner_lookup": {
+              "calls": 7667,
+              "inclusive_ms": 0.137799
+            },
+            "publication_deliver": {
+              "calls": 85,
+              "inclusive_ms": 0.240415
+            },
+            "publication_seal": {
+              "calls": 85,
+              "inclusive_ms": 0.179789
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.159042
+            },
+            "refine_history": {
+              "calls": 12,
+              "inclusive_ms": 35.403999
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.419917
+            },
+            "refine_to_domain": {
+              "calls": 1029,
+              "inclusive_ms": 0.178133
+            },
+            "serialize_release": {
+              "calls": 6,
+              "inclusive_ms": 0.097499
+            },
+            "serialize_window": {
+              "calls": 85,
+              "inclusive_ms": 3.179249
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 85,
+              "inclusive_ms": 3.60554
+            }
+          },
+          "service_ms": 95.511375,
+          "thread_cpu_ms": 89.906833
+        }
+      ],
+      "variant": "cell_local_temporal_first"
+    },
+    {
+      "build_kind": "detailed_instrumentation",
+      "core_processing_ms": 14695.499959,
+      "instrumentation": {
+        "history_finest_rows_scanned": 34688262,
+        "history_query_rows_scanned": 960035498,
+        "hypothetical_fifo_100ms_arrivals": {
+          "completion_delay_above_100ms_count": 3,
+          "initial_queue_empty": true,
+          "last_input_completion_delay_ms": 76.29075000000012,
+          "live_paced_measurement": false,
+          "max_input_completion_delay_ms": 104.88591700000006,
+          "max_wait_before_service_ms": 4.885917000000063
+        },
+        "inclusive_nonadditive": true,
+        "input_tick_service": {
+          "count": 199,
+          "eof_service_ms": 112.691375,
+          "max_ms": 104.885917,
+          "mean_ms": 73.27839066331659,
+          "p50_ms": 72.377666,
+          "p95_ms": 96.788417,
+          "p99_ms": 104.688958,
+          "quantile_definition": "nearest rank, ceil(p*n)",
+          "service_above_100ms_count": 3
+        },
+        "occupied_leaf_owner_search_calls": 1272742,
+        "owner_prefix_map_lookups": 2098200,
+        "schema": "ump.scoped-runtime-instrumentation.v1",
+        "scopes": {
+          "common_evaluate": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "history_finest": {
+            "calls": 10160,
+            "inclusive_ms": 4918.547621
+          },
+          "history_query": {
+            "calls": 692866,
+            "inclusive_ms": 1850.761715
+          },
+          "local_can_merge": {
+            "calls": 161394,
+            "inclusive_ms": 1638.667728
+          },
+          "local_compact": {
+            "calls": 397,
+            "inclusive_ms": 851.617368
+          },
+          "local_make_window": {
+            "calls": 293319,
+            "inclusive_ms": 263.240977
+          },
+          "local_merge": {
+            "calls": 2554,
+            "inclusive_ms": 556.271638
+          },
+          "local_process": {
+            "calls": 200,
+            "inclusive_ms": 14535.635794
+          },
+          "local_refine": {
+            "calls": 398,
+            "inclusive_ms": 5370.26625
+          },
+          "local_selection": {
+            "calls": 7863,
+            "inclusive_ms": 231.939782
+          },
+          "metric_evaluate": {
+            "calls": 871229,
+            "inclusive_ms": 1182.466741
+          },
+          "owner_lookup": {
+            "calls": 1514046,
+            "inclusive_ms": 28.279829
+          },
+          "publication_deliver": {
+            "calls": 7863,
+            "inclusive_ms": 56.395602
+          },
+          "publication_seal": {
+            "calls": 7863,
+            "inclusive_ms": 23.234478
+          },
+          "refine_copy": {
+            "calls": 397,
+            "inclusive_ms": 28.498453
+          },
+          "refine_history": {
+            "calls": 2247,
+            "inclusive_ms": 4711.011798
+          },
+          "refine_owners": {
+            "calls": 397,
+            "inclusive_ms": 177.455616
+          },
+          "refine_to_domain": {
+            "calls": 209102,
+            "inclusive_ms": 131.417591
+          },
+          "serialize_release": {
+            "calls": 2554,
+            "inclusive_ms": 38.679789
+          },
+          "serialize_window": {
+            "calls": 7863,
+            "inclusive_ms": 287.523661
+          },
+          "spatial_propose": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "terminal": {
+            "calls": 7863,
+            "inclusive_ms": 367.723373
+          }
+        }
+      },
+      "logical_output_equal_excluding_runtime": true,
+      "maxrss_unit": "Darwin wait4 bytes",
+      "output_sha256": "488af0cc55e6c2b00d3ad146bed1014184adc4bb351d0247161d392d109c7118",
+      "previous_max_tick": {
+        "distinct_starts_peak": 6,
+        "distinct_starts_total": 12,
+        "eof": false,
+        "finest_rows_scanned": 716124,
+        "frontier_peak": 1990,
+        "logical_ms": 15200,
+        "occupied_cells_total": 6606,
+        "owner_searches": 6606,
+        "prefix_lookups": 8763,
+        "query_rows_scanned": 6300198,
+        "scopes": {
+          "common_evaluate": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "history_finest": {
+            "calls": 179,
+            "inclusive_ms": 29.832668
+          },
+          "history_query": {
+            "calls": 3377,
+            "inclusive_ms": 11.24781
+          },
+          "local_can_merge": {
+            "calls": 802,
+            "inclusive_ms": 7.467258
+          },
+          "local_compact": {
+            "calls": 2,
+            "inclusive_ms": 4.413416
+          },
+          "local_make_window": {
+            "calls": 1105,
+            "inclusive_ms": 1.088706
+          },
+          "local_merge": {
+            "calls": 42,
+            "inclusive_ms": 8.965498
+          },
+          "local_process": {
+            "calls": 1,
+            "inclusive_ms": 89.881375
+          },
+          "local_refine": {
+            "calls": 2,
+            "inclusive_ms": 29.043834
+          },
+          "local_selection": {
+            "calls": 166,
+            "inclusive_ms": 4.123754
+          },
+          "metric_evaluate": {
+            "calls": 4581,
+            "inclusive_ms": 6.689469
+          },
+          "owner_lookup": {
+            "calls": 7773,
+            "inclusive_ms": 0.135565
+          },
+          "publication_deliver": {
+            "calls": 166,
+            "inclusive_ms": 0.97654
+          },
+          "publication_seal": {
+            "calls": 166,
+            "inclusive_ms": 0.451954
+          },
+          "refine_copy": {
+            "calls": 2,
+            "inclusive_ms": 0.145376
+          },
+          "refine_history": {
+            "calls": 12,
+            "inclusive_ms": 26.001211
+          },
+          "refine_owners": {
+            "calls": 2,
+            "inclusive_ms": 0.401375
+          },
+          "refine_to_domain": {
+            "calls": 1130,
+            "inclusive_ms": 0.181178
+          },
+          "serialize_release": {
+            "calls": 42,
+            "inclusive_ms": 0.625043
+          },
+          "serialize_window": {
+            "calls": 166,
+            "inclusive_ms": 6.350505
+          },
+          "spatial_propose": {
+            "calls": 0,
+            "inclusive_ms": 0.0
+          },
+          "terminal": {
+            "calls": 166,
+            "inclusive_ms": 7.791371
+          }
+        },
+        "service_ms": 92.3235,
+        "thread_cpu_ms": 92.027666
+      },
+      "process_maxrss_bytes": 599523328,
+      "process_system_s": 0.294823,
+      "process_user_s": 15.698054,
+      "process_wall_s": 16.008945291999993,
+      "top_ticks": [
+        {
+          "distinct_starts_peak": 5,
+          "distinct_starts_total": 10,
+          "eof": false,
+          "finest_rows_scanned": 902000,
+          "frontier_peak": 2179,
+          "logical_ms": 3000,
+          "occupied_cells_total": 6166,
+          "owner_searches": 6166,
+          "prefix_lookups": 8360,
+          "query_rows_scanned": 5913500,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 186,
+              "inclusive_ms": 24.037462
+            },
+            "history_query": {
+              "calls": 4763,
+              "inclusive_ms": 11.51828
+            },
+            "local_can_merge": {
+              "calls": 871,
+              "inclusive_ms": 10.861408
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 10.265374
+            },
+            "local_make_window": {
+              "calls": 2191,
+              "inclusive_ms": 2.071525
+            },
+            "local_merge": {
+              "calls": 1,
+              "inclusive_ms": 0.236208
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 104.641417
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 25.800708
+            },
+            "local_selection": {
+              "calls": 176,
+              "inclusive_ms": 1.658169
+            },
+            "metric_evaluate": {
+              "calls": 5968,
+              "inclusive_ms": 6.768237
+            },
+            "owner_lookup": {
+              "calls": 7389,
+              "inclusive_ms": 0.130195
+            },
+            "publication_deliver": {
+              "calls": 176,
+              "inclusive_ms": 0.278123
+            },
+            "publication_seal": {
+              "calls": 176,
+              "inclusive_ms": 0.344461
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.175417
+            },
+            "refine_history": {
+              "calls": 10,
+              "inclusive_ms": 23.132834
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.357583
+            },
+            "refine_to_domain": {
+              "calls": 1203,
+              "inclusive_ms": 0.146727
+            },
+            "serialize_release": {
+              "calls": 1,
+              "inclusive_ms": 0.025083
+            },
+            "serialize_window": {
+              "calls": 176,
+              "inclusive_ms": 6.575204
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 176,
+              "inclusive_ms": 7.211041
+            }
+          },
+          "service_ms": 104.885917,
+          "thread_cpu_ms": 104.871417
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 652878,
+          "frontier_peak": 2095,
+          "logical_ms": 9000,
+          "occupied_cells_total": 8692,
+          "owner_searches": 8692,
+          "prefix_lookups": 10858,
+          "query_rows_scanned": 5960064,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 138,
+              "inclusive_ms": 37.309745
+            },
+            "history_query": {
+              "calls": 4449,
+              "inclusive_ms": 11.197141
+            },
+            "local_can_merge": {
+              "calls": 886,
+              "inclusive_ms": 9.53909
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 9.092416
+            },
+            "local_make_window": {
+              "calls": 1875,
+              "inclusive_ms": 1.687012
+            },
+            "local_merge": {
+              "calls": 3,
+              "inclusive_ms": 0.771292
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 104.446958
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 39.979126
+            },
+            "local_selection": {
+              "calls": 124,
+              "inclusive_ms": 1.291076
+            },
+            "metric_evaluate": {
+              "calls": 5280,
+              "inclusive_ms": 6.168929
+            },
+            "owner_lookup": {
+              "calls": 9832,
+              "inclusive_ms": 0.166659
+            },
+            "publication_deliver": {
+              "calls": 124,
+              "inclusive_ms": 0.221294
+            },
+            "publication_seal": {
+              "calls": 124,
+              "inclusive_ms": 0.228083
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.171833
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 36.617663
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.373376
+            },
+            "refine_to_domain": {
+              "calls": 1131,
+              "inclusive_ms": 0.087987
+            },
+            "serialize_release": {
+              "calls": 3,
+              "inclusive_ms": 0.050084
+            },
+            "serialize_window": {
+              "calls": 124,
+              "inclusive_ms": 4.422206
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 124,
+              "inclusive_ms": 4.880003
+            }
+          },
+          "service_ms": 104.688958,
+          "thread_cpu_ms": 104.64975
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 482064,
+          "frontier_peak": 2095,
+          "logical_ms": 11000,
+          "occupied_cells_total": 8210,
+          "owner_searches": 8210,
+          "prefix_lookups": 10077,
+          "query_rows_scanned": 6125400,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 106,
+              "inclusive_ms": 35.008091
+            },
+            "history_query": {
+              "calls": 4402,
+              "inclusive_ms": 11.44385
+            },
+            "local_can_merge": {
+              "calls": 942,
+              "inclusive_ms": 11.106536
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 8.707333
+            },
+            "local_make_window": {
+              "calls": 1793,
+              "inclusive_ms": 1.643126
+            },
+            "local_merge": {
+              "calls": 5,
+              "inclusive_ms": 1.185667
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 100.323792
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 38.023458
+            },
+            "local_selection": {
+              "calls": 92,
+              "inclusive_ms": 1.06771
+            },
+            "metric_evaluate": {
+              "calls": 5037,
+              "inclusive_ms": 6.097916
+            },
+            "owner_lookup": {
+              "calls": 9292,
+              "inclusive_ms": 0.159356
+            },
+            "publication_deliver": {
+              "calls": 92,
+              "inclusive_ms": 0.214042
+            },
+            "publication_seal": {
+              "calls": 92,
+              "inclusive_ms": 0.173417
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.188083
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 34.452835
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.3725
+            },
+            "refine_to_domain": {
+              "calls": 1071,
+              "inclusive_ms": 0.091754
+            },
+            "serialize_release": {
+              "calls": 5,
+              "inclusive_ms": 0.080374
+            },
+            "serialize_window": {
+              "calls": 92,
+              "inclusive_ms": 3.239377
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 92,
+              "inclusive_ms": 3.633538
+            }
+          },
+          "service_ms": 100.578291,
+          "thread_cpu_ms": 100.5605
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 264936,
+          "frontier_peak": 2155,
+          "logical_ms": 8800,
+          "occupied_cells_total": 8568,
+          "owner_searches": 8568,
+          "prefix_lookups": 10803,
+          "query_rows_scanned": 6867420,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 86,
+              "inclusive_ms": 38.494337
+            },
+            "history_query": {
+              "calls": 3400,
+              "inclusive_ms": 11.572609
+            },
+            "local_can_merge": {
+              "calls": 997,
+              "inclusive_ms": 9.28666
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 3.271458
+            },
+            "local_make_window": {
+              "calls": 793,
+              "inclusive_ms": 0.800814
+            },
+            "local_merge": {
+              "calls": 43,
+              "inclusive_ms": 9.671626
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 96.6835
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 38.414833
+            },
+            "local_selection": {
+              "calls": 71,
+              "inclusive_ms": 3.563744
+            },
+            "metric_evaluate": {
+              "calls": 4004,
+              "inclusive_ms": 6.982236
+            },
+            "owner_lookup": {
+              "calls": 9749,
+              "inclusive_ms": 0.178833
+            },
+            "publication_deliver": {
+              "calls": 71,
+              "inclusive_ms": 0.838544
+            },
+            "publication_seal": {
+              "calls": 71,
+              "inclusive_ms": 0.275458
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.186458
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 34.897334
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.518249
+            },
+            "refine_to_domain": {
+              "calls": 1141,
+              "inclusive_ms": 0.200624
+            },
+            "serialize_release": {
+              "calls": 43,
+              "inclusive_ms": 0.623753
+            },
+            "serialize_window": {
+              "calls": 71,
+              "inclusive_ms": 2.701788
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 71,
+              "inclusive_ms": 3.820625
+            }
+          },
+          "service_ms": 99.097667,
+          "thread_cpu_ms": 99.083167
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 530868,
+          "frontier_peak": 2089,
+          "logical_ms": 10000,
+          "occupied_cells_total": 8424,
+          "owner_searches": 8424,
+          "prefix_lookups": 10402,
+          "query_rows_scanned": 6746406,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 137,
+              "inclusive_ms": 37.376336
+            },
+            "history_query": {
+              "calls": 3334,
+              "inclusive_ms": 11.124661
+            },
+            "local_can_merge": {
+              "calls": 917,
+              "inclusive_ms": 8.855251
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 3.194916
+            },
+            "local_make_window": {
+              "calls": 838,
+              "inclusive_ms": 0.788685
+            },
+            "local_merge": {
+              "calls": 39,
+              "inclusive_ms": 8.749213
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 96.631416
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 37.438167
+            },
+            "local_selection": {
+              "calls": 122,
+              "inclusive_ms": 3.813749
+            },
+            "metric_evaluate": {
+              "calls": 4224,
+              "inclusive_ms": 6.638123
+            },
+            "owner_lookup": {
+              "calls": 9621,
+              "inclusive_ms": 0.154099
+            },
+            "publication_deliver": {
+              "calls": 122,
+              "inclusive_ms": 0.816873
+            },
+            "publication_seal": {
+              "calls": 122,
+              "inclusive_ms": 0.345332
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.167625
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 33.594459
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.437875
+            },
+            "refine_to_domain": {
+              "calls": 1168,
+              "inclusive_ms": 0.160179
+            },
+            "serialize_release": {
+              "calls": 39,
+              "inclusive_ms": 0.562833
+            },
+            "serialize_window": {
+              "calls": 122,
+              "inclusive_ms": 4.533627
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 122,
+              "inclusive_ms": 5.704416
+            }
+          },
+          "service_ms": 99.0635,
+          "thread_cpu_ms": 99.031583
+        },
+        {
+          "distinct_starts_peak": 6,
+          "distinct_starts_total": 12,
+          "eof": false,
+          "finest_rows_scanned": 860544,
+          "frontier_peak": 2125,
+          "logical_ms": 11200,
+          "occupied_cells_total": 7056,
+          "owner_searches": 7056,
+          "prefix_lookups": 9317,
+          "query_rows_scanned": 7077576,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 202,
+              "inclusive_ms": 32.831082
+            },
+            "history_query": {
+              "calls": 3446,
+              "inclusive_ms": 11.499264
+            },
+            "local_can_merge": {
+              "calls": 930,
+              "inclusive_ms": 8.253914
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 3.599375
+            },
+            "local_make_window": {
+              "calls": 1001,
+              "inclusive_ms": 0.953693
+            },
+            "local_merge": {
+              "calls": 39,
+              "inclusive_ms": 8.538961
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 95.91725
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 31.787875
+            },
+            "local_selection": {
+              "calls": 189,
+              "inclusive_ms": 4.311665
+            },
+            "metric_evaluate": {
+              "calls": 4775,
+              "inclusive_ms": 6.851678
+            },
+            "owner_lookup": {
+              "calls": 8292,
+              "inclusive_ms": 0.156503
+            },
+            "publication_deliver": {
+              "calls": 189,
+              "inclusive_ms": 0.921997
+            },
+            "publication_seal": {
+              "calls": 189,
+              "inclusive_ms": 0.452299
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.174958
+            },
+            "refine_history": {
+              "calls": 12,
+              "inclusive_ms": 28.744292
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.421625
+            },
+            "refine_to_domain": {
+              "calls": 1205,
+              "inclusive_ms": 0.170619
+            },
+            "serialize_release": {
+              "calls": 39,
+              "inclusive_ms": 0.574709
+            },
+            "serialize_window": {
+              "calls": 189,
+              "inclusive_ms": 6.906249
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 189,
+              "inclusive_ms": 8.293698
+            }
+          },
+          "service_ms": 98.475625,
+          "thread_cpu_ms": 98.447584
+        },
+        {
+          "distinct_starts_peak": 6,
+          "distinct_starts_total": 12,
+          "eof": false,
+          "finest_rows_scanned": 615528,
+          "frontier_peak": 2176,
+          "logical_ms": 8000,
+          "occupied_cells_total": 7248,
+          "owner_searches": 7248,
+          "prefix_lookups": 9397,
+          "query_rows_scanned": 7046700,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 157,
+              "inclusive_ms": 32.257627
+            },
+            "history_query": {
+              "calls": 3453,
+              "inclusive_ms": 12.651272
+            },
+            "local_can_merge": {
+              "calls": 934,
+              "inclusive_ms": 8.06729
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 3.462291
+            },
+            "local_make_window": {
+              "calls": 895,
+              "inclusive_ms": 0.951226
+            },
+            "local_merge": {
+              "calls": 45,
+              "inclusive_ms": 10.756498
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 95.918375
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 31.169625
+            },
+            "local_selection": {
+              "calls": 144,
+              "inclusive_ms": 4.659751
+            },
+            "metric_evaluate": {
+              "calls": 4508,
+              "inclusive_ms": 7.707653
+            },
+            "owner_lookup": {
+              "calls": 8481,
+              "inclusive_ms": 0.139541
+            },
+            "publication_deliver": {
+              "calls": 144,
+              "inclusive_ms": 1.076881
+            },
+            "publication_seal": {
+              "calls": 144,
+              "inclusive_ms": 0.44179
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.181167
+            },
+            "refine_history": {
+              "calls": 12,
+              "inclusive_ms": 28.03825
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.435874
+            },
+            "refine_to_domain": {
+              "calls": 1198,
+              "inclusive_ms": 0.184269
+            },
+            "serialize_release": {
+              "calls": 45,
+              "inclusive_ms": 0.731455
+            },
+            "serialize_window": {
+              "calls": 144,
+              "inclusive_ms": 5.587832
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 144,
+              "inclusive_ms": 7.11704
+            }
+          },
+          "service_ms": 98.456375,
+          "thread_cpu_ms": 98.38125
+        },
+        {
+          "distinct_starts_peak": 3,
+          "distinct_starts_total": 6,
+          "eof": false,
+          "finest_rows_scanned": 933500,
+          "frontier_peak": 2182,
+          "logical_ms": 1000,
+          "occupied_cells_total": 3892,
+          "owner_searches": 3892,
+          "prefix_lookups": 6009,
+          "query_rows_scanned": 5838000,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 210,
+              "inclusive_ms": 16.701995
+            },
+            "history_query": {
+              "calls": 4742,
+              "inclusive_ms": 12.301078
+            },
+            "local_can_merge": {
+              "calls": 874,
+              "inclusive_ms": 9.858594
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 10.085875
+            },
+            "local_make_window": {
+              "calls": 2195,
+              "inclusive_ms": 1.970826
+            },
+            "local_merge": {
+              "calls": 1,
+              "inclusive_ms": 0.274334
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 97.31425
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 17.533999
+            },
+            "local_selection": {
+              "calls": 204,
+              "inclusive_ms": 1.768585
+            },
+            "metric_evaluate": {
+              "calls": 6120,
+              "inclusive_ms": 7.143362
+            },
+            "owner_lookup": {
+              "calls": 5112,
+              "inclusive_ms": 0.097262
+            },
+            "publication_deliver": {
+              "calls": 204,
+              "inclusive_ms": 0.29453
+            },
+            "publication_seal": {
+              "calls": 204,
+              "inclusive_ms": 0.349506
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.171792
+            },
+            "refine_history": {
+              "calls": 6,
+              "inclusive_ms": 15.755206
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.277708
+            },
+            "refine_to_domain": {
+              "calls": 1202,
+              "inclusive_ms": 0.135115
+            },
+            "serialize_release": {
+              "calls": 1,
+              "inclusive_ms": 0.023875
+            },
+            "serialize_window": {
+              "calls": 204,
+              "inclusive_ms": 7.20029
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 204,
+              "inclusive_ms": 7.860049
+            }
+          },
+          "service_ms": 97.548166,
+          "thread_cpu_ms": 97.458167
+        },
+        {
+          "distinct_starts_peak": 7,
+          "distinct_starts_total": 14,
+          "eof": false,
+          "finest_rows_scanned": 695392,
+          "frontier_peak": 1987,
+          "logical_ms": 18000,
+          "occupied_cells_total": 7830,
+          "owner_searches": 7830,
+          "prefix_lookups": 9777,
+          "query_rows_scanned": 6509504,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 172,
+              "inclusive_ms": 34.120454
+            },
+            "history_query": {
+              "calls": 3347,
+              "inclusive_ms": 11.480889
+            },
+            "local_can_merge": {
+              "calls": 813,
+              "inclusive_ms": 8.204535
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 4.101917
+            },
+            "local_make_window": {
+              "calls": 1027,
+              "inclusive_ms": 0.972406
+            },
+            "local_merge": {
+              "calls": 38,
+              "inclusive_ms": 8.890331
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 94.8235
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 33.650457
+            },
+            "local_selection": {
+              "calls": 157,
+              "inclusive_ms": 4.122629
+            },
+            "metric_evaluate": {
+              "calls": 4459,
+              "inclusive_ms": 6.53756
+            },
+            "owner_lookup": {
+              "calls": 8977,
+              "inclusive_ms": 0.15322
+            },
+            "publication_deliver": {
+              "calls": 157,
+              "inclusive_ms": 0.904757
+            },
+            "publication_seal": {
+              "calls": 157,
+              "inclusive_ms": 0.410292
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.164584
+            },
+            "refine_history": {
+              "calls": 14,
+              "inclusive_ms": 30.298627
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.410541
+            },
+            "refine_to_domain": {
+              "calls": 1120,
+              "inclusive_ms": 0.148207
+            },
+            "serialize_release": {
+              "calls": 38,
+              "inclusive_ms": 0.583878
+            },
+            "serialize_window": {
+              "calls": 157,
+              "inclusive_ms": 5.795619
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 157,
+              "inclusive_ms": 7.120918
+            }
+          },
+          "service_ms": 97.227916,
+          "thread_cpu_ms": 97.199166
+        },
+        {
+          "distinct_starts_peak": 8,
+          "distinct_starts_total": 16,
+          "eof": false,
+          "finest_rows_scanned": 192944,
+          "frontier_peak": 2035,
+          "logical_ms": 18800,
+          "occupied_cells_total": 9172,
+          "owner_searches": 9172,
+          "prefix_lookups": 11040,
+          "query_rows_scanned": 6523392,
+          "scopes": {
+            "common_evaluate": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "history_finest": {
+              "calls": 71,
+              "inclusive_ms": 41.024289
+            },
+            "history_query": {
+              "calls": 3305,
+              "inclusive_ms": 11.247125
+            },
+            "local_can_merge": {
+              "calls": 902,
+              "inclusive_ms": 7.977951
+            },
+            "local_compact": {
+              "calls": 2,
+              "inclusive_ms": 3.659542
+            },
+            "local_make_window": {
+              "calls": 792,
+              "inclusive_ms": 0.781779
+            },
+            "local_merge": {
+              "calls": 39,
+              "inclusive_ms": 8.866832
+            },
+            "local_process": {
+              "calls": 1,
+              "inclusive_ms": 94.287542
+            },
+            "local_refine": {
+              "calls": 2,
+              "inclusive_ms": 42.198292
+            },
+            "local_selection": {
+              "calls": 54,
+              "inclusive_ms": 3.112715
+            },
+            "metric_evaluate": {
+              "calls": 3756,
+              "inclusive_ms": 6.44497
+            },
+            "owner_lookup": {
+              "calls": 10297,
+              "inclusive_ms": 0.187558
+            },
+            "publication_deliver": {
+              "calls": 54,
+              "inclusive_ms": 0.771961
+            },
+            "publication_seal": {
+              "calls": 54,
+              "inclusive_ms": 0.24554
+            },
+            "refine_copy": {
+              "calls": 2,
+              "inclusive_ms": 0.182209
+            },
+            "refine_history": {
+              "calls": 16,
+              "inclusive_ms": 37.640127
+            },
+            "refine_owners": {
+              "calls": 2,
+              "inclusive_ms": 0.491292
+            },
+            "refine_to_domain": {
+              "calls": 1096,
+              "inclusive_ms": 0.157793
+            },
+            "serialize_release": {
+              "calls": 39,
+              "inclusive_ms": 0.588253
+            },
+            "serialize_window": {
+              "calls": 54,
+              "inclusive_ms": 2.091831
+            },
+            "spatial_propose": {
+              "calls": 0,
+              "inclusive_ms": 0.0
+            },
+            "terminal": {
+              "calls": 54,
+              "inclusive_ms": 3.113583
+            }
+          },
+          "service_ms": 96.788417,
+          "thread_cpu_ms": 96.751042
+        }
+      ],
+      "variant": "cell_local_temporal_first"
+    }
+  ],
+  "schema": "ump.per-tick-runtime-study.v1",
+  "source_sha256": "ab4fadf254bfb5432018ff4bd305cd16d82a7475ae3d934c14c4f9af67dd5cf1",
+  "source_unchanged": true,
+  "thread_cpu_clock": "CLOCK_THREAD_CPUTIME_ID; one read at start/end of tick",
+  "verified_complete": true,
+  "workload_counters_identical_across_repeats": true
+}

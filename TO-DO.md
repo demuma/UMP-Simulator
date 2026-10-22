@@ -5,7 +5,8 @@ A07 common-window valid-descendant rescue and A08 semantic common/local coordina
 are implemented and verified within their reports. Review the full aggregator
 requirements and stated limits before broadening the mechanism. Membership attacks
 remain deferred. Recipient-contract diagnosis, runtime profiling and prefix-based
-ownership lookup are complete, with unchanged policy/coordination/publication output.
+ownership lookup and occupied-leaf history optimization are complete, with unchanged
+policy/coordination/publication output.
 Next validate longer paced/live latency and predeclare the semantic-cap comparison. October 18 is historical.**
 
 **October 22–23 checkpoint:**
@@ -104,13 +105,29 @@ Next validate longer paced/live latency and predeclare the semantic-cap comparis
   waiting is 32.69 ms; logical results are unchanged. See the
   [runtime report](docs/PREFIX_OWNER_LOOKUP_RUNTIME_REPORT_2026-10-23.md) for all runs,
   memory, instrumentation limits and reproduction. No policy/sampling reduction.
+- [x] **132-ms tick diagnosis and occupied-leaf query gate:** the old t=15.2-s peak
+  measures 89.03–92.32 ms in three fresh baseline profiles; its exact extra duration
+  cannot be explained retrospectively. The new per-tick CPU/scope evidence identifies
+  repeated full history reconstruction for geometry as a recurring cost. Implement
+  sparse `queryOccupiedLeaves` while retaining coverage, canonical-type/alias and
+  exact-count validation. All 69 CTest suites pass. See the
+  [protocol](docs/OCCUPIED_LEAF_QUERY_PROTOCOL_2026-10-23.md),
+  [diagnosis](docs/TICK_RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) and
+  [implementation/test report](docs/OCCUPIED_LEAF_QUERY_TEST_REPORT_2026-10-23.md).
+- [x] Compare all ten variants plus repeat/profiles against complete frozen outputs,
+  excluding only runtime. All 14 new runs and four baseline controls/profiles match.
+  Local native core is 11.339–11.624 s versus fresh baseline 14.377 s; detailed p95 is
+  76.92–77.60 ms and maxima 87.25–96.36 ms, with 0/597 services above 100 ms.
+  No modelled FIFO wait on these traces; separate EOF remains below 100 ms.
+  [Runtime report](docs/OCCUPIED_LEAF_QUERY_RUNTIME_REPORT_2026-10-23.md).
 - [ ] **Next real-time verification gate:** use longer paced input and then the live
   sensor/renderer/database path, measuring actual receipt latency, queue growth and
   memory over time. Preserve logical window age separately from wall-clock service,
-  queue and transport delay; define overload/backpressure behavior. Current maxima
-  still exceed the 100-ms cadence, so mean throughput is not a hard deadline claim.
-  Only measured remaining history reconstruction should motivate a later bounded
-  indexing/cache change; preserve exact identity unions, expiry and retry checks.
+  queue and transport delay; define overload/backpressure behavior. The latest
+  measured input maxima stay below 100 ms, but this short offline trace is not a
+  hard deadline bound. Only measured remaining history reconstruction should
+  motivate a later bounded indexing/cache change; preserve exact identity unions,
+  expiry and retry checks.
 - [ ] Review agreed aggregator requirements at each gate: hard eligibility versus
   preference, intermediate tiers, regional bounds, independent starts, current
   merges/future handoffs, irreversible publication, complete source retirement,

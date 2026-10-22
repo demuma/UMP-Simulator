@@ -383,6 +383,35 @@ void immutableRetryAndExpiredRetry() {
         }
     }
 }
+// Refinement needs sparse geometry, but still validates one canonical type per
+// identity over the complete requested interval before committing any split.
+void conflictingRefinementLeavesFrontierAndOutputUnchanged() {
+    auto c=settings(3);Fixture f(c,metrics(c));
+    f.sample(100,{f.person("same","Adult Pedestrian",192)},false);
+    f.sample(200,{f.person("same","Child Pedestrian",255)},false);
+    f.history.advance(300);
+    const auto before=f.engine.windows();
+    const auto historyBefore=f.history.debugState();
+    rejects([&]{f.engine.advance(300,f.history);},
+        "Sparse refinement stopped rejecting cross-cell canonical type changes");
+    const auto after=f.engine.windows();
+    require(f.outputs.empty() && before.size()==after.size(),
+        "Rejected refinement published data or partially split the ownership frontier");
+    for(std::size_t i=0;i<before.size();++i) {
+        const auto& a=before[i];const auto& b=after[i];
+        require(a.cell.id==b.cell.id && a.cell.depth==b.cell.depth && a.cell.x==b.cell.x
+            && a.cell.y==b.cell.y && a.cell.width==b.cell.width && a.cell.height==b.cell.height
+            && a.startMs==b.startMs && a.nextEndMs==b.nextEndMs
+            && a.hardDeadlineMs==b.hardDeadlineMs && a.extensions==b.extensions
+            && a.evaluations==b.evaluations,
+            "Rejected occupied-history validation changed local clocks or ownership");
+    }
+    const auto historyAfter=f.history.debugState();
+    require(historyBefore.watermarkMs==historyAfter.watermarkMs
+        && historyBefore.observations==historyAfter.observations
+        && historyBefore.identityBytes==historyAfter.identityBytes,
+        "Rejected refinement changed its immutable private evidence");
+}
 void budgetsAndTaxonomyIdentityFailBeforeDisclosure() {
     auto c=settings(3);Fixture f(c,metrics(c),timeSettings(),{1,1});
     auto rows=f.people("a",2,"Adult Pedestrian",192);add(rows,f.people("b",2,"Adult Cyclist",192));
@@ -400,7 +429,8 @@ int main() {try {
     explicitSecondaryWaitingAndDefaultOverride();lossyHardRescueAndExplicitMergeWaitForTerminal();
     aHandoffBoundaryIsAlsoAParentTerminal();regionalLossAgeAndValidNeighbourSurvive();repeatedMovingIdentityUsesUnions();
     mixedDepthAndDifferentRetiredStartsCannotReuseHistory();missingCoverageEofAndHalfOpenInput();
-    immutableRetryAndExpiredRetry();budgetsAndTaxonomyIdentityFailBeforeDisclosure();
-    std::cout<<"PASS: 14 semantic cell-local gates, independent windows, tiered parents, policy bounds, unions, retirement, retries and budgets.\n";
+    immutableRetryAndExpiredRetry();conflictingRefinementLeavesFrontierAndOutputUnchanged();
+    budgetsAndTaxonomyIdentityFailBeforeDisclosure();
+    std::cout<<"PASS: 15 semantic cell-local gates, independent windows, tiered parents, policy bounds, unions, retirement, retries and budgets.\n";
     return 0;
 } catch(const std::exception& error) {std::cerr<<"FAIL: "<<error.what()<<'\n';return 1;}}

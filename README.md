@@ -29,8 +29,9 @@ release immediately under the default trigger. The earlier
 [52-entry verification](docs/SEMANTIC_FIRST_TEST_REPORT_2026-10-21.md) and the
 [27-case comparison](docs/SEMANTIC_FIRST_RESULTS_2026-10-21.md) record its exact scope.
 Membership attacks remain deferred. The recipient-contract and runtime-diagnostic
-gates below are complete. Prefix-based ownership lookup is now implemented and
-verified with unchanged full logical output; paced/live latency validation remains open. Shared sampling
+gates below are complete. Prefix-based ownership lookup and dedicated occupied-leaf
+history discovery are implemented and verified with unchanged full logical output;
+paced/live latency validation remains open. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
 bounded, nonblocking renderer consumption are implemented (S04/S01). S05 now paces
@@ -79,6 +80,18 @@ takes 25.594 s core versus 14.881 s after optimization (about 42% less time).
 Instrumented local tick p95 falls to 98.29 ms, but maximum service is 132.69 ms
 and 7/199 ticks exceed 100 ms. See the
 [runtime results](docs/PREFIX_OWNER_LOOKUP_RUNTIME_REPORT_2026-10-23.md).
+The [follow-up tick diagnosis](docs/TICK_RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md)
+did not reproduce the old 132.69-ms peak at that tick in three fresh profiles;
+their maxima are 103.34–111.94 ms, predominantly CPU work. Refinement used full history
+statistics only to discover occupied leaves. A
+[dedicated occupied-leaf query](docs/OCCUPIED_LEAF_QUERY_TEST_REPORT_2026-10-23.md)
+now preserves coverage and global semantic validation while avoiding per-leaf
+statistics/evidence. All 69 CTest suites and all ten frozen variant comparisons
+pass. Fresh local core time falls from 14.377 s to 11.339–11.624 s (about 19–21% less);
+three detailed profiles have p95 76.92–77.60 ms and maxima 87.25–96.36 ms, with
+0/597 input services above 100 ms. See the
+[occupied-query runtime report](docs/OCCUPIED_LEAF_QUERY_RUNTIME_REPORT_2026-10-23.md)
+for repeats, complete-output checks, separate EOF and instrumented timing limits.
 Paced/live queue and receipt measurements remain necessary; this does not establish
 a hard per-tick deadline, end-to-end real-time operation or measured privacy improvement.
 
@@ -269,6 +282,9 @@ stochastic; exact reruns of those historical comparisons need the local frozen i
 | [Semantic release control](docs/SEMANTIC_RELEASE_CONTROL.md) | Configurable secondary priority, default policy eligibility, deliberate waiting and common/local scope |
 | [Asynchronous local replay](docs/ASYNC_LOCAL_REPLAY_CONTRACT_2026-10-22.md) | Independent historical intervals, clipped original-cell provenance, public/private separation and verification contract |
 | [Recipient contract, results and tests](docs/RECIPIENT_CONTRACT_REPORT_2026-10-23.md) | Exact versus estimated occupancy, disjoint support restrictions, paired fixed/adaptive results and unchanged releases |
+| [Occupied-leaf query and tests](docs/OCCUPIED_LEAF_QUERY_TEST_REPORT_2026-10-23.md) | Sparse refinement geometry, unchanged history/semantic validation and 69-suite regression gate |
+| [Occupied-query runtime comparison](docs/OCCUPIED_LEAF_QUERY_RUNTIME_REPORT_2026-10-23.md) | Full-output equality, three profiles below 100 ms on the measured input, remaining hotspots and reproduction |
+| [Per-tick peak diagnosis](docs/TICK_RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) | Historical 132-ms peak not reproduced in three profiles, CPU/scope evidence and repeated history-reconstruction cost |
 | [Prefix owner lookup and tests](docs/PREFIX_OWNER_LOOKUP_TEST_REPORT_2026-10-23.md) | Existing cell-ID ancestry, equivalent ownership search, adversarial depth/start/budget cases and full regression gate |
 | [Optimized runtime comparison](docs/PREFIX_OWNER_LOOKUP_RUNTIME_REPORT_2026-10-23.md) | Ten unchanged variant outputs, fresh controls, per-tick latency/backlog and reproducible isolated instrumentation |
 | [Frozen runtime diagnosis](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) | Native timings, owner-lookup hotspot, input-tick service/backlog, reproducible isolated instrumentation and next acceptance gate |
@@ -389,8 +405,8 @@ is now complete: ten variants, four deterministic repeats, forty evaluations and
 24 pairs under an explicit 400–1,000-ms duration bound. Local windows reduce mean
 logical delay from 547.5 to 251.1 ms versus common coordination, with retention
 93.28% versus 93.91%. Matched fixed grids answer more of the declared exact queries;
-there is no general adaptive utility win. Local native processing also exceeds
-this source's 20-s horizon. The [new replay](http://127.0.0.1:8774/) compares the same
+there is no general adaptive utility win. Before the runtime optimizations below,
+local native processing also exceeded this source's 20-s horizon. The [new replay](http://127.0.0.1:8774/) compares the same
 500-initial-Road-User capture. The [recipient-contract diagnosis](docs/RECIPIENT_CONTRACT_REPORT_2026-10-23.md)
 now separates exact and estimated occupancy: crossing intervals explain much of
 the exact-query loss, but matched fixed output remains strong under estimation.
@@ -398,7 +414,9 @@ Application error/coverage/deadline requirements and high semantic loss still ne
 an explicit decision before changing controller objectives. A separate
 [runtime measurement](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) led to the completed
 [prefix-based lookup](docs/PREFIX_OWNER_LOOKUP_TEST_REPORT_2026-10-23.md), preserving
-all ten full logical outputs while reducing local runtime. Validate longer paced
+all ten full logical outputs while reducing local runtime. The subsequent
+[occupied-leaf query](docs/OCCUPIED_LEAF_QUERY_RUNTIME_REPORT_2026-10-23.md) reduces
+refinement reconstruction further, without changing policies or output. Validate longer paced
 and live operation before a real-time claim; keep application/semantic-cap studies
 separate from implementation throughput.
 Review the aggregator's agreed requirements and remaining limits at every gate. Privacy evaluation then follows with a declared protected secret and

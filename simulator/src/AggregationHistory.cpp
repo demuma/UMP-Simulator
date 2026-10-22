@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <set>
 #include <stdexcept>
 #include <unordered_set>
 
@@ -253,6 +254,44 @@ HistoryQuery AggregationHistory::queryFinest(AggregationTime startMs, Aggregatio
     const auto status = result.coverage == WindowCoverage::Complete ? HistoryQueryStatus::Complete
         : result.coverage == WindowCoverage::Incomplete ? HistoryQueryStatus::Incomplete : HistoryQueryStatus::NoScheduledSamples;
     return {status, std::move(result)};
+}
+
+HistoryOccupiedLeavesQuery AggregationHistory::queryOccupiedLeaves(
+    AggregationTime startMs, AggregationTime endMs) const {
+    if (startMs < 0 || endMs <= startMs)
+        throw std::invalid_argument("History queries require a nonempty nonnegative half-open interval");
+    if (startMs < retainedFrom(watermarkMs)) return {HistoryQueryStatus::Evicted, std::nullopt};
+    if (endMs > watermarkMs) return {HistoryQueryStatus::Future, std::nullopt};
+    const auto before = [&](AggregationTime time) -> std::uint64_t {
+        return time > 0 ? static_cast<std::uint64_t>((time - 1) / config.samplingPeriodMs) : 0;
+    };
+    const auto expected = before(endMs) - before(startMs);
+    std::uint64_t measured = 0, unavailable = 0;
+    std::set<int> occupied;
+    // Retain whole-interval type/alias and exact-count-range validation. A type
+    // conflict can cross leaves, even when each leaf by itself is consistent.
+    // The global validation also covers every leaf subset; no per-leaf semantic
+    // evidence or distinct-identity statistics are needed to discover geometry.
+    std::optional<SemanticAccumulator> semantic;
+    if (config.semanticTaxonomy) semantic.emplace(config.semanticTaxonomy);
+    for (const auto& bin : bins) {
+        if (bin.timeMs < startMs) continue;
+        if (bin.timeMs >= endMs) break;
+        if (bin.status == ObservationStatus::Unavailable) { ++unavailable; continue; }
+        ++measured;
+        for (const auto& observation : bin.observations) {
+            occupied.insert(observation.cell.id);
+            if (semantic) semantic->add(observation.contributorId, observation.type);
+        }
+    }
+    std::vector<CellGeometry> cells;
+    cells.reserve(occupied.size());
+    for (int id : occupied)
+        cells.push_back(historyCell(config.coverage, id, config.coverage.leafDepth));
+    const auto missing = expected - measured - unavailable;
+    const auto status = !expected ? HistoryQueryStatus::NoScheduledSamples
+        : missing || unavailable ? HistoryQueryStatus::Incomplete : HistoryQueryStatus::Complete;
+    return {status, std::move(cells)};
 }
 
 void AggregationHistory::openBucket(CandidateBucket record) {

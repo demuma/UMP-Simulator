@@ -1,0 +1,374 @@
+--- /dev/null
++++ b/simulator/include/RuntimeProfile.hpp
+@@ -0,0 +1,62 @@
++#pragma once
++#include <array>
++#include <chrono>
++#include <cstdint>
++#include <cstdio>
++#include <vector>
++#include <ctime>
++#include <algorithm>
++namespace ump_profile {
++using Clock=std::chrono::steady_clock;
++struct Counter { std::uint64_t calls=0, nanoseconds=0; };
++enum Id {history_query,history_finest,metric_evaluate,local_process,local_refine,local_selection,local_merge,local_can_merge,local_compact,local_make_window,spatial_propose,common_evaluate,publication_seal,publication_deliver,serialize_window,serialize_release,terminal,refine_copy,refine_owners,refine_to_domain,owner_lookup,refine_history,history_occupied, Count};
++inline const char* names[]={"history_query","history_finest","metric_evaluate","local_process","local_refine","local_selection","local_merge","local_can_merge","local_compact","local_make_window","spatial_propose","common_evaluate","publication_seal","publication_deliver","serialize_window","serialize_release","terminal","refine_copy","refine_owners","refine_to_domain","owner_lookup","refine_history","history_occupied"};
++inline std::array<Counter,Count> counters{};
++inline bool active=false;
++inline std::uint64_t occupied_rows_scanned=0,
++ query_rows_scanned=0,finest_rows_scanned=0,occupied_leaf_owner_search_calls=0,owner_prefix_map_lookups=0;
++struct Tick {
++ long long time; double service, cpu; bool eof;
++ std::array<Counter,Count> delta;
++ std::uint64_t queryRows,finestRows,searches,prefixes,frontierPeak,startsPeak,startTotal,occupiedTotal,occupiedRows;
++};
++inline std::array<Counter,Count> beforeCounters{};
++inline std::uint64_t beforeOccupied=0,beforeQuery=0,beforeFinest=0,beforeSearch=0,beforePrefix=0;
++inline std::uint64_t frontierPeak=0,startsPeak=0,startTotal=0,occupiedTotal=0;
++inline double cpuStarted=0;
++inline double cpuNow() { timespec t{}; clock_gettime(CLOCK_THREAD_CPUTIME_ID,&t); return t.tv_sec*1000.0+t.tv_nsec/1e6; }
++inline void beginTick() {
++ beforeCounters=counters; beforeOccupied=occupied_rows_scanned; beforeQuery=query_rows_scanned; beforeFinest=finest_rows_scanned;
++ beforeSearch=occupied_leaf_owner_search_calls; beforePrefix=owner_prefix_map_lookups;
++ frontierPeak=startsPeak=startTotal=occupiedTotal=0; cpuStarted=cpuNow();
++}
++inline std::vector<Tick> ticks;
++struct Scope {
++ Id id; bool enabled; Clock::time_point started;
++ explicit Scope(Id value):id(value),enabled(active),started(enabled ? Clock::now() : Clock::time_point{}) {}
++ ~Scope() { if(enabled) { auto elapsed=std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-started).count(); ++counters[id].calls; counters[id].nanoseconds+=elapsed; } }
++};
++inline void record(Id id,Clock::time_point start) { ++counters[id].calls; counters[id].nanoseconds+=std::chrono::duration_cast<std::chrono::nanoseconds>(Clock::now()-start).count(); }
++inline void reset() { counters={}; occupied_rows_scanned=0; query_rows_scanned=finest_rows_scanned=0; occupied_leaf_owner_search_calls=owner_prefix_map_lookups=0; ticks.clear(); ticks.reserve(256); active=true; }
++inline void tick(long long time,Clock::time_point started,bool eof=false) {
++ const auto ended=Clock::now(); const double cpu=cpuNow()-cpuStarted;
++ Tick t{time,std::chrono::duration<double,std::milli>(ended-started).count(),cpu,eof,{},
++ query_rows_scanned-beforeQuery,finest_rows_scanned-beforeFinest,
++ occupied_leaf_owner_search_calls-beforeSearch,owner_prefix_map_lookups-beforePrefix,
++ frontierPeak,startsPeak,startTotal,occupiedTotal,occupied_rows_scanned-beforeOccupied};
++ for(int i=0;i<Count;++i) t.delta[i]={counters[i].calls-beforeCounters[i].calls,counters[i].nanoseconds-beforeCounters[i].nanoseconds};
++ ticks.push_back(t);
++}
++inline void emit() {
++ std::fprintf(stderr,"{\"schema\":\"ump.scoped-runtime-instrumentation.v1\",\"inclusive_nonadditive\":true,\"scopes\":{");
++ for(int i=0;i<Count;++i) std::fprintf(stderr,"%s\"%s\":{\"calls\":%llu,\"inclusive_ms\":%.9f}",i?",":"",names[i],(unsigned long long)counters[i].calls,counters[i].nanoseconds/1e6);
++ std::fprintf(stderr,"},\"history_query_rows_scanned\":%llu,\"history_finest_rows_scanned\":%llu,\"ticks\":[",(unsigned long long)query_rows_scanned,(unsigned long long)finest_rows_scanned);
++ for(std::size_t i=0;i<ticks.size();++i) {
++  const auto& t=ticks[i];
++  std::fprintf(stderr,"%s{\"logical_ms\":%lld,\"service_ms\":%.9f,\"thread_cpu_ms\":%.9f,\"eof\":%s,\"query_rows_scanned\":%llu,\"finest_rows_scanned\":%llu,\"owner_searches\":%llu,\"prefix_lookups\":%llu,\"frontier_peak\":%llu,\"distinct_starts_peak\":%llu,\"distinct_starts_total\":%llu,\"occupied_cells_total\":%llu,\"scopes\":{", i?",":"",t.time,t.service,t.cpu,t.eof?"true":"false",(unsigned long long)t.queryRows,(unsigned long long)t.finestRows,(unsigned long long)t.searches,(unsigned long long)t.prefixes,(unsigned long long)t.frontierPeak,(unsigned long long)t.startsPeak,(unsigned long long)t.startTotal,(unsigned long long)t.occupiedTotal);
++  for(int j=0;j<Count;++j) std::fprintf(stderr,"%s\"%s\":{\"calls\":%llu,\"inclusive_ms\":%.9f}",j?",":"",names[j],(unsigned long long)t.delta[j].calls,t.delta[j].nanoseconds/1e6);
++  std::fprintf(stderr,"},\"occupied_rows_scanned\":%llu}",(unsigned long long)t.occupiedRows);
++ }
++ std::fprintf(stderr,"],\"occupied_rows_scanned\":%llu,\"occupied_leaf_owner_search_calls\":%llu,\"owner_prefix_map_lookups\":%llu}\n",(unsigned long long)occupied_rows_scanned,(unsigned long long)occupied_leaf_owner_search_calls,(unsigned long long)owner_prefix_map_lookups);
++}
++}
+--- a/simulator/src/AdaptiveAggregation.cpp
++++ b/simulator/src/AdaptiveAggregation.cpp
+@@ -1,3 +1,4 @@
++#include "RuntimeProfile.hpp"
+ #include "AdaptiveAggregation.hpp"
+ #include <algorithm>
+ #include <cmath>
+@@ -162,6 +163,7 @@
+ 
+ void AdaptiveAggregation::evaluate(AggregationTime endMs, AggregationTime nowMs,
+     const AggregationHistory& history, bool final) {
++    ump_profile::Scope profileScope(ump_profile::common_evaluate);
+     auto next = pending; // A failed proposal or sink must not advance the private cut.
+     if (++next.evaluations > temporal.maxEvaluations)
+         throw std::length_error("Adaptive temporal evaluation budget exceeded");
+--- a/simulator/src/AggregationHistory.cpp
++++ b/simulator/src/AggregationHistory.cpp
+@@ -1,3 +1,4 @@
++#include "RuntimeProfile.hpp"
+ #include "AggregationHistory.hpp"
+ #include "SemanticTaxonomy.hpp"
+ #include <algorithm>
+@@ -149,6 +150,7 @@
+ 
+ HistoryQuery AggregationHistory::query(const CellGeometry& cell, AggregationTime startMs,
+     AggregationTime endMs) const {
++    ump_profile::Scope profileScope(ump_profile::history_query);
+     validateCell(config.coverage, cell);
+     if (startMs < 0 || endMs <= startMs)
+         throw std::invalid_argument("History queries require a nonempty nonnegative half-open interval");
+@@ -169,6 +171,7 @@
+         if (bin.timeMs >= endMs) break;
+         if (bin.status == ObservationStatus::Unavailable) { ++result.unavailableSamples; continue; }
+         ++result.measuredSamples; // Empty/other-cell observations still establish coverage here.
++        if (ump_profile::active) ump_profile::query_rows_scanned += bin.observations.size();
+         for (const auto& observation : bin.observations) {
+             if ((observation.cell.id >> shift) != cell.id) continue;
+             ++result.counts.observationContributions;
+@@ -192,6 +195,7 @@
+ 
+ HistoryQuery AggregationHistory::queryFinest(AggregationTime startMs, AggregationTime endMs,
+     std::optional<CellGeometry> domain) const {
++    ump_profile::Scope profileScope(ump_profile::history_finest);
+     if (domain) validateCell(config.coverage, *domain);
+     if (startMs < 0 || endMs <= startMs)
+         throw std::invalid_argument("History queries require a nonempty nonnegative half-open interval");
+@@ -217,6 +221,7 @@
+         if (bin.timeMs >= endMs) break;
+         if (bin.status == ObservationStatus::Unavailable) { ++result.unavailableSamples; continue; }
+         ++result.measuredSamples;
++        if (ump_profile::active) ump_profile::finest_rows_scanned += bin.observations.size();
+         for (const auto& observation : bin.observations) {
+             if (domain && (observation.cell.id >> (2 * (config.coverage.leafDepth - domain->depth))) != domain->id)
+                 continue;
+@@ -258,6 +263,7 @@
+ 
+ HistoryOccupiedLeavesQuery AggregationHistory::queryOccupiedLeaves(
+     AggregationTime startMs, AggregationTime endMs) const {
++    ump_profile::Scope profileScope(ump_profile::history_occupied);
+     if (startMs < 0 || endMs <= startMs)
+         throw std::invalid_argument("History queries require a nonempty nonnegative half-open interval");
+     if (startMs < retainedFrom(watermarkMs)) return {HistoryQueryStatus::Evicted, std::nullopt};
+@@ -279,6 +285,7 @@
+         if (bin.timeMs >= endMs) break;
+         if (bin.status == ObservationStatus::Unavailable) { ++unavailable; continue; }
+         ++measured;
++        if (ump_profile::active) ump_profile::occupied_rows_scanned += bin.observations.size();
+         for (const auto& observation : bin.observations) {
+             occupied.insert(observation.cell.id);
+             if (semantic) semantic->add(observation.contributorId, observation.type);
+--- a/simulator/src/CandidateMetrics.cpp
++++ b/simulator/src/CandidateMetrics.cpp
+@@ -1,3 +1,4 @@
++#include "RuntimeProfile.hpp"
+ #include "CandidateMetrics.hpp"
+ #include "PolicyTree.hpp"
+ #include <algorithm>
+@@ -185,6 +186,7 @@
+ }
+ 
+ WindowMetricAssessment MetricEvaluator::evaluate(const AggregationCandidate& candidate, AggregationTime now) const {
++    ump_profile::Scope profileScope(ump_profile::metric_evaluate);
+     validateCandidate(candidate, now);
+     if (tree) tree->validateContext(candidate.grid, candidate.applicationId);
+     const bool configured = policy.has_value() || static_cast<bool>(tree);
+--- a/simulator/src/CellLocalAggregation.cpp
++++ b/simulator/src/CellLocalAggregation.cpp
+@@ -1,3 +1,4 @@
++#include "RuntimeProfile.hpp"
+ #include "CellLocalAggregation.hpp"
+ #include <algorithm>
+ #include <cmath>
+@@ -51,6 +52,7 @@
+ 
+ CellLocalAggregation::Window CellLocalAggregation::makeWindow(const CellGeometry& cell,
+     AggregationTime start, std::optional<CellGeometry> previous) const {
++    ump_profile::Scope profileScope(ump_profile::local_make_window);
+     AggregationTime cap = temporal.maxWindowMs;
+     AggregationTime minimum = config.windowMs;
+     AggregationCandidate footprint{config.runId, config.sensorId, config.applicationId,
+@@ -168,6 +170,7 @@
+ 
+ CellLocalAggregation::Frontier::iterator CellLocalAggregation::enclosingOwner(
+     Frontier& cut, const CellGeometry& domain) {
++    ump_profile::Scope profileScope(ump_profile::owner_lookup);
+     // Canonical cell IDs append two quadrant bits per level, as in Quadtree.
+     // The disjoint frontier has at most one owner containing this domain. Check
+     // the domain itself, then its ancestors; stop at the four depth-1 base cells
+@@ -175,6 +178,7 @@
+     // partitioned among finer owners, none of these IDs is present.
+     // At most domain.depth map lookups replace a scan over the entire frontier.
+     for (int id = domain.id, depth = domain.depth; depth >= 1; id >>= 2, --depth) {
++        if (ump_profile::active) ++ump_profile::owner_prefix_map_lookups;
+         const auto owner = cut.find(id);
+         if (owner != cut.end()) return owner;
+     }
+@@ -182,6 +186,7 @@
+ }
+ 
+ void CellLocalAggregation::refineToDomain(Frontier& cut, const CellGeometry& domain) const {
++    ump_profile::Scope profileScope(ump_profile::refine_to_domain);
+     for (;;) {
+         const auto enclosing = enclosingOwner(cut, domain);
+         if (enclosing == cut.end() || enclosing->second.publicState.cell.depth == domain.depth) return;
+@@ -206,6 +211,7 @@
+ }
+ 
+ void CellLocalAggregation::refineDue(AggregationTime endpoint, const AggregationHistory& history) {
++    ump_profile::Scope profileScope(ump_profile::local_refine);
+     // Query fine support once per distinct start, then split only occupied paths.
+     // Empty sibling areas stay represented by compressed owners. This refinement
+     // happens before output, so an occupied region never waits for a coarse policy.
+@@ -213,25 +219,37 @@
+     for (const auto& [id, window] : frontier) {
+         if (window.publicState.cell.depth == config.coverage.leafDepth
+             || window.publicState.startMs >= endpoint || observed.count(window.publicState.startMs)) continue;
+-        auto found = history.queryOccupiedLeaves(window.publicState.startMs, endpoint);
++        const auto queriedStart = window.publicState.startMs;
++        auto found = [&] { ump_profile::Scope p(ump_profile::refine_history);
++            return history.queryOccupiedLeaves(queriedStart, endpoint); }();
+         if (!found.cells) throw std::runtime_error("Cell-local refinement history is unavailable");
+         observed.emplace(window.publicState.startMs, std::move(*found.cells));
+     }
++    ump_profile::frontierPeak=std::max<std::uint64_t>(ump_profile::frontierPeak,frontier.size());
++    ump_profile::startsPeak=std::max<std::uint64_t>(ump_profile::startsPeak,observed.size());
++    ump_profile::startTotal+=observed.size();
++    for(const auto& observedEntry:observed) ump_profile::occupiedTotal+=observedEntry.second.size();
+     if (observed.empty()) return;
++    const auto copyStarted = ump_profile::Clock::now();
+     auto after = frontier;
++    ump_profile::record(ump_profile::refine_copy, copyStarted);
++    { ump_profile::Scope ownerScope(ump_profile::refine_owners);
+     for (const auto& [start, cells] : observed)
+         for (const auto& cell : cells) {
++            if (ump_profile::active) ++ump_profile::occupied_leaf_owner_search_calls;
+             const auto owner = enclosingOwner(after, cell);
+             // A geometrically enclosing owner may already have retired this
+             // historical prefix. Its original start must still match exactly.
+             if (owner != after.end() && owner->second.publicState.startMs == start)
+                 refineToDomain(after, cell);
+         }
++    }
+     frontier.swap(after);
+ }
+ 
+ bool CellLocalAggregation::canMerge(const Frontier& cut, const CellGeometry& domain,
+     AggregationTime end, AggregationTime& start) const {
++    ump_profile::Scope profileScope(ump_profile::local_can_merge);
+     bool found = false;
+     std::uint64_t covered = 0;
+     const auto units = std::uint64_t{1} << (2 * (config.coverage.leafDepth - domain.depth));
+@@ -249,6 +267,7 @@
+ SpatialSelection CellLocalAggregation::selectionFor(const Window& source,
+     AggregationCandidate candidate, WindowMetricAssessment assessment,
+     const AggregationHistory& history, bool selected, const std::string& reason, bool final) const {
++    ump_profile::Scope profileScope(ump_profile::local_selection);
+     const auto scope = candidate.cells.at(0).cell;
+     auto finest = candidate;
+     finest.cells.clear();
+@@ -310,6 +329,7 @@
+ 
+ bool CellLocalAggregation::tryMerge(const CellGeometry& domain, AggregationTime end,
+     const AggregationHistory& history, bool final) {
++    ump_profile::Scope profileScope(ump_profile::local_merge);
+     if (domain.depth < spatial.minDepth) return false;
+     // A strict enclosing plan still protects its entire rendezvous domain. A
+     // passing parent may replace plans completely inside its private footprint;
+@@ -500,6 +520,7 @@
+ }
+ 
+ void CellLocalAggregation::compactFreshOwners(AggregationTime boundary, const AggregationHistory& history) {
++    ump_profile::Scope profileScope(ump_profile::local_compact);
+     // Ownership geometry is private state, independent of the last released cut.
+     // Untouched successors with equal clocks can coalesce directly. Out-of-phase
+     // idle successors first retire their proven-empty prefixes explicitly, then
+@@ -594,6 +615,7 @@
+ }
+ 
+ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory& history, bool final) {
++    ump_profile::Scope profileScope(ump_profile::local_process);
+     const bool semanticEnabled = static_cast<bool>(config.semanticTaxonomy);
+     const bool semanticFirst = temporal.strategy == AdaptationStrategy::SemanticFirst;
+     const bool immediateSemantic = semanticEnabled && temporal.releaseTrigger == ReleaseTrigger::PolicySatisfied;
+--- a/simulator/src/PublicationCoordinator.cpp
++++ b/simulator/src/PublicationCoordinator.cpp
+@@ -1,3 +1,4 @@
++#include "RuntimeProfile.hpp"
+ #include "PublicationCoordinator.hpp"
+ #include <algorithm>
+ #include <cmath>
+@@ -28,6 +29,7 @@
+ 
+ std::shared_ptr<const ReleaseSnapshot> PublicationCoordinator::seal(
+     const SpatialSelection& selection, AggregationTime nowMs) {
++    ump_profile::Scope profileScope(ump_profile::publication_seal);
+     if (finished) throw std::logic_error("Publication stream ended with a truncated final window");
+     if (pending || delivering) throw std::logic_error("Publication support is already reserved");
+     if (nowMs < lastDeliveryMs) throw std::invalid_argument("Publication time must be monotonic");
+@@ -140,6 +142,7 @@
+ }
+ 
+ bool PublicationCoordinator::deliver(AggregationTime nowMs, const Sink& sink) {
++    ump_profile::Scope profileScope(ump_profile::publication_deliver);
+     if (!pending || delivering) throw std::logic_error("No deliverable reservation, or reentrant delivery");
+     if (!sink || nowMs < lastDeliveryMs)
+         throw std::invalid_argument("Delivery requires a sink and monotonic simulation time");
+--- a/simulator/src/SpatialSelection.cpp
++++ b/simulator/src/SpatialSelection.cpp
+@@ -1,3 +1,4 @@
++#include "RuntimeProfile.hpp"
+ #include "SpatialSelection.hpp"
+ #include <algorithm>
+ #include <functional>
+@@ -44,6 +45,7 @@
+ SpatialSelection SpatialSelector::propose(const AggregationCandidate& finest,
+     const AggregationHistory& history, const MetricEvaluator& evaluator,
+     std::optional<double> semanticLossCeiling, bool allowSpatialMerges) const {
++    ump_profile::Scope profileScope(ump_profile::spatial_propose);
+     if (semanticLossCeiling && (!std::isfinite(*semanticLossCeiling)
+             || *semanticLossCeiling < 0 || *semanticLossCeiling > 1
+             || !config.semanticTaxonomy || config.semanticTaxonomy != evaluator.semanticTaxonomy()))
+--- a/simulator/tools/AggregationReplay.cpp
++++ b/simulator/tools/AggregationReplay.cpp
+@@ -1,3 +1,4 @@
++#include "RuntimeProfile.hpp"
+ #include "AdaptiveAggregation.hpp"
+ #include "CellLocalAggregation.hpp"
+ #include "AggregationConfiguration.hpp"
+@@ -302,6 +303,7 @@
+ }
+ 
+ std::string serializeWindow(const SpatialSelection& selection) {
++    ump_profile::Scope profileScope(ump_profile::serialize_window);
+     const auto& c = selection.candidate;
+     std::vector<std::string> cells, decisions;
+     for (std::size_t i = 0; i < c.cells.size(); ++i) {
+@@ -358,6 +360,7 @@
+     return scopedObject(std::move(windowFields), selection.coordinationCell);
+ }
+ std::string serializeRelease(const ReleaseSnapshot& release) {
++    ump_profile::Scope profileScope(ump_profile::serialize_release);
+     std::vector<std::string> cells;
+     for (const auto& cell : release.cells) {
+         auto fields = geometry(cell.aggregate.cell); counts(fields, cell.aggregate.counts);
+@@ -372,6 +375,7 @@
+ }
+ 
+ std::string run(const Input& input, const Settings& settings, const Options& options) {
++    ump_profile::reset();
+     const auto started = std::chrono::steady_clock::now();
+     const auto& config = settings.aggregation;
+     const bool localMode = settings.temporal && settings.temporal->coordination == CoordinationMode::CellLocal;
+@@ -389,6 +393,7 @@
+     std::uint64_t inputContributions = 0, accountedContributions = 0;
+     for (const auto& batch : input.batches) inputContributions += batch.observations.size();
+     const auto terminal = [&](const SpatialSelection& selection) {
++        ump_profile::Scope profileScope(ump_profile::terminal);
+         publication.seal(selection, selection.candidate.closedAtMs);
+         if (!publication.deliver(selection.candidate.closedAtMs, [&](const auto& release) {
+             retain(releases, serializeRelease(release)); return SinkResult::Acknowledged;
+@@ -428,13 +433,20 @@
+     // Advance every declared sensor cadence, including missing samples. Advancing
+     // only at observed timestamps would introduce strategy-dependent latency.
+     for (AggregationTime time = input.periodMs; time < input.endMs;) {
++        ump_profile::beginTick();
++        const auto tickStarted = ump_profile::Clock::now();
+         if (batchIndex < input.batches.size() && input.batches[batchIndex].observedAtMs == time)
+             manager.ingest(input.batches[batchIndex++]);
+         else manager.advance(time);
++        ump_profile::tick(time, tickStarted);
+         if (time > std::numeric_limits<AggregationTime>::max() - input.periodMs) break;
+         time += input.periodMs;
+     }
++    ump_profile::beginTick();
++    const auto finishStarted=ump_profile::Clock::now();
+     manager.finish(input.endMs);
++    ump_profile::tick(input.endMs,finishStarted,true);
++    ump_profile::active=false;
+     if (batchIndex != input.batches.size() || publication.state().retiredThroughMs != input.endMs
+         || inputContributions != accountedContributions)
+         throw std::runtime_error("Replay failed interval retirement or observation conservation");
+@@ -451,6 +463,7 @@
+             settings.temporal->semanticSecondaryStrategy)));
+         parameters.emplace_back("release_trigger", quoted(releaseTriggerName(settings.temporal->releaseTrigger)));
+     }
++    ump_profile::emit();
+     return object({{"schema", quoted("ump.replay-result.v1")}, {"classification", quoted("private_research_diagnostics")},
+         {"mode", quoted(options.mode)},
+         {"configuration_yaml", quoted(settings.configurationYaml)},

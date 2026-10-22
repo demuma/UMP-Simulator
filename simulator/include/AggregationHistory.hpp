@@ -16,6 +16,14 @@ struct HistoryQuery {
     std::optional<AggregationCandidate> candidate;
 };
 
+// Geometry needed for refinement, without candidate statistics or public output.
+// A present empty vector is retained empty/no-sample history; nullopt means that
+// the interval is future or evicted. Incomplete history can still contain cells.
+struct HistoryOccupiedLeavesQuery {
+    HistoryQueryStatus status;
+    std::optional<std::vector<CellGeometry>> cells;
+};
+
 enum class BucketRole { Active, Preemptive };
 enum class BucketState { Collecting, Closed }; // Observation progress, not publication approval.
 struct BucketKey {
@@ -51,6 +59,9 @@ public:
     // Reconstruct the finest occupied cut and exact whole-domain identity union.
     HistoryQuery queryFinest(AggregationTime startMs, AggregationTime endMs,
         std::optional<CellGeometry> domain = std::nullopt) const;
+    // Whole-domain occupied leaves in canonical ID order. Preserve queryFinest's
+    // coverage and semantic identity validation, without per-leaf accumulation.
+    HistoryOccupiedLeavesQuery queryOccupiedLeaves(AggregationTime startMs, AggregationTime endMs) const;
     void openBucket(CandidateBucket bucket);
     void extendBucket(const BucketKey& key, AggregationTime endMs);
     bool discardBucket(const BucketKey& key);

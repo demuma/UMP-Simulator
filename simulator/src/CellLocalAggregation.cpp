@@ -213,11 +213,9 @@ void CellLocalAggregation::refineDue(AggregationTime endpoint, const Aggregation
     for (const auto& [id, window] : frontier) {
         if (window.publicState.cell.depth == config.coverage.leafDepth
             || window.publicState.startMs >= endpoint || observed.count(window.publicState.startMs)) continue;
-        const auto found = history.queryFinest(window.publicState.startMs, endpoint);
-        if (!found.candidate) throw std::runtime_error("Cell-local refinement history is unavailable");
-        std::vector<CellGeometry> occupied;
-        for (const auto& item : found.candidate->cells) occupied.push_back(item.cell);
-        observed.emplace(window.publicState.startMs, std::move(occupied));
+        auto found = history.queryOccupiedLeaves(window.publicState.startMs, endpoint);
+        if (!found.cells) throw std::runtime_error("Cell-local refinement history is unavailable");
+        observed.emplace(window.publicState.startMs, std::move(*found.cells));
     }
     if (observed.empty()) return;
     auto after = frontier;
