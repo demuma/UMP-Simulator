@@ -238,7 +238,7 @@ if(UMP_BUILD_REPLAY)
     set_tests_properties(replay_regression PROPERTIES LABELS "unit;replay;evaluation" TIMEOUT 30)
     find_package(Python3 3.9 COMPONENTS Interpreter REQUIRED)
     foreach(evaluation occupancy privacy comparison capture oracle privacy_dataset empirical_privacy privacy_study coordination coordination_metrics coordination_scenarios coordination_study plot_coordination_study
-        compare_coordination_studies plot_privacy_coordination robustness_attacks run_privacy_robustness plot_privacy_robustness privacy_repair causal_privacy online_occupancy run_privacy_prefix_study selective_suppression semantic_adaptation semantic_tradeoffs semantic_queries run_semantic_priority_study semantic_first moving_comparison cell_size_caps four_second_window semantic_release local_policy_replay replay_data)
+        compare_coordination_studies plot_privacy_coordination robustness_attacks run_privacy_robustness plot_privacy_robustness privacy_repair causal_privacy online_occupancy run_privacy_prefix_study selective_suppression semantic_adaptation semantic_tradeoffs semantic_queries run_semantic_priority_study semantic_first moving_comparison cell_size_caps four_second_window semantic_release local_policy_replay semantic_local_policy replay_data)
         add_test(NAME ${evaluation}_evaluation COMMAND ${Python3_EXECUTABLE} -m unittest discover
             -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/evaluation -p test_${evaluation}.py)
         set_tests_properties(${evaluation}_evaluation PROPERTIES LABELS "unit;evaluation"
@@ -300,6 +300,14 @@ if(UMP_BUILD_METRIC_TESTS AND UMP_BUILD_SPATIAL_TESTS)
         src/CandidateMetrics.cpp src/PolicyTree.cpp src/PublicationCoordinator.cpp)
     add_test(NAME semantic_first_core COMMAND SemanticFirstTests)
     set_tests_properties(semantic_first_core PROPERTIES LABELS "unit;aggregation;semantic" TIMEOUT 30)
+    if(UMP_BUILD_COORDINATION_TESTS)
+        add_executable(SemanticCellLocalTests tests/SemanticCellLocalTests.cpp
+            src/CellLocalAggregation.cpp src/AdaptiveAggregation.cpp src/SpatialSelection.cpp
+            src/AggregationHistory.cpp src/CandidateMetrics.cpp src/PolicyTree.cpp
+            src/PublicationCoordinator.cpp)
+        add_test(NAME semantic_cell_local COMMAND SemanticCellLocalTests)
+        set_tests_properties(semantic_cell_local PROPERTIES LABELS "unit;aggregation;semantic;coordination" TIMEOUT 60)
+    endif()
     set_tests_properties(semantic_taxonomy semantic_history semantic_pipeline PROPERTIES
         LABELS "unit;aggregation;semantic" TIMEOUT 30)
 endif()
@@ -319,7 +327,7 @@ foreach(core_target Simulator SensorRegressionTests AggregationRegressionTests M
     PublicationStoreRegressionTests PublicationPipelineRegressionTests AggregationPresentationTests
     AggregationReplay ReplayRegressionTests CoordinationRegressionTests CoordinationStressTests
     ScopedPublicationRegressionTests SemanticTaxonomyTests SemanticHistoryTests SemanticPipelineTests
-    SemanticPublicationStoreTests SemanticFirstTests)
+    SemanticPublicationStoreTests SemanticFirstTests SemanticCellLocalTests)
     if(TARGET ${core_target})
         target_compile_features(${core_target} PRIVATE cxx_std_17)
         target_link_libraries(${core_target} PRIVATE ump_semantic)

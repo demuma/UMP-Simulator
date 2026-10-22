@@ -1,5 +1,11 @@
 # Cell-local space-time coordination
 
+**October 22 extension:** [semantic cell-local coordination](SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md)
+now supports taxonomy-enabled independent owners and both Semantic First secondary
+priorities. Earlier scope exclusions below describe the original implementation
+gate; see the [new verification report](SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md)
+for current behavior and remaining visualization/effectiveness limits.
+
 Implementation date: 2026-10-19. The opt-in `cell_local` controller shares the existing
 fine observation history and metric/policy evaluator. It adds independent cell windows,
 mixed-depth ownership, unpublished parent takeovers and spatially scoped publication.

@@ -189,9 +189,25 @@ temporal_adaptation: {extension_step_ms: 100, max_window_ms: 4000, max_evaluatio
         noStrategy["policy_tree"]["execution"].remove("release_trigger");
         noStrategy["policy_tree"]["execution"]["semantic_secondary_strategy"] = "spatial_first";
         rejects([&] { validatePolicyExecution(noStrategy); }, "requires semantic_first");
-        auto unsupportedLocalSemantic = YAML::Load(semanticFixture);
-        unsupportedLocalSemantic["temporal_adaptation"]["coordination"] = "cell_local";
-        rejects([&] { readTemporalAdaptation(unsupportedLocalSemantic); }, "common_window only");
+        auto localSemantic = YAML::Load(semanticFixture);
+        localSemantic["temporal_adaptation"]["coordination"] = "cell_local";
+        for (const auto* strategy : {"semantic_first", "temporal_first", "spatial_first"}) {
+            localSemantic["policy_tree"]["execution"]["strategy"] = strategy;
+            localSemantic["policy_tree"]["execution"].remove("semantic_secondary_strategy");
+            const auto configuredLocal = readTemporalAdaptation(localSemantic);
+            require(configuredLocal && configuredLocal->coordination == ump::CoordinationMode::CellLocal
+                && configuredLocal->releaseTrigger == ump::ReleaseTrigger::PolicySatisfied,
+                "Semantic cell-local settings lost independent coordination or immediate release default");
+            require(static_cast<bool>(readSemanticTaxonomy(localSemantic)),
+                "Semantic cell-local taxonomy was rejected");
+        }
+        localSemantic["policy_tree"]["execution"]["strategy"] = "semantic_first";
+        for (const auto* secondary : {"temporal_first", "spatial_first"}) {
+            localSemantic["policy_tree"]["execution"]["semantic_secondary_strategy"] = secondary;
+            localSemantic["policy_tree"]["execution"]["release_trigger"] = "priority_satisfied";
+            require(readTemporalAdaptation(localSemantic)->releaseTrigger == ump::ReleaseTrigger::PrioritySatisfied,
+                "Local semantic priority trigger was lost");
+        }
         auto missingTaxonomy = YAML::Load(semanticFixture);
         missingTaxonomy.remove("semantic_taxonomy");
         rejects([&] { readTemporalAdaptation(missingTaxonomy); }, "requires semantic_taxonomy");

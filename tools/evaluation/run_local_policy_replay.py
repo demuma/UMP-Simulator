@@ -149,8 +149,10 @@ def audit(data, config, actual):
             source = [r for batch in data['batches']
                       if release['start_ms'] <= batch['observed_at_ms'] < release['end_ms']
                       for r in batch['observations']
-                      if r['cell_id'] >> (2 * (6 - cell['depth'])) == cell['cell_id']]
+                      if r['cell_id'] >> (2 * (data['coverage']['leaf_depth'] - cell['depth'])) == cell['cell_id']]
             semantic = cell['semantic']
+            if semantic.get('schema') != 'ump.semantic-release.v1':
+                raise ValueError('Wrong semantic release schema')
             if (semantic['taxonomy_id'], semantic['taxonomy_version']) != (
                     config['semantic_taxonomy']['id'], config['semantic_taxonomy']['version']):
                 raise ValueError('Wrong semantic catalog')

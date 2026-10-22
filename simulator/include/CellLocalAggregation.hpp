@@ -23,6 +23,9 @@ struct CellLocalWindow {
 // reconstructable ancestor assessments are bounded by spatial.maxEvaluations. A sibling hold
 // requires a common-start parent with feasible geometry/time bounds, not merely
 // another failure in the same coarse quadrant; future support is never promised.
+// With semantic input, hard eligibility and Semantic First preference are separate.
+// The default policy trigger releases passing owners after current rescues without
+// speculative holds; explicit preference waiting remains bounded by local deadlines.
 class CellLocalAggregation {
 public:
     using Sink = AdaptiveAggregation::Sink;

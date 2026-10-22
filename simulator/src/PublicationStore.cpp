@@ -141,10 +141,8 @@ Document releaseDocument(const ReleaseSnapshot& release, std::size_t maxBytes) {
         if (released.semantic) {
             // This store verifies the structural boundary only. The coordinator must
             // assess the category cut against its trusted versioned taxonomy first.
-            // Keeping this optional extension inside v1 preserves every legacy byte
-            // when no semantic representation was requested.
-            if (release.coordinationCell)
-                throw std::invalid_argument("Semantic publication requires common-window coordination");
+            // The optional representation is shared by common-window v1 and scoped
+            // v2 releases; absent semantics preserve their existing BSON bytes.
             const auto& semantic = *released.semantic;
             if (counts.observationContributions > 9007199254740991ULL
                 || semantic.taxonomyId.empty() || semantic.taxonomyVersion.empty() || semantic.bins.empty()
@@ -267,7 +265,7 @@ ReleaseSnapshot parseRelease(View document) {
             counts.meanSampleOccupancy = values["mean_sample_occupancy"].get_double().value;
         if (row["semantic"]) {
             const auto semantic = row["semantic"].get_document().view();
-            if (scoped || stringField(semantic, "schema") != "ump.semantic-release.v1")
+            if (stringField(semantic, "schema") != "ump.semantic-release.v1")
                 throw PublicationConflict("Publication journal semantic schema or coordination is invalid");
             SemanticRepresentation representation;
             representation.taxonomyId = stringField(semantic, "taxonomy_id");

@@ -374,14 +374,16 @@ class SemanticAdaptationReplayTests(unittest.TestCase):
                 actual = self.run_core(source([population(19, 1), absent, population(19, 1)]), policy())
                 self.assertEqual(actual["releases"], [])
 
-    def test_unknown_conflicting_and_cell_local_inputs_reject_without_output(self):
+    def test_unknown_conflicting_and_invalid_coordination_inputs_reject_without_output(self):
         bad_label = source([[observation("a", "not-in-taxonomy")]] * 3)
         conflicting = source([[observation("a")], [observation("a", "adult_cyclist")], []])
         for data in (bad_label, conflicting):
             with self.subTest(data=data):
                 self.run_core(data, policy(), succeeds=False)
         config = policy()
-        config["temporal_adaptation"]["coordination"] = "cell_local"
+        # Semantic cell-local execution is supported by the subsequent local gate;
+        # unknown modes must still fail before producing a recipient stream.
+        config["temporal_adaptation"]["coordination"] = "unknown_coordination"
         self.run_core(source([population(19, 1)] * 3), config, "spatial_first", succeeds=False)
 
     def test_semantic_auditor_detects_false_counts_overlap_and_false_loss(self):

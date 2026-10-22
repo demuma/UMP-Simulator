@@ -100,9 +100,6 @@ std::shared_ptr<const ump::SemanticTaxonomy> readSemanticTaxonomy(const YAML::No
     if (!requirements || !requirements["min_category_distinct_contributors"]
         || !requirements["semantic_max_loss"])
         throw std::invalid_argument("Semantic taxonomy requires min_category_distinct_contributors.min and semantic_max_loss.max");
-    if (aggregation["temporal_adaptation"] && aggregation["temporal_adaptation"]["coordination"]
-        && aggregation["temporal_adaptation"]["coordination"].as<std::string>() == "cell_local")
-        throw std::invalid_argument("Semantic taxonomy currently supports common_window only");
     return std::make_shared<const ump::SemanticTaxonomy>(node["id"].as<std::string>(),
         node["version"].as<std::string>(), std::move(nodes));
 }
@@ -148,9 +145,6 @@ void validatePolicyExecution(const YAML::Node& aggregation) {
                     throw std::invalid_argument("semantic_first requires semantic_taxonomy");
                 if (!aggregation["temporal_adaptation"])
                     throw std::invalid_argument("semantic_first requires temporal_adaptation");
-                const auto coordination = aggregation["temporal_adaptation"]["coordination"];
-                if (coordination && coordination.as<std::string>() != "common_window")
-                    throw std::invalid_argument("semantic_first currently supports common_window only");
             }
         }
         if (execution["semantic_secondary_strategy"]) {
@@ -201,9 +195,6 @@ std::optional<ump::TemporalAdaptationConfig> readTemporalAdaptation(const YAML::
         if (mode == "cell_local") settings.coordination = ump::CoordinationMode::CellLocal;
         else if (mode != "common_window") throw std::invalid_argument("Unsupported temporal_adaptation.coordination");
     }
-    if (settings.strategy == ump::AdaptationStrategy::SemanticFirst
-        && settings.coordination != ump::CoordinationMode::CommonWindow)
-        throw std::invalid_argument("semantic_first currently supports common_window only");
     if (settings.coordination == ump::CoordinationMode::CellLocal
         && aggregation["spatial_selection"]["preserve_valid_descendants"]
         && aggregation["spatial_selection"]["preserve_valid_descendants"].as<bool>())

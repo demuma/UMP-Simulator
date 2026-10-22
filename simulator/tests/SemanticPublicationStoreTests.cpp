@@ -122,16 +122,23 @@ bsoncxx::document::value legacyPayload(const ump::ReleaseSnapshot& release) {
         kvp("counts", make_document(kvp("observation_contributions", std::int64_t{24}),
             kvp("distinct_contributors", std::int64_t{8}), kvp("mean_sample_occupancy", 2.4))),
         kvp("effective_policy_id", "test-policy/effective")));
-    return make_document(kvp("_id", release.releaseId), kvp("schema", "ump.release.v1"),
+    bsoncxx::builder::basic::document expected;
+    expected.append(kvp("_id", release.releaseId), kvp("schema", release.coordinationCell ? "ump.release.v2" : "ump.release.v1"),
         kvp("data_role", "recipient_release"), kvp("run_id", release.runId),
         kvp("sensor_id", release.sensorId), kvp("application_id", release.applicationId),
         kvp("model", release.model), kvp("policy_id", release.policyId),
         kvp("policy_version", release.policyVersion), kvp("start_ms", release.startMs),
         kvp("end_ms", release.endMs), kvp("sealed_at_ms", release.sealedAtMs), kvp("cells", cells));
+    if (release.coordinationCell) {
+        const auto& scope = *release.coordinationCell;
+        expected.append(kvp("coordination_cell", make_document(kvp("cell_id", scope.id), kvp("depth", scope.depth),
+            kvp("x", scope.x), kvp("y", scope.y), kvp("width", scope.width), kvp("height", scope.height))));
+    }
+    return expected.extract();
 }
 
 void realSemanticPipeline(std::shared_ptr<mongocxx::client> client,
-    const ump::PublicationStoreOptions& options) {
+    const ump::PublicationStoreOptions& options, bool scoped = false) {
     // One acceptance case crosses the real observation accumulator, bounded
     // history, semantic evaluator, selector, immutable coordinator and Mongo store.
     // Every observation belongs to this test's existing UUID-owned namespaces.
@@ -140,7 +147,8 @@ void realSemanticPipeline(std::shared_ptr<mongocxx::client> client,
         std::vector<SemanticNode>{{"Root", "", 1, {}}, {"Cyclist", "Root", .5, {}},
             {"Adult", "Cyclist", 0, {"Adult Cyclist"}},
             {"Child", "Cyclist", 0, {"Child Cyclist"}}});
-    AggregationConfig config{"semantic-core-acceptance", "agbs", "application", {0, 0, 80, 80, 2}, 100, 400};
+    AggregationConfig config{scoped ? "semantic-local-acceptance" : "semantic-core-acceptance",
+        "agbs", "application", {0, 0, 80, 80, 2}, 100, 400};
     config.history = HistoryLimits{2000, 32, 10000, 1000000, 128};
     config.semanticTaxonomy = taxonomy;
     std::vector<AggregationCandidate> fixedWindows;
@@ -174,11 +182,14 @@ void realSemanticPipeline(std::shared_ptr<mongocxx::client> client,
     auto selected = selector.select(*evidence.candidate, *manager.history(), evaluator);
     require(selected.selectedCells == 1 && selected.candidate.cells.front().cell.id == 48,
         "Real semantic support generalized space instead of the permitted taxonomy categories");
-    PublicationCoordinator publisher(config, evaluator);
+    if (scoped) selected.coordinationCell = historyCell(config.coverage, 12, 1);
+    PublicationCoordinator publisher(config, evaluator, {}, {}, scoped);
     const auto release = publisher.seal(selected, 400);
     const auto exactSemantic = [&](const ReleaseSnapshot& value) {
         require(value.startMs == 0 && value.endMs == 400 && value.sealedAtMs == 400
-            && !value.coordinationCell && value.cells.size() == 1 && value.cells.front().semantic,
+            && value.coordinationCell.has_value() == scoped
+            && (!scoped || value.coordinationCell->id == 12)
+            && value.cells.size() == 1 && value.cells.front().semantic,
             "Acceptance snapshot lost its original interval, scope or semantic output");
         const auto& released = value.cells.front();
         const auto& representation = *released.semantic;
@@ -227,7 +238,7 @@ void realSemanticPipeline(std::shared_ptr<mongocxx::client> client,
             "Lost-ACK retry failed to reconcile exact semantic output");
         restarted.commit(immutable);
         return SinkResult::Acknowledged;
-    }) && !publisher.pendingRelease() && publisher.state().retiredThroughMs == 400,
+    }) && !publisher.pendingRelease() && publisher.state().retiredThroughMs == (scoped ? 0 : 400),
         "Reconciled semantic commit failed to retire exactly the approved interval");
     durable = restarted.recoverStream(config.runId, config.sensorId, config.applicationId);
     require(durable.size() == 1 && durable.front().committed,
@@ -238,6 +249,17 @@ void realSemanticPipeline(std::shared_ptr<mongocxx::client> client,
         "Real semantic pipeline recovery changed immutable bytes or inserted a duplicate");
     const auto stored = recipient.find_one(make_document(kvp("_id", release->releaseId)));
     require(static_cast<bool>(stored), "Real semantic recipient payload is missing");
+    require(field(stored->view(), "schema") == (scoped ? "ump.release.v2" : "ump.release.v1")
+        && static_cast<bool>(stored->view()["coordination_cell"]) == scoped,
+        "Semantic publication changed the outer schema or lost scoped geometry");
+    if (scoped) {
+        mustThrow<std::invalid_argument>([&] { publisher.seal(selected, 400); },
+            "Acknowledged scoped semantic support was reused");
+        auto untrusted = config;
+        untrusted.semanticTaxonomy.reset();
+        mustThrow<std::invalid_argument>([&] { PublicationCoordinator rejected(untrusted, evaluator, {}, {}, true); },
+            "Scoped publisher accepted a mismatched immutable taxonomy");
+    }
     const auto first = *stored->view()["cells"].get_array().value.begin();
     const auto persistedSemantic = first.get_document().view()["semantic"].get_document().view();
     const auto bin = *persistedSemantic["categories"].get_array().value.begin();
@@ -474,7 +496,8 @@ int main() {
         invalid([](auto& r) {
             r.coordinationCell = r.cells.front().aggregate.cell;
             r.releaseId = "ump-release-v2/" + r.releaseId.substr(std::string("ump-release-v1/").size()) + "/12/1";
-        }, "Semantic payload accepted in unsupported cell-local coordination");
+            r.coordinationCell->x += 1;
+        }, "Semantic cell outside its scoped geometry was accepted");
         auto small = options;
         small.maxBytes = 2048;
         ump::PublicationStore bounded(client, small);
@@ -517,6 +540,20 @@ int main() {
         require(recipient.count_documents({}) == 2, "Read-only semantic recovery disclosed pending data");
         realSemanticPipeline(client, options);
         realSemanticFirstPipeline(client, options);
+        realSemanticPipeline(client, options, true);
+        auto legacyScoped = snapshot(3000, false);
+        legacyScoped.coordinationCell = legacyScoped.cells.front().aggregate.cell;
+        legacyScoped.releaseId = "ump-release-v2/" + legacyScoped.releaseId.substr(std::string("ump-release-v1/").size()) + "/12/1";
+        require(store.publish(legacyScoped) == ump::SinkResult::Acknowledged, "Legacy scoped release stopped publishing");
+        store.commit(legacyScoped);
+        const auto scopedRow = recipient.find_one(make_document(kvp("_id", legacyScoped.releaseId)));
+        const auto expectedScoped = legacyPayload(legacyScoped);
+        require(scopedRow && scopedRow->view().length() == expectedScoped.view().length()
+            && std::memcmp(scopedRow->view().data(), expectedScoped.view().data(), expectedScoped.view().length()) == 0,
+            "Disabled semantics changed legacy scoped v2 BSON bytes");
+        const auto recoveredScoped = store.recoverStream(legacyScoped.runId, legacyScoped.sensorId, legacyScoped.applicationId);
+        require(recoveredScoped.back().release.coordinationCell && !recoveredScoped.back().release.cells.front().semantic,
+            "Scalar scoped recovery lost its optional semantic boundary");
         std::cout << "Semantic publication store tests passed\n";
         return 0;
     } catch (const std::exception& error) {

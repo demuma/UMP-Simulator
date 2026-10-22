@@ -15,8 +15,6 @@ PublicationCoordinator::PublicationCoordinator(AggregationConfig settings, Metri
     : config(std::move(settings)), evaluator(std::move(metrics)), limits(bounds), maximumWindowMs(maximum), cellLocal(scoped) {
     if (config.semanticTaxonomy != evaluator.semanticTaxonomy())
         throw std::invalid_argument("Publication requires the same immutable semantic taxonomy as its evaluator");
-    if (cellLocal && config.semanticTaxonomy)
-        throw std::invalid_argument("Semantic taxonomy currently supports common_window only");
 
     historyCell(config.coverage, 12, 1);
     if (config.runId.empty() || config.sensorId.empty() || config.applicationId.empty()

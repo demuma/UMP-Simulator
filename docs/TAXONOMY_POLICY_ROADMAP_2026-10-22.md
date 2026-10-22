@@ -49,8 +49,7 @@ The same observations are compared under uniform and regional policies. Read
 the [actual results and limits](LOCAL_LEAF_POLICY_RESULTS_2026-10-22.md).
 
 This is ready now for numeric requirements. It is too early to claim regional
-attribute-forbidding rules, realistic residential behavior or independently
-timed semantic cells. In particular a common-window controller may apply the
+attribute-forbidding rules, realistic residential behavior or realistic independent traffic behavior. A common-window controller may apply the
 strictest regional time cap to its entire domain; expose this coupling rather
 than present it as individual temporal policy enforcement.
 
@@ -69,8 +68,10 @@ observable utility losses before larger scenes. This step is integrated with
 the current viewer and leaf-policy experiment; it does not require the full
 modifier builder or a new collision solver.
 
-Next, integrate semantics with the existing cell-local ownership/handoff
-coordinator and repeat identical inputs. Then add seeded continuous-flow street
+The [cell-local semantic gate](SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md) now
+integrates the existing ownership/handoff coordinator and compares identical inputs;
+see its [results and verification](SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md).
+A correct asynchronous replay mosaic remains next. Then add seeded continuous-flow street
 scenarios and meaningful type-count/hotspot queries, retaining strong legal
 uniform-grid/window baselines and cases where adaptation has no advantage.
 

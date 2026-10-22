@@ -1,0 +1,771 @@
+{
+  "date": "2026-10-22",
+  "results": {
+    "cell_local_regional_spatial_first": {
+      "coordination": "cell_local",
+      "independent_audit": "verified",
+      "input_observations": 380,
+      "mean_interval_start_age_ms": 335.43859649122805,
+      "mean_observation_to_release_delay_ms": 209.82456140350877,
+      "mean_output_cell_side_m": 1.5833333333333333,
+      "mean_semantic_loss": 0.26666666666666666,
+      "per_source_group": {
+        "control-east": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "control-west": {
+          "input_observations": 76,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 76,
+          "unreleased_observations": 0
+        },
+        "guard-east": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 19
+        },
+        "guard-south": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 19
+        },
+        "infeasible-scooter": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 57
+        },
+        "semantic-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "semantic-child": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 157.89473684210526,
+          "mean_observation_to_release_delay_ms": 121.05263157894737,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-senior": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 157.89473684210526,
+          "mean_observation_to_release_delay_ms": 121.05263157894737,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        }
+      },
+      "released_cells": 31,
+      "released_observations": 285,
+      "retained_by_source_group": {
+        "control-east": 57,
+        "control-west": 76,
+        "semantic-adult": 38,
+        "semantic-child": 38,
+        "spatial-adult": 38,
+        "spatial-senior": 38
+      },
+      "retained_fraction": 0.75,
+      "retired_domains": 402,
+      "unreleased_observations": 95
+    },
+    "cell_local_regional_temporal_first": {
+      "coordination": "cell_local",
+      "independent_audit": "verified",
+      "input_observations": 380,
+      "mean_interval_start_age_ms": 335.43859649122805,
+      "mean_observation_to_release_delay_ms": 209.82456140350877,
+      "mean_output_cell_side_m": 1.5833333333333333,
+      "mean_semantic_loss": 0.26666666666666666,
+      "per_source_group": {
+        "control-east": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "control-west": {
+          "input_observations": 76,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 76,
+          "unreleased_observations": 0
+        },
+        "guard-east": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 19
+        },
+        "guard-south": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 19
+        },
+        "infeasible-scooter": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 57
+        },
+        "semantic-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "semantic-child": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 157.89473684210526,
+          "mean_observation_to_release_delay_ms": 121.05263157894737,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-senior": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 157.89473684210526,
+          "mean_observation_to_release_delay_ms": 121.05263157894737,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        }
+      },
+      "released_cells": 31,
+      "released_observations": 285,
+      "retained_by_source_group": {
+        "control-east": 57,
+        "control-west": 76,
+        "semantic-adult": 38,
+        "semantic-child": 38,
+        "spatial-adult": 38,
+        "spatial-senior": 38
+      },
+      "retained_fraction": 0.75,
+      "retired_domains": 402,
+      "unreleased_observations": 95
+    },
+    "cell_local_uniform_spatial_first": {
+      "coordination": "cell_local",
+      "independent_audit": "verified",
+      "input_observations": 380,
+      "mean_interval_start_age_ms": 400.0,
+      "mean_observation_to_release_delay_ms": 242.10526315789474,
+      "mean_output_cell_side_m": 1.625,
+      "mean_semantic_loss": 0.0,
+      "per_source_group": {
+        "control-east": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "control-west": {
+          "input_observations": 76,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 76,
+          "unreleased_observations": 0
+        },
+        "guard-east": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 19,
+          "unreleased_observations": 0
+        },
+        "guard-south": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 19,
+          "unreleased_observations": 0
+        },
+        "infeasible-scooter": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "semantic-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "semantic-child": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-senior": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        }
+      },
+      "released_cells": 35,
+      "released_observations": 380,
+      "retained_by_source_group": {
+        "control-east": 57,
+        "control-west": 76,
+        "guard-east": 19,
+        "guard-south": 19,
+        "infeasible-scooter": 57,
+        "semantic-adult": 38,
+        "semantic-child": 38,
+        "spatial-adult": 38,
+        "spatial-senior": 38
+      },
+      "retained_fraction": 1.0,
+      "retired_domains": 335,
+      "unreleased_observations": 0
+    },
+    "cell_local_uniform_temporal_first": {
+      "coordination": "cell_local",
+      "independent_audit": "verified",
+      "input_observations": 380,
+      "mean_interval_start_age_ms": 400.0,
+      "mean_observation_to_release_delay_ms": 242.10526315789474,
+      "mean_output_cell_side_m": 1.625,
+      "mean_semantic_loss": 0.0,
+      "per_source_group": {
+        "control-east": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "control-west": {
+          "input_observations": 76,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 76,
+          "unreleased_observations": 0
+        },
+        "guard-east": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 19,
+          "unreleased_observations": 0
+        },
+        "guard-south": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 19,
+          "unreleased_observations": 0
+        },
+        "infeasible-scooter": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "semantic-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "semantic-child": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-senior": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        }
+      },
+      "released_cells": 35,
+      "released_observations": 380,
+      "retained_by_source_group": {
+        "control-east": 57,
+        "control-west": 76,
+        "guard-east": 19,
+        "guard-south": 19,
+        "infeasible-scooter": 57,
+        "semantic-adult": 38,
+        "semantic-child": 38,
+        "spatial-adult": 38,
+        "spatial-senior": 38
+      },
+      "retained_fraction": 1.0,
+      "retired_domains": 335,
+      "unreleased_observations": 0
+    },
+    "common_window_regional_spatial_first": {
+      "coordination": "common_window",
+      "independent_audit": "verified",
+      "input_observations": 380,
+      "mean_interval_start_age_ms": 557.8947368421053,
+      "mean_observation_to_release_delay_ms": 315.7894736842105,
+      "mean_output_cell_side_m": 1.5833333333333333,
+      "mean_semantic_loss": 0.26666666666666666,
+      "per_source_group": {
+        "control-east": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "control-west": {
+          "input_observations": 76,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 76,
+          "unreleased_observations": 0
+        },
+        "guard-east": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 19
+        },
+        "guard-south": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 19
+        },
+        "infeasible-scooter": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 57
+        },
+        "semantic-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "semantic-child": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-senior": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        }
+      },
+      "released_cells": 16,
+      "released_observations": 285,
+      "retained_by_source_group": {
+        "control-east": 57,
+        "control-west": 76,
+        "semantic-adult": 38,
+        "semantic-child": 38,
+        "spatial-adult": 38,
+        "spatial-senior": 38
+      },
+      "retained_fraction": 0.75,
+      "retired_domains": 4,
+      "unreleased_observations": 95
+    },
+    "common_window_regional_temporal_first": {
+      "coordination": "common_window",
+      "independent_audit": "verified",
+      "input_observations": 380,
+      "mean_interval_start_age_ms": 557.8947368421053,
+      "mean_observation_to_release_delay_ms": 315.7894736842105,
+      "mean_output_cell_side_m": 1.5833333333333333,
+      "mean_semantic_loss": 0.26666666666666666,
+      "per_source_group": {
+        "control-east": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "control-west": {
+          "input_observations": 76,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 76,
+          "unreleased_observations": 0
+        },
+        "guard-east": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 19
+        },
+        "guard-south": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 19
+        },
+        "infeasible-scooter": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": null,
+          "mean_observation_to_release_delay_ms": null,
+          "released_observations": 0,
+          "unreleased_observations": 57
+        },
+        "semantic-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "semantic-child": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-senior": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 557.8947368421053,
+          "mean_observation_to_release_delay_ms": 315.7894736842105,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        }
+      },
+      "released_cells": 16,
+      "released_observations": 285,
+      "retained_by_source_group": {
+        "control-east": 57,
+        "control-west": 76,
+        "semantic-adult": 38,
+        "semantic-child": 38,
+        "spatial-adult": 38,
+        "spatial-senior": 38
+      },
+      "retained_fraction": 0.75,
+      "retired_domains": 4,
+      "unreleased_observations": 95
+    },
+    "common_window_uniform_spatial_first": {
+      "coordination": "common_window",
+      "independent_audit": "verified",
+      "input_observations": 380,
+      "mean_interval_start_age_ms": 400.0,
+      "mean_observation_to_release_delay_ms": 242.10526315789474,
+      "mean_output_cell_side_m": 1.625,
+      "mean_semantic_loss": 0.0,
+      "per_source_group": {
+        "control-east": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "control-west": {
+          "input_observations": 76,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 76,
+          "unreleased_observations": 0
+        },
+        "guard-east": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 19,
+          "unreleased_observations": 0
+        },
+        "guard-south": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 19,
+          "unreleased_observations": 0
+        },
+        "infeasible-scooter": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "semantic-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "semantic-child": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-senior": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        }
+      },
+      "released_cells": 35,
+      "released_observations": 380,
+      "retained_by_source_group": {
+        "control-east": 57,
+        "control-west": 76,
+        "guard-east": 19,
+        "guard-south": 19,
+        "infeasible-scooter": 57,
+        "semantic-adult": 38,
+        "semantic-child": 38,
+        "spatial-adult": 38,
+        "spatial-senior": 38
+      },
+      "retained_fraction": 1.0,
+      "retired_domains": 5,
+      "unreleased_observations": 0
+    },
+    "common_window_uniform_temporal_first": {
+      "coordination": "common_window",
+      "independent_audit": "verified",
+      "input_observations": 380,
+      "mean_interval_start_age_ms": 400.0,
+      "mean_observation_to_release_delay_ms": 242.10526315789474,
+      "mean_output_cell_side_m": 1.625,
+      "mean_semantic_loss": 0.0,
+      "per_source_group": {
+        "control-east": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "control-west": {
+          "input_observations": 76,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 76,
+          "unreleased_observations": 0
+        },
+        "guard-east": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 19,
+          "unreleased_observations": 0
+        },
+        "guard-south": {
+          "input_observations": 19,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 19,
+          "unreleased_observations": 0
+        },
+        "infeasible-scooter": {
+          "input_observations": 57,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 57,
+          "unreleased_observations": 0
+        },
+        "semantic-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "semantic-child": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-adult": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        },
+        "spatial-senior": {
+          "input_observations": 38,
+          "mean_interval_start_age_ms": 400.0,
+          "mean_observation_to_release_delay_ms": 242.10526315789474,
+          "released_observations": 38,
+          "unreleased_observations": 0
+        }
+      },
+      "released_cells": 35,
+      "released_observations": 380,
+      "retained_by_source_group": {
+        "control-east": 57,
+        "control-west": 76,
+        "guard-east": 19,
+        "guard-south": 19,
+        "infeasible-scooter": 57,
+        "semantic-adult": 38,
+        "semantic-child": 38,
+        "spatial-adult": 38,
+        "spatial-senior": 38
+      },
+      "retained_fraction": 1.0,
+      "retired_domains": 5,
+      "unreleased_observations": 0
+    }
+  },
+  "schema": "ump.semantic-cell-local-compact-results.v1",
+  "scope": "Analytical mechanism fixture; no generated movement recordings or complete release streams.",
+  "source_manifest_sha256": "8124fb27a9fae7db16a28d9b9d8f661dd998204d9d1d6cbeff5c268999637811",
+  "verification": {
+    "ctest_passed": 62,
+    "ctest_total": 62,
+    "ctest_wall_seconds": 17.54,
+    "deterministic_repeats": 4,
+    "native_acceptance_cases": 14,
+    "primary_audited_public_cells": 234,
+    "primary_audited_semantic_bins": 254,
+    "primary_variant_count": 8,
+    "targeted_sanitizers": {
+      "acceptance_cases": 14,
+      "binary_sha256": "70c24654445e422d69c7404811e7cf9b9f22dd9eabd06b25d8d8dc9c2cfa78fc",
+      "compiler_command": [
+        "clang++",
+        "-std=c++17",
+        "-O1",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-Isimulator/include",
+        "simulator/tests/SemanticCellLocalTests.cpp",
+        "simulator/src/CellLocalAggregation.cpp",
+        "simulator/src/AdaptiveAggregation.cpp",
+        "simulator/src/SpatialSelection.cpp",
+        "simulator/src/AggregationHistory.cpp",
+        "simulator/src/CandidateMetrics.cpp",
+        "simulator/src/PolicyTree.cpp",
+        "simulator/src/SemanticTaxonomy.cpp",
+        "-o",
+        "/private/tmp/ump-semantic-cell-local-20261022/core/SemanticCellLocalTests-sanitized"
+      ],
+      "execution_environment": {
+        "ASAN_OPTIONS": "detect_leaks=0:halt_on_error=1",
+        "UBSAN_OPTIONS": "halt_on_error=1:print_stacktrace=1"
+      },
+      "returncode": 0,
+      "scope": "Targeted ASan/UBSan acceptance run; leak detection disabled. No regular CMake or release binary modifications.",
+      "source_sha256": {
+        "simulator/src/AdaptiveAggregation.cpp": "ef68658d2b6cdc1fa1de624fa076c9d4c3b8d52b73b89ce38eb799e4096ea2eb",
+        "simulator/src/AggregationHistory.cpp": "009f53af98baa5c3ca5abb33ff2d20a34db098c933efe83b9d3a52a842c06125",
+        "simulator/src/CandidateMetrics.cpp": "22ac9e5840b6c164f132555b76c80986735e68467967d756768aaef899ea9f19",
+        "simulator/src/CellLocalAggregation.cpp": "38af909951594caadf06fa8b0c2e866b90167a953c906626301bba88da84a99a",
+        "simulator/src/PolicyTree.cpp": "42f701335eeed78260edd046bf6f600df0eae12087622b94801ff27dbc27adba",
+        "simulator/src/SemanticTaxonomy.cpp": "4345f1519eaaeae3501366a225fa89ddf0e80bc78497011dcc19f5879e4b7342",
+        "simulator/src/SpatialSelection.cpp": "3fe08bb88815b76c9336f53b38fb772ba66c7031208bd5cbf0aec493bf5ddf95",
+        "simulator/tests/SemanticCellLocalTests.cpp": "5764f1b84c9dcc488d9791d5ccecf60ca31c960f447473d0ba85c0e7d3bccd62"
+      },
+      "status": "passed",
+      "stderr": "",
+      "stdout": "PASS: 14 semantic cell-local gates, independent windows, tiered parents, policy bounds, unions, retirement, retries and budgets.\n",
+      "test": "SemanticCellLocalTests"
+    },
+    "unchanged_common_references": 4,
+    "verified_manifest_artifacts": 56
+  }
+}

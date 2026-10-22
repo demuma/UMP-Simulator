@@ -25,10 +25,12 @@ CellLocalAggregation::CellLocalAggregation(AggregationConfig settings,
       evaluator(std::move(metrics)), sink(std::move(output)), maxActiveCells(maximum) {
     historyCell(config.coverage, 12, 1);
     adaptationStrategyName(temporal.strategy);
-    if (temporal.strategy == AdaptationStrategy::SemanticFirst)
-        throw std::invalid_argument("semantic_first currently supports common_window only");
-    if (config.semanticTaxonomy || evaluator.semanticTaxonomy())
-        throw std::invalid_argument("Semantic taxonomy currently supports common_window only");
+    semanticSecondaryStrategyName(temporal.semanticSecondaryStrategy);
+    releaseTriggerName(temporal.releaseTrigger);
+    if (config.semanticTaxonomy != evaluator.semanticTaxonomy())
+        throw std::invalid_argument("Cell-local aggregation requires the same immutable semantic taxonomy as its evaluator");
+    if (temporal.strategy == AdaptationStrategy::SemanticFirst && !config.semanticTaxonomy)
+        throw std::invalid_argument("Semantic First requires a configured immutable taxonomy");
     if (spatial.preserveValidDescendants)
         throw std::invalid_argument("preserve_valid_descendants supports common_window only; cell_local already uses independent descendant owners");
     if (!sink || config.samplingPeriodMs <= 0 || config.windowMs <= 0
@@ -256,6 +258,23 @@ SpatialSelection CellLocalAggregation::selectionFor(const Window& source,
     result.temporalDecisions = source.decisions;
     result.temporalDecisions.push_back({TemporalAction::Finalize, candidate.startMs, candidate.endMs,
         candidate.closedAtMs, assessment.status});
+    if (temporal.strategy == AdaptationStrategy::SemanticFirst) {
+        const bool terminal = final || candidate.endMs >= source.publicState.hardDeadlineMs
+            || candidate.closedAtMs >= source.publicState.hardDeadlineMs
+            || reason == "coordination_handoff" || candidate.coverage != WindowCoverage::Complete;
+        const std::optional<double> actual = selected
+            ? std::optional<double>{assessment.cells.at(0).semantic->maxLoss} : std::nullopt;
+        const double ceiling = actual.value_or(candidate.counts.observationContributions && terminal ? 1.0 : 0.0);
+        // In local mode this counts ordered representation tiers through the
+        // selected cost, not parent evaluator calls or measured search runtime.
+        // Ancestor evidence is cached once and compared against those same tiers.
+        std::set<double> considered{0};
+        for (const auto& node : config.semanticTaxonomy->nodes())
+            if (node.loss > 0 && node.loss <= ceiling) considered.insert(node.loss);
+        result.semanticPriority = SemanticPrioritySelection{ceiling, actual, considered.size(),
+            terminal && ceiling > 0, semanticSecondaryStrategyName(temporal.semanticSecondaryStrategy),
+            releaseTriggerName(temporal.releaseTrigger), selected && temporal.releaseTrigger == ReleaseTrigger::PolicySatisfied};
+    }
     // An empty private retirement is explicit in its scope, without a public zero
     // cell or a misleading suppressed-support counter.
     if (!candidate.counts.observationContributions) {
@@ -318,6 +337,20 @@ bool CellLocalAggregation::tryMerge(const CellGeometry& domain, AggregationTime 
             if (!source.previousSelected && window.previousSelected) source.previousSelected = window.previousSelected;
             if (window.decisions.size() > source.decisions.size()) source.decisions = window.decisions;
         }
+    AggregationTime affectedDeadline = source.publicState.hardDeadlineMs;
+    for (const auto& [id, window] : *cut)
+        if (containsCell(domain, window.publicState.cell)) {
+            affectedDeadline = std::min(affectedDeadline, window.publicState.hardDeadlineMs);
+            if (const auto boundary = handoffBoundary(window.publicState.cell))
+                affectedDeadline = std::min(affectedDeadline, *boundary);
+        }
+    source.publicState.hardDeadlineMs = affectedDeadline;
+    if (temporal.strategy == AdaptationStrategy::SemanticFirst
+        && temporal.releaseTrigger == ReleaseTrigger::PrioritySatisfied
+        && !final && end < affectedDeadline && candidate.closedAtMs < affectedDeadline
+        && (temporal.semanticSecondaryStrategy == SemanticSecondaryStrategy::SpatialFirst
+            || !checked.cells.at(0).semantic || checked.cells.at(0).semantic->maxLoss > 0))
+        return false;
     source.decisions.push_back({TemporalAction::CoarsenSpatially, start, end,
         candidate.closedAtMs, checked.status});
     auto selected = selectionFor(source, candidate, checked, history, true,
@@ -551,6 +584,9 @@ void CellLocalAggregation::compactFreshOwners(AggregationTime boundary, const Ag
 }
 
 void CellLocalAggregation::process(AggregationTime now, const AggregationHistory& history, bool final) {
+    const bool semanticEnabled = static_cast<bool>(config.semanticTaxonomy);
+    const bool semanticFirst = temporal.strategy == AdaptationStrategy::SemanticFirst;
+    const bool immediateSemantic = semanticEnabled && temporal.releaseTrigger == ReleaseTrigger::PolicySatisfied;
     retryPending(now);
     drainHandoffIntents(now);
     // A retry may have completed the last empty alignment in a prior endpoint.
@@ -629,6 +665,11 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
                     maximum = std::min(maximum, owner.publicState.hardDeadlineMs);
                     deadlinePressure = deadlinePressure || endpoint >= owner.publicState.hardDeadlineMs
                         || now >= owner.publicState.hardDeadlineMs;
+                    if (semanticEnabled)
+                        if (const auto boundary = handoffBoundary(owner.publicState.cell)) {
+                            maximum = std::min(maximum, *boundary);
+                            deadlinePressure = deadlinePressure || endpoint >= *boundary || now >= *boundary;
+                        }
                 }
             AggregationTime minimum = endpoint + config.samplingPeriodMs;
             bool futurePossible = candidate.coverage == WindowCoverage::Complete
@@ -669,10 +710,12 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
                         // These ratios are not monotone. They may change, but
                         // no future passing assessment is assumed or fabricated.
                         break;
-                    case MetricId::OccupancyMae:
                     case MetricId::MinCategoryDistinctContributors:
                     case MetricId::SemanticMaxLoss:
                     case MetricId::SemanticMeanLoss:
+                        if (!semanticEnabled) futurePossible = false;
+                        break; // Possible with new evidence, never assumed to pass.
+                    case MetricId::OccupancyMae:
                     case MetricId::Count:
                         futurePossible = false;
                         break;
@@ -688,21 +731,50 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
         };
         std::set<int> proposals;
         std::set<int> holdDomains;
+        std::vector<double> semanticCeilings{0};
+        if (semanticFirst) {
+            for (const auto& node : config.semanticTaxonomy->nodes())
+                if (node.loss > 0) semanticCeilings.push_back(node.loss);
+            std::sort(semanticCeilings.begin(), semanticCeilings.end());
+            semanticCeilings.erase(std::unique(semanticCeilings.begin(), semanticCeilings.end()), semanticCeilings.end());
+        }
         for (const auto& [id, check] : checks) {
-            if (!check.failed) continue;
+            const auto& ownSemantic = check.assessment.cells.at(0).semantic;
+            const bool preferenceFailure = semanticFirst && check.candidate.counts.observationContributions
+                && ownSemantic && ownSemantic->maxLoss > 0;
+            if (!check.failed && !preferenceFailure) continue;
             const auto& w = frontier.at(id).publicState;
             bool foundNearest = false;
+            std::vector<std::pair<int, double>> semanticChoices;
             for (int depth = w.cell.depth - 1; depth >= spatial.minDepth; --depth) {
                 const auto domain = historyAncestor(config.coverage, w.cell, w.cell.depth - depth);
                 const auto& parent = assessParent(domain);
                 if (!parent) continue;
                 if (parent->futurePossible) holdDomains.insert(domain.id);
                 const bool mayCoarsen = temporal.strategy == AdaptationStrategy::TemporalFirst
-                    || parent->deadlinePressure;
-                if (!foundNearest && mayCoarsen && !parent->check.failed) {
+                    || parent->deadlinePressure || (semanticFirst && (immediateSemantic
+                        || temporal.semanticSecondaryStrategy == SemanticSecondaryStrategy::TemporalFirst));
+                if (semanticFirst) {
+                    const auto& value = parent->check.assessment.cells.at(0).semantic;
+                    if (!mayCoarsen || parent->check.failed || !value) continue;
+                    // Explicit waiting admits only zero-loss rescues before the
+                    // tightest affected owner's terminal boundary, including a
+                    // rescue for a hard-failed child. Equal loss keeps fine space.
+                    if (!immediateSemantic && !parent->deadlinePressure && value->maxLoss > 0) continue;
+                    if (!check.failed && value->maxLoss >= ownSemantic->maxLoss) continue;
+                    semanticChoices.emplace_back(domain.id, value->maxLoss);
+                } else if (!foundNearest && mayCoarsen && !parent->check.failed) {
                     proposals.insert(domain.id);
                     foundNearest = true;
                 }
+            }
+            // Parent evidence is cached once per endpoint. Evaluate its ordered
+            // semantic tiers before disclosing any child; nearest geometry wins
+            // at the first tier with a legal current rescue or improvement.
+            for (double ceiling : semanticCeilings) {
+                const auto chosen = std::find_if(semanticChoices.begin(), semanticChoices.end(),
+                    [&](const auto& choice) { return choice.second <= ceiling; });
+                if (chosen != semanticChoices.end()) { proposals.insert(chosen->first); break; }
             }
         }
         // Every proposed domain is the finest passing rescue for at least one
@@ -788,11 +860,14 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
             current.decisions.push_back({TemporalAction::EvaluateFinest, state.startMs, endpoint, now, checked.status});
             const bool complete = candidate.coverage == WindowCoverage::Complete;
             const bool empty = candidate.counts.observationContributions == 0;
-            const bool eligible = !empty && passed(candidate, checked);
+            const bool hardEligible = !empty && passed(candidate, checked);
             auto boundary = handoffBoundary(state.cell);
             const bool atHandoff = boundary && endpoint >= *boundary;
             const bool atLimit = endpoint >= state.hardDeadlineMs || now >= state.hardDeadlineMs;
             const bool terminal = terminalEnd || atLimit || atHandoff || (!complete && candidate.expectedSamples);
+            const bool preferred = !semanticFirst || immediateSemantic || terminal
+                || (checked.cells.at(0).semantic && checked.cells.at(0).semantic->maxLoss == 0);
+            const bool eligible = hardEligible && preferred;
             // Future alignment is decided only after every owner due at this
             // endpoint has produced its complete successor. The preflighted intent
             // survives an interrupted sink through Pending, then resumes after ACK.
@@ -802,7 +877,7 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
                 && choices != futureChoices.end() && !choices->second.empty())
                 intents.emplace(std::make_pair(endpoint, id), choices->second);
             bool hold = false;
-            if (!terminal && (eligible || empty))
+            if (!terminal && (eligible || empty) && !(immediateSemantic && eligible))
                 for (int parentId : holdDomains) {
                     const auto& parent = *parents.at(parentId);
                     const auto& domain = parent.check.candidate.cells.at(0).cell;

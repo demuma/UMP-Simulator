@@ -28,9 +28,19 @@ remain deferred. October 18 is historical.**
 - [x] Complete the integrated build, 60-entry CTest run, real-artifact group checks,
   browser inspection and portable-data verification. See the
   [October 22 test report](docs/REPLAY_LOCAL_POLICY_TEST_REPORT_2026-10-22.md).
-- [ ] Next: design semantic-aware cell-local ownership and deadlines before removing
-  the existing taxonomy/local-mode guard; repeat this exact leaf-policy fixture.
-  Separate expected scope tests from policy/privacy effectiveness experiments.
+- [x] Implement semantic-aware cell-local ownership, current-endpoint rescue planning,
+  independent regional deadlines and scoped publication/recovery. Follow the
+  [contract](docs/SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md) and verify the identical
+  leaf-policy fixture before drawing effectiveness conclusions.
+- [x] Clarify analytical replay provenance and add reference-cell zoom, full-sample /
+  viewport identity counts and exact-coordinate multiplicities. Four identities in
+  cell 12300 are distinct even when their markers overlap at full-area scale.
+- [ ] Next visualization gate: implement an asynchronous historical interval mosaic
+  before enabling local-mode results in the HTML replay. Preserve explicit source
+  intervals, sealing times, unknown areas and no historical support reuse.
+- [ ] Design the next seeded moving-data local-policy comparison after reviewing the
+  [local semantic results](docs/SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md). Keep
+  mechanism acceptance distinct from empirical privacy effectiveness.
 
 **Current execution order (supersedes older next-step notes below):**
 
@@ -102,15 +112,16 @@ remain deferred. October 18 is historical.**
    [test/result report](docs/SEMANTIC_RELEASE_TEST_REPORT_2026-10-21.md).
    Old experiment runners explicitly retain their historical preference trigger;
    frozen captures/results/protocols are unchanged.
-9. **Next algorithm gate - integrate semantics with cell-local coordination:**
-   individual windows, immutable publication and future parent handoffs already
-   exist for nonsemantic TF/SF, but taxonomy-enabled cell-local input/publication
-   is still rejected. Plan and test semantic-aware ownership, independent hard
-   regional deadlines, sibling takeover/partial release, reservation conflicts,
-   source accounting and retry before enabling it. A valid cell should not wait
-   merely for an unrelated failing branch; released support must never re-enter
-   a later merge. Define how early eligible release trades future merge options
-   against latency. Do not remove the guard without this integration.
+9. **Completed integration - semantic cell-local coordination:** taxonomy-enabled
+   TF/SF/Semantic First now share the existing ownership/handoff coordinator. Current
+   legal parent rescues precede child disclosure; default eligible releases do not
+   wait solely for speculative future merges. Explicit preference waiting remains
+   bounded by each affected owner's regional deadline and handoff boundary. Scoped
+   immutable publication, recovery, identity unions and source retirement are tested.
+   See the [contract](docs/SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md) and
+   [controlled comparison](docs/SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md).
+   Next review actual local losses and develop the asynchronous viewer; do not infer
+   global mean-loss optimality or privacy gains from policy compliance.
 10. **MR02, presentation gate (narrative drafted, slide editing/rehearsal open):** prepare one coherent 20-minute narrative: question and
    conditional answer first; policy model, three adaptation dimensions, controlled
    trade-off, recorded replay and validated fixed-baseline comparison. Put simulator
@@ -2142,3 +2153,21 @@ causal evaluation reuses that repaired controller unchanged.
   These measured limitations are part of the gate, not hidden tuning targets.
 - Next is review of application priorities and turnover/waiting costs. No second Semantic
   First combination, local-semantic controller, map work or new attacks begins automatically.
+
+## Follow-up research questions from semantic coordination review
+
+- [ ] Quantify the opportunity cost of irreversible early release against bounded
+  holding, using identical inputs and policy constraints; current release eligibility
+  does not promise the best later merge.
+- [ ] Compare worst-category-loss selection with an observation-weighted mean-loss
+  objective. A Root-only region can open a global common-window loss ceiling while
+  another region could still preserve a useful family category. This is an objective
+  limitation, not evidence that max loss 1 forces every output to Root.
+- [ ] Preserve a separate chronology for analytical fixtures and actual Simulator
+  captures. The 20-identity leaf fixture deliberately keeps positions in their leaves;
+  it cannot support claims about realistic walking, density or collision behavior.
+
+- [ ] Separate base probe cadence from hard minimum duration in the next comparison.
+  The 400-ms base probe allows current legal parent rescues with shorter intervals
+  at other owners' endpoints; compare an explicit `window_duration_ms.min` without
+  retrospectively changing the frozen October 22 fixture.

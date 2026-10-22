@@ -21,9 +21,11 @@ implemented initially with Temporal First secondary priority, bounded waiting an
 The [semantic release update](docs/SEMANTIC_RELEASE_CONTROL.md) now adds Spatial First
 secondary and defaults the semantic controller to release a complete legal cut at
 the first eligible endpoint. Explicit `priority_satisfied` retains preference waiting.
-This does not yet add taxonomy support to independent cell-local windows.
-[Acceptance and same-source results](docs/SEMANTIC_RELEASE_TEST_REPORT_2026-10-21.md)
-separate that remaining integration gap from the new release behavior.
+The [cell-local semantic extension](docs/SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md)
+now connects these choices to independent owners and regional deadlines. Current
+legal parent rescues are planned before child disclosure; otherwise eligible owners
+release immediately under the default trigger. The earlier
+[common-window results](docs/SEMANTIC_RELEASE_TEST_REPORT_2026-10-21.md) remain unchanged.
 [52-entry verification](docs/SEMANTIC_FIRST_TEST_REPORT_2026-10-21.md) and the
 [27-case comparison](docs/SEMANTIC_FIRST_RESULTS_2026-10-21.md) record its exact scope.
 Membership attacks and computation/cache optimization are deferred. Shared sampling
@@ -158,12 +160,19 @@ The [local-policy experiment](docs/LOCAL_LEAF_POLICY_RESULTS_2026-10-22.md) affe
 16 of 4096 finest leaves. It demonstrates truthful Pedestrian generalization,
 a Cyclist sibling merge, suppression and untouched fine control cells on the same
 scripted observations. Uniform/local retention is 100%/75% in this diagnostic fixture;
-this is not a real-traffic effectiveness result. It exposes a remaining limitation:
-a strict regional temporal bound still caps the entire common semantic window.
+this is not a real-traffic effectiveness result. Its common-window baseline exposes
+temporal coupling: a strict regional bound caps the complete semantic interval.
+The subsequent [local-window comparison](docs/SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md)
+tests independent owners on exactly the same input.
 
 The [four-step roadmap](docs/TAXONOMY_POLICY_ROADMAP_2026-10-22.md) orders taxonomy
 contracts, observation/release semantics, local numeric policies and cell inspection.
-The next algorithm gate remains semantic-aware independent cell windows.
+Semantic-aware independent windows are now available through opt-in
+`temporal_adaptation.coordination: cell_local`. The common-window HTML viewer
+still rejects these asynchronous result streams until a correct historical
+interval mosaic is implemented. Its new **Reference viewport** zoom and explicit
+ID/coordinate counts clarify the stationary analytical fixture, including four
+closely spaced identities in cell 12300; no observations were moved or invented.
 [Checkpoint inventory](docs/RESEARCH_CHECKPOINT_2026-10-22.md) accounts for the
 162 previously uncommitted paths; the [verification report](docs/REPLAY_LOCAL_POLICY_TEST_REPORT_2026-10-22.md)
 records the integrated checks.
@@ -290,10 +299,12 @@ presentation, paper and dissertation text.
 Spatial First preserves spatial detail; **Semantic First preserves semantic accuracy**.
 The name identifies the dimension to preserve, not the first coarsening action. TF tries
 spatial aggregation before temporal extension; SF tries temporal extension before spatial
-aggregation. All three are implemented, with `semantic_first` currently restricted to
-common-window taxonomy-enabled runs and Temporal First secondary priority. It seeks a
-zero-loss spatial cut before waiting, then permits bounded loss-tier fallback at a terminal
-endpoint. Ordinary TF/SF still attempt early semantic generalization inside each candidate.
+aggregation. All three support taxonomy-enabled common and cell-local coordination.
+Semantic First accepts either secondary priority. The default `policy_satisfied`
+trigger releases eligible support after current-endpoint rescue planning; explicit
+`priority_satisfied` can wait for zero loss within local hard deadlines. Temporal
+secondary allows an earlier exact parent, while Spatial secondary preserves fine
+geometry until the terminal boundary. Ordinary TF/SF still attempt early semantic generalization inside each candidate.
 Hard bounds apply to every choice; mean loss remains a constraint/report, not an optimized
 objective in the first Semantic First mode.
 
@@ -952,7 +963,7 @@ requirements. See the [acceptance contract](docs/SELECTIVE_DESCENDANT_RESCUE.md)
 
 ### Enable the semantic release product
 
-Within a history-enabled common-window aggregation stream, supply a versioned
+Within a history-enabled common-window or cell-local aggregation stream, supply a versioned
 `semantic_taxonomy` and explicit root `min_category_distinct_contributors.min` and
 `semantic_max_loss.max` requirements. Regions may strengthen them. The hierarchy maps
 existing source labels to terminal categories; behavior profiles remain unchanged.
@@ -961,8 +972,13 @@ See the complete [configuration and formulas](docs/SEMANTIC_ADAPTATION.md).
 The mechanism chooses a truthful complete category cut for each spatial/time candidate.
 If its semantic support/loss or another hard bound fails, TF/SF/A07 continues normally.
 It never emits a hidden rare category beside an unchanged total or relabels a cyclist
-as a pedestrian. The default scalar-only mode remains unchanged. Enabled cell-local
-semantics reject explicitly; there is no implicit fallback to unassessed class counts.
+as a pedestrian. The default scalar-only mode remains unchanged. Cell-local
+semantics use independently retired spatial scopes and the same trusted taxonomy
+through publication and recovery; there is no fallback to unassessed class counts.
+For local mode, leave the common-window-only `preserve_valid_descendants` option
+disabled: independent owners already preserve valid neighbors. See the
+[local contract](docs/SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md) and
+[comparison/test report](docs/SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md).
 
 The [five MongoDB-free examples](simulator/examples/semantic-adaptation/README.md)
 show whole-group generalization, intermediate cyclist classes, exact labels and

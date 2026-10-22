@@ -1,5 +1,11 @@
 # Semantic adaptation under regional policy constraints
 
+**October 22 extension:** [semantic cell-local coordination](SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md)
+now supports taxonomy-enabled independent owners and both Semantic First secondary
+priorities. Earlier scope exclusions below describe the original implementation
+gate; see the [new verification report](SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md)
+for current behavior and remaining visualization/effectiveness limits.
+
 Date: 2026-10-21. Status: first common-window implementation verified. The acceptance
 contract was recorded before implementation; this document now includes its exact
 interfaces, formulas, results and limits.
