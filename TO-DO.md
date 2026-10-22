@@ -40,11 +40,13 @@ remain deferred. October 18 is historical.**
   in the HTML replay: original cell/window provenance under clipping, event-time
   causality, independent public/private histories, empty scope retirement, rewind
   and bounded masks. See the [viewer test report](docs/ASYNC_LOCAL_REPLAY_TEST_REPORT_2026-10-22.md).
-- [ ] Next: implement scope-aware semantic fixed-query utility. Preserve original
-  cell/interval statistics and taxonomy semantics, unknown support, fixed query and
-  deadline cohorts, and coverage alongside conditional error. The viewer is not
-  this evaluator and does not complete it.
-- [ ] Then compare common/local adaptation with legal fixed raster/window settings
+- [x] Implement and verify scope-aware semantic fixed-query utility: exact public
+  tiles, taxonomy domains, missing support, fixed deadline cohorts, compact and paired
+  summaries. The [protocol](docs/SCOPED_SEMANTIC_UTILITY_PROTOCOL_2026-10-22.md) and
+  [test/results report](docs/SCOPED_SEMANTIC_UTILITY_TEST_REPORT_2026-10-22.md) record
+  48 frozen evaluations, 24 comparisons and a byte-identical repeat. Local windows
+  help some regional tasks; larger queries and crossing intervals remain unknown.
+- [ ] Next compare common/local adaptation with legal fixed raster/window settings
   on the same existing moving input and hard policy. Declare minimum duration,
   query masks, EOF scope and release-event costs; common-window adaptive
   coordination is an ablation, not the fixed baseline.
@@ -136,7 +138,8 @@ remain deferred. October 18 is historical.**
    See the [contract](docs/SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md) and
    [controlled comparison](docs/SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md).
    The [asynchronous viewer gate](docs/ASYNC_LOCAL_REPLAY_TEST_REPORT_2026-10-22.md)
-   is now implemented and verified. Next adapt scoped semantic query utility, then
+   is now implemented and verified. Scoped semantic query utility is also verified
+   in its [bounded study](docs/SCOPED_SEMANTIC_UTILITY_TEST_REPORT_2026-10-22.md). Next
    compare the same moving input against legal fixed baselines, reviewing aggregator
    requirements at every gate. Privacy evaluation follows; do not infer global
    mean-loss optimality or privacy gains from policy compliance.
@@ -145,16 +148,17 @@ remain deferred. October 18 is historical.**
    trade-off, recorded replay and validated fixed-baseline comparison. Put simulator
    implementation, extra metric catalogs and old attack studies in backup. Mark
    future scenarios explicitly. Use the [18-minute narrative plus buffer](docs/PRESENTATION_NARRATIVE_20MIN_2026-10-21.md).
-11. **MR03, subsequent evaluation design:** first adapt scoped semantic fixed-query
-   utility and compare the same existing moving input with legal fixed baselines.
+11. **MR03, subsequent evaluation design:** scoped semantic fixed-query utility is
+   implemented and verified. Next compare the same existing moving input with legal
+   fixed baselines.
    Review aggregator requirements and evidence at each gate. Then specify the privacy
    objective, suitable policies and controlled scenarios before a new privacy matrix.
    Later consider independent captures, density/turnover and heterogeneous regions
    one factor at a time. Keep the
    same source, hard constraints and query/deadline cohort across legal fixed and
-   adaptive comparisons. Scoped semantic queries are not implemented by the local
-   mechanism gate. A one-type/seven-type control remains separate; the current
-   fixed mix does not estimate a causal type-count effect. ALOQ reproduction is a
+   adaptive comparisons. The new scoped semantic evaluator uses exact contained
+   category-count tiles; label it separately from the interpolating scalar estimator.
+   A one-type/seven-type control remains separate; the current fixed mix does not estimate a causal type-count effect. ALOQ reproduction is a
    later external comparison with different privacy guarantees, requiring a verified
    adapter, units, seeds and geometry. Do not automatically start these experiments.
 12. Keep finest observation depth 6 unchanged. Maximum output size is a separate

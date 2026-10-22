@@ -241,6 +241,8 @@ stochastic; exact reruns of those historical comparisons need the local frozen i
 | [Cell-size cap results](docs/CELL_SIZE_CAP_RESULTS_2026-10-21.md) | Same-input 40/10/5 m policy sensitivity, retained data, fixed-query coverage and acceptance evidence |
 | [Semantic release control](docs/SEMANTIC_RELEASE_CONTROL.md) | Configurable secondary priority, default policy eligibility, deliberate waiting and common/local scope |
 | [Asynchronous local replay](docs/ASYNC_LOCAL_REPLAY_CONTRACT_2026-10-22.md) | Independent historical intervals, clipped original-cell provenance, public/private separation and verification contract |
+| [Scoped semantic utility](docs/SCOPED_SEMANTIC_UTILITY_PROTOCOL_2026-10-22.md) | Exact category-count query contract for independent cells/windows, fixed cohorts and sparse public support |
+| [Semantic utility results and tests](docs/SCOPED_SEMANTIC_UTILITY_TEST_REPORT_2026-10-22.md) | 48 frozen evaluations, matched coverage/error, conditional local-window benefit and alignment limits |
 | [Semantic release tests and results](docs/SEMANTIC_RELEASE_TEST_REPORT_2026-10-21.md) | Native/replay acceptance, exact hierarchy examples and same-source trigger comparison |
 | [Camera-ready ALOG comparison](docs/CAMERA_READY_COMPARISON_2026-10-21.md) | Attached ALOG versus ALOQ distinction, frequency RMSE, LDP and semantic-loss comparability |
 | [Four-second windows](docs/FOUR_SECOND_WINDOWS.md) | Optional coupled policy/controller limits, bounded history and direct 1 s / 4 s replay |
@@ -348,18 +350,20 @@ reduction in empirical attack success.
 **Next milestone: October 25 conference evidence; October 18 is historical.**
 Input, metrics, regional policies, bounded history, common/local space-time adaptation
 and immutable publication run together. The asynchronous replay gate is implemented
-and verified. Next comes scope-aware semantic fixed-query utility, followed by a
-comparison on the same existing moving input against legal fixed raster/window
-settings. Review the aggregator's agreed requirements and remaining limits at
-every gate. Privacy evaluation then follows with a declared protected secret and
+and verified. Scope-aware semantic fixed-query utility is also implemented and
+verified on the unchanged analytical fixture. Its [results and test report](docs/SCOPED_SEMANTIC_UTILITY_TEST_REPORT_2026-10-22.md)
+show a conditional local-window benefit and persistent unknown queries from missing
+spatial support or crossing intervals. Next compare the same existing moving input
+against legal fixed raster/window settings. Review the aggregator's agreed
+requirements and remaining limits at every gate. Privacy evaluation then follows with a declared protected secret and
 recipient model; its policies and scenarios need explicit design. A new utility
 optimizer, movement generator or attack matrix is not started automatically.
 
 Earlier utility, membership and causal-prefix studies remain evidence for their
 stated historical configurations. They do not establish the effectiveness of the
-new semantic local release policy. In particular, scoped semantic fixed-query
-utility is not yet adapted or verified. The fixed raster/fixed window with identical
-input and hard policy is an existing baseline; common-window adaptive coordination
+new semantic local release policy. The new exact semantic query evaluation verifies
+decoding and deadline coverage for its fixed workload; it is not a privacy metric.
+The fixed raster/fixed window with identical input and hard policy is an existing baseline; common-window adaptive coordination
 is an ablation, not a replacement for that baseline. A support pass and declared
 category loss are operational measures, not demonstrated privacy-risk reduction.
 Semantic visits require a protected-secret contract; live receipt timing remains
