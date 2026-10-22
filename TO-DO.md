@@ -1,12 +1,14 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-22. Current priority: sequential algorithm and policy-compliance work.
+**Status: 2026-10-23. Current priority: sequential algorithm and policy-compliance work.
 A07 common-window valid-descendant rescue and A08 semantic common/local coordination
 are implemented and verified within their reports. Review the full aggregator
-requirements and stated limits before broadening the mechanism. Membership attacks and computation/cache optimization
-remain deferred. October 18 is historical.**
+requirements and stated limits before broadening the mechanism. Membership attacks
+remain deferred. Recipient-contract diagnosis and runtime
+profiling are complete; optimize the measured ownership-lookup cost next without
+changing policy, coordination or publication semantics. October 18 is historical.**
 
-**October 22 checkpoint:**
+**October 22–23 checkpoint:**
 
 - [x] Make replay cell inspection explicit: keyboard-selectable cell list, selected
   outline, focus zoom, released categories and opt-in private original groups for
@@ -53,19 +55,48 @@ remain deferred. October 18 is historical.**
   Local has lower delay than common but no exact-query coverage advantage over
   the matched fixed baseline. Raw input/releases remain outside Git; the compact
   results package is about 525 kB. New private replay: http://127.0.0.1:8774/.
-- [ ] **Next review gate:** define the intended recipient time bins and treatment of
-  unknown spatial support before changing the controller. Independent 400-ms
-  releases cannot generally answer exact 1-s queries; matched fixed grids also
-  expose this mismatch. An estimator or public coverage/empty statement requires
-  a separate accuracy and disclosure contract, not private zero imputation.
+- [x] **October 23 recipient-contract gate:** retain exact scores and evaluate a
+  separately declared uniform spatial/temporal occupancy estimator. Add disjoint
+  spatial/temporal/semantic/deadline support masks; missing support remains unknown.
+  Forty frozen evaluations and 24 pairs pass, all forty old exact scores unchanged;
+  54 new test methods and eight affected CTest suites pass. See the
+  [protocol](docs/RECIPIENT_CONTRACT_PROTOCOL_2026-10-23.md) and
+  [results/test report](docs/RECIPIENT_CONTRACT_REPORT_2026-10-23.md).
+- [x] Explain the fixed-grid advantage without changing policies to force a win.
+  At 10 m/400 ms immediate estimated Road User coverage is fixed 79.22% versus local
+  68.48%; 1-s extra lag gives local 79.65% with nonzero error. At 5 m, compare adaptive
+  estimates with legal coarse fixed estimates as well as the native fine grid.
+  Uniform constraints and near-10-m adaptive output leave little observed spatial
+  advantage. Semantic ambiguity persists; timing and missing coverage are separate.
+- [ ] **Application decision before a controller change:** choose exact versus
+  explicitly estimated products, query bins, acceptable error, required coverage and
+  receipt deadlines. The optional estimator does not set those preferences or
+  authorize a public empty statement; private zero imputation remains excluded.
 - [ ] Predeclare a bounded policy/scenario sensitivity matrix for semantic detail,
   local constraints and feasibility; retain the uniform moving pilot as a negative
   reference. Here 95.04% of locally retained observations are generalized to Road
   User. More source retention is not the same as preserving category information.
-- [ ] Keep native throughput as a separate open measurement: local replay takes
-  25.7–25.9 s per 20-s source here (about 0.78x), despite low simulated delay.
-  Review required workload/latency before optimization; no cache/controller
-  optimization is introduced by the current comparison gate.
+- [x] Profile native work separately from logical policy delay. Nine bounded
+  executions preserve full output except runtime. Local refinement performs
+  2,182,123,527 ownership-map visits; its instrumented tick p95 is 176.84 ms and
+  171/199 services exceed the 100-ms arrival period. See the
+  [runtime report](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) and isolated reproducer
+  in `tools/profiling/`. JSON serialization and frontier copying are not the main
+  measured local costs in this source.
+- [ ] **Next implementation gate — owner lookup:** replace linear enclosing-owner
+  scans in `refineDue` and `refineToDomain` with lookup along the cell-ID ancestry.
+  Preserve original starts, iteration/split order, independent windows, regional
+  rules, handoffs, coverage and immutable publication. No shared-window fallback,
+  disabled checks or altered sampling to obtain speedups. Add adversarial ownership
+  tests and require all ten frozen outputs equal excluding runtime, plus existing
+  accounting/policy/expiry/missing-sample/retry regressions.
+- [ ] Measure optimized release-build service p50/p95/max, FIFO backlog at the real
+  100-ms sensor cadence, and memory before/after. Then run longer paced and live
+  sensor/renderer/database paths, measuring actual receipt time and queue growth.
+  Keep logical window age separate from wall-clock service/queue/transport delay;
+  state overload/backpressure behavior explicitly. A shorter average replay time
+  is not yet an end-to-end real-time guarantee. Only profile-supported remaining
+  history work should motivate a later bounded indexing/cache gate.
 - [ ] Review agreed aggregator requirements at each gate: hard eligibility versus
   preference, intermediate tiers, regional bounds, independent starts, current
   merges/future handoffs, irreversible publication, complete source retirement,

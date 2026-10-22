@@ -3,7 +3,7 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
-**Status: 2026-10-22. Current work: sequential algorithm/policy-compliance verification.
+**Status: 2026-10-23. Current work: sequential algorithm/policy-compliance verification.
 The first A07 slice now optionally preserves valid whole descendants after a failed
 common-window spatial merge. Its [contract](docs/SELECTIVE_DESCENDANT_RESCUE.md) and
 [test report](docs/SELECTIVE_DESCENDANT_RESCUE_TEST_REPORT_2026-10-21.md) define the gate
@@ -28,7 +28,9 @@ release immediately under the default trigger. The earlier
 [common-window results](docs/SEMANTIC_RELEASE_TEST_REPORT_2026-10-21.md) remain unchanged.
 [52-entry verification](docs/SEMANTIC_FIRST_TEST_REPORT_2026-10-21.md) and the
 [27-case comparison](docs/SEMANTIC_FIRST_RESULTS_2026-10-21.md) record its exact scope.
-Membership attacks and computation/cache optimization are deferred. Shared sampling
+Membership attacks remain deferred. The recipient-contract and runtime-diagnostic
+gates below are complete; prefix-based ownership lookup is the next bounded
+performance change, subject to unchanged full logical output. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
 bounded, nonblocking renderer consumption are implemented (S04/S01). S05 now paces
@@ -54,6 +56,22 @@ public-only calibrated empirical membership benchmark are now implemented. Contr
 synthetic results and verification are recorded in the October 19 test report. The historical
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
+
+**October 23 recipient/runtime gate:** [forty frozen evaluations](docs/RECIPIENT_CONTRACT_REPORT_2026-10-23.md)
+now distinguish exact answers from optional uniform occupancy estimates, using
+disjoint public-support/deadline/semantic diagnostics. All forty original exact
+scores remain unchanged. At 10 m/400 ms the fixed baseline immediately answers
+79.22% of Road User queries versus 68.48% locally; with 1-s extra query lag local
+reaches 79.65%, with occupancy MAE 0.01523 instead of zero. Estimates change the
+coverage/error/latency trade-off; they do not recover unknown category splits or
+missing support. [Compact results](docs/RECIPIENT_CONTRACT_RESULTS_2026-10-23.json)
+contain no movements or raw releases. Eight affected CTest suites pass.
+The [runtime diagnosis](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) identifies
+linear ownership searches in refinement: 2.18 billion map-entry visits on this
+20-s recording. Instrumented local tick p95 is 176.84 ms against a 100-ms input
+cadence. The next performance gate replaces that search with cell-ID ancestor
+lookup while requiring identical outputs; it does not change release policy.
+No live end-to-end real-time claim or measured privacy improvement follows.
 
 The bounded [recorded moving-data pilot](docs/MOVING_REPLAY.md) uses the existing C++
 Simulator with its seven maintained Road User profiles, verified GT/AGBS capture and
@@ -241,6 +259,8 @@ stochastic; exact reruns of those historical comparisons need the local frozen i
 | [Cell-size cap results](docs/CELL_SIZE_CAP_RESULTS_2026-10-21.md) | Same-input 40/10/5 m policy sensitivity, retained data, fixed-query coverage and acceptance evidence |
 | [Semantic release control](docs/SEMANTIC_RELEASE_CONTROL.md) | Configurable secondary priority, default policy eligibility, deliberate waiting and common/local scope |
 | [Asynchronous local replay](docs/ASYNC_LOCAL_REPLAY_CONTRACT_2026-10-22.md) | Independent historical intervals, clipped original-cell provenance, public/private separation and verification contract |
+| [Recipient contract, results and tests](docs/RECIPIENT_CONTRACT_REPORT_2026-10-23.md) | Exact versus estimated occupancy, disjoint support restrictions, paired fixed/adaptive results and unchanged releases |
+| [Frozen runtime diagnosis](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) | Native timings, owner-lookup hotspot, input-tick service/backlog, reproducible isolated instrumentation and next acceptance gate |
 | [Scoped semantic utility](docs/SCOPED_SEMANTIC_UTILITY_PROTOCOL_2026-10-22.md) | Exact category-count query contract for independent cells/windows, fixed cohorts and sparse public support |
 | [Semantic utility results and tests](docs/SCOPED_SEMANTIC_UTILITY_TEST_REPORT_2026-10-22.md) | 48 frozen evaluations, matched coverage/error, conditional local-window benefit and alignment limits |
 | [Semantic release tests and results](docs/SEMANTIC_RELEASE_TEST_REPORT_2026-10-21.md) | Native/replay acceptance, exact hierarchy examples and same-source trigger comparison |
@@ -360,9 +380,14 @@ logical delay from 547.5 to 251.1 ms versus common coordination, with retention
 93.28% versus 93.91%. Matched fixed grids answer more of the declared exact queries;
 there is no general adaptive utility win. Local native processing also exceeds
 this source's 20-s horizon. The [new replay](http://127.0.0.1:8774/) compares the same
-500-initial-Road-User capture. Review the recipient's time-bin/coverage requirements
-and the high remaining semantic loss before changing the mechanism. Review the aggregator's agreed
-requirements and remaining limits at every gate. Privacy evaluation then follows with a declared protected secret and
+500-initial-Road-User capture. The [recipient-contract diagnosis](docs/RECIPIENT_CONTRACT_REPORT_2026-10-23.md)
+now separates exact and estimated occupancy: crossing intervals explain much of
+the exact-query loss, but matched fixed output remains strong under estimation.
+Application error/coverage/deadline requirements and high semantic loss still need
+an explicit decision before changing controller objectives. A separate
+[runtime measurement](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) makes prefix-based
+owner lookup the next bounded optimization; full logical output must be preserved.
+Review the aggregator's agreed requirements and remaining limits at every gate. Privacy evaluation then follows with a declared protected secret and
 recipient model; its policies and scenarios need explicit design. A new utility
 optimizer, movement generator or attack matrix is not started automatically.
 

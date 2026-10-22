@@ -256,3 +256,34 @@ All 360 configurations and 1,929 actual intervals audit. Detailed support/QI mea
 fixed cohorts, conservative answerability and limits are specified in that report
 and notation section 26. Zero answered-only error must be reported alongside query
 coverage; no source observations fill missing recipient support.
+
+
+## Recipient-support and occupancy estimation diagnosis (2026-10-23)
+
+The [recipient contract](RECIPIENT_CONTRACT_PROTOCOL_2026-10-23.md) adds an optional
+offline decoder for existing releases. This does not introduce a new online
+eligibility metric or policy threshold. For query region/time/category `(R_Q,T_Q,g)`,
+each resolved public record contributes its category count multiplied by its
+intersected area fraction and intersected scheduled-sample fraction. Divide the
+sum by `|T_Q|` for mean sampled occupancy. The initial t=0 slot is not a sensor
+sample. Counts are observation contributions, not unique people across time.
+
+An estimate is available only with complete, semantically resolved public support
+sealed by the query deadline. Missing records stay unknown; broad categories do
+not imply fine-type proportions. Every old exact answer remains an equal estimated
+answer. The original exact decoder is conservative whole-tile containment, not
+maximal inference from the public transcript (some crossing certified zeros could
+be inferred by a stronger decoder).
+
+Always report fixed-cohort coverage together with conditional contribution/occupancy
+MAE and errors on the paired answered intersection. Estimated-only answers are
+counted separately. Query-support diagnostics partition finest-leaf/sample volume
+by joint spatial crossing, temporal crossing, semantic ambiguity and lateness masks,
+plus an unpublished remainder. These are representation restrictions, not causal
+producer failure counts or privacy-risk metrics. Category questions repeat support.
+
+See [results and tests](RECIPIENT_CONTRACT_REPORT_2026-10-23.md): forty unchanged
+exact evaluations, forty additional diagnoses and twenty-four paired comparisons.
+Application error tolerances remain undecided. The [runtime report](RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md)
+separately measures per-input service and a hypothetical queue; logical policy age
+does not include wall-clock processing/transport delay.
