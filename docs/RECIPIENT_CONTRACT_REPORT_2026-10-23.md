@@ -16,8 +16,12 @@ of general adaptive superiority or privacy improvement.
 
 The producer, priorities, policies, releases, source recording and old exact scores
 are unchanged. This gate adds a public-support diagnosis and an optional receiver
-estimator. Estimates are a separately evaluated application option; they are not a
-new default publication rule or a promise that a traffic application accepts them.
+estimator. After the study, on 2026-10-23 the user selected exact answers as the
+reference plus clearly labeled estimates evaluated separately for error, coverage
+and latency. This accepts the application evaluation approach; numerical error,
+coverage and deadline requirements remain open. Producer policies and publication
+rules are unchanged. The frozen protocol retains the decision's pending status at
+study execution; its hashes and reported results are not rewritten retrospectively.
 
 ## Implemented contract
 

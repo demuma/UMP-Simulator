@@ -68,10 +68,14 @@ changing policy, coordination or publication semantics. October 18 is historical
   estimates with legal coarse fixed estimates as well as the native fine grid.
   Uniform constraints and near-10-m adaptive output leave little observed spatial
   advantage. Semantic ambiguity persists; timing and missing coverage are separate.
-- [ ] **Application decision before a controller change:** choose exact versus
-  explicitly estimated products, query bins, acceptable error, required coverage and
-  receipt deadlines. The optional estimator does not set those preferences or
-  authorize a public empty statement; private zero imputation remains excluded.
+- [x] **Application product decision (2026-10-23):** the user selected exact answers
+  as the reference plus clearly labeled estimates evaluated separately for error,
+  coverage and latency. Keep both products on identical query cohorts; this decision
+  does not change producer policies or published data.
+- [ ] **Quantitative application requirements before a controller change:** choose
+  query bins, acceptable estimation error, required coverage and receipt deadlines.
+  Acceptance of estimates does not authorize a public empty statement or private
+  zero imputation; missing support and unresolved categories remain unknown.
 - [ ] Predeclare a bounded policy/scenario sensitivity matrix for semantic detail,
   local constraints and feasibility; retain the uniform moving pilot as a negative
   reference. Here 95.04% of locally retained observations are generalized to Road

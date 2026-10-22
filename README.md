@@ -66,6 +66,9 @@ reaches 79.65%, with occupancy MAE 0.01523 instead of zero. Estimates change the
 coverage/error/latency trade-off; they do not recover unknown category splits or
 missing support. [Compact results](docs/RECIPIENT_CONTRACT_RESULTS_2026-10-23.json)
 contain no movements or raw releases. Eight affected CTest suites pass.
+The user has selected exact answers as the reference plus clearly labeled estimates,
+with error, coverage and latency evaluated separately. Numerical application
+requirements remain open; producer policies and releases are unchanged.
 The [runtime diagnosis](docs/RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md) identifies
 linear ownership searches in refinement: 2.18 billion map-entry visits on this
 20-s recording. Instrumented local tick p95 is 176.84 ms against a 100-ms input

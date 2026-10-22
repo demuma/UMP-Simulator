@@ -284,6 +284,10 @@ producer failure counts or privacy-risk metrics. Category questions repeat suppo
 
 See [results and tests](RECIPIENT_CONTRACT_REPORT_2026-10-23.md): forty unchanged
 exact evaluations, forty additional diagnoses and twenty-four paired comparisons.
-Application error tolerances remain undecided. The [runtime report](RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md)
+After the study, on 2026-10-23 the user selected exact answers as the reference
+plus clearly labeled estimates evaluated separately for error, coverage and latency.
+This accepts the two-product evaluation approach, not a numerical error tolerance,
+minimum coverage or receipt deadline. Those application limits remain undecided.
+The [runtime report](RUNTIME_DIAGNOSTIC_REPORT_2026-10-23.md)
 separately measures per-input service and a hypothetical queue; logical policy age
 does not include wall-clock processing/transport delay.
