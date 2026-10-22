@@ -86,4 +86,36 @@ test('Private summary cache is bounded and carries counts instead of raw tracks'
  assert.equal(sourceIndex.cache.size,32);
  assert.equal(JSON.stringify([...sourceIndex.cache.values()]).includes('future'),false);
 });
+test('Reference counts separate IDs from exactly coincident XY positions',()=>{
+ const rows=[{id:'adult',type:'Adult',x:1,y:2},{id:'child',type:'Child',x:1,y:2},{id:'other',type:'Adult',x:3,y:4}];
+ const sample=M.referenceSample(rows);
+ assert.equal(sample.totalCount,3);assert.equal(sample.totalPositions,2);assert.equal(sample.visibleCount,3);assert.equal(sample.visiblePositions,2);
+ assert.equal(sample.groups[0].observations.length,2);assert.equal(sample.groups[0].observations[0],rows[0]);
+});
+test('Reference never merges nearby distinct coordinates or jitters input',()=>{
+ const rows=[{id:'a',x:1,y:2},{id:'b',x:1.0000001,y:2}],before=JSON.stringify(rows);
+ const sample=M.referenceSample(rows);assert.equal(sample.visiblePositions,2);
+ assert.deepEqual(sample.groups.map(g=>[g.x,g.y]),[[1,2],[1.0000001,2]]);assert.equal(JSON.stringify(rows),before);
+});
+test('Reference selected-cell focus applies half-open geometry to current sample only',()=>{
+ const rows=[{id:'inside',x:1,y:1},{id:'right',x:2,y:1},{id:'bottom',x:1,y:2},{id:'other',x:3,y:3}];
+ const sample=M.referenceSample(rows,{x:1,y:1,width:1,height:1});
+ assert.equal(sample.totalCount,4);assert.equal(sample.totalPositions,4);assert.equal(sample.visibleCount,1);
+ assert.equal(sample.groups[0].observations[0].id,'inside');
+});
+test('Reference focus preserves four close distinct users rather than one screen cluster',()=>{
+ const rows=[0,1,2,3].map(i=>({id:'person-'+i,x:2.8+i*.05,y:2.8+i*.04}));
+ const sample=M.referenceSample(rows,{x:2.5,y:2.5,width:1.25,height:1.25});
+ assert.equal(sample.visibleCount,4);assert.equal(sample.visiblePositions,4);
+});
+test('Missing current samples cannot retain old focused positions',()=>{
+ const frame=M.observationAt(inspectionReplay,600),sample=M.referenceSample(frame.visible,{x:0,y:0,width:4,height:4});
+ assert.equal(sample.totalCount,0);assert.equal(sample.visibleCount,0);assert.deepEqual(sample.groups,[]);
+});
+test('Declared scripted tag is explicit provenance, other titles do not imply simulator capture',()=>{
+ assert.equal(M.inputProvenance({title:'Local patches · scripted mechanism test'}).kind,'scripted');
+ assert.equal(M.inputProvenance({title:'Recorded movement',run_id:'simulator-capture-example'}).kind,'unspecified');
+ assert.equal(M.inputProvenance({title:'Not a scripted mechanism test'}).kind,'unspecified');
+ assert.equal(M.inputProvenance({}).kind,'unspecified');
+});
 process.stdout.write(passed+' model tests passed\n');

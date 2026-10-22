@@ -193,6 +193,40 @@ class ViewerTests(unittest.TestCase):
             self.assertIn(attrs['aria-describedby'], controls.ids)
             self.assertEqual(controls.ids['focus'+side][1]['type'], 'checkbox')
 
+    def test_reference_focus_control_is_labeled_and_defaults_to_full_area(self):
+        class ReferenceControls(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.label = False
+                self.select = None
+                self.options = []
+                self.in_select = False
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if tag == 'label' and attrs.get('for') == 'referenceFocus':
+                    self.label = True
+                if tag == 'select' and attrs.get('id') == 'referenceFocus':
+                    self.select = attrs
+                    self.in_select = True
+                if tag == 'option' and self.in_select:
+                    self.options.append(attrs)
+            def handle_endtag(self, tag):
+                if tag == 'select':
+                    self.in_select = False
+        controls = ReferenceControls()
+        controls.feed((Path(__file__).parent/'index.html').read_text())
+        self.assertTrue(controls.label)
+        self.assertEqual(controls.select['aria-describedby'], 'referenceFocusHint')
+        self.assertEqual([option['value'] for option in controls.options], ['full', 'A', 'B'])
+        self.assertFalse(any('selected' in option for option in controls.options[1:]))
+
+    def test_reference_wording_does_not_assume_simulator_generation(self):
+        html = (Path(__file__).parent/'index.html').read_text()
+        self.assertNotIn('Private sensor observations from the recorded simulator run', html)
+        self.assertIn('Private input observations from this recorded replay', html)
+        self.assertIn('id="referenceProvenance"', html)
+        self.assertIn('the dots and counts remain the current recorded sample', html)
+
     def test_exact_source_group_inspection_requires_explicit_opt_in(self):
         class SourceToggle(HTMLParser):
             attrs = None

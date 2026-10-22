@@ -31,15 +31,38 @@ function baseMap(id,g=replay.coverage) {
  return layout;
 }
 function motion() {
- const {ctx,left,top,scale}=baseMap('reference'),g=replay.coverage,frame=M.observationAt(replay,time),types=new Map();
- for(const roadUser of frame.visible){const color=palette[allTypes.indexOf(roadUser.type)%palette.length];ctx.beginPath();ctx.arc(left+(roadUser.x-g.x)*scale,top+(roadUser.y-g.y)*scale,2.6,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();types.set(roadUser.type,(types.get(roadUser.type)||0)+1);}
+ const frame=M.observationAt(replay,time),focus=$('referenceFocus').value;
+ const selected=focus==='A'||focus==='B'?displayed(focus):null;
+ const chosen=selected?M.selectCell(selected.cells,selections[focus]):null;
+ const g=chosen||replay.coverage,{ctx,left,top,scale,w,h}=baseMap('reference',g);
+ const sample=M.referenceSample(frame.visible,g),types=new Map();
+ for(const observation of frame.visible){if(!types.has(observation.type))types.set(observation.type,{total:0,shown:0});types.get(observation.type).total++;}
+ ctx.save();ctx.beginPath();ctx.rect(left,top,w,h);ctx.clip();
+ for(const group of sample.groups){
+   const x=left+(group.x-g.x)*scale,y=top+(group.y-g.y)*scale,radius=group.observations.length>1?3.3:2.6;
+   for(const [index,roadUser]of group.observations.entries()){
+     const color=palette[allTypes.indexOf(roadUser.type)%palette.length],start=-Math.PI/2+index/group.observations.length*Math.PI*2,end=start+Math.PI*2/group.observations.length;
+     ctx.beginPath();ctx.moveTo(x,y);ctx.arc(x,y,radius,start,end);ctx.closePath();ctx.fillStyle=color;ctx.fill();types.get(roadUser.type).shown++;
+   }
+   if(group.observations.length>1){ctx.font='bold 10px -apple-system,sans-serif';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='#fff';ctx.strokeText(String(group.observations.length),x+5,y-4);ctx.fillStyle='#263b49';ctx.fillText(String(group.observations.length),x+5,y-4);}
+ }
+ ctx.restore();
  const labels={not_yet_sampled:'No sensor sample has arrived yet.',unavailable:'The most recent scheduled measurement is unavailable.',missing_sample:'No current sensor sample is available. Previous positions are cleared.'};
- $('referenceCaption').textContent=frame.status==='measured'?`Recorded sample at ${seconds(frame.batch.observed_at_ms)} · held for ${seconds(frame.age)} until the next expected sample. Positions are not interpolated.`:labels[frame.status];
- stats('referenceStats',[['road users in sample',number(frame.visible.length)],['sample interval',seconds(replay.sampling_period_ms)],['finest cell side',number(g.width/2**g.leaf_depth)+' m']]);
- const detail=$('referenceDetail');detail.replaceChildren(element('h3','Recorded road-user types'));
+ const positionText=frame.status==='measured'?`Current recorded sample at ${seconds(frame.batch.observed_at_ms)} · held for ${seconds(frame.age)} until the next expected sample. Positions are not interpolated.`:labels[frame.status];
+ const focusText=chosen?` Viewport: comparison ${focus}, cell ${chosen.cell_id}, ${number(chosen.width)} × ${number(chosen.height)} m. This footprint comes from historical [${seconds(selected.row.start_ms)}, ${seconds(selected.row.end_ms)}); the dots above remain the current sample.`:focus!=='full'?' The selected comparison has no finalized cell yet; the full area is shown.':' Full recorded area.';
+ $('referenceCaption').textContent=positionText+focusText;
+ stats('referenceStats',[['road-user IDs in full sample',number(sample.totalCount)],['distinct XY in full sample',number(sample.totalPositions)],['road-user IDs in this viewport',number(sample.visibleCount)]]);
+ const detail=$('referenceDetail');detail.replaceChildren(element('h3','Current sample · recorded road-user types'));
+ detail.append(element('p',`${number(sample.visibleCount)} IDs at ${number(sample.visiblePositions)} distinct coordinates in this viewport · sample interval ${seconds(replay.sampling_period_ms)} · finest cell side ${number(replay.coverage.width/2**replay.coverage.leaf_depth)} m`,'scope'));
  if(!types.size)detail.append(element('p','No measured positions are displayed at this timestamp.','muted'));
- for(const [type,count]of [...types].sort((a,b)=>a[0].localeCompare(b[0]))){const item=element('div');const dot=element('i',null,'dot');dot.style.background=palette[allTypes.indexOf(type)%palette.length];item.append(dot,document.createTextNode(`${type}: ${number(count)}`));detail.append(item);}
- detail.append(element('p','Counts describe one observed sample. Release cells describe a whole time window; these numbers have different meanings.','scope'));
+ else {
+   const sorted=[...types].sort((a,b)=>a[0].localeCompare(b[0]));
+   const table=groupTable(['Recorded type','Full sample','In viewport'],sorted.map(([type,count])=>[type,number(count.total),number(count.shown)]));
+   for(const [index,[type]]of sorted.entries()){const dot=element('i',null,'dot');dot.style.background=palette[allTypes.indexOf(type)%palette.length];table.tBodies[0].rows[index].cells[0].prepend(dot);}
+   detail.append(table);
+ }
+ detail.append(element('p','A numbered dot represents multiple IDs at exactly the same recorded XY position. Its colored sectors show their types. Close but different positions can still overlap at this scale; zoom preserves their exact coordinates.','scope'));
+ detail.append(element('p','These counts describe one current sample. The selected release cells and private source-group tables describe whole historical windows; their distinct-user counts can differ.','scope'));
 }
 function variant(side) {return variants[Number($('variant'+side).value)];}
 function displayed(side) {
@@ -139,6 +162,7 @@ async function start(){
  allTypes=[...new Set(replay.batches.flatMap(b=>b.observations.map(o=>o.type)))].sort();
  variants=await Promise.all(manifest.variants.map(async v=>({...v,result:await fetchJSON('/bundle/'+v.result)})));
  if(manifest.title)$('title').textContent=manifest.title;
+ $('referenceProvenance').textContent=M.inputProvenance(manifest).text;
  events=M.eventTimes(variants,replay.end_ms);
  $('duration').textContent=seconds(replay.end_ms)+' recorded';$('timeline').max=replay.end_ms;
  $('source').textContent=`${replay.run_id} · ${number(replay.coverage.width)} × ${number(replay.coverage.height)} m · leaf depth ${replay.coverage.leaf_depth}`;
@@ -146,7 +170,7 @@ async function start(){
  for(const side of ['A','B']){const select=$('variant'+side);for(const [index,v]of variants.entries()){const option=element('option',v.label);option.value=index;select.append(option);}select.value=side==='A'?0:Math.min(1,variants.length-1);select.addEventListener('change',()=>{selections[side]=null;render();});$('cell'+side).addEventListener('change',event=>{selections[side]=event.target.value;render();});$('focus'+side).addEventListener('change',render);$('map'+side).addEventListener('click',event=>{const l=layouts['map'+side],r=event.currentTarget.getBoundingClientRect(),x=(event.clientX-r.left-l.left)/l.scale+l.viewport.x,y=(event.clientY-r.top-l.top)/l.scale+l.viewport.y;const cell=displayed(side).cells.find(c=>M.contains(c,x,y));selections[side]=cell?.cell_id??null;render();});}
  $('play').addEventListener('click',()=>{if(playing){pause();return;}if(time>=replay.end_ms)time=0;playing=true;lastTick=0;$('play').textContent='Ⅱ Pause';});
  $('previous').addEventListener('click',()=>{pause();time=M.eventBefore(events,time);render();});$('next').addEventListener('click',()=>{pause();time=M.eventAfter(events,time);render();});
- $('timeline').addEventListener('input',event=>{pause();time=Number(event.target.value);render();});$('private').addEventListener('change',render);$('sourceGroups').addEventListener('change',render);
+ $('timeline').addEventListener('input',event=>{pause();time=Number(event.target.value);render();});$('private').addEventListener('change',render);$('sourceGroups').addEventListener('change',render);$('referenceFocus').addEventListener('change',render);
  $('lanes').addEventListener('click',event=>{pause();const r=event.currentTarget.getBoundingClientRect(),l=layouts.lanes;time=(event.clientX-r.left-l.left)/l.w*replay.end_ms;render();});
  window.addEventListener('resize',render);$('application').hidden=false;render();requestAnimationFrame(tick);
 }

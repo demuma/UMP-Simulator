@@ -41,6 +41,27 @@
   function eventBefore(times, now) { return [...times].reverse().find(t => t < now) ?? times[0]; }
   function contains(cell, x, y) { return x >= cell.x && y >= cell.y && x < cell.x+cell.width && y < cell.y+cell.height; }
   function privateCells(window) { return window ? window.cells.filter(c => !c.selected) : []; }
+  /* Group only exactly coincident recorded coordinates. Close screen markers
+     are never moved, merged by distance or interpreted as a single person. */
+  function referenceSample(observations, viewport) {
+    const allPositions=new Set(),positions=new Map();let visibleCount=0;
+    for(const observation of observations){
+      const key=JSON.stringify([observation.x,observation.y]);allPositions.add(key);
+      if(viewport&&!contains(viewport,observation.x,observation.y))continue;
+      visibleCount++;
+      if(!positions.has(key))positions.set(key,{x:observation.x,y:observation.y,observations:[]});
+      positions.get(key).observations.push(observation);
+    }
+    return {totalCount:observations.length,totalPositions:allPositions.size,visibleCount,
+      visiblePositions:positions.size,groups:[...positions.values()]};
+  }
+  function inputProvenance(manifest) {
+    /* The frozen legacy local-policy bundle declares its source in its title.
+       Other source kinds must remain unspecified rather than inferred from IDs. */
+    if(typeof manifest.title==='string'&&/(?:^|·\s*)scripted mechanism test$/i.test(manifest.title))
+      return {kind:'scripted',text:'Declared input: scripted mechanism test (bundle title). This analytical setup is designed to exercise policy decisions; its small coordinate changes do not represent realistic traffic movement.'};
+    return {kind:'unspecified',text:'Replay input. The bundle does not declare its generation method here; the reference displays its recorded coordinates.'};
+  }
   function selectCell(cells, selectedId) {
     return cells.find(cell => String(cell.cell_id) === String(selectedId)) || cells[0] || null;
   }
@@ -95,5 +116,5 @@
     if(index.cache.size>=32)index.cache.delete(index.cache.keys().next().value);
     index.cache.set(key,summary);return summary;
   }
-  return {lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,selectCell,buildSourceIndex,sourceGroups};
+  return {lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,referenceSample,inputProvenance,selectCell,buildSourceIndex,sourceGroups};
 }));
