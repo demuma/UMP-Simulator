@@ -39,6 +39,21 @@ past/future trajectories. Mapped trajectories follow the actual route polyline;
 the OSM map is aligned exactly with the sensing square. The rendered smoke test
 passed, but no live-window screenshot/layout verification is claimed.
 
+## Local replay retention: clarified user preference
+
+Generated movement/observation data **may be retained locally** for repeatable
+browser replay. Put persistent recordings and full replay outputs under the
+repository's ignored `results/` tree; never add them to Git. Only source code,
+static scenario definitions, documentation and compact results belong in the
+published repository. The M01 verifier's earlier database cleanup/no-file-export
+behavior remains unchanged and its historical test report is accurate.
+
+The mapped source is currently integrated with the native live Renderer only.
+The browser viewer still needs a native MongoDB-to-replay adapter plus aligned
+map support. Running the launcher or opening an older replay does not perform
+this conversion. Persisting recordings is authorized; that missing browser
+integration is an explicit follow-up in [TO-DO](../../TO-DO.md).
+
 ## Declared source scope
 
 - 80 × 80 m, D6, 4,096 possible 1.25-m leaves. This is one local sensing footprint,

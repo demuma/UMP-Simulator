@@ -7,7 +7,9 @@ requirements and stated limits before broadening the mechanism. Membership attac
 remain deferred. Recipient-contract diagnosis, runtime profiling and prefix-based
 ownership lookup, occupied-leaf discovery, sorted history ranges and merge-range
 lookup are complete, with unchanged policy/coordination/publication output.
-Diagnostic costs and full/off file output are measured and verified. Today's presentation structure is ready. M01 now verifies one bounded mapped entrance/visit source through the maintained Simulator and normal Policy Tree path. Next review source/task assumptions and compare fair fixed/adaptive settings (M02), then revisit measured performance (M03). The full three-scenario effectiveness study remains open. October 18 is historical.**
+Diagnostic costs and full/off file output are measured and verified. Today's presentation structure is ready. M01 now verifies one bounded mapped entrance/visit source through the maintained Simulator and normal Policy Tree path. Next complete persistent local mapped replay and inspect source/semantic decisions.
+Refine movement/collision validity before scaling density. Then compare fair
+fixed/adaptive settings (M02) and revisit measured performance (M03). The full three-scenario effectiveness study remains open. October 18 is historical.**
 
 **October 22–23 checkpoint:**
 
@@ -21,6 +23,37 @@ Diagnostic costs and full/off file output are measured and verified. Today's pre
   pass independent checks and private GT renaming preserves full logical output.
   See the [test report](docs/MAPPED_SCENE_TEST_REPORT_2026-10-23.md). Kinematic
   movement, long hidden gaps and scenario-local taxonomy are explicit limits.
+- [ ] **M01 follow-up, persistent local mapped replay:** user clarification on
+  2026-10-23 permits retaining generated movement/observation recordings locally
+  for replay. Keep them under ignored `results/`; never stage/push them. Add the
+  missing native MongoDB → frozen replay adapter, actual release/journal timing,
+  aligned map, attribution, legend and snapshot-derived street/building labels.
+  Preserve observation track IDs; keep the person mapping private. Label absent
+  failed-candidate diagnostics unavailable, rather than reconstructing decisions.
+  Verify cell inspection, rewind, source completeness and exact agreement with the
+  native recipient stream before calling browser replay integration complete.
+- [ ] **M01 follow-up, movement before density:** retain the four-route source as
+  the historical integration fixture. Current motion has one arrival burst over
+  0..12.6 s and no collision response. Add seeded spatial route variation inside
+  checked walking corridors, distributed boundary sources/destinations and
+  body-clearance checks; avoid independent per-frame position jitter. Keep
+  portal visits explicit. Then integrate/verify local collision response with
+  route progress and event times driven by realized motion. Delays must not
+  reset a track or count as an indoor visit. Preserve legacy motion behavior.
+  Inspect actual overlaps and ingress headways before increasing density.
+- [ ] **M01 follow-up, explain semantic decisions before controller changes:**
+  current `policy_satisfied` permits a positive-cost category at the first legal
+  endpoint, even if future waiting might preserve subtypes. Five-track support
+  per positive category, four local bounds and a flat five-terminal Pedestrian
+  branch constrain exact output. A failing occupied terminal can generalize the
+  branch. Explain current support and constraint failures in private inspection.
+  Compare existing `policy_satisfied` / `priority_satisfied` on identical captured
+  observations before adding a new trade-off objective. Keep hard policies equal.
+  Compare ingress/density levels separately, with fixed type shares and matched
+  route/arrival seeds. Report actual concurrent/local density, semantic tiers,
+  coverage, suppression and delay. More total scheduled people or more spatial
+  variation is not assumed to improve subtype support or privacy. No controller,
+  policy or movement change is implemented by this planning checkpoint.
 - [ ] **M02 mapped experiment gate:** review source flows, query tasks and local
   policy requirements; compare fixed grid/window, static regional and adaptive
   settings on identical observations. Report retained data, subtype availability,
