@@ -116,3 +116,58 @@ unit in this gate. Population assignments must be exact, including small groups.
 Do not mix a movement change, a policy change and an optimization when interpreting
 an experiment. The upcoming performance gate is explicitly retained; the present
 gate establishes correct, inspectable source behavior first.
+
+
+## Follow-up protocol: observations, visits and physical people
+
+Planning clarification, 2026-10-23. No runtime metric or source contract changes
+are made by this section. Local movement recordings are now authorized for replay
+under ignored `results/`, with no movement/identity streams committed to Git.
+
+An observation track is the operational counterpart of an object ID maintained
+by a multi-object tracker across associated observations. It is not a persistent
+physical-person identifier. Real tracking implementations have finite lost-target
+lifetimes and optional re-association; a returning target can receive a new ID.
+The [NVIDIA tracker documentation](https://docs.nvidia.com/metropolis/deepstream/dev-guide/text/DS_plugin_gst-nvtracker.html#target-re-identification)
+provides one concrete example. This is conceptual context, not a dependency or a
+proposal to add Re-ID to this project.
+
+With detection presence, geometry, observed labels and cadence fixed, replacing
+one track by consecutive track fragments leaves AGBS observation contributions,
+per-sample occupancy and class counts unchanged. It can increase interval union
+support and category support. Unique-person counts, repeat-visitor counts and
+linked indoor dwell cannot be inferred by assuming every new track is a new
+person. Boundary/building crossings can still be counted as events, with a
+separate event definition and detection completeness assumptions. ABS velocity
+estimation additionally needs a fresh warm-up after a track break; AGBS invariance
+does not imply that every sensor's exported rows remain unchanged.
+
+Keep physical movement fixed in the first fragmentation comparison. Retain the
+stable mapping only in private evaluation. Measure n_track, n_GT and delta n from
+section 29 of the [notation reference](TERMINOLOGY_AND_NOTATION.md), including the
+fraction of released cell/windows whose operational support passes while true
+modeled-person support fails the same threshold. Report class-specific cases and
+zero-denominator metrics explicitly. This diagnoses the consequences of identity
+assumptions rather than correcting operational counts with the GT oracle.
+
+One proposed separate metric is
+
+$$
+n_{\mathrm{sim}}(C,I)=\max_{t\in\mathcal T_{\mathrm{meas}}\cap I}N(C,t),
+$$
+
+where N(C,t) counts observed units in C at an actually measured time. With no
+duplicate detections/tracks or false positives within a sample, n_sim is a lower
+bound on distinct physical people observed over I. A per-category version needs
+the same conditions and an explicit classification model. This mathematical
+bound is conditional; it is not an anonymity or unlinkability guarantee. Five
+people passing one after another may yield n_sim=1, so it can lose much of the
+benefit of temporal distinct-person pooling. An interval with no measured sample
+has unavailable support, not a fabricated zero.
+
+The metric is not implemented. Compare it under a separately named policy with
+current track union support, measuring retention, detail and delay. Do not
+silently redefine `distinct_contributors`. A compatibility-based minimum-person
+model might use more tracklet timing/motion information later, but belongs to a
+separate research gate. The existing long-gap integration fixture remains a
+controlled regression source, not a realistic solution to arbitrary re-entry.

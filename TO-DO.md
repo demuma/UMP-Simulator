@@ -63,6 +63,45 @@ fixed/adaptive settings (M02) and revisit measured performance (M03). The full t
   coverage, suppression and delay. More total scheduled people or more spatial
   variation is not assumed to improve subtype support or privacy. No controller,
   policy or movement change is implemented by this planning checkpoint.
+- [ ] **Overlapping Region gate, after replay inspection:** extend the compiled
+  PolicyTree to accept nested/partially overlapping aligned rectangles. For each
+  metric use the maximum lower bound and minimum upper bound from root, region
+  types and all intersected instances; retain all sources. Do not select one
+  winning Region. A candidate crossing even an unoccupied strict patch inherits
+  its bounds over the whole footprint. Keep malformed individual definitions and
+  root/single-Region contradictions rejected. Valid individual Regions may have
+  an infeasible conjunction: retain that spatial policy as infeasible, diagnose
+  it before the run and forbid releases there; unaffected areas can continue.
+  Update compilation's homogeneous-membership stop condition as well as the
+  overlap guard. Verify nested/partial/identical rectangles, touching edges,
+  order independence, provenance, ancestors, empty support and infeasible leaves.
+  Update old overlap-rejection tests/tools/docs; keep the OSM export's disjoint
+  partition check as a separate geometry contract. Arbitrary polygons remain a
+  later rasterization/input task. This gate is planned, not implemented.
+- [ ] **Track fragmentation / statistical meaning gate, before density claims:**
+  retain stable modeled-person IDs only in private GT. Operational tracks end
+  when an episode ends; building return has a new ID and no oracle relinking.
+  With identical detections, positions, types and sample times, ID fragmentation
+  must preserve AGBS occupancy, observation contributions and type counts. Track
+  unions/category support can increase; unique visitors, linked visits and
+  person-level dwell are unavailable without additional linkage assumptions.
+  ABS velocity warm-up is a separate observable loss on new tracks. Compare
+  unchanged movement with controlled ID fragmentation, short indoor gaps and
+  stable-ID private references. Report delta n, inflation ratio (undefined at a
+  zero denominator), false threshold passes against GT, occupancy invariance and
+  ABS warm-up loss. Revisit the integrated long-gap restriction explicitly rather
+  than retaining it as a general solution. The source's current contract remains
+  unchanged until a new supported identity/metric contract is implemented.
+- [ ] **Conservative support comparison:** evaluate maximum simultaneous observed
+  support per candidate and per released category as a proposed lower bound on
+  distinct physical people, assuming no duplicate detections/tracks or false
+  positives within a sample. This needs no cross-gap re-identification, but five
+  sequential passers may have peak support one, so temporal pooling receives less
+  credit. It is not implemented or an anonymity guarantee. Use a separate named
+  metric/policy variant; never silently replace current distinct-track semantics.
+  Bound tests and compare retention, semantic detail and delay before adoption.
+  A stronger compatibility-based person lower bound is later research, not part
+  of the next implementation. Define the protected unit and secret before attacks.
 - [ ] **M02 mapped experiment gate:** review source flows, query tasks and local
   policy requirements; compare fixed grid/window, static regional and adaptive
   settings on identical observations. Report retained data, subtype availability,
