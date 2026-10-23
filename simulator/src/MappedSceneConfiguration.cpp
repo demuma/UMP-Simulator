@@ -13,6 +13,11 @@ void keys(const YAML::Node& node, const std::set<std::string>& allowed, const ch
             throw std::invalid_argument(std::string(name) + " has an unknown or duplicate key: " + key);
     }
 }
+ump::Point point(const YAML::Node& node, const char* name) {
+    if (!node || !node.IsSequence() || node.size()!=2 || !node[0].IsScalar() || !node[1].IsScalar())
+        throw std::invalid_argument(std::string(name) + " requires exactly two scalar coordinates");
+    return {node[0].as<double>(),node[1].as<double>()};
+}
 std::string text(const YAML::Node& node, const char* name) {
     if (!node || !node.IsScalar() || node.as<std::string>().empty())
         throw std::invalid_argument(std::string(name) + " must be a nonempty scalar");
@@ -22,7 +27,7 @@ std::string text(const YAML::Node& node, const char* name) {
 
 ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
     double width, double height, const std::unordered_set<std::string>& knownProfiles) {
-    keys(node, {"support_contract", "routes", "people", "motion"}, "mapped_scene");
+    keys(node, {"support_contract", "routes", "people", "motion", "portals"}, "mapped_scene");
     if (text(node["support_contract"], "mapped_scene.support_contract") != "one_episode_per_retained_history")
         throw std::invalid_argument("Mapped scene requires the explicit one_episode_per_retained_history support contract");
     if (!node["routes"].IsSequence() || !node["people"].IsSequence())
@@ -38,6 +43,19 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
         result.motionStepMs=motion["step_ms"].as<ump::AggregationTime>(50);
         result.clearanceM=motion["clearance_m"].as<double>(.1);
         result.portalGateRadiusM=motion["portal_gate_radius_m"].as<double>(3);
+    }
+    if (node["portals"]) {
+        if (!node["portals"].IsSequence()) throw std::invalid_argument("mapped_scene.portals must be a sequence");
+        for (const auto& p : node["portals"]) {
+            keys(p,{"id","building_id","point","facade","width_m","provenance"},"mapped portal");
+            const auto facade=p["facade"];
+            if (!facade || !facade.IsSequence() || facade.size()!=2)
+                throw std::invalid_argument("Mapped portal facade requires exactly two endpoints");
+            result.portals.push_back({text(p["id"],"portal id"),text(p["building_id"],"portal building id"),
+                point(p["point"],"portal point"),point(facade[0],"portal facade endpoint"),
+                point(facade[1],"portal facade endpoint"),p["width_m"].as<double>(),
+                text(p["provenance"],"portal provenance")});
+        }
     }
     for (const auto& r : node["routes"]) {
         keys(r, {"id", "points", "start_portal", "end_portal"}, "mapped route");

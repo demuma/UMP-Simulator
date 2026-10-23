@@ -1,0 +1,287 @@
+{
+  "schema": "ump.multi-building-access-evidence.v1",
+  "status": "verified",
+  "base_revision": "1ccf92d",
+  "native_binary_sha256": "f02f1f7387fec38cf4756fcc4a65b84c242bcb35ea15f9ad5b2861e1ba806c2c",
+  "tests": {
+    "configured_suites": 83,
+    "passed": 83,
+    "wall_seconds": 43.03,
+    "mapped_core_asan_ubsan_cases": 16,
+    "asan_ubsan_passed": true,
+    "independent_capture_audit_unit_methods": 5,
+    "generator_methods": 20,
+    "generator_native_drain_cases": [
+      "64 / seed 20261023 / interval1000ms",
+      "128 / seed 20261024 / interval500ms"
+    ],
+    "full_test_log_sha256": "9ef4414c55a0aa9dcd7e9dcdb03d79dda4e7cc22a36b051c9afab7419f73718b",
+    "sanitizer_log_sha256": "2a003ba6a40fbbb9bd70325dec9a260b25911ca9f02064c2df18aaa76aa409a9"
+  },
+  "geometry": {
+    "context_sha256": "c397b8a047c4b13f5b5bb05f6cdc1ebc4318590c6aac4a10a9ba75aa3942ca0d",
+    "source_geometry_sha256": "afa2690e408f467af5ff679770bf872816cc568714d9171cf4efb493809e40ed",
+    "building_footprints": 8,
+    "roof_footprints": 2,
+    "portals": [
+      {
+        "id": "facade-43117523",
+        "building_id": "osm-way-43117523",
+        "point": [
+          40.88464587699855,
+          62.87002432299778
+        ],
+        "facade": [
+          [
+            23.792485125362873,
+            68.79053797014058
+          ],
+          [
+            57.97680662863422,
+            56.94951067585498
+          ]
+        ],
+        "width_m": 1.2,
+        "provenance": "synthetic"
+      },
+      {
+        "id": "facade-613989270",
+        "building_id": "osm-way-613989270",
+        "point": [
+          64.1362468424486,
+          21.62398795923218
+        ],
+        "facade": [
+          [
+            64.70104856765829,
+            23.38522578123957
+          ],
+          [
+            63.57144511723891,
+            19.862750137224793
+          ]
+        ],
+        "width_m": 1.2,
+        "provenance": "synthetic"
+      }
+    ],
+    "construction": {
+      "scope": "Synthetic original-facade midpoint portals and bounded walking paths; not real door locations, real access rights, shop entrances, indoor geometry or empirical visitor rates.",
+      "portal_exception_radius_m": 0.85,
+      "max_route_vertices": 64,
+      "navigation_lattice_m": 1.25,
+      "access_through_minimum_centerline_separation_m": 1.1,
+      "crossing_scope": "Building access is geometrically separated from both through-flow directions; no crossing or head-on priority claim.",
+      "rejected_or_unselected_buildings": [
+        {
+          "building_id": "osm-way-425508816",
+          "reason": "roof_or_non_ground_layer_not_an_indoor_destination"
+        },
+        {
+          "building_id": "osm-way-425508817",
+          "reason": "roof_or_non_ground_layer_not_an_indoor_destination"
+        },
+        {
+          "building_id": "osm-way-32529387",
+          "reason": "no_separated_checked_boundary_access_pair"
+        },
+        {
+          "building_id": "osm-way-322716237",
+          "reason": "bounded_two_destination_fixture_not_selected"
+        },
+        {
+          "building_id": "osm-way-43028979",
+          "reason": "bounded_two_destination_fixture_not_selected"
+        },
+        {
+          "building_id": "osm-way-43028983",
+          "reason": "bounded_two_destination_fixture_not_selected"
+        }
+      ]
+    },
+    "route_geometry_summary": {
+      "status": "pass",
+      "scope": "Exact centreline and swept .55m body/clearance checked; exceptions limited to referenced .85m facade transition disks; domain-edge body clipping allowed.",
+      "minimum_access_through_centerline_separation_m": 1.3721435537927253,
+      "building_count": 2,
+      "portal_count": 2,
+      "body_plus_clearance_radius_m": 0.55,
+      "facade_portal_exception_radius_m": 0.85
+    },
+    "public_figure": "docs/figures/multi-building-access-2026-10-24.png",
+    "public_figure_sha256": "53269ce9ccc9f6192b778cf35ff5a5f07f937cf331c9497698a8964ec00d83f5"
+  },
+  "native64": {
+    "local_scene": "/Users/maxdemu/Developer/UMP-Simulator/results/building-access-2026-10-24-64/scene",
+    "local_replay": "/Users/maxdemu/Developer/UMP-Simulator/results/building-access-2026-10-24-64/replay",
+    "capture_proof": {
+      "schema": "ump.mapped-recording-proof.v1",
+      "status": "verified",
+      "source_completed": true,
+      "source_horizon_completed": true,
+      "source_completion_semantics": "source_completed is a compatibility alias for source_horizon_completed; it does not mean all episodes completed.",
+      "all_scheduled_episodes_completed": true,
+      "lifecycle_quality": {
+        "status": "all_scheduled_episodes_completed",
+        "gt_coverage_status": "verified_against_recorded_visible_intervals",
+        "event_rows": 192,
+        "expected_gt_rows": 92026,
+        "source_steps_checked": 3600,
+        "scheduled_people": 64,
+        "scheduled_episodes": 96,
+        "realized_starts": 96,
+        "realized_ends": 96,
+        "pending_episodes_at_horizon": 0,
+        "active_episodes_at_horizon": 0
+      },
+      "motion_quality": {
+        "status": "scheduled_episodes_completed",
+        "source_model": "bounded_swept_body_corridor_following",
+        "reported_diagnostics": {
+          "blocked_motion_steps": 17103,
+          "admission_wait_steps": 118,
+          "merge_admission_wait_steps": 0,
+          "max_consecutive_stop_ms": 2600,
+          "active_stalled_tracks": 0,
+          "body_overlap_violations": 0
+        },
+        "scope": "Recorded source counters and event/GT consistency only. Completion does not establish realistic motion, general queue liveness, swept collision avoidance or privacy."
+      },
+      "source_origin_epoch_ms": 1792747800000,
+      "gt_rows": 92026,
+      "measured_samples": 1799,
+      "measured_empty_samples": 226,
+      "raw_cell_rows": 42845,
+      "input_observation_contributions": 46009,
+      "recipient_release_documents": 376,
+      "published_cell_windows": 376,
+      "unique_published_cell_ids": 20,
+      "private_retirements": 47637,
+      "private_empty_retirements": 47261,
+      "track_person_inflated_published_cells": 0,
+      "scope": "Exact recorded source/lifecycle/count/category/policy and committed journal agreement. No general motion liveness, empirical privacy or baseline superiority claim.",
+      "empty_measurement_evidence": "Completed source horizon, event-audited GT coverage, fail-fast GT writes and configured sensor clock; raw rows alone do not prove empty measurement.",
+      "building_access": {
+        "status": "verified_native_portal_agreement",
+        "building_footprints": 8,
+        "routable_portals": 2,
+        "generated_manifest_geometry_digest_verified": true,
+        "generated_manifest_config_and_background_verified": true
+      },
+      "native_execution": {
+        "schema": "ump.mapped-execution.v1",
+        "state": "complete",
+        "binary_sha256": "f02f1f7387fec38cf4756fcc4a65b84c242bcb35ea15f9ad5b2861e1ba806c2c",
+        "config_sha256": "449c1e6508e8f0cb6d3ce3f09a6845a2f136a9615456c25fc9112cbb1a621002",
+        "exit_code": 0,
+        "binary_wall_seconds": 28.281181167,
+        "scope": "Includes native startup, source, aggregation and DB I/O; not a per-step deadline."
+      },
+      "files_sha256": {
+        "observations.json": "df6b3ff37847f3114ec23ad2b4a3d1dbc92b041faf30b826f6ac9e9f39994051",
+        "native_result.json": "bb7fa42d1719b1ed291aec80426ad2814f4b1d9f7a078009fe4b003582f1f1cc",
+        "map_background.png": "53269ce9ccc9f6192b778cf35ff5a5f07f937cf331c9497698a8964ec00d83f5",
+        "building_access.json": "c397b8a047c4b13f5b5bb05f6cdc1ebc4318590c6aac4a10a9ba75aa3942ca0d",
+        "private/native_source.json": "a9651d8929b95726362e8a735a0c6e31128b4adbcb0e486b4704e992992e1e71",
+        "private/config.yaml": "449c1e6508e8f0cb6d3ce3f09a6845a2f136a9615456c25fc9112cbb1a621002",
+        "bundle.json": "c35fc5b074d19d03b54c930d9816e3a25c487bd3c84dc7538758666d597c6791",
+        "private/execution.json": "fd1e6bf5aa435b7d48fabfae11320f353a62b4e6ad647750c069b6f43dc8534e"
+      }
+    },
+    "independent_body_portal_audit": {
+      "status": "pass",
+      "independent_gt_body_pair_checks": 1873571,
+      "minimum_body_clearance_margin_m": -3.329422549713801e-06,
+      "maximum_observed_route_distance_m": 5.000194827386721e-06,
+      "minimum_realized_hidden_gap_ms": 8000,
+      "targets_with_completed_entries": 2,
+      "buildings_with_completed_entries": 2,
+      "buildings_with_realized_exits": 2,
+      "all_planned_entries_completed": true,
+      "portals": {
+        "facade-43117523": {
+          "planned_entries": 16,
+          "completed_entries": 16,
+          "realized_exits": 16,
+          "max_start_distance_m": 1.9869452702231225e-06,
+          "max_last_frame_distance_m": 0.07018098696085023
+        },
+        "facade-613989270": {
+          "planned_entries": 16,
+          "completed_entries": 16,
+          "realized_exits": 16,
+          "max_start_distance_m": 1.3500690895308133e-06,
+          "max_last_frame_distance_m": 0.05751918436928936
+        }
+      },
+      "scope": "All stored native source frames, route containment, pairwise circular body+clearance separation, exact portal lifecycle and realized indoor timing; no private identities in this report.",
+      "config_sha256": "449c1e6508e8f0cb6d3ce3f09a6845a2f136a9615456c25fc9112cbb1a621002",
+      "native_source_sha256": "a9651d8929b95726362e8a735a0c6e31128b4adbcb0e486b4704e992992e1e71"
+    },
+    "last_episode_end_ms": 157400,
+    "maximum_stop_ms": 2600
+  },
+  "pure128": {
+    "local_config": "/Users/maxdemu/Developer/UMP-Simulator/results/building-access-2026-10-24-128-drain/config.yaml",
+    "config_sha256": "27f7dfe5dea5ee10e93183a4580dc831dfe970be0778e61f075e9779b277bcf9",
+    "scope": "Pure native motion/configuration model, no MongoDB and no sampled movement export",
+    "drain_log": "Mapped finite drain: scheduled=192 starts=192 ends=192 active=0 pending=0 stalled=0 overlaps=0 max_stop_ms=5200 merge_wait_steps=0 last_end_ms=164150 horizon_ms=600000",
+    "drain_log_sha256": "5023330d5068321a29d0ffd874c3293de62807ac845a99419a5b17958314235f"
+  },
+  "legacy_native_equivalence": {
+    "schema": "ump.mapped-mongo-cost-comparison.v1",
+    "equal": true,
+    "checks": {
+      "agents": {
+        "equal": true,
+        "rows": 95605,
+        "normalized_sha256": "d499cccfb2f819831a7ea35b583e2db60e025522d02b64b89d22d6253efc9896"
+      },
+      "sensor": {
+        "equal": true,
+        "rows": 42852,
+        "normalized_sha256": "ebeb66ae7060434ee7f661bef74e3865ea6f5d2636ebe9320de39d6a62c2a3b4"
+      },
+      "releases": {
+        "equal": true,
+        "rows": 509,
+        "normalized_sha256": "142583733aad34ae2102c33fd7cfab20603b3d4223b5b2b52cc1d0d3795452ff"
+      },
+      "journals": {
+        "equal": true,
+        "rows": 47106,
+        "normalized_sha256": "1867a264d4cc8139cc51ca43a0bcc5c6c86e0fa9836a179dc37bde2bd2a8fb3e"
+      }
+    },
+    "normalization": "fresh raw BSON _id, run UUID, database cursor row order only"
+  },
+  "browser_acceptance": {
+    "url": "http://127.0.0.1:8786/",
+    "sample_time_ms": 60000,
+    "observed_track_ids": 57,
+    "distinct_positions": 57,
+    "building_inventory_verified": true,
+    "all_three_panels_geometry_verified": true,
+    "map_and_policy_toggle_distinction_verified": true,
+    "screenshot_local": "/private/tmp/ump-building-replay-20261024.jpg",
+    "screenshot_sha256": "b06fc0672be0d8e99be24b40f97880516a01aa8f143acc4163815f492681f727"
+  },
+  "initial_failure_and_resolution": {
+    "initial_pure64_horizon_ms": 600000,
+    "initial_realized_starts": 92,
+    "initial_realized_ends": 79,
+    "initial_active_stalled_tracks": 13,
+    "initial_pending_tracks": 4,
+    "overlap_violations": 0,
+    "cause": "Rappolthaus access crossed opposing through-flow near x5..16; stopping prevented collisions but created a finite-source deadlock.",
+    "resolution": "Separate access routes from the entire through-flow envelope. Body/angle-aware door throat also tested independently."
+  },
+  "limits": [
+    "Only two routable modeled destinations in one frozen80m source;8footprints includes2roofs.",
+    "Synthetic wallmidpoint doors and widths are scenario assumptions, not verified OSM entrances.",
+    "Static preplanned routing, conservative singlecenter door admission; no general crowd or arbitraryroute liveness guarantee.",
+    "Illustrative policies/taxonomy unchanged; oldentrance patch does not automatically cover every newdoor.",
+    "No new privacy guarantee, attackresult or baselinesuperiority claim.",
+    "Full generated movement/native records/replays remain ignored and local."
+  ]
+}

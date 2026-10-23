@@ -59,6 +59,19 @@ synthetic results and verification are recorded in the October 19 test report. T
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 
+**October 24 multi-building access:** a new mapped `buildings` mode draws eight
+separate cached footprints and distributes visits across exact synthetic facade
+midpoints at Rappolthaus and MöGrill. Native entry/return uses the exact door,
+body/angle-aware short admission and fresh visible tracks. The actual 64-person
+capture completes all 96 episodes and 32 visits; the dense pure 128-person source
+also drains. All 83 CTest suites and 16 mapped-core sanitizer cases pass, and the
+complete historical native source/releases/journal remain equal. The local replay
+is at [127.0.0.1:8786](http://127.0.0.1:8786/); see the
+[implementation](docs/MULTI_BUILDING_ACCESS_2026-10-24.md) and
+[test report](docs/MULTI_BUILDING_ACCESS_TEST_REPORT_2026-10-24.md).
+Doors and widths are scenario assumptions; policies/taxonomy and privacy claims
+are unchanged. Generated movement remains local under ignored results/.
+
 **October 24 native I/O optimization:** the full private empty-retirement journal
 now uses one atomic committed insert per empty scope. Two matched 180-s mapped
 pairs preserve every GT, sensor, recipient and final journal field; instrumented

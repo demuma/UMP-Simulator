@@ -9,6 +9,35 @@ in Git. See the [identity contract](../../docs/MAPPED_SCENE_IDENTITY_CONTRACT_20
 [historical integration report](../../docs/MAPPED_SCENE_TEST_REPORT_2026-10-23.md)
 and [current integration report](../../docs/MAPPED_REPLAY_INTEGRATION_TEST_REPORT_2026-10-23.md).
 
+## Multi-building access (current default)
+
+The launcher now defaults to `--motion-mode buildings`. It draws eight separate
+cached OSM footprints and connects two buildings through **synthetic** exact
+original-wall midpoint doors: Rappolthaus and MöGrill. Door widths are modeled,
+not inferred from OSM. Actual route-end arrival controls entry; the former 3-m
+approach disk is not an entry trigger. Body/angle-aware short door admission and
+separated access/through paths retain swept collision checks.
+
+```sh
+/private/tmp/ump-osm-moenckeberg-2026-10-23/venv/bin/python tools/mapped_scene/run_scene.py \
+  --motion-mode buildings --population 64 --duration-s 180 --arrival-interval-ms 1000 \
+  --output results/YOUR_FRESH_BUILDING_RUN/scene --replay --port 8786
+```
+
+The existing verified local capture can be reopened with:
+
+```sh
+python3 -B tools/replay_viewer/serve.py --bundle results/building-access-2026-10-24-64/replay --port 8786
+```
+
+Building/entrance highlights and the door inventory are separate from policy
+rectangles. A small public geometry artifact survives export/comparison; private
+identity schedules remain unserved. The first fixture has 64 people, 32 visits
+(16 per building) and 96 visible episodes; all finish in the verified 180-s run.
+Use explicit `corridor`/`integration` to reproduce the historical sources below.
+See the [implementation contract](../../docs/MULTI_BUILDING_ACCESS_2026-10-24.md)
+and [test report](../../docs/MULTI_BUILDING_ACCESS_TEST_REPORT_2026-10-24.md).
+
 ## Build and prepare the Python environment
 
 From the repository root, with normal Simulator dependencies and MongoDB running
@@ -57,8 +86,8 @@ population, admitted tracks and current visible population.
 
 ## Corridor motion extension
 
-`run_scene.py` now defaults to `--motion-mode corridor`; historical integration
-must be selected explicitly as above. The corridor implementation adds:
+`--motion-mode corridor` retains the previous single-door corridor source; both
+it and historical integration are now selected explicitly. The corridor implementation adds:
 
 - One seeded smooth lateral path variant per visible episode, within checked
   directional walking corridors. Portal/boundary endpoints remain fixed. There
@@ -158,7 +187,8 @@ clears future entries and never interpolates motion. Consult the detailed
 ## Domain, identity and semantic scope
 
 D6 in an 80-m sensing square gives 4,096 possible 1.25-m leaves. This footprint is
-not the whole shopping street. OSM entrance node 6244468529 lies on Rappolthaus
+not the whole shopping street. The following single-door details describe the
+historical modes; the current buildings mode is specified in the contract above. OSM entrance node 6244468529 lies on Rappolthaus
 building way 43117523; residential use is unverified. No interior floorplan or
 indoor movement is claimed. A visit temporarily removes the observed unit from
 all sensors.

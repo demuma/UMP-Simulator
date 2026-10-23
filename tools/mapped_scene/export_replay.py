@@ -448,11 +448,53 @@ def map_metadata(scene, cfg, repo):
         pois=json.loads(poi_path.read_text())
         insist(pois.get('schema')=='ump.osm-label-snapshot.v1' and pois.get('coordinate_transform')==manifest.get('coordinate_transform'), 'POI snapshot belongs to a different map transform')
         labels += [{key:row[key] for key in ('text','x','y','kind')} for row in pois['labels']]
-    return {'image':'map_background.png','bounds':{'x':0,'y':0,'width':80,'height':80},
+    result = {'image':'map_background.png','bounds':{'x':0,'y':0,'width':80,'height':80},
             'attribution':cfg['renderer']['map_attribution'],'labels':labels,
             'legend':[{'label':label,'color':color} for label,color in
                       [('Buildings','#CBD1D9'),('Walking geometry','#B8DDD5'),('Carriageway','#E4B66B'),
                        ('Cycling geometry','#B9CAE4'),('Crossing geometry','#D5BFDF'),('Entrance context','#E4B295')]]}
+    access=scene/'building_access.json'
+    if access.exists():
+        insist(access.resolve().is_relative_to(scene.resolve()) and access.is_file(), 'Escaping public building access artifact')
+        result['building_access']='building_access.json'
+        result['legend']=[entry for entry in result['legend'] if entry['label']!='Entrance context']
+    return result
+
+
+def validate_scene_building_access(scene, cfg, access_path):
+    """Tie public map targets to the exact native source configuration.
+
+    Structural public-schema validation alone cannot establish that a drawing
+    represents the doors actually used by the recorded source. Keep this check
+    explicit, ID keyed and independent of portal ordering in either artifact.
+    """
+    access=json.loads(access_path.read_text())
+    bounds=access['bounds']; simulation=cfg['simulation']
+    insist(bounds=={'x':0,'y':0,'width':simulation.get('width'),'height':simulation.get('height')},
+           'Public building access bounds differ from native scene dimensions')
+    declared=cfg.get('mapped_scene',{}).get('portals')
+    insist(isinstance(declared,list) and all(isinstance(portal,dict) and isinstance(portal.get('id'),str) for portal in declared),
+           'Public building access requires declared native scene portals')
+    by_id={portal['id']:portal for portal in declared}
+    insist(len(by_id)==len(declared) and by_id=={portal['id']:portal for portal in access['portals']},
+           'Public building access portals differ from native scene configuration')
+    manifest_path=scene/'scene_manifest.json'
+    manifest=json.loads(manifest_path.read_text()) if manifest_path.is_file() else {}
+    if 'building_access_sha256' in manifest:
+        insist(manifest['building_access_sha256']==digest(access_path),
+               'Public building access differs from generated scene manifest digest')
+    generated=manifest.get('motion_mode')=='buildings'
+    if generated:
+        insist(manifest.get('configuration_sha256')==digest(scene/'config.yaml'),
+               'Native building configuration differs from generated scene manifest digest')
+        insist(manifest.get('background_sha256')==digest(scene/'map_background.png'),
+               'Building map background differs from generated scene manifest digest')
+        insist('building_access_sha256' in manifest,
+               'Generated building scene is missing its public geometry digest')
+    return {'status':'verified_native_portal_agreement','building_footprints':len(access['buildings']),
+            'routable_portals':len(access['portals']),
+            'generated_manifest_geometry_digest_verified':'building_access_sha256' in manifest,
+            'generated_manifest_config_and_background_verified':generated}
 
 
 def export_scene(scene, output):
@@ -461,12 +503,21 @@ def export_scene(scene, output):
     cfg=yaml.safe_load((scene/'config.yaml').read_text())
     raw=load_native(cfg); observations,result,proof=build_recording(cfg,raw)
     map_info=map_metadata(scene,cfg,repo)
+    if 'building_access' in map_info:
+        spec=importlib.util.spec_from_file_location('ump_access_validation',repo/'tools/replay_viewer/serve.py')
+        validator=importlib.util.module_from_spec(spec); spec.loader.exec_module(validator)
+        access_path=validator.validate_building_access(scene,map_info,observations['coverage'])
+        proof['building_access']=validate_scene_building_access(scene,cfg,access_path)
     sensor=next(s for s in cfg['sensors'] if s['type']=='adaptive-grid-based'); agg=sensor['aggregation']
     output.mkdir(parents=True,mode=0o700); (output/'private').mkdir(mode=0o700)
     write_json(output/'observations.json',observations); write_json(output/'native_result.json',result)
     write_json(output/'private/native_source.json',raw)
     shutil.copyfile(scene/'config.yaml',output/'private/config.yaml')
     shutil.copyfile(scene/'map_background.png',output/'map_background.png')
+    public_files=['observations.json','native_result.json','map_background.png']
+    if 'building_access' in map_info:
+        shutil.copyfile(scene/'building_access.json',output/'building_access.json')
+        public_files.append('building_access.json')
     bundle={'schema':'ump.replay-viewer.v1','title':'Mönckebergstraße · native mapped observations and actual releases',
             'observations':'observations.json','identity_unit':'visible_episode_track',
             'input_provenance':'Maintained C++ Simulator, mapped '+cfg['mapped_scene'].get('motion',{}).get('mode','integration')
@@ -474,7 +525,7 @@ def export_scene(scene, output):
             'map':map_info,'variants':[{'id':'native','label':'Actual native aggregation',
                  'result':'native_result.json','policy_tree_id':agg['policy_tree']['id'],'policy_regions':regional_metadata(cfg,agg),
                  'policy_root_requirements':[{'metric':m,**b} for m,b in sorted(agg['policy_tree']['root'].items())]}]}
-    bundle['sha256']={name:digest(output/name) for name in ('observations.json','native_result.json','map_background.png')}
+    bundle['sha256']={name:digest(output/name) for name in public_files}
     write_json(output/'bundle.json',bundle)
     execution_path=scene/'execution.json'
     if execution_path.is_file():
@@ -486,7 +537,7 @@ def export_scene(scene, output):
         proof['native_execution']=execution
     else:
         proof['native_execution']={'status':'not_recorded_by_earlier_launcher'}
-    proof['files_sha256']={name:digest(output/name) for name in ('observations.json','native_result.json','private/native_source.json','private/config.yaml','map_background.png','bundle.json')}
+    proof['files_sha256']={name:digest(output/name) for name in public_files+['private/native_source.json','private/config.yaml','bundle.json']}
     if (output/'private/execution.json').is_file():proof['files_sha256']['private/execution.json']=digest(output/'private/execution.json')
     # Shared validator checks ID-derived geometry, scopes, event order and no reuse.
     spec=importlib.util.spec_from_file_location('ump_replay_server',repo/'tools/replay_viewer/serve.py')

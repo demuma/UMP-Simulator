@@ -12,7 +12,7 @@ import tempfile
 import unittest
 
 import yaml
-from shapely.geometry import LineString
+from shapely.geometry import LineString, Point, Polygon, box
 
 HERE = pathlib.Path(__file__).resolve().parent
 SPEC = importlib.util.spec_from_file_location("mapped_builder", HERE / "build_mapped_scene.py")
@@ -159,6 +159,130 @@ class MappedSceneGeneratorTests(unittest.TestCase):
                 if route["start_portal"]=="building-rappolthaus": self.assertEqual(route["points"][0],builder.DOOR)
                 if route["end_portal"]=="building-rappolthaus": self.assertEqual(route["points"][-1],builder.DOOR)
 
+    def test_building_source_has_separate_footprints_and_original_wall_midpoints(self):
+        context, routes, construction = builder.building_geometry(str(REPO))
+        self.assertEqual(context["schema"], "ump.building-access.v1")
+        self.assertEqual(len(context["buildings"]), 8)
+        self.assertEqual(len(context["portals"]), 2)
+        self.assertEqual(len({p["building_id"] for p in context["portals"]}), 2)
+        original = {f"osm-{p['osm_type']}-{p['osm_id']}": g for p,g in self.local if p["kind"] == "building"}
+        for portal in context["portals"]:
+            self.assertEqual(portal["provenance"], "synthetic")
+            wall = LineString(portal["facade"])
+            self.assertLess(Point(portal["point"]).distance(wall.interpolate(.5, normalized=True)), 1e-9)
+            self.assertLess(wall.difference(original[portal["building_id"]].boundary.buffer(1e-7)).length, 1e-7)
+            self.assertGreaterEqual(wall.length, portal["width_m"])
+            self.assertEqual(portal["width_m"], 1.2)
+        domain = box(0,0,80,80)
+        for building in context["buildings"]:
+            self.assertTrue(building["name"])
+            for ring in building["polygons"]:
+                self.assertTrue(domain.covers(Polygon(ring)))
+                self.assertEqual(ring[0], ring[-1])
+        excluded = construction["rejected_or_unselected_buildings"]
+        self.assertEqual(len(excluded), 6)
+        self.assertEqual(sum(row["reason"] == "roof_or_non_ground_layer_not_an_indoor_destination" for row in excluded), 2)
+        self.assertNotIn("people", context)
+        self.assertNotIn("construction", context)
+        self.assertEqual(len(routes), 4)
+
+    def test_building_paths_have_checked_bodies_and_exact_portal_endpoints(self):
+        cfg = builder.make_config(REPO,DATABASE,180,False,20261023,"buildings",64,1000)
+        context, _, _ = builder.building_geometry(str(REPO))
+        report = builder.access_module().audit_access(self.local,self.layers,cfg["mapped_scene"]["routes"],context["portals"])
+        self.assertEqual(report["building_count"], 2)
+        self.assertGreaterEqual(report["minimum_access_through_centerline_separation_m"],1.1-1e-7)
+        self.assertTrue(all(row["body_building_intersection_outside_portal_m2"] < 1e-7
+                            and row["body_outside_walkable_area_m2"] < 1e-7
+                            for row in report["routes"].values()))
+        self.assertTrue(all(row["vertices"] <= 64 for row in report["routes"].values()))
+        portals = {p["id"]:p for p in cfg["mapped_scene"]["portals"]}
+        for route in cfg["mapped_scene"]["routes"]:
+            if route["start_portal"] in portals:
+                self.assertEqual(route["points"][0], portals[route["start_portal"]]["point"])
+            if route["end_portal"] in portals:
+                self.assertEqual(route["points"][-1], portals[route["end_portal"]]["point"])
+        corrupt = copy.deepcopy(cfg["mapped_scene"]["routes"])
+        entry = next(row for row in corrupt if row["end_portal"] in portals)
+        entry["points"][-1][0] += .01
+        with self.assertRaisesRegex(ValueError,"exact declared facade point"):
+            builder.access_module().audit_access(self.local,self.layers,corrupt,context["portals"])
+
+    def test_building_visits_distributed_without_changing_taxonomy_or_policy(self):
+        cfg = builder.make_config(REPO,DATABASE,180,False,20261023,"buildings",64,1000)
+        again = builder.make_config(REPO,DATABASE,180,False,20261023,"buildings",64,1000)
+        changed = builder.make_config(REPO,DATABASE,180,False,20261024,"buildings",64,1000)
+        self.assertEqual(cfg,again)
+        self.assertNotEqual(cfg["mapped_scene"]["people"],changed["mapped_scene"]["people"])
+        self.assertEqual(cfg["mapped_scene"]["portals"],changed["mapped_scene"]["portals"])
+        historical = builder.make_config(REPO,DATABASE,180,False,20261023,"corridor",64,1000)
+        self.assertEqual(cfg["region_taxonomy"],historical["region_taxonomy"])
+        self.assertEqual(cfg["regions"],historical["regions"])
+        self.assertEqual(cfg["sensors"][0]["aggregation"],historical["sensors"][0]["aggregation"])
+        report = builder.audit_config(cfg)
+        self.assertEqual(report["scheduled_visitors"],32)
+        self.assertEqual(report["visible_episodes"],96)
+        self.assertEqual(report["minimum_hidden_gap_ms"],8000)
+        routes={r["id"]:r for r in cfg["mapped_scene"]["routes"]}
+        visited=[routes[p["episodes"][0]["route_id"]]["end_portal"] for p in cfg["mapped_scene"]["people"] if len(p["episodes"])==2]
+        self.assertEqual(sorted(visited.count(portal["id"]) for portal in cfg["mapped_scene"]["portals"]),[16,16])
+        self.assertEqual(len(routes),96)
+        self.assertEqual(len({e["track_id"] for p in cfg["mapped_scene"]["people"] for e in p["episodes"]}),96)
+        self.assertTrue(all(p["episodes"][0]["track_id"] != p["episodes"][1]["track_id"]
+                            for p in cfg["mapped_scene"]["people"] if len(p["episodes"])==2))
+
+    def test_building_audit_rejects_former_access_through_deadlock_crossing(self):
+        cfg=builder.make_config(REPO,DATABASE,180,False,20261023,"buildings",64,1000)
+        context,_,_=builder.building_geometry(str(REPO))
+        routes=copy.deepcopy(cfg["mapped_scene"]["routes"])
+        entry=next(r for r in routes if r["end_portal"]=="facade-43117523")
+        # Former inlet was walkable and body-clear of buildings, but intersected
+        # the opposing through stream near x=5..10m and deadlocked finite flow.
+        entry["points"][0]=[0,66]
+        with self.assertRaisesRegex(ValueError,"through-flow"):
+            builder.access_module().audit_access(self.local,self.layers,routes,context["portals"])
+
+    def test_building_audit_rejects_unrelated_facade_exemption(self):
+        context, routes, _ = builder.building_geometry(str(REPO))
+        corrupt = copy.deepcopy(routes)
+        # A route cannot borrow another building's portal disk to cross a wall.
+        entry = corrupt[0]
+        original = next(g for p,g in self.local if p["kind"] == "building" and p["osm_id"] == 43117523)
+        center = original.intersection(box(0,0,80,80)).representative_point()
+        entry["points"].insert(1,list(center.coords)[0])
+        with self.assertRaisesRegex(ValueError,"clearance failed"):
+            builder.access_module().audit_access(self.local,self.layers,corrupt,context["portals"])
+
+    def test_building_audit_rejects_invented_clipped_wall(self):
+        context, routes, _ = copy.deepcopy(builder.building_geometry(str(REPO)))
+        portal = next(p for p in context["portals"] if p["building_id"] == "osm-way-43117523")
+        portal["facade"] = [[0,70],[0,78]]
+        portal["point"] = [0,74]
+        for route in routes:
+            if route["start_portal"] == portal["id"]:
+                route["points"][0] = list(portal["point"])
+            if route["end_portal"] == portal["id"]:
+                route["points"][-1] = list(portal["point"])
+        with self.assertRaisesRegex(ValueError,"complete original building wall"):
+            builder.access_module().audit_access(self.local,self.layers,routes,context["portals"])
+
+    def test_building_cli_writes_public_geometry_and_no_movement_data(self):
+        with tempfile.TemporaryDirectory(prefix="ump-building-config-test-") as temp:
+            output=pathlib.Path(temp)/"scene"
+            subprocess.run([sys.executable,str(HERE/"build_mapped_scene.py"),"--repo",str(REPO),
+                "--output",str(output),"--database",DATABASE,"--motion-mode","buildings",
+                "--duration-s","180","--population","64","--arrival-interval-ms","1000"],
+                check=True,capture_output=True,text=True,timeout=60)
+            self.assertEqual({p.name for p in output.iterdir()},
+                {"config.yaml","map_background.png","scene_manifest.json","building_access.json"})
+            context=json.loads((output/"building_access.json").read_text())
+            self.assertEqual(set(context),{"schema","bounds","buildings","portals"})
+            self.assertEqual(len(context["portals"]),2)
+            manifest=json.loads((output/"scene_manifest.json").read_text())
+            self.assertEqual(manifest["motion_mode"],"buildings")
+            self.assertEqual(manifest["building_access_sha256"],builder.sha((output/"building_access.json").read_bytes()))
+            self.assertEqual(manifest["route_geometry"]["status"],"pass")
+
     @unittest.skipUnless(os.environ.get("UMP_MAPPED_CORE_TEST_BINARY"),
                          "Set UMP_MAPPED_CORE_TEST_BINARY for the native finite-source drain gate")
     def test_dense_corridor_native_config_drains_without_dropped_tracks(self):
@@ -174,6 +298,28 @@ class MappedSceneGeneratorTests(unittest.TestCase):
             self.assertEqual(result.returncode,0,result.stdout+result.stderr)
             self.assertIn("scheduled=160 starts=160 ends=160 active=0 pending=0",result.stdout)
             self.assertIn("stalled=0 overlaps=0",result.stdout)
+
+    @unittest.skipUnless(os.environ.get("UMP_MAPPED_CORE_TEST_BINARY"),
+                         "Set UMP_MAPPED_CORE_TEST_BINARY for native multi-building finite-source drainage")
+    def test_building_native_sources_drain_without_lost_tracks_or_overlap(self):
+        # Exercise the complete generated paths, explicit facade portals,
+        # admissions and relative returns. This catches branch/gate cycles that
+        # geometric containment alone cannot detect. The finite drain horizon
+        # is a source-completeness check, not a per-track latency guarantee.
+        for population, seed, arrival_ms in [(64,20261023,1000),(128,20261024,500)]:
+            with self.subTest(population=population, seed=seed, arrival_ms=arrival_ms):
+                source=builder.make_config(REPO,DATABASE,180,False,seed,"buildings",population,arrival_ms)
+                expected=sum(len(p["episodes"]) for p in source["mapped_scene"]["people"])
+                self.assertEqual(expected,population*3//2)
+                self.assertEqual(len({p["building_id"] for p in source["mapped_scene"]["portals"]}),2)
+                with tempfile.TemporaryDirectory(prefix="ump-building-drain-test-") as temp:
+                    config=pathlib.Path(temp)/"config.yaml"
+                    config.write_text(yaml.safe_dump(source,sort_keys=False),encoding="utf-8")
+                    result=subprocess.run([os.environ["UMP_MAPPED_CORE_TEST_BINARY"],"--drain-config",
+                        str(config),"--end-ms","600000"],capture_output=True,text=True,timeout=120)
+                    self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+                    self.assertIn(f"scheduled={expected} starts={expected} ends={expected} active=0 pending=0",result.stdout)
+                    self.assertIn("stalled=0 overlaps=0",result.stdout)
 
     def test_historical_population_and_corridor_flow_guards(self):
         for kwargs in [{"population":128},{"arrival_interval_ms":1000}]:

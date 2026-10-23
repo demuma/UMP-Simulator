@@ -95,6 +95,32 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
         || !std::isfinite(config.portalGateRadiusM) || config.portalGateRadiusM <= 0)
         throw std::invalid_argument("Mapped corridor motion requires step <=50ms, finite clearance and positive portal gate");
     std::set<std::string> identifiers;
+    std::map<std::string,const MappedPortal*> declaredPortals;
+    std::map<std::string,double> portalBodyClearance;
+    for (const auto& portal:config.portals) {
+        identifier(portal.id,"portal identifier");
+        identifier(portal.buildingId,"portal building identifier");
+        const double facadeLength=std::hypot(portal.facadeEnd.x-portal.facadeStart.x,
+            portal.facadeEnd.y-portal.facadeStart.y);
+        if (!identifiers.insert(portal.id).second)
+            throw std::invalid_argument("Mapped scene identifiers must be globally unique");
+        if (!finite(portal.point) || !finite(portal.facadeStart) || !finite(portal.facadeEnd)
+            || !std::isfinite(facadeLength) || facadeLength<=0
+            || !std::isfinite(portal.widthM) || portal.widthM<=0 || portal.widthM>facadeLength+1e-9
+            || portal.point.x<0 || portal.point.y<0 || portal.point.x>config.width || portal.point.y>config.height
+            || pointSegmentDistance(portal.point,portal.facadeStart,portal.facadeEnd)>1e-7)
+            throw std::invalid_argument("Mapped portal requires a finite in-domain point on a nondegenerate facade and fitting positive width");
+        if (portal.provenance!="osm" && portal.provenance!="synthetic")
+            throw std::invalid_argument("Mapped portal provenance must be osm or synthetic");
+        // The door opening is centered at the point and must fit on its facade,
+        // including when a mapped entrance is not at the wall midpoint.
+        if (std::hypot(portal.point.x-portal.facadeStart.x,portal.point.y-portal.facadeStart.y)+1e-7<portal.widthM/2
+            || std::hypot(portal.point.x-portal.facadeEnd.x,portal.point.y-portal.facadeEnd.y)+1e-7<portal.widthM/2)
+            throw std::invalid_argument("Mapped portal opening extends beyond its declared facade");
+        declaredPortals.emplace(portal.id,&portal);
+        portalPoints.emplace(portal.id,portal.point);
+        explicitPortalGateRadii.emplace(portal.id,portal.widthM/2);
+    }
     routeData.reserve(config.routes.size());
     for (std::size_t i = 0; i < config.routes.size(); ++i) {
         const auto& route = config.routes[i];
@@ -114,7 +140,12 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
         routeData.push_back({std::move(cumulative), length});
         for (const auto& endpoint : {std::make_pair(route.startPortal,route.points.front()),
                 std::make_pair(route.endPortal,route.points.back())}) {
-            if (endpoint.first.empty() || boundary(endpoint.second,config.width,config.height)) continue;
+            if (endpoint.first.empty()) continue;
+            const auto declared=declaredPortals.find(endpoint.first);
+            if (!declaredPortals.empty() && declared==declaredPortals.end()
+                && !boundary(endpoint.second,config.width,config.height))
+                throw std::invalid_argument("Interior route endpoint references an undeclared building portal");
+            if (declared==declaredPortals.end() && boundary(endpoint.second,config.width,config.height)) continue;
             const auto old=portalPoints.find(endpoint.first);
             if (old!=portalPoints.end() && std::hypot(old->second.x-endpoint.second.x,
                     old->second.y-endpoint.second.y)>1e-7)
@@ -180,6 +211,21 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
             if (episode.startMs < 0)
                 throw std::invalid_argument("Mapped episode cannot start before the simulation origin");
             const auto r = routeFound->second;
+            const auto& referencedRoute=config.routes[r];
+            for (const auto& portalId:{referencedRoute.startPortal,referencedRoute.endPortal}) {
+                const auto portal=declaredPortals.find(portalId);
+                if (portal==declaredPortals.end()) continue;
+                if (person.radiusM*2>portal->second->widthM+1e-9)
+                    throw std::invalid_argument("Mapped person body does not fit through its declared portal opening");
+                // One exact center is shared by arrivals and departures. Reserve
+                // a short body-aware throat, not the historical exclusive 3m
+                // disk. Route-specific separated approaches are still needed;
+                // this is not a general bidirectional path planner.
+                auto& radius=explicitPortalGateRadii.at(portalId);
+                radius=std::max(radius,person.radiusM*2+config.clearanceM);
+                portalBodyClearance[portalId]=std::max(portalBodyClearance[portalId],
+                    person.radiusM*2+config.clearanceM);
+            }
             const auto duration = durationMs(routeData[r].length, person.speedMps);
             if (episode.startMs > std::numeric_limits<AggregationTime>::max() - duration)
                 throw std::invalid_argument("Mapped episode end exceeds simulation time range");
@@ -195,6 +241,16 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
                 const auto gap = episode.afterPreviousMs.value_or(episode.startMs - *previousEnd);
                 minimumGap = minimumGap ? std::min(*minimumGap, gap) : gap;
             }
+            if (e && episode.afterPreviousMs && !declaredPortals.empty()) {
+                const auto& previousRoute=config.routes[routeIndices.at(person.episodes[e-1].routeId)];
+                const auto previousDoor=declaredPortals.find(previousRoute.endPortal);
+                if (previousDoor!=declaredPortals.end()) {
+                    const auto nextDoor=declaredPortals.find(referencedRoute.startPortal);
+                    if (nextDoor==declaredPortals.end()
+                        || nextDoor->second->buildingId!=previousDoor->second->buildingId)
+                        throw std::invalid_argument("A hidden building visit must return through the same declared building");
+                }
+            }
             previousEnd = endMs;
             tracks.emplace(episode.trackId, EpisodeData{p, r, e, endMs});
             const auto& route = config.routes[r];
@@ -204,6 +260,34 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
                 lifecycle.push_back({MappedEventKind::EpisodeEnd, person.personId, episode.trackId,
                     route.id, route.endPortal, endMs});
             } else runtime.emplace(episode.trackId,RuntimeTrack{});
+        }
+    }
+    // Opposing arrivals/departures meet at one exact doorway center. Their
+    // split approach rays need enough lateral separation before we release the
+    // local throat. Diameter alone is insufficient for a shallow split: both
+    // fronts could otherwise wait at body contact on either side of its edge.
+    // This bound concerns only the incident endpoint segments. Arbitrary route
+    // crossings elsewhere remain the route planner's responsibility.
+    for (auto& [portal,radius]:explicitPortalGateRadii) {
+        const auto body=portalBodyClearance.find(portal);
+        if (body==portalBodyClearance.end()) continue;
+        for (const auto& arrival:config.routes) {
+            if (arrival.endPortal!=portal) continue;
+            const auto p=arrival.points.back(), a=arrival.points[arrival.points.size()-2];
+            const double ax=a.x-p.x, ay=a.y-p.y, al=std::hypot(ax,ay);
+            for (const auto& departure:config.routes) {
+                if (departure.startPortal!=portal) continue;
+                const auto b=departure.points[1];
+                const double bx=b.x-p.x, by=b.y-p.y, bl=std::hypot(bx,by);
+                const double cosine=std::clamp((ax*bx+ay*by)/(al*bl),-1.0,1.0);
+                // Closest approach need not occur at equal radial distances:
+                // an outgoing body may pass the waiting front along its ray.
+                const double separation=cosine<=0 ? 1 : std::sqrt(std::max(0.0,1-cosine*cosine));
+                const double throat=separation>1e-6 ? body->second/separation+config.clearanceM
+                    : std::max(al,bl)+body->second;
+                if (!std::isfinite(throat)) throw std::invalid_argument("Mapped portal approach throat is nonfinite");
+                radius=std::max(radius,throat);
+            }
         }
     }
     std::sort(lifecycle.begin(), lifecycle.end(), [](const auto& a, const auto& b) {
@@ -286,10 +370,19 @@ void MappedScene::admitPending(AggregationTime nowMs) {
             if (std::hypot(point.x-other.position.x,point.y-other.position.y)
                     <person.radiusM+otherPerson.radiusM+config.clearanceM-1e-9) available=false;
             // A building exit waits indoors until the shared facade approach is free.
-            for (const auto& [portal,centre] : portalPoints)
-                if (std::hypot(point.x-centre.x,point.y-centre.y)<config.portalGateRadiusM
-                    && std::hypot(other.position.x-centre.x,other.position.y-centre.y)<config.portalGateRadiusM)
+            for (const auto& [portal,centre] : portalPoints) {
+                const auto explicitGate=explicitPortalGateRadii.find(portal);
+                const double radius=explicitGate==explicitPortalGateRadii.end()
+                    ? config.portalGateRadiusM : explicitGate->second;
+                if (explicitGate!=explicitPortalGateRadii.end()) {
+                    const auto& route=config.routes[data.route];
+                    const auto& otherRoute=config.routes[tracks.at(otherId).route];
+                    if (route.startPortal!=portal || (otherRoute.startPortal!=portal && otherRoute.endPortal!=portal)) continue;
+                }
+                if (std::hypot(point.x-centre.x,point.y-centre.y)<radius
+                    && std::hypot(other.position.x-centre.x,other.position.y-centre.y)<radius)
                     available=false;
+            }
         }
         if (!available) { ++diagnostics.admissionWaitSteps; continue; }
         state.state=RuntimeTrack::State::Active; state.position=point;
@@ -308,9 +401,14 @@ void MappedScene::advanceCorridorStep(AggregationTime nextMs) {
     std::map<std::string,std::string> gateOwner;
     for (const auto& [id,state] : runtime) if (state.state==RuntimeTrack::State::Active) {
         active.push_back(id); reservations.emplace(id,std::vector<Point>{state.position,state.position});
-        for (const auto& [portal,centre] : portalPoints)
-            if (std::hypot(state.position.x-centre.x,state.position.y-centre.y)<config.portalGateRadiusM-1e-6)
+        for (const auto& [portal,centre] : portalPoints) {
+            const auto explicitGate=explicitPortalGateRadii.find(portal);
+            const auto& route=config.routes[tracks.at(id).route];
+            if (explicitGate!=explicitPortalGateRadii.end() && route.startPortal!=portal && route.endPortal!=portal) continue;
+            const double radius=explicitGate==explicitPortalGateRadii.end()?config.portalGateRadiusM:explicitGate->second;
+            if (std::hypot(state.position.x-centre.x,state.position.y-centre.y)<radius-1e-6)
                 gateOwner.emplace(portal,id);
+        }
     }
     std::sort(active.begin(),active.end(),[&](const auto& a,const auto& b) {
         const auto& x=runtime.at(a);const auto& y=runtime.at(b);
@@ -424,7 +522,10 @@ void MappedScene::advanceCorridorStep(AggregationTime nextMs) {
             for (const auto& [portal,owner] : gateOwner) {
                 if (owner==id) continue;
                 const auto centre=portalPoints.at(portal);
-                if (pathDistance(path,{centre,centre})<config.portalGateRadiusM+1e-6) return false;
+                const auto explicitGate=explicitPortalGateRadii.find(portal);
+                if (explicitGate!=explicitPortalGateRadii.end() && route.startPortal!=portal && route.endPortal!=portal) continue;
+                const double radius=explicitGate==explicitPortalGateRadii.end()?config.portalGateRadiusM:explicitGate->second;
+                if (pathDistance(path,{centre,centre})<radius+1e-6) return false;
             }
             return true;
         };
@@ -457,8 +558,12 @@ void MappedScene::advanceCorridorStep(AggregationTime nextMs) {
                 if (grant!=reservation.throughBatch.end()) grant->second=true;
             }
         }
-        for (const auto& [portal,centre] : portalPoints)
-            if (pathDistance(path,{centre,centre})<config.portalGateRadiusM-1e-6) gateOwner.emplace(portal,id);
+        for (const auto& [portal,centre] : portalPoints) {
+            const auto explicitGate=explicitPortalGateRadii.find(portal);
+            if (explicitGate!=explicitPortalGateRadii.end() && route.startPortal!=portal && route.endPortal!=portal) continue;
+            const double radius=explicitGate==explicitPortalGateRadii.end()?config.portalGateRadiusM:explicitGate->second;
+            if (pathDistance(path,{centre,centre})<radius-1e-6) gateOwner.emplace(portal,id);
+        }
         if (compiled.length-reached<1e-9) {
             state.state=RuntimeTrack::State::Finished;state.arrivedAtMs=nextMs;
             ++diagnostics.realizedEnds;

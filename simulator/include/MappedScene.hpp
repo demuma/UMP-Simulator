@@ -20,6 +20,16 @@ struct MappedRoute {
     std::string startPortal, endPortal;
 };
 
+// A deliberate source-model access point on a building facade. OSM provenance
+// denotes a mapped entrance; synthetic portals are simulation assumptions. This
+// geometry does not grant entry on incidental contact with any building wall.
+struct MappedPortal {
+    std::string id, buildingId;
+    Point point, facadeStart, facadeEnd;
+    double widthM;
+    std::string provenance; // Exactly "osm" or "synthetic".
+};
+
 struct MappedEpisode {
     std::string trackId, routeId;
     AggregationTime startMs;
@@ -43,7 +53,8 @@ struct MappedSceneConfig {
     MappedMotionMode motionMode = MappedMotionMode::Integration;
     AggregationTime motionStepMs = 50;
     double clearanceM = .1;
-    double portalGateRadiusM = 3;
+    double portalGateRadiusM = 3; // Historical undeclared-portal mode only.
+    std::vector<MappedPortal> portals;
 };
 
 struct MappedMotionDiagnostics {
@@ -123,6 +134,10 @@ private:
     std::optional<AggregationTime> minimumGap;
     std::map<std::string, RuntimeTrack> runtime;
     std::map<std::string, Point> portalPoints;
+    // Explicit doors reserve only a local body-clearance throat for tracks
+    // that actually enter/exit that door. Unrelated passers use the same swept
+    // body collision checks without acquiring an artificial entrance resource.
+    std::map<std::string, double> explicitPortalGateRadii;
     // One bounded branch/through-flow merge resource per building portal.
     // Persistent FIFO exit ownership or finite compatible through batches keep
     // later arrivals from growing a batch indefinitely. The owner retains the

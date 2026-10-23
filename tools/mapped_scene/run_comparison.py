@@ -98,6 +98,10 @@ def compare(recording,output,binary):
         if not path.is_relative_to(recording) or not path.is_file() or not isinstance(digest,str) or not re.fullmatch(r'[0-9a-f]{64}',digest) or sha(path)!=digest:
             raise ValueError('Changed or escaping recording artifact: '+name)
     spec=importlib.util.spec_from_file_location('source_viewer_validation',ROOT/'tools/replay_viewer/serve.py');validator=importlib.util.module_from_spec(spec);spec.loader.exec_module(validator);validator.validate_bundle(recording)
+    shared_files=['observations.json','map_background.png']
+    if read(recording/'bundle.json').get('map',{}).get('building_access'):
+        if 'building_access.json' not in hashes: raise ValueError('Missing building access recording digest')
+        shared_files.append('building_access.json')
     data=read(recording/'observations.json');native_cfg=yaml.safe_load((recording/'private/config.yaml').read_text());base=native_config(native_cfg)
     progress_step=round(native_cfg['simulation']['time_step']*1000)
     if progress_step<=0 or data['sampling_period_ms']%progress_step or abs(native_cfg['simulation']['time_step']*1000-progress_step)>1e-9:
@@ -122,7 +126,7 @@ def compare(recording,output,binary):
     viewer['title']='Mönckebergstraße · same-source fixed and adaptive comparison'
     viewer['variants']=[]; viewer['sha256']={}
     # Local copies allow a self-contained persistent comparison; original remains frozen.
-    for name in ('observations.json','map_background.png'): shutil.copyfile(recording/name,output/name)
+    for name in shared_files: shutil.copyfile(recording/name,output/name)
     for variant in matrix:
         name=variant['id'];config=settings_for(base,variant)
         config_path=output/(name+'-policy.json');result_path=output/(name+'.json');write(config_path,config)
@@ -165,7 +169,7 @@ def compare(recording,output,binary):
             raise ValueError('Frozen binary/source changed during comparison')
         print(json.dumps({'variant':name,'status':'verified','retained_fraction':stats['retained_fraction'],
                           'exact_subtype_fraction':stats['exact_subtype_fraction_of_input']}),flush=True)
-    for name in ['observations.json','map_background.png']+[v['result'] for v in viewer['variants']]:viewer['sha256'][name]=sha(output/name)
+    for name in shared_files+[v['result'] for v in viewer['variants']]:viewer['sha256'][name]=sha(output/name)
     viewer['input_provenance']+=' Comparison panels are actual offline AggregationReplay executions on these identical observations, not the native sink stream.'
     write(output/'bundle.json',viewer)
     spec=importlib.util.spec_from_file_location('viewer_validation',ROOT/'tools/replay_viewer/serve.py');validator=importlib.util.module_from_spec(spec);spec.loader.exec_module(validator);validator.validate_bundle(output)

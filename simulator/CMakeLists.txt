@@ -408,7 +408,7 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS AND UMP_MAPPED_SCENE_PYTHON)
     if(NOT EXISTS "${UMP_MAPPED_SCENE_PYTHON}")
         message(FATAL_ERROR "UMP_MAPPED_SCENE_PYTHON does not exist")
     endif()
-    foreach(mapped_test build_mapped_scene export_replay analyze_tracks run_comparison)
+    foreach(mapped_test audit_building_access build_mapped_scene export_replay analyze_tracks run_comparison)
         add_test(NAME mapped_${mapped_test}_tools COMMAND "${UMP_MAPPED_SCENE_PYTHON}"
             "${CMAKE_CURRENT_SOURCE_DIR}/../tools/mapped_scene/test_${mapped_test}.py")
         set_tests_properties(mapped_${mapped_test}_tools PROPERTIES

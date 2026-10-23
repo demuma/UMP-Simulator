@@ -35,7 +35,7 @@ def main():
     parser.add_argument('--port', type=int, default=8780)
     parser.add_argument('--duration-s', type=int, default=90)
     parser.add_argument('--seed', type=int, default=20261023)
-    parser.add_argument('--motion-mode', choices=['integration','corridor'], default='corridor')
+    parser.add_argument('--motion-mode', choices=['integration','corridor','buildings'], default='buildings')
     parser.add_argument('--population', type=int, default=64)
     parser.add_argument('--arrival-interval-ms',type=int)
     parser.add_argument('--output', type=pathlib.Path, help='Fresh scene folder; replay becomes its sibling')

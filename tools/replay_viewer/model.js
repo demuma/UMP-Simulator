@@ -70,6 +70,20 @@
     return {x:layout.left+(bounds.x-viewport.x)*layout.scale,y:layout.top+(bounds.y-viewport.y)*layout.scale,
       width:bounds.width*layout.scale,height:bounds.height*layout.scale};
   }
+  function mapPoint(point,viewport,layout) {
+    return {x:layout.left+(point[0]-viewport.x)*layout.scale,
+      y:layout.top+(point[1]-viewport.y)*layout.scale};
+  }
+  /* Door endpoints are centred on the recorded portal, along its facade.
+     The returned coordinates remain physical metres; marker visibility does
+     not enlarge a source admission area or move any observed road user. */
+  function portalSegment(portal) {
+    const [a,b]=portal.facade,dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
+    if(!Number.isFinite(length)||length<=0)throw new RangeError('Portal facade must have positive length');
+    const half=portal.width_m/2;
+    return [[portal.point[0]-dx/length*half,portal.point[1]-dy/length*half],
+      [portal.point[0]+dx/length*half,portal.point[1]+dy/length*half]];
+  }
   function eventTimes(variants, end, privateMode=false) {
     const rows=privateMode?'windows':'releases',stamp=privateMode?'evaluated_at_ms':'sealed_at_ms';
     return [...new Set([0,end,...variants.flatMap(v => v.result[rows].map(r => r[stamp]))])].sort((a,b)=>a-b);
@@ -222,5 +236,5 @@
     if(index.cache.size>=32)index.cache.delete(index.cache.keys().next().value);
     index.cache.set(key,summary);return summary;
   }
-  return {lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,referenceSample,inputProvenance,selectCell,mosaicAt,selectEntry,entryContains,MAX_VISIBLE_FRAGMENTS,buildSourceIndex,sourceGroups,releaseAccounting,policyAt,mapImageRectangle};
+  return {lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,referenceSample,inputProvenance,selectCell,mosaicAt,selectEntry,entryContains,MAX_VISIBLE_FRAGMENTS,buildSourceIndex,sourceGroups,releaseAccounting,policyAt,mapImageRectangle,mapPoint,portalSegment};
 }));

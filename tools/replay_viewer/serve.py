@@ -25,6 +25,8 @@ SCHEMA = 'ump.replay-viewer.v1'
 ASSETS = ('index.html', 'model.js', 'viewer.js')
 MAX_MAP_BYTES = 16 * 1024 * 1024
 MAX_MAP_SIDE = 4096
+MAX_BUILDING_ACCESS_BYTES = 2 * 1024 * 1024
+MAX_BUILDING_VERTICES = 32768
 
 
 def read_json(path: Path):
@@ -190,6 +192,93 @@ def validate_map(root: Path, manifest: dict, coverage: dict):
     return path
 
 
+def validate_building_access(root: Path, mapping: dict, coverage: dict):
+    """Allow only bounded public geometry, never source schedules or identities.
+
+    This optional v1 artifact deliberately has a closed schema: blindly serving
+    a scene manifest could expose stable private people or planned episodes.
+    Coordinates use the same local metres as the observations, including zoom.
+    """
+    if 'building_access' not in mapping:
+        return None
+    if mapping['building_access'] != 'building_access.json':
+        raise ValueError('Building access must be the literal allowlisted building_access.json')
+    path = local_file(root, 'building_access.json')
+    if path.stat().st_size > MAX_BUILDING_ACCESS_BYTES:
+        raise ValueError('Building access geometry exceeds 2 MiB')
+    value = read_json(path)
+    if not isinstance(value,dict) or set(value) != {'schema','bounds','buildings','portals'} or value.get('schema') != 'ump.building-access.v1':
+        raise ValueError('Invalid public building access schema')
+    bounds = value['bounds']
+    if not isinstance(bounds,dict) or set(bounds) != {'x','y','width','height'} or any(type(bounds.get(k)) not in (int,float) or not math.isfinite(bounds[k]) or bounds[k] != coverage[k] for k in bounds):
+        raise ValueError('Building access bounds must exactly match observation coverage')
+    buildings,portals = value['buildings'],value['portals']
+    if not isinstance(buildings,list) or len(buildings)>256 or not isinstance(portals,list) or len(portals)>512:
+        raise ValueError('Building access exceeds 256 buildings or 512 portals')
+    vertices = 0
+    def text(item,name,limit=160):
+        if not isinstance(item,str) or not item.strip() or item!=item.strip() or len(item)>limit:
+            raise ValueError('Invalid building access '+name)
+    def point(item, clipped=True):
+        if not isinstance(item,list) or len(item)!=2:
+            raise ValueError('Building coordinates must be XY pairs')
+        for coordinate in item:
+            numeric(coordinate,'building coordinate',-1e6)
+            if coordinate>1e6: raise ValueError('Building coordinate exceeds bounded local geometry')
+        if clipped and not (coverage['x']-1e-7<=item[0]<=coverage['x']+coverage['width']+1e-7 and coverage['y']-1e-7<=item[1]<=coverage['y']+coverage['height']+1e-7):
+            raise ValueError('Building geometry lies outside observation coverage')
+    def rings(items):
+        nonlocal vertices
+        if not isinstance(items,list) or len(items)>256:
+            raise ValueError('Building polygons require bounded ring arrays')
+        for ring in items:
+            if not isinstance(ring,list) or len(ring)<4:
+                raise ValueError('Building polygon rings need at least four vertices')
+            vertices+=len(ring)
+            if vertices>MAX_BUILDING_VERTICES: raise ValueError('Building geometry exceeds vertex limit')
+            for coordinate in ring: point(coordinate)
+            if ring[0]!=ring[-1]: raise ValueError('Building polygon rings must be closed')
+    identities=set()
+    for building in buildings:
+        if not isinstance(building,dict) or not {'id','name','polygons'}.issubset(building) or set(building)-{'id','name','polygons','holes','osm_type','osm_id','building_type'}:
+            raise ValueError('Building geometry contains unsupported or private fields')
+        text(building['id'],'building ID',128);text(building['name'],'building name')
+        if building['id'] in identities: raise ValueError('Duplicate building ID')
+        identities.add(building['id'])
+        if not building['polygons']: raise ValueError('Building geometry needs a polygon')
+        rings(building['polygons']);rings(building.get('holes',[]))
+        if 'osm_type' in building and building['osm_type'] not in ('way','relation'):
+            raise ValueError('Invalid OSM building type')
+        if 'osm_id' in building and not (type(building['osm_id']) is int and building['osm_id']>0 or isinstance(building['osm_id'],str) and re.fullmatch(r'[0-9]{1,20}',building['osm_id'])):
+            raise ValueError('Invalid OSM building ID')
+        if 'building_type' in building: text(building['building_type'],'building type',128)
+    portal_ids=set()
+    for portal in portals:
+        if not isinstance(portal,dict) or set(portal)!={'id','building_id','point','facade','width_m','provenance'}:
+            raise ValueError('Portal geometry contains unsupported or private fields')
+        text(portal['id'],'portal ID',128)
+        if portal['id'] in portal_ids: raise ValueError('Duplicate portal ID')
+        portal_ids.add(portal['id'])
+        text(portal['building_id'],'portal building ID',128)
+        if portal['building_id'] not in identities: raise ValueError('Portal references unknown building')
+        if portal['provenance'] not in ('osm','synthetic'): raise ValueError('Unknown entrance provenance')
+        point(portal['point'])
+        facade=portal['facade']
+        if not isinstance(facade,list) or len(facade)!=2: raise ValueError('Portal facade requires two endpoints')
+        for endpoint in facade: point(endpoint,False)
+        dx,dy=facade[1][0]-facade[0][0],facade[1][1]-facade[0][1]
+        length=math.hypot(dx,dy)
+        if length<=0: raise ValueError('Portal facade must have positive length')
+        px,py=portal['point'][0]-facade[0][0],portal['point'][1]-facade[0][1]
+        fraction=(px*dx+py*dy)/(length*length)
+        if not -1e-7<=fraction<=1+1e-7 or abs(px*dy-py*dx)/length>1e-5:
+            raise ValueError('Portal point must lie on its facade')
+        numeric(portal['width_m'],'entrance width',.1)
+        if portal['width_m']>20 or portal['width_m']>length+1e-5:
+            raise ValueError('Entrance width exceeds facade or 20 m')
+    return path
+
+
 def canonical_cell(cell: dict, coverage: dict) -> tuple[int, int, int, int]:
     """Validate an ID-derived rectangle and return its finest Morton interval."""
     if not isinstance(cell, dict):
@@ -333,6 +422,9 @@ def validate_bundle(root: Path) -> tuple[dict, dict[str, Path]]:
     map_path = validate_map(root, manifest, coverage)
     if map_path:
         paths['map_background.png'] = map_path
+        access_path = validate_building_access(root, manifest['map'], coverage)
+        if access_path:
+            paths['building_access.json'] = access_path
     previous = -1
     if not isinstance(replay.get('batches'), list):
         raise ValueError('Missing replay batches')

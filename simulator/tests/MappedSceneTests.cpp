@@ -318,6 +318,118 @@ void fastSweptMergeCrossingReleasesReservation() {
     require(scene.motionDiagnostics().overlapViolations==0,"Fast swept merge crossed another physical body");
 }
 
+
+MappedSceneConfig explicitVisitingScene() {
+    MappedSceneConfig input{12,10,
+        {{"precise-in",{{0,5},{6,5}},"","precise-door"},
+            {"precise-out",{{6,5},{6.8,3.8},{12,3.8}},"precise-door",""}},
+        {{"precise-person","Adult Pedestrian",1,
+            {{"precise-first","precise-in",0},{"precise-return","precise-out",0,2000}},.25}}};
+    input.motionMode=MappedMotionMode::CorridorFollowing;
+    input.portals={{"precise-door","building-a",{6,5},{4,5},{8,5},1.2,"synthetic"}};
+    return input;
+}
+
+void preciseDoorArrivalAndRealizedReentry() {
+    const auto input=explicitVisitingScene();
+    MappedScene scene(input);
+    scene.advanceTo(3500);
+    const auto approaching=scene.frameAt(3500);
+    require(approaching.size()==1 && near(approaching[0].position.x,3.5),
+        "Entering a historical 3m approach disk must not swallow a visible visitor");
+    scene.advanceTo(5950);
+    require(scene.frameAt(5950).size()==1 && near(scene.frameAt(5950)[0].position.x,5.95),
+        "A precise entry must remain visible up to the quantized route endpoint");
+    scene.advanceTo(6000);
+    require(scene.frameAt(6000).empty() && scene.episodeEndMs("precise-first")==6000,
+        "A precise entry must end exactly when its facade point is reached");
+    scene.advanceTo(7950);
+    require(scene.frameAt(7950).empty(),"Hidden dwell ended before realized arrival plus its minimum gap");
+    scene.advanceTo(8000);
+    const auto returning=scene.frameAt(8000);
+    require(returning.size()==1 && returning[0].trackId=="precise-return"
+        && near(returning[0].position.x,6) && near(returning[0].position.y,5),
+        "A return must begin at the precise same-building door with a new visible token");
+    scene.advanceTo(20000);
+    require(scene.motionDiagnostics().realizedEnds==2 && scene.motionDiagnostics().overlapViolations==0,
+        "Precise visit source failed to drain");
+    MappedScene coarse(input);coarse.advanceTo(20000);
+    require(coarse.events().size()==scene.events().size(),"Coarse precise motion lost lifecycle events");
+    for (std::size_t i=0;i<scene.events().size();++i)
+        require(scene.events()[i].trackId==coarse.events()[i].trackId
+            && scene.events()[i].atMs==coarse.events()[i].atMs,
+            "Caller cadence changed a precise entrance lifecycle");
+}
+
+void independentDoorsAndUnrelatedPassers() {
+    MappedSceneConfig input{12,10,
+        {{"first-exit",{{5,5},{5,0}},"first-door",""},
+            {"second-exit",{{6.5,5},{6.5,0}},"second-door",""},
+            {"passing-route",{{0,5.8},{12,5.8}},"",""}},
+        {{"first-person","Adult Pedestrian",1,{{"first-visible","first-exit",0}}},
+            {"second-person","Adult Pedestrian",1,{{"second-visible","second-exit",0}}},
+            {"passing-person","Adult Pedestrian",1,{{"passing-visible","passing-route",0}}}}};
+    input.motionMode=MappedMotionMode::CorridorFollowing;
+    input.portals={{"first-door","first-building",{5,5},{4.2,5},{5.8,5},1,"osm"},
+        {"second-door","second-building",{6.5,5},{5.8,5},{7.2,5},1,"synthetic"}};
+    MappedScene scene(input);
+    require(scene.frameAt(0).size()==3 && scene.motionDiagnostics().admissionWaitSteps==0,
+        "Independent nearby doors were serialized by the historical broad entrance disk");
+    scene.advanceTo(6000);
+    require(scene.frameAt(6000).size()==1 && scene.frameAt(6000)[0].trackId=="passing-visible"
+        && near(scene.frameAt(6000)[0].position.x,6),
+        "An unrelated passer was captured by an entrance or its broad admission zone");
+    scene.advanceTo(15000);
+    require(scene.motionDiagnostics().realizedEnds==3 && scene.motionDiagnostics().overlapViolations==0,
+        "Nearby independent doors failed to drain safely");
+}
+
+void splitDoorThroatPreventsOpposingContactDeadlock() {
+    MappedSceneConfig input{20,12,
+        {{"split-in",{{0,8.5},{9.2,8.5},{10,10}},"","split-door"},
+            {"split-out",{{10,10},{10.8,8.5},{20,8.5}},"split-door",""}},
+        {{"arriving-person","Pedestrian With Stroller",1,{{"arriving-track","split-in",0}},.45},
+            {"departing-person","Pedestrian With Stroller",1,{{"departing-track","split-out",9700}},.45}}};
+    input.motionMode=MappedMotionMode::CorridorFollowing;
+    input.portals={{"split-door","split-building",{10,10},{8,10},{12,10},1.2,"synthetic"}};
+    MappedScene scene(input);scene.advanceTo(40000);
+    const auto d=scene.motionDiagnostics();
+    require(d.realizedStarts==2 && d.realizedEnds==2 && d.activeTracks==0
+        && d.pendingTracks==0 && d.overlapViolations==0
+        && (d.blockedMotionSteps>0 || d.admissionWaitSteps>0),
+        "Opposing split door approaches stalled at body contact or overlapped instead of safely draining");
+}
+
+void invalidExplicitDoors() {
+    const auto bad=[](const std::function<void(MappedSceneConfig&)>& mutate) {
+        auto input=explicitVisitingScene();mutate(input);rejects([&]{MappedScene scene(input);});
+    };
+    bad([](auto& c){c.portals.push_back(c.portals.front());});
+    bad([](auto& c){c.portals[0].buildingId="  ";});
+    bad([](auto& c){c.portals[0].id=c.routes[0].id;});
+    bad([](auto& c){c.portals[0].point={6,5.001};});
+    bad([](auto& c){c.portals[0].point={-1,5};});
+    bad([](auto& c){c.portals[0].facadeStart=c.portals[0].facadeEnd;});
+    bad([](auto& c){c.portals[0].facadeStart.x=std::numeric_limits<double>::infinity();});
+    bad([](auto& c){c.portals[0].widthM=0;});
+    bad([](auto& c){c.portals[0].widthM=5;});
+    bad([](auto& c){c.portals[0].widthM=.4;});
+    bad([](auto& c){c.portals[0].point={4.2,5};c.routes[0].points.back()={4.2,5};c.routes[1].points.front()={4.2,5};});
+    bad([](auto& c){c.portals[0].provenance="assumed-osm";});
+    bad([](auto& c){c.routes[0].points.back().x+=.001;});
+    bad([](auto& c){c.routes[0].endPortal="undeclared-door";});
+    bad([](auto& c){c.routes[1].startPortal="";c.routes[1].points.front()={0,5};});
+    bad([](auto& c){c.portals.push_back({"other-door","different-building",{8,5},{7,5},{9,5},1,"osm"});
+        c.routes[1].startPortal="other-door";c.routes[1].points.front()={8,5};});
+    auto allowed=explicitVisitingScene();
+    allowed.portals.push_back({"other-door","building-a",{8,5},{7,5},{9,5},1,"osm"});
+    allowed.routes[1].startPortal="other-door";allowed.routes[1].points.front()={8,5};
+    MappedScene sameBuildingDifferentDoor(allowed);
+    sameBuildingDifferentDoor.advanceTo(8000);
+    require(near(sameBuildingDifferentDoor.frameAt(8000)[0].position.x,8),
+        "A building visit should be allowed to exit through another declared door of the same building");
+}
+
 void opposedSingleLaneStopsSafelyWithoutClaimingCompletion() {
     MappedSceneConfig input{10,10,
         {{"east",{{0,5},{10,5}},"",""},{"west",{{10,5},{0,5}},"",""}},
@@ -348,6 +460,10 @@ int main() {
         separatedOpposingLanesAndRealizedPortalGap();
         boundedBranchMergeAdmitsWaitingExitsAndDrains();
         fastSweptMergeCrossingReleasesReservation();
+        preciseDoorArrivalAndRealizedReentry();
+        independentDoorsAndUnrelatedPassers();
+        splitDoorThroatPreventsOpposingContactDeadlock();
+        invalidExplicitDoors();
         opposedSingleLaneStopsSafelyWithoutClaimingCompletion();
         std::cout << "Mapped scene route, lifecycle, identity-boundary and validation tests passed\n";
     } catch (const std::exception& error) {

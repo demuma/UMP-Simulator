@@ -508,6 +508,97 @@ class NativeRecordingTests(unittest.TestCase):
                 load.assert_not_called()
             self.assertEqual({str(path.relative_to(output)):path.read_bytes() for path in output.rglob('*') if path.is_file()},before)
 
+    def test_export_public_building_geometry_is_validated_hashed_and_keeps_private_data_separate(self):
+        self.cfg['mapped_scene']={'motion':{'mode':'buildings'}}
+        def chunk(kind,payload):
+            return struct.pack('>I',len(payload))+kind+payload+struct.pack('>I',zlib.crc32(kind+payload)&0xffffffff)
+        png=(b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',1,1,8,6,0,0,0))
+             +chunk(b'IDAT',zlib.compress(b'\x00\xff\xff\xff\xff'))+chunk(b'IEND',b''))
+        access={'schema':'ump.building-access.v1','bounds':dict(x=0,y=0,width=80,height=80),
+                'buildings':[{'id':'way1','name':'Shop building','polygons':[[[10,10],[30,10],[30,30],[10,30],[10,10]]]}],
+                'portals':[{'id':'entry1','building_id':'way1','point':[20,10],
+                            'facade':[[10,10],[30,10]],'width_m':1.2,'provenance':'synthetic'}]}
+        mapping={'image':'map_background.png','bounds':dict(x=0,y=0,width=80,height=80),
+                 'attribution':'© OpenStreetMap contributors','labels':[],'legend':[],
+                 'building_access':'building_access.json'}
+        self.cfg['simulation'].update(width=80,height=80)
+        self.cfg['mapped_scene']['portals']=copy.deepcopy(access['portals'])
+        with tempfile.TemporaryDirectory() as directory:
+            scene=Path(directory)/'scene';scene.mkdir();output=Path(directory)/'replay'
+            (scene/'config.yaml').write_text(export.yaml.safe_dump(self.cfg),encoding='utf-8')
+            (scene/'map_background.png').write_bytes(png)
+            (scene/'building_access.json').write_text(json.dumps(access))
+            with mock.patch.object(export,'load_native',return_value=self.raw),mock.patch.object(export,'map_metadata',return_value=mapping):
+                proof=export.export_scene(scene,output)
+            manifest=json.loads((output/'bundle.json').read_text())
+            self.assertEqual(manifest['map']['building_access'],'building_access.json')
+            self.assertEqual(proof['files_sha256']['building_access.json'],export.digest(scene/'building_access.json'))
+            self.assertEqual(manifest['sha256']['building_access.json'],proof['files_sha256']['building_access.json'])
+            self.assertEqual((output/'building_access.json').read_bytes(),(scene/'building_access.json').read_bytes())
+            self.assertNotIn('private-person-',(output/'building_access.json').read_text())
+            access['private_person_id']='forbidden'
+            (scene/'building_access.json').write_text(json.dumps(access))
+            rejected=Path(directory)/'rejected'
+            with mock.patch.object(export,'load_native',return_value=self.raw),mock.patch.object(export,'map_metadata',return_value=mapping):
+                with self.assertRaisesRegex(ValueError,'public building access schema'):export.export_scene(scene,rejected)
+            self.assertFalse(rejected.exists(),'Invalid public geometry must fail before creating a recording')
+
+    def test_public_building_artifact_must_match_native_portals_dimensions_and_generated_digests(self):
+        access={'schema':'ump.building-access.v1','bounds':dict(x=0,y=0,width=80,height=80),
+                'buildings':[], 'portals':[{'id':'door-b','building_id':'building-b','point':[2,0],
+                    'facade':[[0,0],[4,0]],'width_m':1.2,'provenance':'synthetic'},
+                    {'id':'door-a','building_id':'building-a','point':[8,0],
+                    'facade':[[6,0],[10,0]],'width_m':1.2,'provenance':'synthetic'}]}
+        with tempfile.TemporaryDirectory() as directory:
+            scene=Path(directory);path=scene/'building_access.json'
+            path.write_text(json.dumps(access));(scene/'map_background.png').write_bytes(b'fixture map bytes')
+            cfg={'simulation':{'width':80,'height':80},'mapped_scene':{'portals':list(reversed(copy.deepcopy(access['portals'])))}}
+            (scene/'config.yaml').write_text(export.yaml.safe_dump(cfg))
+            proof=export.validate_scene_building_access(scene,cfg,path)
+            self.assertEqual(proof['status'],'verified_native_portal_agreement')
+            self.assertFalse(proof['generated_manifest_config_and_background_verified'])
+            for mutation in ('point','facade','width_m','building_id','provenance','missing','duplicate','width','height'):
+                with self.subTest(mutation=mutation):
+                    changed=copy.deepcopy(cfg)
+                    portal=changed['mapped_scene']['portals'][0]
+                    if mutation=='point':portal['point'][0]+=.1
+                    if mutation=='facade':portal['facade'][0][0]+=.1
+                    if mutation=='width_m':portal['width_m']=1.1
+                    if mutation=='building_id':portal['building_id']='another-building'
+                    if mutation=='provenance':portal['provenance']='osm'
+                    if mutation=='missing':changed['mapped_scene']['portals'].pop()
+                    if mutation=='duplicate':changed['mapped_scene']['portals'].append(copy.deepcopy(portal))
+                    if mutation in ('width','height'):changed['simulation'][mutation]=81
+                    with self.assertRaisesRegex(ValueError,'differ from native'):export.validate_scene_building_access(scene,changed,path)
+            manifest={'motion_mode':'buildings','building_access_sha256':export.digest(path),
+                      'configuration_sha256':export.digest(scene/'config.yaml'),
+                      'background_sha256':export.digest(scene/'map_background.png')}
+            (scene/'scene_manifest.json').write_text(json.dumps(manifest))
+            proof=export.validate_scene_building_access(scene,cfg,path)
+            self.assertTrue(proof['generated_manifest_config_and_background_verified'])
+            for mutation in ('geometry','configuration','background','missing_geometry'):
+                with self.subTest(mutation=mutation):
+                    changed=copy.deepcopy(manifest)
+                    if mutation=='geometry':changed['building_access_sha256']='0'*64
+                    if mutation=='configuration':changed['configuration_sha256']='0'*64
+                    if mutation=='background':changed['background_sha256']='0'*64
+                    if mutation=='missing_geometry':changed.pop('building_access_sha256')
+                    (scene/'scene_manifest.json').write_text(json.dumps(changed))
+                    with self.assertRaisesRegex(ValueError,'digest'):export.validate_scene_building_access(scene,cfg,path)
+
+    def test_map_metadata_only_references_optional_local_public_building_artifact(self):
+        with tempfile.TemporaryDirectory() as directory:
+            scene=Path(directory)/'scene';scene.mkdir();repo=Path(directory)/'repo';repo.mkdir()
+            (scene/'scene_manifest.json').write_text(json.dumps({'map_labels':[{'text':'Building','x':20,'y':20,'kind':'building'}]}))
+            cfg={'renderer':{'map_attribution':'© OpenStreetMap contributors'}}
+            self.assertNotIn('building_access',export.map_metadata(scene,cfg,repo))
+            (scene/'building_access.json').write_text('{}')
+            self.assertEqual(export.map_metadata(scene,cfg,repo)['building_access'],'building_access.json')
+            (scene/'building_access.json').unlink()
+            external=Path(directory)/'outside.json';external.write_text('{}')
+            (scene/'building_access.json').symlink_to(external)
+            with self.assertRaisesRegex(ValueError,'Escaping public building access'):export.map_metadata(scene,cfg,repo)
+
     def test_native_read_failure_and_bounded_write_helpers(self):
         with mock.patch.object(export.shutil,'which',return_value='/mock/mongosh'),mock.patch.object(export.subprocess,'run',return_value=subprocess.CompletedProcess([],1,'','connection refused')):
             with self.assertRaisesRegex(ValueError,'Native read failed'):export.load_native(self.cfg)

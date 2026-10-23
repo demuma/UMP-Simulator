@@ -112,6 +112,25 @@ int main(int argc,char** argv) {
         rejects([&]{auto n=YAML::Clone(corridor);n["people"][0]["radius_m"]=0;read(n);});
         rejects([&]{auto n=YAML::Clone(corridor);n["people"][0]["episodes"][1].remove("after_previous_ms");read(n);});
         rejects([&]{auto n=fixture();n["people"][0]["episodes"][1]["after_previous_ms"]=8000;read(n);});
+        auto explicitDoors=YAML::Clone(corridor);
+        explicitDoors["portals"]=YAML::Load(R"([{
+            id: door, building_id: mapped-building, point: [2,5],
+            facade: [[2,3],[2,7]], width_m: 1.2, provenance: synthetic}])");
+        const auto precise=read(explicitDoors);
+        require(precise.portals.size()==1 && precise.portals[0].buildingId=="mapped-building"
+            && precise.portals[0].point.x==2 && precise.portals[0].facadeEnd.y==7
+            && precise.portals[0].widthM==1.2 && precise.portals[0].provenance=="synthetic",
+            "Explicit building door geometry was not preserved");
+        rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"][0]["typo"]=1;read(n);});
+        rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"]=YAML::Load("{id: door}");read(n);});
+        rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"][0]["facade"]=YAML::Load("[[2,3]]");read(n);});
+        rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"][0]["point"]=YAML::Load("[2,5,7]");read(n);});
+        rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"][0].remove("building_id");read(n);});
+        rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"][0]["provenance"]="unknown";read(n);});
+        rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"][0]["point"][0]=".nan";read(n);});
+        rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"].push_back(YAML::Clone(n["portals"][0]));read(n);});
+        rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"][0]["width_m"]=.7;read(n);});
+        rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"][0]["id"]="different-door";read(n);});
         std::cout << "Mapped scene YAML and retained-history support guards passed\n";
         return 0;
     } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }

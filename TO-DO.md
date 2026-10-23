@@ -15,6 +15,29 @@ initial correctness/process review and nominal paced runtime measurement are com
 native source/I/O timing and atomic empty checkpoints now pass the first M03 slice;
 remaining controller/source and paced external receipt timing stay open. The full three-scenario effectiveness study remains open. October 18 is historical.**
 
+**October 24 multi-building gate completed:** explicit synthetic facade midpoint
+doors, separate building boundaries, body/angle-aware door admission, distributed
+visits and replay overlays are implemented. The native 64-person source completes
+96 episodes/32 visits, the pure 128-person source completes 192 episodes, and the
+complete legacy corridor source/publication/journal remains unchanged. All 83
+suites and 16 mapped-core sanitizer cases pass. Read the
+[test report](docs/MULTI_BUILDING_ACCESS_TEST_REPORT_2026-10-24.md).
+
+- [x] Draw separate original building footprints and precise doors, with provenance
+  and an inspectable building/door inventory; keep map context distinct from policies.
+- [x] Use original wall midpoints only, reject artificial crop-border facades and
+  audit full route/body geometry. Keep generated movement local and ignored.
+- [x] Route actual visits to two different buildings. Verify exact entry/exit,
+  realized indoor gaps, independent doors, no accidental wall-contact disappearance,
+  all-frame body separation and complete finite drainage for the declared sources.
+- [x] Preserve legacy modes and full native GT/sensor/recipient/journal output.
+- [ ] Next privacy gate: agree the protected unit, secret, observer knowledge and
+  complete release-stream evaluation. Keep operational support compliance distinct
+  from measured inference/linkage protection; geometry alone is not a privacy result.
+- [ ] Later source extensions: additional verified actual OSM doors, explicit
+  access/level assumptions, calibrated visit rates, general dynamic crossings,
+  overtaking and richer modifier-based source taxonomy. Current doors are synthetic.
+
 **October 23 whole-system review completed:** 82/82 suites pass. Integer sensor
 phase, actual-interval ABS velocity, exact-minimum policy scheduling, UTC/offset
 parsing and fixed run origins are corrected. All three frozen mapped results are
@@ -41,14 +64,14 @@ completion caused by producer wake-up. Read the [review report](docs/SYSTEM_REVI
 - [ ] Before extending the taxonomy, agree source modifiers, unknown handling,
   wheelchair placement, release hierarchy and loss definitions on a small example.
   A multiattribute lattice is a separate future mechanism, not current behavior.
-- [ ] Extend explicit building destinations with mapped or labeled synthetic
-  reachable facade portals. Only destination-bound road users may cross them;
-  arbitrary wall contact must not remove passers-by. Verify body envelopes,
-  multi-door queues, lifecycle completion and input density as a separate gate.
-- [ ] Expand the mapped visit source beyond its one connected door: inspect all six
-  entrance nodes, level/accessibility, facade/walkable connectivity and public
-  provenance, then assign explicit destinations/visit rates. POI names alone do
-  not establish one entrance per shop. Validate multi-resource queues separately.
+- [x] Extend explicit building destinations with labeled synthetic reachable
+  facade portals. Only destination-bound road users enter; arbitrary wall contact
+  does not remove passers-by. Body envelopes, actual two-building visits, lifecycle,
+  drainage and the replay are verified in the October 24 gate above.
+- [ ] Inspect all six actual OSM entrance nodes for level/accessibility and
+  walking connectivity before treating them as verified ground-level destinations.
+  The October 24 two-building extension uses explicitly synthetic midpoint doors;
+  it does not establish one real entrance per POI or validate access rights.
 - [ ] Compare the already implemented Temporal First, Spatial First and both
   Semantic First secondaries in a separately predeclared matrix. Preserve the
   six-case immediate/semantic-wait study as its original release-trigger experiment.

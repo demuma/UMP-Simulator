@@ -11,6 +11,7 @@ import threading
 import struct
 import zlib
 import unittest
+from unittest import mock
 from urllib.error import HTTPError
 from urllib.request import urlopen
 
@@ -72,6 +73,94 @@ class ViewerTests(unittest.TestCase):
             'labels':[{'text':'Mönckebergstraße','x':40,'y':50,'kind':'street'}]}
         (self.root/'map_background.png').write_bytes(self.png())
         return self.manifest['map']
+
+    def add_building_access(self):
+        self.add_map()['building_access']='building_access.json'
+        value={'schema':'ump.building-access.v1','bounds':dict(x=0,y=0,width=80,height=80),
+               'buildings':[{'id':'way1','name':'Example building','osm_type':'way','osm_id':1,
+                             'building_type':'retail','polygons':[[[10,10],[30,10],[30,30],[10,30],[10,10]]]}],
+               'portals':[{'id':'door1','building_id':'way1','point':[20,10],
+                           'facade':[[10,10],[30,10]],'width_m':1.2,'provenance':'synthetic'}]}
+        (self.root/'building_access.json').write_text(json.dumps(value))
+        return value
+
+    def test_public_building_geometry_is_optional_and_hash_checked(self):
+        self.add_building_access();self.write()
+        _,files=serve.validate_bundle(self.root)
+        self.assertEqual(files['building_access.json'],(self.root/'building_access.json').resolve())
+        self.manifest['sha256']={'building_access.json':hashlib.sha256((self.root/'building_access.json').read_bytes()).hexdigest()}
+        self.write();serve.validate_bundle(self.root)
+        with (self.root/'building_access.json').open('a') as stream: stream.write(' ')
+        with self.assertRaisesRegex(ValueError,'digest mismatch'):
+            serve.validate_bundle(self.root)
+
+    def test_public_building_schema_rejects_private_identity_and_schedule_fields(self):
+        for level in ('root','building','portal'):
+            with self.subTest(level=level):
+                value=self.add_building_access()
+                target=value if level=='root' else value['buildings' if level=='building' else 'portals'][0]
+                target['private_person_id']='must-never-be-served'
+                (self.root/'building_access.json').write_text(json.dumps(value));self.rejected()
+
+    def test_public_building_geometry_limits_and_relationships_are_validated(self):
+        for mutation in ('bounds','open_ring','few_vertices','outside','boolean','nonfinite','duplicate_building',
+                         'duplicate_portal','unknown_building','bad_provenance','off_facade','zero_facade','width','buildings','portals'):
+            with self.subTest(mutation=mutation):
+                value=self.add_building_access();building=value['buildings'][0];portal=value['portals'][0]
+                if mutation=='bounds':value['bounds']['width']=81
+                if mutation=='open_ring':building['polygons'][0][-1]=[11,10]
+                if mutation=='few_vertices':building['polygons']=[[[1,1],[2,2],[1,1]]]
+                if mutation=='outside':building['polygons'][0][1]=[81,10]
+                if mutation=='boolean':building['polygons'][0][1]=[True,10]
+                if mutation=='nonfinite':portal['point']=[float('nan'),10]
+                if mutation=='duplicate_building':value['buildings'].append(copy.deepcopy(building))
+                if mutation=='duplicate_portal':value['portals'].append(copy.deepcopy(portal))
+                if mutation=='unknown_building':portal['building_id']='unknown'
+                if mutation=='bad_provenance':portal['provenance']='realistic'
+                if mutation=='off_facade':portal['point']=[20,11]
+                if mutation=='zero_facade':portal['facade']=[[10,10],[10,10]]
+                if mutation=='width':portal['width_m']=21
+                if mutation=='buildings':value['buildings']=[building]*257
+                if mutation=='portals':value['portals']=[portal]*513
+                (self.root/'building_access.json').write_text(json.dumps(value));self.rejected()
+        self.add_building_access();self.write()
+        with mock.patch.object(serve,'MAX_BUILDING_VERTICES',4):
+            with self.assertRaisesRegex(ValueError,'vertex limit'):serve.validate_bundle(self.root)
+
+    def test_public_building_holes_and_real_entrance_provenance_are_preserved(self):
+        value=self.add_building_access()
+        value['buildings'][0]['holes']=[[[14,14],[16,14],[16,16],[14,16],[14,14]]]
+        value['portals'][0]['provenance']='osm'
+        (self.root/'building_access.json').write_text(json.dumps(value));self.write()
+        serve.validate_bundle(self.root)
+
+    def test_public_building_path_missing_symlink_and_size_are_rejected(self):
+        self.add_building_access()
+        for path in ('../building_access.json','private/config.yaml','scene_manifest.json','https://example.org/access.json'):
+            self.manifest['map']['building_access']=path;self.rejected()
+        self.manifest['map']['building_access']='building_access.json'
+        (self.root/'building_access.json').unlink();self.rejected()
+        with tempfile.TemporaryDirectory() as other:
+            external=Path(other)/'external.json';external.write_text('{}')
+            (self.root/'building_access.json').symlink_to(external);self.rejected()
+            (self.root/'building_access.json').unlink()
+        self.add_building_access();self.write()
+        with mock.patch.object(serve,'MAX_BUILDING_ACCESS_BYTES',2):
+            with self.assertRaisesRegex(ValueError,'2 MiB'):serve.validate_bundle(self.root)
+
+    def test_only_validated_public_building_artifact_is_served(self):
+        self.add_building_access();self.write()
+        (self.root/'scene_manifest.json').write_text('{"private_person_id":"private"}')
+        server=ThreadingHTTPServer(('127.0.0.1',0),serve.handler_for(self.root,Path(__file__).parent));server.verbose=False
+        thread=threading.Thread(target=server.serve_forever,daemon=True);thread.start()
+        url='http://127.0.0.1:'+str(server.server_address[1])
+        try:
+            with urlopen(url+'/bundle/building_access.json') as response:
+                self.assertEqual(response.headers['Content-Type'],'application/json; charset=utf-8')
+                self.assertEqual(json.load(response)['schema'],'ump.building-access.v1')
+            with self.assertRaises(HTTPError):urlopen(url+'/bundle/scene_manifest.json')
+        finally:
+            server.shutdown();thread.join();server.server_close()
 
     def test_optional_map_png_and_track_metadata_validate(self):
         self.add_map()

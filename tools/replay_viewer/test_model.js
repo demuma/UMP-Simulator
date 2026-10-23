@@ -301,6 +301,19 @@ test('Map placement preserves global world coordinates through zoom and crop',()
  const shifted={x:-10,y:5,width:80,height:80};
  assert.deepEqual(M.mapImageRectangle(shifted,shifted,{left:40,top:10,scale:2}),{x:40,y:10,width:160,height:160});
 });
+test('Building and portal positions use the same world transform in full and cell-focused panels',()=>{
+ const point=[20,10];
+ assert.deepEqual(M.mapPoint(point,{x:0,y:0,width:80,height:80},{left:40,top:12,scale:4}),{x:120,y:52});
+ assert.deepEqual(M.mapPoint(point,{x:17.5,y:7.5,width:5,height:5},{left:40,top:12,scale:64}),{x:200,y:172});
+});
+test('Precise entrance segment keeps physical width and midpoint on diagonal facades',()=>{
+ const portal={point:[5,5],facade:[[0,0],[10,10]],width_m:1.2},before=JSON.stringify(portal);
+ const [a,b]=M.portalSegment(portal);
+ assert.ok(Math.abs(Math.hypot(b[0]-a[0],b[1]-a[1])-1.2)<1e-12);
+ assert.equal((a[0]+b[0])/2,5);assert.equal((a[1]+b[1])/2,5);
+ assert.equal(JSON.stringify(portal),before);
+ assert.throws(()=>M.portalSegment({point:[1,1],facade:[[1,1],[1,1]],width_m:1}),/positive length/);
+});
 test('Declared mapped source provenance does not rely on names or presumed realism',()=>{
  assert.deepEqual(M.inputProvenance({input_provenance:'Kinematic mapped routes; no collision solver.'}),
  {kind:'declared',text:'Declared input: Kinematic mapped routes; no collision solver.'});

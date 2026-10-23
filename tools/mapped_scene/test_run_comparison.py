@@ -244,6 +244,36 @@ class ComparisonTests(unittest.TestCase):
         self.assertIn('private-oracle-not-browser-data',(output/'adaptive_immediate-private-audit.json').read_text())
         self.assertEqual({str(path.relative_to(self.recording)):path.read_bytes() for path in self.recording.rglob('*') if path.is_file()},before)
 
+    def add_building_access(self):
+        access={'schema':'ump.building-access.v1','bounds':dict(x=0,y=0,width=80,height=80),
+                'buildings':[{'id':'way1','name':'Shop building','polygons':[[[10,10],[30,10],[30,30],[10,30],[10,10]]]}],
+                'portals':[{'id':'entry1','building_id':'way1','point':[20,10],
+                            'facade':[[10,10],[30,10]],'width_m':1.2,'provenance':'synthetic'}]}
+        self.write_json(self.recording/'building_access.json',access)
+        self.manifest['map']['building_access']='building_access.json'
+        self.manifest['sha256']['building_access.json']=comparison.sha(self.recording/'building_access.json')
+        self.write_json(self.recording/'bundle.json',self.manifest)
+        self.proof['files_sha256']['building_access.json']=comparison.sha(self.recording/'building_access.json')
+        self.proof['files_sha256']['bundle.json']=comparison.sha(self.recording/'bundle.json');self.write_proof()
+
+    def test_public_building_geometry_survives_same_source_comparison_without_private_sidecars(self):
+        self.add_building_access();output=self.root/'building-comparison'
+        self.run_mocked(output)
+        viewer=comparison.read(output/'bundle.json')
+        self.assertEqual(viewer['map']['building_access'],'building_access.json')
+        self.assertEqual((output/'building_access.json').read_bytes(),(self.recording/'building_access.json').read_bytes())
+        self.assertEqual(viewer['sha256']['building_access.json'],comparison.sha(output/'building_access.json'))
+        self.assertFalse((output/'private/native_source.json').exists())
+
+    def test_public_building_recording_digest_cannot_be_missing_or_changed(self):
+        self.add_building_access()
+        original=(self.recording/'building_access.json').read_bytes()
+        (self.recording/'building_access.json').write_bytes(original+b' ')
+        self.assert_preflight_rejects()
+        (self.recording/'building_access.json').write_bytes(original)
+        self.proof['files_sha256'].pop('building_access.json');self.write_proof()
+        self.assert_preflight_rejects()
+
     def test_protocol_and_query_bank_do_not_change_when_every_variant_suppresses_output(self):
         populated,_,_,_=self.run_mocked(self.root/'populated')
         empty,_,_,_=self.run_mocked(self.root/'empty',empty=True)

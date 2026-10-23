@@ -7,7 +7,7 @@ const seconds = ms => (ms / 1000).toFixed(2) + ' s';
 const number = value => value == null ? '—' : Number(value).toLocaleString('en-US',{maximumFractionDigits:3});
 const readable = name => name.replaceAll('_',' ');
 const element = (tag,text,className) => {const item=document.createElement(tag);if(text!=null)item.textContent=text;if(className)item.className=className;return item;};
-let replay, manifest, variants, events, allTypes, sourceIndex, mapImage=null, time=0, playing=false, lastTick=0;
+let replay, manifest, variants, events, allTypes, sourceIndex, mapImage=null, buildingAccess=null, time=0, playing=false, lastTick=0;
 const selections = {A:null,B:null};
 const selectionCellIds = {A:null,B:null};
 const selectorRows = {A:undefined,B:undefined};
@@ -46,6 +46,35 @@ function geographyLabels(layout){
  }
  ctx.restore();
 }
+function drawBuildingAccess(layout){
+ if(!buildingAccess)return;
+ const {ctx,left,top,w,h,viewport:g}=layout,toCanvas=point=>M.mapPoint(point,g,layout);
+ ctx.save();ctx.beginPath();ctx.rect(left,top,w,h);ctx.clip();
+ if($('buildingBoundaries').checked){
+   for(const building of buildingAccess.buildings){
+     ctx.beginPath();
+     for(const ring of [...building.polygons,...(building.holes??[])]){
+       for(const [index,point]of ring.entries()){const p=toCanvas(point);if(index)ctx.lineTo(p.x,p.y);else ctx.moveTo(p.x,p.y);}
+       ctx.closePath();
+     }
+     ctx.strokeStyle='rgba(255,255,255,.95)';ctx.lineWidth=4;ctx.stroke();
+     ctx.strokeStyle='#364c67';ctx.lineWidth=1.5;ctx.stroke();
+   }
+ }
+ if($('entranceMarkers').checked){
+   for(const portal of buildingAccess.portals){
+     const point=toCanvas(portal.point),[start,end]=M.portalSegment(portal).map(toCanvas),synthetic=portal.provenance==='synthetic';
+     ctx.strokeStyle=synthetic?'#b44720':'#12658a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(start.x,start.y);ctx.lineTo(end.x,end.y);ctx.stroke();
+     // A small screen-space glyph identifies the exact point. It is not a
+     // collision/admission radius and does not change with world zoom.
+     ctx.beginPath();
+     if(synthetic){ctx.moveTo(point.x,point.y-4);ctx.lineTo(point.x+4,point.y);ctx.lineTo(point.x,point.y+4);ctx.lineTo(point.x-4,point.y);ctx.closePath();}
+     else ctx.rect(point.x-3.5,point.y-3.5,7,7);
+     ctx.fillStyle=synthetic?'#fff4e9':'#e6f6ff';ctx.fill();ctx.lineWidth=1.6;ctx.stroke();
+   }
+ }
+ ctx.restore();
+}
 function drawPolicyRegions(layout,selectedVariants){
  if(!$('policyRegions').checked)return;
  const {ctx,left,top,w:mapWidth,h:mapHeight,scale,viewport:g}=layout,seen=new Set();
@@ -65,7 +94,7 @@ function motion() {
  const chosen=chosenEntry?.cell;
  const g=chosen||replay.coverage,{ctx,left,top,scale,w,h}=baseMap('reference',g);
  const sample=M.referenceSample(frame.visible,g),types=new Map();
- geographyLabels(layouts.reference);drawPolicyRegions(layouts.reference,[variant('A'),variant('B')]);
+ drawBuildingAccess(layouts.reference);geographyLabels(layouts.reference);drawPolicyRegions(layouts.reference,[variant('A'),variant('B')]);
  for(const observation of frame.visible){if(!types.has(observation.type))types.set(observation.type,{total:0,shown:0});types.get(observation.type).total++;}
  ctx.save();ctx.beginPath();ctx.rect(left,top,w,h);ctx.clip();
  for(const group of sample.groups){
@@ -119,7 +148,7 @@ function releaseMap(side) {
    }
  }
  ctx.restore();
- geographyLabels(layouts[id]);drawPolicyRegions(layouts[id],[v]);
+ drawBuildingAccess(layouts[id]);geographyLabels(layouts[id]);drawPolicyRegions(layouts[id],[v]);
  $('map'+side).setAttribute('aria-label',`${privateMode?'Finalized decision':'Released aggregation'} mosaic ${side}`);
  const title=$('variant'+side).previousElementSibling;
  title.textContent=`Comparison ${side} · ${privateMode?'Private finalized decisions':'Published history'}${local?' · local windows':' · common window'}`;
@@ -214,6 +243,21 @@ function legends(){
  const geography=$('geographyLegend');geography.replaceChildren();
  if(manifest.map){geography.append(element('strong','Map geography'));for(const entry of manifest.map.legend??[]){const label=element('span'),swatch=element('i',null,'swatch');swatch.style.background=entry.color;label.append(swatch,document.createTextNode(entry.label));geography.append(label);}}
  else geography.hidden=true;
+ if(buildingAccess){
+   geography.append(element('span',`${number(buildingAccess.buildings.length)} separate building footprints`));
+   for(const [label,color]of [['Building boundary highlight','#364c67'],['Synthetic facade midpoint · diamond','#b44720'],['OSM entrance · square','#12658a']]){const item=element('span'),swatch=element('i',null,'swatch');swatch.style.background=color;item.append(swatch,document.createTextNode(label));geography.append(item);}
+   const osm=buildingAccess.portals.filter(portal=>portal.provenance==='osm').length;
+   $('buildingAccessSummary').textContent=`${number(buildingAccess.portals.length)} routable entrance points (${number(osm)} OSM, ${number(buildingAccess.portals.length-osm)} synthetic). Entrance strokes show physical width; symbols mark exact targets, without an admission-radius circle. Building outlines are map context, not policy-region boundaries.`;
+   const rows=[];
+   for(const building of buildingAccess.buildings){
+     const portals=buildingAccess.portals.filter(portal=>portal.building_id===building.id);
+     if(!portals.length)rows.push([building.name,'No routable entrance in this scene','—','—','—']);
+     for(const portal of portals)rows.push([building.name,portal.id,portal.provenance==='osm'?'OSM entrance':'Synthetic facade midpoint',portal.point.map(number).join(' / '),number(portal.width_m)]);
+   }
+   $('buildingAccessInventory').replaceChildren(element('p','Building outlines come from the cached map. Synthetic entrance points are scenario assumptions; a building outline alone does not establish a shop, access right or usable entrance.','scope'),groupTable(['Building','Entrance','Provenance','Target x / y (m)','Width (m)'],rows));
+
+ }
+ $('buildingBoundariesControl').hidden=!buildingAccess;$('entranceMarkersControl').hidden=!buildingAccess;$('buildingAccessSummary').hidden=!buildingAccess;$('buildingAccessDetails').hidden=!buildingAccess;
  const types=$('typeLegend');types.replaceChildren(element('strong','Observed track types'));
  for(const [index,type]of allTypes.entries()){const label=element('span'),dot=element('i',null,'dot');dot.style.background=palette[index%palette.length];label.append(dot,document.createTextNode(type));types.append(label);}
  $('mapAttribution').textContent=manifest.map?.attribution??'';
@@ -237,6 +281,7 @@ async function start(){
  manifest=await fetchJSON('/bundle/bundle.json');if(manifest.schema!=='ump.replay-viewer.v1')throw new Error('Unsupported viewer bundle schema');
  replay=await fetchJSON('/bundle/'+manifest.observations);
  if(manifest.map){mapImage=await new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=()=>reject(new Error('Declared local map PNG could not be decoded'));image.src='/bundle/'+manifest.map.image;});}
+ if(manifest.map?.building_access)buildingAccess=await fetchJSON('/bundle/'+manifest.map.building_access);
  sourceIndex=M.buildSourceIndex(replay);
  allTypes=[...new Set(replay.batches.flatMap(b=>b.observations.map(o=>o.type)))].sort();
  variants=await Promise.all(manifest.variants.map(async v=>({...v,result:await fetchJSON('/bundle/'+v.result)})));
@@ -250,7 +295,7 @@ async function start(){
  for(const side of ['A','B']){const select=$('variant'+side);for(const [index,v]of variants.entries()){const option=element('option',v.label);option.value=index;select.append(option);}select.value=side==='A'?0:Math.min(1,variants.length-1);select.addEventListener('change',()=>{selections[side]=null;selectionCellIds[side]=null;render();});$('cell'+side).addEventListener('change',event=>{selections[side]=event.target.value;selectionCellIds[side]=displayed(side).entries.find(e=>e.key===event.target.value)?.cell.cell_id??null;render();});$('focus'+side).addEventListener('change',render);$('map'+side).addEventListener('click',event=>{const l=layouts['map'+side],r=event.currentTarget.getBoundingClientRect(),x=(event.clientX-r.left-l.left)/l.scale+l.viewport.x,y=(event.clientY-r.top-l.top)/l.scale+l.viewport.y;const entry=displayed(side).entries.find(e=>M.entryContains(e,x,y));selections[side]=entry?.key??null;selectionCellIds[side]=entry?.cell.cell_id??null;render();});}
  $('play').addEventListener('click',()=>{if(playing){pause();return;}if(time>=replay.end_ms)time=0;playing=true;lastTick=0;$('play').textContent='Ⅱ Pause';});
  $('previous').addEventListener('click',()=>{pause();time=M.eventBefore(events,time);render();});$('next').addEventListener('click',()=>{pause();time=M.eventAfter(events,time);render();});
- $('timeline').addEventListener('input',event=>{pause();time=Number(event.target.value);render();});$('private').addEventListener('change',()=>{events=M.eventTimes(variants,replay.end_ms,$('private').checked);selections.A=null;selections.B=null;selectionCellIds.A=null;selectionCellIds.B=null;render();});$('sourceGroups').addEventListener('change',render);$('policyRegions').addEventListener('change',render);$('mapNames').addEventListener('change',render);$('referenceFocus').addEventListener('change',render);
+ $('timeline').addEventListener('input',event=>{pause();time=Number(event.target.value);render();});$('private').addEventListener('change',()=>{events=M.eventTimes(variants,replay.end_ms,$('private').checked);selections.A=null;selections.B=null;selectionCellIds.A=null;selectionCellIds.B=null;render();});$('sourceGroups').addEventListener('change',render);$('policyRegions').addEventListener('change',render);$('mapNames').addEventListener('change',render);$('buildingBoundaries').addEventListener('change',render);$('entranceMarkers').addEventListener('change',render);$('referenceFocus').addEventListener('change',render);
  $('lanes').addEventListener('click',event=>{pause();const r=event.currentTarget.getBoundingClientRect(),l=layouts.lanes;time=(event.clientX-r.left-l.left)/l.w*replay.end_ms;render();});
  window.addEventListener('resize',render);$('application').hidden=false;render();requestAnimationFrame(tick);
 }

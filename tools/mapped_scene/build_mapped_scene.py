@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import functools
 import gzip
 import hashlib
 import importlib.util
@@ -212,6 +213,60 @@ def individual_corridor_paths(routes, people, seed):
     return result
 
 
+def access_module():
+    spec = importlib.util.spec_from_file_location("ump_building_access", pathlib.Path(__file__).with_name("building_access.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@functools.lru_cache(maxsize=2)
+def building_geometry(repo):
+    """Cache only immutable geometry construction; no movement data is cached."""
+    _, local, layers, _, _ = load_source(pathlib.Path(repo))
+    return access_module().build_access(local, layers)
+
+
+def building_scene(repo, seed, population, duration_s, interval_ms=None):
+    context, access_routes, construction = copy.deepcopy(building_geometry(str(repo)))
+    people, interval = corridor_people(seed, population, duration_s, interval_ms)
+    # Every second person visits. Hidden identities and return timing retain the
+    # same private-oracle/observed-episode separation as the corridor fixture.
+    base_routes = corridor_routes(seed)[:4] + access_routes
+    rng = random.Random(seed ^ 0x3C6EF372FE94F82B)
+    tokens = random.Random(seed ^ 0xBB67AE8584CAA73B)
+    for index, person in enumerate(people):
+        if index % 2 == 0:
+            portal = context["portals"][(index//2) % len(context["portals"])]
+            first = person["episodes"][0]
+            first["route_id"] = "building-in-" + portal["id"]
+            person["episodes"] = [first, {"track_id": str(uuid.UUID(int=tokens.getrandbits(128), version=4)),
+                "route_id": "building-out-" + portal["id"], "start_ms": 0,
+                "after_previous_ms": 8000 if index % 4 == 0 else 10000}]
+        else:
+            person["episodes"] = [person["episodes"][0]]
+            person["episodes"][0]["route_id"] = f"corridor-{'east' if index%4==1 else 'west'}-{rng.randrange(2)}"
+    routes = {row["id"]: row for row in base_routes}
+    individual = []
+    # Identifiers are independent of private identity spelling. Individual
+    # through corridors retain their existing smooth variation. Access paths
+    # remain exact checked polylines: no unchecked jitter beside a facade.
+    through_people = [p for p in people if len(p["episodes"]) == 1]
+    individual.extend(individual_corridor_paths(base_routes, through_people, seed))
+    for person in people:
+        if len(person["episodes"]) < 2:
+            continue
+        for episode in person["episodes"]:
+            base = routes[episode["route_id"]]
+            identifier = "building-route-" + str(uuid.UUID(int=rng.getrandbits(128), version=4))
+            individual.append({**copy.deepcopy(base), "id": identifier})
+            episode["route_id"] = identifier
+    return {"support_contract": "one_episode_per_retained_history",
+        "motion": {"mode": "corridor_following", "step_ms": 50, "clearance_m": .1,
+                   "portal_gate_radius_m": 1.3},
+        "portals": context["portals"], "routes": individual, "people": people}, context, construction
+
+
 def profiles():
     result = []
     colors = ["blue", "magenta", "purple", "orange", "green"]
@@ -317,7 +372,12 @@ def make_config(repo, database, duration, render, seed, motion_mode="integration
     agg["semantic_taxonomy"] = {"id": "ump-mapped-pedestrian-release", "version": "1", "nodes":
         [{"id": "road_user", "loss": 1}, {"id": "pedestrian", "parent": "road_user", "loss": .5}] +
         [{"id": node, "parent": "pedestrian", "loss": 0, "input_types": [label]} for node, label in zip(leaves, PROFILES)]}
-    if motion_mode == "corridor":
+    if motion_mode == "buildings":
+        cfg["mapped_scene"], _, _ = building_scene(repo, seed, population, duration, arrival_interval_ms)
+        cfg["agents"]["num_agents"] = population
+        for row in cfg["agents"]["road_user_taxonomy"]:
+            row["probability"] = sum(p["type"] == row["type"] for p in cfg["mapped_scene"]["people"]) / population
+    elif motion_mode == "corridor":
         people,interval=corridor_people(seed,population,duration,arrival_interval_ms)
         routes=individual_corridor_paths(corridor_routes(seed),people,seed)
         cfg["mapped_scene"]={"support_contract":"one_episode_per_retained_history",
@@ -384,10 +444,14 @@ def audit_config(cfg):
             individual_route_count=len(cfg["mapped_scene"]["routes"]),
             route_variation_scope="Each visible episode has a seeded smooth lateral path variant within a directional corridor; facade and boundary endpoints are pinned. No per-frame jitter or overtaking guarantee.",
             support_scope="Distinct observed tracks; declared relative hidden gaps exceed retained history. No GT association reaches aggregation.")
+    if cfg["mapped_scene"].get("portals"):
+        result.update(building_destinations=len({p["building_id"] for p in cfg["mapped_scene"]["portals"]}),
+            portal_scope="Synthetic, reachable original-facade midpoints. Exact endpoint admission, not arbitrary wall contact. Exterior geometry does not establish real doors, shops or access permission.",
+            route_variation_scope="Individual smooth through corridors; checked fixed access branches at two distinct buildings, with exact facade endpoints. No per-frame access jitter or general route-planner claim.")
     return result
 
 
-def draw_background(layers, output):
+def draw_background(layers, output, building_access=None):
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
@@ -396,7 +460,7 @@ def draw_background(layers, output):
     colors = {"building": "#CBD1D9", "road": "#E4B66B", "walking": "#B8DDD5", "cycling": "#B9CAE4", "crossing": "#D5BFDF", "entrance": "#E4B295"}
     fig = plt.figure(figsize=(8, 8), dpi=100)
     ax = fig.add_axes([0, 0, 1, 1]); ax.set_facecolor("#F4F5F7")
-    for kind in ["road", "walking", "cycling", "crossing", "building", "entrance"]:
+    for kind in ["road", "walking", "cycling", "crossing", "building"] + ([] if building_access else ["entrance"]):
         geometry = layers[kind]
         parts = [geometry] if geometry.geom_type == "Polygon" else getattr(geometry, "geoms", [])
         for polygon in parts:
@@ -412,7 +476,33 @@ def draw_background(layers, output):
                 codes.extend([Path.MOVETO] + [Path.LINETO] * (len(pts)-2) + [Path.CLOSEPOLY])
             ax.add_patch(PathPatch(Path(vertices, codes), facecolor=colors[kind],
                                    edgecolor="#7A8590" if kind == "building" else "none", linewidth=.5))
-    ax.plot(DOOR[0], DOOR[1], marker="o", color="#A64422", markersize=4)
+    if building_access:
+        # Original footprints are kept distinct rather than merged into one
+        # grey mask, including shared/adjacent boundaries and clipped edges.
+        for building in building_access["buildings"]:
+            for ring in building["polygons"] + building.get("holes", []):
+                ax.plot([p[0] for p in ring], [p[1] for p in ring], color="#59636F", linewidth=1.1)
+        selected_buildings = {p["building_id"] for p in building_access["portals"]}
+        for building in building_access["buildings"]:
+            if building["id"] in selected_buildings:
+                polygon = max((Polygon(ring) for ring in building["polygons"]), key=lambda p:p.area)
+                label_point = polygon.representative_point()
+                ax.text(label_point.x, label_point.y, building["name"], fontsize=7,
+                        color="#36414B", ha="center", va="center")
+        for portal in building_access["portals"]:
+            a, b = portal["facade"]
+            length = math.dist(a, b)
+            tangent = [(b[i]-a[i])/length for i in range(2)]
+            center, half = portal["point"], portal["width_m"]/2
+            ax.plot([center[0]-half*tangent[0], center[0]+half*tangent[0]],
+                    [center[1]-half*tangent[1], center[1]+half*tangent[1]],
+                    color="#C44720", linewidth=3, solid_capstyle="butt")
+            ax.plot(center[0], center[1], marker="o", color="#8B2E13", markersize=2)
+        ax.text(1, 1, "© OpenStreetMap contributors | ODbL 1.0\nOrange door: synthetic facade midpoint; synthetic motion",
+                fontsize=6, color="#36414B", va="top",
+                bbox={"facecolor":"white", "alpha":.92, "edgecolor":"none", "pad":3})
+    else:
+        ax.plot(DOOR[0], DOOR[1], marker="o", color="#A64422", markersize=4)
     ax.set_xlim(0, SIDE); ax.set_ylim(SIDE, 0); ax.set_aspect("equal"); ax.set_axis_off()
     fig.savefig(output, dpi=100, facecolor="#F4F5F7", pad_inches=0)
     plt.close(fig)
@@ -426,8 +516,8 @@ def main():
     parser.add_argument("--duration-s", type=int, default=90)
     parser.add_argument("--seed", type=int, default=20261023)
     parser.add_argument("--render", action="store_true")
-    parser.add_argument("--motion-mode",choices=["integration","corridor"],default="integration")
-    parser.add_argument("--population",type=int,default=64,help="Corridor explicit population; historical mode stays at 64")
+    parser.add_argument("--motion-mode",choices=["integration","corridor","buildings"],default="integration")
+    parser.add_argument("--population",type=int,default=64,help="Corridor/buildings explicit population; historical mode stays at 64")
     parser.add_argument("--arrival-interval-ms",type=int,help="Corridor source interval, multiple of 50 ms; default spreads requests across horizon")
     args = parser.parse_args()
     repo = args.repo.resolve()
@@ -439,14 +529,21 @@ def main():
         parser.error("output directory already exists; choose a fresh output")
     _, local, layers, assumptions, provenance = load_source(repo)
     cfg = make_config(repo, args.database, args.duration_s, args.render, args.seed,args.motion_mode,args.population,args.arrival_interval_ms)
-    geometry = route_geometry_audit(local, layers,
-        cfg["mapped_scene"]["routes"] if args.motion_mode=="corridor" else None,
-        max(p["radius_m"] for p in cfg["mapped_scene"]["people"])+cfg["mapped_scene"]["motion"]["clearance_m"] if args.motion_mode=="corridor" else None)
+    context, construction = None, None
+    if args.motion_mode == "buildings":
+        context, _, construction = copy.deepcopy(building_geometry(str(repo)))
+        geometry = access_module().audit_access(local, layers, cfg["mapped_scene"]["routes"], context["portals"])
+    else:
+        geometry = route_geometry_audit(local, layers,
+            cfg["mapped_scene"]["routes"] if args.motion_mode=="corridor" else None,
+            max(p["radius_m"] for p in cfg["mapped_scene"]["people"])+cfg["mapped_scene"]["motion"]["clearance_m"] if args.motion_mode=="corridor" else None)
     scene = audit_config(cfg)
     args.output.mkdir(parents=True)
     config_bytes = yaml.safe_dump(cfg, sort_keys=False, allow_unicode=True).encode()
     (args.output / "config.yaml").write_bytes(config_bytes)
-    draw_background(layers, args.output / "map_background.png")
+    draw_background(layers, args.output / "map_background.png", context)
+    if context is not None:
+        (args.output / "building_access.json").write_text(json.dumps(context, indent=2, ensure_ascii=False) + "\n")
     report = {"status": "pass", "seed": args.seed, "configuration_sha256": sha(config_bytes),
               "background_sha256": sha((args.output / "map_background.png").read_bytes()),
               "generator_sha256": sha(pathlib.Path(__file__).read_bytes()), **provenance,
@@ -454,7 +551,10 @@ def main():
               "map_width_assumptions": assumptions,
               "policy_scope": "Four illustrative disjoint raster-aligned regions through the normal Region/PolicyTree adapter. Requirements are declared experimental choices, not validated privacy protection or map-derived law.",
               "execution": "cd to this output folder, then run the maintained simulator/build/Simulator; no simulation or DB operation was executed by this generator."}
-    if args.motion_mode=="corridor": report["motion_mode"]="corridor"
+    if args.motion_mode in ("corridor", "buildings"): report["motion_mode"] = args.motion_mode
+    if context is not None:
+        report["building_access"] = construction
+        report["building_access_sha256"] = sha((args.output / "building_access.json").read_bytes())
     (args.output / "scene_manifest.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
     print(json.dumps({"status": "pass", "output": str(args.output), "config_sha256": report["configuration_sha256"],
                       "people": scene["scheduled_people"], "episodes": scene["visible_episodes"], "visitors": scene["scheduled_visitors"]}))
