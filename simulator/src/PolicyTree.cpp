@@ -88,8 +88,9 @@ PolicyTree::PolicyTree(PolicyTreeConfig setup, std::vector<PolicyRegion> selecte
         Rect area{x, y, right - x, bottom - y};
         if (area.width <= 0 || area.height <= 0)
             throw std::invalid_argument("Policy region is smaller than the supported grid: " + region.id);
-        for (const auto& earlier : regions) if (intersects(earlier.area, area))
-            throw std::invalid_argument("Overlapping selected policy regions are not supported: " + region.id);
+        // Selected regions may overlap. Every intersecting region contributes
+        // hard bounds; conflicts between otherwise valid regions are preserved
+        // on the affected compiled footprint rather than silently relaxed.
         regions.push_back({area, std::move(effective)});
     }
     std::vector<std::size_t> all;
@@ -140,7 +141,11 @@ std::size_t PolicyTree::compile(Rect area, int depth, const std::vector<std::siz
     for (auto i : indices) effective = intersect(effective, regions[i].policy);
     const auto index = nodes.size();
     nodes.push_back({area, depth, intern(std::move(effective))});
-    if (indices.empty() || (indices.size() == 1 && contains(regions[indices[0]].area, area))) return index;
+    // Membership is homogeneous when every relevant region covers this node.
+    // This includes multiple overlapping/nested regions and, vacuously, no
+    // regions. Aligned finest leaves always satisfy this condition.
+    if (std::all_of(indices.begin(), indices.end(),
+            [&](std::size_t i) { return contains(regions[i].area, area); })) return index;
     if (depth == config.grid.leafDepth) throw std::logic_error("Aligned policy region cuts a finest leaf");
     const int half = area.width / 2;
     for (int quadrant = 0; quadrant < 4; ++quadrant) {

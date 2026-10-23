@@ -34,8 +34,10 @@ inline std::vector<std::string> aggregationCompletedLines(const SpatialSelection
         "Coarser: " + std::to_string(snapshot.coarsenedCells) + " | Finer: "
             + std::to_string(snapshot.refinedCells)
     };
-    if (snapshot.coordinationCell)
+    if (snapshot.coordinationCell) {
         lines.insert(lines.begin() + 1, "Latest local decision: cell " + std::to_string(snapshot.coordinationCell->id));
+        lines.push_back("Latest decision only; full publication history is in the recorded replay");
+    }
     if (snapshot.publicationState == "retired_without_release") lines.push_back("No cells released");
     lines.push_back("Solid: green selected, orange coarser, blue finer, red suppressed");
     return lines;

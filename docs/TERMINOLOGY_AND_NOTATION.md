@@ -1,6 +1,6 @@
 # Terminology, notation and mathematical contract
 
-Version 1.12 — 2026-10-23. This is the project's canonical terminology for the presentation,
+Version 1.13 — 2026-10-23. This is the project's canonical terminology for the presentation,
 paper, dissertation and new documentation. It describes the implemented baseline and marks
 future extensions explicitly. Earlier reviews retain historical/local notation; use this
 reference when translating them into publication text. Code identifiers are mapped below;
@@ -149,9 +149,10 @@ coarsening to 40-m cells, not the full 80-m synthetic root. Three upward levels 
 side by 8 and area by 64; they do not require 64 materialized bucket copies.
 
 A functional region R_r need not equal a data cell. It can span or intersect many cells.
-Currently its boundaries must align to finest-cell edges, and selected regions are disjoint
-axis-aligned rectangles. General polygon/overlap semantics require an explicit future
-geometry compiler. “Not one-to-one with cells” must not imply that arbitrary misalignment
+Its boundaries currently must align to finest-cell edges. Selected axis-aligned
+rectangles may overlap, nest or coincide; the compiler retains all applicable
+constraints and sources. Arbitrary polygons/misalignment require an explicit
+geometry preprocessing step. “Not one-to-one with cells” must not imply that arbitrary misalignment
 is already accepted by the current parser.
 
 ## 5. Time and observations
@@ -252,7 +253,11 @@ A missing lower/upper bound is mathematically -infinity/+infinity; actual config
 remain finite and use the registered domain. A weaker child requirement cannot relax an
 inherited bound. A cross-region footprint can have an empty admissible range while its
 children remain individually feasible. The current parser rejects an inherited conflict
-within one region at startup; a conflicting combined footprint is a failed candidate.
+within one region at startup. Conjunction-only conflicts between individually
+valid overlapping regions are retained as infeasible compiled spatial policies;
+resolution on that footprint fails eligibility while unaffected cells remain usable.
+A coarse footprint can also become infeasible through conjunction across separate
+strict patches, even when its children are individually feasible.
 
 **P2 — Admissibility of a cell/interval candidate.** For valid geometry and stream context:
 
@@ -1268,3 +1273,67 @@ Scenario-local stroller and mobility-aid terminals truthfully generalize to
 Pedestrian, then Road User. The mover plus equipment is one modeled observed unit;
 a stroller occupant contributes separate support only if separately modeled and
 observed. Labels alone imply neither age/diagnosis nor calibrated motion behavior.
+
+
+## 30. Numerical progress, native capture and replay fidelity
+
+Implemented 2026-10-23. The native source has separate numerical progress and
+measurement clocks: Delta t_sim=50 ms and delta_sigma=100 ms in the mapped scene.
+For explicit matching replay progress, define q_l=l Delta t_sim, l>=0. A q_l that
+is not a scheduled sensor sample creates no observation batch or measured-empty
+certificate. Sample zero is not in the sensor schedule of section 5.
+
+The native AGBS update calls manager.advance(q_l) before capturing a due batch;
+manager.ingest then appends that batch and notifies progress again at the same
+sample timestamp. The exclusive horizon is finalized separately. This order can
+change adaptive coordination even when the observed batches are identical.
+Consequently, a same-input mechanism comparison must fix both clocks, initial
+progress and event ordering, rather than only the sensor period.
+
+`AggregationReplay --progress-step-ms 50` reproduces this native ordering, including
+advance(0). The optional positive step must divide the sensor period, not exceed
+it, and align the horizon. Event budgets include initialization/finalization.
+Pacing changes wall-clock arrival scheduling, not this logical event sequence.
+The absent-option path retains the historical replay behavior and output schema;
+explicit progress metadata is recorded only when the option is supplied.
+
+Native capture converts recorded GT positions at sensor sample times and verifies
+them against actual raw AGBS cells. It retains immutable recipient releases and
+committed private retirements. An event-driven audit checks the visible GT set at every numerical step against
+recorded half-open episode intervals. A completed numerical horizon, this coverage
+evidence, fail-fast GT writes and the declared clock support the measured-empty
+claim; absent raw occupied-cell rows alone do not. Horizon completion and completion
+of all scheduled episodes are separate fields, with active/pending/stalled counts. Capture does not infer unrecorded active/rejected
+candidates or observed metric checks from final publication records.
+
+## 31. Track interventions and publication accounting
+
+The implemented private identity study fixes every physical observation, type,
+sample status and timestamp while changing only identity labels. Fragmentation
+uses declared 500/1000-ms global boundaries; the privileged stable-person variant
+is an evaluation reference only. Applying its mapping operationally would change
+the mechanism's information boundary and is prohibited. Delta n from section 29
+and same-numeric-threshold false passes diagnose support assumptions; they do not
+measure a successful adversarial attack or establish k-anonymity.
+
+For a recorded result and playhead t, let R_t denote actual release events with
+sealing time at most t and K_r their original selected cells. Distinguish
+
+$$
+N_{\mathrm{events}}(t)=|\mathcal R_t|,\qquad
+N_{\mathrm{cell\text{-}windows}}(t)=\sum_{r\in\mathcal R_t}|K_r|,\qquad
+N_{\mathrm{spatial}}(t)=\left|\{\nu(C):C\in K_r,r\in\mathcal R_t\}\right|.
+$$
+
+The same spatial ID can occur in multiple source intervals. A historical mosaic
+can mask old geometry with newer scopes, creating drawing fragments without
+creating publications or redistributing the original aggregate's counts. Neither
+visible mosaics nor counts over asynchronous intervals describe a simultaneous
+current population. Rewind uses the event prefix at t and removes later events.
+
+Maximum simultaneous modeled-person support is now available as a diagnostic
+private-evaluator reference, including per-category cases. It remains conditional
+on the observation/detection model and is not an implemented online metric or a
+replacement for `distinct_contributors`. Missing denominators remain unavailable.
+The current integration report distinguishes retention from exact/estimated
+application-query utility and from empirical privacy.

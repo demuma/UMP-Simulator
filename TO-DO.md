@@ -7,13 +7,16 @@ requirements and stated limits before broadening the mechanism. Membership attac
 remain deferred. Recipient-contract diagnosis, runtime profiling and prefix-based
 ownership lookup, occupied-leaf discovery, sorted history ranges and merge-range
 lookup are complete, with unchanged policy/coordination/publication output.
-Diagnostic costs and full/off file output are measured and verified. Today's presentation structure is ready. M01 now verifies one bounded mapped entrance/visit source through the maintained Simulator and normal Policy Tree path. Next complete persistent local mapped replay and inspect source/semantic decisions.
-Refine movement/collision validity before scaling density. Then compare fair
-fixed/adaptive settings (M02) and revisit measured performance (M03). The full three-scenario effectiveness study remains open. October 18 is historical.**
+Diagnostic costs and full/off file output are measured and verified. Today's presentation structure is ready. M01 now includes persistent native mapped capture/replay, inspected regional constraints,
+overlapping PolicyTree compilation, a same-clock identity study and a predeclared
+six-method comparison. Fresh corridor native capture, clock-matched replay and
+visual acceptance now pass within the reported bounded sources. Review those
+findings, then perform the requested whole-system correctness/process and
+performance review (M03). The full three-scenario effectiveness study remains open. October 18 is historical.**
 
 **October 22–23 checkpoint:**
 
-- [x] **M01 mapped scene, sequential gate:** implement and verify the
+- [x] **M01 historical mapped integration gate:** implement and verify the
   [80-m route/lifecycle and identity contract](docs/MAPPED_SCENE_IDENTITY_CONTRACT_2026-10-23.md)
   through the maintained Simulator: 64 modeled people / 80 visible tracks / 16
   visits, one verified entrance, four normal regional policy patches and five
@@ -23,33 +26,51 @@ fixed/adaptive settings (M02) and revisit measured performance (M03). The full t
   pass independent checks and private GT renaming preserves full logical output.
   See the [test report](docs/MAPPED_SCENE_TEST_REPORT_2026-10-23.md). Kinematic
   movement, long hidden gaps and scenario-local taxonomy are explicit limits.
-- [ ] **M01 follow-up, persistent local mapped replay:** user clarification on
-  2026-10-23 permits retaining generated movement/observation recordings locally
-  for replay. Keep them under ignored `results/`; never stage/push them. Add the
-  missing native MongoDB → frozen replay adapter, actual release/journal timing,
-  aligned map, attribution, legend and snapshot-derived street/building labels.
-  Preserve observation track IDs; keep the person mapping private. Label absent
-  failed-candidate diagnostics unavailable, rather than reconstructing decisions.
-  Verify cell inspection, rewind, source completeness and exact agreement with the
-  native recipient stream before calling browser replay integration complete.
-- [ ] **M01 visualization truth gate:** the native G overlay currently shows only
+- [x] **M01 persistent local mapped replay:** native MongoDB capture now persists
+  actual GT-sampled positions, matched raw AGBS observations, immutable releases
+  and committed private retirements under ignored `results/`. Completed source,
+  schemas/stream identities, counts/semantics, regional bounds and journal equality
+  are independently checked. Browser map alignment, attribution, snapshot names,
+  three legends, cell inspection, rewind and cumulative counters are implemented
+  and visually inspected. Stable person mapping stays in an unserved private
+  sidecar; unavailable rejected/active checks are never fabricated. Local movement
+  retention is authorized, but no sampled stream belongs in Git. See the
+  [current integration report](docs/MAPPED_REPLAY_INTEGRATION_TEST_REPORT_2026-10-23.md).
+- [x] **M01 native/offline clock fidelity:** separate 50-ms numerical progress
+  from 100-ms measurements. Explicit `--progress-step-ms` includes origin zero,
+  pre-ingest progress and no-measurement ticks; observations retain their original
+  cadence. The default legacy CLI path is preserved. Direct native-like callback,
+  missing/unavailable/empty coverage, event-budget and paced equivalence checks
+  pass. Original-episode identity reruns match native logical releases using the
+  same clock. Future experiments must pin both clocks, not only sensor cadence.
+- [ ] **M01 remaining native visualization truth gate:** browser historical
+  mosaics, policy/root inspection and distinct publication counters are complete.
+  The native G overlay currently shows only
   the latest finalized local decision; an empty retirement can replace earlier
-  successful releases before the next 100-ms display sample. Add an explicit
-  latest-decision label and trustworthy cumulative release/cell-window counters;
+  successful releases before the next 100-ms display sample. The explicit
+  latest-decision scope label is now present. Add trustworthy cumulative
+  release/cell-window counters;
   provide a scope-aware historical mosaic if cumulative geometry is displayed.
   Dashed amber means the active owner's dated last check failed/unavailable, not
   final suppression. Draw configured policy-region bounds separately from OSM
   context and explain root/region inheritance. Verify overlays against actual
   recipient events; do not infer total publications from visible rectangles.
-- [ ] **M01 follow-up, movement before density:** retain the four-route source as
-  the historical integration fixture. Current motion has one arrival burst over
-  0..12.6 s and no collision response. Add seeded spatial route variation inside
-  checked walking corridors, distributed boundary sources/destinations and
-  body-clearance checks; avoid independent per-frame position jitter. Keep
-  portal visits explicit. Then integrate/verify local collision response with
-  route progress and event times driven by realized motion. Delays must not
-  reset a track or count as an indoor visit. Preserve legacy motion behavior.
-  Inspect actual overlaps and ingress headways before increasing density.
+- [x] **M01 bounded corridor motion acceptance:** preserve the four-route integration
+  fixture. Corridor code now adds seeded individual smooth paths inside checked
+  walking geometry, sustained source requests, body-envelope checks, realized
+  progress/stops, source/door admission and an explicit local route-join gate.
+  Its FIFO merge coordination is source motion, not a policy Region or an
+  aggregation sibling merge. Door/body token admission and compatible through
+  batches prevent starvation in the bounded case; this is not a global solver,
+  free overtaking or deadlock-freedom claim. Arrival/dwell/return events follow
+  realized progress; waits preserve the track. Core/generator checks include the
+  dense exact-population fixture draining beyond a shorter observation horizon.
+  Fresh native capture/export, body/route/lifecycle checks and browser inspection
+  pass for the bounded reference. Its original-episode replay matches native
+  logical releases at the same clock. The denser finite horizon retains active/
+  queued trips; the separate longer drain check completes the requested episodes.
+  Continue reporting censoring and long stop tails before increasing density.
+  Legacy movement remains unchanged; see the current integration report.
 - [ ] **M01 follow-up, explain semantic decisions before controller changes:**
   current `policy_satisfied` permits a positive-cost category at the first legal
   endpoint, even if future waiting might preserve subtypes. Five-track support
@@ -61,53 +82,62 @@ fixed/adaptive settings (M02) and revisit measured performance (M03). The full t
   Compare ingress/density levels separately, with fixed type shares and matched
   route/arrival seeds. Report actual concurrent/local density, semantic tiers,
   coverage, suppression and delay. More total scheduled people or more spatial
-  variation is not assumed to improve subtype support or privacy. No controller,
-  policy or movement change is implemented by this planning checkpoint.
-- [ ] **Overlapping Region gate, after replay inspection:** extend the compiled
-  PolicyTree to accept nested/partially overlapping aligned rectangles. For each
-  metric use the maximum lower bound and minimum upper bound from root, region
-  types and all intersected instances; retain all sources. Do not select one
-  winning Region. A candidate crossing even an unoccupied strict patch inherits
-  its bounds over the whole footprint. Keep malformed individual definitions and
-  root/single-Region contradictions rejected. Valid individual Regions may have
-  an infeasible conjunction: retain that spatial policy as infeasible, diagnose
-  it before the run and forbid releases there; unaffected areas can continue.
-  Update compilation's homogeneous-membership stop condition as well as the
-  overlap guard. Verify nested/partial/identical rectangles, touching edges,
-  order independence, provenance, ancestors, empty support and infeasible leaves.
-  Update old overlap-rejection tests/tools/docs; keep the OSM export's disjoint
-  partition check as a separate geometry contract. Arbitrary polygons remain a
-  later rasterization/input task. This gate is planned, not implemented.
-- [ ] **Track fragmentation / statistical meaning gate, before density claims:**
-  retain stable modeled-person IDs only in private GT. Operational tracks end
-  when an episode ends; building return has a new ID and no oracle relinking.
-  With identical detections, positions, types and sample times, ID fragmentation
-  must preserve AGBS occupancy, observation contributions and type counts. Track
-  unions/category support can increase; unique visitors, linked visits and
-  person-level dwell are unavailable without additional linkage assumptions.
-  ABS velocity warm-up is a separate observable loss on new tracks. Compare
-  unchanged movement with controlled ID fragmentation, short indoor gaps and
-  stable-ID private references. Report delta n, inflation ratio (undefined at a
-  zero denominator), false threshold passes against GT, occupancy invariance and
-  ABS warm-up loss. Revisit the integrated long-gap restriction explicitly rather
-  than retaining it as a general solution. The source's current contract remains
-  unchanged until a new supported identity/metric contract is implemented.
+  variation is not assumed to improve subtype support or privacy. No new
+  trade-off objective has been added: this gate uses the existing controllers.
+  The same-input six-method comparison is now implemented; review its bounded
+  results before changing controller priorities. Higher retention does not imply
+  better exact fixed-time query coverage. The fixed baseline can still win the
+  predeclared query task; absent output over empty geography remains unknown.
+- [x] **Overlapping Region compiler gate:** nested, partial and identical aligned
+  rectangles now contribute every applicable root/type/instance bound; maximum
+  minima and minimum maxima retain all sources. There is no winning Region.
+  Coarse candidates inherit strict patches even over unoccupied support. Malformed
+  individual rules and root/single-Region inherited conflicts remain rejected;
+  conjunction-only conflicts between individually valid Regions are represented
+  as infeasible spatial policies and cannot release data. Compilation handles
+  homogeneous overlapping membership, not only the old overlap guard. Tests cover
+  overlap geometry, touching edges, order/provenance and infeasible footprints.
+  General polygons/misalignment remain a separate preprocessing task; the OSM
+  export's disjoint-partition test remains a distinct geometry contract.
+- [x] **Track fragmentation analysis gate:** `analyze_tracks.py` compares original
+  episodes, 500/1000-ms ID fragments and an explicitly privileged evaluation-only
+  GT reference on fixed physical observations. Occupancy/type counts and sample
+  opportunities stay invariant; interval/category unions and downstream decisions
+  may change. It reports track/person support, inflation, same-threshold false
+  passes and diagnostic peak support, with zero denominators unavailable. Stable
+  mapping never enters the operational source/controller. Same-clock original
+  reruns reproduce checked native logical releases. ABS warm-up remains a separate
+  sensor-specific effect; unique visitors or linked indoor dwell are not inferred
+  from new IDs. This diagnoses an assumption, not an empirical attack or a
+  person-level anonymity guarantee. Keep general support/privacy decisions open.
+- [ ] **ABS fragmentation warm-up accounting:** quantify velocity/row loss after
+  track breaks separately; the completed fragmentation study evaluates AGBS
+  support and does not establish unchanged ABS output or warm-up utility.
 - [ ] **Conservative support comparison:** evaluate maximum simultaneous observed
   support per candidate and per released category as a proposed lower bound on
   distinct physical people, assuming no duplicate detections/tracks or false
   positives within a sample. This needs no cross-gap re-identification, but five
   sequential passers may have peak support one, so temporal pooling receives less
-  credit. It is not implemented or an anonymity guarantee. Use a separate named
-  metric/policy variant; never silently replace current distinct-track semantics.
+  credit. Peak support is now computed as an evaluator-only diagnostic; it is
+  not an online metric/policy variant or an anonymity guarantee. Use a separate
+  named runtime metric/policy variant; never silently replace current distinct-track semantics.
   Bound tests and compare retention, semantic detail and delay before adoption.
   A stronger compatibility-based person lower bound is later research, not part
   of the next implementation. Define the protected unit and secret before attacks.
-- [ ] **M02 mapped experiment gate:** review source flows, query tasks and local
-  policy requirements; compare fixed grid/window, static regional and adaptive
-  settings on identical observations. Report retained data, subtype availability,
-  query error/coverage and delay. All M01 releases generalize to Pedestrian; this
-  is not a demonstrated privacy gain or baseline advantage. Keep the original
-  residential / shopfront / crossing plan as separate, unfinished scenarios.
+- [x] **M02 bounded same-recording method comparison:** freeze the six-method
+  matrix and 10-m/1-s exact-plus-estimate query bank before result execution.
+  Compare immediate/preference-waiting adaptive controllers and 5/10-m ×
+  400/1000-ms fixed baselines with identical hard policies/taxonomy and the same
+  50-ms progress/100-ms measurement clock. Record policy/retirement audits,
+  retention, subtype support, weighted resolution/loss/age and exact versus
+  separately assessed estimated query utility. Input integrity and no-oracle
+  boundaries are checked. Review the current report: an adaptive retention gain
+  is not a universal query-utility victory or measured privacy improvement.
+- [ ] **M02 broader scenario/effectiveness gate:** multiple independent source
+  seeds/density regimes, explicit regional application tasks and the original
+  residential / shopfront / crossing scenarios remain unfinished. Freeze each
+  protocol before examining outcomes. Define the protected unit/secret and
+  adversary before making empirical privacy claims.
 - [ ] **General person-support / fragmented-track gate:** operational support is
   distinct tracks. The first scene enforces hidden gap > retained history; the
   real-sensor short-gap regression deliberately produces two tracks from one GT
@@ -116,9 +146,13 @@ fixed/adaptive settings (M02) and revisit measured performance (M03). The full t
 - [ ] **M03 renewed optimization gate after mapped-scene correctness:** profile source
   motion, sensor capture, regional/semantic checks, history and merge queries,
   diagnostics and publication separately. The audited 9,531 private empty-retirement
-  checkpoints are an explicit I/O workload to inspect; their runtime share and
+  checkpoints in the historical integration reference and 46,597 empty
+  retirements in the corrected 64-person corridor capture are explicit I/O
+  workloads to inspect; their runtime share and
   durability trade-off are not established. Preserve identical logical output before
   and after each optimization; report source deadlines and receipt/queueing delay.
+  Next perform the requested full correctness/process review across source,
+  sensors, policy compilation, history, publication, replay and experiment tooling before applying further optimization.
 
 - [x] **Optional real-map feasibility gate (October 23):** use a real Mönckebergstraße
   OSM extract, project functional regions and conservatively discretise three
@@ -128,7 +162,8 @@ fixed/adaptive settings (M02) and revisit measured performance (M03). The full t
   independent geometry/provenance checks. See the [report](docs/OSM_MOENCKEBERG_FEASIBILITY_2026-10-23.md).
 - [ ] Complete full-map OSM → normal Region configuration, general traversable
   routes/portals, collision obstacles and validated visit labels. M01 implements
-  only one checked entrance, four explicit routes and four normal policy patches.
+  one checked entrance and four normal policy patches; the historical fixture has
+  four routes, while corridor mode adds checked individual episode paths.
   A kilometre-scale D6 root has 16-m cells in this test; the local 80-m D6 footprint
   retains 1.25-m cells. Neither import nor finer depth is a measured privacy gain.
   The actual Rappolthaus entrance is not verified as residential. Complete the
@@ -146,7 +181,8 @@ fixed/adaptive settings (M02) and revisit measured performance (M03). The full t
   subsequent semantic local gate verifies independent owner windows instead.
 - [x] Integrate these checks into the [four-step taxonomy/policy roadmap](docs/TAXONOMY_POLICY_ROADMAP_2026-10-22.md).
   Full modifier-based population generation, regional attribute restrictions and
-  arbitrary/overlapping map geometry remain later work.
+  arbitrary polygon/misaligned geometry remain later work; aligned rectangular
+  overlaps are now supported by the normal compiled PolicyTree.
 - [x] Inventory the 162 existing changed paths and prepare a compact, integrity-checked
   results-only package. Keep generated movement recordings, full replay streams,
   the 29-GB raw result tree and external papers out of Git.
@@ -587,8 +623,8 @@ made for this review.
 - [ ] Resolve active/preemptive interval ownership, publication states and bounded retention.
 - [ ] Define sibling time alignment and already-published-data behavior for merge/split.
 - [x] Integrate existing Region instances into one application policy tree, with cached lookup
-  and explicit inheritance/boundary rules; no full tree per individual metric (initial aligned,
-  non-overlapping rectangle scope; see A04).
+  and explicit inheritance/boundary rules; no full tree per individual metric. The
+  original aligned/disjoint scope now supports nested/overlapping aligned rectangles (A04).
 - [ ] Define metric inputs/units and update triggers; distinguish per-observation statistics,
   deadline-based checks and offline evaluation. Correct the slide's ambiguous utility formulas.
 - [ ] Establish a small performance baseline before adding a thread or changing data transport.
@@ -639,7 +675,9 @@ Database writing and rendering consume the resulting release rather than decidin
 - [x] **P4 — Minimal actual policy tree (A04).** Implemented a separate immutable tree with
   root/type/Region inheritance and a runnable two-region example. Compatible numeric hard
   bounds intersect; cross-region parent conflicts do not contaminate child requirements.
-  Unsupported overlaps/unaligned boundaries and contradictory inherited rules fail explicitly.
+  Aligned nested/overlapping Regions now intersect all applicable bounds. Unaligned
+  boundaries and inherited contradictions within one Region still fail startup;
+  conjunction-only cross-Region conflicts remain infeasible spatial policies.
   Tests cover geometry, inheritance, context and startup before DB writes. Thresholds are
   demonstration parameters; root strategy/model selection is now integrated, while regional execution overrides and live policy changes remain open.
 - [x] **P5 — Initial decision and publication baseline (A03/A05).** Evaluate a candidate with P3/P4 and record
@@ -1010,7 +1048,9 @@ cell-local coordination or A07 before increasing environment realism.
   40-m parent at 400 ms versus four 20-m cells at 500 ms; later refinement verified.
 - [ ] Define the street cross-section, stable region IDs and movement paths for road,
   cycleways, footways and entrance patches, plus the shop-front variant.
-- [ ] Use aligned disjoint rectangles first; explicitly decompose entrance/context overlap.
+- [x] Support aligned nested/overlapping entrance/context patches with strict
+  conjunction; disjoint experimental controls remain useful but are not required by
+  the compiler. Arbitrary polygon conversion remains open.
 - [ ] Validate corridor/path containment and border transitions independently of aggregation.
 - [ ] Define fixed per-region occupancy queries and extend the evaluator for required region
   masks/query shapes; never use private GT to fill absent public support.
@@ -1154,7 +1194,9 @@ are not completed by this slice.
   by one numeric strictness rule. Keep model fixed per initial run and preserve release history.
 - [x] Handle cells crossing aligned region boundaries by intersecting all affected
   requirements, even over unoccupied portions. Keep finer feasible children usable.
-- [ ] Extend beyond non-overlapping rectangular regions; specify nesting/overlap semantics.
+- [x] Extend aligned rectangular Regions to nested/overlapping geometry with strict
+  numeric conjunction, full provenance and infeasible-footprint handling.
+- [ ] Extend geometry input beyond aligned rectangles with explicit polygon/raster semantics.
 - [x] Fix policies during initial runs; retain tree ID/version and per-cell effective ID,
   sources and structural feasibility in v3 internal diagnostics.
 - [ ] Specify cache invalidation and open-window behavior before permitting live changes.

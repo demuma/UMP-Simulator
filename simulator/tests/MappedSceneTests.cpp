@@ -184,6 +184,155 @@ void invalidConfigurations() {
     rejects([&] { scene.episodeEndMs("unknown-track"); });
     rejects([&] { scene.privatePersonForTrack("unknown-track"); });
 }
+
+void conservativeFollowersAndActualVelocity() {
+    MappedSceneConfig input{20,10,{{"lane",{{0,2},{8,2},{8,6},{20,6}},"",""}},
+        {{"leader-person","Adult Pedestrian",1,{{"leader","lane",0}}},
+            {"follower-person","Adult Pedestrian",2,{{"follower","lane",200}}}}};
+    input.motionMode=MappedMotionMode::CorridorFollowing;
+    MappedScene scene(input);
+    bool sawBlocked=false;
+    std::map<std::string,Point> previousPositions;
+    for (int time=0;time<=30000;time+=50) {
+        scene.advanceTo(time);const auto frame=scene.frameAt(time);
+        for (std::size_t a=0;a<frame.size();++a) for (std::size_t b=a+1;b<frame.size();++b)
+            require(std::hypot(frame[a].position.x-frame[b].position.x,
+                    frame[a].position.y-frame[b].position.y)>=.5-1e-7,
+                "Follower body overlapped its leader at a corner");
+        if (scene.motionDiagnostics().blockedMotionSteps) sawBlocked=true;
+        for (const auto& track:frame) {
+            require(std::hypot(track.velocity.x,track.velocity.y)<=2+1e-9,
+                "Realized velocity exceeded the declared preferred speed");
+            const auto previous=previousPositions.find(track.trackId);
+            if (previous!=previousPositions.end())
+                require(std::abs(track.velocity.x-(track.position.x-previous->second.x)/.05)<1e-8
+                    && std::abs(track.velocity.y-(track.position.y-previous->second.y)/.05)<1e-8,
+                    "Reported actual velocity differs from realized finite-step displacement");
+        }
+        previousPositions.clear();
+        for (const auto& track:frame) previousPositions.emplace(track.trackId,track.position);
+    }
+    require(sawBlocked && scene.motionDiagnostics().admissionWaitSteps>0
+        && scene.motionDiagnostics().overlapViolations==0,"Follower/admission collision response did not occur");
+    require(scene.episodeEndMs("follower")>12000,"Faster follower ignored collision delay");
+    rejects([&]{scene.advanceTo(0);});
+}
+
+void separatedOpposingLanesAndRealizedPortalGap() {
+    MappedSceneConfig input{12,10,
+        {{"east",{{0,2},{12,2}},"",""},{"west",{{12,4},{0,4}},"",""},
+            {"door-in",{{0,7},{6,7}},"","door"},
+            {"door-out",{{6,7},{6,5},{0,5}},"door",""}},
+        {{"east-person","Adult Pedestrian",2,{{"east-track","east",0}}},
+            {"west-person","Adult Pedestrian",2,{{"west-track","west",0}}},
+            {"door-leader-person","Adult Pedestrian",1,{{"door-leader","door-in",0}}},
+            {"visitor-person","Adult Pedestrian",2,
+                {{"in-track","door-in",200},{"out-track","door-out",0,8000}}}}};
+    input.motionMode=MappedMotionMode::CorridorFollowing;input.portalGateRadiusM=1;
+    MappedScene scene(input);
+    for (int time=0;time<=20000;time+=50) scene.advanceTo(time);
+    require(scene.motionDiagnostics().realizedEnds==5 && scene.motionDiagnostics().overlapViolations==0,
+        "Separated opposing lanes or the portal visit failed to finish");
+    AggregationTime entry=-1,reentry=-1;
+    for (const auto& event:scene.events()) {
+        if (event.trackId=="in-track" && event.kind==MappedEventKind::EpisodeEnd) entry=event.atMs;
+        if (event.trackId=="out-track" && event.kind==MappedEventKind::EpisodeStart) reentry=event.atMs;
+    }
+    require(entry>3200 && reentry-entry>=8000,"Indoor gap was based on planned rather than delayed realized arrival");
+    MappedScene coarse(input);
+    coarse.advanceTo(20000);
+    require(coarse.motionDiagnostics().realizedEnds==5 && coarse.events().size()==scene.events().size(),
+        "A large caller step changed bounded motion or lifecycle counts");
+    for (std::size_t i=0;i<scene.events().size();++i)
+        require(scene.events()[i].trackId==coarse.events()[i].trackId
+            && scene.events()[i].atMs==coarse.events()[i].atMs,
+            "Caller cadence changed realized admission or departure time");
+    rejects([&]{coarse.advanceTo(20001);});
+}
+
+
+void boundedBranchMergeAdmitsWaitingExitsAndDrains() {
+    MappedSceneConfig input{30,16,
+        {{"through",{{0,6},{15,6},{30,6}},"",""},
+            {"exit",{{10,12},{10,10},{12,8},{14,6.3},{16,6},{30,6}},"door",""}}, {}};
+    input.motionMode=MappedMotionMode::CorridorFollowing;
+    input.portalGateRadiusM=2;
+    // Requests use intentionally reversed opaque names: admission order must
+    // depend on arrival time, and shared through batches must stay finite.
+    for (int i=0;i<24;++i) {
+        const auto token="through-"+std::to_string(100-i);
+        input.people.push_back({"private-through-"+std::to_string(i),"Adult Pedestrian",
+            1.1+(i%3)*.2,{{token,"through",i*500}},i%2 ? .45 : .35});
+    }
+    for (int i=0;i<4;++i)
+        input.people.push_back({"private-exit-"+std::to_string(i),"Pedestrian With Stroller",
+            1.2,{{"exit-"+std::to_string(100-i),"exit",i*4000}},.45});
+    MappedScene scene(input);
+    AggregationTime firstExitCrossing=-1, lateThroughCrossing=-1;
+    for (int time=0;time<=150000;time+=50) {
+        scene.advanceTo(time);
+        for (const auto& track:scene.frameAt(time)) {
+            if (track.position.x>=16.5 && track.trackId=="exit-100" && firstExitCrossing<0)
+                firstExitCrossing=time;
+            if (track.position.x>=16.5 && track.trackId=="through-77" && lateThroughCrossing<0)
+                lateThroughCrossing=time;
+        }
+    }
+    const auto diagnostic=scene.motionDiagnostics();
+    require(diagnostic.realizedStarts==28 && diagnostic.realizedEnds==28
+        && diagnostic.activeTracks==0 && diagnostic.pendingTracks==0
+        && diagnostic.overlapViolations==0 && diagnostic.mergeAdmissionWaitSteps>0,
+        "Bounded building/through merge did not safely drain every scheduled track");
+    require(firstExitCrossing>=0 && lateThroughCrossing>firstExitCrossing,
+        "A stream of later through requests starved an earlier building exit");
+    std::map<std::string,int> starts,ends;
+    for (const auto& event:scene.events()) {
+        if (event.kind==MappedEventKind::EpisodeStart) ++starts[event.trackId];
+        else ++ends[event.trackId];
+    }
+    for (const auto& person:input.people) for (const auto& episode:person.episodes)
+        require(starts[episode.trackId]==1 && ends[episode.trackId]==1,
+            "Merge completion dropped, teleported or duplicated a scheduled lifecycle");
+    // Caller cadence must not change reservations or realized lifecycle times.
+    MappedScene coarse(input);coarse.advanceTo(150000);
+    require(coarse.events().size()==scene.events().size(),"Coarse caller step lost a merge lifecycle");
+    for (std::size_t i=0;i<scene.events().size();++i)
+        require(scene.events()[i].trackId==coarse.events()[i].trackId
+            && scene.events()[i].atMs==coarse.events()[i].atMs,
+            "Merge reservations depend on caller cadence");
+}
+
+
+void fastSweptMergeCrossingReleasesReservation() {
+    MappedSceneConfig input{1000,16,
+        {{"through",{{0,6},{1000,6}},"",""},
+            {"exit",{{14,10},{14,8},{14,6.3},{16,6},{1000,6}},"door",""}},
+        {{"private-fast","Adult Pedestrian",400,{{"a-exit","exit",0}}},
+            {"private-through","Adult Pedestrian",10,{{"z-through","through",0}}}}};
+    input.motionMode=MappedMotionMode::CorridorFollowing;input.portalGateRadiusM=1;
+    MappedScene scene(input);scene.advanceTo(2000);
+    const auto frame=scene.frameAt(2000);
+    const auto through=std::find_if(frame.begin(),frame.end(),[](const auto& t){return t.trackId=="z-through";});
+    require(through!=frame.end() && through->position.x>15,
+        "A body crossing the whole merge resource in one substep retained stale ownership");
+    require(scene.motionDiagnostics().overlapViolations==0,"Fast swept merge crossed another physical body");
+}
+
+void opposedSingleLaneStopsSafelyWithoutClaimingCompletion() {
+    MappedSceneConfig input{10,10,
+        {{"east",{{0,5},{10,5}},"",""},{"west",{{10,5},{0,5}},"",""}},
+        {{"a-person","Adult Pedestrian",1,{{"a-track","east",0}}},
+            {"b-person","Adult Pedestrian",1,{{"b-track","west",0}}}}};
+    input.motionMode=MappedMotionMode::CorridorFollowing;
+    MappedScene scene(input);
+    scene.advanceTo(20000);
+    const auto diagnostic=scene.motionDiagnostics();
+    require(diagnostic.overlapViolations==0 && diagnostic.activeTracks==2
+        && diagnostic.activeStalledTracks==2 && diagnostic.maxConsecutiveStopMs>=10000,
+        "Conservative head-on stall was hidden or allowed overlap");
+    for (const auto& track:scene.frameAt(20000))
+        require(track.velocity.x==0 && track.velocity.y==0,"A stopped track was overwritten by preferred velocity");
+}
 } // namespace
 
 int main() {
@@ -195,6 +344,11 @@ int main() {
         shortGapInflatesTrackSupport();
         touchingEpisodesAndSortedEvents();
         invalidConfigurations();
+        conservativeFollowersAndActualVelocity();
+        separatedOpposingLanesAndRealizedPortalGap();
+        boundedBranchMergeAdmitsWaitingExitsAndDrains();
+        fastSweptMergeCrossingReleasesReservation();
+        opposedSingleLaneStopsSafelyWithoutClaimingCompletion();
         std::cout << "Mapped scene route, lifecycle, identity-boundary and validation tests passed\n";
     } catch (const std::exception& error) {
         std::cerr << "Mapped scene test failed: " << error.what() << '\n';

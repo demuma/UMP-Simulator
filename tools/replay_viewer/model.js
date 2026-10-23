@@ -34,6 +34,42 @@
     }
     return {contributions, count};
   }
+  /* Count immutable original records, never the clipped display fragments. */
+  function releaseAccounting(result,time) {
+    const spatial=new Set();let publishedCellWindows=0,releaseEvents=0,contributions=0;
+    for(const release of result.releases){
+      if(release.sealed_at_ms>time)break;
+      releaseEvents++;
+      for(const cell of release.cells){
+        publishedCellWindows++;spatial.add(String(cell.cell_id));
+        contributions+=cell.observation_contributions??0;
+      }
+    }
+    return {publishedCellWindows,uniqueSpatialCells:spatial.size,releaseEvents,contributions};
+  }
+  function intersects(a,b) {return a.x<b.x+b.width&&b.x<a.x+a.width&&a.y<b.y+b.height&&b.y<a.y+a.height;}
+  /* Declaration inspection only: no observed values or pass/fail are invented.
+     A coarse cell inherits every positively intersected regional declaration. */
+  function policyAt(variant,cell) {
+    const regions=(variant.policy_regions??[]).filter(region=>intersects(region,cell));
+    const combined=new Map();
+    const add=(requirements,source)=>{for(const requirement of requirements??[]){
+      let bound=combined.get(requirement.metric);
+      if(!bound){bound={metric:requirement.metric,sources:[]};combined.set(requirement.metric,bound);}
+      if(requirement.min!=null)bound.min=bound.min==null?requirement.min:Math.max(bound.min,requirement.min);
+      if(requirement.max!=null)bound.max=bound.max==null?requirement.max:Math.min(bound.max,requirement.max);
+      bound.sources.push({source,...requirement});
+    }};
+    add(variant.policy_root_requirements,'root');
+    for(const region of regions)add(region.requirements,region.id);
+    const requirements=[...combined.values()].map(bound=>({...bound,conflict:bound.min!=null&&bound.max!=null&&bound.min>bound.max}));
+    return {rootDeclared:Array.isArray(variant.policy_root_requirements),regions,requirements,
+      conflicting:requirements.some(bound=>bound.conflict)};
+  }
+  function mapImageRectangle(bounds,viewport,layout) {
+    return {x:layout.left+(bounds.x-viewport.x)*layout.scale,y:layout.top+(bounds.y-viewport.y)*layout.scale,
+      width:bounds.width*layout.scale,height:bounds.height*layout.scale};
+  }
   function eventTimes(variants, end, privateMode=false) {
     const rows=privateMode?'windows':'releases',stamp=privateMode?'evaluated_at_ms':'sealed_at_ms';
     return [...new Set([0,end,...variants.flatMap(v => v.result[rows].map(r => r[stamp]))])].sort((a,b)=>a-b);
@@ -59,6 +95,8 @@
   function inputProvenance(manifest) {
     /* The frozen legacy local-policy bundle declares its source in its title.
        Other source kinds must remain unspecified rather than inferred from IDs. */
+    if(typeof manifest.input_provenance==='string'&&manifest.input_provenance.trim())
+      return {kind:'declared',text:'Declared input: '+manifest.input_provenance};
     if(typeof manifest.title==='string'&&/(?:^|·\s*)scripted mechanism test$/i.test(manifest.title))
       return {kind:'scripted',text:'Declared input: scripted mechanism test (bundle title). This analytical setup is designed to exercise policy decisions; its small coordinate changes do not represent realistic traffic movement.'};
     return {kind:'unspecified',text:'Replay input. The bundle does not declare its generation method here; the reference displays its recorded coordinates.'};
@@ -184,5 +222,5 @@
     if(index.cache.size>=32)index.cache.delete(index.cache.keys().next().value);
     index.cache.set(key,summary);return summary;
   }
-  return {lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,referenceSample,inputProvenance,selectCell,mosaicAt,selectEntry,entryContains,MAX_VISIBLE_FRAGMENTS,buildSourceIndex,sourceGroups};
+  return {lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,referenceSample,inputProvenance,selectCell,mosaicAt,selectEntry,entryContains,MAX_VISIBLE_FRAGMENTS,buildSourceIndex,sourceGroups,releaseAccounting,policyAt,mapImageRectangle};
 }));

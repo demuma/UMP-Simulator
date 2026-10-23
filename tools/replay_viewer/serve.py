@@ -17,10 +17,14 @@ import math
 from pathlib import Path, PurePosixPath
 import re
 import sys
+import struct
+import zlib
 from urllib.parse import unquote, urlsplit
 
 SCHEMA = 'ump.replay-viewer.v1'
 ASSETS = ('index.html', 'model.js', 'viewer.js')
+MAX_MAP_BYTES = 16 * 1024 * 1024
+MAX_MAP_SIDE = 4096
 
 
 def read_json(path: Path):
@@ -46,12 +50,25 @@ def numeric(value, name, minimum=0):
         raise ValueError(f'Invalid {name}')
 
 
-def validate_policy_regions(variant: dict, coverage: dict):
-    """Optional display metadata remains bounded and spatially truthful.
+def validate_requirements(requirements, description):
+    if not isinstance(requirements, list) or len(requirements) > 64:
+        raise ValueError(description+' requires a list of at most 64 bounds')
+    for requirement in requirements:
+        if not isinstance(requirement, dict) or not isinstance(requirement.get('metric'), str) or not re.fullmatch(r'[a-z][a-z0-9_]{0,95}', requirement['metric']):
+            raise ValueError(description+' metrics must be lowercase identifier strings')
+        if 'min' not in requirement and 'max' not in requirement:
+            raise ValueError(description+' requires a minimum or maximum')
+        for bound in ('min', 'max'):
+            if bound in requirement:
+                numeric(requirement[bound], description+' '+bound, -math.inf)
+        if 'min' in requirement and 'max' in requirement and requirement['min'] > requirement['max']:
+            raise ValueError(description+' minimum cannot exceed its maximum')
 
-    These declarations do not evaluate policy or certify recorded cell checks.
-    They only supply local overlays for private research inspection.
-    """
+
+def validate_policy_regions(variant: dict, coverage: dict):
+    """Validate declarations, never reconstruct missing observed metric checks."""
+    if 'policy_root_requirements' in variant:
+        validate_requirements(variant['policy_root_requirements'], 'Root policy')
     if 'policy_regions' not in variant:
         return
     regions = variant['policy_regions']
@@ -71,19 +88,106 @@ def validate_policy_regions(variant: dict, coverage: dict):
             numeric(region.get(key), 'policy region '+key, -math.inf if key in ('x', 'y') else 0)
         if region['width'] <= 0 or region['height'] <= 0 or region['x'] < coverage['x'] or region['y'] < coverage['y'] or region['x']+region['width'] > coverage['x']+coverage['width'] or region['y']+region['height'] > coverage['y']+coverage['height']:
             raise ValueError('Policy region rectangle must have positive size and lie inside coverage')
-        requirements = region.get('requirements', [])
-        if not isinstance(requirements, list) or len(requirements) > 64:
-            raise ValueError('Policy region requirements must be a list of at most 64 bounds')
-        for requirement in requirements:
-            if not isinstance(requirement, dict) or not isinstance(requirement.get('metric'), str) or not re.fullmatch(r'[a-z][a-z0-9_]{0,95}', requirement['metric']):
-                raise ValueError('Policy region metrics must be lowercase identifier strings')
-            if 'min' not in requirement and 'max' not in requirement:
-                raise ValueError('Policy region requirements need a minimum or maximum')
-            for bound in ('min', 'max'):
-                if bound in requirement:
-                    numeric(requirement[bound], 'policy region requirement '+bound, -math.inf)
-            if 'min' in requirement and 'max' in requirement and requirement['min'] > requirement['max']:
-                raise ValueError('Policy region minimum cannot exceed its maximum')
+        validate_requirements(region.get('requirements', []), 'Policy region')
+
+
+def validate_png(path: Path):
+    """Bound and structurally validate the one local RGB/RGBA map asset.
+
+    Header dimensions alone do not stop a compressed pixel bomb. Validate chunk
+    CRCs and bound decompression to the declared noninterlaced scanline size.
+    No optional image decoder, arbitrary file serving or animation is used.
+    """
+    if path.stat().st_size > MAX_MAP_BYTES:
+        raise ValueError('Map PNG exceeds 16 MiB')
+    data = path.read_bytes()
+    if len(data) < 45 or data[:8] != b'\x89PNG\r\n\x1a\n':
+        raise ValueError('Map image must be a complete PNG')
+    offset, header, chunks, ended = 8, None, [], False
+    while offset < len(data):
+        if offset+12 > len(data):
+            raise ValueError('Truncated map PNG chunk')
+        length = struct.unpack('>I', data[offset:offset+4])[0]
+        kind = data[offset+4:offset+8]
+        end = offset+12+length
+        if end > len(data):
+            raise ValueError('Truncated map PNG payload')
+        payload = data[offset+8:offset+8+length]
+        crc = struct.unpack('>I', data[offset+8+length:end])[0]
+        if zlib.crc32(kind+payload) & 0xffffffff != crc:
+            raise ValueError('Map PNG chunk checksum mismatch')
+        if header is None:
+            if kind != b'IHDR' or length != 13:
+                raise ValueError('Map PNG needs an initial IHDR')
+            width,height,depth,color,compression,filtering,interlace = struct.unpack('>IIBBBBB',payload)
+            if not 1 <= width <= MAX_MAP_SIDE or not 1 <= height <= MAX_MAP_SIDE or depth != 8 or color not in (2,6) or compression or filtering or interlace:
+                raise ValueError('Map PNG must be bounded noninterlaced 8-bit RGB or RGBA')
+            header = (width,height,3 if color==2 else 4)
+        elif kind == b'IHDR':
+            raise ValueError('Duplicate map PNG header')
+        elif kind == b'IDAT':
+            chunks.append(payload)
+        elif kind == b'IEND':
+            if length or end != len(data):
+                raise ValueError('Map PNG must end at IEND')
+            ended = True
+        elif kind in (b'acTL',b'fcTL',b'fdAT') or not (kind[0] & 32):
+            raise ValueError('Unsupported animated or critical map PNG chunk')
+        offset = end
+    if not ended or not chunks:
+        raise ValueError('Incomplete map PNG')
+    width,height,channels = header
+    row_bytes = width*channels+1
+    expected = row_bytes*height
+    try:
+        decoder = zlib.decompressobj()
+        pixels = decoder.decompress(b''.join(chunks), expected+1)
+        if len(pixels) != expected or not decoder.eof or decoder.unused_data or decoder.unconsumed_tail:
+            raise ValueError('Map PNG decompressed size disagrees with its dimensions')
+        if any(pixels[index] > 4 for index in range(0,expected,row_bytes)):
+            raise ValueError('Invalid map PNG scanline filter')
+    except zlib.error as error:
+        raise ValueError('Invalid compressed map PNG') from error
+    return width,height
+
+
+def validate_map(root: Path, manifest: dict, coverage: dict):
+    if 'identity_unit' in manifest and manifest['identity_unit'] not in ('visible_episode_track','observed_identity'):
+        raise ValueError('Unsupported replay identity unit')
+    if 'input_provenance' in manifest and (not isinstance(manifest['input_provenance'],str) or not manifest['input_provenance'].strip() or len(manifest['input_provenance']) > 1024):
+        raise ValueError('Input provenance must be nonempty text up to 1024 characters')
+    if 'map' not in manifest:
+        return None
+    mapping = manifest['map']
+    if not isinstance(mapping,dict) or mapping.get('image') != 'map_background.png':
+        raise ValueError('Map image must be the literal allowlisted map_background.png')
+    bounds = mapping.get('bounds')
+    if not isinstance(bounds,dict) or any(type(bounds.get(key)) not in (int,float) or not math.isfinite(bounds[key]) or bounds[key] != coverage[key] for key in ('x','y','width','height')):
+        raise ValueError('Map bounds must exactly match observation coverage')
+    attribution = mapping.get('attribution')
+    if not isinstance(attribution,str) or not attribution.strip() or len(attribution) > 512:
+        raise ValueError('Map requires attribution text up to 512 characters')
+    legend = mapping.get('legend',[])
+    if not isinstance(legend,list) or len(legend) > 32:
+        raise ValueError('Map legend requires at most 32 entries')
+    for entry in legend:
+        if not isinstance(entry,dict) or not isinstance(entry.get('label'),str) or not entry['label'].strip() or len(entry['label']) > 160 or not isinstance(entry.get('color'),str) or not re.fullmatch(r'#[0-9a-fA-F]{6}',entry['color']):
+            raise ValueError('Map legend needs bounded text and RGB hex colors')
+    labels = mapping.get('labels',[])
+    if not isinstance(labels,list) or len(labels) > 200:
+        raise ValueError('Map labels require at most 200 entries')
+    for label in labels:
+        if not isinstance(label,dict) or not isinstance(label.get('text'),str) or not label['text'].strip() or len(label['text']) > 160 or label.get('kind','place') not in ('street','building','shop','entrance','place'):
+            raise ValueError('Invalid map label')
+        for key in ('x','y'):
+            numeric(label.get(key),'map label '+key,-math.inf)
+        if not coverage['x'] <= label['x'] <= coverage['x']+coverage['width'] or not coverage['y'] <= label['y'] <= coverage['y']+coverage['height']:
+            raise ValueError('Map label lies outside coverage')
+    path = (root/'map_background.png').resolve()
+    if not path.is_relative_to(root.resolve()) or not path.is_file():
+        raise ValueError('Missing or escaping map image')
+    validate_png(path)
+    return path
 
 
 def canonical_cell(cell: dict, coverage: dict) -> tuple[int, int, int, int]:
@@ -226,6 +330,9 @@ def validate_bundle(root: Path) -> tuple[dict, dict[str, Path]]:
         raise ValueError('Coverage must have positive dimensions')
     if type(coverage['leaf_depth']) is not int or not 1 <= coverage['leaf_depth'] <= 14:
         raise ValueError('Coverage requires an integer leaf depth in [1,14]')
+    map_path = validate_map(root, manifest, coverage)
+    if map_path:
+        paths['map_background.png'] = map_path
     previous = -1
     if not isinstance(replay.get('batches'), list):
         raise ValueError('Missing replay batches')
@@ -285,7 +392,7 @@ def handler_for(root: Path, assets: Path):
             source = routes[path]
             data = source.read_bytes()
             self.send_response(200)
-            self.send_header('Content-Type', 'application/json; charset=utf-8' if source.suffix == '.json' else 'text/javascript; charset=utf-8' if source.suffix == '.js' else 'text/html; charset=utf-8')
+            self.send_header('Content-Type', 'application/json; charset=utf-8' if source.suffix == '.json' else 'text/javascript; charset=utf-8' if source.suffix == '.js' else 'image/png' if source.suffix == '.png' else 'text/html; charset=utf-8')
             self.send_header('Content-Length', str(len(data)))
             self.send_header('Cache-Control', 'no-store')
             self.send_header('X-Content-Type-Options', 'nosniff')

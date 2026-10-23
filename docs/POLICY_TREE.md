@@ -1,7 +1,8 @@
 # Regional policy tree
 
-Status: 2026-10-14. A04 numeric policies are implemented and verified. The initial tree
-now also accepts application-level execution choices for the integrated A03/A05 path.
+Status: 2026-10-23. A04 numeric policies and strict composition of overlapping/nested
+aligned rectangular Regions are implemented. The tree also accepts application-level
+execution choices for the integrated A03/A05 path.
 Metric computation remains in the evaluator; execution choices are interpreted by the
 controller/publication adapter, not numerically intersected as metric requirements.
 
@@ -36,17 +37,21 @@ Root duration <= 1000 ms and regional duration >= 1200 ms are a configuration er
 
 Use existing Region instances with explicit IDs and their SFML geometry. A selected region
 must be inside the stream coverage, rectangular and aligned to the finest supported cells.
-Selected regions must not overlap in positive area; touching edges are allowed. Unknown
-region IDs/types, duplicate IDs/types, unsupported boundaries and exhausted node budgets
-are explicit errors. Unselected regions do not apply to this application/stream.
+Selected regions may overlap or nest. Every positive-area intersection contributes
+requirements; touching edges or corners alone do not. Distinct Regions may have identical
+geometry. Duplicate Region IDs, inconsistent definitions of one Region type, unknown
+references, unsupported boundaries and exhausted node budgets are explicit errors.
+Unselected regions do not apply to this application/stream.
 An omitted Region ID gets a configuration-order ID for legacy compatibility; explicit IDs
 are recommended wherever a policy_tree references regions.
 
 The policy tree is a separate, sparse quadtree compiled once before database initialization.
 Its synthetic root covers the whole sensor square. Four children match the data tree's
 base-cell convention (depth 1, IDs 12–15). Refine only where a region boundary requires it;
-do not expand every maximum-depth data leaf. Homogeneous descendants share one immutable
-effective policy, and lookup walks only the existing policy nodes. Enforce max_nodes.
+do not expand every maximum-depth data leaf. A node is homogeneous when all intersecting
+Regions contain its entire footprint, including multiple overlapping Regions. Its
+descendants share one immutable effective policy, and lookup walks only existing nodes.
+Enforce max_nodes.
 Small numeric comparison tolerances handle representation error, not arbitrary boundary
 snapping. Candidate ID, depth, bounds, grid and application must match the compiled domain.
 
@@ -63,7 +68,13 @@ If regions A and B permit cell sides [5,10] and [20,40] respectively, their own 
 can be feasible while their combined footprint has incompatible bounds [20,10]. Preserve
 that parent as explicitly infeasible; its metric check reports contradictory_policy_bounds.
 Do not abort the whole valid regional configuration and do not contaminate child policies.
-Whether to merge, split or suppress is a later decision-layer responsibility.
+The same rule applies where otherwise individually valid Regions overlap: the intersection
+may be infeasible even at a finest leaf. Any ancestor touching that contradiction also
+inherits it; a larger cell cannot remove a local hard requirement. Exclusive neighboring
+footprints keep their own requirements. Malformed individual ranges and a single Region
+contradicting the root still fail startup validation. No weighting, priority override or
+averaging reconciles incompatible hard bounds. Merge, split, waiting and suppression
+remain controller decisions; no candidate may bypass an infeasible policy.
 
 ## Configuration
 
@@ -99,9 +110,10 @@ a successful overall assessment; unavailable reference metrics remain unavailabl
 
 No new thread, SharedBuffer consumer, mutable data-tree reference or per-tick region scan
 is introduced. The tree is immutable for the run. It uses standard C++; YAML/Region adaptation
-and JSON serialization are outside the core. Runtime policy changes, overlapping/nested
-selected regions, arbitrary polygons, temporal policy regions, preference/action conflicts,
-multiple simultaneously published application views and adaptive decision selection remain open.
+and JSON serialization are outside the core. Construction-only Region geometry is
+discarded after compilation; there is no per-timestep rectangle/polygon intersection.
+Runtime policy changes, arbitrary polygons, temporal policy regions, regional execution
+preferences and multiple simultaneously published application views remain outside this gate.
 A02 now provides [bounded private reconstruction](AGGREGATION_HISTORY.md) for alternative
 cell/interval candidates; this does not change policy or publication semantics.
 
@@ -129,6 +141,35 @@ its instance minimum 2 cannot weaken 5. Region `northeast` inherits duration <= 
 regions use the root. All thresholds are illustrative. Agent placement is not reproducibly
 seeded, so exact occupied-cell counts vary; deterministic unit fixtures establish the rules.
 
+## Strict overlapping Region gate — 2026-10-23
+
+The focused policy regression covers partial, nested and identical overlaps; edge/corner
+contact; strict root/type/instance bounds; complete ancestor footprints including empty
+strict patches; contradictory overlaps with feasible exclusive neighbors; Region-order
+stability; immutable lookup and sparse D14 construction/node budgets. An independent
+physical-rectangle oracle checks every D6 leaf (4,096) and every nonroot ancestor (1,364),
+including infeasible intersections and the complete provenance set.
+
+A persistent standard-C++ cell-local controller fixture places observations in one
+infeasible overlap and one legal adjacent leaf. It checks that all nine neighboring
+contributions are selected, all nine conflict contributions are suppressed, windows finish
+within their 400-ms cap and terminal retirement footprints do not overlap in space-time.
+This tests mechanism correctness; it does not establish a privacy gain or optimality.
+The focused Release-style binary and its AddressSanitizer/UBSan build both pass.
+All three unchanged real-map exports also pass the updated production probe, with
+5,460 ordinary and 5,460 additional-overlap resolutions per footprint. Their compiled
+node counts remain 5,197 / 4,889 / 5,077 for overview / detail / close detail.
+
+The existing OSM exports stay unchanged as disjoint raster tilings. Their production probe
+now separately verifies acceptance of an identical additional Region and independently
+resolves all 5,460 cells with its extra provenance. Duplicate Region IDs remain a negative
+case. This keeps raster-export tiling validation distinct from Region overlap support.
+
+No movement generator, map scene policy, metric formula, controller priority or publication
+schema changes are part of this gate. Numeric feasibility remains distinct from observed
+metric success. Run the focused `policy_regression` test after the normal build; the
+historical verification below describes the earlier nonoverlapping implementation.
+
 ## Verification — 2026-10-13
 
 The full Release build and all seven CTest suites passed. `PolicyRegressionTests` covers
@@ -153,8 +194,9 @@ A complete headless regional run using 200 agents, 50-ms simulation steps, 100-m
 sampling and 400-ms windows verified five v3 windows and 308 occupied-cell assessments.
 An independent geometry-based expectation checked all four bounds, observed values, status
 and sources per cell: 172 passed, 136 failed. These counts describe that fixture only.
-Nine invalid configurations (unknown Region/type, duplicate Region ID, overlap, unaligned
-boundary, inherited contradiction, exhausted node budget, unknown metric, mixed policy modes)
+At that earlier date, nine invalid configurations (unknown Region/type, duplicate Region
+ID, overlap, unaligned boundary, inherited contradiction, exhausted node budget, unknown
+metric, mixed policy modes)
 failed before clearing or metadata writes. A sentinel created in a disposable database was
 unchanged after every failure. A separate four-stream run checked twelve windows for uniform
 pass/fail/unavailable and absent-policy compatibility with the new v3 fields.

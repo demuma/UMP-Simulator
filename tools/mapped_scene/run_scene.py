@@ -1,18 +1,22 @@
 #!/usr/bin/env python3
-"""Run a fresh mapped visit scene using the maintained Simulator binary.
+"""Run and locally record a fresh mapped scene with the maintained Simulator.
 
-Keeps the owned MongoDB data by default for inspection. --cleanup removes only
-the three fresh UUID namespaces created by this invocation, after the run.
+Generated movement and replay artifacts are retained under ignored results/ by
+ default. --replay serves the verified recording on localhost after completion.
+Only explicitly requested --cleanup removes this invocation's three owned DBs.
 """
 import argparse
+from datetime import datetime, timezone
 import importlib.util
+import hashlib
 import json
 import pathlib
 import shutil
 import subprocess
 import sys
-import tempfile
+import time
 import uuid
+import webbrowser
 
 
 def mongo(shell, script):
@@ -25,12 +29,22 @@ def mongo(shell, script):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--render', action='store_true')
+    parser.add_argument('--render', action='store_true', help='Show the native live window during simulation')
+    parser.add_argument('--replay', action='store_true', help='Serve the recorded browser replay after simulation')
+    parser.add_argument('--open', action='store_true', help='Open the browser when --replay starts')
+    parser.add_argument('--port', type=int, default=8780)
     parser.add_argument('--duration-s', type=int, default=90)
     parser.add_argument('--seed', type=int, default=20261023)
-    parser.add_argument('--output', type=pathlib.Path)
-    parser.add_argument('--cleanup', action='store_true')
+    parser.add_argument('--motion-mode', choices=['integration','corridor'], default='corridor')
+    parser.add_argument('--population', type=int, default=64)
+    parser.add_argument('--arrival-interval-ms',type=int)
+    parser.add_argument('--output', type=pathlib.Path, help='Fresh scene folder; replay becomes its sibling')
+    parser.add_argument('--no-record',action='store_true',help='Skip the persistent local recording')
+    parser.add_argument('--cleanup', action='store_true', help='Remove only owned DBs after a verified recording/run')
     args = parser.parse_args()
+    if args.open and not args.replay: parser.error('--open requires --replay')
+    if args.no_record and args.replay: parser.error('--replay requires recording')
+    if not 1<=args.port<=65535: parser.error('Port must be 1..65535')
     repo = pathlib.Path(__file__).resolve().parents[2]
     binary = repo/'simulator/build/Simulator'
     shell = shutil.which('mongosh')
@@ -39,31 +53,64 @@ def main():
     missing = [m for m in ['yaml','shapely','matplotlib','numpy','pyproj'] if importlib.util.find_spec(m) is None]
     if missing:
         parser.error('Use a Python environment with tools/mapped_scene/requirements.txt; missing: '+', '.join(missing))
-    database = 'UMP_Mapped_'+uuid.uuid4().hex
+    token=uuid.uuid4().hex
+    database = 'UMP_Mapped_'+token
     names = [database,database+'_Releases',database+'_Private']
     existing = mongo(shell, 'const names='+json.dumps(names)+'; print(JSON.stringify(names.filter(n => '
         'db.getSiblingDB(n).getCollectionNames().length>0)));')
     if existing:
         raise RuntimeError('Fresh namespace collision; refusing to reuse data')
-    output = args.output or pathlib.Path(tempfile.mkdtemp(prefix='ump-mapped-visits-'))/'scene'
+    stamp=datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
+    output = (args.output or repo/'results'/'mapped-visits'/(stamp+'-'+token[:8])/'scene').resolve()
+    recording=output.parent/'replay'
+    if output.exists() or (not args.no_record and recording.exists()):
+        parser.error('Scene/recording folder already exists; choose a fresh --output parent')
     command = [sys.executable,str(pathlib.Path(__file__).with_name('build_mapped_scene.py')),
                '--repo',str(repo),'--output',str(output),'--database',database,
-               '--duration-s',str(args.duration_s),'--seed',str(args.seed)]
-    if args.render:
-        command.append('--render')
+               '--duration-s',str(args.duration_s),'--seed',str(args.seed),
+               '--motion-mode',args.motion_mode,'--population',str(args.population)]
+    if args.arrival_interval_ms is not None: command += ['--arrival-interval-ms',str(args.arrival_interval_ms)]
+    if args.render: command.append('--render')
     subprocess.run(command,check=True)
-    print('Scene: '+str(output.resolve()),flush=True)
+    print('Scene: '+str(output),flush=True)
     print('Owned MongoDB databases: '+', '.join(names),flush=True)
     print('Private GT identity is separate from visible observation tracks.',flush=True)
-    try:
-        return subprocess.run([str(binary)],cwd=output).returncode
-    finally:
-        if args.cleanup:
-            result = mongo(shell,'const names='+json.dumps(names)+'; for(const n of names) db.getSiblingDB(n).dropDatabase(); '
-                'print(JSON.stringify({remaining:names.filter(n=>db.getSiblingDB(n).getCollectionNames().length>0)}));')
-            if result['remaining']:
-                raise RuntimeError('Owned database cleanup failed: '+str(result['remaining']))
-            print('Removed the three owned test databases.',flush=True)
+    binary_sha=hashlib.sha256(binary.read_bytes()).hexdigest()
+    config_sha=hashlib.sha256((output/'config.yaml').read_bytes()).hexdigest()
+    started=time.perf_counter()
+    result=subprocess.run([str(binary)],cwd=output)
+    elapsed=time.perf_counter()-started
+    execution={'schema':'ump.mapped-execution.v1','state':'complete' if result.returncode==0 else 'failed',
+               'binary_sha256':binary_sha,'config_sha256':config_sha,'exit_code':result.returncode,
+               'binary_wall_seconds':elapsed,'scope':'Includes native startup, source, aggregation and DB I/O; not a per-step deadline.'}
+    if hashlib.sha256(binary.read_bytes()).hexdigest()!=binary_sha:
+        execution['state']='binary_changed'
+    (output/'execution.json').write_text(json.dumps(execution,indent=2)+'\n')
+    if execution['state']=='binary_changed':raise RuntimeError('Native binary changed during the source run; refusing a verified capture')
+    if result.returncode:
+        print('Simulator failed/cancelled: source databases retained for inspection; no verified replay claimed.',file=sys.stderr)
+        return result.returncode
+    if not args.no_record:
+        subprocess.run([sys.executable,str(pathlib.Path(__file__).with_name('export_replay.py')),
+                        '--scene',str(output),'--output',str(recording)],check=True)
+        print('Persistent local replay: '+str(recording),flush=True)
+    if args.cleanup:
+        result = mongo(shell,'const names='+json.dumps(names)+'; for(const n of names) db.getSiblingDB(n).dropDatabase(); '
+            'print(JSON.stringify({remaining:names.filter(n=>db.getSiblingDB(n).getCollectionNames().length>0)}));')
+        if result['remaining']:
+            raise RuntimeError('Owned database cleanup failed: '+str(result['remaining']))
+        print('Removed only the three owned test databases; local recording is retained.',flush=True)
+    if args.replay:
+        if args.open:
+            # Opening is user-selected. The server starts next; the tab can reload
+            # if its first request races startup. No remote URL or service is used.
+            webbrowser.open('http://127.0.0.1:'+str(args.port)+'/')
+        return subprocess.run([sys.executable,str(repo/'tools/replay_viewer/serve.py'),
+                               '--bundle',str(recording),'--port',str(args.port)]).returncode
+    if not args.no_record:
+        print('View again: '+sys.executable+' '+str(repo/'tools/replay_viewer/serve.py')
+              +' --bundle '+str(recording)+' --port '+str(args.port),flush=True)
+    return 0
 
 
 if __name__=='__main__':

@@ -65,7 +65,7 @@ def load_source(repo: pathlib.Path):
     }
 
 
-def route_geometry_audit(local, layers):
+def route_geometry_audit(local, layers, routes=None, body_clearance_m=None):
     buildings = [g for p, g in local if p["kind"] == "building"]
     union = unary_union(buildings)
     door_features = [(p, g) for p, g in local if p["kind"] == "entrance" and p["osm_id"] == DOOR_OSM_ID]
@@ -76,7 +76,8 @@ def route_geometry_audit(local, layers):
     if Point(DOOR).distance(door_geom) > 1e-6 or door_geom.distance(building_geom.boundary) > 1e-6:
         raise ValueError("The declared door is not the frozen building facade node")
     results = {}
-    for name, points in ROUTE_POINTS.items():
+    supplied = ROUTE_POINTS if routes is None else {r["id"]: r["points"] for r in routes}
+    for name, points in supplied.items():
         line = LineString(points)
         if not box(0, 0, SIDE, SIDE).covers(line):
             raise ValueError(f"Route outside declared domain: {name}")
@@ -88,11 +89,127 @@ def route_geometry_audit(local, layers):
         results[name] = {"length_m": line.length, "building_interior_length_m": interior_length,
                          "outside_derived_walking_length_m": outside_walking,
                          "vertices": len(points), "geometry_sha256": sha(line.wkb)}
+        if body_clearance_m is not None:
+            # Facade transitions deliberately end/start at the door centre. Only
+            # this explicitly bounded portal disk is exempt from wall clearance.
+            portal_exception = door_geom.buffer(.85)
+            body = line.buffer(body_clearance_m).intersection(box(0, 0, SIDE, SIDE))
+            outside = body.difference(layers["walking"].union(portal_exception)).area
+            wall = body.intersection(union.difference(portal_exception)).area
+            if outside > 1e-6 or wall > 1e-6:
+                raise ValueError(f"Route body clearance failed: {name}: outside={outside}, wall={wall}")
+            results[name].update(body_plus_clearance_radius_m=body_clearance_m,
+                                 body_outside_walkable_area_m2=outside,
+                                 body_building_intersection_outside_portal_m2=wall,
+                                 facade_portal_exception_radius_m=.85)
+    directional_clearance = None
+    if routes is not None and body_clearance_m is not None:
+        east = [LineString(r["points"]) for r in routes if r["start_portal"]!="boundary-east"]
+        west = [LineString(r["points"]) for r in routes if r["start_portal"]=="boundary-east"]
+        if east and west:
+            directional_clearance = min(a.distance(b) for a in east for b in west)
+            if directional_clearance < 2*body_clearance_m-1e-7:
+                raise ValueError("Opposing individualized corridors do not preserve swept-body separation")
     return {"status": "pass", "domain_side_m": SIDE, "leaf_depth": DEPTH, "leaf_side_m": STEP,
             "entrance_osm_node": DOOR_OSM_ID, "building_osm_way": BUILDING_OSM_ID,
             "entrance_facade_distance_m": door_geom.distance(building_geom.boundary),
             "routes": results,
-            "scope": "Centre-line containment only. Frozen OSM width interpretation is inherited; circular body clearance and collision avoidance are not established."}
+            **({"minimum_opposing_route_centerline_distance_m":directional_clearance,
+                "opposing_direction_body_clearance_checked":True} if body_clearance_m is not None else {}),
+            "scope": ("Swept circular body plus clearance checked against derived walking/building geometry, except the explicitly bounded facade portal disk and domain-edge clipping. Collision response is checked separately."
+                if body_clearance_m is not None else "Centre-line containment only. Frozen OSM width interpretation is inherited; circular body clearance and collision avoidance are not established.")}
+
+
+def corridor_routes(seed):
+    """Separated direction lanes with bounded smooth lateral variation.
+
+    These remain declared polylines, not a city route planner. Their full swept
+    body footprint is checked against frozen walk/building geometry before use.
+    """
+    rng = random.Random(seed ^ 0xA54FF53A)
+    rows = []
+    lane_points = []
+    common_phase=rng.uniform(0,2*math.pi)
+    # Eastbound lanes border the visited frontage, so entry/exit branches do
+    # not cross the opposing northern stream. Visits continue east on exit.
+    for index, intercept in enumerate([69.4, 70.6, 67.0, 68.2]):
+        # The mapped footway widens inside the footprint. Expand lane spacing
+        # there, then taper it at both boundaries before introducing individual
+        # smooth offsets. Shared curvature preserves opposing-lane separation.
+        points = [[x, intercept - .315*x + (intercept-68.8)/1.2*.6*math.sin(math.pi*x/80)
+                   +.04*math.sin(x/80*2*math.pi+common_phase)] for x in range(0,81,10)]
+        lane_points.append(points)
+        east = index < 2
+        ordered = points if east else list(reversed(points))
+        rows.append({"id": f"corridor-{'east' if east else 'west'}-{index%2}", "points": ordered,
+                     "start_portal": "boundary-west" if east else "boundary-east",
+                     "end_portal": "boundary-east" if east else "boundary-west"})
+    # Inbound and outbound branches separate outside the door admission zone.
+    # The actual facade node is unchanged from the integration fixture.
+    inbound = [lane_points[1][0], lane_points[1][1], lane_points[1][2],
+               [22,66.0], DOOR]
+    outbound = [DOOR, [DOOR[0],66.0], [26,64.5], [28,63.0], *lane_points[1][3:]]
+    rows.extend([{"id":"corridor-visit-in","points":inbound,"start_portal":"boundary-west","end_portal":"building-rappolthaus"},
+                 {"id":"corridor-visit-out","points":outbound,"start_portal":"building-rappolthaus","end_portal":"boundary-east"}])
+    return rows
+
+
+def corridor_people(seed, population, duration_s, interval_ms=None):
+    if not 5 <= population <= 2048:
+        raise ValueError("Corridor population must be 5..2048 explicit people")
+    interval = interval_ms if interval_ms is not None else max(50, round(duration_s*1000/population/50)*50)
+    if interval < 50 or interval % 50:
+        raise ValueError("Corridor arrival interval must be a positive multiple of 50 ms")
+    weights = [16,12,12,12,12]
+    counts = [population*w//64 for w in weights]
+    remainder = population-sum(counts)
+    order = sorted(range(5),key=lambda i:(-(population*weights[i]%64),i))
+    for i in order[:remainder]: counts[i]+=1
+    labels = [label for label,count in zip(PROFILES,counts) for _ in range(count)]
+    rng=random.Random(seed); rng.shuffle(labels)
+    tokens=random.Random(seed ^ 0x1B8735936D748A2F)
+    radii={row["type"]:row["radius"] for row in profiles()}
+    people=[]
+    for index,label in enumerate(labels):
+        visit=index%4==0
+        route="corridor-visit-in" if visit else f"corridor-{'east' if index%2==0 else 'west'}-{rng.randrange(2)}"
+        episodes=[{"track_id":str(uuid.UUID(int=tokens.getrandbits(128),version=4)),"route_id":route,"start_ms":index*interval}]
+        if visit:
+            episodes.append({"track_id":str(uuid.UUID(int=tokens.getrandbits(128),version=4)),
+                             "route_id":"corridor-visit-out","start_ms":0,"after_previous_ms":8000 if index%8==0 else 10000})
+        people.append({"person_id":f"private-person-{index+1:04d}","type":label,
+                       "speed_mps":round(rng.uniform(1.1,1.5),6),"radius_m":radii[label],"episodes":episodes})
+    return people,interval
+
+
+def individual_corridor_paths(routes, people, seed):
+    """One reproducible smooth polyline per visible episode, never frame jitter.
+
+    All variants retain the directional corridor and exact facade/boundary
+    endpoints. Lane spacing expands inside the footprint before path offsets.
+    Source identity spelling does not enter route shape or identifiers.
+    """
+    original={row["id"]:row for row in routes}
+    rng=random.Random(seed ^ 0x510E527FADE682D1)
+    result=[]
+    for person in people:
+        for episode in person["episodes"]:
+            base=original[episode["route_id"]]
+            phase=rng.uniform(0,2*math.pi)
+            points=copy.deepcopy(base["points"])
+            for index,point in enumerate(points[1:-1],1):
+                x,y=point
+                envelope=math.sin(math.pi*x/80)
+                shift=.18*envelope*math.sin(phase+x/12)
+                # Preserve the facade-normal departure segment and both exact
+                # portal endpoints. Full swept geometry is checked before emit.
+                if base["id"]=="corridor-visit-out" and index==1: shift=0
+                point[1]=y+shift
+            identifier="corridor-route-"+str(uuid.UUID(int=rng.getrandbits(128),version=4))
+            episode["route_id"]=identifier
+            result.append({"id":identifier,"points":points,
+                           "start_portal":base["start_portal"],"end_portal":base["end_portal"]})
+    return result
 
 
 def profiles():
@@ -165,7 +282,7 @@ def regions():
     return list(types.values()), rows
 
 
-def make_config(repo, database, duration, render, seed):
+def make_config(repo, database, duration, render, seed, motion_mode="integration", population=64, arrival_interval_ms=None):
     cfg = yaml.safe_load((repo / "simulator/examples/temporal-aggregation/config.yaml").read_text())
     cfg["display"].update(width=1000, height=900, pixels_per_meter=10, title="UMP Mönckebergstraße — mapped visit scene")
     cfg["renderer"].update(show_renderer=render, show_trajectories=True, show_waypoints=False,
@@ -200,6 +317,17 @@ def make_config(repo, database, duration, render, seed):
     agg["semantic_taxonomy"] = {"id": "ump-mapped-pedestrian-release", "version": "1", "nodes":
         [{"id": "road_user", "loss": 1}, {"id": "pedestrian", "parent": "road_user", "loss": .5}] +
         [{"id": node, "parent": "pedestrian", "loss": 0, "input_types": [label]} for node, label in zip(leaves, PROFILES)]}
+    if motion_mode == "corridor":
+        people,interval=corridor_people(seed,population,duration,arrival_interval_ms)
+        routes=individual_corridor_paths(corridor_routes(seed),people,seed)
+        cfg["mapped_scene"]={"support_contract":"one_episode_per_retained_history",
+            "motion":{"mode":"corridor_following","step_ms":50,"clearance_m":.1,"portal_gate_radius_m":3},
+            "routes":routes,"people":people}
+        cfg["agents"]["num_agents"]=population
+        for row in cfg["agents"]["road_user_taxonomy"]:
+            row["probability"]=sum(p["type"]==row["type"] for p in people)/population
+    elif motion_mode != "integration" or population != 64 or arrival_interval_ms is not None:
+        raise ValueError("Historical integration mode preserves exactly 64 people and its original 200-ms schedule")
     return cfg
 
 
@@ -211,6 +339,7 @@ def audit_config(cfg):
     minimum_gap = math.inf
     last_end = 0
     visits = 0
+    corridor = cfg["mapped_scene"].get("motion",{}).get("mode")=="corridor_following"
     for person in people:
         assert person["person_id"] not in person_ids
         person_ids.add(person["person_id"])
@@ -225,7 +354,7 @@ def audit_config(cfg):
             track_ids.add(token)
             end = episode["start_ms"] + math.ceil(route_lengths[episode["route_id"]] / person["speed_mps"] * 1000)
             if previous_end is not None:
-                minimum_gap = min(minimum_gap, episode["start_ms"] - previous_end)
+                minimum_gap = min(minimum_gap, episode.get("after_previous_ms",episode["start_ms"] - previous_end))
             previous_end = end
             last_end = max(last_end, end)
     areas = [box(r["area"]["x"], r["area"]["y"], r["area"]["x"] + r["area"]["width"], r["area"]["y"] + r["area"]["height"]) for r in cfg["regions"]]
@@ -234,10 +363,11 @@ def audit_config(cfg):
             assert first.intersection(other).area == 0
     for region in cfg["regions"]:
         assert all(abs(value / STEP - round(value / STEP)) < 1e-9 for value in region["area"].values())
-    assert len(people) == cfg["agents"]["num_agents"] == 64
+    assert len(people) == cfg["agents"]["num_agents"]
+    if not corridor: assert len(people)==64
     assert set(counts) == set(PROFILES)
     assert minimum_gap > cfg["sensors"][0]["aggregation"]["history"]["retention_ms"]
-    return {"status": "pass", "scheduled_people": len(people), "visible_episodes": len(track_ids),
+    result = {"status": "pass", "scheduled_people": len(people), "visible_episodes": len(track_ids),
             "scheduled_visitors": visits, "population_by_observed_profile": dict(sorted(counts.items())),
             "minimum_hidden_gap_ms": minimum_gap, "history_horizon_ms": 6000,
             "last_scheduled_exit_ms": last_end, "regions": len(areas),
@@ -246,6 +376,15 @@ def audit_config(cfg):
             "motion_scope": "Synthetic schedules and speeds on real OSM geometry; not empirical visitation or calibrated group behavior.",
             "support_scope": "Operational distinct track support. Hidden gaps exceed retained history only for this controlled scene.",
             "profile_assumptions": "Five observed categories; type-independent explicit 1.1–1.5 m/s speeds; one mover plus equipment is one modeled contributor. Circular radii are declared conservative visualization assumptions; priority is identical across profiles."}
+    if corridor:
+        result.update(last_scheduled_exit_ms=None,
+            last_source_request_ms=max(p["episodes"][0]["start_ms"] for p in people),
+            motion_scope="Stateful route progress, bounded conservative swept-body following, source/door admission and realized lifecycle events. Not ORCA, overtaking or a globally complete collision solver.",
+            arrival_scope="Explicit sustained source requests; actual admissions may queue. Future return timing is anchored to realized arrival.",
+            individual_route_count=len(cfg["mapped_scene"]["routes"]),
+            route_variation_scope="Each visible episode has a seeded smooth lateral path variant within a directional corridor; facade and boundary endpoints are pinned. No per-frame jitter or overtaking guarantee.",
+            support_scope="Distinct observed tracks; declared relative hidden gaps exceed retained history. No GT association reaches aggregation.")
+    return result
 
 
 def draw_background(layers, output):
@@ -287,6 +426,9 @@ def main():
     parser.add_argument("--duration-s", type=int, default=90)
     parser.add_argument("--seed", type=int, default=20261023)
     parser.add_argument("--render", action="store_true")
+    parser.add_argument("--motion-mode",choices=["integration","corridor"],default="integration")
+    parser.add_argument("--population",type=int,default=64,help="Corridor explicit population; historical mode stays at 64")
+    parser.add_argument("--arrival-interval-ms",type=int,help="Corridor source interval, multiple of 50 ms; default spreads requests across horizon")
     args = parser.parse_args()
     repo = args.repo.resolve()
     if not re.fullmatch(r"UMP_Mapped_[0-9a-f]{32}", args.database):
@@ -296,8 +438,10 @@ def main():
     if args.output.exists():
         parser.error("output directory already exists; choose a fresh output")
     _, local, layers, assumptions, provenance = load_source(repo)
-    geometry = route_geometry_audit(local, layers)
-    cfg = make_config(repo, args.database, args.duration_s, args.render, args.seed)
+    cfg = make_config(repo, args.database, args.duration_s, args.render, args.seed,args.motion_mode,args.population,args.arrival_interval_ms)
+    geometry = route_geometry_audit(local, layers,
+        cfg["mapped_scene"]["routes"] if args.motion_mode=="corridor" else None,
+        max(p["radius_m"] for p in cfg["mapped_scene"]["people"])+cfg["mapped_scene"]["motion"]["clearance_m"] if args.motion_mode=="corridor" else None)
     scene = audit_config(cfg)
     args.output.mkdir(parents=True)
     config_bytes = yaml.safe_dump(cfg, sort_keys=False, allow_unicode=True).encode()
@@ -310,6 +454,7 @@ def main():
               "map_width_assumptions": assumptions,
               "policy_scope": "Four illustrative disjoint raster-aligned regions through the normal Region/PolicyTree adapter. Requirements are declared experimental choices, not validated privacy protection or map-derived law.",
               "execution": "cd to this output folder, then run the maintained simulator/build/Simulator; no simulation or DB operation was executed by this generator."}
+    if args.motion_mode=="corridor": report["motion_mode"]="corridor"
     (args.output / "scene_manifest.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
     print(json.dumps({"status": "pass", "output": str(args.output), "config_sha256": report["configuration_sha256"],
                       "people": scene["scheduled_people"], "episodes": scene["visible_episodes"], "visitors": scene["scheduled_visitors"]}))

@@ -265,6 +265,46 @@ test('Mosaic has a visible-fragment cap and can rebuild safely after a rejected 
  assert.throws(()=>M.mosaicAt(input,200),/visible-fragment limit/);
  assert.equal(M.mosaicAt(input,199).entries.length,0);
 });
+test('Published cell-window counts are independent from event counts and visible fragments',()=>{
+ const a=geometry(12,0,0,4,4),b=geometry(13,4,0,4,4);
+ const input={releases:[{sealed_at_ms:200,cells:[a,b]},{sealed_at_ms:400,cells:[a]}]};
+ assert.deepEqual(M.releaseAccounting(input,199),{publishedCellWindows:0,uniqueSpatialCells:0,releaseEvents:0,contributions:0});
+ assert.deepEqual(M.releaseAccounting(input,200),{publishedCellWindows:2,uniqueSpatialCells:2,releaseEvents:1,contributions:160});
+ assert.deepEqual(M.releaseAccounting(input,400),{publishedCellWindows:3,uniqueSpatialCells:2,releaseEvents:2,contributions:240});
+ assert.equal(M.releaseAccounting(input,200).publishedCellWindows,2);
+});
+test('Policy inspection intersects root and all overlapping regional requirements',()=>{
+ const policy={policy_root_requirements:[{metric:'support',min:5},{metric:'duration_ms',max:4000}],policy_regions:[
+  {id:'entrance',x:1,y:1,width:2,height:2,requirements:[{metric:'support',min:10}]},
+  {id:'fast',x:2,y:2,width:2,height:2,requirements:[{metric:'duration_ms',max:1000},{metric:'support',min:7}]},
+  {id:'touching',x:4,y:0,width:1,height:4,requirements:[{metric:'support',min:100}]}]};
+ const before=JSON.stringify(policy),resolved=M.policyAt(policy,{x:0,y:0,width:4,height:4});
+ assert.equal(resolved.rootDeclared,true);assert.deepEqual(resolved.regions.map(r=>r.id),['entrance','fast']);
+ const support=resolved.requirements.find(r=>r.metric==='support');
+ assert.equal(support.min,10);assert.equal(support.sources.length,3);assert.equal(support.conflict,false);
+ assert.equal(resolved.requirements.find(r=>r.metric==='duration_ms').max,1000);
+ assert.equal(resolved.conflicting,false);assert.equal(JSON.stringify(policy),before);
+ assert.equal(Object.hasOwn(support,'observed'),false);assert.equal(Object.hasOwn(support,'status'),false);
+});
+test('Policy contradictions are explicit and missing root declarations remain unknown',()=>{
+ const policy={policy_regions:[{id:'minimum',x:0,y:0,width:4,height:4,requirements:[{metric:'cell_side_m',min:10}]},
+ {id:'maximum',x:2,y:2,width:4,height:4,requirements:[{metric:'cell_side_m',max:5}]}]};
+ const overlap=M.policyAt(policy,{x:2,y:2,width:1,height:1});
+ assert.equal(overlap.rootDeclared,false);assert.equal(overlap.conflicting,true);
+ assert.equal(overlap.requirements[0].min,10);assert.equal(overlap.requirements[0].max,5);
+ assert.deepEqual(M.policyAt({},coarse),{rootDeclared:false,regions:[],requirements:[],conflicting:false});
+ assert.equal(M.policyAt(policy,{x:0,y:0,width:1,height:1}).conflicting,false);
+});
+test('Map placement preserves global world coordinates through zoom and crop',()=>{
+ const bounds={x:0,y:0,width:80,height:80},layout={left:40,top:10,scale:8};
+ assert.deepEqual(M.mapImageRectangle(bounds,{x:20,y:30,width:5,height:5},layout),{x:-120,y:-230,width:640,height:640});
+ const shifted={x:-10,y:5,width:80,height:80};
+ assert.deepEqual(M.mapImageRectangle(shifted,shifted,{left:40,top:10,scale:2}),{x:40,y:10,width:160,height:160});
+});
+test('Declared mapped source provenance does not rely on names or presumed realism',()=>{
+ assert.deepEqual(M.inputProvenance({input_provenance:'Kinematic mapped routes; no collision solver.'}),
+ {kind:'declared',text:'Declared input: Kinematic mapped routes; no collision solver.'});
+});
 /* Optional real-artifact check: no generated dataset is required by the normal
    regression suite or stored in this test. Pass a local replay-result filename. */
 if(process.argv[2]) {

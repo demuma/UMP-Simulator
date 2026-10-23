@@ -3,7 +3,9 @@
 Date: 2026-10-23. Implementation gate: one reproducible, map-constrained synthetic
 scene in the maintained Simulator. **M01 is implemented and verified**; see the
 [test report](MAPPED_SCENE_TEST_REPORT_2026-10-23.md) and [run guide](../tools/mapped_scene/README.md).
-This precedes baseline/privacy-effectiveness claims and a renewed performance gate.
+The current [replay/identity/comparison integration report](MAPPED_REPLAY_INTEGRATION_TEST_REPORT_2026-10-23.md)
+extends this historical gate. A bounded same-source baseline comparison is now
+available; empirical privacy-effectiveness and a renewed performance gate remain open.
 Existing legacy scenarios are preserved.
 
 ## Domain and route scope
@@ -120,8 +122,11 @@ gate establishes correct, inspectable source behavior first.
 
 ## Follow-up protocol: observations, visits and physical people
 
-Planning clarification, 2026-10-23. No runtime metric or source contract changes
-are made by this section. Local movement recordings are now authorized for replay
+Implemented analysis extension, 2026-10-23. `tools/mapped_scene/analyze_tracks.py`
+now audits the fixed physical recording and optionally reruns original episodes,
+500/1000-ms identity fragments and an evaluation-only GT reference through the
+maintained aggregation core. This does not change the runtime support metric or
+remove the native source's long-gap restriction. Local movement recordings are now authorized for replay
 under ignored `results/`, with no movement/identity streams committed to Git.
 
 An observation track is the operational counterpart of an object ID maintained
@@ -165,9 +170,56 @@ people passing one after another may yield n_sim=1, so it can lose much of the
 benefit of temporal distinct-person pooling. An interval with no measured sample
 has unavailable support, not a fabricated zero.
 
-The metric is not implemented. Compare it under a separately named policy with
+Peak support is implemented as a private evaluation diagnostic, not as an online
+policy metric. A future operational variant must use a separately named policy with
 current track union support, measuring retention, detail and delay. Do not
 silently redefine `distinct_contributors`. A compatibility-based minimum-person
 model might use more tracklet timing/motion information later, but belongs to a
 separate research gate. The existing long-gap integration fixture remains a
 controlled regression source, not a realistic solution to arbitrary re-entry.
+
+
+## Current extension boundaries
+
+Native runs may persist full observations and releases locally under ignored
+`results/`. The export requires completed source metadata, exact GT/raw-cell and
+public count/category/policy agreement, valid geometry and a committed
+journal/recipient bijection. Event-driven GT coverage is checked at every source
+step. Numerical-horizon completion, scheduled-episode completion and final
+active/pending/stalled counts are recorded separately. Stable identities/configuration/native source stay
+in an unserved private sidecar. The browser receives episode tokens and recorded
+positions but no g_GT mapping; it remains private research material even when
+showing its recipient display filter. Labels and regions are source metadata,
+not evidence of a protected visit or a privacy guarantee.
+
+The native 50-ms progress clock must be preserved independently from the 100-ms
+measurement clock, including progress at zero and before ingestion. Explicit
+`--progress-step-ms` supplies that schedule; extra ticks do not create observations.
+The original-episode rerun is checked against native logical releases before
+interpreting fragmentation effects. A stable-ID oracle comparison is explicitly
+privileged and cannot be adopted as a runtime repair without changing assumptions.
+
+The corridor motion extension replaces scheduled position overwrite with realized
+path progress, conservative swept-body following and source/door admission. Each
+episode follows a seeded smooth path inside checked walking geometry. A derived
+local route-join gate coordinates FIFO body tokens and compatible through batches;
+this is source traffic coordination, not a PolicyTree Region or an aggregation
+merge. Indoor gaps start after realized entrance arrival. Collisions, queue waits
+and delayed source admission do not create new identities or indoor visits.
+
+These mechanisms are bounded to declared corridors/portals. They do not establish
+free routing, overtaking, a globally complete crowd solver, globally bounded waits,
+realistic shop preferences or calibrated flux. A finite observation horizon can
+leave active/queued trips; scheduled population is not concurrent density. Fresh
+native corridor/capture/visual acceptance passes within the reported
+bounded sources. The denser finite horizon is explicitly censored; a separate
+longer drain check completes the requested episodes. These findings and measured
+stop tails belong in the current integration report, not in the historical M01
+totals above.
+
+Overlapping aligned rectangular policy Regions now combine every applicable
+root/type/instance bound. Infeasibility from conjunction is retained spatially;
+no Region or semantic label is dropped to make a release pass. This addresses
+policy compliance, not whether the chosen constraints protect an adversarial
+secret. Protected unit, secret, attacker knowledge and a longitudinal evaluation
+remain necessary for a privacy claim.

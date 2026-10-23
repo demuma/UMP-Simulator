@@ -199,6 +199,133 @@ nodes:
         }
     }
 }
+// A second integration path mirrors the native sensor's actual call order,
+// including the pre-ingest progress call. It uses publication callbacks directly
+// rather than replay's event-consumption lambda or its scheduling helper.
+void nativeProgressClock() {
+    auto config = configuration();
+    config["temporal_adaptation"]["coordination"] = "cell_local";
+    config["temporal_adaptation"]["max_active_cells"] = 64;
+    config["spatial_selection"]["max_evaluations"] = 256;
+    const auto input = umpReplay::parseInput(source());
+    umpReplay::Options options; options.mode = "spatial_first"; options.progressStepMs = 50;
+    const auto settings = umpReplay::parseSettings(config, input, options);
+    const auto recorded = YAML::Load(umpReplay::run(input, settings, options));
+    require(recorded["parameters"]["progress_step_ms"].as<int>() == 50
+        && recorded["parameters"]["progress_origin_ms"].as<int>() == 0,
+        "Explicit native progress clock was not recorded");
+
+    const auto& aggregation = settings.aggregation;
+    ump::PublicationLimits limits; limits.maxCoordinationNodes = settings.temporal->maxActiveCells * 2;
+    ump::PublicationCoordinator publication(aggregation, settings.evaluator, limits,
+        settings.temporal->maxWindowMs, true);
+    std::vector<std::string> windows, releases;
+    const auto terminal = [&](const ump::SpatialSelection& selection) {
+        publication.seal(selection, selection.candidate.closedAtMs);
+        require(publication.deliver(selection.candidate.closedAtMs, [&](const auto& release) {
+            releases.push_back(umpReplay::serializeRelease(release));
+            return ump::SinkResult::Acknowledged;
+        }), "Direct native-like sink did not acknowledge");
+        windows.push_back(umpReplay::serializeWindow(selection));
+    };
+    AggregationManager manager(aggregation, [](const auto&) {});
+    ump::CellLocalAggregation local(aggregation, *settings.temporal, settings.spatial,
+        settings.evaluator, terminal, settings.temporal->maxActiveCells);
+    std::vector<ump::AggregationTime> callbacks;
+    manager.setProgressSink([&](auto now, bool finishing) {
+        callbacks.push_back(now);
+        if (finishing) local.finish(now, *manager.history());
+        else local.advance(now, *manager.history());
+    });
+    manager.advance(0);
+    require(manager.history()->debugState().observations == 0 && manager.debugState().measuredSamples == 0,
+        "Origin progress fabricated a measurement");
+    std::size_t next = 0;
+    for (ump::AggregationTime now = 50; now < input.endMs; now += 50) {
+        manager.advance(now);
+        if (next < input.batches.size() && input.batches[next].observedAtMs == now)
+            manager.ingest(input.batches[next++]);
+    }
+    manager.finish(input.endMs);
+    require(next == input.batches.size() && callbacks.front() == 0
+        && std::count(callbacks.begin(), callbacks.end(), 50) == 1
+        && std::count(callbacks.begin(), callbacks.end(), 100) == 2,
+        "Native-like progress did not distinguish sensor sampling from simulation ticks");
+    require(YAML::Dump(recorded["windows"]) == YAML::Dump(YAML::Load(umpReplay::array(windows)))
+        && YAML::Dump(recorded["releases"]) == YAML::Dump(YAML::Load(umpReplay::array(releases))),
+        "Explicit progress replay differs from direct native-like CellLocal callbacks");
+    require(recorded["input_observation_contributions"].as<int>() == 8
+        && recorded["accounted_observation_contributions"].as<int>() == 8,
+        "Extra progress ticks changed observed support");
+    auto legacyOptions = options; legacyOptions.progressStepMs.reset();
+    const auto legacy = YAML::Load(umpReplay::run(input, settings, legacyOptions));
+    require(!legacy["parameters"]["progress_step_ms"] && !legacy["parameters"]["progress_origin_ms"],
+        "Default replay output gained explicit-clock metadata");
+}
+
+void progressClockCoverageAndValidation() {
+    auto inputNode = source();
+    inputNode["batches"][1]["status"] = "unavailable";
+    inputNode["batches"][1]["observations"] = YAML::Node(YAML::NodeType::Sequence);
+    inputNode["batches"].remove(2);
+    const auto input = umpReplay::parseInput(inputNode);
+    umpReplay::Options options; options.mode = "fixed"; options.progressStepMs = 50;
+    const auto settings = umpReplay::parseSettings(configuration(), input, options);
+    const auto actual = YAML::Load(umpReplay::run(input, settings, options));
+    const auto first = actual["windows"][0];
+    require(first["expected_samples"].as<int>() == 3 && first["measured_samples"].as<int>() == 1
+        && first["unavailable_samples"].as<int>() == 1 && first["missing_samples"].as<int>() == 1
+        && first["coverage"].as<std::string>() == "incomplete",
+        "Nonmeasurement progress ticks became sampled or measured-empty data");
+    require(actual["input_observation_contributions"].as<int>() == 4
+        && actual["accounted_observation_contributions"].as<int>() == 4,
+        "Explicit progress altered source contribution conservation");
+    for (const ump::AggregationTime invalid : {0, -50, 75, 101, 200}) {
+        options.progressStepMs = invalid;
+        rejects([&] { umpReplay::parseSettings(configuration(), input, options); },
+            "Invalid progress step was accepted");
+    }
+    options.progressStepMs = 100;
+    auto unaligned = input; unaligned.endMs = 850;
+    rejects([&] { umpReplay::parseSettings(configuration(), unaligned, options); },
+        "Explicit progress accepted an unaligned horizon");
+    options.progressStepMs = 50;
+    require(umpReplay::progressStepFor(unaligned, options) == 50,
+        "A horizon on a finer progress tick was rejected");
+    auto excessive = input; excessive.endMs = umpReplay::maxReplayTicks * 50;
+    rejects([&] { umpReplay::progressStepFor(excessive, options); },
+        "Origin and finish were excluded from the explicit event budget");
+    excessive.endMs = 100000 * 50; options.paceRate = 100.;
+    rejects([&] { umpReplay::progressStepFor(excessive, options); },
+        "Explicit paced progress exceeded its event budget");
+}
+
+void pacedProgressClockEquivalence() {
+    auto config = configuration();
+    config["temporal_adaptation"]["coordination"] = "cell_local";
+    config["temporal_adaptation"]["max_active_cells"] = 64;
+    config["spatial_selection"]["max_evaluations"] = 256;
+    auto inputNode = source(); inputNode["end_ms"] = 850;
+    const auto input = umpReplay::parseInput(inputNode);
+    umpReplay::Options options; options.mode = "spatial_first"; options.progressStepMs = 50;
+    const auto settings = umpReplay::parseSettings(config, input, options);
+    auto offline = YAML::Load(umpReplay::run(input, settings, options));
+    options.paceRate = 100.; options.queueCapacity = 64;
+    auto paced = YAML::Load(umpReplay::run(input, settings, options));
+    const auto events = paced["runtime"]["pacing"]["events"];
+    require(events.size() == 17 && events[0]["logical_time_ms"].as<int>() == 50
+        && events[0]["kind"].as<std::string>() == "cadence"
+        && events[16]["logical_time_ms"].as<int>() == 850
+        && events[16]["kind"].as<std::string>() == "finish",
+        "Paced explicit clock did not schedule every positive progress tick plus finish");
+    for (std::size_t i = 0; i < events.size(); ++i)
+        require(events[i]["logical_time_ms"].as<int>() == static_cast<int>((i+1)*50),
+            "Paced progress skipped or fabricated a logical tick");
+    offline.remove("runtime"); paced.remove("runtime");
+    require(YAML::Dump(offline) == YAML::Dump(paced),
+        "Pacing changed explicit-clock core output beyond runtime");
+}
+
 void pacingCliValidation() {
     const std::vector<std::string> base{"AggregationReplay", "--input", "/unused/input.json",
         "--config", "/unused/policy.json", "--mode", "fixed", "--output",
@@ -211,7 +338,13 @@ void pacingCliValidation() {
         return umpReplay::arguments(static_cast<int>(argv.size()), argv.data());
     };
     const auto defaults = parse({});
-    require(!defaults.paceRate, "Offline CLI implicitly enabled pacing");
+    require(!defaults.paceRate && !defaults.progressStepMs, "Offline CLI implicitly enabled pacing or native progress");
+    require(parse({"--progress-step-ms", "50"}).progressStepMs == std::optional<ump::AggregationTime>{50},
+        "CLI did not retain the explicit progress step");
+    for (const char* value : {"0", "-1", "nan", "1.5", "50junk"})
+        rejects([&] { parse({"--progress-step-ms", value}); }, "Malformed progress step accepted");
+    rejects([&] { parse({"--progress-step-ms", "50", "--progress-step-ms", "100"}); },
+        "Duplicate progress step accepted");
     const auto paced = parse({"--pace-rate", "1", "--queue-capacity", "8"});
     require(paced.paceRate == std::optional<double>{1} && paced.queueCapacity == 8,
         "Valid paced CLI options not retained");
@@ -229,8 +362,9 @@ void pacingCliValidation() {
 int main() {
     try {
         policiesAndStrategies(); missingEmptyAndTruncation(); strictValidationAndIsolation();
-        pacedCoreEquivalence(); pacingCliValidation();
-        std::cout << "PASS: frozen replay, actual core modes, policy-controlled fixed baselines, conservation, determinism, gaps, paced equivalence, CLI validation and private/public separation.\n";
+        pacedCoreEquivalence(); pacingCliValidation(); nativeProgressClock();
+        progressClockCoverageAndValidation(); pacedProgressClockEquivalence();
+        std::cout << "PASS: frozen replay, actual core modes, policy-controlled fixed baselines, conservation, determinism, gaps, native progress-clock equivalence, paced equivalence, CLI validation and private/public separation.\n";
         return 0;
     } catch (const std::exception& error) { std::cerr << "FAIL: " << error.what() << '\n'; return 1; }
 }

@@ -125,9 +125,20 @@ int main(int argc, char** argv) {
         bad = geometry(0, 0, 6, grid); bad.id = 1;
         rejects([&] { tree.resolve(bad); }, "Invalid ID unexpectedly accepted");
         require(!regions.empty(), "A raster export must contain regions");
+        // The exported raster remains a disjoint tiling by design. Production
+        // PolicyTree now separately accepts intersecting Region requirements.
         auto overlap = regions; auto extra = regions.front(); extra.id += "-overlap-probe";
         overlap.push_back(extra);
-        rejects([&] { PolicyTree rejected(config, overlap); }, "Overlapping geometry unexpectedly accepted");
+        PolicyTree overlapping(config, overlap);
+        require(overlapping.nodeCount() == tree.nodeCount(),
+            "An identical extra Region expanded a homogeneous policy footprint");
+        std::size_t overlapTested = 0;
+        for (int depth = 1; depth <= grid.leafDepth; ++depth)
+            for (int y = 0; y < (1 << depth); ++y) for (int x = 0; x < (1 << depth); ++x) {
+                check(overlapping, config, overlap, geometry(x, y, depth, grid)); ++overlapTested;
+            }
+        auto duplicate = regions; duplicate.push_back(regions.front());
+        rejects([&] { PolicyTree rejected(config, duplicate); }, "Duplicate Region identifier unexpectedly accepted");
         auto unaligned = regions; unaligned.front().x += leafSide / 3;
         rejects([&] { PolicyTree rejected(config, unaligned); }, "Unaligned geometry unexpectedly accepted");
         require(leafIds.size() == 4096 && *leafIds.begin() == 12288 && *leafIds.rbegin() == 16383,
@@ -138,7 +149,9 @@ int main(int argc, char** argv) {
             << ",\"resolved_cells_all_depths\":" << tested << ",\"resolved_nonroot_ancestors\":" << (tested-4096)
             << ",\"feasible_bounds_cells\":" << feasible << ",\"compiled_nodes\":" << tree.nodeCount()
             << ",\"effective_policies\":" << tree.effectivePolicyCount()
-            << ",\"negative_checks\":4,\"distinct_support_is_privacy_guarantee\":false}\n";
+            << ",\"negative_checks\":4,\"positive_overlap_checks\":1"
+            << ",\"overlap_resolved_cells_all_depths\":" << overlapTested
+            << ",\"distinct_support_is_privacy_guarantee\":false}\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "FAIL: " << error.what() << '\n'; return 1;

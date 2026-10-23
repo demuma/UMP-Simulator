@@ -121,6 +121,67 @@ class MappedSceneGeneratorTests(unittest.TestCase):
             self.assertNotEqual(result.returncode, 0)
             self.assertFalse(output.exists())
 
+    def test_corridor_sustained_arrivals_and_relative_returns(self):
+        source=builder.make_config(REPO,DATABASE,90,False,20261023,"corridor",128)
+        report=builder.audit_config(source)
+        self.assertEqual(report["scheduled_people"],128)
+        self.assertEqual(report["visible_episodes"],160)
+        self.assertGreater(report["last_source_request_ms"],88000)
+        self.assertIsNone(report["last_scheduled_exit_ms"])
+        self.assertEqual(source["mapped_scene"]["motion"]["mode"],"corridor_following")
+        for person in source["mapped_scene"]["people"]:
+            for episode in person["episodes"][1:]:
+                self.assertGreater(episode["after_previous_ms"],6000)
+                self.assertEqual(episode["start_ms"],0)
+        fast=builder.make_config(REPO,DATABASE,90,False,20261023,"corridor",128,100)
+        self.assertEqual(builder.audit_config(fast)["last_source_request_ms"],12700)
+
+    def test_corridor_seeded_lane_diversity_and_swept_body_clearance(self):
+        for seed in [20261023,20261024,20261025]:
+            routes=builder.corridor_routes(seed)
+            report=builder.route_geometry_audit(self.local,self.layers,routes,.55)
+            self.assertEqual(len(routes),6)
+            self.assertTrue(all(route["body_outside_walkable_area_m2"]<1e-6
+                and route["body_building_intersection_outside_portal_m2"]<1e-6
+                for route in report["routes"].values()))
+        self.assertNotEqual(builder.corridor_routes(20261023),builder.corridor_routes(20261024))
+        self.assertEqual(builder.corridor_routes(20261023),builder.corridor_routes(20261023))
+        source=builder.make_config(REPO,DATABASE,90,False,20261023,"corridor",64)
+        paths=source["mapped_scene"]["routes"]
+        self.assertEqual(len(paths),80)
+        self.assertEqual(len({row["id"] for row in paths}),80)
+        builder.route_geometry_audit(self.local,self.layers,paths,.55)
+        routes={row["id"]:row for row in paths}
+        for person in source["mapped_scene"]["people"]:
+            for episode in person["episodes"]:
+                self.assertNotIn(person["person_id"],episode["route_id"])
+                route=routes[episode["route_id"]]
+                if route["start_portal"]=="building-rappolthaus": self.assertEqual(route["points"][0],builder.DOOR)
+                if route["end_portal"]=="building-rappolthaus": self.assertEqual(route["points"][-1],builder.DOOR)
+
+    @unittest.skipUnless(os.environ.get("UMP_MAPPED_CORE_TEST_BINARY"),
+                         "Set UMP_MAPPED_CORE_TEST_BINARY for the native finite-source drain gate")
+    def test_dense_corridor_native_config_drains_without_dropped_tracks(self):
+        # Reproduce the formerly deadlocked native source. The 180-s capture
+        # horizon is censored; 360 s explicitly tests finite drainage, not a
+        # latency promise. Only a temporary input config is written, no motion.
+        source=builder.make_config(REPO,DATABASE,180,False,20261023,"corridor",128,500)
+        with tempfile.TemporaryDirectory(prefix="ump-mapped-drain-test-") as temp:
+            config=pathlib.Path(temp)/"config.yaml"
+            config.write_text(yaml.safe_dump(source,sort_keys=False),encoding="utf-8")
+            result=subprocess.run([os.environ["UMP_MAPPED_CORE_TEST_BINARY"],"--drain-config",
+                str(config),"--end-ms","360000"],capture_output=True,text=True,timeout=120)
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn("scheduled=160 starts=160 ends=160 active=0 pending=0",result.stdout)
+            self.assertIn("stalled=0 overlaps=0",result.stdout)
+
+    def test_historical_population_and_corridor_flow_guards(self):
+        for kwargs in [{"population":128},{"arrival_interval_ms":1000}]:
+            with self.assertRaises(ValueError):
+                builder.make_config(REPO,DATABASE,90,False,20261023,**kwargs)
+        for population,interval in [(4,None),(2049,None),(64,51),(64,0)]:
+            with self.assertRaises(ValueError): builder.corridor_people(20261023,population,90,interval)
+
 
 if __name__ == "__main__":
     unittest.main()

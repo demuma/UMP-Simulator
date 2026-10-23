@@ -213,8 +213,24 @@ struct Options {
     std::optional<int> fixedDepth;
     std::optional<AggregationTime> fixedWindowMs;
     std::optional<double> paceRate;
+    std::optional<AggregationTime> progressStepMs;
     std::size_t queueCapacity = 64;
 };
+// Optional native-style progress is a separate clock from sensor sampling.
+// Leave the historical replay path unchanged unless the option is explicit.
+AggregationTime progressStepFor(const Input& input, const Options& options) {
+    if (!options.progressStepMs) return input.periodMs;
+    const auto step = *options.progressStepMs;
+    if (step <= 0 || step > input.periodMs || input.periodMs % step != 0 || input.endMs % step != 0)
+        throw std::invalid_argument("Progress step must be positive, divide the sensor period, not exceed it, and align the horizon");
+    // Include initialization at zero and finalization in the event budget.
+    const auto events = static_cast<std::uint64_t>(input.endMs / step) + 1;
+    if (events > static_cast<std::uint64_t>(maxReplayTicks))
+        throw std::invalid_argument("Explicit progress supports at most ten million initialization/progress/finish events");
+    if (options.paceRate && events > 100000)
+        throw std::invalid_argument("Pacing supports at most 100000 initialization/progress/finish events");
+    return step;
+}
 struct Settings {
     AggregationConfig aggregation;
     SpatialSelectionConfig spatial;
@@ -224,6 +240,7 @@ struct Settings {
     std::string configurationYaml;
 };
 Settings parseSettings(YAML::Node node, const Input& input, const Options& options) {
+    (void)progressStepFor(input, options);
     keys(node, {"application_id", "window_ms", "max_observations_per_window", "history", "spatial_selection",
         "temporal_adaptation", "metric_policy", "policy_tree", "policy_regions", "semantic_taxonomy"}, "replay configuration");
     if (options.mode != "fixed" && options.mode != "spatial" && options.mode != "temporal_first"
@@ -406,6 +423,7 @@ std::optional<std::uint64_t> peakResidentBytes() {
 std::string optionalBytes(std::optional<std::uint64_t> bytes) { return bytes ? number(*bytes) : "null"; }
 
 std::string run(const Input& input, const Settings& settings, const Options& options) {
+    const auto progressStepMs = progressStepFor(input, options);
     const auto started = std::chrono::steady_clock::now();
     const auto& config = settings.aggregation;
     const bool localMode = settings.temporal && settings.temporal->coordination == CoordinationMode::CellLocal;
@@ -472,21 +490,30 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
     const auto consume = [&](AggregationTime time, bool finishing) {
         currentEventMs = time;
         if (finishing) manager.finish(time);
-        else if (batchIndex < input.batches.size() && input.batches[batchIndex].observedAtMs == time)
-            manager.ingest(input.batches[batchIndex++]);
-        else manager.advance(time);
+        else {
+            // The native sensor first advances its manager on every simulator
+            // tick, then ingests an actual due measurement. ingest() appends
+            // history and notifies progress again at the same sample time.
+            // Merely inserting extra no-sample ticks would miss this ordering.
+            if (options.progressStepMs) manager.advance(time);
+            if (batchIndex < input.batches.size() && input.batches[batchIndex].observedAtMs == time)
+                manager.ingest(input.batches[batchIndex++]);
+            else if (!options.progressStepMs) manager.advance(time);
+        }
     };
     if (options.paceRate) {
         // Build a small immutable arrival schedule, not copies of observations.
-        // Missing samples advance the same clock; EOF is a separately timed event.
-        const auto count = static_cast<std::uint64_t>((input.endMs - 1) / input.periodMs) + 1;
+        // Sensor sampling remains unchanged when a finer progress clock is used.
+        // Origin initialization is processed directly at the pacing epoch; the
+        // positive event schedule retains the existing PacedReplay contract.
+        const auto count = static_cast<std::uint64_t>((input.endMs - 1) / progressStepMs) + 1;
         if (count > 100000) throw std::invalid_argument("Pacing supports at most 100000 cadence/finish events");
         std::vector<PacedEvent> events;
         events.reserve(static_cast<std::size_t>(count));
-        for (AggregationTime time = input.periodMs; time < input.endMs;) {
+        for (AggregationTime time = progressStepMs; time < input.endMs;) {
             events.push_back({time, false});
-            if (time > std::numeric_limits<AggregationTime>::max() - input.periodMs) break;
-            time += input.periodMs;
+            if (time > std::numeric_limits<AggregationTime>::max() - progressStepMs) break;
+            time += progressStepMs;
         }
         events.push_back({input.endMs, true});
         validatePacing(events, *options.paceRate, options.queueCapacity);
@@ -502,6 +529,7 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
         };
         // Parsing, validation and core construction precede the arrival origin.
         pacingEpoch = ReplayClock::now();
+        if (options.progressStepMs) consume(0, false);
         sampleMemory(0);
         AggregationTime nextMemorySample = 1000;
         pacing = runPaced(events, *options.paceRate, options.queueCapacity, pacingEpoch, [&](const auto& event) {
@@ -512,11 +540,13 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
             }
         });
     } else {
-        // Advance every declared sensor cadence, including missing samples.
-        for (AggregationTime time = input.periodMs; time < input.endMs;) {
+        // Default: historical sensor-cadence clock. Explicit: native-style
+        // initialization and progress, including ticks without measurements.
+        if (options.progressStepMs) consume(0, false);
+        for (AggregationTime time = progressStepMs; time < input.endMs;) {
             consume(time, false);
-            if (time > std::numeric_limits<AggregationTime>::max() - input.periodMs) break;
-            time += input.periodMs;
+            if (time > std::numeric_limits<AggregationTime>::max() - progressStepMs) break;
+            time += progressStepMs;
         }
         consume(input.endMs, true);
     }
@@ -531,6 +561,10 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
         {"min_depth", number(settings.spatial.minDepth)},
         {"extension_step_ms", settings.temporal ? number(settings.temporal->extensionStepMs) : "null"},
         {"max_window_ms", settings.temporal ? number(settings.temporal->maxWindowMs) : number(config.windowMs)}};
+    if (options.progressStepMs) {
+        parameters.emplace_back("progress_step_ms", number(*options.progressStepMs));
+        parameters.emplace_back("progress_origin_ms", number(0));
+    }
     if (settings.temporal && settings.temporal->strategy == AdaptationStrategy::SemanticFirst) {
         parameters.emplace_back("semantic_secondary_strategy", quoted(semanticSecondaryStrategyName(
             settings.temporal->semanticSecondaryStrategy)));
@@ -620,6 +654,11 @@ Options arguments(int argc, char** argv) {
         else if (key == "--output") result.output = value;
         else if (key == "--mode") result.mode = value;
         else if (key == "--fixed-window-ms") result.fixedWindowMs = integer();
+        else if (key == "--progress-step-ms") {
+            const auto step = integer();
+            if (step <= 0) throw std::invalid_argument("Progress step must be positive");
+            result.progressStepMs = step;
+        }
         else if (key == "--pace-rate") {
             std::size_t consumed = 0;
             const double rate = std::stod(value, &consumed);

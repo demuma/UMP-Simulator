@@ -348,12 +348,16 @@ void Simulation::initializeMappedScene() {
             || !std::isfinite(static_cast<float>(person.speedMps)) || static_cast<float>(person.speedMps) <= 0
             || !std::isfinite(attributes.bodyRadius) || attributes.bodyRadius <= 0)
             throw std::invalid_argument("Mapped speed/radius is outside its declared behavior profile");
+        if (mappedScene->configuration().motionMode == ump::MappedMotionMode::CorridorFollowing
+            && std::abs(person.radiusM - attributes.bodyRadius) > 1e-6)
+            throw std::invalid_argument("Mapped corridor body radius must match its declared observed profile");
     }
     if (mappedScene->configuration().people.size() != static_cast<std::size_t>(numAgents))
         throw std::invalid_argument("Mapped explicit person count must equal agents.num_agents");
 }
 
 void Simulation::updateMappedAgents(ump::AggregationTime nowMs) {
+    mappedScene->advanceTo(nowMs);
     const auto frame = mappedScene->frameAt(nowMs);
     std::unordered_map<std::string, std::size_t> previous;
     for (std::size_t i = 0; i < agents.size(); ++i) previous.emplace(agents[i].agentId, i);
@@ -376,17 +380,27 @@ void Simulation::updateMappedAgents(ump::AggregationTime nowMs) {
         agent.velocity = {static_cast<float>(track.velocity.x), static_cast<float>(track.velocity.y)};
         agent.initialVelocity = agent.velocity;
         agent.velocityMagnitude = std::hypot(agent.velocity.x, agent.velocity.y);
-        if (!std::isfinite(agent.velocityMagnitude) || agent.velocityMagnitude <= 0)
+        if (!std::isfinite(agent.velocityMagnitude))
             throw std::logic_error("Mapped velocity must be finite and representable");
-        agent.heading = agent.velocity / agent.velocityMagnitude;
-        agent.theta = std::atan2(agent.heading.y, agent.heading.x);
-        agent.acceleration = {0, 0}; agent.initialAcceleration = {0, 0}; agent.accelerationMagnitude = 0;
-        agent.collisionPredicted = false; agent.stopped = false; agent.isActive = true;
-        agent.noiseSeed = 0;
-        agent.waypointDistance = waypointDistance;
         const auto& routes = mappedScene->configuration().routes;
         const auto route = std::find_if(routes.begin(), routes.end(), [&](const auto& r) { return r.id == track.routeId; });
         if (route == routes.end()) throw std::logic_error("Mapped source lost a validated route");
+        if (agent.velocityMagnitude > 1e-8f) agent.heading = agent.velocity / agent.velocityMagnitude;
+        else {
+            // Admission/following can stop a route. Keep a finite route heading
+            // without replacing its measured zero velocity by preferred speed.
+            const auto next = route->points.at(static_cast<std::size_t>(track.nextWaypointIndex));
+            const auto previousPoint = route->points.at(static_cast<std::size_t>(track.nextWaypointIndex - 1));
+            const double length = std::hypot(next.x - previousPoint.x, next.y - previousPoint.y);
+            agent.heading = {static_cast<float>((next.x - previousPoint.x) / length),
+                static_cast<float>((next.y - previousPoint.y) / length)};
+        }
+        agent.theta = std::atan2(agent.heading.y, agent.heading.x);
+        agent.acceleration = {0, 0}; agent.initialAcceleration = {0, 0}; agent.accelerationMagnitude = 0;
+        agent.collisionPredicted = false;
+        agent.stopped = agent.velocityMagnitude <= 1e-8f; agent.isActive = true;
+        agent.noiseSeed = 0;
+        agent.waypointDistance = waypointDistance;
         agent.trajectory.clear();
         for (const auto& point : route->points)
             agent.trajectory.push_back({static_cast<float>(point.x), static_cast<float>(point.y)});
@@ -904,7 +918,25 @@ void Simulation::run() {
                 << "source_elapsed_ms" << static_cast<std::int64_t>(simulationTime.asMilliseconds())
                 << "planned_duration_ms" << static_cast<std::int64_t>(targetSimulationTime) * 1000
                 << "scheduled_people" << static_cast<std::int64_t>(mappedScene->configuration().people.size())
-                << "scheduled_tracks" << static_cast<std::int64_t>(mappedScene->events().size() / 2);
+                << "scheduled_tracks" << static_cast<std::int64_t>([&] {
+                    std::size_t count = 0;
+                    for (const auto& person : mappedScene->configuration().people) count += person.episodes.size();
+                    return count;
+                }());
+        if (mappedScene->configuration().motionMode == ump::MappedMotionMode::CorridorFollowing) {
+            const auto motion = mappedScene->motionDiagnostics();
+            summary << "motion_model" << "bounded_swept_body_corridor_following"
+                << "realized_track_starts" << static_cast<std::int64_t>(motion.realizedStarts)
+                << "realized_track_ends" << static_cast<std::int64_t>(motion.realizedEnds)
+                << "blocked_motion_steps" << static_cast<std::int64_t>(motion.blockedMotionSteps)
+                << "admission_wait_steps" << static_cast<std::int64_t>(motion.admissionWaitSteps)
+                << "merge_admission_wait_steps" << static_cast<std::int64_t>(motion.mergeAdmissionWaitSteps)
+                << "max_consecutive_stop_ms" << static_cast<std::int64_t>(motion.maxConsecutiveStopMs)
+                << "active_stalled_tracks" << static_cast<std::int64_t>(motion.activeStalledTracks)
+                << "pending_tracks" << static_cast<std::int64_t>(motion.pendingTracks)
+                << "active_tracks" << static_cast<std::int64_t>(motion.activeTracks)
+                << "body_overlap_violations" << static_cast<std::int64_t>(motion.overlapViolations);
+        }
         collection.insert_one(summary << bsoncxx::builder::stream::finalize);
     }
 
@@ -1027,7 +1059,8 @@ void Simulation::postMetadata() {
                  << "ground_truth_identity_unit" << "synthetic_person"
                  << "support_contract" << "one_episode_per_retained_history"
                  << "minimum_hidden_gap_ms" << mappedScene->minimumHiddenGapMs().value_or(0)
-                 << "motion_model" << "scheduled_polyline_without_crowd_interactions";
+                 << "motion_model" << (mappedScene->configuration().motionMode == ump::MappedMotionMode::CorridorFollowing
+                    ? "bounded_swept_body_corridor_following" : "scheduled_polyline_without_crowd_interactions");
     }
 
     // Insert the metadata document into the collection

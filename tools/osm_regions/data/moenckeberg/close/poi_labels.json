@@ -1,0 +1,90 @@
+{
+  "schema": "ump.osm-label-snapshot.v1",
+  "attribution": "© OpenStreetMap contributors; ODbL 1.0",
+  "copyright_url": "https://www.openstreetmap.org/copyright",
+  "source_xml_sha256": "230dd159d3d01233a6cc641ae826a664bb9228b6833c6ed7f7ddea0c6a7cccec",
+  "coordinate_transform": {
+    "source_crs": "EPSG:25832",
+    "x_equals_easting_minus": 566277.8310511189,
+    "y_equals_top_northing_minus_northing": 5934095.84809249
+  },
+  "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 80,
+    "height": 80
+  },
+  "labels": [
+    {
+      "text": "H&M HOME",
+      "x": 52.469680846785195,
+      "y": 66.32902561035007,
+      "kind": "shop",
+      "osm_type": "node",
+      "osm_id": 442443889,
+      "osm_version": "11",
+      "osm_timestamp": "2025-04-13T15:54:15Z"
+    },
+    {
+      "text": "Elbphilharmonie Kultur Café Starbucks",
+      "x": 36.22871069912799,
+      "y": 25.788304790854454,
+      "kind": "place",
+      "osm_type": "node",
+      "osm_id": 442443891,
+      "osm_version": "23",
+      "osm_timestamp": "2025-07-17T11:04:42Z"
+    },
+    {
+      "text": "Adidas Originals",
+      "x": 42.01549824443646,
+      "y": 69.78066274896264,
+      "kind": "shop",
+      "osm_type": "node",
+      "osm_id": 990030917,
+      "osm_version": "15",
+      "osm_timestamp": "2026-09-12T16:31:26Z"
+    },
+    {
+      "text": "Ditsch",
+      "x": 31.07323890796397,
+      "y": 73.39491189830005,
+      "kind": "shop",
+      "osm_type": "node",
+      "osm_id": 2887815990,
+      "osm_version": "10",
+      "osm_timestamp": "2025-04-06T13:00:52Z"
+    },
+    {
+      "text": "Mö Grill",
+      "x": 77.95681338803843,
+      "y": 58.014937203377485,
+      "kind": "place",
+      "osm_type": "node",
+      "osm_id": 4248082207,
+      "osm_version": "15",
+      "osm_timestamp": "2025-05-19T18:31:11Z"
+    },
+    {
+      "text": "Apollo",
+      "x": 12.196238371776417,
+      "y": 79.62416840996593,
+      "kind": "shop",
+      "osm_type": "node",
+      "osm_id": 10771056021,
+      "osm_version": "4",
+      "osm_timestamp": "2026-07-23T21:20:58Z"
+    },
+    {
+      "text": "Konzertkasse Mönckebergstraße",
+      "x": 40.635239401017316,
+      "y": 29.56515745446086,
+      "kind": "shop",
+      "osm_type": "node",
+      "osm_id": 13739289193,
+      "osm_version": "1",
+      "osm_timestamp": "2026-04-18T07:47:26Z"
+    }
+  ],
+  "scope": "Source-snapshot POI names only. No current-tenant verification, entrance linkage, movement destination or policy assignment."
+}

@@ -8,7 +8,7 @@ From the repository root:
 python3 tools/replay_viewer/serve.py --bundle results/YOUR_RUN/viewer --port 8765
 ```
 
-Open `http://127.0.0.1:8765/`. Stop the server with Ctrl+C. The server binds to localhost only and serves only its three viewer assets plus the explicitly declared bundle JSON files. It does not expose the repository directory.
+Open `http://127.0.0.1:8765/`. Stop the server with Ctrl+C. The server binds to localhost only and serves only its three viewer assets, the explicitly declared bundle JSON files, and the one optional validated map PNG. It does not expose the repository directory.
 
 ## Common versus local semantic comparison
 
@@ -55,7 +55,7 @@ The bundle directory contains `bundle.json`:
 }
 ```
 
-Paths must be relative to that directory; parent traversal, external symlinks and arbitrary file types are rejected. The observations must use `ump.observation-replay.v1`, with finite XY coordinates for each observation. Results must use `ump.replay-result.v1`, with exactly matching run ID, sensor ID, coverage, cadence and horizon. Different policy/application IDs are permitted because those are experimental inputs. An optional `sha256` object maps declared relative filenames to their SHA-256 digests. A digest checks accidental changes; it is not an independent trust guarantee.
+JSON paths must be relative to that directory; parent traversal, external symlinks and arbitrary file types are rejected. The only additional file type is the optional literal `map_background.png` described below. The observations must use `ump.observation-replay.v1`, with finite XY coordinates for each observation. Results must use `ump.replay-result.v1`, with exactly matching run ID, sensor ID, coverage, cadence and horizon. Different policy/application IDs are permitted because those are experimental inputs. An optional `sha256` object maps declared relative filenames to their SHA-256 digests. A digest checks accidental changes; it is not an independent trust guarantee.
 
 To validate without starting the server:
 
@@ -79,11 +79,70 @@ The viewer references existing JSON files rather than embedding large data in HT
 - The cell inspector gives the original half-open spatial bounds and source interval, recorded total observations, distinct road users, mean sample occupancy and a table of **released** semantic categories. For a clipped historical cell, these values belong to the whole original footprint; visible fragments are masks only, and their counts are unknown. A missing category breakdown is explicitly unknown; it is never reconstructed into the recipient section. The observed smallest category support and declared semantic loss are shown. Category support is an operational condition, not a demonstrated anonymity guarantee.
 - **Inspect private source groups** is a separate, initially disabled research control. It adds an amber table of the exact recorded input types **within the same selected cell and full half-open window**, before semantic generalization. It never uses the current position sample as a proxy for the window. Distinct users are deduplicated within each type and across the footprint; raw identities are not rendered. A person whose classification changes can occur in multiple type rows, so their distinct counts cannot be summed.
 - Source group averages divide by the measured samples in that interval, including measured-empty samples. Explicitly unavailable samples are counted separately. Missing scheduled samples are not reconstructed. These input averages and categories are private diagnostics, not published category estimates or additional recipient knowledge. They remain hidden before the displayed release seals or the diagnostic window finalizes, including after seeking backwards.
-- Policy checks are shown only in the private diagnostic view. Optional `variants[].policy_regions` metadata draws dashed purple local-rule footprints there and lists intersecting region declarations in the inspector. A region has `id`, finite `x`, `y`, `width`, `height`, optional `type`, and optional `requirements: [{metric, min?, max?}]`. Metadata describes declared regions; the recorded effective checks determine actual decisions. Region metadata is validated before serving: at most 4096 regions per variant, unique nonempty IDs, finite positive rectangles inside coverage, and at most 64 well-formed finite requirement bounds per region. Lowercase metric identifiers describe declarations; they do not activate a metric implementation. Older bundles without this metadata keep their existing behavior.
+- Recorded policy checks are shown only in the private diagnostic view; unavailable checks remain explicitly unrecorded. The separate **Show declared policy regions** toggle draws dashed purple local-rule footprints in all three views, including the reference. It does not enable suppressed diagnostics or private source groups. Optional `variants[].policy_regions` metadata supplies those footprints and lists intersecting declarations in the inspector. A region has `id`, finite `x`, `y`, `width`, `height`, optional `type`, and optional `requirements: [{metric, min?, max?}]`. Metadata describes declared regions; it does not reconstruct the runtime policy compiler or its metric evaluations. Optional `variants[].policy_root_requirements` uses the same requirement list. The inspector combines root bounds with every region that intersects the original cell by positive area: lower bounds take the maximum and upper bounds take the minimum. It shows every source declaration and flags an empty bound intersection. Boundary contact alone does not count as intersection. The **Policy trees and declared regions** overview is available before any release. Older bundles without root metadata explicitly show that the complete effective declaration is unknown. Region metadata is validated before serving: at most 4096 regions per variant, unique nonempty IDs, finite positive rectangles inside coverage, and at most 64 well-formed finite requirement bounds per region. Lowercase metric identifiers describe declarations; they do not activate a metric implementation. Older bundles without this metadata keep their existing behavior.
 - Event buttons and timeline lanes use actual availability timestamps; private-only finalizations are diagnostic events when that overlay is selected. Spatial displays change at recorded output events. There is no claim that every geometric difference is an explicitly logged merge or split operation.
 - Cumulative released observations are shown against the **whole run's** input observation count. The denominator includes later data when the playhead is earlier; this is a replay progress summary, not a time-local retention estimate.
 
 The whole bundle remains **private research material**, even when the recipient display filter is selected. It contains identities, raw positions and diagnostic thresholds. A sanitized recipient export is a different artifact.
+
+## Optional mapped-scene metadata
+
+The native mapped-scene exporter can add these fields without changing the
+existing `ump.replay-viewer.v1` observation/result contract:
+
+```json
+{
+  "identity_unit": "visible_episode_track",
+  "input_provenance": "Native mapped source; sampled positions follow declared kinematic routes.",
+  "map": {
+    "image": "map_background.png",
+    "bounds": {"x": 0, "y": 0, "width": 80, "height": 80},
+    "attribution": "© OpenStreetMap contributors",
+    "legend": [{"label": "Walking area", "color": "#e8dfce"}],
+    "labels": [{"text": "Mönckebergstraße", "x": 40, "y": 50, "kind": "street"}]
+  }
+}
+```
+
+The map bounds must exactly equal recorded observation coverage. The PNG is
+clipped and transformed in world coordinates when focusing a selected cell; it
+is not stretched to fill the zoomed cell. Attribution remains outside the
+clipped canvas. The map, observed track types, and output-state legends are
+separate. Street, building, shop, entrance and place names are rendered only
+from supplied metadata, never inferred from paths or guessed from geography.
+The map-name toggle is independent of the policy-region toggle.
+
+The server accepts one literal map filename, bounded to 16 MiB and 4096 pixels
+per side. It verifies noninterlaced 8-bit RGB/RGBA PNG dimensions, chunk checksums,
+complete image termination and bounded decompressed scanline length. It rejects
+external symlinks, arbitrary image paths, animations, truncated files, bad pixel
+sizes and unsupported formats. Metadata is bounded to 32 geography legend items,
+200 labels inside the world bounds, 160 characters per label/legend entry,
+512 attribution characters and 1024 provenance characters. Geography colors are
+ordinary `#RRGGBB` values; no CSS or URLs are accepted there. A map digest may be
+included in the existing `sha256` table. Old bundles without maps remain valid.
+
+For `identity_unit: "visible_episode_track"`, support labels explicitly say
+**tracks**. A new visible episode can belong to a previously observed person;
+the viewer does not link those episodes and receives no stable private person
+mapping. Its type tables describe recorded tracks and classification labels,
+not verified counts of different people. Other or absent identity-unit metadata
+uses the conservative term **observed IDs**.
+
+Each comparison distinguishes six quantities at the current playhead:
+
+- Visible original historical aggregates, each with its own interval.
+- Cumulative actual published **cell-windows** (every original released cell once).
+- Unique published spatial cell IDs (a repeated cell in a later window counts once).
+- Released observation contributions against the full-run input count.
+- Actual release events (an event can contain several cells).
+- Visible geometry fragments (display masks, never additional publications).
+
+These are historical accounting quantities, not a simultaneous population and
+not a privacy guarantee. Rewinding removes later publications from the totals.
+Overlapping regional declarations are retained for inspection, including
+cross-region contradictions; a contradiction is a finding about the supplied
+bounds, not a fabricated observed metric failure.
 
 ## Local mosaic interpretation
 

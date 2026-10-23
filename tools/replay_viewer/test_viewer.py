@@ -8,6 +8,8 @@ import json
 from pathlib import Path
 import tempfile
 import threading
+import struct
+import zlib
 import unittest
 from urllib.error import HTTPError
 from urllib.request import urlopen
@@ -49,6 +51,133 @@ class ViewerTests(unittest.TestCase):
     def test_matching_bundle_validates(self):
         _,files=serve.validate_bundle(self.root)
         self.assertEqual(set(files),{'bundle.json','observations.json','result.json'})
+
+    @staticmethod
+    def png(width=2, height=2, *, depth=8, color=6, interlace=0, pixels=None):
+        def chunk(kind,payload):
+            return struct.pack('>I',len(payload))+kind+payload+struct.pack('>I',zlib.crc32(kind+payload)&0xffffffff)
+        if pixels is None:
+            channels=3 if color==2 else 4
+            pixels=(b'\x00'+b'\xff'*width*channels)*height
+        return (b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('>IIBBBBB',width,height,depth,color,0,0,interlace))
+                +chunk(b'IDAT',zlib.compress(pixels))+chunk(b'IEND',b''))
+
+    def add_map(self):
+        self.manifest['identity_unit']='visible_episode_track'
+        self.manifest['input_provenance']='Native mapped pedestrian test; recorded observations, not interpolated positions.'
+        self.manifest['map']={'image':'map_background.png',
+            'bounds':{key:self.replay['coverage'][key] for key in ('x','y','width','height')},
+            'attribution':'© OpenStreetMap contributors',
+            'legend':[{'label':'Walking area','color':'#e8dfce'}],
+            'labels':[{'text':'Mönckebergstraße','x':40,'y':50,'kind':'street'}]}
+        (self.root/'map_background.png').write_bytes(self.png())
+        return self.manifest['map']
+
+    def test_optional_map_png_and_track_metadata_validate(self):
+        self.add_map()
+        self.write()
+        manifest,files=serve.validate_bundle(self.root)
+        self.assertEqual(manifest['identity_unit'],'visible_episode_track')
+        self.assertEqual(files['map_background.png'],(self.root/'map_background.png').resolve())
+        self.manifest['sha256']={'map_background.png':hashlib.sha256((self.root/'map_background.png').read_bytes()).hexdigest()}
+        self.write()
+        serve.validate_bundle(self.root)
+
+    def test_map_image_path_is_a_single_literal_allowlist_entry(self):
+        for path in ('other.png','../map_background.png','https://example.org/map.png','map_background.svg','sub/map_background.png'):
+            with self.subTest(path=path):
+                self.add_map()['image']=path
+                self.rejected()
+
+    def test_map_image_external_symlink_and_missing_image_rejected(self):
+        self.add_map()
+        (self.root/'map_background.png').unlink()
+        self.rejected()
+        with tempfile.TemporaryDirectory() as other:
+            external=Path(other)/'outside.png'
+            external.write_bytes(self.png())
+            (self.root/'map_background.png').symlink_to(external)
+            self.rejected()
+
+    def test_map_bounds_must_match_frozen_observations(self):
+        for bounds in (None,{},dict(x=0,y=0,width=160,height=80),dict(x=True,y=0,width=80,height=80),dict(x=0,y=0,width=80,height=float('nan'))):
+            with self.subTest(bounds=bounds):
+                self.add_map()['bounds']=bounds
+                self.rejected()
+
+    def test_map_metadata_limits_and_types_are_enforced(self):
+        for key,value in [('attribution',''),('attribution','x'*513),('legend',{}),('legend',[{'label':'Walk','color':'url(external)'}]),
+                ('legend',[{'label':'Walk','color':'#abcdef'}]*33),('labels',{}),('labels',[{'text':'Outside','x':81,'y':0}]),
+                ('labels',[{'text':'Bad','x':0,'y':0,'kind':'guess'}]),('labels',[{'text':'x'*161,'x':0,'y':0}]),
+                ('labels',[{'text':'More','x':0,'y':0}]*201)]:
+            with self.subTest(key=key,value=value):
+                self.add_map()[key]=value
+                self.rejected()
+        for key,value in [('identity_unit','person'),('input_provenance',''),('input_provenance','x'*1025)]:
+            with self.subTest(key=key):
+                self.add_map()
+                self.manifest[key]=value
+                self.rejected()
+
+    def test_png_header_crc_pixel_size_filter_and_animation_guards(self):
+        self.add_map()
+        valid=self.png()
+        cases=[b'not a PNG', valid[:-1], valid+b'extra', valid[:29]+bytes([valid[29]^1])+valid[30:],
+               self.png(width=4097),self.png(depth=16),self.png(interlace=1),
+               self.png(pixels=b'\x00'*100),self.png(pixels=(b'\x05'+b'\xff'*8)*2)]
+        animation=b'acTL'+struct.pack('>II',2,0)
+        animation_chunk=struct.pack('>I',8)+animation+struct.pack('>I',zlib.crc32(animation)&0xffffffff)
+        cases.append(valid[:33]+animation_chunk+valid[33:])
+        for data in cases:
+            with self.subTest(size=len(data)):
+                (self.root/'map_background.png').write_bytes(data)
+                self.rejected()
+        # A valid RGB image uses a different scanline size from RGBA.
+        (self.root/'map_background.png').write_bytes(self.png(color=2))
+        self.write()
+        serve.validate_bundle(self.root)
+
+    def test_png_oversized_file_is_rejected_before_decoding(self):
+        self.add_map()
+        with (self.root/'map_background.png').open('r+b') as image:
+            image.truncate(serve.MAX_MAP_BYTES+1)
+        self.rejected()
+
+    def test_overlapping_region_metadata_and_cross_region_conflicts_are_retained(self):
+        region=self.add_policy_region(requirements=[{'metric':'support','min':10}])
+        self.manifest['variants'][0]['policy_regions'].append(dict(region,id='overlap',requirements=[{'metric':'support','max':5}]))
+        self.manifest['variants'][0]['policy_root_requirements']=[{'metric':'support','min':5}]
+        self.write()
+        serve.validate_bundle(self.root)
+        # Viewer preserves declarations to expose the conflict; it does not
+        # pretend the source mechanism could satisfy both inequalities.
+
+    def test_root_requirement_schema_is_validated(self):
+        for value in (None,{},[{'metric':'support'}],[{'metric':'bad metric','min':1}],[{'metric':'support','min':True}]):
+            with self.subTest(value=value):
+                self.manifest['variants'][0]['policy_root_requirements']=value
+                self.rejected()
+
+    def test_map_serves_png_mime_without_exposing_other_images(self):
+        self.add_map()
+        self.write()
+        (self.root/'other.png').write_bytes(self.png())
+        server=ThreadingHTTPServer(('127.0.0.1',0),serve.handler_for(self.root,Path(__file__).parent))
+        server.verbose=False
+        thread=threading.Thread(target=server.serve_forever,daemon=True)
+        thread.start()
+        url='http://127.0.0.1:'+str(server.server_address[1])
+        try:
+            with urlopen(url+'/bundle/map_background.png') as response:
+                self.assertEqual(response.headers['Content-Type'],'image/png')
+                self.assertEqual(response.headers['X-Content-Type-Options'],'nosniff')
+                self.assertEqual(response.read(),self.png())
+            with self.assertRaises(HTTPError):
+                urlopen(url+'/bundle/other.png')
+        finally:
+            server.shutdown()
+            thread.join()
+            server.server_close()
 
     def frozen_study(self):
         """Small independent source files exercise preparation without real datasets."""

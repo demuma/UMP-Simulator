@@ -22,13 +22,23 @@ std::string text(const YAML::Node& node, const char* name) {
 
 ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
     double width, double height, const std::unordered_set<std::string>& knownProfiles) {
-    keys(node, {"support_contract", "routes", "people"}, "mapped_scene");
+    keys(node, {"support_contract", "routes", "people", "motion"}, "mapped_scene");
     if (text(node["support_contract"], "mapped_scene.support_contract") != "one_episode_per_retained_history")
         throw std::invalid_argument("Mapped scene requires the explicit one_episode_per_retained_history support contract");
     if (!node["routes"].IsSequence() || !node["people"].IsSequence())
         throw std::invalid_argument("mapped_scene routes and people must be sequences");
     ump::MappedSceneConfig result;
     result.width = width; result.height = height;
+    if (node["motion"]) {
+        const auto motion=node["motion"];
+        keys(motion,{"mode","step_ms","clearance_m","portal_gate_radius_m"},"mapped_scene.motion");
+        if (text(motion["mode"],"mapped motion mode")!="corridor_following")
+            throw std::invalid_argument("Only explicit corridor_following motion settings are supported");
+        result.motionMode=ump::MappedMotionMode::CorridorFollowing;
+        result.motionStepMs=motion["step_ms"].as<ump::AggregationTime>(50);
+        result.clearanceM=motion["clearance_m"].as<double>(.1);
+        result.portalGateRadiusM=motion["portal_gate_radius_m"].as<double>(3);
+    }
     for (const auto& r : node["routes"]) {
         keys(r, {"id", "points", "start_portal", "end_portal"}, "mapped route");
         ump::MappedRoute route;
@@ -44,17 +54,19 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
         result.routes.push_back(std::move(route));
     }
     for (const auto& p : node["people"]) {
-        keys(p, {"person_id", "type", "speed_mps", "episodes"}, "mapped person");
+        keys(p, {"person_id", "type", "speed_mps", "episodes", "radius_m"}, "mapped person");
         ump::MappedPerson person;
         person.personId = text(p["person_id"], "private person id");
         person.type = text(p["type"], "observed profile type");
         if (!knownProfiles.count(person.type)) throw std::invalid_argument("Unknown mapped behavior profile: " + person.type);
         person.speedMps = p["speed_mps"].as<double>();
+        person.radiusM = p["radius_m"].as<double>(.25);
         if (!p["episodes"].IsSequence()) throw std::invalid_argument("Mapped person episodes must be a sequence");
         for (const auto& e : p["episodes"]) {
-            keys(e, {"track_id", "route_id", "start_ms"}, "mapped episode");
+            keys(e, {"track_id", "route_id", "start_ms", "after_previous_ms"}, "mapped episode");
             person.episodes.push_back({text(e["track_id"], "track id"),
-                text(e["route_id"], "route id"), e["start_ms"].as<ump::AggregationTime>()});
+                text(e["route_id"], "route id"), e["start_ms"].as<ump::AggregationTime>(),
+                e["after_previous_ms"] ? std::optional<ump::AggregationTime>{e["after_previous_ms"].as<ump::AggregationTime>()} : std::nullopt});
         }
         result.people.push_back(std::move(person));
     }

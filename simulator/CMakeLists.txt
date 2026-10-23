@@ -128,7 +128,8 @@ endif()
 option(UMP_BUILD_POLICY_TESTS "Build regional policy core and YAML adapter tests (no window/database)" ON)
 if(UMP_BUILD_POLICY_TESTS)
     enable_testing()
-    add_executable(PolicyRegressionTests tests/PolicyRegressionTests.cpp src/PolicyTree.cpp src/CandidateMetrics.cpp)
+    add_executable(PolicyRegressionTests tests/PolicyRegressionTests.cpp src/PolicyTree.cpp src/CandidateMetrics.cpp
+        src/CellLocalAggregation.cpp src/AdaptiveAggregation.cpp src/SpatialSelection.cpp src/AggregationHistory.cpp)
     target_compile_features(PolicyRegressionTests PRIVATE cxx_std_17)
     add_test(NAME policy_regression COMMAND PolicyRegressionTests)
     add_executable(PolicyConfigurationTests tests/PolicyConfigurationTests.cpp src/PolicyTree.cpp
@@ -387,4 +388,20 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS)
     add_test(NAME mapped_pedestrian_semantics COMMAND MappedPedestrianSemanticTests)
     set_tests_properties(mapped_scene mapped_scene_configuration mapped_pedestrian_semantics
         PROPERTIES LABELS "unit;mapped_scene" TIMEOUT 15)
+endif()
+
+# Optional Python environment for the mapped recorder/geometry tools. Dependencies
+# are isolated from the normal simulator build; see tools/mapped_scene/requirements.txt.
+set(UMP_MAPPED_SCENE_PYTHON "" CACHE FILEPATH "Python with mapped-scene requirements for recorder/tool tests")
+if(UMP_BUILD_MAPPED_SCENE_TESTS AND UMP_MAPPED_SCENE_PYTHON)
+    if(NOT EXISTS "${UMP_MAPPED_SCENE_PYTHON}")
+        message(FATAL_ERROR "UMP_MAPPED_SCENE_PYTHON does not exist")
+    endif()
+    foreach(mapped_test build_mapped_scene export_replay analyze_tracks run_comparison)
+        add_test(NAME mapped_${mapped_test}_tools COMMAND "${UMP_MAPPED_SCENE_PYTHON}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../tools/mapped_scene/test_${mapped_test}.py")
+        set_tests_properties(mapped_${mapped_test}_tools PROPERTIES
+            LABELS "unit;mapped_scene;tools" TIMEOUT 60
+            ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;UMP_REPLAY_BINARY=$<TARGET_FILE:AggregationReplay>;UMP_MAPPED_CORE_TEST_BINARY=$<TARGET_FILE:MappedSceneConfigurationTests>")
+    endforeach()
 endif()

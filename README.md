@@ -59,29 +59,48 @@ synthetic results and verification are recorded in the October 19 test report. T
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 
-**October 23 bounded mapped-scene gate:** the maintained Simulator now runs an
-opt-in 80 × 80-m Mönckebergstraße scene at D6 (1.25-m finest cells). Explicit routes,
-one verified entrance and private indoor visits produce 64 modeled people, 80
-visible-episode tracks and 16 visits over 90 s. Stroller and mobility-aid profiles
-join Adult, Child and Senior under the truthful Pedestrian semantic parent.
-The normal Region → PolicyTree path supplies four local constraint patches.
-Stable person identity stays in private GT; sensors/aggregation receive episode
-tracks only. This controlled source requires hidden gaps longer than retained
-history; a separate short-gap regression demonstrates two tracks from one person.
-It does not provide general person-level support or re-identification guarantees.
+**October 23 mapped replay and policy integration:** native mapped runs now retain
+actual sampled observations, immutable releases and private journal retirements
+under ignored `results/`. The browser replay includes the aligned attributable
+map, snapshot names, separate legends, local-region overlays, root/effective-bound
+inspection, released categories and opt-in private source groups. Counters separate
+published cell-windows, spatial IDs, events and display fragments. Captured journals
+do not expose rejected/active candidates; missing observed checks remain unknown.
+Stable GT identities and the person↔track mapping remain outside the HTTP allowlist.
+Generated movement/identity streams are local only and must never be committed.
 
-[77 CTest suites and eight generator tests pass](docs/MAPPED_SCENE_TEST_REPORT_2026-10-23.md).
-Two native runs with renamed private GT IDs have identical sensor and recipient
-contents. All 1,050 releases pass independent policy/count checks; 87.04% of measured
-observation contributions survive, all generalized to Pedestrian. Actual output
-uses 1.25 / 2.5 / 5 / 10-m cells and 0.4–4-s windows. This demonstrates bounded
-source/aggregation correctness, not baseline superiority or measured privacy gain.
-Motion is kinematic; crowd collision, body clearance and calibrated visit rates
-remain open. The [run guide](tools/mapped_scene/README.md) starts the native demo;
-the [identity contract](docs/MAPPED_SCENE_IDENTITY_CONTRACT_2026-10-23.md) and
-[compact results](docs/MAPPED_SCENE_RESULTS_2026-10-23.json) define its scope.
-Next review the source/tasks and compare fair fixed/adaptive settings, then revisit
-measured runtime costs, including 9,531 private empty-retirement checkpoints.
+The normal PolicyTree now accepts overlapping/nested aligned rectangular Regions:
+every positive-area intersection contributes hard bounds; cross-region conflicts
+remain infeasible with full provenance. Arbitrary polygons and native live-renderer
+region inspection remain open. Native 50-ms progress and 100-ms measurements are
+separate clocks. Explicit replay `--progress-step-ms 50` reproduces origin and
+pre-ingest advancement without fabricating observations; legacy replay defaults
+remain unchanged. Original-episode reruns reproduce the checked native logical
+releases with the matched clock.
+
+Same-source identity analysis and a predeclared six-method fixed/adaptive comparison
+are implemented. They preserve hard policies, distinguish exact answers from
+separate occupancy estimates, and keep the GT oracle evaluator-only. They establish
+neither empirical privacy nor universal adaptive superiority. The new corridor
+source adds seeded individual paths, sustained arrival requests and conservative
+swept-body following/admission. Fresh native capture, exact-clock replay and browser
+inspection pass for the bounded reference. A denser finite-horizon run is explicitly
+censored; a separate longer drain check finishes its requested episodes. This is
+not a general crowd solver or calibrated shopping simulation.
+See the [run/capture/replay guide](tools/mapped_scene/README.md),
+[current integration report](docs/MAPPED_REPLAY_INTEGRATION_TEST_REPORT_2026-10-23.md) and
+[identity contract](docs/MAPPED_SCENE_IDENTITY_CONTRACT_2026-10-23.md).
+
+The historical M01 integration reference remains 80 × 80 m/D6 (1.25-m leaves),
+64 modeled people, 80 visible episodes and 16 visits. Its four policy patches and
+five pedestrian types produced 1,050 audited cell-windows, using 77 spatial IDs;
+all retained observations generalized to Pedestrian. The
+[historical report](docs/MAPPED_SCENE_TEST_REPORT_2026-10-23.md) records the original
+77 CTest/eight-generator gate and 87.04% retention. These figures describe the
+kinematic integration fixture, not a new corridor/density experiment. Current
+final results belong to the current integration report. Empirical privacy,
+three substantive scenarios and the renewed whole-system/performance audit remain
+explicit follow-ups, including private empty-retirement I/O costs.
 
 **October 23 optional OSM feasibility gate:**
 [Real Mönckebergstraße map figures and production PolicyTree checks](docs/OSM_MOENCKEBERG_FEASIBILITY_2026-10-23.md)
@@ -583,17 +602,17 @@ reverted test results do not establish correctness of the current implementation
 
 | Area | Present | Missing or limited |
 |---|---|---|
-| Simulation | Agents, class attributes, movement, regions and configurable timestep | No central seed; movement noise partly depends on wall-clock time |
+| Simulation | Agents, class attributes, regions and configurable timestep; optional seeded mapped source and persistent local capture | Legacy random motion has no central seed and can depend on wall time; mapped source is deterministic |
 | Ground truth | Agent identity, position, velocity and timestamp stored in MongoDB; one full controlled AGBS run verified against GT | Completeness across other runs, sensor types and boundary cases not systematically validated |
 | ABS | Position, type, identity and velocity from consecutive observations; first complete output at 100 ms for the current 10-Hz setup | Nominal-period velocity requires aligned fixed intervals; publication after DB errors is not guaranteed |
 | GBS | Fixed cells, class counts and total count per observation | No full temporal aggregation or privacy-based release decision |
 | AGBS | Fine observation quadtree, position mapping, counts and cell IDs; optional reusable aggregation pipeline | Input geometry follows positions/max depth; adaptive publication uses a separately selected cut |
 | Aggregation pipeline | AGBS ingestion, bounded history, regional checks, spatial/temporal selection and immutable policy-approved MongoDB releases | Default common-window plus opt-in cell-local coordination; alternative publication models and automatic restart remain open |
-| Regional rules | Immutable sparse PolicyTree; root/type/region metric inheritance, footprint conflicts and stream-level Temporal First/Spatial First/Semantic First selection | Aligned, non-overlapping rectangles only; legacy granularity/k/l fields inactive; no regional strategy overrides or live updates |
+| Regional rules | Immutable sparse PolicyTree; overlapping/nested aligned rectangles, strict root/type/instance intersection, provenance and infeasible spatial policies | Arbitrary polygons/misalignment, live updates and regional execution overrides remain open; legacy granularity/k/l fields inactive |
 | Temporal history | Bounded sample history, exact ancestor/time queries, logical active/preemptive windows, bounded extension and coordinated retirement | No automatic precomputed ancestor statistic caches; cell-local coordination is opt-in |
-| Rendering | Combined typed frames, nonblocking pairing, bounded queues and dated latest-measurement AGBS geometry and independent playback pacing; four V3 DB renderers | Independent input/completed/active-window displays implemented; broader lifecycle inspection and long-run tests remain open |
+| Rendering | Typed frames, nonblocking pairing, bounded queues and independent pacing; mapped browser replay with world-aligned map, legends, policy/cell inspector and actual publication counters | Native live region inspection/cumulative publication mosaic remain open; capture journals do not contain rejected/active candidates |
 | Evaluation | Online candidate measures, fixed/deadline occupancy utility, common/local frozen replay, independent grouped membership studies and causal repeated-alarm attacks | Synthetic bounded attackers; semantic visits, stronger matched controls, robust population calibration, live receipt timing and formal guarantees remain open |
-| Movement | Start/target, straight-line waypoints, noise and collision avoidance | No street routing; TTC/lookahead behavior not validated |
+| Movement | Legacy start/target motion; optional mapped integration routes and seeded corridor progress/following/admission with realized events | Bounded corridor model; no general city routing/overtaking/global crowd solver or calibrated shopping flux; legacy TTC/lookahead remains limited |
 | Taxonomy | Type, behavior, appearance and distribution in one configuration | Strong coupling; modular redesign not yet specified |
 
 Existing source does not imply all edge cases are correct. The adaptive baseline and initial
