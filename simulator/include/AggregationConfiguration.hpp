@@ -14,6 +14,14 @@ std::optional<ump::SpatialSelectionConfig> readSpatialSelection(const YAML::Node
 void validatePolicyExecution(const YAML::Node& aggregation);
 std::optional<ump::TemporalAdaptationConfig> readTemporalAdaptation(const YAML::Node& aggregation);
 
+// Private file diagnostics are independent of policy checks, recipient publication
+// and renderer state. Historical full JSONL output remains the default.
+struct DiagnosticsConfiguration {
+    bool enabled = true;
+    std::string directory = "results/aggregation";
+};
+DiagnosticsConfiguration readDiagnosticsConfiguration(const YAML::Node& aggregation);
+
 // Database adapter settings remain plain values so configuration checks need no MongoDB client.
 struct PublicationConfiguration {
     std::string database;

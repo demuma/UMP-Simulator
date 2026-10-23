@@ -1,0 +1,130 @@
+{
+  "schema": "ump.diagnostic-cost-artifact-cleanup.v1",
+  "phase": "verified_then_deleted",
+  "scope": "Only newly generated complete replay outputs, detailed diagnostic JSONL and timing traces from this test. Existing user observation recording is unchanged. No new movement export occurred.",
+  "files": [
+    {
+      "relative_path": "run-baseline-full/result.json",
+      "bytes": 21893155,
+      "sha256": "957486dd2e6a56e229f8eca6ee717a6213321abb0072fa622ef29366dd613835"
+    },
+    {
+      "relative_path": "run-baseline-full/events.jsonl",
+      "bytes": 12331119,
+      "sha256": "30693591db4f5a22054264acf3868edc2e08db3ebaa0b3161af9c0f4e34efa82"
+    },
+    {
+      "relative_path": "run-baseline-full/diagnostics/candidates-912C987F-59FF-4F05-8E76-EEDBB46B12D9.jsonl",
+      "bytes": 73522872,
+      "sha256": "cc44d0b948858d3c81adc5ed210893b95155161321a03b441398f5067a6639a2"
+    },
+    {
+      "relative_path": "run-baseline-full/diagnostics/selection-9D18E922-D8BC-4F2E-9859-D958EEB0C4E8.jsonl",
+      "bytes": 116735889,
+      "sha256": "13bbe863307b1c6b3e656d2661dc8a9c3c9152e46892f5b8c73c744312f46f28"
+    },
+    {
+      "relative_path": "run-baseline-disabled/result.json",
+      "bytes": 21893155,
+      "sha256": "49af3e1cefe5118261a9e6a6f5188ca1f8047ecf06f6c9a21f06781c1cd408c5"
+    },
+    {
+      "relative_path": "run-baseline-disabled/events.jsonl",
+      "bytes": 4172848,
+      "sha256": "099c0b29a404caa2af59b9d1f23673e9e3c2ba4114d1cf3ae1e6a46b151b474f"
+    },
+    {
+      "relative_path": "run-baseline-disabled/diagnostics/candidates-A1475448-8CEC-4D9B-AEBA-D36F399F2033.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "run-baseline-disabled/diagnostics/selection-0AF4609E-E238-43C2-81EC-90F8DDD84A55.jsonl",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "relative_path": "run-optimized-full-1/result.json",
+      "bytes": 21893248,
+      "sha256": "3a2e62de51f13d91e55c55d246797a8f37ed0112348ad0e2a605c291bf782b88"
+    },
+    {
+      "relative_path": "run-optimized-full-1/events.jsonl",
+      "bytes": 12329090,
+      "sha256": "a3587e9052d00b421e3bb1cc79e5af14a203a50126146df04279e7743b1d6ba7"
+    },
+    {
+      "relative_path": "run-optimized-full-1/diagnostics/candidates-C76167CF-BEC3-47B8-8574-AC489E3D5B3B.jsonl",
+      "bytes": 73522872,
+      "sha256": "cc44d0b948858d3c81adc5ed210893b95155161321a03b441398f5067a6639a2"
+    },
+    {
+      "relative_path": "run-optimized-full-1/diagnostics/selection-44E16D9D-09AB-447C-AF5B-30577717F91A.jsonl",
+      "bytes": 116735889,
+      "sha256": "13bbe863307b1c6b3e656d2661dc8a9c3c9152e46892f5b8c73c744312f46f28"
+    },
+    {
+      "relative_path": "run-optimized-off-1/result.json",
+      "bytes": 21893248,
+      "sha256": "6aceb3294315e671491e17b00e58201fb5f026437e0393fcd841784e84dadbc4"
+    },
+    {
+      "relative_path": "run-optimized-off-1/events.jsonl",
+      "bytes": 4172983,
+      "sha256": "44dca4de4bc8d3be119f0d639ab51e190f4819cac459e5e0dafd01b811b5147b"
+    },
+    {
+      "relative_path": "run-optimized-full-2/result.json",
+      "bytes": 21893254,
+      "sha256": "3678bb3f04c3a06265911b0d83320316a2419bfb2f11eea56df065743b67dc67"
+    },
+    {
+      "relative_path": "run-optimized-full-2/events.jsonl",
+      "bytes": 12330277,
+      "sha256": "4b32c86ece259726eee2df8434f3e4509c0cb27d8ff15dbabfec79a7718f8479"
+    },
+    {
+      "relative_path": "run-optimized-full-2/diagnostics/candidates-D763B231-B786-46B7-9C56-365777197332.jsonl",
+      "bytes": 73522872,
+      "sha256": "cc44d0b948858d3c81adc5ed210893b95155161321a03b441398f5067a6639a2"
+    },
+    {
+      "relative_path": "run-optimized-full-2/diagnostics/selection-2EA160C7-869E-41D2-B9C2-5103D0CEE8E7.jsonl",
+      "bytes": 116735889,
+      "sha256": "13bbe863307b1c6b3e656d2661dc8a9c3c9152e46892f5b8c73c744312f46f28"
+    },
+    {
+      "relative_path": "run-optimized-off-2/result.json",
+      "bytes": 21893254,
+      "sha256": "3f6e66ec66f1f2b51efbbaba23fee2f3f59475de7204d848046baed9212732f3"
+    },
+    {
+      "relative_path": "run-optimized-off-2/events.jsonl",
+      "bytes": 4172648,
+      "sha256": "210458bbacb8f85f38a6a615e2dbcfad80b666ed125f9cf467bc23d59a86e235"
+    },
+    {
+      "relative_path": "live-full-headless-20-retry/timing.jsonl",
+      "bytes": 17814844,
+      "sha256": "663eca4616cc2960407dbfef9e0c12decb1918bb8ede4e6dc94e0d8f9b59121a"
+    },
+    {
+      "relative_path": "live-full-headless-20-retry/diagnostics/candidates-FE9BCC5C-01C7-484A-8C78-9DBB4B683298.jsonl",
+      "bytes": 72320356,
+      "sha256": "9814bfa6db691fe789edbf4b9c1a5644094cf1d50226cf48c9a7ebfc4df39875"
+    },
+    {
+      "relative_path": "live-full-headless-20-retry/diagnostics/selection-D3EA6410-8553-4A63-BC82-69EE4E163578.jsonl",
+      "bytes": 116992691,
+      "sha256": "d6a8783b6c4e9c878d920b35132bec197c257a1da811ec41a02f58395a90d940"
+    },
+    {
+      "relative_path": "live-off-renderer-20/timing.jsonl",
+      "bytes": 9680867,
+      "sha256": "563018af1dfa51b636b6eef876ab2512c0d8eaa01d5794befedf05e5e45a9355"
+    }
+  ],
+  "deleted_bytes": 968453320,
+  "all_listed_files_absent": true,
+  "existing_input_hash_unchanged": true
+}

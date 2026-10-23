@@ -382,8 +382,8 @@ void Simulation::initializeMetricPolicies() {
         const ump::GridCoverage coverage{area["x"].as<float>(), area["y"].as<float>(),
             area["width"].as<float>(), area["height"].as<float>(), sensor["grid"]["max_depth"].as<int>()};
         const auto applicationId = aggregation["application_id"].as<std::string>("fixed-baseline");
-        if (aggregation["diagnostics_directory"].as<std::string>("results/aggregation").empty())
-            throw std::invalid_argument("Aggregation diagnostics_directory must not be empty");
+        // Validate file diagnostics before any sensor/database initialization.
+        (void)readDiagnosticsConfiguration(aggregation);
         const double rate = sensor["frame_rate"].as<double>();
         if (!std::isfinite(rate) || rate <= 0 || 1000.0 / rate < 1
             || 1000.0 / rate >= static_cast<double>(std::numeric_limits<ump::AggregationTime>::max()))
@@ -550,8 +550,10 @@ void Simulation::initializeSensors() {
                 settings.history = readHistoryLimits(aggregation["history"]);
                 auto evaluator = std::move(metricEvaluators.at(sensor->sensorId));
                 settings.semanticTaxonomy = evaluator.semanticTaxonomy();
-                auto diagnostics = makeAggregationDiagnosticsSink(
-                    aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp);
+                const auto diagnosticSettings = readDiagnosticsConfiguration(aggregation);
+                AggregationDiagnosticsSink diagnostics;
+                if (diagnosticSettings.enabled)
+                    diagnostics = makeAggregationDiagnosticsSink(diagnosticSettings.directory, timestamp);
                 const auto spatialSettings = readSpatialSelection(aggregation, maxDepth);
                 const auto temporalSettings = readTemporalAdaptation(aggregation);
                 const auto publicationSettings = readPublicationConfiguration(aggregation);
@@ -562,8 +564,9 @@ void Simulation::initializeSensors() {
                 const bool localMode = temporalSettings && temporalSettings->coordination == ump::CoordinationMode::CellLocal;
                 auto* sensorInstance = sensor.get();
                 if (spatialSettings) {
-                    auto spatialDiagnostics = makeSpatialDiagnosticsSink(
-                        aggregation["diagnostics_directory"].as<std::string>("results/aggregation"), timestamp);
+                    SpatialDiagnosticsSink spatialDiagnostics;
+                    if (diagnosticSettings.enabled)
+                        spatialDiagnostics = makeSpatialDiagnosticsSink(diagnosticSettings.directory, timestamp);
                     std::shared_ptr<ump::PublicationCoordinator> coordinator;
                     std::shared_ptr<ump::PublicationStore> store;
                     std::size_t maxAttempts = 0;
@@ -629,11 +632,13 @@ void Simulation::initializeSensors() {
                             if (!delivered) throw std::runtime_error(
                                 "Publication attempts exhausted; private journal and reservation remain pending");
                         }
-                        try { spatialDiagnostics(*recorded); }
-                        catch (const std::exception& error) {
-                            if (!coordinator) throw;
-                            // Diagnostic I/O cannot undo acknowledged output or block selector handover.
-                            std::cerr << "Committed release retained; diagnostic write failed: " << error.what() << '\n';
+                        if (spatialDiagnostics) {
+                            try { spatialDiagnostics(*recorded); }
+                            catch (const std::exception& error) {
+                                if (!coordinator) throw;
+                                // Diagnostic I/O cannot undo acknowledged output or block selector handover.
+                                std::cerr << "Committed release retained; diagnostic write failed: " << error.what() << '\n';
+                            }
                         }
                         sensorInstance->setAggregationDebug(std::move(recorded));
                     };
@@ -649,7 +654,10 @@ void Simulation::initializeSensors() {
                     }
                     sensor->enableAggregation(settings, timeStep, timestamp,
                         [evaluator, diagnostics, selector, terminal, sensorInstance](const auto& candidate) {
-                            diagnostics(candidate, evaluator.evaluate(candidate, candidate.closedAtMs));
+                            // This assessment serves only the private candidate file.
+                            // The selector/coordinator still run all required policy checks.
+                            if (diagnostics)
+                                diagnostics(candidate, evaluator.evaluate(candidate, candidate.closedAtMs));
                             if (selector) {
                                 const auto selected = selector->propose(candidate,
                                     *sensorInstance->getAggregationManager()->history(), evaluator);
@@ -690,7 +698,10 @@ void Simulation::initializeSensors() {
                 } else {
                     sensor->enableAggregation(settings, timeStep, timestamp,
                         [evaluator, diagnostics](const auto& candidate) {
-                            diagnostics(candidate, evaluator.evaluate(candidate, candidate.closedAtMs));
+                            // This assessment serves only the private candidate file.
+                            // The selector/coordinator still run all required policy checks.
+                            if (diagnostics)
+                                diagnostics(candidate, evaluator.evaluate(candidate, candidate.closedAtMs));
                         });
                 }
             }

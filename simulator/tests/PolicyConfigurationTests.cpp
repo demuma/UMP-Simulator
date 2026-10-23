@@ -10,9 +10,54 @@ template<class F> void rejects(F work, const char* text) {
     }
     throw std::runtime_error(std::string("Expected error: ") + text);
 }
+
+void diagnosticsConfiguration() {
+    const auto read = [](const std::string& yaml) { return readDiagnosticsConfiguration(YAML::Load(yaml)); };
+    const auto invalid = [&](const std::string& yaml) {
+        try { read(yaml); } catch (const std::exception&) { return; }
+        throw std::runtime_error("Invalid diagnostic configuration accepted: " + yaml);
+    };
+    const auto defaults = read("{}");
+    require(defaults.enabled && defaults.directory == "results/aggregation",
+        "Absent diagnostics options changed full synchronous diagnostics defaults");
+    const auto emptyOptions = read("diagnostics: {}");
+    require(emptyOptions.enabled && emptyOptions.directory == defaults.directory,
+        "Empty diagnostics options changed the compatible default");
+    const auto explicitFull = read("diagnostics: {mode: full}\ndiagnostics_directory: debug/recordings");
+    require(explicitFull.enabled && explicitFull.directory == "debug/recordings",
+        "Explicit full diagnostics lost its directory or enabled state");
+    const auto legacyDirectory = read("diagnostics_directory: legacy/output");
+    require(legacyDirectory.enabled && legacyDirectory.directory == "legacy/output",
+        "Existing diagnostics_directory setting lost compatibility");
+    const auto off = read("diagnostics: {mode: off}");
+    require(!off.enabled && off.directory == defaults.directory,
+        "Explicit off diagnostics did not disable file diagnostics");
+    const auto offEmpty = read("diagnostics: {mode: off}\ndiagnostics_directory: ''");
+    require(!offEmpty.enabled && offEmpty.directory.empty(),
+        "Off diagnostics incorrectly required a nonempty file directory");
+    invalid("diagnostics_directory: ''");
+    invalid("diagnostics: {mode: full}\ndiagnostics_directory: ''");
+    for (const auto* value : {"null", "[]", "full", "off", "false", "7"})
+        invalid(std::string("diagnostics: ") + value);
+    for (const auto* value : {"null", "[]", "{}", "true", "false", "0", "1", "unknown", "FULL", "''"})
+        invalid(std::string("diagnostics: {mode: ") + value + "}");
+    invalid("diagnostics: {mode: full, unsupported: true}");
+    invalid("diagnostics: {mode: full, mode: off}");
+    invalid("diagnostics: {unsupported: true, unsupported: false}");
+    for (const auto* value : {"null", "[]", "{}"}) {
+        invalid(std::string("diagnostics_directory: ") + value);
+        invalid(std::string("diagnostics: {mode: off}\ndiagnostics_directory: ") + value);
+    }
+    // YAML maps permit repeated outer keys; reject ambiguous file controls rather
+    // than allowing operator[] to silently select one of two conflicting values.
+    invalid("diagnostics: {mode: full}\ndiagnostics: {mode: off}");
+    invalid("diagnostics_directory: first\ndiagnostics_directory: second");
+    invalid("diagnostics: {mode: off}\ndiagnostics_directory: first\ndiagnostics_directory: second");
+}
 }
 int main() {
     try {
+        diagnosticsConfiguration();
         Region::RegionTypeAttributes attributes{};
         attributes.privacy.k_anonymity.min = 1000; // Legacy fields must not become support thresholds.
         attributes.metricRequirements = readMetricRequirements(YAML::Load("distinct_contributors: {min: 5}"));
@@ -307,7 +352,7 @@ temporal_adaptation: {extension_step_ms: 100, max_window_ms: 4000, max_evaluatio
         validatePublicationDestinations(*publication, {"Simulation", "UMP_RawSensors", "UMP_GroundTruth"});
         rejects([&] { validatePublicationDestinations(*publication, {"Unrelated", "UMP_Recipient"}); }, "overlaps raw database");
         rejects([&] { validatePublicationDestinations(*publication, {"Unrelated", "ump_privatejournal"}); }, "overlaps raw database");
-        std::cout << "PASS: YAML/Region adapter, execution policy, temporal/publication settings, destination isolation and compatibility.\n";
+        std::cout << "PASS: YAML/Region adapter, execution policy, diagnostics, temporal/publication settings, destination isolation and compatibility.\n";
         return 0;
     } catch (const std::exception& error) {
         std::cerr << "FAIL: " << error.what() << '\n'; return 1;

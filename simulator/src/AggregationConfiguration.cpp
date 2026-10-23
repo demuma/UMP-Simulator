@@ -206,6 +206,37 @@ std::optional<ump::TemporalAdaptationConfig> readTemporalAdaptation(const YAML::
     return settings;
 }
 
+DiagnosticsConfiguration readDiagnosticsConfiguration(const YAML::Node& aggregation) {
+    DiagnosticsConfiguration settings;
+    if (!aggregation.IsMap()) throw std::invalid_argument("aggregation must be a map");
+    std::set<std::string> seen;
+    for (const auto& item : aggregation) {
+        const auto key = item.first.as<std::string>();
+        if ((key == "diagnostics" || key == "diagnostics_directory") && !seen.insert(key).second)
+            throw std::invalid_argument("Duplicate aggregation diagnostics setting: " + key);
+    }
+    const auto node = aggregation["diagnostics"];
+    if (node) {
+        allowedKeys(node, {"mode"}, "aggregation diagnostics");
+        if (node["mode"]) {
+            if (!node["mode"].IsScalar())
+                throw std::invalid_argument("aggregation.diagnostics.mode must be full or off");
+            const auto mode = node["mode"].as<std::string>();
+            if (mode != "full" && mode != "off")
+                throw std::invalid_argument("aggregation.diagnostics.mode must be full or off");
+            settings.enabled = mode == "full";
+        }
+    }
+    if (aggregation["diagnostics_directory"]) {
+        if (!aggregation["diagnostics_directory"].IsScalar())
+            throw std::invalid_argument("Aggregation diagnostics_directory must be a string");
+        settings.directory = aggregation["diagnostics_directory"].as<std::string>();
+    }
+    if (settings.enabled && settings.directory.empty())
+        throw std::invalid_argument("Aggregation diagnostics_directory must not be empty in full mode");
+    return settings;
+}
+
 std::optional<PublicationConfiguration> readPublicationConfiguration(const YAML::Node& aggregation) {
     const auto node = aggregation["publication"];
     if (!node) return std::nullopt;

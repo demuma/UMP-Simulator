@@ -187,3 +187,15 @@ the strictest whole-domain time maximum, including empty base footprints. Thus o
 can constrain the shared window for all cells. This is an explicit conservative coordination
 choice, not independently scheduled regional adaptation. See
 [TEMPORAL_AGGREGATION.md](TEMPORAL_AGGREGATION.md).
+
+
+## Current integration scope (2026-10-23)
+
+The shared-window paragraph above describes the original controller.
+Taxonomy-enabled `semantic_first`, `semantic_secondary_strategy` and
+`release_trigger` are specified in [SEMANTIC_RELEASE_CONTROL.md](SEMANTIC_RELEASE_CONTROL.md).
+The verified cell-local integration follows
+[SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md](SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md)
+and its [test report](SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md).
+Regions supply numeric requirements; cells own independent intervals. Application
+execution choices remain root-level, with no regional strategy override.

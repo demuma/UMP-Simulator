@@ -1,5 +1,7 @@
 # A coherent 20-minute presentation: candidate narrative
 
+Current structure: [PRESENTATION_STRUCTURE_2026-10-23.md](PRESENTATION_STRUCTURE_2026-10-23.md). The dated evidence below is preserved as a historical planning snapshot.
+
 Date: 2026-10-21. Planning document, not a replacement slide deck. The bounded moving pilot is implemented and verified: three captures, 27 method outputs, three deterministic repeats and 55 passing CTest entries. Slide editing and rehearsal remain open. All assertions must be matched to the latest frozen run before presentation. Use 18 minutes of planned speech and 2 minutes of transition/demo contingency. Keep implementation details, full taxonomy, alternative attack studies and regression statistics in backup slides.
 
 ## One central question

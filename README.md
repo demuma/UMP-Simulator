@@ -59,6 +59,18 @@ synthetic results and verification are recorded in the October 19 test report. T
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 
+**October 23 diagnostic-cost and presentation gate:**
+[74 CTest suites pass](docs/DIAGNOSTIC_COST_TEST_REPORT_2026-10-23.md). Explicit
+`aggregation.diagnostics: {mode: off}` disables private JSONL files and their
+file-only evaluation, preserving policy checks, durable publication and live
+cell/progress overlays. Full remains the default. Two same-input full/off pairs
+show 13.09% less measured processing; actual live DB/file costs are reported
+separately. No hard real-time or new privacy guarantee is inferred.
+Today's [11-slide presentation structure](docs/PRESENTATION_STRUCTURE_2026-10-23.md)
+and [three-scenario plan](docs/THREE_SCENARIO_PLAN_2026-10-23.md) are ready: residential
+entrances, shopfront stopping and a crossing. Their new effectiveness results are
+planned, with normal Region → PolicyTree integration and fair fixed baselines.
+
 **October 23 paced/live gate:** [73 CTest suites pass](docs/PACED_LIVE_TEST_REPORT_2026-10-23.md).
 Independently paced 100-ms replay preserves the complete frozen output: ordinary
 service p95 73.90 ms, maximum 87.97 ms, peak queue 1/8. A two-minute live run takes

@@ -1,6 +1,6 @@
 # Terminology, notation and mathematical contract
 
-Version 1.10 — 2026-10-21. This is the project's canonical terminology for the presentation,
+Version 1.11 — 2026-10-23. This is the project's canonical terminology for the presentation,
 paper, dissertation and new documentation. It describes the implemented baseline and marks
 future extensions explicitly. Earlier reviews retain historical/local notation; use this
 reference when translating them into publication text. Code identifiers are mapped below;
@@ -395,9 +395,10 @@ optimizer or combination.
 pi denotes the implemented deterministic action rule; it is not a learned RL policy,
 a formal optimizer or the Policy Tree itself. Execution strategy is currently application-
 root-level. temporal_first/spatial_first are accepted as before; semantic_first requires
-taxonomy-enabled common windows. Numeric region constraints are resolved separately for
-each candidate cell. Regional strategy overrides and local semantic coordination are
-not implemented by this root-level strategy.
+a taxonomy-enabled stream. Both common-window and the verified cell-local integration
+are supported; see [the owner-local contract](SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md).
+Numeric regional constraints apply to each candidate. Regional strategy overrides
+remain unsupported.
 
 ## 11. Publication geometry and scope of guarantees
 
@@ -1204,8 +1205,11 @@ all legal spatial levels and then positive ceilings. The immediate policy trigge
 overrides this preference waiting and can make both secondaries identical.
 
 The setting currently governs the semantic controller only. Nonsemantic TF/SF
-reference scheduling is unchanged. Local semantic ownership, unlike nonsemantic
-local windows, remains an explicit unsupported integration gate.
+reference scheduling is unchanged. This section describes the original common-window
+semantic controller. Since 2026-10-22, cell-local semantics follow the
+[owner-local contract](SEMANTIC_CELL_LOCAL_CONTRACT_2026-10-22.md); they do not wait
+for a single complete-domain cut. Version 1.11 corrects these scope references;
+it does not change the equations or the historical common-window findings.
 
 A policy maximum semantic loss of 1 permits the Road User ancestor. A measured
 maximum 1 means at least one positive-support published bin reaches that declared

@@ -7,7 +7,7 @@ requirements and stated limits before broadening the mechanism. Membership attac
 remain deferred. Recipient-contract diagnosis, runtime profiling and prefix-based
 ownership lookup, occupied-leaf discovery, sorted history ranges and merge-range
 lookup are complete, with unchanged policy/coordination/publication output.
-Paced/live latency has been measured; next profile the integrated diagnostic path and predeclare the semantic-cap comparison. October 18 is historical.**
+Diagnostic costs and full/off file output are measured and verified. Today's presentation structure is ready; next implement the first functional-region scenario through the maintained Simulator and normal Policy Tree path. October 18 is historical.**
 
 **October 22–23 checkpoint:**
 
@@ -158,12 +158,30 @@ Paced/live latency has been measured; next profile the integrated diagnostic pat
   All three owned databases and seven generated files (933.2 MB) are removed.
   See the [follow-up report](docs/PACED_60S_FOLLOWUP_2026-10-23.md) and its compact
   evidence; existing user recordings and algorithm code are unchanged.
-- [ ] **Next integrated latency gate:** separately time detailed diagnostic
-  construction/serialization/flush and publication on the live event ordering.
-  Headless diagnostics reach 958.5 MB in 120 logical seconds, but their CPU/I/O
-  cost is not yet isolated. Consider a bounded configurable diagnostic path only
-  after exact-output checks. Do not skip 50-ms progress calls or parallelize the
-  controller without proving unchanged window/expiry/publication semantics.
+- [x] **Integrated diagnostic-cost gate:** split BSON, JSON, stream write, flush,
+  diagnostic-only evaluation, copying, progress snapshots and individual DB calls.
+  Add explicit `diagnostics.mode: full|off`, full by default. All 74 CTest entries
+  pass; both full repeat JSONL files remain byte-identical and all full/off logical
+  results match. Paired mean processing falls 13.129 → 11.411 s (13.09%).
+  Full live stream insertion takes 5.344 s; DB calls total 4.961 s in a separate
+  probe. Do not infer causal live speedup from unpaired trajectories. Live off
+  rendering retains cell/progress overlays and all 400 frames. See the
+  [test report](docs/DIAGNOSTIC_COST_TEST_REPORT_2026-10-23.md).
+- [x] Prepare today's [20-minute structure](docs/PRESENTATION_STRUCTURE_2026-10-23.md):
+  11 slides/18 minutes, research question and conditional answer first, current
+  local-policy/utility evidence, strong fixed counterexample, explicit privacy
+  evaluation gap and three proposed street scenarios. Slide editing/rehearsal remain open.
+- [x] Plan residential entrances, shopfront stopping and a time-critical crossing
+  using normal Region → PolicyTree compilation, disjoint fine-aligned patches,
+  controlled maintained-Simulator movement and fair fixed/static-regional baselines.
+  [Scenario plan](docs/THREE_SCENARIO_PLAN_2026-10-23.md); these are not yet evaluated scenes.
+- [ ] Implement and verify scenario 1 before broadening: minimal route/portal/source
+  reproducibility in the maintained Simulator, sustained demand, actual per-region
+  flow and ordinary policy compilation. Align four-second policies with history,
+  controller and resource budgets. Retain exact/estimated task denominators.
+- [ ] Add scenario 2 and scenario 3 only after the first environment/policy/release/
+  utility gate passes. Freeze the protected secret and attacker information before
+  resuming attack implementation; support constraints alone do not prove privacy gain.
 - [ ] Review renderer progress drift and backpressure: capacity 8 bounds queued
   frames, yet measured playback is 0.8464x. The clock schedules from actual
   consumption and does not catch up. Decide acceptable presentation lag separately
@@ -176,7 +194,7 @@ Paced/live latency has been measured; next profile the integrated diagnostic pat
 - [ ] After those gates, design privacy evaluation with protected unit/secret,
   recipient information, measured privacy objective and appropriate policies/scenarios.
   No new utility optimizer, movement generator or attack matrix is started by
-  the current visualization task.
+  this profiling gate; maintained-Simulator scenario work follows the explicit plan.
 
 **Current execution order (supersedes older next-step notes below):**
 
@@ -258,28 +276,28 @@ Paced/live latency has been measured; next profile the integrated diagnostic pat
    [controlled comparison](docs/SEMANTIC_CELL_LOCAL_TEST_REPORT_2026-10-22.md).
    The [asynchronous viewer gate](docs/ASYNC_LOCAL_REPLAY_TEST_REPORT_2026-10-22.md)
    is now implemented and verified. Scoped semantic query utility is also verified
-   in its [bounded study](docs/SCOPED_SEMANTIC_UTILITY_TEST_REPORT_2026-10-22.md). Next
-   compare the same moving input against legal fixed baselines, reviewing aggregator
-   requirements at every gate. Privacy evaluation follows; do not infer global
-   mean-loss optimality or privacy gains from policy compliance.
-10. **MR02, presentation gate (narrative drafted, slide editing/rehearsal open):** prepare one coherent 20-minute narrative: question and
-   conditional answer first; policy model, three adaptation dimensions, controlled
-   trade-off, recorded replay and validated fixed-baseline comparison. Put simulator
-   implementation, extra metric catalogs and old attack studies in backup. Mark
-   future scenarios explicitly. Use the [18-minute narrative plus buffer](docs/PRESENTATION_NARRATIVE_20MIN_2026-10-21.md).
-11. **MR03, subsequent evaluation design:** scoped semantic fixed-query utility is
-   implemented and verified. Next compare the same existing moving input with legal
-   fixed baselines.
-   Review aggregator requirements and evidence at each gate. Then specify the privacy
-   objective, suitable policies and controlled scenarios before a new privacy matrix.
-   Later consider independent captures, density/turnover and heterogeneous regions
-   one factor at a time. Keep the
-   same source, hard constraints and query/deadline cohort across legal fixed and
-   adaptive comparisons. The new scoped semantic evaluator uses exact contained
-   category-count tiles; label it separately from the interpolating scalar estimator.
-   A one-type/seven-type control remains separate; the current fixed mix does not estimate a causal type-count effect. ALOQ reproduction is a
-   later external comparison with different privacy guarantees, requiring a verified
-   adapter, units, seeds and geometry. Do not automatically start these experiments.
+   in its [bounded study](docs/SCOPED_SEMANTIC_UTILITY_TEST_REPORT_2026-10-22.md).
+   The subsequent same-input moving comparison against legal fixed baselines is
+   [complete](docs/MOVING_SCOPED_COMPARISON_REPORT_2026-10-22.md), with no universal
+   adaptive advantage. Privacy evaluation follows; do not infer global mean-loss
+   optimality or privacy gains from policy compliance.
+10. **MR02, presentation structure complete; editing/rehearsal open:** use the
+    current [11-slide/18-minute structure](docs/PRESENTATION_STRUCTURE_2026-10-23.md).
+    Question and conditional answer first; policy model, three adaptation dimensions,
+    independently audited local evidence, fixed-baseline comparison and privacy
+    evaluation contract. Simulator internals/runtime stay in backup. The October 21
+    narrative remains a dated reference rather than the current slide order.
+11. **MR03, next scenario gate:** follow the
+    [three-scenario plan](docs/THREE_SCENARIO_PLAN_2026-10-23.md) in order. Begin with
+    residential entrances in the maintained Simulator and normal Region/PolicyTree
+    path, then shopfront stopping and crossing. Keep source, hard constraints,
+    category semantics and query/deadline cohorts identical across fixed/adaptive
+    methods. Include 1.25-m finest fixed cells and a planned static region-specific
+    comparator. New empirical privacy claims require a declared secret, recipient
+    transcript, held-out comparison and utility cost; earlier attack results do not
+    transfer automatically. Semantic-cap and type-mixture effects remain separate
+    declared factors. ALOQ reproduction is a later external comparison with a
+    different privacy/output contract, not an unrun result bar.
 12. Keep finest observation depth 6 unchanged. Maximum output size is a separate
    hard policy bound. Individual/type suppression, per-class utility priorities and
    broader simulation realism remain separate decisions.

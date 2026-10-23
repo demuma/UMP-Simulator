@@ -129,6 +129,17 @@ static DetailedSink makeDetailedSink(const std::string& directory,
     return [file, simulationOrigin](const ump::AggregationCandidate& candidate, const ump::WindowMetricAssessment& assessment, const ump::SpatialSelection* spatial) {
         if (assessment.cells.size() != candidate.cells.size())
             throw std::invalid_argument("Metric assessment does not match candidate cells");
+        if (spatial) {
+            if (spatial->decisions.size() != candidate.cells.size()
+                || spatial->finestAssessment.cells.size() != spatial->finest.cells.size())
+                throw std::invalid_argument("Spatial diagnostic arrays do not match their cells");
+            for (std::size_t sourceIndex = 0; sourceIndex < spatial->finest.cells.size(); ++sourceIndex)
+                if (spatial->finestAssessment.cells[sourceIndex].cellId != spatial->finest.cells[sourceIndex].cell.id)
+                    throw std::invalid_argument("Spatial source assessment cell order differs from candidate");
+            for (const auto& checkedAttempt : spatial->attempts)
+                if (checkedAttempt.assessment.cellId != checkedAttempt.cell.cell.id)
+                    throw std::invalid_argument("Spatial attempt assessment differs from candidate cell");
+        }
         const auto& grid = candidate.grid;
         bsoncxx::builder::basic::array cells;
         for (std::size_t index = 0; index < candidate.cells.size(); ++index) {

@@ -138,6 +138,20 @@ if(UMP_BUILD_POLICY_TESTS)
     set_tests_properties(policy_regression policy_configuration PROPERTIES LABELS "unit;policies" TIMEOUT 15)
 endif()
 
+# No window or MongoDB connection; only BSON JSON serialization and temp files.
+option(UMP_BUILD_DIAGNOSTIC_TESTS "Build aggregation diagnostic artifact tests" ON)
+if(UMP_BUILD_DIAGNOSTIC_TESTS)
+    enable_testing()
+    add_executable(AggregationDiagnosticsTests tests/AggregationDiagnosticsTests.cpp
+        src/AggregationDiagnostics.cpp src/Utilities.cpp src/CandidateMetrics.cpp src/PolicyTree.cpp
+        src/SpatialSelection.cpp src/AggregationManager.cpp src/AggregationHistory.cpp)
+    target_compile_features(AggregationDiagnosticsTests PRIVATE cxx_std_17)
+    target_link_libraries(AggregationDiagnosticsTests PRIVATE ump_semantic SFML::Graphics
+        SFML::Window SFML::System mongo::bsoncxx_shared)
+    add_test(NAME aggregation_diagnostics COMMAND AggregationDiagnosticsTests)
+    set_tests_properties(aggregation_diagnostics PROPERTIES LABELS "unit;aggregation;diagnostics" TIMEOUT 15)
+endif()
+
 option(UMP_BUILD_HISTORY_TESTS "Build bounded history and logical bucket tests (standard C++ only)" ON)
 if(UMP_BUILD_HISTORY_TESTS)
     enable_testing()
