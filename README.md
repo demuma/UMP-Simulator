@@ -66,9 +66,12 @@ service p95 73.90 ms, maximum 87.97 ms, peak queue 1/8. A two-minute live run ta
 miss their 50-ms target. Drawing is comparatively small; detailed diagnostics,
 durable publication and additional live progress calls need separate cost review.
 All 18,257 long-run releases match committed journals; all owned test databases and
-large generated diagnostics were removed. The planned longer paired movement capture
-awaits explicit temporary-storage permission after automatic approval rejection.
-See [compact results](docs/PACED_LIVE_RESULTS_2026-10-23.json). These measurements
+large generated diagnostics were removed. The subsequently authorized
+[60-s paired replay](docs/PACED_60S_FOLLOWUP_2026-10-23.md) preserves all 275,689
+contributions and full logical output. It exposes one service above 100 ms
+(maximum 119.06 ms), with a short recovered queue wait and no overflow. Generated
+motion and full results were deleted after analysis. See the initial
+[compact results](docs/PACED_LIVE_RESULTS_2026-10-23.json). These measurements
 establish neither a hard real-time bound nor a new privacy guarantee.
 
 **October 23 recipient/runtime gate:** [forty frozen evaluations](docs/RECIPIENT_CONTRACT_REPORT_2026-10-23.md)

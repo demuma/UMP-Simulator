@@ -150,11 +150,14 @@ Paced/live latency has been measured; next profile the integrated diagnostic pat
   requires 26.07 s service; declining population makes total averages optimistic.
   Renderer source-to-draw p95 is 461.55 ms, drawing itself p95 4.76 ms. All 12 owned
   test databases and 2.004 GB generated diagnostics were removed after verification.
-- [ ] Complete the longer identical-moving-input paced comparison if temporary
-  local capture is explicitly approved. Automatic approval review rejected the
-  planned 60-s export under the earlier storage restriction; permission is pending.
-  Neither long live run exported movement data. Do not label the current 20-s
-  paired trace as a longer paired recording.
+- [x] Complete the explicitly approved temporary 60-s same-input paired replay.
+  Exact GT/AGBS capture and full unpaced/paced equality pass for 599 measurements
+  and 275,689 contributions. Service p95 is 76.22 ms, maximum 119.06 ms;
+  one service and two scheduled-completion intervals exceed 100 ms. Queue peak
+  is 1/8 and the short backlog recovers. No hard deadline bound is established.
+  All three owned databases and seven generated files (933.2 MB) are removed.
+  See the [follow-up report](docs/PACED_60S_FOLLOWUP_2026-10-23.md) and its compact
+  evidence; existing user recordings and algorithm code are unchanged.
 - [ ] **Next integrated latency gate:** separately time detailed diagnostic
   construction/serialization/flush and publication on the live event ordering.
   Headless diagnostics reach 958.5 MB in 120 logical seconds, but their CPU/I/O

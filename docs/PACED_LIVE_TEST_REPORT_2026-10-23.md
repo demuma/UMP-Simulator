@@ -154,11 +154,14 @@ completed. This was a test-harness error, not a publication failure.
 The headless long run preceded the frozen paced pair while the longer input was
 being prepared. A planned temporary 60-s movement export was rejected by automatic
 approval review under the user's earlier movement-storage restriction. Therefore
-the two-minute live tests ran without movement export. The requested explicit
-permission for a temporary paired capture remains pending; no generated long
-movement recording was retained or substituted. The paired moving replay remains
-20 s, and the live tests are independent stochastic realizations. Initial smoke
-movement exports were removed after securing compact audit evidence.
+the two-minute live tests ran without movement export. At this initial gate,
+the paired moving replay covered 20 s and the live tests were independent stochastic
+realizations. Initial smoke movement exports were removed after securing compact
+audit evidence. The user subsequently authorized temporary local storage: the
+[completed 60-s follow-up](PACED_60S_FOLLOWUP_2026-10-23.md) adds full paired equality,
+one service over 100 ms and verified deletion of all newly generated motion. The
+permission and longer paired-run item are now resolved; the original measurements
+above remain unchanged.
 
 Raw input, releases, timing traces and large diagnostic files are not Git artifacts.
 Compact results, source hashes, source tools and tests are sufficient to distinguish

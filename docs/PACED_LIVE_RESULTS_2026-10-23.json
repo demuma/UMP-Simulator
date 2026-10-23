@@ -2086,12 +2086,18 @@
   },
   "scope_changes": [
     "Long headless run preceded frozen paced pair during input preparation.",
-    "Automatic approval review rejected temporary new 60s movement export under prior storage restriction; explicit permission requested and pending.",
-    "Both 120s live runs proceeded without movement export; no long paired moving replay result is claimed."
+    "Automatic approval review initially rejected the temporary60s movement export; the user subsequently explicitly authorized temporary local storage and deletion.",
+    "Both initial120s live runs proceeded without movement export. A subsequent separately documented60s capture and paired comparison completed after explicit authorization."
   ],
   "remaining": [
     "Sustained dense live deadline compliance is not established.",
-    "Separate diagnostic serialization/flush from core and publication costs before another optimization.",
-    "Long identical-moving-input paced comparison awaits temporary capture permission."
-  ]
+    "Separate diagnostic serialization/flush from core and publication costs before another optimization."
+  ],
+  "approved_followup": {
+    "status": "complete",
+    "report": "PACED_60S_FOLLOWUP_2026-10-23.md",
+    "results": "PACED_60S_FOLLOWUP_RESULTS_2026-10-23.json",
+    "results_sha256": "2d198e63a877be45bab03755b469dfaec27dd1a2d358fde1a8b375af1e3750db",
+    "movement_files_deleted": true
+  }
 }
