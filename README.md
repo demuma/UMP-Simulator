@@ -3,7 +3,7 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
-**Status: 2026-10-23. Current work: sequential algorithm/policy-compliance verification.
+**Status: 2026-10-24. Current work: sequential algorithm/policy-compliance verification.
 The first A07 slice now optionally preserves valid whole descendants after a failed
 common-window spatial merge. Its [contract](docs/SELECTIVE_DESCENDANT_RESCUE.md) and
 [test report](docs/SELECTIVE_DESCENDANT_RESCUE_TEST_REPORT_2026-10-21.md) define the gate
@@ -58,6 +58,16 @@ public-only calibrated empirical membership benchmark are now implemented. Contr
 synthetic results and verification are recorded in the October 19 test report. The historical
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
+
+**October 24 native I/O optimization:** the full private empty-retirement journal
+now uses one atomic committed insert per empty scope. Two matched 180-s mapped
+pairs preserve every GT, sensor, recipient and final journal field; instrumented
+wall improves from 26.10–26.48 s to 21.80–22.08 s. All 82 CTest suites and 13 profiling
+helper checks pass. This retains durability and is a bounded measurement, not a
+hard realtime guarantee. See the [test report](docs/NATIVE_MONGO_OPTIMIZATION_REPORT_2026-10-24.md).
+Building entrances, MongoDB rereads and age/equipment taxonomy choices are clarified
+in the [design note](docs/BUILDING_ACCESS_AND_TAXONOMY_DESIGN_2026-10-24.md); new doors
+and a modifier taxonomy are proposals, not implemented features.
 
 **October 23 system review:** confirmed sensor float-clock drift, an exact-duration
 policy scheduling defect and UTC/offset parsing errors are corrected. Sampling now

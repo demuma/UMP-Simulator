@@ -1,0 +1,780 @@
+{
+  "schema": "ump.native-mongo-optimization-evidence.v1",
+  "scope": "180-second mapped corridor, 64 modeled people, 80 visible episodes, 50-ms source/100-ms sensor, headless, full private journal; instrumented Release builds; two sequential before/after pairs",
+  "production_base_revision": "648b87aac2a5d4e7a3f754ceddeba2fd51ae9f54",
+  "runs": [
+    {
+      "local_directory": "/private/tmp/ump-mongo-cost-before-verified-20261024",
+      "wall_seconds": 26.1009035,
+      "binary_sha256": "20d8f5e075b85fa69bdbc84439b128de5d7d5ba7e9cc38677d4751186eac25fd",
+      "config_sha256": "bc325ae3df9d7781cb58cc84f735e501b5e4e1cdcf477bfc98d5e0ad9eb6f501",
+      "source_config_sha256": "dc59ffe57de64d4b1681f2e9f3f9088d92c0941ed39af1eeaf0274042ddeec42",
+      "trace": {
+        "source_steps": 3600,
+        "renderer_frames": 0,
+        "exclusive_end_ms": 180000,
+        "queue_capacity": 8
+      },
+      "summary_sha256": "bc5408263e7a89af1f7335c79e2519e8db6c5143680bd9500b921d0f6d9a024a",
+      "capture_proof_sha256": "39dfe88c22fb56023ef2699bbca18419dee51f008fc2ef39b85d43124354104c",
+      "proof": {
+        "status": "verified",
+        "gt_rows": 95443,
+        "measured_samples": 1799,
+        "input_observation_contributions": 47706,
+        "recipient_release_documents": 509,
+        "private_retirements": 47106,
+        "private_empty_retirements": 46597
+      },
+      "stages": {
+        "simulation_step": {
+          "count": 3600,
+          "total_ms": 25303.938153999985,
+          "mean_ms": 7.028871709444441,
+          "p50_ms": 3.001375,
+          "p95_ms": 27.448958,
+          "p99_ms": 40.768709,
+          "max_ms": 56.66775
+        },
+        "ground_truth_write": {
+          "count": 3600,
+          "total_ms": 584.7352459999997,
+          "mean_ms": 0.16242645722222215,
+          "p50_ms": 0.122625,
+          "p95_ms": 0.459125,
+          "p99_ms": 0.571625,
+          "max_ms": 1.726875
+        },
+        "raw_sensor_write": {
+          "count": 3600,
+          "total_ms": 274.3731240000001,
+          "mean_ms": 0.07621475666666669,
+          "p50_ms": 4.2e-05,
+          "p95_ms": 0.341708,
+          "p99_ms": 0.491416,
+          "max_ms": 6.164333
+        },
+        "terminal_total": {
+          "count": 47106,
+          "total_ms": 11125.313936999999,
+          "mean_ms": 0.23617615456629726,
+          "p50_ms": 0.178166,
+          "p95_ms": 0.506084,
+          "p99_ms": 0.840375,
+          "max_ms": 29.549708
+        },
+        "aggregation_advance": {
+          "count": 3600,
+          "total_ms": 21370.920110000017,
+          "mean_ms": 5.936366697222227,
+          "p50_ms": 2.088541,
+          "p95_ms": 24.759416,
+          "p99_ms": 37.153917,
+          "max_ms": 51.187125
+        },
+        "aggregation_ingest": {
+          "count": 1799,
+          "total_ms": 1770.624615,
+          "mean_ms": 0.9842271345191773,
+          "p50_ms": 0.850458,
+          "p95_ms": 2.52,
+          "p99_ms": 3.384,
+          "max_ms": 4.063792
+        },
+        "publication_prepare": {
+          "count": 47106,
+          "total_ms": 4812.795874999973,
+          "mean_ms": 0.10216948743259825,
+          "p50_ms": 0.079042,
+          "p95_ms": 0.215958,
+          "p99_ms": 0.352959,
+          "max_ms": 28.42925
+        },
+        "publication_publish": {
+          "count": 509,
+          "total_ms": 159.9409179999999,
+          "mean_ms": 0.3142257721021609,
+          "p50_ms": 0.205,
+          "p95_ms": 0.52475,
+          "p99_ms": 0.626708,
+          "max_ms": 22.306125
+        },
+        "publication_commit": {
+          "count": 47106,
+          "total_ms": 5860.7928859999565,
+          "mean_ms": 0.12441712066403338,
+          "p50_ms": 0.092958,
+          "p95_ms": 0.281791,
+          "p99_ms": 0.431958,
+          "max_ms": 1.764166
+        },
+        "publication_journal_find": {
+          "count": 94721,
+          "total_ms": 4366.62816000009,
+          "mean_ms": 0.04609989506023047,
+          "p50_ms": 0.034208,
+          "p95_ms": 0.10175,
+          "p99_ms": 0.162583,
+          "max_ms": 7.382375
+        },
+        "publication_journal_insert": {
+          "count": 47106,
+          "total_ms": 2442.436311999994,
+          "mean_ms": 0.05184979221330603,
+          "p50_ms": 0.039833,
+          "p95_ms": 0.108667,
+          "p99_ms": 0.169292,
+          "max_ms": 28.152417
+        },
+        "publication_journal_update": {
+          "count": 47106,
+          "total_ms": 3507.2562850000327,
+          "mean_ms": 0.07445455536449778,
+          "p50_ms": 0.054166,
+          "p95_ms": 0.177542,
+          "p99_ms": 0.271875,
+          "max_ms": 1.362708
+        },
+        "publication_recipient_find": {
+          "count": 1018,
+          "total_ms": 78.115467,
+          "mean_ms": 0.07673425049115913,
+          "p50_ms": 0.05525,
+          "p95_ms": 0.153834,
+          "p99_ms": 0.2565,
+          "max_ms": 0.633
+        },
+        "publication_recipient_insert": {
+          "count": 509,
+          "total_ms": 68.594747,
+          "mean_ms": 0.13476374656188606,
+          "p50_ms": 0.06275,
+          "p95_ms": 0.181333,
+          "p99_ms": 0.307334,
+          "max_ms": 21.97125
+        },
+        "publication_release_bson": {
+          "count": 94721,
+          "total_ms": 181.5835929999528,
+          "mean_ms": 0.0019170362749543692,
+          "p50_ms": 0.001792,
+          "p95_ms": 0.002375,
+          "p99_ms": 0.004791,
+          "max_ms": 0.06275
+        },
+        "publication_journal_bson": {
+          "count": 142845,
+          "total_ms": 105.13216999995704,
+          "mean_ms": 0.0007359877489583607,
+          "p50_ms": 0.000708,
+          "p95_ms": 0.001041,
+          "p99_ms": 0.001166,
+          "max_ms": 0.0555
+        },
+        "source_steps_over_50ms": 9
+      }
+    },
+    {
+      "local_directory": "/private/tmp/ump-mongo-cost-after-20261024",
+      "wall_seconds": 22.075301291000002,
+      "binary_sha256": "5a41e0ac3b7693de89e1c760bb1d86772a8314ceb7f3cd7ceb5bfd5bf0e18631",
+      "config_sha256": "8f4464ed0f82aa5eb349618547821b2c0531c12f498366fc6917c9fdf2a13813",
+      "source_config_sha256": "dc59ffe57de64d4b1681f2e9f3f9088d92c0941ed39af1eeaf0274042ddeec42",
+      "trace": {
+        "source_steps": 3600,
+        "renderer_frames": 0,
+        "exclusive_end_ms": 180000,
+        "queue_capacity": 8
+      },
+      "summary_sha256": "60db5e8ff04ec53e3a5eb0cccf2bbd9a4af91efa91a6bde4c5bb219f9cac8993",
+      "capture_proof_sha256": "823912e1783f6442f889c7a9809dc318d78ad16a63dc385f8b26d28518f66c6d",
+      "proof": {
+        "status": "verified",
+        "gt_rows": 95443,
+        "measured_samples": 1799,
+        "input_observation_contributions": 47706,
+        "recipient_release_documents": 509,
+        "private_retirements": 47106,
+        "private_empty_retirements": 46597
+      },
+      "stages": {
+        "simulation_step": {
+          "count": 3600,
+          "total_ms": 21376.81820700003,
+          "mean_ms": 5.938005057500008,
+          "p50_ms": 3.057584,
+          "p95_ms": 21.203,
+          "p99_ms": 28.225167,
+          "max_ms": 48.949458
+        },
+        "ground_truth_write": {
+          "count": 3600,
+          "total_ms": 1068.0876899999992,
+          "mean_ms": 0.2966910249999998,
+          "p50_ms": 0.302917,
+          "p95_ms": 0.6055,
+          "p99_ms": 0.918292,
+          "max_ms": 9.457958
+        },
+        "raw_sensor_write": {
+          "count": 3600,
+          "total_ms": 535.9719570000002,
+          "mean_ms": 0.14888109916666672,
+          "p50_ms": 8.3e-05,
+          "p95_ms": 0.513709,
+          "p99_ms": 0.719875,
+          "max_ms": 10.823042
+        },
+        "terminal_total": {
+          "count": 47106,
+          "total_ms": 5990.499556999984,
+          "mean_ms": 0.12717062703264942,
+          "p50_ms": 0.106167,
+          "p95_ms": 0.219583,
+          "p99_ms": 1.207583,
+          "max_ms": 36.655208
+        },
+        "aggregation_advance": {
+          "count": 3600,
+          "total_ms": 16599.229803000006,
+          "mean_ms": 4.610897167500002,
+          "p50_ms": 1.966083,
+          "p95_ms": 17.894709,
+          "p99_ms": 24.135083,
+          "max_ms": 46.693166
+        },
+        "aggregation_ingest": {
+          "count": 1799,
+          "total_ms": 1823.951495999999,
+          "mean_ms": 1.0138696475819895,
+          "p50_ms": 0.877959,
+          "p95_ms": 2.577083,
+          "p99_ms": 3.5155,
+          "max_ms": 4.138208
+        },
+        "publication_prepare": {
+          "count": 509,
+          "total_ms": 239.07741599999986,
+          "mean_ms": 0.4697002278978386,
+          "p50_ms": 0.422,
+          "p95_ms": 0.691625,
+          "p99_ms": 1.201625,
+          "max_ms": 10.007959
+        },
+        "publication_publish": {
+          "count": 509,
+          "total_ms": 260.258073,
+          "mean_ms": 0.5113125206286837,
+          "p50_ms": 0.422333,
+          "p95_ms": 0.7545,
+          "p99_ms": 1.389041,
+          "max_ms": 22.951958
+        },
+        "publication_commit": {
+          "count": 509,
+          "total_ms": 329.6756149999999,
+          "mean_ms": 0.6476927603143416,
+          "p50_ms": 0.58875,
+          "p95_ms": 0.842916,
+          "p99_ms": 1.538709,
+          "max_ms": 11.627083
+        },
+        "publication_retire_empty": {
+          "count": 46597,
+          "total_ms": 4867.994642000009,
+          "mean_ms": 0.10447012987960617,
+          "p50_ms": 0.099667,
+          "p95_ms": 0.195125,
+          "p99_ms": 0.322125,
+          "max_ms": 17.595792
+        },
+        "publication_journal_find": {
+          "count": 1527,
+          "total_ms": 301.89355199999954,
+          "mean_ms": 0.1977037013752453,
+          "p50_ms": 0.1535,
+          "p95_ms": 0.341625,
+          "p99_ms": 0.702833,
+          "max_ms": 9.726625
+        },
+        "publication_journal_insert": {
+          "count": 47106,
+          "total_ms": 4833.720249999962,
+          "mean_ms": 0.10261368509319327,
+          "p50_ms": 0.097375,
+          "p95_ms": 0.195417,
+          "p99_ms": 0.32175,
+          "max_ms": 17.59025
+        },
+        "publication_journal_update": {
+          "count": 509,
+          "total_ms": 186.86879200000007,
+          "mean_ms": 0.36712925736738716,
+          "p50_ms": 0.335875,
+          "p95_ms": 0.506042,
+          "p99_ms": 0.690167,
+          "max_ms": 11.225083
+        },
+        "publication_recipient_find": {
+          "count": 1018,
+          "total_ms": 131.44903999999997,
+          "mean_ms": 0.12912479371316304,
+          "p50_ms": 0.115709,
+          "p95_ms": 0.201584,
+          "p99_ms": 0.369708,
+          "max_ms": 1.70825
+        },
+        "publication_recipient_insert": {
+          "count": 509,
+          "total_ms": 101.78016200000002,
+          "mean_ms": 0.1999610255402751,
+          "p50_ms": 0.13825,
+          "p95_ms": 0.227916,
+          "p99_ms": 0.829,
+          "max_ms": 22.146625
+        },
+        "publication_release_bson": {
+          "count": 48124,
+          "total_ms": 93.31933000000842,
+          "mean_ms": 0.0019391432549249526,
+          "p50_ms": 0.00175,
+          "p95_ms": 0.002667,
+          "p99_ms": 0.005542,
+          "max_ms": 0.115208
+        },
+        "publication_journal_bson": {
+          "count": 49651,
+          "total_ms": 34.94383100000023,
+          "mean_ms": 0.0007037890676924982,
+          "p50_ms": 0.000667,
+          "p95_ms": 0.000917,
+          "p99_ms": 0.001167,
+          "max_ms": 0.037084
+        },
+        "source_steps_over_50ms": 0
+      }
+    },
+    {
+      "local_directory": "/private/tmp/ump-mongo-cost-before-repeat-20261024",
+      "wall_seconds": 26.476851749999998,
+      "binary_sha256": "20d8f5e075b85fa69bdbc84439b128de5d7d5ba7e9cc38677d4751186eac25fd",
+      "config_sha256": "e7733460789fbd09e5ade1bb27bbcbc90a2172a5f6fe5084df76a0dcb365e3cd",
+      "source_config_sha256": "dc59ffe57de64d4b1681f2e9f3f9088d92c0941ed39af1eeaf0274042ddeec42",
+      "trace": {
+        "source_steps": 3600,
+        "renderer_frames": 0,
+        "exclusive_end_ms": 180000,
+        "queue_capacity": 8
+      },
+      "summary_sha256": "11fa6f0b6b3240334d05334f3f904884aed911131820d93b3686348eb8ddb227",
+      "capture_proof_sha256": "64374750ea1a6271102a62372a88648b4d1fcbfaa7d61375647c40951a67b12c",
+      "proof": {
+        "status": "verified",
+        "gt_rows": 95443,
+        "measured_samples": 1799,
+        "input_observation_contributions": 47706,
+        "recipient_release_documents": 509,
+        "private_retirements": 47106,
+        "private_empty_retirements": 46597
+      },
+      "stages": {
+        "simulation_step": {
+          "count": 3600,
+          "total_ms": 25676.498975,
+          "mean_ms": 7.132360826388888,
+          "p50_ms": 3.044084,
+          "p95_ms": 27.804417,
+          "p99_ms": 42.810833,
+          "max_ms": 57.302292
+        },
+        "ground_truth_write": {
+          "count": 3600,
+          "total_ms": 557.7434130000007,
+          "mean_ms": 0.15492872583333353,
+          "p50_ms": 0.122042,
+          "p95_ms": 0.43625,
+          "p99_ms": 0.554334,
+          "max_ms": 2.497542
+        },
+        "raw_sensor_write": {
+          "count": 3600,
+          "total_ms": 255.1737650000001,
+          "mean_ms": 0.07088160138888891,
+          "p50_ms": 4.2e-05,
+          "p95_ms": 0.306042,
+          "p99_ms": 0.472334,
+          "max_ms": 1.002292
+        },
+        "terminal_total": {
+          "count": 47106,
+          "total_ms": 11195.926060000054,
+          "mean_ms": 0.23767515942767492,
+          "p50_ms": 0.186542,
+          "p95_ms": 0.498292,
+          "p99_ms": 0.764875,
+          "max_ms": 23.822209
+        },
+        "aggregation_advance": {
+          "count": 3600,
+          "total_ms": 21710.785437000002,
+          "mean_ms": 6.030773732500001,
+          "p50_ms": 2.138875,
+          "p95_ms": 25.03875,
+          "p99_ms": 39.0405,
+          "max_ms": 53.353833
+        },
+        "aggregation_ingest": {
+          "count": 1799,
+          "total_ms": 1822.1424480000012,
+          "mean_ms": 1.01286406225681,
+          "p50_ms": 0.891791,
+          "p95_ms": 2.602875,
+          "p99_ms": 3.498791,
+          "max_ms": 3.9945
+        },
+        "publication_prepare": {
+          "count": 47106,
+          "total_ms": 4880.9352840000465,
+          "mean_ms": 0.10361599974525637,
+          "p50_ms": 0.082208,
+          "p95_ms": 0.213,
+          "p99_ms": 0.321583,
+          "max_ms": 23.411708
+        },
+        "publication_publish": {
+          "count": 509,
+          "total_ms": 152.98954200000006,
+          "mean_ms": 0.30056884479371326,
+          "p50_ms": 0.18125,
+          "p95_ms": 0.499292,
+          "p99_ms": 0.573666,
+          "max_ms": 20.202792
+        },
+        "publication_commit": {
+          "count": 47106,
+          "total_ms": 5858.774917000007,
+          "mean_ms": 0.12437428176877695,
+          "p50_ms": 0.098125,
+          "p95_ms": 0.271791,
+          "p99_ms": 0.411291,
+          "max_ms": 23.13075
+        },
+        "publication_journal_find": {
+          "count": 94721,
+          "total_ms": 4368.584563000041,
+          "mean_ms": 0.0461205494346559,
+          "p50_ms": 0.036209,
+          "p95_ms": 0.100458,
+          "p99_ms": 0.152,
+          "max_ms": 8.483917
+        },
+        "publication_journal_insert": {
+          "count": 47106,
+          "total_ms": 2534.303242999996,
+          "mean_ms": 0.053800009404322086,
+          "p50_ms": 0.04325,
+          "p95_ms": 0.108333,
+          "p99_ms": 0.164625,
+          "max_ms": 23.37825
+        },
+        "publication_journal_update": {
+          "count": 47106,
+          "total_ms": 3464.3095259999914,
+          "mean_ms": 0.07354285071965336,
+          "p50_ms": 0.056084,
+          "p95_ms": 0.166708,
+          "p99_ms": 0.260167,
+          "max_ms": 23.089625
+        },
+        "publication_recipient_find": {
+          "count": 1018,
+          "total_ms": 75.53838399999997,
+          "mean_ms": 0.07420273477406676,
+          "p50_ms": 0.05275,
+          "p95_ms": 0.148417,
+          "p99_ms": 0.229,
+          "max_ms": 0.373041
+        },
+        "publication_recipient_insert": {
+          "count": 509,
+          "total_ms": 64.099913,
+          "mean_ms": 0.1259330314341847,
+          "p50_ms": 0.057375,
+          "p95_ms": 0.177916,
+          "p99_ms": 0.255708,
+          "max_ms": 20.088209
+        },
+        "publication_release_bson": {
+          "count": 94721,
+          "total_ms": 190.45662100001326,
+          "mean_ms": 0.0020107116795643337,
+          "p50_ms": 0.001875,
+          "p95_ms": 0.0025,
+          "p99_ms": 0.005042,
+          "max_ms": 0.049834
+        },
+        "publication_journal_bson": {
+          "count": 142845,
+          "total_ms": 107.3854869999157,
+          "mean_ms": 0.0007517623087956576,
+          "p50_ms": 0.000708,
+          "p95_ms": 0.001042,
+          "p99_ms": 0.00125,
+          "max_ms": 0.084959
+        },
+        "source_steps_over_50ms": 11
+      }
+    },
+    {
+      "local_directory": "/private/tmp/ump-mongo-cost-after-repeat-20261024",
+      "wall_seconds": 21.80338775,
+      "binary_sha256": "5a41e0ac3b7693de89e1c760bb1d86772a8314ceb7f3cd7ceb5bfd5bf0e18631",
+      "config_sha256": "eee0b954d017cbffe8aeb09ce98da274c592f3269246fc9cf5b712d3de484da6",
+      "source_config_sha256": "dc59ffe57de64d4b1681f2e9f3f9088d92c0941ed39af1eeaf0274042ddeec42",
+      "trace": {
+        "source_steps": 3600,
+        "renderer_frames": 0,
+        "exclusive_end_ms": 180000,
+        "queue_capacity": 8
+      },
+      "summary_sha256": "86934ae1028fa04d66e5659b45ec9e9fcd1e8fab0122d1fa7977c29eea3e3d9f",
+      "capture_proof_sha256": "ddba5bc0b50b2f4a9615d5c3749b0a0836d74e446f4e9aa8919ba06121be9599",
+      "proof": {
+        "status": "verified",
+        "gt_rows": 95443,
+        "measured_samples": 1799,
+        "input_observation_contributions": 47706,
+        "recipient_release_documents": 509,
+        "private_retirements": 47106,
+        "private_empty_retirements": 46597
+      },
+      "stages": {
+        "simulation_step": {
+          "count": 3600,
+          "total_ms": 21346.414110999995,
+          "mean_ms": 5.9295594752777765,
+          "p50_ms": 2.991625,
+          "p95_ms": 21.9575,
+          "p99_ms": 28.596542,
+          "max_ms": 51.314833
+        },
+        "ground_truth_write": {
+          "count": 3600,
+          "total_ms": 1097.1109890000016,
+          "mean_ms": 0.30475305250000045,
+          "p50_ms": 0.286709,
+          "p95_ms": 0.668667,
+          "p99_ms": 0.793667,
+          "max_ms": 10.620875
+        },
+        "raw_sensor_write": {
+          "count": 3600,
+          "total_ms": 512.9674780000004,
+          "mean_ms": 0.1424909661111112,
+          "p50_ms": 4.2e-05,
+          "p95_ms": 0.532125,
+          "p99_ms": 0.659417,
+          "max_ms": 5.538083
+        },
+        "terminal_total": {
+          "count": 47106,
+          "total_ms": 6203.769353999972,
+          "mean_ms": 0.1316980714558649,
+          "p50_ms": 0.114333,
+          "p95_ms": 0.20625,
+          "p99_ms": 1.205208,
+          "max_ms": 28.063625
+        },
+        "aggregation_advance": {
+          "count": 3600,
+          "total_ms": 16619.325702000002,
+          "mean_ms": 4.616479361666667,
+          "p50_ms": 1.91925,
+          "p95_ms": 18.478667,
+          "p99_ms": 25.058375,
+          "max_ms": 48.934417
+        },
+        "aggregation_ingest": {
+          "count": 1799,
+          "total_ms": 1795.2227459999976,
+          "mean_ms": 0.9979003590883812,
+          "p50_ms": 0.862959,
+          "p95_ms": 2.620333,
+          "p99_ms": 3.525291,
+          "max_ms": 4.009958
+        },
+        "publication_prepare": {
+          "count": 509,
+          "total_ms": 220.07082399999982,
+          "mean_ms": 0.43235918271119805,
+          "p50_ms": 0.428042,
+          "p95_ms": 0.583959,
+          "p99_ms": 0.693041,
+          "max_ms": 1.905042
+        },
+        "publication_publish": {
+          "count": 509,
+          "total_ms": 297.7137139999999,
+          "mean_ms": 0.5848992416502945,
+          "p50_ms": 0.516042,
+          "p95_ms": 0.736334,
+          "p99_ms": 1.411584,
+          "max_ms": 26.343708
+        },
+        "publication_commit": {
+          "count": 509,
+          "total_ms": 344.2150049999999,
+          "mean_ms": 0.676257377210216,
+          "p50_ms": 0.670625,
+          "p95_ms": 0.903959,
+          "p99_ms": 1.166208,
+          "max_ms": 1.817333
+        },
+        "publication_retire_empty": {
+          "count": 46597,
+          "total_ms": 5056.357562000062,
+          "mean_ms": 0.10851251286563646,
+          "p50_ms": 0.108333,
+          "p95_ms": 0.188833,
+          "p99_ms": 0.25225,
+          "max_ms": 25.338875
+        },
+        "publication_journal_find": {
+          "count": 1527,
+          "total_ms": 287.5801669999997,
+          "mean_ms": 0.18833016830386357,
+          "p50_ms": 0.180375,
+          "p95_ms": 0.290875,
+          "p99_ms": 0.371917,
+          "max_ms": 1.4975
+        },
+        "publication_journal_insert": {
+          "count": 47106,
+          "total_ms": 5030.493407999978,
+          "mean_ms": 0.10679092701566634,
+          "p50_ms": 0.105959,
+          "p95_ms": 0.189333,
+          "p99_ms": 0.253333,
+          "max_ms": 25.336208
+        },
+        "publication_journal_update": {
+          "count": 509,
+          "total_ms": 185.95391400000003,
+          "mean_ms": 0.36533185461689593,
+          "p50_ms": 0.365541,
+          "p95_ms": 0.501458,
+          "p99_ms": 0.56975,
+          "max_ms": 1.168167
+        },
+        "publication_recipient_find": {
+          "count": 1018,
+          "total_ms": 159.9904679999999,
+          "mean_ms": 0.15716155992141445,
+          "p50_ms": 0.149708,
+          "p95_ms": 0.224791,
+          "p99_ms": 0.427208,
+          "max_ms": 1.75025
+        },
+        "publication_recipient_insert": {
+          "count": 509,
+          "total_ms": 114.63121299999992,
+          "mean_ms": 0.22520866994106073,
+          "p50_ms": 0.169791,
+          "p95_ms": 0.2435,
+          "p99_ms": 0.344833,
+          "max_ms": 25.952875
+        },
+        "publication_release_bson": {
+          "count": 48124,
+          "total_ms": 92.30130400000454,
+          "mean_ms": 0.0019179890283435403,
+          "p50_ms": 0.00175,
+          "p95_ms": 0.002583,
+          "p99_ms": 0.005208,
+          "max_ms": 0.34325
+        },
+        "publication_journal_bson": {
+          "count": 49651,
+          "total_ms": 34.407220999998074,
+          "mean_ms": 0.0006929814303840421,
+          "p50_ms": 0.000667,
+          "p95_ms": 0.000875,
+          "p99_ms": 0.001209,
+          "max_ms": 0.050167
+        },
+        "source_steps_over_50ms": 1
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "schema": "ump.mapped-mongo-cost-comparison.v1",
+      "equal": true,
+      "checks": {
+        "agents": {
+          "equal": true,
+          "rows": 95605,
+          "normalized_sha256": "d499cccfb2f819831a7ea35b583e2db60e025522d02b64b89d22d6253efc9896"
+        },
+        "sensor": {
+          "equal": true,
+          "rows": 42852,
+          "normalized_sha256": "ebeb66ae7060434ee7f661bef74e3865ea6f5d2636ebe9320de39d6a62c2a3b4"
+        },
+        "releases": {
+          "equal": true,
+          "rows": 509,
+          "normalized_sha256": "142583733aad34ae2102c33fd7cfab20603b3d4223b5b2b52cc1d0d3795452ff"
+        },
+        "journals": {
+          "equal": true,
+          "rows": 47106,
+          "normalized_sha256": "1867a264d4cc8139cc51ca43a0bcc5c6c86e0fa9836a179dc37bde2bd2a8fb3e"
+        }
+      },
+      "normalization": "fresh raw BSON _id, run UUID, database cursor row order only"
+    },
+    {
+      "schema": "ump.mapped-mongo-cost-comparison.v1",
+      "equal": true,
+      "checks": {
+        "agents": {
+          "equal": true,
+          "rows": 95605,
+          "normalized_sha256": "d499cccfb2f819831a7ea35b583e2db60e025522d02b64b89d22d6253efc9896"
+        },
+        "sensor": {
+          "equal": true,
+          "rows": 42852,
+          "normalized_sha256": "ebeb66ae7060434ee7f661bef74e3865ea6f5d2636ebe9320de39d6a62c2a3b4"
+        },
+        "releases": {
+          "equal": true,
+          "rows": 509,
+          "normalized_sha256": "142583733aad34ae2102c33fd7cfab20603b3d4223b5b2b52cc1d0d3795452ff"
+        },
+        "journals": {
+          "equal": true,
+          "rows": 47106,
+          "normalized_sha256": "1867a264d4cc8139cc51ca43a0bcc5c6c86e0fa9836a179dc37bde2bd2a8fb3e"
+        }
+      },
+      "normalization": "fresh raw BSON _id, run UUID, database cursor row order only"
+    }
+  ],
+  "tests": {
+    "ctest_suites": 82,
+    "ctest_passed": 82,
+    "ctest_elapsed_s": 16.12,
+    "python_profiling_methods": 13,
+    "python_profiling_passed": 13
+  },
+  "limitations": [
+    "Small bounded source and two pairs, not statistical capacity proof.",
+    "Instrumented wall includes startup and buffered event flush, excludes later export.",
+    "Private checkpoint semantics unchanged; automatic simulator restart still unsupported.",
+    "Real network/server failure injection not performed. Duplicate durable state, restarted adapter, conflict and legacy prepared paths checked.",
+    "Initial timing-only UMP_Cost namespace was refused by exporter; excluded from these verified pairs; required UMP_Mapped guard retained.",
+    "Generated movement, raw traces and full databases remain local and are excluded from Git."
+  ]
+}

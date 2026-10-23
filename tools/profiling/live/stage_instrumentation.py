@@ -33,6 +33,11 @@ patch('simulator/src/PublicationStore.cpp',[
  ('SinkResult PublicationStore::publish(const ReleaseSnapshot& release) {','SinkResult PublicationStore::publish(const ReleaseSnapshot& release) {\n    ump_live_timing::Scope timingPublish("publication_publish");'),
  ('void PublicationStore::commit(const ReleaseSnapshot& release) {','void PublicationStore::commit(const ReleaseSnapshot& release) {\n    ump_live_timing::Scope timingCommit("publication_commit");'),
 ])
+publication=out/'simulator/src/PublicationStore.cpp'
+publication_source=publication.read_text()
+retire='void PublicationStore::retireEmpty(const ReleaseSnapshot& release) {'
+if retire in publication_source:
+ publication.write_text(publication_source.replace(retire,retire+'\n    ump_live_timing::Scope timingRetire("publication_retire_empty");'))
 patch('simulator/src/Renderer.cpp',[
  ('void Renderer::run() {','void Renderer::run() {\n    ump_live_timing::Flush timingFlush;'),
  ('            render();','            const auto timingDraw = ump_live_timing::Clock::now();\n            render();\n            ump_live_timing::event("renderer_draw", timingDraw, received ? 1 : 0, agentBuffer.currentWriteFrameIndex.load() - agentBuffer.currentReadFrameIndex.load(), sensorBuffer.currentWriteFrameIndex.load() - sensorBuffer.currentReadFrameIndex.load());'),

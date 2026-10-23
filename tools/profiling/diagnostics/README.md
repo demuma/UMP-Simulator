@@ -61,3 +61,33 @@ configuration and `--capture-seconds 20`; do not request `--export-capture`.
 The harness verifies owned UUID databases and immutable recipient/journal equality,
 then deletes those test databases. Renderer and headless live runs have independent
 stochastic motion and cannot establish an equal-input speed difference.
+
+
+## Matched native mapped I/O gate (October 24)
+
+`build_live_costs.py` now explicitly disables timestamp test targets in its copied
+production-only project, and hashes the base timing overlay/header as build inputs.
+The production test configuration is unchanged. Run with the mapped-scene Python
+requirements and a frozen, completed source scene (source data never enters Git):
+
+```sh
+python tools/profiling/diagnostics/run_mapped_costs.py --source-scene results/system-review-empty-origin64-2026-10-23/scene --binary /private/tmp/ump-mongo-cost-after-build-20261024/build/Simulator --output /private/tmp/ump-fresh-mapped-cost-run
+python tools/profiling/diagnostics/compare_mapped_costs.py /private/tmp/ump-before /private/tmp/ump-after
+```
+
+Use fresh output paths. The runner copies the scene, fixes one common UTC origin,
+uses fresh UUID `UMP_Mapped_` databases with clearing disabled, forces headless
+execution and requires full empty-retirement journaling. It retains its own local
+DBs and raw replay; there is no automatic cleanup. It verifies the exact 50-ms
+source cadence, hashes configuration/executable, then invokes the normal mapped
+source/publication verifier. Do not run another benchmark/build concurrently.
+The comparator checks all GT/lifecycle, raw sensor, recipient and private journal
+fields. Only fresh raw BSON IDs, the run UUID and database cursor row order are
+normalized. Track IDs, timestamps, values and committed states are retained.
+
+The summary's stage scopes are inclusive. Individual database calls are disjoint,
+but must not be added to their enclosing terminal/publication/simulation scopes.
+Process wall includes startup and instrumentation flush; it excludes the later
+recording/export verifier. Instrumentation buffers events and affects runtime.
+See the [report](../../../docs/NATIVE_MONGO_OPTIMIZATION_REPORT_2026-10-24.md) for
+measured bounds and the preserved durability contract.

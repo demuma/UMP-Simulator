@@ -38,12 +38,17 @@ public:
     PublicationStore(const PublicationStore&) = delete;
     PublicationStore& operator=(const PublicationStore&) = delete;
 
-    // Durable private intent precedes every possible disclosure, including empty windows.
+    // Durable private intent precedes every possible disclosure.
     // Same ID/content is idempotent; changed content under an existing ID is an error.
     void prepare(const ReleaseSnapshot& release);
     SinkResult publish(const ReleaseSnapshot& release);
     // Retire only after an identical recipient document is visible, or for an empty release.
     void commit(const ReleaseSnapshot& release);
+
+    // Empty scopes have no recipient write to bracket. Durably insert their final
+    // private record atomically before retiring the in-memory reservation. Identical
+    // retries are idempotent; legacy prepared records are checked and completed.
+    void retireEmpty(const ReleaseSnapshot& release);
 
     // Read-only majority reads: never send an undelivered/stale snapshot to recipients.
     // An identical already-visible release can be acknowledged after acknowledgement loss.

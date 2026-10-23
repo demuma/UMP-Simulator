@@ -180,6 +180,15 @@ Full private JSONL diagnostics and the in-memory retirement ledger remain enable
 With this option the journal recovers disclosed releases, not a complete controller
 retirement checkpoint. Automatic controller restart is unsupported in both modes.
 
+As of October 24, full empty checkpoints use `PublicationStore::retireEmpty`:
+one acknowledged insert writes the identical final `committed` journal record.
+There is no recipient resource to bracket with prepared/commit. Duplicate or
+ambiguous inserts still reconcile exact content, and an existing identical legacy
+prepared empty record completes through the checked commit path. The controller
+retires its reservation only after that durable step. Nonempty output retains its
+original prepare/publish/commit path. See the
+[native I/O test report](NATIVE_MONGO_OPTIMIZATION_REPORT_2026-10-24.md).
+
 Automatic simulation checkpoint/restart remains outside the contract. Journal recovery
 supports immutable delivery recovery; it does not reconstruct agent motion or controller
 state from a terminated simulation.

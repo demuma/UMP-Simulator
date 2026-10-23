@@ -1,6 +1,6 @@
 # TO-DO — UMP-Simulator
 
-**Status: 2026-10-23. Current priority: sequential algorithm and policy-compliance work.
+**Status: 2026-10-24. Current priority: sequential algorithm and policy-compliance work.
 A07 common-window valid-descendant rescue and A08 semantic common/local coordination
 are implemented and verified within their reports. Review the full aggregator
 requirements and stated limits before broadening the mechanism. Membership attacks
@@ -12,7 +12,8 @@ overlapping PolicyTree compilation, a same-clock identity study and a predeclare
 six-method comparison. Fresh corridor native capture, clock-matched replay and
 visual acceptance now pass within the reported bounded sources. The requested
 initial correctness/process review and nominal paced runtime measurement are complete;
-next instrument native source/I/O/receipt timing (M03). The full three-scenario effectiveness study remains open. October 18 is historical.**
+native source/I/O timing and atomic empty checkpoints now pass the first M03 slice;
+remaining controller/source and paced external receipt timing stay open. The full three-scenario effectiveness study remains open. October 18 is historical.**
 
 **October 23 whole-system review completed:** 82/82 suites pass. Integer sensor
 phase, actual-interval ABS velocity, exact-minimum policy scheduling, UTC/offset
@@ -27,9 +28,23 @@ completion caused by producer wake-up. Read the [review report](docs/SYSTEM_REVI
   fresh source with empty datetime and keep all generated movement local.
 - [x] Measure nominal/accelerated service, source lateness, queueing and memory;
   distinguish in-memory acknowledgement from actual MongoDB/application receipt.
-- [ ] Next runtime gate: instrument native raw writes and private empty-retirement
-  I/O separately before changing durability/checkpoint policy. Code-derived DB
-  call counts are not measured wall-time attribution.
+- [x] Instrument native raw writes and private empty-retirement I/O separately.
+  Two 180-s matched pairs verify all final journal entries and reduce journal DB
+  operations by 74.0% with atomic empty committed inserts. No checkpoint policy
+  is weakened. See [measurements and test report](docs/NATIVE_MONGO_OPTIMIZATION_REPORT_2026-10-24.md).
+- [ ] Next runtime gate: isolate remaining aggregation/controller work and source
+  motion, then repeat dense and paced delivery measurements. One optimized step
+  still exceeds 50 ms; actual external application receipt remains unmeasured.
+- [x] Clarify building/entrance provenance, current unmodeled age for aid/accessory
+  profiles and the limitations of an age-first release tree; see the
+  [design discussion](docs/BUILDING_ACCESS_AND_TAXONOMY_DESIGN_2026-10-24.md).
+- [ ] Before extending the taxonomy, agree source modifiers, unknown handling,
+  wheelchair placement, release hierarchy and loss definitions on a small example.
+  A multiattribute lattice is a separate future mechanism, not current behavior.
+- [ ] Extend explicit building destinations with mapped or labeled synthetic
+  reachable facade portals. Only destination-bound road users may cross them;
+  arbitrary wall contact must not remove passers-by. Verify body envelopes,
+  multi-door queues, lifecycle completion and input density as a separate gate.
 - [ ] Expand the mapped visit source beyond its one connected door: inspect all six
   entrance nodes, level/accessibility, facade/walkable connectivity and public
   provenance, then assign explicit destinations/visit rates. POI names alone do
@@ -175,12 +190,12 @@ completion caused by producer wake-up. Read the [review report](docs/SYSTEM_REVI
   diagnostics and publication separately. The audited 9,531 private empty-retirement
   checkpoints in the historical integration reference and 46,597 empty
   retirements in the corrected 64-person corridor capture are explicit I/O
-  workloads to inspect; their runtime share and
-  durability trade-off are not established. Preserve identical logical output before
-  and after each optimization; report source deadlines and receipt/queueing delay.
-  The first full correctness/process review is complete (see SYSTEM_REVIEW_REPORT);
-  retain its bounded findings and instrument the remaining native I/O path before
-  applying further optimization.
+  workloads. The October 24 native I/O slice now measures this share and preserves
+  full final journaling with atomic empty checkpoint inserts (82 suites pass).
+  Further source/controller/dense/paced external-receipt decomposition remains open.
+  Preserve identical logical output before and after every optimization; report
+  source deadlines and receipt/queueing delay. Keep the bounded findings in the
+  SYSTEM_REVIEW_REPORT and NATIVE_MONGO_OPTIMIZATION_REPORT.
 
 - [x] **Optional real-map feasibility gate (October 23):** use a real Mönckebergstraße
   OSM extract, project functional regions and conservatively discretise three

@@ -59,6 +59,11 @@ def main():
             count=source.count(old)
             if not count:raise ValueError(f'Missing PublicationStore anchor: {old}')
             source=source.replace(old,new)
+    direct_insert='impl->journal.insert_one(committed.view())'
+    if direct_insert in source:
+        source=replace_one(source,direct_insert,
+            'ump_live_timing::call("publication_journal_insert", [&] { return '+direct_insert+'; })',
+            'PublicationStore.cpp')
     pub.write_text(source)
     manifest=json.loads((out/'source-hashes.json').read_text())
     manifest['simulator/src/AggregationDiagnostics.cpp']=hashlib.sha256(diag.read_bytes()).hexdigest()

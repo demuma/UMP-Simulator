@@ -438,6 +438,30 @@ void PublicationStore::commit(const ReleaseSnapshot& release) {
     }
 }
 
+void PublicationStore::retireEmpty(const ReleaseSnapshot& release) {
+    if (!release.cells.empty())
+        throw std::invalid_argument("Direct private retirement requires an empty release");
+    auto payload = releaseDocument(release, impl->options.maxBytes);
+    auto committed = journalDocument(release, payload.view(), true, impl->options.maxBytes);
+    try {
+        // There is no recipient disclosure or second durable resource here. The
+        // acknowledged insert itself is the complete private retirement record.
+        if (!impl->journal.insert_one(committed.view()))
+            throw std::runtime_error("Private retirement was not durably acknowledged");
+        return;
+    } catch (const mongocxx::exception&) {
+        // Duplicate writers and acknowledgement loss must compare the full bytes,
+        // not merely the ID. An absent record leaves the caller's reservation held.
+        const auto filter = make_document(kvp("_id", release.releaseId));
+        auto existing = impl->journal.find_one(filter.view());
+        if (!existing) throw;
+        if (impl->checkJournal(existing->view(), release, payload.view())) return;
+    }
+    // A previous process/version may have left an identical prepared empty record.
+    // Keep the ordinary conditional commit/conflict checks for that recovery path.
+    commit(release);
+}
+
 SinkResult PublicationStore::reconcile(const ReleaseSnapshot& release) const {
     auto payload = releaseDocument(release, impl->options.maxBytes);
     try { return impl->reconcile(release, payload.view()); }

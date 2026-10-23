@@ -287,6 +287,46 @@ int main() {
             "Scoped store accepted geometry inconsistent with its scope");
         require(recipient.count_documents({}) == 3 && journal.count_documents({}) == 5,
             "Rejected scoped input left partial persistence");
+        // Direct empty checkpoints preserve the exact legacy final BSON while
+        // avoiding a prepared/commit round trip. Existing durable state stays checked.
+        auto direct = snapshot(4000, true);
+        store.retireEmpty(direct);
+        auto directRow = journal.find_one(make_document(kvp("_id", direct.releaseId)));
+        require(directRow && stringField(directRow->view(), "state") == "committed",
+            "Direct empty retirement did not persist its final state");
+        const auto directBytes = bsoncxx::to_json(directRow->view());
+        ump::PublicationStore afterEmptyAckLoss(client, options);
+        afterEmptyAckLoss.retireEmpty(direct);
+        store.prepare(direct);
+        store.commit(direct);
+        auto sameRow = journal.find_one(make_document(kvp("_id", direct.releaseId)));
+        require(sameRow && bsoncxx::to_json(sameRow->view()) == directBytes,
+            "Identical empty retry or legacy API changed the durable record");
+        auto conflictingEmpty = direct;
+        ++conflictingEmpty.sealedAtMs;
+        mustThrow<ump::PublicationConflict>([&] { store.retireEmpty(conflictingEmpty); },
+            "Direct retirement ignored conflicting immutable content");
+        auto legacyEmpty = snapshot(5000, true);
+        store.prepare(legacyEmpty);
+        store.retireEmpty(legacyEmpty);
+        store.retireEmpty(legacyEmpty);
+        auto legacyRow = journal.find_one(make_document(kvp("_id", legacyEmpty.releaseId)));
+        require(legacyRow && stringField(legacyRow->view(), "state") == "committed",
+            "Direct retirement failed to complete a legacy prepared empty record");
+        mustThrow<std::invalid_argument>([&] { store.retireEmpty(snapshot(6000)); },
+            "Nonempty release bypassed the durable disclosure protocol");
+        mustThrow<std::length_error>([&] { tinyStore.retireEmpty(snapshot(6000, true)); },
+            "Direct retirement ignored its BSON size limit");
+        auto invalidEmpty = snapshot(6000, true);
+        invalidEmpty.releaseId = "invalid";
+        mustThrow<std::invalid_argument>([&] { store.retireEmpty(invalidEmpty); },
+            "Invalid empty snapshot left a private checkpoint");
+        auto recoveredEmpty = store.recoverStream(direct.runId, direct.sensorId, direct.applicationId);
+        require(std::count_if(recoveredEmpty.begin(), recoveredEmpty.end(), [&](const auto& entry) {
+            return entry.committed && (entry.release.releaseId == direct.releaseId
+                || entry.release.releaseId == legacyEmpty.releaseId);
+        }) == 2 && recipient.count_documents({}) == 3 && journal.count_documents({}) == 7,
+            "Direct retirements changed recipient output or durable recovery coverage");
         std::cout << "Publication store regression tests passed\n";
         return 0;
     } catch (const std::exception& error) {

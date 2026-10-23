@@ -20,7 +20,7 @@ def main():
  shutil.copyfile(here/'LiveTiming.hpp',project/'include/LiveTiming.hpp')
  cmake=(root/'simulator/CMakeLists.txt').read_text().split('# Opt-in integration test:')[0]+'\ntarget_link_libraries(Simulator PRIVATE ump_semantic)\n'
  (project/'CMakeLists.txt').write_text(cmake)
- subprocess.run(['cmake','-S',str(project),'-B',str(out/'build'),'-DCMAKE_BUILD_TYPE=Release','-DCMAKE_OSX_ARCHITECTURES='+platform.machine()],check=True)
+ subprocess.run(['cmake','-S',str(project),'-B',str(out/'build'),'-DCMAKE_BUILD_TYPE=Release','-DUMP_BUILD_TIMESTAMP_TESTS=OFF','-DCMAKE_OSX_ARCHITECTURES='+platform.machine()],check=True)
  subprocess.run(['cmake','--build',str(out/'build'),'--parallel','4'],check=True)
  if any(digest(root/path)!=wanted for path,wanted in original.items()):raise RuntimeError('Production source changed during isolated build')
  result={'schema':'ump.live-instrumented-build.v1','revision':revision,'worktree_status':subprocess.check_output(['git','status','--porcelain'],cwd=root,text=True),'production_sources_sha256':original,'prepared_sources_sha256':{str(f.relative_to(project)):digest(f) for f in sorted(project.rglob('*')) if f.is_file()},'tool_sha256':{f.name:digest(f) for f in [Path(__file__),here/'stage_instrumentation.py',here/'LiveTiming.hpp']},'binary_sha256':digest(out/'build/Simulator'),'production_modified':False}

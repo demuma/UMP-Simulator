@@ -730,9 +730,10 @@ void Simulation::initializeSensors() {
                                 });
                             for (std::size_t attempt = 0; attempt < maxAttempts && !delivered; ++attempt) {
                                 try {
-                                    store->prepare(*release);
-                                    // Empty intervals have no recipient record, but retire durably first.
-                                    if (release->cells.empty()) store->commit(*release);
+                                    // Empty intervals have one private durable resource only.
+                                    // Keep their complete final checkpoint before local retirement.
+                                    if (release->cells.empty()) store->retireEmpty(*release);
+                                    else store->prepare(*release);
                                     delivered = coordinator->deliver(now, [store](const auto& payload) {
                                         const auto result = store->publish(payload);
                                         if (result == ump::SinkResult::Acknowledged) store->commit(payload);
