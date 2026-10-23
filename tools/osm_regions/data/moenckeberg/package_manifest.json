@@ -1,0 +1,118 @@
+{
+  "status": "compact OSM geometry/policy feasibility package; no movement or releases",
+  "files": {
+    "tools/osm_regions/build_map.py": {
+      "bytes": 27247,
+      "sha256": "fcb86b023818d60c0082d62ad9510fdb0367228981dc9a80089081f1094c39d3"
+    },
+    "tools/osm_regions/README.md": {
+      "bytes": 3773,
+      "sha256": "61b0364c2c852908ca9fbe8d003b8d43052d4db8bbb48a80f833c9721091e385"
+    },
+    "tools/osm_regions/requirements.txt": {
+      "bytes": 75,
+      "sha256": "21a55a6debb7578b1125613027ee10095b7222f3fe964c86b0b7d345360815cd"
+    },
+    "tools/osm_regions/check_policy.cpp": {
+      "bytes": 7936,
+      "sha256": "fd15411ee0127e478a992928b56a806b80008c17eadb3e718a230a2217313913"
+    },
+    "tools/osm_regions/run_policy_probe.py": {
+      "bytes": 4313,
+      "sha256": "64b44b7022641ac4981d5eab4c4b772dd4272248a6f150132951630c5737653f"
+    },
+    "tools/osm_regions/audit_geometry.py": {
+      "bytes": 6827,
+      "sha256": "1892a9e670558b2332b71c2274b550a21edb45e6b2bec7c159cea13bd3c372b4"
+    },
+    "docs/OSM_MOENCKEBERG_FEASIBILITY_2026-10-23.md": {
+      "bytes": 9526,
+      "sha256": "7bc247772649c22ee66e81d923430dc031b198c37f2c4072478ca571bc20e1f6"
+    },
+    "tools/osm_regions/data/moenckeberg/source_geometry.geojson.gz": {
+      "bytes": 325748,
+      "sha256": "508ca79545419b1f1028b79a1f8a12684b8a6ed53e95b2d94fb36094298388f3"
+    },
+    "tools/osm_regions/data/moenckeberg/source_manifest.json": {
+      "bytes": 1010,
+      "sha256": "3a2ffc3fb6c5270198e69e3c68ef0bcdc6c2e2b98a06f0b2d37f588b11b97f58"
+    },
+    "tools/osm_regions/data/moenckeberg/summary.json": {
+      "bytes": 215851,
+      "sha256": "9e27427ca9a7946cf2f5087ee0b12708b3b8ed573aa5db925b65a90d82526319"
+    },
+    "tools/osm_regions/data/moenckeberg/geometry_validation.json": {
+      "bytes": 3012,
+      "sha256": "8d35873838fcba8db60d81df0ac97430482fd91693609e609624fbea6d7a1e7f"
+    },
+    "tools/osm_regions/data/moenckeberg/policy_build_manifest.json": {
+      "bytes": 7548,
+      "sha256": "6c90ca6721918e772bb56abd2d2329d040d8a859925abe9eaa15a7fc17ab5c60"
+    },
+    "docs/figures/osm_moenckeberg/monckeberg_regions_d6.png": {
+      "bytes": 1749193,
+      "sha256": "c595635f36abb63c1a1be5260cf618d05840bb261324677b8af323b94d843175"
+    },
+    "docs/figures/osm_moenckeberg/monckeberg_regions_d6.svg": {
+      "bytes": 1697349,
+      "sha256": "48eadeef4fef6a66454f6f2a41df2c1ecd8acf426aaa5a7616ba4d8c2e116d60"
+    },
+    "docs/figures/osm_moenckeberg/monckeberg_regions_detail.png": {
+      "bytes": 613372,
+      "sha256": "9df72e15fd5ad5c6512e6639044eb4e4ba6964ae8f4f269f736803b4396a614c"
+    },
+    "docs/figures/osm_moenckeberg/monckeberg_regions_detail.svg": {
+      "bytes": 364671,
+      "sha256": "378bcdee313be77462e05252eae2a12b19385ed8e0a165eeb315d8fdcec75698"
+    },
+    "tools/osm_regions/data/moenckeberg/overview/policy.json": {
+      "bytes": 504041,
+      "sha256": "b4d63a6127add91af1f296368e9b9cc4ced752248a3e59e09bac1217adb927e1"
+    },
+    "tools/osm_regions/data/moenckeberg/overview/cells.json": {
+      "bytes": 9704,
+      "sha256": "3324e09885e72a39e7aebf66f45a85a8de082f00345b1bc24ac592c08a7d253a"
+    },
+    "tools/osm_regions/data/moenckeberg/overview/policy_validation.json": {
+      "bytes": 533,
+      "sha256": "921713bc6816cb3ab4ce21968016e61ba16dcd7e2cb9811bee3e2b438e1b9ab4"
+    },
+    "tools/osm_regions/data/moenckeberg/overview/geometry_validation.json": {
+      "bytes": 751,
+      "sha256": "5c6b3c1fe479e4f0659319e030fe877558f20ed4a0048c0533c6c41f36274044"
+    },
+    "tools/osm_regions/data/moenckeberg/detail/policy.json": {
+      "bytes": 134688,
+      "sha256": "16c8bfcde9c6e542470575dc93868135b97a9719acd64748dcf9761a716ab6c3"
+    },
+    "tools/osm_regions/data/moenckeberg/detail/cells.json": {
+      "bytes": 8853,
+      "sha256": "a9cfccd25902b336a526fe253fbc2a8ac0e9f05dbcbc5532515d27837c15b809"
+    },
+    "tools/osm_regions/data/moenckeberg/detail/policy_validation.json": {
+      "bytes": 532,
+      "sha256": "34ebee9d3abf10b3cc9819b4782c947e2f3e36a879644a30311ba96820e3e455"
+    },
+    "tools/osm_regions/data/moenckeberg/detail/geometry_validation.json": {
+      "bytes": 749,
+      "sha256": "5a0254f8af1cdf8a29c59a76432148e65cae5ad77fda92d59ed992afe3a52048"
+    },
+    "tools/osm_regions/data/moenckeberg/close/policy.json": {
+      "bytes": 107494,
+      "sha256": "11e403b37c6b19c42d62e1c5d78a688e68de2523ee843fa4914be358b2e66d7a"
+    },
+    "tools/osm_regions/data/moenckeberg/close/cells.json": {
+      "bytes": 8852,
+      "sha256": "822a5a498e5761ffafb2c3be09bc85225e787f74e3380bf4336e160042ef0120"
+    },
+    "tools/osm_regions/data/moenckeberg/close/policy_validation.json": {
+      "bytes": 531,
+      "sha256": "08b97457172582bbc57091609852f4b401136a1f0288eef030fd8806fc42fe0b"
+    },
+    "tools/osm_regions/data/moenckeberg/close/geometry_validation.json": {
+      "bytes": 749,
+      "sha256": "36cf96cb61e594f5734c98086a87a252cab8e2b5f47d18a502d0beffe122a56f"
+    }
+  },
+  "total_bytes": 5814928
+}

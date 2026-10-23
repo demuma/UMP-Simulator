@@ -1,0 +1,19 @@
+{
+  "status": "pass",
+  "depth": 6,
+  "coverage_side_m": 1024,
+  "leaf_side_m": 16,
+  "rectangles": 1745,
+  "covered_leaves": 4096,
+  "unique_leaf_ids": 4096,
+  "min_leaf_id": 12288,
+  "max_leaf_id": 16383,
+  "resolved_cells_all_depths": 5460,
+  "resolved_nonroot_ancestors": 1364,
+  "feasible_bounds_cells": 5460,
+  "compiled_nodes": 5197,
+  "effective_policies": 2913,
+  "negative_checks": 4,
+  "distinct_support_is_privacy_guarantee": false,
+  "policy_sha256": "b4d63a6127add91af1f296368e9b9cc4ced752248a3e59e09bac1217adb927e1"
+}

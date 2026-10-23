@@ -1,0 +1,61 @@
+{
+  "status": "pass",
+  "source_xml_sha256": "230dd159d3d01233a6cc641ae826a664bb9228b6833c6ed7f7ddea0c6a7cccec",
+  "source_geometry_sha256": "afa2690e408f467af5ff679770bf872816cc568714d9171cf4efb493809e40ed",
+  "original_xml_node_way_features_checked": {
+    "node/entrance": 262,
+    "way/transport_line": 2381,
+    "way/building": 599,
+    "way/transport_area": 121
+  },
+  "original_xml_node_way_feature_count": 3363,
+  "relation_features_not_independently_reconstructed": 20,
+  "max_original_source_hausdorff_discrepancy_m": 0,
+  "cases": {
+    "overview": {
+      "status": "pass",
+      "domain_side_m": 1024,
+      "leaf_side_m": 16.0,
+      "independent_raster_cells_compared": 4096,
+      "raster_class_bits_compared": 24576,
+      "policy_rectangles_match_raster": true,
+      "source_building_and_entrance_geometry_checked": true,
+      "building_symmetric_difference_m2": 0.0,
+      "entrance_symmetric_difference_m2": 0.0,
+      "source_geometry_sha256": "afa2690e408f467af5ff679770bf872816cc568714d9171cf4efb493809e40ed",
+      "policy_sha256": "b4d63a6127add91af1f296368e9b9cc4ced752248a3e59e09bac1217adb927e1",
+      "cells_sha256": "3324e09885e72a39e7aebf66f45a85a8de082f00345b1bc24ac592c08a7d253a",
+      "transport_semantics_scope": "Vector-to-raster fidelity checked; transport class/width interpretation remains declared model assumptions."
+    },
+    "detail": {
+      "status": "pass",
+      "domain_side_m": 160,
+      "leaf_side_m": 2.5,
+      "independent_raster_cells_compared": 4096,
+      "raster_class_bits_compared": 24576,
+      "policy_rectangles_match_raster": true,
+      "source_building_and_entrance_geometry_checked": true,
+      "building_symmetric_difference_m2": 0.0,
+      "entrance_symmetric_difference_m2": 0.0,
+      "source_geometry_sha256": "afa2690e408f467af5ff679770bf872816cc568714d9171cf4efb493809e40ed",
+      "policy_sha256": "16c8bfcde9c6e542470575dc93868135b97a9719acd64748dcf9761a716ab6c3",
+      "cells_sha256": "a9cfccd25902b336a526fe253fbc2a8ac0e9f05dbcbc5532515d27837c15b809",
+      "transport_semantics_scope": "Vector-to-raster fidelity checked; transport class/width interpretation remains declared model assumptions."
+    },
+    "close": {
+      "status": "pass",
+      "domain_side_m": 80,
+      "leaf_side_m": 1.25,
+      "independent_raster_cells_compared": 4096,
+      "raster_class_bits_compared": 24576,
+      "policy_rectangles_match_raster": true,
+      "source_building_and_entrance_geometry_checked": true,
+      "building_symmetric_difference_m2": 0.0,
+      "entrance_symmetric_difference_m2": 0.0,
+      "source_geometry_sha256": "afa2690e408f467af5ff679770bf872816cc568714d9171cf4efb493809e40ed",
+      "policy_sha256": "11e403b37c6b19c42d62e1c5d78a688e68de2523ee843fa4914be358b2e66d7a",
+      "cells_sha256": "822a5a498e5761ffafb2c3be09bc85225e787f74e3380bf4336e160042ef0120",
+      "transport_semantics_scope": "Vector-to-raster fidelity checked; transport class/width interpretation remains declared model assumptions."
+    }
+  }
+}

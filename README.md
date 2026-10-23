@@ -59,6 +59,15 @@ synthetic results and verification are recorded in the October 19 test report. T
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 
+**October 23 optional OSM feasibility gate:**
+[Real Mönckebergstraße map figures and production PolicyTree checks](docs/OSM_MOENCKEBERG_FEASIBILITY_2026-10-23.md)
+are available. Separate D6 domains of 1,024 / 160 / 80 m produce 16 / 2.5 / 1.25-m
+leaves. Every exported grid and inherited regional constraint is checked; the
+compact source and reproduction tools are in `tools/osm_regions/`. This is map
+preprocessing and core-policy compilation, with explicit geometry assumptions.
+Full Simulator map/movement integration and privacy results remain open. The
+three controlled scenarios still come next, starting with residential entrances.
+
 **October 23 diagnostic-cost and presentation gate:**
 [74 CTest suites pass](docs/DIAGNOSTIC_COST_TEST_REPORT_2026-10-23.md). Explicit
 `aggregation.diagnostics: {mode: off}` disables private JSONL files and their

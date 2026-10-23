@@ -11,6 +11,18 @@ Diagnostic costs and full/off file output are measured and verified. Today's pre
 
 **October 22–23 checkpoint:**
 
+- [x] **Optional real-map feasibility gate (October 23):** use a real Mönckebergstraße
+  OSM extract, project functional regions and conservatively discretise three
+  separate D6 footprints. Export exact disjoint rectangles; validate all 4,096
+  leaves and 1,364 nonroot ancestors per case with production PolicyTree code.
+  Save attributable PNG/SVG figures, a compressed geometry-only snapshot and
+  independent geometry/provenance checks. See the [report](docs/OSM_MOENCKEBERG_FEASIBILITY_2026-10-23.md).
+- [ ] Keep full OSM → normal Simulator Region configuration, traversable map/routes,
+  portals, collision obstacles and visit labels as a later integration gate.
+  A kilometre-scale D6 root has 16-m cells in this test; local 80-m D6 footprints
+  retain 1.25-m cells. Neither import nor finer depth is a measured privacy gain.
+  Complete the first controlled residential scenario before broadening this path.
+
 - [x] Make replay cell inspection explicit: keyboard-selectable cell list, selected
   outline, focus zoom, released categories and opt-in private original groups for
   exactly the displayed cell/window. Show local policy geometry separately from
