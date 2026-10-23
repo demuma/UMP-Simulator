@@ -130,6 +130,7 @@ def compare(recording,output,binary):
                  '--mode',variant['mode'],'--output',str(result_path),'--progress-step-ms',str(progress_step)]
         if variant['mode']=='fixed':command+=['--fixed-depth',str(variant['depth']),'--fixed-window-ms',str(variant['window'])]
         start=time.perf_counter(); completed=subprocess.run(command,text=True,capture_output=True,timeout=240)
+        process_wall=time.perf_counter()-start
         (output/(name+'.log')).write_text(completed.stdout+completed.stderr)
         if completed.returncode: raise RuntimeError(name+': '+completed.stderr[:2000])
         result=read(result_path)
@@ -148,8 +149,12 @@ def compare(recording,output,binary):
                        'semantic_published_cells':audit['semantic_published_cells'],
                        'semantic_published_bins':audit['semantic_published_bins'],
                        'regional_recomputed_cells':len(audit['regional_recomputations'])}
+        pipeline_wall=time.perf_counter()-start
         summary['cases'][name]={'stats':stats,'independent_audit':audit_summary,
-                                 'recipient_query_summaries':compact,'wall_seconds':time.perf_counter()-start,
+                                 'recipient_query_summaries':compact,'native_process_wall_seconds':process_wall,
+                                 'comparison_pipeline_wall_seconds':pipeline_wall,
+                                 'wall_seconds':pipeline_wall,
+                                 'timing_scope':'wall_seconds is a legacy alias for comparison_pipeline_wall_seconds, including Python audits/queries/writes.',
                                  'result_sha256':sha(result_path),'config_sha256':sha(config_path)}
         # The actual native output is independent evidence, not silently replaced.
         # The comparison viewer explicitly identifies all six as offline reruns.

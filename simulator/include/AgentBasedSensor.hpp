@@ -38,6 +38,9 @@ private:
     mongocxx::database db;
     mongocxx::collection collection;
 
+    // Timestamp shared by the positions from the preceding actual observation.
+    std::optional<SensorTime> previousPositionTimestamp;
+
     // Pending output batch; observations are assembled locally in captureAgentData().
     std::pair<std::chrono::system_clock::time_point, std::vector<AgentData>> dataStorage;
 };

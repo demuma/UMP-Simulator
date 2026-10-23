@@ -19,6 +19,7 @@
 /*******************************/
 
 std::string generateUUID();
+// Explicit Z/offset input is UTC; timezone-free input preserves legacy local interpretation.
 std::string generateISOTimestamp();
 std::string generateISOTimestampString(const std::chrono::system_clock::time_point& timestamp);
 bsoncxx::types::b_date generateBsonDate(const std::string& dateTimeString);

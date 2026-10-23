@@ -59,6 +59,20 @@ synthetic results and verification are recorded in the October 19 test report. T
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 
+**October 23 system review:** confirmed sensor float-clock drift, an exact-duration
+policy scheduling defect and UTC/offset parsing errors are corrected. Sampling now
+uses actual integer timestamp slots; ABS uses the actual observation interval.
+A run resolves its epoch once, including an explicitly empty date setting. All
+82 CTest suites pass, the three frozen mapped outputs remain identical, and a fresh
+180-s empty-origin native run reproduces the reference movements/releases.
+The nominal 180-s paced dense replay had maximum core service 34.334 ms against
+50-ms progress, but one scheduled completion exceeded 50 ms because the producer
+woke late. This supports bounded measured feasibility, not a hard end-to-end
+realtime guarantee. See the [review and test report](docs/SYSTEM_REVIEW_REPORT_2026-10-23.md).
+The single connected entrance and two adaptive comparison cases are fixture/matrix
+choices: six OSM entrance nodes exist locally, and both other primary priorities
+and both Semantic First secondary priorities are implemented.
+
 **October 23 mapped replay and policy integration:** native mapped runs now retain
 actual sampled observations, immutable releases and private journal retirements
 under ignored `results/`. The browser replay includes the aligned attributable
@@ -99,8 +113,9 @@ all retained observations generalized to Pedestrian. The
 77 CTest/eight-generator gate and 87.04% retention. These figures describe the
 kinematic integration fixture, not a new corridor/density experiment. Current
 final results belong to the current integration report. Empirical privacy,
-three substantive scenarios and the renewed whole-system/performance audit remain
-explicit follow-ups, including private empty-retirement I/O costs.
+three substantive scenarios and native I/O/receipt profiling remain explicit
+follow-ups. The initial whole-system review is complete; private empty-retirement
+I/O costs still need causal measurement.
 
 **October 23 optional OSM feasibility gate:**
 [Real Mönckebergstraße map figures and production PolicyTree checks](docs/OSM_MOENCKEBERG_FEASIBILITY_2026-10-23.md)
@@ -604,7 +619,7 @@ reverted test results do not establish correctness of the current implementation
 |---|---|---|
 | Simulation | Agents, class attributes, regions and configurable timestep; optional seeded mapped source and persistent local capture | Legacy random motion has no central seed and can depend on wall time; mapped source is deterministic |
 | Ground truth | Agent identity, position, velocity and timestamp stored in MongoDB; one full controlled AGBS run verified against GT | Completeness across other runs, sensor types and boundary cases not systematically validated |
-| ABS | Position, type, identity and velocity from consecutive observations; first complete output at 100 ms for the current 10-Hz setup | Nominal-period velocity requires aligned fixed intervals; publication after DB errors is not guaranteed |
+| ABS | Position, type, identity and velocity from consecutive observations; first complete output at 100 ms for the current 10-Hz setup | Velocity uses actual elapsed observation time; raw DB publication after partial errors is not idempotent |
 | GBS | Fixed cells, class counts and total count per observation | No full temporal aggregation or privacy-based release decision |
 | AGBS | Fine observation quadtree, position mapping, counts and cell IDs; optional reusable aggregation pipeline | Input geometry follows positions/max depth; adaptive publication uses a separately selected cut |
 | Aggregation pipeline | AGBS ingestion, bounded history, regional checks, spatial/temporal selection and immutable policy-approved MongoDB releases | Default common-window plus opt-in cell-local coordination; alternative publication models and automatic restart remain open |
@@ -646,9 +661,11 @@ and timestamps were also verified for the example agent in the existing database
 ### 5.2 Current sampling and initial observations
 
 All three sensors use Sensor::isSamplingDue(timeStep). The first update observes the
-initial state and initializes the schedule without adding elapsed time. Later updates
-add the completed simulation step. A due observation resets the timer regardless of
-whether any agents are in the area.
+initial state and fixes an observation-time origin without emitting a sample.
+Integer microsecond slots determine later due observations. An unaligned/late update
+emits one actual sample after a deadline, preserving the original phase; skipped
+slots are not fabricated. Occupancy does not change the schedule. Duplicate timestamps
+emit nothing; backwards timestamps and midstream frame-rate changes are rejected.
 
 | State time, relative to initial observation | ABS | GBS / AGBS |
 |---|---|---|
@@ -677,15 +694,16 @@ current position for the next observation, and publishes only identities with bo
 The velocity calculation is:
 
 ```cpp
-observation.estimatedVelocity = (agent.position - previous->second) * frameRate;
+const auto elapsed = std::chrono::duration<double>(timestamp - *previousPositionTimestamp).count();
+observation.estimatedVelocity = (agent.position - previous->second) / static_cast<float>(elapsed);
 ```
 
-This is an interval average, not the instantaneous GT velocity at the endpoint. It is
-correct when consecutive samples are exactly 1/frameRate apart. The initial schedule
-now satisfies that condition for 50-ms ticks and 10-Hz sensors. No agent timestamps are
-read to calculate this velocity. Non-aligned periods, varying steps and irregular
-observations still require the actual-interval work in F01/D02; the timer currently resets
-to zero at a due sample and does not implement fractional-period scheduling.
+This is an interval average, not instantaneous endpoint GT velocity. It uses the
+actual sensor observation interval, including irregular/late updates, and reads no
+agent timestamps. New/reentering tracks still follow the two-observation warm-up.
+Generic ABS/GBS periods are rounded to integer microseconds. AGBS aggregation keeps
+its stricter whole-millisecond, simulation-step-divisor configuration contract.
+The 10-ms / 10-Hz regression now samples at 100/200/300 ms instead of 110/220/330 ms.
 
 An unknown identity's first position is retained internally; its first complete ABS record
 appears on the next consecutive sensor observation. An agent absent at a scheduled

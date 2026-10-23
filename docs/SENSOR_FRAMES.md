@@ -35,7 +35,10 @@ step time   AGBS-A (10 Hz)   AGBS-B (5 Hz)   sensor frame sent
 
 This example uses the existing aligned 50-ms simulation step. ABS and GBS contribute
 under their own IDs on their own due steps. No sensor waits for a later observation from
-another sensor. Non-aligned sampling remains D02/F01.
+another sensor. Generic ABS/GBS sampling now preserves integer timestamp phase on
+unaligned updates, emitting only actual observations; ABS divides displacement by
+the actual observation interval. AGBS aggregation still requires whole-millisecond
+periods aligned to simulation ticks. See the system review for the 10-ms clock fix.
 
 - Missing ID: this sensor has no sample at this step.
 - Present empty grid payload: the sensor measured an empty area.

@@ -63,7 +63,7 @@ CellLocalAggregation::Window CellLocalAggregation::makeWindow(const CellGeometry
             && *check.requirement.max < static_cast<double>(cap))
             cap = static_cast<AggregationTime>(*check.requirement.max);
         if (check.requirement.id == MetricId::WindowDurationMs && check.requirement.min
-            && *check.requirement.min < static_cast<double>(temporal.maxWindowMs))
+            && *check.requirement.min <= static_cast<double>(temporal.maxWindowMs))
             minimum = std::max(minimum, static_cast<AggregationTime>(*check.requirement.min));
     }
     cap -= cap % config.samplingPeriodMs;

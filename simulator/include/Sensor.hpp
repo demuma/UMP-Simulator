@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 #include <chrono>
+#include <cstdint>
 #include <string>
 #include <iostream>
 #include <mongocxx/client.hpp>
@@ -53,9 +54,16 @@ public:
 protected:
     std::shared_ptr<mongocxx::client> client;
     std::optional<SensorSample> pendingSample;
-    float timeSinceLastUpdate = 0.0f;
-
-    // The first update observes the initial state; no simulation step has elapsed yet.
+    // The first update observes the initial state. Integer timestamp slots preserve
+    // the sampling phase without accumulating floating-point simulation steps.
+    // A late update yields one actual observation, never invented catch-up frames.
     bool samplingInitialized = false;
     bool isSamplingDue(float timeStep);
+
+private:
+    SensorTime samplingOrigin{};
+    SensorTime previousUpdateTimestamp{};
+    std::chrono::microseconds samplingPeriod{0};
+    std::int64_t previousSamplingSlot = 0;
+    float initializedFrameRate = 0;
 };

@@ -68,11 +68,24 @@ def summarize(paced, reference):
         raise ValueError('Invalid bounded-queue contract')
     period = integer(paced['source']['sampling_period_ms'], 'sampling period', 1)
     end = integer(paced['source']['end_ms'], 'end', 1)
-    expected_count = (end - 1) // period + 1
+    parameters = paced['parameters']
+    explicit_progress = 'progress_step_ms' in parameters
+    step = integer(parameters['progress_step_ms'], 'progress step', 1) if explicit_progress else period
+    if explicit_progress:
+        if step > period or period % step or end % step:
+            raise ValueError('Progress step must divide the sensor period and align the horizon')
+        if integer(parameters.get('progress_origin_ms'), 'progress origin') != 0:
+            raise ValueError('Explicit progress requires origin zero')
+    elif 'progress_origin_ms' in parameters:
+        raise ValueError('Progress origin requires an explicit progress step')
+    # Initialization at zero is consumed synchronously before the paced event
+    # schedule. Telemetry rows begin at the first positive progress tick; finish
+    # replaces the endpoint tick. Measurement cadence remains a separate clock.
+    expected_count = (end - 1) // step + 1
     events = data['events']
-    if expected_count > 100000 or not events or len(events) != expected_count:
+    if expected_count + int(explicit_progress) > 100000 or not events or len(events) != expected_count:
         raise ValueError('Missing/excess cadence or finish telemetry')
-    expected_times = list(range(period, end, period)) + [end]
+    expected_times = list(range(step, end, step)) + [end]
     previous_finish = 0
     for index, (event, logical_time) in enumerate(zip(events, expected_times)):
         if event['logical_time_ms'] != logical_time or event['kind'] != ('finish' if index == len(events) - 1 else 'cadence'):
@@ -135,19 +148,25 @@ def summarize(paced, reference):
         'sampled_max': max((sample[name] for sample in memory if sample[name] is not None), default=None)}
         for name in counters}
     cadence, finish = events[:-1], events[-1:]
+    sample_steps = [event for event in cadence if event['logical_time_ms'] % period == 0]
+    no_sample_steps = [event for event in cadence if event['logical_time_ms'] % period != 0]
     service_total = sum(event['service_finish_ms'] - event['service_start_ms'] for event in events)
     horizon = events[-1]['service_finish_ms']
     return {
         'schema': SCHEMA, 'logical_output_equal_excluding_runtime': True,
         'source': {'logical_duration_ms': end, 'sampling_period_ms': period,
+                   'progress_step_ms': step, 'explicit_native_progress': explicit_progress,
                    'input_observation_contributions': paced['input_observation_contributions'],
                    'accounted_observation_contributions': paced['accounted_observation_contributions']},
         'mode': paced['mode'], 'coordination': paced['parameters']['coordination'],
-        'offered_load': {'rate': rate, 'wall_cadence_ms': period / rate,
+        'offered_load': {'rate': rate, 'wall_cadence_ms': step / rate,
+                         'wall_sensor_sampling_period_ms': period / rate,
                          'queue_capacity': capacity, 'peak_queue_depth': peak},
         'quantile_definition': 'nearest rank, ceil(p*n)',
+        'cadence_scope': 'All positive progress ticks before finish, including ticks without a sensor measurement',
         'cadence': event_metrics(cadence), 'finish': event_metrics(finish),
-        'cadence_service_over_offered_interval': sum(event['service_finish_ms'] - event['service_start_ms'] > period / rate for event in cadence),
+        'sample_steps': event_metrics(sample_steps), 'no_sample_steps': event_metrics(no_sample_steps),
+        'cadence_service_over_offered_interval': sum(event['service_finish_ms'] - event['service_start_ms'] > step / rate for event in cadence),
         'consumer_service_total_ms': service_total, 'wall_horizon_through_finish_ms': horizon,
         'consumer_busy_fraction': service_total / horizon if horizon else None,
         'unpaced_control_processing_ms': finite(reference['runtime']['processing_ms'], 'control processing time'),
@@ -160,6 +179,7 @@ def summarize(paced, reference):
             'The producer replays preloaded observations; parsing, validation and core setup precede the arrival origin.',
             'Service includes per-step in-memory serialization and telemetry; consumer busy fraction is wall-clock occupancy, not CPU utilization.',
             'EOF is separate from ordinary cadence events; paced processing time includes intentional waits.',
+            'Explicit origin advancement precedes positive progress-event telemetry and is not part of summed queued service.',
             'Release timing is an in-memory acknowledgement, not external application or MongoDB receipt.',
             'Process RSS includes preloaded input and retained research diagnostics; history counters are sampled and not total heap accounting.',
             'Sampled maxima are not continuous peaks, except the process high-water RSS counter itself.',

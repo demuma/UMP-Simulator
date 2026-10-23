@@ -57,6 +57,17 @@ target_compile_options(Simulator PRIVATE -O3)
 # target_compile_definitions(Simulator PRIVATE ERROR)
 # target_compile_definitions(Simulator PRIVATE TIMING)
 
+# Timestamp regression checks need BSON/SFML types but no database or window.
+option(UMP_BUILD_TIMESTAMP_TESTS "Build ISO/UTC timestamp utility tests" ON)
+if(UMP_BUILD_TIMESTAMP_TESTS)
+    enable_testing()
+    add_executable(UtilitiesRegressionTests tests/UtilitiesRegressionTests.cpp src/Utilities.cpp)
+    target_compile_features(UtilitiesRegressionTests PRIVATE cxx_std_17)
+    target_link_libraries(UtilitiesRegressionTests PRIVATE SFML::Graphics SFML::System mongo::bsoncxx_shared)
+    add_test(NAME timestamp_utilities COMMAND UtilitiesRegressionTests)
+    set_tests_properties(timestamp_utilities PROPERTIES LABELS "unit;timing" TIMEOUT 15)
+endif()
+
 # Opt-in integration test: creates and removes only a UUID-named test database.
 option(UMP_BUILD_SENSOR_REGRESSION_TESTS "Build sensor regression tests (requires localhost MongoDB)" OFF)
 if(UMP_BUILD_SENSOR_REGRESSION_TESTS)

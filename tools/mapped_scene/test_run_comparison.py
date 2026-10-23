@@ -217,6 +217,11 @@ class ComparisonTests(unittest.TestCase):
         summary,calls,queries,policies=self.run_mocked(output)
         self.assertEqual(len(calls),6)
         self.assertEqual(len(summary['cases']),6)
+        for case in summary['cases'].values():
+            self.assertGreaterEqual(case['native_process_wall_seconds'],0)
+            self.assertGreaterEqual(case['comparison_pipeline_wall_seconds'],case['native_process_wall_seconds'])
+            self.assertEqual(case['wall_seconds'],case['comparison_pipeline_wall_seconds'])
+            self.assertIn('legacy alias',case['timing_scope'])
         self.assertEqual(summary['scientific_repetitions'],0)
         self.assertEqual({tuple((command[command.index('--fixed-depth')+1],command[command.index('--fixed-window-ms')+1]))
                           for command in calls if '--fixed-depth' in command},{('3','400'),('3','1000'),('4','400'),('4','1000')})

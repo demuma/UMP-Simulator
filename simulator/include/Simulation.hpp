@@ -82,6 +82,7 @@ private:
     sf::Time simulationTime = sf::Time::Zero;
     std::string datetime;
     std::chrono::system_clock::time_point timestamp;
+    std::chrono::system_clock::time_point simulationEpoch;
 
     // Window parameters
     float simulationWidth; // Meters

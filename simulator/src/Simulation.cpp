@@ -86,19 +86,12 @@ void Simulation::loadConfiguration() {
     //     numThreads = std::thread::hardware_concurrency();
     // }
 
-    // If datetime is provided in the configuration, use it, otherwise use the current time
-    if(config["simulation"]["datetime"]) {
-
-        // Set time from configuration
-        datetime = config["simulation"]["datetime"].as<std::string>();
-    } else {
-
-        // Set current time
-        datetime = generateISOTimestamp();
-    }
-
-    // Set simulation timestamp
-    timestamp = generateISOTimestamp(simulationTime, datetime);
+    // Resolve the run origin once. Missing/empty configuration uses current UTC;
+    // subsequent ticks and lifecycle events never reread wall time or parse dates.
+    datetime=config["simulation"]["datetime"].as<std::string>("");
+    if (datetime.empty()) datetime=generateISOTimestamp();
+    simulationEpoch=generateISOTimestamp(sf::Time::Zero,datetime);
+    timestamp=simulationEpoch;
 
     // Collision
     collisionGridCellSize = config["collision"]["grid"]["cell_size"].as<float>();
@@ -421,7 +414,7 @@ void Simulation::postMappedEventsThrough(ump::AggregationTime nowMs) {
     while (end < events.size() && events[end].atMs <= nowMs) {
         const auto& event = events[end++];
         bsoncxx::builder::stream::document document{};
-        const auto at = generateISOTimestamp(sf::milliseconds(event.atMs), datetime);
+        const auto at = simulationEpoch + std::chrono::milliseconds(event.atMs);
         document << "data_type" << "mapped lifecycle event"
                  << "timestamp" << bsoncxx::types::b_date{at}
                  << "processed_at_ms" << nowMs
@@ -883,7 +876,7 @@ void Simulation::run() {
         update();
 
         // Update timestamp
-        timestamp = generateISOTimestamp(simulationTime, datetime);
+        timestamp = simulationEpoch + std::chrono::microseconds(simulationTime.asMicroseconds());
         
         // Sensor updates and any measurement-frame writes for t are complete.
         // Receiving this agent frame confirms that no sensor contribution for t is still in flight.
@@ -952,11 +945,11 @@ void Simulation::run() {
     // Print simulation statistics
     STATS_MSG("Total simulation wall time: " << simulationRealTime.asSeconds() << " seconds for " << completedSteps << " frames");
     STATS_MSG("Total simulation time: " << simulationTime.asSeconds() << " seconds" << " for " << numAgents << " agents");
-    STATS_MSG("Simulation speedup: " << (maxFrames * timeStep) / simulationRealTime.asSeconds());
-    STATS_MSG("Frame rate: " << 1/(simulationRealTime.asSeconds() / completedSteps));
-    STATS_MSG("Average simulation update time: " << simulationUpdateTime.asSeconds() / completedSteps);
-    STATS_MSG("Average simulation time step: " << simulationRealTime.asSeconds() / completedSteps);
-    STATS_MSG("Average write buffer time: " << totalWriteBufferTime.asSeconds() / completedSteps);
+    STATS_MSG("Simulation speedup: " << (simulationRealTime.asSeconds() > 0 ? simulationTime.asSeconds() / simulationRealTime.asSeconds() : 0));
+    STATS_MSG("Frame rate: " << (simulationRealTime.asSeconds() > 0 ? completedSteps / simulationRealTime.asSeconds() : 0));
+    STATS_MSG("Average simulation update time: " << (completedSteps ? simulationUpdateTime.asSeconds() / completedSteps : 0));
+    STATS_MSG("Average simulation time step: " << (completedSteps ? simulationRealTime.asSeconds() / completedSteps : 0));
+    STATS_MSG("Average write buffer time: " << (completedSteps ? totalWriteBufferTime.asSeconds() / completedSteps : 0));
 }
 
 void Simulation::update() {
@@ -980,11 +973,11 @@ void Simulation::update() {
     }
 
     // Update timestamp
-    timestamp = generateISOTimestamp(simulationTime, datetime);
+    timestamp = simulationEpoch + std::chrono::microseconds(simulationTime.asMicroseconds());
     
     if (mappedScene) {
-        // Scripted route progress uses simulation time only. This first mapped
-        // source does not claim crowd interaction or a new collision solver.
+        // Both mapped modes advance from the same fixed simulation epoch.
+        // Corridor following has bounded interactions; integration stays kinematic.
         updateMappedAgents(simulationTime.asMilliseconds());
         return;
     }
@@ -1037,7 +1030,7 @@ void Simulation::update() {
 void Simulation::postMetadata() {
 
     // Get the current timestamp
-    timestamp = generateISOTimestamp(simulationTime, datetime);
+    timestamp = simulationEpoch + std::chrono::microseconds(simulationTime.asMicroseconds());
 
     // Prepare a BSON document for the metadata
     bsoncxx::builder::stream::document document{};

@@ -41,6 +41,7 @@ void AgentBasedSensor::update(std::vector<Agent>& agents, float timeStep, std::c
 
     if (!samplingInitialized) {
         previousPositions.clear();
+        previousPositionTimestamp = timestamp;
         for (const auto& agent : agents) {
             if (detectionArea.contains(agent.position)) {
                 previousPositions[agent.agentId] = agent.position;
@@ -55,6 +56,7 @@ void AgentBasedSensor::update(std::vector<Agent>& agents, float timeStep, std::c
     captureAgentData(agents);
     pendingSample = AgentSensorSample{dataStorage.second, currentPositions.size()};
     previousPositions = std::move(currentPositions);
+    previousPositionTimestamp = timestamp;
     currentPositions.clear();
 }
 
@@ -82,8 +84,12 @@ void AgentBasedSensor::captureAgentData(std::vector<Agent>& agents) {
         observation.timestamp = timestamp;
         observation.type = agent.type;
         observation.position = agent.position;
-        // Valid for the fixed, aligned sampling intervals used by the current setup.
-        observation.estimatedVelocity = (agent.position - previous->second) * frameRate;
+        if (!previousPositionTimestamp || timestamp <= *previousPositionTimestamp)
+            throw std::logic_error("ABS velocity requires two strictly ordered observations");
+        const auto elapsed = std::chrono::duration<double>(timestamp - *previousPositionTimestamp).count();
+        // The source can arrive after a sampling deadline. Use the actual interval
+        // represented by these positions rather than the requested frame rate.
+        observation.estimatedVelocity = (agent.position - previous->second) / static_cast<float>(elapsed);
         observations.emplace_back(std::move(observation));
     }
 

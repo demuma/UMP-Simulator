@@ -10,9 +10,36 @@ lookup are complete, with unchanged policy/coordination/publication output.
 Diagnostic costs and full/off file output are measured and verified. Today's presentation structure is ready. M01 now includes persistent native mapped capture/replay, inspected regional constraints,
 overlapping PolicyTree compilation, a same-clock identity study and a predeclared
 six-method comparison. Fresh corridor native capture, clock-matched replay and
-visual acceptance now pass within the reported bounded sources. Review those
-findings, then perform the requested whole-system correctness/process and
-performance review (M03). The full three-scenario effectiveness study remains open. October 18 is historical.**
+visual acceptance now pass within the reported bounded sources. The requested
+initial correctness/process review and nominal paced runtime measurement are complete;
+next instrument native source/I/O/receipt timing (M03). The full three-scenario effectiveness study remains open. October 18 is historical.**
+
+**October 23 whole-system review completed:** 82/82 suites pass. Integer sensor
+phase, actual-interval ABS velocity, exact-minimum policy scheduling, UTC/offset
+parsing and fixed run origins are corrected. All three frozen mapped results are
+unchanged; a fresh empty-origin native run reproduces source and releases. A 180-s
+nominal paced replay measures core service below 50 ms, with one late scheduled
+completion caused by producer wake-up. Read the [review report](docs/SYSTEM_REVIEW_REPORT_2026-10-23.md).
+
+- [x] Review source/sensor/renderer ordering, policy/semantic checks, local ownership,
+  history, immutable publication and experiment/runtime reporting.
+- [x] Preserve complete frozen mapped outputs after the narrow fixes; validate a
+  fresh source with empty datetime and keep all generated movement local.
+- [x] Measure nominal/accelerated service, source lateness, queueing and memory;
+  distinguish in-memory acknowledgement from actual MongoDB/application receipt.
+- [ ] Next runtime gate: instrument native raw writes and private empty-retirement
+  I/O separately before changing durability/checkpoint policy. Code-derived DB
+  call counts are not measured wall-time attribution.
+- [ ] Expand the mapped visit source beyond its one connected door: inspect all six
+  entrance nodes, level/accessibility, facade/walkable connectivity and public
+  provenance, then assign explicit destinations/visit rates. POI names alone do
+  not establish one entrance per shop. Validate multi-resource queues separately.
+- [ ] Compare the already implemented Temporal First, Spatial First and both
+  Semantic First secondaries in a separately predeclared matrix. Preserve the
+  six-case immediate/semantic-wait study as its original release-trigger experiment.
+- [ ] Raw sensor DB fault gate: inject partial bulk-insert failures, specify fail-fast
+  versus retry semantics, and prove idempotence before claiming one-write guarantees
+  under faults. Current successful-write tests do not establish this.
 
 **October 22–23 checkpoint:**
 
@@ -151,8 +178,9 @@ performance review (M03). The full three-scenario effectiveness study remains op
   workloads to inspect; their runtime share and
   durability trade-off are not established. Preserve identical logical output before
   and after each optimization; report source deadlines and receipt/queueing delay.
-  Next perform the requested full correctness/process review across source,
-  sensors, policy compilation, history, publication, replay and experiment tooling before applying further optimization.
+  The first full correctness/process review is complete (see SYSTEM_REVIEW_REPORT);
+  retain its bounded findings and instrument the remaining native I/O path before
+  applying further optimization.
 
 - [x] **Optional real-map feasibility gate (October 23):** use a real Mönckebergstraße
   OSM extract, project functional regions and conservatively discretise three
@@ -813,7 +841,7 @@ defects when they invalidate input, aggregation or the chosen demo.
 **Implemented rule, 2026-10-12:** ABS emits complete records only. A valid stationary estimate
 means equal consecutive positions; an unknown agent is not encoded as zero velocity.
 GBS/AGBS still count each currently observed agent, including an ABS identity not yet emitted.
-Actual observation timestamps for interval robustness remain F01.
+Actual observation timestamps and irregular-interval robustness are implemented by the October23 review (F01).
 
 **Verification:** regression covers initial motion, new identities, absence and reentry.
 
@@ -821,9 +849,9 @@ Actual observation timestamps for interval robustness remain F01.
 
 - [x] Identify timestamp as the time of the position state.
 - [x] Describe the preceding interval represented by a velocity estimate.
-- [ ] Separate simulation time, data time, publication time and wall-clock processing time.
-- [ ] Define behavior when sensor periods do not align with simulation ticks.
-- [ ] Review absolute-date/UTC handling; generateISOTimestamp uses mktime.
+- [x] Separate simulation time, data time, publication time and wall-clock processing time; actual native DB receipt timing remains a separate M03 measurement.
+- [x] Define behavior when sensor periods do not align with simulation ticks: generic late actual samples preserve phase; AGBS aggregation rejects unaligned periods.
+- [x] Review absolute-date/UTC handling: explicit Z/offsets use UTC; timezone-free input retains legacy local conversion; run origin is resolved once.
 
 **Finding:** no universal GT/ABS time shift in the Aggregation_Manager import. Sensors observe
 the same state/time as GT. simulationTime is increased before the timestamp field, which
@@ -834,10 +862,12 @@ Do not shift timestamps merely to make records appear synchronized.
 
 **Additional absolute-time audit (2026-10-14):**
 
-- [ ] Make the timezone convention explicit for `simulation.datetime` and audit DST handling.
+- [x] Make the timezone convention explicit for `simulation.datetime` and audit DST handling.
   The capture configured `2026-10-14T10:30:00`, while authoritative Mongo metadata used
   `2026-10-14T09:30:00.000Z`. Relative GT/AGBS times were exactly aligned; do not infer the
   intended UTC offset from this timezone-free string or change old reference timestamps.
+  The October23 correction honors explicit Z/offsets and preserves legacy bare values
+  (including tm_isdst=0). Use an explicit zone for portable/DST-unambiguous inputs.
 
 ### D03 — Define aggregate counts and windows — P0 before temporal aggregation
 
@@ -1780,9 +1810,9 @@ replace the core work package with a general simulator rewrite.
 
 ### F01 — Use actual elapsed observation time for velocity — P0
 
-- [ ] Retain earlier position and its observation time together.
-- [ ] Calculate velocity as DeltaPosition / DeltaTime.
-- [ ] Handle zero/negative elapsed time.
+- [x] Retain earlier position and its observation time together.
+- [x] Calculate velocity as DeltaPosition / DeltaTime.
+- [x] Handle zero/negative elapsed time.
 - [x] Consolidate duplicate calculations; remove unused estimateVelocities and its ABS map.
 - [x] Implement delayed complete records for unknown/reentering agents as selected in D01.
 
@@ -1804,9 +1834,11 @@ over 0–100 ms and subsequent 100-ms intervals. A separate deliberately supplie
 observation interval must also be calculated using its actual duration. Different spacing remains correct. Identity,
 position and timestamp still match GT. Unknown agents follow D01.
 
-**Status:** actual elapsed-time calculation remains open. The 2026-10-12 correction
-fixes aligned startup, consolidates calculation and implements D01; it deliberately retains
-nominal frameRate estimation. The older 0ce473f implementation remains reverted.
+**Status:** implemented and verified by the 2026-10-23 system review. The previous
+scheduled sample timestamp suffices because previousPositions contains exactly the
+preceding measured set. Irregular 60-ms source updates and late jumps preserve phase
+and the correct interval velocity; backwards/repeated timestamps cannot fabricate a
+new estimate. The historical 2026-10-12 fix covered aligned startup only.
 
 ### S01 — SharedBuffer shutdown and consumption — transport correction implemented
 
@@ -2115,7 +2147,9 @@ GBS/AGBS still omit empty DB count batches. AGBS emits empty renderer snapshots 
 **Affected files:** Sensor.hpp/.cpp, all three sensor update methods and Simulation.cpp.
 **Verification:** Release build and isolated MongoDB regression passed, including non-epoch
 initial time, first correct known velocity and state/time matching at 100 ms.
-**Limits:** fixed aligned intervals only. Non-aligned/fractional scheduling remains D02/F01.
+**Historical limit:** the original F00 fix covered aligned intervals. The October23
+review replaces float accumulation with integer timestamp slots and completes F01.
+Generic sensor scheduling supports late actual ticks; AGBS aggregation remains aligned.
 
 ### F02 — Publish each ABS measurement batch once — P0 — implemented for successful writes
 

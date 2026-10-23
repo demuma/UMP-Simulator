@@ -1,0 +1,1093 @@
+{
+  "schema": "ump.system-review.v1",
+  "baseline_revision": "c550fde",
+  "date": "2026-10-23",
+  "scope": "Aggregate review evidence only; no generated movement, track/person IDs or full replay data.",
+  "source_sensor": {
+    "schema": "ump.source-sensor-review-evidence.v1",
+    "frozen_geometry_sha256": "508ca79545419b1f1028b79a1f8a12684b8a6ed53e95b2d94fb36094298388f3",
+    "domain": {
+      "x": 0,
+      "y": 0,
+      "width": 80,
+      "height": 80
+    },
+    "frozen_entrances_in_domain": [
+      {
+        "osm_id": 280355670,
+        "x": 77.55428756435867,
+        "y": 61.90388976410031,
+        "tags": {
+          "entrance": "yes",
+          "name": "Barkhof"
+        },
+        "active_scene_portal": false
+      },
+      {
+        "osm_id": 348025368,
+        "x": 64.45375276682898,
+        "y": 13.808432191610336,
+        "tags": {
+          "entrance": "yes",
+          "name": "Spitalerstraße"
+        },
+        "active_scene_portal": false
+      },
+      {
+        "osm_id": 4616972979,
+        "x": 20.36375087313354,
+        "y": 7.273528850637376,
+        "tags": {
+          "entrance": "main",
+          "level": "1"
+        },
+        "active_scene_portal": false
+      },
+      {
+        "osm_id": 6244468529,
+        "x": 23.792485125362873,
+        "y": 68.79053797014058,
+        "tags": {
+          "entrance": "main"
+        },
+        "active_scene_portal": true
+      },
+      {
+        "osm_id": 9370793427,
+        "x": 35.24755586031824,
+        "y": 28.583821195177734,
+        "tags": {
+          "entrance": "main"
+        },
+        "active_scene_portal": false
+      },
+      {
+        "osm_id": 11062053180,
+        "x": 48.73195168864913,
+        "y": 21.039408031851053,
+        "tags": {
+          "entrance": "secondary"
+        },
+        "active_scene_portal": false
+      }
+    ],
+    "entrance_counts": {
+      "frozen_osm": 6,
+      "connected_by_current_scene": 1
+    },
+    "shop_label_scope": "Source-snapshot POI text only; no established per-shop doorway or path association.",
+    "clock_reproduction_before_fix": {
+      "sensor_hz": 10,
+      "simulation_step_50ms_sample_times_ms": [
+        100,
+        200,
+        300,
+        400,
+        500
+      ],
+      "simulation_step_10ms_sample_times_ms": [
+        110,
+        220,
+        330,
+        440
+      ],
+      "simulation_step_60ms_sample_times_ms": [
+        120,
+        240,
+        360,
+        480
+      ],
+      "mechanism": "float timestep accumulation/reset loses exact requested phase; accepted10-ms AGBS setup subsequently rejects110-ms off-cadence sample."
+    },
+    "source_sensor_review": {
+      "gt_sensor_timestamp_order": "Source state t is stored before update; update samples state t using timestamp t before advancing agents. Shared agent frame t is published after sensor contributions complete. No one-step timestamp displacement found in current50-ms source.",
+      "identity": "Operational Agent and sensor inputs receive visible episode track IDs only; private GT retains person identity and lifecycle.",
+      "renderer_transport": "Single producer, bounded queues, sensor-first completion barrier and nonblocking cursor preserve exact-step pairing without waiting for absent measurements.",
+      "remaining_limits": [
+        "Single explicitly connected facade portal.",
+        "Bounded manually designed corridor polylines, not city-wide pathfinding or calibrated pedestrian behavior.",
+        "Collision/liveness validity is scenario-limited; stored completion counters do not prove general queue liveness."
+      ]
+    },
+    "clock_validation_after_fix": {
+      "suite": "SensorRegressionTests",
+      "status": "pass",
+      "simulation_step_10ms_sample_times_ms": [
+        100,
+        200,
+        300,
+        400,
+        500
+      ],
+      "irregular_actual_update_times_ms": [
+        0,
+        60,
+        120,
+        180,
+        240,
+        300,
+        600,
+        610,
+        700
+      ],
+      "irregular_actual_measurement_times_ms": [
+        120,
+        240,
+        300,
+        600,
+        700
+      ],
+      "expected_velocity_mps": {
+        "x": 2,
+        "y": 1
+      },
+      "checks": [
+        "Actual ABS/GBS/AGBS rows and velocities",
+        "No duplicate row on repeated timestamp",
+        "No invented300/400/500ms observations when source jumps300to600ms",
+        "Unknown track warm-up preserved",
+        "10ms AGBS complete sampling coverage",
+        "60ms/100ms AGBS aggregation rejected",
+        "Backward timestamp rejected",
+        "Nonpositive/nonfinite and midstream changed frame rates rejected",
+        "Existing50ms10Hz and5Hz lifecycle/empty-area tests preserved"
+      ],
+      "supported_alignment": "AGBS aggregation still requires whole-millisecond source and sampling periods, with sampling period divisible by source step. Generic ABS/GBS can observe on late/unaligned ticks; at most one measurement is emitted at an actual update, the phase is preserved, and requested periods are rounded to whole microseconds."
+    }
+  },
+  "runtime": {
+    "schema": "ump.mapped-runtime-review.v1",
+    "baseline_revision": "c550fdefdac2e8a7334c7be5708b443b06719856",
+    "hardware": {
+      "cpu": "Apple M4 Pro",
+      "physical_memory_bytes": 25769803776,
+      "system": "Darwin",
+      "release": "24.6.0",
+      "machine": "arm64"
+    },
+    "source": "Corrected corridor128-final, 180s,112565observations, samehardroot/regionalpolicy; native50msprogress/100mssampling",
+    "protocol": "Two sequential rate5/rate1 paced runs with builds/tests paused,64pendingFIFOcapacity. Full outputs equal frozen unpaced comparison outside runtime. Directoriginadvance precedesqueuedtelemetry. No new movement or MongoDB operation. One repetition per rate.",
+    "rates": {
+      "1": {
+        "artifacts": {
+          "binary": {
+            "bytes": 775760,
+            "sha256": "f1f87a6f7fcf23beb9ce87bb85118fde60bc52ce460e6397f90f7ed9c5a8d6f2"
+          },
+          "paced_output": {
+            "bytes": 62557552,
+            "sha256": "0e7593045e22b0779cc1bb089ae48559dfb59f12cbd1db01bc7d7839e0e5cd08"
+          },
+          "protocol": {
+            "bytes": 5598,
+            "sha256": "0ee551bd46efd1ad3168cc24aaeaf9a2fa87ded25330316090258040d04edcf6"
+          },
+          "source": {
+            "bytes": 15480167,
+            "sha256": "f1acb8c7fb72aabc582b08aca98517ae3c2233ccae184e3c2dd8848a08c3eac0"
+          },
+          "summarizer": {
+            "bytes": 14051,
+            "sha256": "ac1cdb701eebcec4a3eb2d7291fc35b7f2a28e7db77906179bccfbbcb6827dc0"
+          },
+          "unpaced_output": {
+            "bytes": 60947455,
+            "sha256": "3c8143855d343fce5665df8ba1edf673e0e1f4f8866042052c50133e6f9a2de1"
+          }
+        },
+        "cadence": {
+          "actual_enqueue_to_completion": {
+            "count": 3599,
+            "max_ms": 34.33849999999802,
+            "mean_ms": 10.67361113059176,
+            "p50_ms": 6.296166999993147,
+            "p95_ms": 25.686874999999418,
+            "p99_ms": 29.721958000001905
+          },
+          "enqueue_lock_delay": {
+            "count": 3599,
+            "max_ms": 0.044292000005953014,
+            "mean_ms": 0.000150488746985813,
+            "p50_ms": 8.30000062705949e-05,
+            "p95_ms": 0.00033400001120753586,
+            "p99_ms": 0.0006670000002486631
+          },
+          "queue_wait": {
+            "count": 3599,
+            "max_ms": 14.986750000003667,
+            "mean_ms": 0.029895124478864023,
+            "p50_ms": 0.013540999992983416,
+            "p95_ms": 0.06720800000039162,
+            "p99_ms": 0.1794579999996131
+          },
+          "scheduled_arrival_to_completion": {
+            "count": 3599,
+            "max_ms": 75.07429099999717,
+            "mean_ms": 14.79125598555154,
+            "p50_ms": 10.967250000001513,
+            "p95_ms": 30.162624999997206,
+            "p99_ms": 34.38333299999795
+          },
+          "service": {
+            "count": 3599,
+            "max_ms": 34.333958000002895,
+            "mean_ms": 10.643716006112896,
+            "p50_ms": 6.278707999998005,
+            "p95_ms": 25.6737909999938,
+            "p99_ms": 29.712832999997772
+          },
+          "source_scheduling_lateness": {
+            "count": 3599,
+            "max_ms": 60.07437499999651,
+            "mean_ms": 4.117494366212792,
+            "p50_ms": 5.014415999998164,
+            "p95_ms": 5.049750000005588,
+            "p99_ms": 5.277874999999767
+          }
+        },
+        "cadence_scope": "All positive progress ticks before finish, including ticks without a sensor measurement",
+        "cadence_service_over_offered_interval": 0,
+        "consumer_busy_fraction": 0.2129666229313493,
+        "consumer_service_total_ms": 38342.3963230003,
+        "coordination": "cell_local",
+        "finish": {
+          "actual_enqueue_to_completion": {
+            "count": 1,
+            "max_ms": 35.68633399999817,
+            "mean_ms": 35.68633399999817,
+            "p50_ms": 35.68633399999817,
+            "p95_ms": 35.68633399999817,
+            "p99_ms": 35.68633399999817
+          },
+          "enqueue_lock_delay": {
+            "count": 1,
+            "max_ms": 0.00012499999138526618,
+            "mean_ms": 0.00012499999138526618,
+            "p50_ms": 0.00012499999138526618,
+            "p95_ms": 0.00012499999138526618,
+            "p99_ms": 0.00012499999138526618
+          },
+          "queue_wait": {
+            "count": 1,
+            "max_ms": 0.023917000013170764,
+            "mean_ms": 0.023917000013170764,
+            "p50_ms": 0.023917000013170764,
+            "p95_ms": 0.023917000013170764,
+            "p99_ms": 0.023917000013170764
+          },
+          "scheduled_arrival_to_completion": {
+            "count": 1,
+            "max_ms": 39.46249999999418,
+            "mean_ms": 39.46249999999418,
+            "p50_ms": 39.46249999999418,
+            "p95_ms": 39.46249999999418,
+            "p99_ms": 39.46249999999418
+          },
+          "service": {
+            "count": 1,
+            "max_ms": 35.662416999985,
+            "mean_ms": 35.662416999985,
+            "p50_ms": 35.662416999985,
+            "p95_ms": 35.662416999985,
+            "p99_ms": 35.662416999985
+          },
+          "source_scheduling_lateness": {
+            "count": 1,
+            "max_ms": 3.776041000004625,
+            "mean_ms": 3.776041000004625,
+            "p50_ms": 3.776041000004625,
+            "p95_ms": 3.776041000004625,
+            "p99_ms": 3.776041000004625
+          }
+        },
+        "limitations": [
+          "The producer replays preloaded observations; parsing, validation and core setup precede the arrival origin.",
+          "Service includes per-step in-memory serialization and telemetry; consumer busy fraction is wall-clock occupancy, not CPU utilization.",
+          "EOF is separate from ordinary cadence events; paced processing time includes intentional waits.",
+          "Explicit origin advancement precedes positive progress-event telemetry and is not part of summed queued service.",
+          "Release timing is an in-memory acknowledgement, not external application or MongoDB receipt.",
+          "Process RSS includes preloaded input and retained research diagnostics; history counters are sampled and not total heap accounting.",
+          "Sampled maxima are not continuous peaks, except the process high-water RSS counter itself.",
+          "Logical equivalence and measured latency do not establish a hard realtime guarantee."
+        ],
+        "logical_output_equal_excluding_runtime": true,
+        "memory": {
+          "counters": {
+            "history_bins": {
+              "final": 60,
+              "initial": 0,
+              "sampled_max": 61
+            },
+            "history_buckets": {
+              "final": 0,
+              "initial": 0,
+              "sampled_max": 0
+            },
+            "history_identity_bytes": {
+              "final": 108064,
+              "initial": 0,
+              "sampled_max": 419492
+            },
+            "history_observations": {
+              "final": 1949,
+              "initial": 0,
+              "sampled_max": 7491
+            },
+            "process_peak_resident_bytes": {
+              "final": 728956928,
+              "initial": 728956928,
+              "sampled_max": 728956928
+            },
+            "process_resident_bytes": {
+              "final": 121995264,
+              "initial": 95731712,
+              "sampled_max": 121995264
+            },
+            "retained_result_bytes": {
+              "final": 61637177,
+              "initial": 0,
+              "sampled_max": 61637177
+            }
+          },
+          "sample_count": 181
+        },
+        "mode": "semantic_first",
+        "no_sample_steps": {
+          "actual_enqueue_to_completion": {
+            "count": 1800,
+            "max_ms": 17.28975000000355,
+            "mean_ms": 3.6801850900001023,
+            "p50_ms": 3.5956250000017462,
+            "p95_ms": 6.328915999998571,
+            "p99_ms": 7.230542000004789
+          },
+          "enqueue_lock_delay": {
+            "count": 1800,
+            "max_ms": 0.044292000005953014,
+            "mean_ms": 0.00018641166664099194,
+            "p50_ms": 8.399999933317304e-05,
+            "p95_ms": 0.000375000003259629,
+            "p99_ms": 0.000750000006519258
+          },
+          "queue_wait": {
+            "count": 1800,
+            "max_ms": 14.986750000003667,
+            "mean_ms": 0.030682842221994733,
+            "p50_ms": 0.012999999991734512,
+            "p95_ms": 0.05920800002058968,
+            "p99_ms": 0.12512499999866122
+          },
+          "scheduled_arrival_to_completion": {
+            "count": 1800,
+            "max_ms": 27.37816600000224,
+            "mean_ms": 7.778435012222382,
+            "p50_ms": 7.86929100000998,
+            "p95_ms": 11.26075000000128,
+            "p99_ms": 12.236124999995809
+          },
+          "service": {
+            "count": 1800,
+            "max_ms": 8.16854099999182,
+            "mean_ms": 3.649502247778108,
+            "p50_ms": 3.5732089999946766,
+            "p95_ms": 6.312374999994063,
+            "p99_ms": 7.212625000000116
+          },
+          "source_scheduling_lateness": {
+            "count": 1800,
+            "max_ms": 10.08837499999936,
+            "mean_ms": 4.098063510555639,
+            "p50_ms": 5.012874999985797,
+            "p95_ms": 5.042290999990655,
+            "p99_ms": 5.071625000011409
+          }
+        },
+        "offered_load": {
+          "peak_queue_depth": 2,
+          "queue_capacity": 64,
+          "rate": 1,
+          "wall_cadence_ms": 50.0,
+          "wall_sensor_sampling_period_ms": 100.0
+        },
+        "paced_processing_ms_including_waits": 180039.522666,
+        "quantile_definition": "nearest rank, ceil(p*n)",
+        "release": {
+          "count": 2615,
+          "logical_sealing_delay": {
+            "count": 2615,
+            "max_ms": 0,
+            "mean_ms": 0.0,
+            "p50_ms": 0,
+            "p95_ms": 0,
+            "p99_ms": 0
+          },
+          "scheduled_logical_seal_to_in_memory_ack": {
+            "count": 2615,
+            "max_ms": 70.82233299999643,
+            "mean_ms": 18.078125911281088,
+            "p50_ms": 18.579416000000492,
+            "p95_ms": 24.424165999997058,
+            "p99_ms": 26.006750000000466
+          },
+          "scheduled_window_end_to_in_memory_ack": {
+            "count": 2615,
+            "max_ms": 70.82233299999643,
+            "mean_ms": 18.078125911281088,
+            "p50_ms": 18.579416000000492,
+            "p95_ms": 24.424165999997058,
+            "p99_ms": 26.006750000000466
+          }
+        },
+        "sample_steps": {
+          "actual_enqueue_to_completion": {
+            "count": 1799,
+            "max_ms": 34.33849999999802,
+            "mean_ms": 17.670924567537277,
+            "p50_ms": 18.128458999999566,
+            "p95_ms": 27.447375000003376,
+            "p99_ms": 30.77308300000732
+          },
+          "enqueue_lock_delay": {
+            "count": 1799,
+            "max_ms": 0.0018750000017462298,
+            "mean_ms": 0.00011454585905956389,
+            "p50_ms": 8.30000062705949e-05,
+            "p95_ms": 0.0003330000035930425,
+            "p99_ms": 0.0005839999939780682
+          },
+          "queue_wait": {
+            "count": 1799,
+            "max_ms": 3.0384590000030585,
+            "mean_ms": 0.029106968871507002,
+            "p50_ms": 0.0141250000015134,
+            "p95_ms": 0.07179200000246055,
+            "p99_ms": 0.1941659999993135
+          },
+          "scheduled_arrival_to_completion": {
+            "count": 1799,
+            "max_ms": 75.07429099999717,
+            "mean_ms": 21.807975136186606,
+            "p50_ms": 22.273291000004974,
+            "p95_ms": 32.09220800000185,
+            "p99_ms": 35.70462499999849
+          },
+          "service": {
+            "count": 1799,
+            "max_ms": 34.333958000002895,
+            "mean_ms": 17.64181759866577,
+            "p50_ms": 18.11254200001713,
+            "p95_ms": 27.437332999994396,
+            "p99_ms": 30.768041000002995
+          },
+          "source_scheduling_lateness": {
+            "count": 1799,
+            "max_ms": 60.07437499999651,
+            "mean_ms": 4.136936022790267,
+            "p50_ms": 5.015958000003593,
+            "p95_ms": 5.058665999997174,
+            "p99_ms": 5.447832999998354
+          }
+        },
+        "schema": "ump.paced-replay-summary.v1",
+        "source": {
+          "accounted_observation_contributions": 112565,
+          "explicit_native_progress": true,
+          "input_observation_contributions": 112565,
+          "logical_duration_ms": 180000,
+          "progress_step_ms": 50,
+          "sampling_period_ms": 100
+        },
+        "unpaced_control_processing_ms": 21327.709041,
+        "wall_horizon_through_finish_ms": 180039.4625,
+        "scheduled_completion_over_offered_interval": 1,
+        "actual_enqueue_completion_over_offered_interval": 0
+      },
+      "5": {
+        "artifacts": {
+          "binary": {
+            "bytes": 775760,
+            "sha256": "f1f87a6f7fcf23beb9ce87bb85118fde60bc52ce460e6397f90f7ed9c5a8d6f2"
+          },
+          "paced_output": {
+            "bytes": 62551691,
+            "sha256": "62ede659af33bcab8767d8ce1932e1fbfcea30faf799d7c27f47db443cd2cba5"
+          },
+          "protocol": {
+            "bytes": 5598,
+            "sha256": "0ee551bd46efd1ad3168cc24aaeaf9a2fa87ded25330316090258040d04edcf6"
+          },
+          "source": {
+            "bytes": 15480167,
+            "sha256": "f1acb8c7fb72aabc582b08aca98517ae3c2233ccae184e3c2dd8848a08c3eac0"
+          },
+          "summarizer": {
+            "bytes": 13898,
+            "sha256": "2911b7d3baee80e1f39f8a928201d24bc12164fd46ca6befd15fe5662d190362"
+          },
+          "unpaced_output": {
+            "bytes": 60947455,
+            "sha256": "3c8143855d343fce5665df8ba1edf673e0e1f4f8866042052c50133e6f9a2de1"
+          }
+        },
+        "cadence": {
+          "actual_enqueue_to_completion": {
+            "count": 3599,
+            "max_ms": 161.19079199999942,
+            "mean_ms": 16.656983223395414,
+            "p50_ms": 6.788209000002098,
+            "p95_ms": 101.43087500000001,
+            "p99_ms": 137.42408299999988
+          },
+          "enqueue_lock_delay": {
+            "count": 3599,
+            "max_ms": 0.0052080000004934845,
+            "mean_ms": 6.304473463162162e-05,
+            "p50_ms": 4.199999966658652e-05,
+            "p95_ms": 0.0001250000022992026,
+            "p99_ms": 0.0002919999969890341
+          },
+          "queue_wait": {
+            "count": 3599,
+            "max_ms": 151.28320799999892,
+            "mean_ms": 10.514407022228355,
+            "p50_ms": 0.010209000000031665,
+            "p95_ms": 91.50437500000044,
+            "p99_ms": 127.42387500000041
+          },
+          "scheduled_arrival_to_completion": {
+            "count": 3599,
+            "max_ms": 163.27449999999953,
+            "mean_ms": 18.55722730758552,
+            "p50_ms": 8.677999999999884,
+            "p95_ms": 103.39045799999985,
+            "p99_ms": 139.43204100000003
+          },
+          "service": {
+            "count": 3599,
+            "max_ms": 27.044749999999112,
+            "mean_ms": 6.142576201166997,
+            "p50_ms": 3.9966660000000047,
+            "p95_ms": 16.381124999999884,
+            "p99_ms": 20.060457999999926
+          },
+          "source_scheduling_lateness": {
+            "count": 3599,
+            "max_ms": 2.6662910000013653,
+            "mean_ms": 1.9001810394554233,
+            "p50_ms": 2.008708000000297,
+            "p95_ms": 2.2204579999997804,
+            "p99_ms": 2.484958000000006
+          }
+        },
+        "cadence_scope": "All positive progress ticks before finish, including ticks without a sensor measurement",
+        "cadence_service_over_offered_interval": 870,
+        "consumer_busy_fraction": 0.6142626779372665,
+        "consumer_service_total_ms": 22126.61437300002,
+        "coordination": "cell_local",
+        "finish": {
+          "actual_enqueue_to_completion": {
+            "count": 1,
+            "max_ms": 19.49720900000102,
+            "mean_ms": 19.49720900000102,
+            "p50_ms": 19.49720900000102,
+            "p95_ms": 19.49720900000102,
+            "p99_ms": 19.49720900000102
+          },
+          "enqueue_lock_delay": {
+            "count": 1,
+            "max_ms": 8.299999899463728e-05,
+            "mean_ms": 8.299999899463728e-05,
+            "p50_ms": 8.299999899463728e-05,
+            "p95_ms": 8.299999899463728e-05,
+            "p99_ms": 8.299999899463728e-05
+          },
+          "queue_wait": {
+            "count": 1,
+            "max_ms": 0.014584000004106201,
+            "mean_ms": 0.014584000004106201,
+            "p50_ms": 0.014584000004106201,
+            "p95_ms": 0.014584000004106201,
+            "p99_ms": 0.014584000004106201
+          },
+          "scheduled_arrival_to_completion": {
+            "count": 1,
+            "max_ms": 21.420749999997497,
+            "mean_ms": 21.420749999997497,
+            "p50_ms": 21.420749999997497,
+            "p95_ms": 21.420749999997497,
+            "p99_ms": 21.420749999997497
+          },
+          "service": {
+            "count": 1,
+            "max_ms": 19.482624999996915,
+            "mean_ms": 19.482624999996915,
+            "p50_ms": 19.482624999996915,
+            "p95_ms": 19.482624999996915,
+            "p99_ms": 19.482624999996915
+          },
+          "source_scheduling_lateness": {
+            "count": 1,
+            "max_ms": 1.9234579999974812,
+            "mean_ms": 1.9234579999974812,
+            "p50_ms": 1.9234579999974812,
+            "p95_ms": 1.9234579999974812,
+            "p99_ms": 1.9234579999974812
+          }
+        },
+        "limitations": [
+          "The producer replays preloaded observations; parsing, validation and core setup precede the arrival origin.",
+          "Service includes per-step in-memory serialization and telemetry; consumer busy fraction is wall-clock occupancy, not CPU utilization.",
+          "EOF is separate from ordinary cadence events; paced processing time includes intentional waits.",
+          "Release timing is an in-memory acknowledgement, not external application or MongoDB receipt.",
+          "Process RSS includes preloaded input and retained research diagnostics; history counters are sampled and not total heap accounting.",
+          "Sampled maxima are not continuous peaks, except the process high-water RSS counter itself.",
+          "Logical equivalence and measured latency do not establish a hard realtime guarantee."
+        ],
+        "logical_output_equal_excluding_runtime": true,
+        "memory": {
+          "counters": {
+            "history_bins": {
+              "final": 60,
+              "initial": 0,
+              "sampled_max": 61
+            },
+            "history_buckets": {
+              "final": 0,
+              "initial": 0,
+              "sampled_max": 0
+            },
+            "history_identity_bytes": {
+              "final": 108064,
+              "initial": 0,
+              "sampled_max": 419492
+            },
+            "history_observations": {
+              "final": 1949,
+              "initial": 0,
+              "sampled_max": 7491
+            },
+            "process_peak_resident_bytes": {
+              "final": 773275648,
+              "initial": 773275648,
+              "sampled_max": 773275648
+            },
+            "process_resident_bytes": {
+              "final": 123977728,
+              "initial": 85721088,
+              "sampled_max": 141099008
+            },
+            "retained_result_bytes": {
+              "final": 61635083,
+              "initial": 0,
+              "sampled_max": 61635083
+            }
+          },
+          "sample_count": 181
+        },
+        "mode": "semantic_first",
+        "no_sample_steps": {
+          "actual_enqueue_to_completion": {
+            "count": 1800,
+            "max_ms": 154.95004199999858,
+            "mean_ms": 13.640323281111169,
+            "p50_ms": 2.2596249999987776,
+            "p95_ms": 99.23299999999836,
+            "p99_ms": 133.5562089999985
+          },
+          "enqueue_lock_delay": {
+            "count": 1800,
+            "max_ms": 0.0052080000004934845,
+            "mean_ms": 6.021222220297674e-05,
+            "p50_ms": 4.199999966658652e-05,
+            "p95_ms": 0.0001250000022992026,
+            "p99_ms": 0.0002500000000509317
+          },
+          "queue_wait": {
+            "count": 1800,
+            "max_ms": 151.28320799999892,
+            "mean_ms": 11.49748274111114,
+            "p50_ms": 0.01770799999940209,
+            "p95_ms": 95.7174159999995,
+            "p99_ms": 128.84129199999916
+          },
+          "scheduled_arrival_to_completion": {
+            "count": 1800,
+            "max_ms": 156.94162499999948,
+            "mean_ms": 15.541242326666708,
+            "p50_ms": 4.246082999999999,
+            "p95_ms": 101.24020799999926,
+            "p99_ms": 135.5603749999991
+          },
+          "service": {
+            "count": 1800,
+            "max_ms": 13.009125000000495,
+            "mean_ms": 2.1428405400000328,
+            "p50_ms": 1.9623329999994894,
+            "p95_ms": 4.247209000001021,
+            "p99_ms": 5.269874999999956
+          },
+          "source_scheduling_lateness": {
+            "count": 1800,
+            "max_ms": 2.6662910000013653,
+            "mean_ms": 1.900858833333337,
+            "p50_ms": 2.007207999999082,
+            "p95_ms": 2.2133749999993597,
+            "p99_ms": 2.47329099999979
+          }
+        },
+        "offered_load": {
+          "peak_queue_depth": 16,
+          "queue_capacity": 64,
+          "rate": 5,
+          "wall_cadence_ms": 10.0,
+          "wall_sensor_sampling_period_ms": 20.0
+        },
+        "paced_processing_ms_including_waits": 36022.278167,
+        "quantile_definition": "nearest rank, ceil(p*n)",
+        "release": {
+          "count": 2615,
+          "logical_sealing_delay": {
+            "count": 2615,
+            "max_ms": 0,
+            "mean_ms": 0.0,
+            "p50_ms": 0,
+            "p95_ms": 0,
+            "p99_ms": 0
+          },
+          "scheduled_logical_seal_to_in_memory_ack": {
+            "count": 2615,
+            "max_ms": 156.86837500000001,
+            "mean_ms": 28.445988545697894,
+            "p50_ms": 10.397208000000319,
+            "p95_ms": 125.84262499999932,
+            "p99_ms": 147.9559160000008
+          },
+          "scheduled_window_end_to_in_memory_ack": {
+            "count": 2615,
+            "max_ms": 156.86837500000001,
+            "mean_ms": 28.445988545697894,
+            "p50_ms": 10.397208000000319,
+            "p95_ms": 125.84262499999932,
+            "p99_ms": 147.9559160000008
+          }
+        },
+        "sample_steps": {
+          "actual_enqueue_to_completion": {
+            "count": 1799,
+            "max_ms": 161.19079199999942,
+            "mean_ms": 19.675320019455153,
+            "p50_ms": 9.746791999999914,
+            "p95_ms": 106.28600000000006,
+            "p99_ms": 141.0276249999988
+          },
+          "enqueue_lock_delay": {
+            "count": 1799,
+            "max_ms": 0.0009170000012090895,
+            "mean_ms": 6.58788215530006e-05,
+            "p50_ms": 4.200000057608122e-05,
+            "p95_ms": 0.0001250000022992026,
+            "p99_ms": 0.0002920000006270129
+          },
+          "queue_wait": {
+            "count": 1799,
+            "max_ms": 144.9290000000001,
+            "mean_ms": 9.530784846581396,
+            "p50_ms": 0.009291999998822575,
+            "p95_ms": 89.45379200000025,
+            "p99_ms": 123.66045800000029
+          },
+          "scheduled_arrival_to_completion": {
+            "count": 1799,
+            "max_ms": 163.27449999999953,
+            "mean_ms": 21.574888767092713,
+            "p50_ms": 11.70745800000077,
+            "p95_ms": 107.72562499999913,
+            "p99_ms": 143.03366599999936
+          },
+          "service": {
+            "count": 1799,
+            "max_ms": 27.044749999999112,
+            "mean_ms": 10.144535172873798,
+            "p50_ms": 9.72466699999859,
+            "p95_ms": 17.948459000001094,
+            "p99_ms": 21.88824999999997
+          },
+          "source_scheduling_lateness": {
+            "count": 1799,
+            "max_ms": 2.5460410000000593,
+            "mean_ms": 1.8995028688160436,
+            "p50_ms": 2.010207999999693,
+            "p95_ms": 2.221832999999606,
+            "p99_ms": 2.492541000000074
+          }
+        },
+        "schema": "ump.paced-replay-summary.v1",
+        "source": {
+          "accounted_observation_contributions": 112565,
+          "explicit_native_progress": true,
+          "input_observation_contributions": 112565,
+          "logical_duration_ms": 180000,
+          "progress_step_ms": 50,
+          "sampling_period_ms": 100
+        },
+        "unpaced_control_processing_ms": 21327.709041,
+        "wall_horizon_through_finish_ms": 36021.42075,
+        "scheduled_completion_over_offered_interval": 1512,
+        "actual_enqueue_completion_over_offered_interval": 1214
+      }
+    },
+    "nominal_process": {
+      "schema": "ump.mapped-runtime-process-review.v1",
+      "binary_sha256": "f1f87a6f7fcf23beb9ce87bb85118fde60bc52ce460e6397f90f7ed9c5a8d6f2",
+      "source_sha256": "f1acb8c7fb72aabc582b08aca98517ae3c2233ccae184e3c2dd8848a08c3eac0",
+      "config_sha256": "742bf480bb0b669746117545bb5c59ad41ba140bc86b79592ae36ca0a63dd323",
+      "command": [
+        "/Users/maxdemu/Developer/UMP-Simulator/simulator/build/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/mapped-2026-10-23-corridor128-final/replay/observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/mapped-2026-10-23-corridor128-final/comparison/adaptive_immediate-policy.json",
+        "--mode",
+        "semantic_first",
+        "--output",
+        "/private/tmp/ump-review-paced128-rate1-20261023.json",
+        "--progress-step-ms",
+        "50",
+        "--pace-rate",
+        "1",
+        "--queue-capacity",
+        "64"
+      ],
+      "machine": {
+        "system": "Darwin",
+        "release": "24.6.0",
+        "machine": "arm64"
+      },
+      "return_code": 0,
+      "process_wall_seconds": 181.84853204200002,
+      "child_user_cpu_seconds": 39.04097,
+      "child_system_cpu_seconds": 0.6787059999999999,
+      "child_peak_rss_bytes": 728956928,
+      "scope": "One AggregationReplay child including parsing, configuration preflight, intentional pacing waits, core, in-memory diagnostic serialization and final file write. macOS ru_maxrss bytes. Not native MongoDB or renderer.",
+      "stdout": "Replay completed: \"/private/tmp/ump-review-paced128-rate1-20261023.json\"\n",
+      "stderr": ""
+    },
+    "tool_fix": {
+      "description": "Respect explicit progress_step_ms and zero origin; validate origin-inclusive event budget; distinguish measurement/no-measurement service and offered intervals.",
+      "tests": "8/8 test_summarize_paced_replay.py tests pass; old HEAD summarizer rejects actual50ms trace with Missing/excesscadenceorfinishtelemetry.",
+      "summarizer_sha256": "ac1cdb701eebcec4a3eb2d7291fc35b7f2a28e7db77906179bccfbbcb6827dc0",
+      "tests_sha256": "25dd7140112366ca594a9e21bbebdd36a308ee4401d09d7aba8428fbdbffd150"
+    },
+    "interpretation": [
+      "Zero nominal core service durations exceed50ms, butone scheduledcompletion does because source scheduling was60.074ms late. This is not a hardrealtimebound.",
+      "Rate5 has870services>10ms and peakqueue16/64; eventualcompletion with identicaloutputdoesnot mean eachaccelerateddeadlineismet.",
+      "Stocktelemetryreports per-event walltime, not threadCPU; processCPU available only nominalwrapper.",
+      "HighwaterRSS already reached beforepacing, includes preloadedJSON/YAMLparse/preflight; sampledRSSgrowthalsoincludes retainedresearchdiagnostics. Thisisnotlivealgorithmheapgrowth.",
+      "Coreincludesinmemoryresultserialization/telemetry and excludesMongoDB/renderer. Currentmappednativewalltimes cannotisolateDBtime.",
+      "Ratesdiffer inoperatingsystem scheduling/powerbehavior and onlyone repetitioneach. Do not inferalgorithmic speedchange."
+    ]
+  },
+  "reviewed_replay_equivalence": {
+    "schema": "ump.system-review-equivalence.v1",
+    "baseline_revision": "c550fde",
+    "binary_sha256": "857f82a4bfd8b0f7e3167ad8d5e0a4edb1cf2bc0e903d796d9a70239b698c6f5",
+    "cases": {
+      "integration": {
+        "full_output_equal_excluding_runtime": true,
+        "logical_native_releases_equal": true,
+        "logical_release_sha256": "422a238a32368b5e65706d51bc5e45d844fdb15df5891b37a35a05a8ef8d9175",
+        "observations_sha256": "2c637a92268db33ef388a50db4ca3ef4c5c25fe2926bdc22188e0f939a462f42",
+        "config_sha256": "742bf480bb0b669746117545bb5c59ad41ba140bc86b79592ae36ca0a63dd323",
+        "published_cell_windows": 1050,
+        "input_observation_contributions": 38709,
+        "core_processing_ms": 5357.968333,
+        "validation_pipeline_wall_seconds": 6.3382956660000005
+      },
+      "corridor64-final": {
+        "full_output_equal_excluding_runtime": true,
+        "logical_native_releases_equal": true,
+        "logical_release_sha256": "994454a4b6f662b635d4f553173b55dda6ff9eec4196910b4827880bf6189bd1",
+        "observations_sha256": "3b07a31953e705ceb59af98cf02d42d189c85b9af7e9bcf91e02be69b4fb4c42",
+        "config_sha256": "742bf480bb0b669746117545bb5c59ad41ba140bc86b79592ae36ca0a63dd323",
+        "published_cell_windows": 509,
+        "input_observation_contributions": 47706,
+        "core_processing_ms": 14345.271,
+        "validation_pipeline_wall_seconds": 16.8430715
+      },
+      "corridor128-final": {
+        "full_output_equal_excluding_runtime": true,
+        "logical_native_releases_equal": true,
+        "logical_release_sha256": "697d33f3a66681c039d5fd6119695e49973ab0d917ac7b58b3739b66856f7c9f",
+        "observations_sha256": "f1acb8c7fb72aabc582b08aca98517ae3c2233ccae184e3c2dd8848a08c3eac0",
+        "config_sha256": "742bf480bb0b669746117545bb5c59ad41ba140bc86b79592ae36ca0a63dd323",
+        "published_cell_windows": 2615,
+        "input_observation_contributions": 112565,
+        "core_processing_ms": 22554.480125,
+        "validation_pipeline_wall_seconds": 25.71232825
+      }
+    }
+  },
+  "empty_origin_native_regression": {
+    "schema": "ump.empty-origin-source-regression.v1",
+    "scope": "Fresh maintained Simulator source with explicitly empty datetime, compared with prior maintained mapped corridor64 source. Absolute run origin and owned namespace differ; all physical observations and logical releases are checked. No performance, general privacy or realism claim.",
+    "source_parameters": {
+      "seed": 20261023,
+      "population": 64,
+      "scheduled_episodes": 80,
+      "duration_ms": 180000,
+      "simulation_step_ms": 50,
+      "sampling_period_ms": 100,
+      "arrival_interval_ms": 1000
+    },
+    "runs": {
+      "reference": {
+        "recording_relative_path": "results/mapped-2026-10-23-corridor64-final/replay",
+        "source_origin_epoch_ms": 1792747800000,
+        "source_completed": true,
+        "source_horizon_completed": true,
+        "all_scheduled_episodes_completed": true,
+        "motion_quality_status": "scheduled_episodes_completed",
+        "gt_rows": 95443,
+        "gt_observed_times": 3331,
+        "gt_position_velocity_track_cadence_sha256": "295f0d14e72df0313b195501f670a104838077722798f67d99a0a579c0d2bf6f",
+        "relative_lifecycle_sha256": "5fe08e2e5eec9f16071dfc97f39dbbb97bd1088fd7e38fd2254a5d9920b85bf1",
+        "relative_lifecycle_event_rows": 160,
+        "stream_fingerprint": {
+          "observation_contributions": 47706,
+          "batches": 1799,
+          "complete_scheduled_batches": true,
+          "position_type_cadence_sha256": "f79ea36a127623ba15b9e4cb0ccfd1c61a39cf818c21d5b7aca700ffc2b446d8",
+          "occupancy_type_sha256": "57b14bd24949a1ae1cd841d8d5d74c9b2007d729f83902ada75c967f1418ae89"
+        },
+        "logical_release_sha256": "994454a4b6f662b635d4f553173b55dda6ff9eec4196910b4827880bf6189bd1",
+        "published_cell_windows": 509,
+        "unique_published_cell_ids": 16,
+        "input_observation_contributions": 47706,
+        "native_execution": {
+          "schema": "ump.mapped-execution.v1",
+          "state": "complete",
+          "binary_sha256": "c9143159e5f648fa504ab99fdb9cc1856dc3e986d1a10219a9a1c2e5f2360950",
+          "config_sha256": "7c15ab781b91fca90b20874736cf809ba5bb87933849ac77b1d702768f69ef87",
+          "exit_code": 0,
+          "binary_wall_seconds": 27.158913792,
+          "scope": "Includes native startup, source, aggregation and DB I/O; not a per-step deadline."
+        },
+        "measured_empty_samples": 134,
+        "lifecycle_quality": {
+          "status": "all_scheduled_episodes_completed",
+          "gt_coverage_status": "verified_against_recorded_visible_intervals",
+          "event_rows": 160,
+          "expected_gt_rows": 95443,
+          "source_steps_checked": 3600,
+          "scheduled_people": 64,
+          "scheduled_episodes": 80,
+          "realized_starts": 80,
+          "realized_ends": 80,
+          "pending_episodes_at_horizon": 0,
+          "active_episodes_at_horizon": 0
+        },
+        "motion_quality": {
+          "status": "scheduled_episodes_completed",
+          "source_model": "bounded_swept_body_corridor_following",
+          "reported_diagnostics": {
+            "blocked_motion_steps": 25364,
+            "admission_wait_steps": 597,
+            "merge_admission_wait_steps": 2920,
+            "max_consecutive_stop_ms": 9350,
+            "active_stalled_tracks": 0,
+            "body_overlap_violations": 0
+          },
+          "scope": "Recorded source counters and event/GT consistency only. Completion does not establish realistic motion, general queue liveness, swept collision avoidance or privacy."
+        }
+      },
+      "empty_origin": {
+        "recording_relative_path": "results/system-review-empty-origin64-2026-10-23/replay",
+        "source_origin_epoch_ms": 1792791169000,
+        "source_completed": true,
+        "source_horizon_completed": true,
+        "all_scheduled_episodes_completed": true,
+        "motion_quality_status": "scheduled_episodes_completed",
+        "gt_rows": 95443,
+        "gt_observed_times": 3331,
+        "gt_position_velocity_track_cadence_sha256": "295f0d14e72df0313b195501f670a104838077722798f67d99a0a579c0d2bf6f",
+        "relative_lifecycle_sha256": "5fe08e2e5eec9f16071dfc97f39dbbb97bd1088fd7e38fd2254a5d9920b85bf1",
+        "relative_lifecycle_event_rows": 160,
+        "stream_fingerprint": {
+          "observation_contributions": 47706,
+          "batches": 1799,
+          "complete_scheduled_batches": true,
+          "position_type_cadence_sha256": "f79ea36a127623ba15b9e4cb0ccfd1c61a39cf818c21d5b7aca700ffc2b446d8",
+          "occupancy_type_sha256": "57b14bd24949a1ae1cd841d8d5d74c9b2007d729f83902ada75c967f1418ae89"
+        },
+        "logical_release_sha256": "994454a4b6f662b635d4f553173b55dda6ff9eec4196910b4827880bf6189bd1",
+        "published_cell_windows": 509,
+        "unique_published_cell_ids": 16,
+        "input_observation_contributions": 47706,
+        "native_execution": {
+          "schema": "ump.mapped-execution.v1",
+          "state": "complete",
+          "binary_sha256": "d1e2e74026c9c4016b72b0a56721b41a51a1091a880f2b467781bb317fc4e521",
+          "config_sha256": "dc59ffe57de64d4b1681f2e9f3f9088d92c0941ed39af1eeaf0274042ddeec42",
+          "exit_code": 0,
+          "binary_wall_seconds": 27.475197082999998,
+          "scope": "Includes native startup, source, aggregation and DB I/O; not a per-step deadline."
+        },
+        "measured_empty_samples": 134,
+        "lifecycle_quality": {
+          "status": "all_scheduled_episodes_completed",
+          "gt_coverage_status": "verified_against_recorded_visible_intervals",
+          "event_rows": 160,
+          "expected_gt_rows": 95443,
+          "source_steps_checked": 3600,
+          "scheduled_people": 64,
+          "scheduled_episodes": 80,
+          "realized_starts": 80,
+          "realized_ends": 80,
+          "pending_episodes_at_horizon": 0,
+          "active_episodes_at_horizon": 0
+        },
+        "motion_quality": {
+          "status": "scheduled_episodes_completed",
+          "source_model": "bounded_swept_body_corridor_following",
+          "reported_diagnostics": {
+            "blocked_motion_steps": 25364,
+            "admission_wait_steps": 597,
+            "merge_admission_wait_steps": 2920,
+            "max_consecutive_stop_ms": 9350,
+            "active_stalled_tracks": 0,
+            "body_overlap_violations": 0
+          },
+          "scope": "Recorded source counters and event/GT consistency only. Completion does not establish realistic motion, general queue liveness, swept collision avoidance or privacy."
+        }
+      }
+    },
+    "equalities": {
+      "normalized_source_configuration": true,
+      "all_source_gt_positions_velocities_tracks_and_relative_times": true,
+      "all_relative_lifecycle_events": true,
+      "all_aggregation_observation_positions_types_and_cadence": true,
+      "all_aggregation_occupancy_types_and_cadence": true,
+      "all_logical_recipient_releases": true,
+      "source_origin_changed": true,
+      "complete100ms_measurement_opportunities": true
+    },
+    "status": "pass"
+  },
+  "verification": {
+    "full_build": "passed",
+    "ctest_passed": 82,
+    "ctest_failed": 0,
+    "ctest_wall_seconds": 16.85,
+    "ctest_parallel_jobs": 6,
+    "semantic_cell_local_gates": 17,
+    "exploratory_randomized_cases": 1000,
+    "randomized_scope": "Two500-case deterministic local-controller audits; second injects explicit merge/handoff requests. Temporary exploratory harnesses, separate from permanent CTest gates.",
+    "semantic_minimum_regression_red_against_baseline": true,
+    "utc_regression_red_against_baseline": true,
+    "utc_asan_ubsan": "passed",
+    "semantic_cell_local_asan_ubsan": "passed",
+    "paced_summary_tests": 8,
+    "frozen_replay_cases_preserved": 3,
+    "fresh_empty_origin_native_source": "passed"
+  }
+}

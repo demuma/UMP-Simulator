@@ -1,10 +1,14 @@
 # Terminology, notation and mathematical contract
 
-Version 1.13 — 2026-10-23. This is the project's canonical terminology for the presentation,
+Version 1.14 — 2026-10-23. This is the project's canonical terminology for the presentation,
 paper, dissertation and new documentation. It describes the implemented baseline and marks
 future extensions explicitly. Earlier reviews retain historical/local notation; use this
 reference when translating them into publication text. Code identifiers are mapped below;
 this document does not rename APIs or implement new behavior.
+
+The 1.14 review reconciles historical common-window descriptions with the implemented
+cell-local publication, descendant rescue and semantic secondary priorities. It does not
+change the mechanism or retrospectively relabel earlier experiments.
 
 ## 1. Central distinction
 
@@ -22,9 +26,10 @@ opt-in local mode. The earlier phrase **independent regional aggregation windows
 it incorrectly suggests that a semantic region owns one bucket/window or that region and
 quadtree boundaries must coincide.
 
-The current history API can reconstruct different intervals for different cells. The
-default adaptive controller and publication coordinator use one common interval over
-the entire sensor grid. The opt-in `cell_local` mode has independent spatial owner intervals
+The history API can reconstruct different intervals for different cells. The retained
+`common_window` controller uses one interval over the entire sensor grid. Configuration
+omitting the coordination setting retains that compatibility default. The mapped-scene
+configuration explicitly selects `cell_local`, with independent spatial owner intervals
 and coordinated parent handoffs; see [CELL_LOCAL_COORDINATION.md](CELL_LOCAL_COORDINATION.md).
 
 ## 2. Canonical terms
@@ -169,7 +174,10 @@ baseline. A sample exactly at t_b^+ belongs to the following interval. At 100-ms
 [0,1000) has nine scheduled samples; [1000,2000) has ten. Sensor initialization/internal
 velocity history is distinct from this output schedule.
 
-Implementation clocks are integer simulation milliseconds. Spatial quantities use metres;
+Aggregation clocks are integer simulation milliseconds. The source/renderer use
+microsecond timestamps internally; BSON dates retain millisecond precision. Generic
+sensor periods are rounded to microseconds, while aggregation requires whole-millisecond
+aligned sampling. Spatial quantities use metres;
 velocity uses m/s, requiring explicit conversion if divided by millisecond differences.
 Renderer FPS, simulation steps, sensor sampling and aggregation duration are separate.
 Wall-clock processing time must be named and measured independently.
@@ -285,7 +293,7 @@ new model and implementation.
 A region supplies bounds on I_b. It does not supply I_b itself. Even two cells entirely
 inside the same region may reach their required support at different times.
 
-| Candidate cell | Applicable region | Example duration bound | Possible future local interval |
+| Candidate cell | Applicable region | Example duration bound | Example local interval |
 |---|---|---:|---|
 | C_1 | Carriageway | 200 ms | [0,200) |
 | C_2 | Footway | 1000 ms | [0,400) |
@@ -307,6 +315,12 @@ query cell-local intervals; the opt-in local controller now schedules and retire
 completing cells/coordination groups. A coordination group may couple
 cells across a semantic boundary or several cells inside one region.
 
+When it fits the owner's effective duration/age cap, a known local minimum duration at
+or below the configured maximum schedules the first owner check no earlier than that
+minimum, rounded up to the sensor cadence. Equality with the configured maximum is included: an exact 1000-ms duration must not spend its
+evaluation budget on impossible 400/500-ms prefixes. A minimum above the execution
+maximum does not extend the hard deadline or authorize invalid release.
+
 ## 9. Spatial and temporal transformations
 
 **A1 — Spatial merge.** A parent candidate covers the complete parent footprint and one
@@ -319,14 +333,18 @@ N_{\mathrm{obs}}(P,I)=\sum_{C\in\operatorname{children}(P)}N_{\mathrm{obs}}(C,I)
 $$
 
 Distinct support is generally not additive. Counts of observations are additive over these
-disjoint child footprints. The proposed parent replaces all sibling choices together;
-current capped failure can suppress passing siblings too. Selective child rescue is A07.
+disjoint child footprints. A selected parent consumes all sibling support in its
+unpublished cell/time footprint together. Optional common-window A07 descendant rescue preserves passing whole descendants
+when a permitted parent fails. Cell-local coordination already retains independent
+descendant owners; it does not use the common-window rescue flag.
 
 Different child windows cannot be concatenated into a parent and treated as one common
-window. A future coordinator must reconstruct a valid parent interval from complete retained
-history, respect every applicable bound, and avoid overlap with reserved/published support.
-It can align future unpublished support when available; historical publication cannot be
-undone by deleting a database row.
+window. The implemented cell-local coordinator requires a common unpublished start for
+immediate parent takeover. Differing retired starts can instead request a bounded future
+handoff: earlier prefixes resolve under their own deadlines, and successors acquire a
+common boundary. Parent reconstruction still requires complete retained history and every
+applicable bound. Historical publication cannot be undone by deleting a database row.
+See [CELL_LOCAL_COORDINATION.md](CELL_LOCAL_COORDINATION.md).
 
 **A2 — Temporal extension.** Keep C and t_b^- fixed and increase t_b^+ in declared steps.
 For disjoint adjacent intervals I_1 and I_2:
@@ -373,13 +391,17 @@ Canonical strategy names identify the dimension to preserve:
 |---|---|---|
 | Temporal First | Temporal detail/freshness | Implemented: try spatial aggregation before temporal extension when the finest candidate fails. |
 | Spatial First | Spatial detail | Implemented: try temporal extension before spatial aggregation, subject to bounds/deadlines/finalization. |
-| Semantic First | Semantic detail/classification accuracy | Implemented for common windows: zero-cost spatial preference, bounded waiting, maximum-loss tier fallback; Temporal First is the fixed secondary priority. |
+| Semantic First | Semantic detail/classification accuracy | Implemented for common and cell-local windows, with Temporal First or Spatial First secondary; the release trigger separates immediate hard eligibility from explicit preference waiting. |
 
 “First” ALWAYS names the information dimension to preserve, never the first dimension
 whose representation is coarsened. Semantic First is therefore a valid canonical name.
-The first Semantic First mode fixes Temporal First as its secondary preference. Semantic
-First + Spatial First remains a separate unimplemented combination, with no configuration
-switch implied by the term alone.
+The historical first Semantic First mode fixed Temporal First as its secondary preference.
+Both secondary choices are now implemented through `semantic_secondary_strategy`. With
+`priority_satisfied`, Temporal secondary permits zero-loss spatial rescues before waiting;
+Spatial secondary waits before merging. The default `policy_satisfied` trigger permits
+current legal rescues and releases without waiting solely for a better preference. It can
+therefore make the two secondaries identical on the same observations. Sections 27–28
+distinguish the historical common-window rule from the current controls.
 
 The ordinary TF/SF strategies first assess the finest space/time candidate, permit early
 successful completion and enforce every hard bound. With the taxonomy enabled, they already
@@ -421,9 +443,11 @@ $$
 This is a rule about cell/time support within one run/sensor/application. It does not prevent
 the same road-user identity contributing at different times, establish privacy across a
 trajectory, or justify joint release across several applications. Policy-compliant output
-is not automatically formally anonymous. The current private-final-snapshot coordinator
-reserves and retires the whole common interval; its release document holds multiple cells
-sharing that interval. Per-cell-window publication is not yet that document's contract.
+is not automatically formally anonymous. The common-window private-final-snapshot
+coordinator reserves and retires the whole common interval; its release document holds multiple cells sharing that interval. In the
+implemented cell-local mode, the same publication path receives an explicit coordination
+cell and retires only that cell/time scope. Its ledger checks spatial as well as temporal
+overlap; journal-only empty retirements do not become public zero-occupancy cells.
 
 Release soundness, contribution conservation, bounded attempts, feasibility and optimality
 are different claims. The first properties have implementation checks and regression
@@ -1337,3 +1361,29 @@ on the observation/detection model and is not an implemented online metric or a
 replacement for `distinct_contributors`. Missing denominators remain unavailable.
 The current integration report distinguishes retention from exact/estimated
 application-query utility and from empirical privacy.
+
+
+## 32. Absolute origin, actual sampling and runtime clocks
+
+System review, 2026-10-23. `simulation.datetime` with `Z` or a numeric `+/-HH:MM`
+offset denotes an absolute instant independent of the host timezone. Fractional
+input is retained to BSON millisecond precision. Timezone-free strings deliberately
+retain legacy `mktime(tm_isdst=0)` behavior for old experiments; they are not portable
+UTC or DST-unambiguous specifications. Missing/empty settings resolve current UTC
+once. Every source state and lifecycle event uses that fixed origin plus simulation
+elapsed time; native timestamps retain microseconds until BSON serialization.
+
+The generic sensor gate fixes origin s0 at its initial observation and tests integer
+slots floor((s-s0)/delta_sigma). A slot advance emits at most one observation at the
+actual timestamp s; skipped opportunities are never synthesized. Actual ABS velocity
+is DeltaPosition divided by the elapsed time between its consecutive measured sets.
+Unknown/reentering identities still need two observations. The stricter AGBS
+aggregation schedule remains section5's aligned integer-millisecond contract.
+
+For paced runtime, separate measurement cadence, numerical progress interval,
+producer scheduling lateness, queue wait, service and scheduled-arrival completion.
+A service duration below the offered progress interval does not imply an end-to-end
+deadline is met: the producer can wake late. In-memory acknowledgement is not an
+external application or MongoDB receipt. Comparison subprocess wall time excludes
+Python audit/query work; total comparison-pipeline time includes it. Neither is
+identical to the C++ core processing timer.

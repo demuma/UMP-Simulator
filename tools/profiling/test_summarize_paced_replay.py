@@ -102,6 +102,51 @@ class SummaryTests(unittest.TestCase):
         self.assertEqual(result['release']['scheduled_window_end_to_in_memory_ack']['max_ms'], 2.5)
         self.assertEqual(result['release']['logical_sealing_delay']['max_ms'], 0)
 
+    def test_explicit_progress_clock_keeps_sensor_and_service_intervals_separate(self):
+        paced, _ = pair()
+        paced['parameters'].update(progress_step_ms=50, progress_origin_ms=0)
+        rows = []
+        for logical, start, finish in ((50, 50.2, 110.2), (100, 110.2, 120.2),
+                                       (150, 150.2, 160.2), (200, 200.2, 210.2), (250, 250.2, 255.2)):
+            rows.append(dict(logical_time_ms=logical, kind='finish' if logical == 250 else 'cadence',
+                             scheduled_arrival_ms=logical, enqueue_attempt_ms=logical + .05,
+                             enqueued_ms=logical + .1, service_start_ms=start,
+                             service_finish_ms=finish, queue_depth_after_enqueue=1))
+        paced['runtime']['pacing']['events'] = rows
+        reference = copy.deepcopy(paced)
+        reference['runtime'] = dict(processing_ms=95)
+        result = summary.summarize(paced, reference)
+        self.assertEqual(result['source']['sampling_period_ms'], 100)
+        self.assertEqual(result['source']['progress_step_ms'], 50)
+        self.assertTrue(result['source']['explicit_native_progress'])
+        self.assertEqual(result['offered_load']['wall_cadence_ms'], 50)
+        self.assertEqual(result['offered_load']['wall_sensor_sampling_period_ms'], 100)
+        self.assertEqual(result['cadence']['service']['count'], 4)
+        self.assertEqual(result['sample_steps']['service']['count'], 2)
+        self.assertEqual(result['no_sample_steps']['service']['count'], 2)
+        self.assertEqual(result['cadence_service_over_offered_interval'], 1)
+        self.assertEqual(result['no_sample_steps']['service']['max_ms'], 60)
+        self.assertEqual(result['finish']['service']['count'], 1)
+        self.assertEqual(result['release']['scheduled_window_end_to_in_memory_ack']['max_ms'], 5)
+        self.assertNotIn('never-copy', json.dumps(result))
+
+    def test_explicit_progress_rejects_invalid_clocks_and_missing_origin(self):
+        invalid = [dict(progress_step_ms=0, progress_origin_ms=0),
+                   dict(progress_step_ms=True, progress_origin_ms=0),
+                   dict(progress_step_ms=75, progress_origin_ms=0),
+                   dict(progress_step_ms=200, progress_origin_ms=0),
+                   dict(progress_step_ms=100, progress_origin_ms=0),  # 250-ms horizon is unaligned
+                   dict(progress_step_ms=50), dict(progress_step_ms=50, progress_origin_ms=1),
+                   dict(progress_step_ms=50, progress_origin_ms=False), dict(progress_origin_ms=0)]
+        for clock in invalid:
+            with self.subTest(clock=clock):
+                paced, _ = pair()
+                paced['parameters'].update(clock)
+                reference = copy.deepcopy(paced)
+                reference['runtime'] = dict(processing_ms=25)
+                with self.assertRaises(ValueError):
+                    summary.summarize(paced, reference)
+
     def test_missing_rss_is_explicit_and_empty_distribution_not_zero(self):
         paced, reference = pair()
         for sample in paced['runtime']['pacing']['memory_samples']:

@@ -1,5 +1,7 @@
 #include "../include/Utilities.hpp"
 #include "../include/Logging.hpp"
+#include <limits>
+#include <stdexcept>
 
 // Generate a unique identifier for the agent
 std::string generateUUID() {
@@ -12,15 +14,85 @@ std::string generateUUID() {
     return std::string(uuidStr);
 }
 
-// Generate a unique identifier for the agent
+namespace {
+std::tm utcParts(std::time_t seconds) {
+    std::tm result{};
+    if (!gmtime_r(&seconds, &result)) throw std::invalid_argument("Timestamp is outside the UTC calendar range");
+    return result;
+}
+
+// Explicit Z/offset timestamps are portable instants. A timezone-free value
+// keeps the legacy mktime(tm_isdst=0) interpretation for existing configurations;
+// use Z or an offset for reproducible input across host timezones.
+std::chrono::system_clock::time_point parseTimestamp(const std::string& text) {
+    const auto fail = [&]() -> void { throw std::invalid_argument("Invalid or unrepresentable ISO timestamp: " + text.substr(0,64)); };
+    const auto digits = [&](std::size_t at, std::size_t count) {
+        if (at + count > text.size()) fail();
+        int value=0;
+        for (std::size_t i=at;i<at+count;++i) {
+            if (text[i]<'0' || text[i]>'9') fail();
+            value=value*10+text[i]-'0';
+        }
+        return value;
+    };
+    if (text.size()<19 || text[4]!='-' || text[7]!='-' || text[10]!='T'
+        || text[13]!=':' || text[16]!=':') fail();
+    const int year=digits(0,4),month=digits(5,2),day=digits(8,2);
+    const int hour=digits(11,2),minute=digits(14,2),second=digits(17,2);
+    const bool leap=year%4==0 && (year%100!=0 || year%400==0);
+    const int days[]={31,28+(leap?1:0),31,30,31,30,31,31,30,31,30,31};
+    if (year<1 || month<1 || month>12 || day<1 || day>days[month-1]
+        || hour>23 || minute>59 || second>59) fail();
+    std::size_t at=19;
+    int milliseconds=0;
+    if (at<text.size() && text[at]=='.') {
+        const auto begin=++at;
+        while (at<text.size() && text[at]>='0' && text[at]<='9') ++at;
+        if (at==begin || at-begin>9) fail();
+        for (std::size_t i=0;i<3;++i)
+            milliseconds=milliseconds*10+(begin+i<at?text[begin+i]-'0':0);
+    }
+    bool explicitZone=false;
+    int offsetSeconds=0;
+    if (at<text.size()) {
+        explicitZone=true;
+        if (text[at]=='Z') { if (++at!=text.size()) fail(); }
+        else {
+            const int sign=text[at]=='+'?1:(text[at]=='-'?-1:0);
+            if (!sign || text.size()-at!=6 || text[at+3]!=':') fail();
+            const int hours=digits(at+1,2),minutes=digits(at+4,2);
+            if (hours>23 || minutes>59) fail();
+            offsetSeconds=sign*(hours*3600+minutes*60);at=text.size();
+        }
+    }
+    if (at!=text.size()) fail();
+    std::tm civil{};
+    civil.tm_year=year-1900;civil.tm_mon=month-1;civil.tm_mday=day;
+    civil.tm_hour=hour;civil.tm_min=minute;civil.tm_sec=second;civil.tm_isdst=0;
+    const auto seconds=explicitZone?timegm(&civil):std::mktime(&civil);
+    // libc may leave errno set after a successful conversion. Validate the UTC
+    // round trip instead; time_t(-1) itself is a valid pre-epoch instant.
+    if (explicitZone) {
+        const auto roundTrip=utcParts(seconds);
+        if (roundTrip.tm_year!=year-1900 || roundTrip.tm_mon!=month-1 || roundTrip.tm_mday!=day
+            || roundTrip.tm_hour!=hour || roundTrip.tm_min!=minute || roundTrip.tm_sec!=second) fail();
+    }
+    const auto epochMilliseconds=static_cast<std::int64_t>(seconds)*1000
+        -static_cast<std::int64_t>(offsetSeconds)*1000+milliseconds;
+    using Clock=std::chrono::system_clock;
+    const auto lower=std::chrono::duration_cast<std::chrono::milliseconds>(Clock::duration::min()).count();
+    const auto upper=std::chrono::duration_cast<std::chrono::milliseconds>(Clock::duration::max()).count();
+    if (epochMilliseconds<lower || epochMilliseconds>upper) fail();
+    return Clock::time_point(std::chrono::duration_cast<Clock::duration>(std::chrono::milliseconds(epochMilliseconds)));
+}
+}
+
 std::string generateISOTimestamp() {
-
-    auto now = std::chrono::system_clock::now();
-    std::time_t time_t_now = std::chrono::system_clock::to_time_t(now);
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&time_t_now), "%FT%TZ");
-
-    return ss.str();
+    const auto now=std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    const auto utc=utcParts(now);
+    std::ostringstream output;
+    output << std::put_time(&utc,"%FT%TZ");
+    return output.str();
 }
 
 // Generate velocity from truncated normal distribution
@@ -59,100 +131,33 @@ sf::Vector2f generateRandomVelocityVector(float mu, float sigma, float min, floa
     return velocity;
 }
 
-// Generate a BSON Date (UTC) for the current simulation time.
-std::chrono::system_clock::time_point generateISOTimestamp(sf::Time simulationWallTime, const std::string& dateTimeString = "") {
-    
-    using namespace std::chrono;
-
-    system_clock::time_point dateTime;
-    if (dateTimeString.empty()) {
-        dateTime = system_clock::now();
-    } else {
-        std::tm dateTimeStart = {};
-        std::istringstream ss(dateTimeString);
-        ss >> std::get_time(&dateTimeStart, "%Y-%m-%dT%H:%M:%S");
-        auto tt = std::mktime(&dateTimeStart);
-        dateTime = system_clock::from_time_t(tt);
-    }
-
-    auto millis = milliseconds{simulationWallTime.asMilliseconds()};
-    system_clock::time_point timestamp = dateTime + millis;
-
-    return timestamp;
+// Convert one configured origin plus elapsed simulation time into an instant.
+std::chrono::system_clock::time_point generateISOTimestamp(sf::Time elapsed, const std::string& origin) {
+    const auto start=origin.empty()?std::chrono::system_clock::now():parseTimestamp(origin);
+    using Clock=std::chrono::system_clock;
+    const auto originUs=std::chrono::duration_cast<std::chrono::microseconds>(start.time_since_epoch()).count();
+    const auto deltaUs=elapsed.asMicroseconds();
+    const auto lower=std::chrono::duration_cast<std::chrono::microseconds>(Clock::duration::min()).count();
+    const auto upper=std::chrono::duration_cast<std::chrono::microseconds>(Clock::duration::max()).count();
+    if ((deltaUs>0 && originUs>upper-deltaUs) || (deltaUs<0 && originUs<lower-deltaUs))
+        throw std::overflow_error("Elapsed simulation time exceeds timestamp range");
+    return Clock::time_point(std::chrono::duration_cast<Clock::duration>(std::chrono::microseconds(originUs+deltaUs)));
 }
 
-std::string generateISOTimestampString(const std::chrono::system_clock::time_point& tp) {
-    // Separate whole seconds from sub‑seconds
-    auto dur       = tp.time_since_epoch();
-    auto secs      = std::chrono::duration_cast<std::chrono::seconds>(dur);
-    auto millis    = std::chrono::duration_cast<std::chrono::milliseconds>(dur - secs);
-
-    // Convert seconds→time_t→tm
-    std::time_t t  = secs.count();
-    std::tm utc    = *std::gmtime(&t);
-
-    // Format with fractional part
-    std::ostringstream oss;
-    oss << std::put_time(&utc, "%Y-%m-%dT%H:%M:%S")
-        << '.' << std::setw(3) << std::setfill('0') << millis.count()
-        << 'Z';
-    return oss.str();
+std::string generateISOTimestampString(const std::chrono::system_clock::time_point& point) {
+    auto epochMilliseconds=std::chrono::duration_cast<std::chrono::milliseconds>(point.time_since_epoch()).count();
+    auto seconds=epochMilliseconds/1000;
+    auto fraction=epochMilliseconds%1000;
+    if (fraction<0) {fraction+=1000;--seconds;}
+    const auto utc=utcParts(static_cast<std::time_t>(seconds));
+    std::ostringstream output;
+    output << std::put_time(&utc,"%Y-%m-%dT%H:%M:%S")
+           << '.' << std::setw(3) << std::setfill('0') << fraction << 'Z';
+    return output.str();
 }
 
-// Parses a string like "2025-04-09T11:30:01.123" into a bsoncxx::types::b_date.
 bsoncxx::types::b_date generateBsonDate(const std::string& timestamp) {
-    // Separate the main datetime portion from the fractional seconds
-    std::size_t dotPos = timestamp.find('.');
-    std::string mainPart = (dotPos == std::string::npos)
-                              ? timestamp
-                              : timestamp.substr(0, dotPos);
-
-    // If there's a fractional part, strip off trailing 'Z' if present
-    std::string fractionPart;
-    if (dotPos != std::string::npos) {
-        fractionPart = timestamp.substr(dotPos + 1);
-        // If the fraction part ends with 'Z', remove it:
-        std::size_t zPos = fractionPart.find('Z');
-        if (zPos != std::string::npos) {
-            fractionPart = fractionPart.substr(0, zPos);
-        }
-    }
-
-    // Parse the main date/time up to seconds using std::get_time with format "%Y-%m-%dT%H:%M:%S"
-    std::tm tm{};
-    std::istringstream iss(mainPart);
-    iss >> std::get_time(&tm, "%Y-%m-%dT%H:%M:%S");
-    if (iss.fail()) {
-        throw std::runtime_error("Failed to parse date/time: " + mainPart);
-    }
-
-    // Convert this struct tm to a time_t (local time).
-    std::time_t time_c = std::mktime(&tm);
-    if (time_c == -1) {
-        throw std::runtime_error("Invalid local time conversion.");
-    }
-    // Convert that to a std::chrono::system_clock::time_point
-    auto base_tp = std::chrono::system_clock::from_time_t(time_c);
-
-    // Parse fractional seconds as milliseconds (e.g. .123 => 123 ms).
-    long frac_ms = 0;
-    if (!fractionPart.empty()) {
-        // If fractionPart is more than 3 digits, truncate to 3 for milliseconds
-        if (fractionPart.size() > 3) {
-            fractionPart = fractionPart.substr(0, 3);  
-        }
-        // If it's fewer than 3 digits, pad with zeros on the right
-        while (fractionPart.size() < 3) {
-            fractionPart += '0';
-        }
-        frac_ms = std::stol(fractionPart);
-    }
-
-    // Add the parsed fractional milliseconds to our base time
-    auto total_tp = base_tp + std::chrono::milliseconds(frac_ms);
-
-    // Construct the BSON date )bsoncxx::types::b_date holds a std::chrono::milliseconds)
-    return bsoncxx::types::b_date(total_tp);
+    return bsoncxx::types::b_date(parseTimestamp(timestamp));
 }
 
 // Convert a string to an sf::Color object

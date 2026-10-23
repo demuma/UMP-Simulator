@@ -8,6 +8,7 @@
 #include <mongocxx/uri.hpp>
 #include <cmath>
 #include <map>
+#include <limits>
 #include <set>
 #include <stdexcept>
 
@@ -51,6 +52,112 @@ void verifyGrid(mongocxx::collection collection, TimePoint origin, const Counts&
     }
     require(observed == expected, "Grid cadence or occupancy differs from expected observations");
 }
+// Exercise the actual sensor gate at a valid smaller aligned source step and
+// at irregular/late generic sensor updates. No scheduler may invent catch-up
+// measurements, and ABS finite differences must use the measured interval.
+void verifyObservationClocks(const std::shared_ptr<mongocxx::client>& client,
+    const std::string& databaseName, TestDatabase& fixture, TimePoint origin) {
+    const sf::FloatRect area({0.f, 0.f}, {20.f, 20.f});
+    Agent::AgentTypeAttributes attributes{};
+    for (const bool aligned : {true, false}) {
+        const std::string prefix = aligned ? "clock10_" : "clocklate_";
+        AgentBasedSensor abs(10.f, area, databaseName, prefix + "abs", client, prefix + "abs");
+        GridBasedSensor gbs(10.f, area, 5.f, databaseName, prefix + "gbs", client, prefix + "gbs");
+        AdaptiveGridBasedSensor agbs(10.f, area, 10.f, 2, databaseName, prefix + "agbs", client, prefix + "agbs");
+        std::vector<ump::AggregationCandidate> candidates;
+        if (aligned) agbs.enableAggregation({"aligned10ms", agbs.sensorId, "clock-check",
+            {0, 0, 20, 20, 2}, 100, 400}, .01f, origin,
+            [&](const auto& candidate) { candidates.push_back(candidate); });
+        else {
+            bool rejected = false;
+            try { agbs.enableAggregation({"unaligned60ms", agbs.sensorId, "clock-check",
+                {0, 0, 20, 20, 2}, 100, 400}, .06f, origin, [](const auto&) {}); }
+            catch (const std::invalid_argument&) { rejected = true; }
+            require(rejected, "Aggregation accepted an unaligned 60-ms/100-ms source clock");
+        }
+        std::vector<int> times;
+        if (aligned) for (int ms = 0; ms <= 500; ms += 10) times.push_back(ms);
+        else times = {0, 60, 120, 180, 240, 300, 600, 610, 700};
+        const std::set<int> due = aligned ? std::set<int>{100, 200, 300, 400, 500}
+            : std::set<int>{120, 240, 300, 600, 700};
+        std::vector<Agent> agents;
+        for (const auto ms : times) {
+            agents.clear();
+            for (int index = 0; index < (!aligned && ms >= 180 ? 2 : 1); ++index) {
+                agents.emplace_back(attributes);
+                auto& agent = agents.back();
+                agent.agentId = index ? "entrant" : "resident";
+                agent.type = "pedestrian";
+                agent.position = {1.f + index * 5.f + 2.f * ms / 1000.f, 1.f + ms / 1000.f};
+            }
+            const auto stamp = origin + std::chrono::milliseconds{ms};
+            SensorFrameBuilder frame(stamp);
+            for (Sensor* sensor : {static_cast<Sensor*>(&abs), static_cast<Sensor*>(&gbs), static_cast<Sensor*>(&agbs)}) {
+                sensor->update(agents, aligned ? .01f : .06f, stamp);
+                if (auto sample = sensor->takeSample()) frame.add(sensor->sensorId, stamp, std::move(*sample));
+                sensor->postData();
+                // Reprocessing one timestamp must not create a second observation.
+                sensor->update(agents, aligned ? .01f : .06f, stamp);
+                require(!sensor->takeSample(), "Repeated timestamp emitted duplicate sensor measurement");
+                sensor->postData();
+            }
+            const auto captured = std::move(frame).finish();
+            require(static_cast<bool>(captured) == static_cast<bool>(due.count(ms)),
+                "Integer sensor phase or late-update cadence is wrong");
+            if (captured) require(captured->second.size() == 3,
+                "Clock correction coupled sensor IDs or dropped a real measurement");
+        }
+        if (aligned) {
+            agbs.finishAggregation(origin + std::chrono::milliseconds{510});
+            require(candidates.size() == 2
+                && candidates.front().coverage == ump::WindowCoverage::Complete
+                && candidates.back().coverage == ump::WindowCoverage::Complete
+                && candidates.front().measuredSamples == 3 && candidates.back().measuredSamples == 2,
+                "10-ms source clock lost aligned AGBS aggregation coverage");
+        }
+        Counts expectedGrid, expectedAbs;
+        for (int ms : due) {
+            expectedGrid[ms] = !aligned && ms >= 240 ? 2 : 1;
+            expectedAbs[ms] = !aligned && ms >= 300 ? 2 : 1;
+        }
+        verifyGrid(fixture.db[prefix + "gbs"], origin, expectedGrid);
+        verifyGrid(fixture.db[prefix + "agbs"], origin, expectedGrid);
+        Counts observedAbs;
+        std::set<std::pair<int64_t, std::string>> keys;
+        for (auto row : fixture.db[prefix + "abs"].find({})) {
+            const auto ms = sampleTime(row, origin);
+            const std::string track{row["agent_id"].get_string().value};
+            require(keys.emplace(ms, track).second, "Clock correction duplicated an ABS database row");
+            ++observedAbs[ms];
+            const auto velocity = row["estimated_velocity"].get_document().view();
+            require(std::abs(velocity["x"].get_double().value - 2.) < 1e-4
+                && std::abs(velocity["y"].get_double().value - 1.) < 1e-4,
+                "ABS velocity used nominal period instead of actual observation interval");
+        }
+        require(observedAbs == expectedAbs, "Clock correction changed ABS warm-up or fabricated catch-up rows");
+    }
+    std::vector<Agent> empty;
+    GridBasedSensor guard(10.f, area, 5.f, databaseName, "clock_guard", client, "clock-guard");
+    guard.update(empty, .05f, origin);
+    guard.update(empty, .05f, origin + std::chrono::milliseconds{100});
+    bool backwardsRejected = false;
+    try { guard.update(empty, .05f, origin + std::chrono::milliseconds{99}); }
+    catch (const std::invalid_argument&) { backwardsRejected = true; }
+    require(backwardsRejected, "Sensor clock accepted a backwards observation timestamp");
+    guard.frameRate = 5;
+    bool changeRejected = false;
+    try { guard.update(empty, .05f, origin + std::chrono::milliseconds{150}); }
+    catch (const std::invalid_argument&) { changeRejected = true; }
+    require(changeRejected, "Sensor clock silently changed its initialized sampling period");
+    for (float rate : {0.f, -1.f, std::numeric_limits<float>::infinity(), std::numeric_limits<float>::quiet_NaN()}) {
+        GridBasedSensor invalid(rate, area, 5.f, databaseName, "invalid_clock", client, "invalid-clock");
+        bool rejected = false;
+        try { invalid.update(empty, .05f, origin); }
+        catch (const std::invalid_argument&) { rejected = true; }
+        require(rejected, "Sensor clock accepted a nonpositive/nonfinite frame rate");
+    }
+}
+
 // Exercise real sensors with visible-episode tracks and a private one-person
 // oracle. Reuse only this fixture's UUID-owned database and separate collections.
 void verifyMappedSensorLifecycle(const std::shared_ptr<mongocxx::client>& client,
@@ -198,6 +305,7 @@ int main() {
         require(!renderOnly.getAggregationManager() && !agbs.getAggregationManager(),
             "Disabled/render-only AGBS unexpectedly instantiated a manager");
         const auto origin = TimePoint{std::chrono::milliseconds{1744191000000LL}};
+        verifyObservationClocks(client, name, fixture, origin);
         verifyMappedSensorLifecycle(client, name, fixture, origin);
         std::vector<ump::AggregationCandidate> fastCandidates, slowCandidates;
         ump::AggregationConfig fastConfig{"fixture", agbs.sensorId, "baseline", {0, 0, 20, 20, 2}, 100, 400};
@@ -346,7 +454,7 @@ int main() {
         require(absKeys.count({500, "entrant"}) == 1 && absKeys.count({400, "entrant"}) == 0,
                 "New entrant published without two observations");
         std::cout << "PASS: startup, interval velocities, batch consumption, entry/reentry, "
-                     "grid counts, empty-area cadence, renderer timestamps and identity-bearing aggregation.\n";
+                     "grid counts, integer/late observation clocks, actual interval velocities, empty-area cadence, renderer timestamps and identity-bearing aggregation.\n";
         std::cout << "Isolated test database: " << name << " (removed on exit).\n";
         return 0;
     } catch (const std::exception& e) {

@@ -412,6 +412,69 @@ void conflictingRefinementLeavesFrontierAndOutputUnchanged() {
         && historyBefore.identityBytes==historyAfter.identityBytes,
         "Rejected refinement changed its immutable private evidence");
 }
+// A known minimum at the configured maximum needs one assessment at that
+// endpoint. Spending the sole budget on an impossible earlier interval can
+// abort an otherwise feasible stream, including one with a regional minimum.
+void minimumAtMaximumSkipsImpossibleEarlyChecks() {
+    for (bool regional : {false, true})
+        for (const auto strategy : {AdaptationStrategy::TemporalFirst,
+                AdaptationStrategy::SpatialFirst, AdaptationStrategy::SemanticFirst}) {
+            auto c = settings();
+            auto time = timeSettings(strategy);
+            time.maxEvaluations = 1;
+            const auto evaluator = regional
+                ? metrics(c, 1, 20, 1, {region(c, 48, 2,
+                    {{MetricId::WindowDurationMs, 1000, 1000}})})
+                : MetricEvaluator(std::make_shared<const PolicyTree>(PolicyTreeConfig{
+                    "minimum-at-maximum", "1", "app", c.coverage,
+                    {{MetricId::DistinctContributors, 1, {}}, {MetricId::CellSideM, {}, 20},
+                     {MetricId::WindowDurationMs, 1000, 1000},
+                     {MetricId::MinCategoryDistinctContributors, 1, {}},
+                     {MetricId::SemanticMaxLoss, {}, 1}}}, std::vector<PolicyRegion>{}),
+                    c.semanticTaxonomy);
+            Fixture f(c, evaluator, time);
+            auto rows = f.people("minimum", 1, "Adult Pedestrian", 48);
+            if (regional) add(rows, f.people("neighbour", 1, "Adult Pedestrian", 49));
+            for (int t = 100; t < 1000; t += 100) {
+                f.sample(t, rows);
+                if (t != 400) continue;
+                const auto owners = f.engine.windows();
+                const auto owner = std::find_if(owners.begin(), owners.end(),
+                    [](const auto& w) { return w.cell.id == 48; });
+                require(owner != owners.end() && owner->nextEndMs == 1000
+                    && owner->hardDeadlineMs == 1000 && owner->evaluations == 0,
+                    "Minimum equal to maximum spent a budget on an impossible early interval");
+                require(!find(f, 48, 0, 400), "Minimum-duration owner was retired before its first legal endpoint");
+                if (regional) require(find(f, 49, 0, 400) && find(f, 49, 0, 400)->selectedCells,
+                    "Regional minimum delayed an independent passing neighbour");
+            }
+            f.finish(1000);
+            const auto* output = find(f, 48, 0, 1000);
+            require(output && output->selectedCells == 1 && output->temporalExtensions == 0
+                && output->candidate.counts.observationContributions == 9,
+                "One-evaluation budget did not publish a feasible minimum-equals-maximum interval");
+            audit(f, 1000);
+        }
+}
+
+void minimumBeyondConfiguredMaximumCannotExtendTheDeadline() {
+    auto c = settings();
+    const auto evaluator = MetricEvaluator(std::make_shared<const PolicyTree>(PolicyTreeConfig{
+        "unreachable-minimum", "1", "app", c.coverage,
+        {{MetricId::DistinctContributors, 1, {}}, {MetricId::CellSideM, {}, 20},
+         {MetricId::WindowDurationMs, 1100, 2000},
+         {MetricId::MinCategoryDistinctContributors, 1, {}},
+         {MetricId::SemanticMaxLoss, {}, 1}}}, std::vector<PolicyRegion>{}), c.semanticTaxonomy);
+    Fixture f(c, evaluator);
+    const auto rows = f.people("minimum", 1, "Adult Pedestrian", 48);
+    for (int t = 100; t < 1000; t += 100) f.sample(t, rows);
+    f.finish(1000);
+    require(std::none_of(f.outputs.begin(), f.outputs.end(), [](const auto& out) {
+        return out.selectedCells || out.candidate.endMs > 1000;
+    }), "An unreachable minimum relaxed the execution maximum or disclosed invalid support");
+    audit(f, 1000);
+}
+
 void budgetsAndTaxonomyIdentityFailBeforeDisclosure() {
     auto c=settings(3);Fixture f(c,metrics(c),timeSettings(),{1,1});
     auto rows=f.people("a",2,"Adult Pedestrian",192);add(rows,f.people("b",2,"Adult Cyclist",192));
@@ -430,7 +493,8 @@ int main() {try {
     aHandoffBoundaryIsAlsoAParentTerminal();regionalLossAgeAndValidNeighbourSurvive();repeatedMovingIdentityUsesUnions();
     mixedDepthAndDifferentRetiredStartsCannotReuseHistory();missingCoverageEofAndHalfOpenInput();
     immutableRetryAndExpiredRetry();conflictingRefinementLeavesFrontierAndOutputUnchanged();
+    minimumAtMaximumSkipsImpossibleEarlyChecks();minimumBeyondConfiguredMaximumCannotExtendTheDeadline();
     budgetsAndTaxonomyIdentityFailBeforeDisclosure();
-    std::cout<<"PASS: 15 semantic cell-local gates, independent windows, tiered parents, policy bounds, unions, retirement, retries and budgets.\n";
+    std::cout<<"PASS: 17 semantic cell-local gates, independent windows, tiered parents, policy bounds, unions, retirement, retries and budgets.\n";
     return 0;
 } catch(const std::exception& error) {std::cerr<<"FAIL: "<<error.what()<<'\n';return 1;}}
