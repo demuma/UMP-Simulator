@@ -26,6 +26,7 @@
 #include "CollisionGrid.hpp"
 #include "Sensor.hpp"
 #include "Quadtree.hpp"
+#include "MappedScene.hpp"
 // #include "QuadtreeSnapshot.hpp"
 
 /**************************************/
@@ -60,6 +61,12 @@ public:
 
 private:
     void postMetadata();
+    void initializeMappedScene();
+    void updateMappedAgents(ump::AggregationTime nowMs);
+    void postMappedEventsThrough(ump::AggregationTime nowMs);
+    // Private simulator oracle; never supplied to a Sensor or aggregation input.
+    std::unique_ptr<ump::MappedScene> mappedScene;
+    std::size_t mappedEventCursor = 0;
     std::string aggregationRunId = generateUUID();
     void postData(const std::vector<Agent>& agents);
      // Simulation parameters

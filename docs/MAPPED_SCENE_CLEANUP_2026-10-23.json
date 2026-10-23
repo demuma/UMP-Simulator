@@ -1,0 +1,41 @@
+{
+  "owned": [
+    "UMP_Mapped_d7b5baf20a3f42c1bacce51b3e8b56f1",
+    "UMP_Mapped_d7b5baf20a3f42c1bacce51b3e8b56f1_Releases",
+    "UMP_Mapped_d7b5baf20a3f42c1bacce51b3e8b56f1_Private",
+    "UMP_Mapped_d3ffa653ff6541589b3f1fb2c183e4e0",
+    "UMP_Mapped_d3ffa653ff6541589b3f1fb2c183e4e0_Releases",
+    "UMP_Mapped_d3ffa653ff6541589b3f1fb2c183e4e0_Private",
+    "UMP_Mapped_f4455ac415ed4022ab1f4f530c9d22f7",
+    "UMP_Mapped_f4455ac415ed4022ab1f4f530c9d22f7_Releases",
+    "UMP_Mapped_f4455ac415ed4022ab1f4f530c9d22f7_Private",
+    "UMP_Mapped_8688e2fcb6964e3fba2c0e7de182baa2",
+    "UMP_Mapped_8688e2fcb6964e3fba2c0e7de182baa2_Releases",
+    "UMP_Mapped_8688e2fcb6964e3fba2c0e7de182baa2_Private",
+    "UMP_Mapped_97bd6b19af7e41bfb142b5369f582cd8",
+    "UMP_Mapped_97bd6b19af7e41bfb142b5369f582cd8_Releases",
+    "UMP_Mapped_97bd6b19af7e41bfb142b5369f582cd8_Private"
+  ],
+  "removed_now": [
+    "UMP_Mapped_d7b5baf20a3f42c1bacce51b3e8b56f1",
+    "UMP_Mapped_d7b5baf20a3f42c1bacce51b3e8b56f1_Releases",
+    "UMP_Mapped_d7b5baf20a3f42c1bacce51b3e8b56f1_Private"
+  ],
+  "already_absent": [
+    "UMP_Mapped_d3ffa653ff6541589b3f1fb2c183e4e0",
+    "UMP_Mapped_d3ffa653ff6541589b3f1fb2c183e4e0_Releases",
+    "UMP_Mapped_d3ffa653ff6541589b3f1fb2c183e4e0_Private",
+    "UMP_Mapped_f4455ac415ed4022ab1f4f530c9d22f7",
+    "UMP_Mapped_f4455ac415ed4022ab1f4f530c9d22f7_Releases",
+    "UMP_Mapped_f4455ac415ed4022ab1f4f530c9d22f7_Private",
+    "UMP_Mapped_8688e2fcb6964e3fba2c0e7de182baa2",
+    "UMP_Mapped_8688e2fcb6964e3fba2c0e7de182baa2_Releases",
+    "UMP_Mapped_8688e2fcb6964e3fba2c0e7de182baa2_Private",
+    "UMP_Mapped_97bd6b19af7e41bfb142b5369f582cd8",
+    "UMP_Mapped_97bd6b19af7e41bfb142b5369f582cd8_Releases",
+    "UMP_Mapped_97bd6b19af7e41bfb142b5369f582cd8_Private"
+  ],
+  "remaining": [],
+  "sampled_movement_files_exported": 0,
+  "retained": "Static scenario inputs/backgrounds and compact result/audit files only"
+}

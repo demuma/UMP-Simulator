@@ -1,6 +1,6 @@
 # Terminology, notation and mathematical contract
 
-Version 1.11 — 2026-10-23. This is the project's canonical terminology for the presentation,
+Version 1.12 — 2026-10-23. This is the project's canonical terminology for the presentation,
 paper, dissertation and new documentation. It describes the implemented baseline and marks
 future extensions explicitly. Earlier reviews retain historical/local notation; use this
 reference when translating them into publication text. Code identifiers are mapped below;
@@ -1216,3 +1216,55 @@ maximum 1 means at least one positive-support published bin reaches that declare
 cost; it does not imply that all bins do. Mean loss 1 means all positive-weight
 published contributions have cost 1 in the current catalog. These category costs
 measure declared type abstraction, not loss of counts/space/time or privacy risk.
+
+
+## 29. Mapped scenes: private person identity and operational track support
+
+Status: M01 implemented and verified 2026-10-23. The [identity contract](MAPPED_SCENE_IDENTITY_CONTRACT_2026-10-23.md)
+and [test report](MAPPED_SCENE_TEST_REPORT_2026-10-23.md) define the bounded source.
+The canonical road user u and realized trajectory phi_u(t) refer to the modeled
+entity in private GT. A sensor-visible track is one uninterrupted visible episode;
+it is not automatically a unique person over a longer interval. For an observation
+o, write tid(o) for its operational track identifier and g_GT for the private
+mapping from tracks to modeled people. For the received observation set O(C,I),
+
+$$
+n_{\mathrm{track}}(C,I)
+=\left|\{\operatorname{tid}(o):o\in\mathcal O(C,I)\}\right|,
+\qquad
+n_{\mathrm{GT}}(C,I)
+=\left|\{g_{\mathrm{GT}}(\operatorname{tid}(o)):o\in\mathcal O(C,I)\}\right|.
+$$
+
+The implemented mapped-scene aggregator measures n_track. It never receives
+or applies g_GT. For the ideal nonmerging track model in this source,
+n_GT <= n_track; define evaluation-only track inflation
+
+$$
+\Delta n(C,I)=n_{\mathrm{track}}(C,I)-n_{\mathrm{GT}}(C,I).
+$$
+
+This inequality is not assumed for arbitrary real sensors: track merges,
+duplicate detections and classification errors need separate observation models.
+Existing ideal stable-identity experiments retain their stated model. A bare
+minimum track count is not a general person-level k-anonymity guarantee.
+The same identity distinction applies within each positive semantic bin.
+
+The first integrated scene enforces d_hidden > H >= T_max, where d_hidden is
+every hidden gap, H is the enabled aggregation's retained history, and T_max its
+maximum candidate duration. Together with no other track fragmentation, overlapping
+episodes or track merging, this prevents two episodes of one modeled person in a
+retained candidate. Audited n_track and n_GT therefore agree in this fixture.
+A separate real-sensor regression deliberately uses a shorter gap and obtains
+n_track=2, n_GT=1. The inequality is tested, not silently repaired by an oracle.
+
+A returning visible episode gets a fresh opaque ID in the existing Agent.agentId
+field. Private GT and lifecycle records retain g_GT for evaluation. Recipient
+releases contain neither identity namespace nor g_GT. Fresh IDs do not prevent
+linkage from spatial/temporal side information; no re-identification or
+unlinkability guarantee is implied by this boundary.
+
+Scenario-local stroller and mobility-aid terminals truthfully generalize to
+Pedestrian, then Road User. The mover plus equipment is one modeled observed unit;
+a stroller occupant contributes separate support only if separately modeled and
+observed. Labels alone imply neither age/diagnosis nor calibrated motion behavior.

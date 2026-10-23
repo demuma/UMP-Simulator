@@ -158,6 +158,9 @@ private:
     bool showSensorGrid = true;
     bool overrideSensorGridVisibility = false;
 
+    std::unique_ptr<sf::Texture> mapBackground;
+    std::string mapAttribution;
+
     // Obstacles
     bool showObstacles = false;
     std::vector<Obstacle> obstacles;

@@ -93,6 +93,16 @@ void Renderer::loadConfiguration() {
         ERROR_MSG("Error loading font\n");
     }
 
+    if (config["renderer"]["map_background"]) {
+        mapBackground = std::make_unique<sf::Texture>();
+        const auto image = config["renderer"]["map_background"].as<std::string>();
+        if (image.empty() || !mapBackground->loadFromFile(image))
+            throw std::invalid_argument("Cannot load renderer.map_background: " + image);
+        mapAttribution = config["renderer"]["map_attribution"].as<std::string>("");
+        if (mapAttribution.empty())
+            throw std::invalid_argument("renderer.map_background requires map_attribution");
+    }
+
     // Resize vertex arrays
     bufferZonesVertexArray.resize(numAgents * 300);
     agentBodyVertexArray.resize(numAgents * 6);
@@ -231,7 +241,7 @@ void Renderer::initializeWindow() {
 
     // Create window
     // window.create(sf::VideoMode(windowWidth, windowHeight), title, sf::Style::Default, settings); // Note: SFML 2.6.2 or prior
-    window.create(sf::VideoMode({windowWidth, windowHeight}), title, sf::Style::Default, sf::State::Windowed, settings);
+    window.create(sf::VideoMode({windowWidth, windowHeight}), sf::String::fromUtf8(title.begin(), title.end()), sf::Style::Default, sf::State::Windowed, settings);
 }
 
 // Initialize the GUI elements
@@ -876,6 +886,17 @@ void Renderer::render() {  // Input: meters, Output: pixels
 
     // Clear the window
     window.clear(sf::Color::White);
+    if (mapBackground) {
+        sf::Sprite background(*mapBackground);
+        background.setPosition(offset);
+        background.setScale({simulationWidth / mapBackground->getSize().x,
+                             simulationHeight / mapBackground->getSize().y});
+        window.draw(background);
+        sf::Text attribution(font, sf::String::fromUtf8(mapAttribution.begin(), mapAttribution.end()), 12);
+        attribution.setFillColor(sf::Color(70, 80, 95));
+        attribution.setPosition({offset.x, offset.y + simulationHeight + 3.f});
+        window.draw(attribution);
+    }
 
     // Get the current number of agents
     // currentNumAgents = currentFrame.size();
@@ -1051,8 +1072,8 @@ void Renderer::render() {  // Input: meters, Output: pixels
                 sf::VertexArray waypoints(sf::PrimitiveType::Triangles, 6);
 
                 // Calculate the next waypoint
-                // Get the next waypoint based on trajectory, position, and velocity
-                for (int i = 0; i < agent.trajectory.size(); ++i) {
+                // Legacy frames have no authoritative route cursor.
+                for (int i = 0; agent.nextWaypointIndex < 0 && i < agent.trajectory.size(); ++i) {
                     sf::Vector2f directionToWaypoint = agent.trajectory[i] - agent.position;
                     float dotProduct = directionToWaypoint.x * agent.velocity.x + directionToWaypoint.y * agent.velocity.y;
                     if (dotProduct > 0) {
@@ -1091,7 +1112,17 @@ void Renderer::render() {  // Input: meters, Output: pixels
             }   
 
             // Draw the trajectory lines from initial position to current position respectively to target position
-            if(showTrajectories) {
+            if(showTrajectories && config["simulation"]["scenario"].as<std::string>("") == "mapped_visits"
+                && agent.nextWaypointIndex > 0 && agent.nextWaypointIndex < static_cast<int>(agent.trajectory.size())) {
+                sf::VertexArray past(sf::PrimitiveType::LineStrip), future(sf::PrimitiveType::LineStrip);
+                for (int i = 0; i < agent.nextWaypointIndex; ++i)
+                    past.append(sf::Vertex({agent.trajectory[i] + offset, sf::Color::Blue}));
+                past.append(sf::Vertex({agent.position + offset, sf::Color::Blue}));
+                future.append(sf::Vertex({agent.position + offset, sf::Color::Red}));
+                for (std::size_t i = agent.nextWaypointIndex; i < agent.trajectory.size(); ++i)
+                    future.append(sf::Vertex({agent.trajectory[i] + offset, sf::Color::Red}));
+                window.draw(past); window.draw(future);
+            } else if(showTrajectories) {
                 
                 sf::Vertex pastTrajectory[] = {
                     sf::Vertex({agent.initialPosition + offset, sf::Color::Blue}), 

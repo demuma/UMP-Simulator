@@ -7,6 +7,8 @@
 #include "../include/AggregationDiagnostics.hpp"
 #include "../include/PolicyConfiguration.hpp"
 #include "../include/AggregationConfiguration.hpp"
+#include "../include/MappedSceneConfiguration.hpp"
+#include "../include/SemanticTaxonomy.hpp"
 #include <limits>
 #include <algorithm>
 #include <cctype>
@@ -28,6 +30,7 @@ Simulation::Simulation(
     DEBUG_MSG("Simulation: " << sensorBuffer.name << " write buffer " << sensorBuffer.writeBufferIndex);
     loadConfiguration();
     loadAgentsAttributes();
+    initializeMappedScene();
     loadRegionsAttributes();
     initializeRegions();
     initializeMetricPolicies(); // Validate/compile before initializing any database sink.
@@ -211,6 +214,10 @@ void Simulation::loadObstacles() {
 }
 
 void Simulation::initializeAgents() {
+    if (mappedScene) {
+        updateMappedAgents(0);
+        return;
+    }
 
     // Initialize agents based on the scenario
     if (scenario == "random") {
@@ -323,6 +330,97 @@ void Simulation::initializeAgents() {
     }    
 }
 
+// Opt-in mapped source: retain private persons separately from visible tracks.
+void Simulation::initializeMappedScene() {
+    if (scenario != "mapped_visits") {
+        if (config["mapped_scene"])
+            throw std::invalid_argument("mapped_scene requires simulation.scenario: mapped_visits");
+        return;
+    }
+    std::unordered_set<std::string> profiles;
+    for (const auto& item : agentTypeAttributes) profiles.insert(item.first);
+    mappedScene = std::make_unique<ump::MappedScene>(readMappedSceneConfiguration(
+        config["mapped_scene"], simulationWidth, simulationHeight, profiles));
+    for (const auto& person : mappedScene->configuration().people) {
+        const auto& attributes = agentTypeAttributes.at(person.type);
+        if (!std::isfinite(attributes.velocity.min) || !std::isfinite(attributes.velocity.max)
+            || person.speedMps < attributes.velocity.min || person.speedMps > attributes.velocity.max
+            || !std::isfinite(static_cast<float>(person.speedMps)) || static_cast<float>(person.speedMps) <= 0
+            || !std::isfinite(attributes.bodyRadius) || attributes.bodyRadius <= 0)
+            throw std::invalid_argument("Mapped speed/radius is outside its declared behavior profile");
+    }
+    if (mappedScene->configuration().people.size() != static_cast<std::size_t>(numAgents))
+        throw std::invalid_argument("Mapped explicit person count must equal agents.num_agents");
+}
+
+void Simulation::updateMappedAgents(ump::AggregationTime nowMs) {
+    const auto frame = mappedScene->frameAt(nowMs);
+    std::unordered_map<std::string, std::size_t> previous;
+    for (std::size_t i = 0; i < agents.size(); ++i) previous.emplace(agents[i].agentId, i);
+    std::vector<Agent> next;
+    next.reserve(frame.size());
+    for (const auto& track : frame) {
+        const auto old = previous.find(track.trackId);
+        const auto& attributes = agentTypeAttributes.at(track.type);
+        Agent agent = old == previous.end() ? Agent(attributes) : agents[old->second];
+        agent.agentId = track.trackId; // Only episode identity crosses the Sensor boundary.
+        agent.sensorId = "0";
+        agent.type = track.type;
+        agent.color = stringToColor(attributes.color);
+        agent.initialColor = agent.color;
+        agent.priority = attributes.priority;
+        agent.bodyRadius = attributes.bodyRadius;
+        agent.lookAheadTime = attributes.lookAheadTime;
+        agent.timestamp = timestamp;
+        agent.position = {static_cast<float>(track.position.x), static_cast<float>(track.position.y)};
+        agent.velocity = {static_cast<float>(track.velocity.x), static_cast<float>(track.velocity.y)};
+        agent.initialVelocity = agent.velocity;
+        agent.velocityMagnitude = std::hypot(agent.velocity.x, agent.velocity.y);
+        if (!std::isfinite(agent.velocityMagnitude) || agent.velocityMagnitude <= 0)
+            throw std::logic_error("Mapped velocity must be finite and representable");
+        agent.heading = agent.velocity / agent.velocityMagnitude;
+        agent.theta = std::atan2(agent.heading.y, agent.heading.x);
+        agent.acceleration = {0, 0}; agent.initialAcceleration = {0, 0}; agent.accelerationMagnitude = 0;
+        agent.collisionPredicted = false; agent.stopped = false; agent.isActive = true;
+        agent.noiseSeed = 0;
+        agent.waypointDistance = waypointDistance;
+        const auto& routes = mappedScene->configuration().routes;
+        const auto route = std::find_if(routes.begin(), routes.end(), [&](const auto& r) { return r.id == track.routeId; });
+        if (route == routes.end()) throw std::logic_error("Mapped source lost a validated route");
+        agent.trajectory.clear();
+        for (const auto& point : route->points)
+            agent.trajectory.push_back({static_cast<float>(point.x), static_cast<float>(point.y)});
+        agent.initialPosition = agent.trajectory.front();
+        agent.targetPosition = agent.trajectory.back();
+        agent.nextWaypointIndex = track.nextWaypointIndex;
+        agent.setBufferZoneSize();
+        next.push_back(std::move(agent));
+    }
+    agents = std::move(next);
+}
+
+void Simulation::postMappedEventsThrough(ump::AggregationTime nowMs) {
+    if (!mappedScene) return;
+    const auto& events = mappedScene->events();
+    auto end = mappedEventCursor;
+    std::vector<bsoncxx::document::value> documents;
+    while (end < events.size() && events[end].atMs <= nowMs) {
+        const auto& event = events[end++];
+        bsoncxx::builder::stream::document document{};
+        const auto at = generateISOTimestamp(sf::milliseconds(event.atMs), datetime);
+        document << "data_type" << "mapped lifecycle event"
+                 << "timestamp" << bsoncxx::types::b_date{at}
+                 << "processed_at_ms" << nowMs
+                 << "private_person_id" << event.personId
+                 << "observation_track_id" << event.trackId
+                 << "route_id" << event.routeId << "portal_id" << event.portalId
+                 << "event" << (event.kind == ump::MappedEventKind::EpisodeStart ? "visible_start" : "visible_end");
+        documents.push_back(document << bsoncxx::builder::stream::finalize);
+    }
+    if (!documents.empty()) collection.insert_many(documents); // Private research GT only.
+    mappedEventCursor = end;
+}
+
 void Simulation::initializeRegions() {
 
     // Load regions from the configuration file
@@ -404,6 +502,14 @@ void Simulation::initializeMetricPolicies() {
         const auto spatial = readSpatialSelection(aggregation, coverage.leafDepth);
         auto evaluator = makeMetricEvaluator(aggregation, coverage, applicationId, regions, settings.semanticTaxonomy);
         const auto temporal = readTemporalAdaptation(aggregation);
+        if (mappedScene) {
+            auto horizon = settings.history ? settings.history->retentionMs : settings.windowMs;
+            if (temporal) horizon = std::max(horizon, temporal->maxWindowMs);
+            validateMappedSupportHorizon(*mappedScene, horizon);
+            if (settings.semanticTaxonomy)
+                for (const auto& person : mappedScene->configuration().people)
+                    (void)settings.semanticTaxonomy->leafForType(person.type);
+        }
         if (spatial) { ump::SpatialSelector checkedSelector(settings, *spatial); }
         if (temporal) {
             if (temporal->coordination == ump::CoordinationMode::CellLocal) {
@@ -751,6 +857,8 @@ void Simulation::run() {
         writeBufferTime = simulationClock.getElapsedTime();
         totalWriteBufferTime += writeBufferTime;
         
+        // Private lifecycle references never enter sensor/aggregation observations.
+        postMappedEventsThrough(simulationTime.asMilliseconds());
         // Store current ground truth agent data in MongoDB
         postData(agents);
 
@@ -782,10 +890,22 @@ void Simulation::run() {
         simulationRealTime += simulationStepTime;
     }
 
+    postMappedEventsThrough(simulationTime.asMilliseconds());
     // The last processed state precedes this exclusive end. Flush even a partial window.
     for (auto& sensor : sensors) {
         if (auto* adaptive = dynamic_cast<AdaptiveGridBasedSensor*>(sensor.get()))
             adaptive->finishAggregation(timestamp);
+    }
+
+    if (mappedScene) {
+        bsoncxx::builder::stream::document summary{};
+        summary << "data_type" << "mapped source summary"
+                << "completed_steps" << static_cast<std::int64_t>(completedSteps)
+                << "source_elapsed_ms" << static_cast<std::int64_t>(simulationTime.asMilliseconds())
+                << "planned_duration_ms" << static_cast<std::int64_t>(targetSimulationTime) * 1000
+                << "scheduled_people" << static_cast<std::int64_t>(mappedScene->configuration().people.size())
+                << "scheduled_tracks" << static_cast<std::int64_t>(mappedScene->events().size() / 2);
+        collection.insert_one(summary << bsoncxx::builder::stream::finalize);
     }
 
     // Signalize the simulation has finished so that the renderer can swap buffers if needed
@@ -830,6 +950,13 @@ void Simulation::update() {
     // Update timestamp
     timestamp = generateISOTimestamp(simulationTime, datetime);
     
+    if (mappedScene) {
+        // Scripted route progress uses simulation time only. This first mapped
+        // source does not claim crowd interaction or a new collision solver.
+        updateMappedAgents(simulationTime.asMilliseconds());
+        return;
+    }
+
     // Clear the grid
     collisionGrid.clear();
 
@@ -894,6 +1021,15 @@ void Simulation::postMetadata() {
              << "frame_rate" << 1/timeStep
              << "cell_size" << collisionGridCellSize;
 
+    if (mappedScene) {
+        document << "source_model" << "mapped_visits"
+                 << "observation_identity_unit" << "visible_episode_track"
+                 << "ground_truth_identity_unit" << "synthetic_person"
+                 << "support_contract" << "one_episode_per_retained_history"
+                 << "minimum_hidden_gap_ms" << mappedScene->minimumHiddenGapMs().value_or(0)
+                 << "motion_model" << "scheduled_polyline_without_crowd_interactions";
+    }
+
     // Insert the metadata document into the collection
     try {
         collection.insert_one(document << bsoncxx::builder::stream::finalize);
@@ -936,6 +1072,10 @@ void Simulation::postData(const std::vector<Agent>& agents) {
                      << "position" << positionDocument
                      << "velocity" << velocityDocument;
 
+            if (mappedScene) {
+                document << "observation_track_id" << agent.agentId
+                         << "private_person_id" << mappedScene->privatePersonForTrack(agent.agentId);
+            }
             documents.push_back(document << bsoncxx::builder::stream::finalize);
         }
 
@@ -945,6 +1085,7 @@ void Simulation::postData(const std::vector<Agent>& agents) {
             collection.insert_many(documents);
         } catch (const mongocxx::exception& e) {
             std::cerr << "An error occurred while inserting documents: " << e.what() << std::endl;
+            if (mappedScene) throw; // A verified mapped experiment cannot silently lose GT.
         }
     }
 }

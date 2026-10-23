@@ -1,0 +1,2 @@
+-r ../osm_regions/requirements.txt
+PyYAML==6.0.3

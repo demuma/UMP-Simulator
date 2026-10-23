@@ -7,9 +7,37 @@ requirements and stated limits before broadening the mechanism. Membership attac
 remain deferred. Recipient-contract diagnosis, runtime profiling and prefix-based
 ownership lookup, occupied-leaf discovery, sorted history ranges and merge-range
 lookup are complete, with unchanged policy/coordination/publication output.
-Diagnostic costs and full/off file output are measured and verified. Today's presentation structure is ready; next implement the first functional-region scenario through the maintained Simulator and normal Policy Tree path. October 18 is historical.**
+Diagnostic costs and full/off file output are measured and verified. Today's presentation structure is ready. M01 now verifies one bounded mapped entrance/visit source through the maintained Simulator and normal Policy Tree path. Next review source/task assumptions and compare fair fixed/adaptive settings (M02), then revisit measured performance (M03). The full three-scenario effectiveness study remains open. October 18 is historical.**
 
 **October 22–23 checkpoint:**
+
+- [x] **M01 mapped scene, sequential gate:** implement and verify the
+  [80-m route/lifecycle and identity contract](docs/MAPPED_SCENE_IDENTITY_CONTRACT_2026-10-23.md)
+  through the maintained Simulator: 64 modeled people / 80 visible tracks / 16
+  visits, one verified entrance, four normal regional policy patches and five
+  pedestrian profiles. Stable identity remains private GT, with no oracle linkage
+  in aggregation. All 77 CTest suites, eight generator checks, sanitizer checks,
+  paired 90-s native audits and a 20-s rendered smoke test pass. The 1,050 releases
+  pass independent checks and private GT renaming preserves full logical output.
+  See the [test report](docs/MAPPED_SCENE_TEST_REPORT_2026-10-23.md). Kinematic
+  movement, long hidden gaps and scenario-local taxonomy are explicit limits.
+- [ ] **M02 mapped experiment gate:** review source flows, query tasks and local
+  policy requirements; compare fixed grid/window, static regional and adaptive
+  settings on identical observations. Report retained data, subtype availability,
+  query error/coverage and delay. All M01 releases generalize to Pedestrian; this
+  is not a demonstrated privacy gain or baseline advantage. Keep the original
+  residential / shopfront / crossing plan as separate, unfinished scenarios.
+- [ ] **General person-support / fragmented-track gate:** operational support is
+  distinct tracks. The first scene enforces hidden gap > retained history; the
+  real-sensor short-gap regression deliberately produces two tracks from one GT
+  person. Define conservative support/uncertainty and evaluate fragmentation before
+  general person-level claims. Do not deduplicate runtime data with private GT.
+- [ ] **M03 renewed optimization gate after mapped-scene correctness:** profile source
+  motion, sensor capture, regional/semantic checks, history and merge queries,
+  diagnostics and publication separately. The audited 9,531 private empty-retirement
+  checkpoints are an explicit I/O workload to inspect; their runtime share and
+  durability trade-off are not established. Preserve identical logical output before
+  and after each optimization; report source deadlines and receipt/queueing delay.
 
 - [x] **Optional real-map feasibility gate (October 23):** use a real Mönckebergstraße
   OSM extract, project functional regions and conservatively discretise three
@@ -17,11 +45,13 @@ Diagnostic costs and full/off file output are measured and verified. Today's pre
   leaves and 1,364 nonroot ancestors per case with production PolicyTree code.
   Save attributable PNG/SVG figures, a compressed geometry-only snapshot and
   independent geometry/provenance checks. See the [report](docs/OSM_MOENCKEBERG_FEASIBILITY_2026-10-23.md).
-- [ ] Keep full OSM → normal Simulator Region configuration, traversable map/routes,
-  portals, collision obstacles and visit labels as a later integration gate.
-  A kilometre-scale D6 root has 16-m cells in this test; local 80-m D6 footprints
-  retain 1.25-m cells. Neither import nor finer depth is a measured privacy gain.
-  Complete the first controlled residential scenario before broadening this path.
+- [ ] Complete full-map OSM → normal Region configuration, general traversable
+  routes/portals, collision obstacles and validated visit labels. M01 implements
+  only one checked entrance, four explicit routes and four normal policy patches.
+  A kilometre-scale D6 root has 16-m cells in this test; the local 80-m D6 footprint
+  retains 1.25-m cells. Neither import nor finer depth is a measured privacy gain.
+  The actual Rappolthaus entrance is not verified as residential. Complete the
+  controlled effectiveness scenarios before broadening this path.
 
 - [x] Make replay cell inspection explicit: keyboard-selectable cell list, selected
   outline, focus zoom, released categories and opt-in private original groups for

@@ -63,6 +63,7 @@ if(UMP_BUILD_SENSOR_REGRESSION_TESTS)
     enable_testing()
     add_executable(SensorRegressionTests
         tests/SensorRegressionTests.cpp
+        src/MappedScene.cpp
         src/Sensor.cpp
         src/AgentBasedSensor.cpp
         src/GridBasedSensor.cpp
@@ -367,3 +368,23 @@ foreach(core_target Simulator SensorRegressionTests AggregationRegressionTests M
         target_link_libraries(${core_target} PRIVATE ump_semantic)
     endif()
 endforeach()
+
+# Standard-C++ mapped source + strict YAML adaptation; no DB/window in these tests.
+option(UMP_BUILD_MAPPED_SCENE_TESTS "Build mapped route, lifecycle, identity and semantic tests" ON)
+if(UMP_BUILD_MAPPED_SCENE_TESTS)
+    enable_testing()
+    add_executable(MappedSceneTests tests/MappedSceneTests.cpp src/MappedScene.cpp)
+    target_compile_features(MappedSceneTests PRIVATE cxx_std_17)
+    add_test(NAME mapped_scene COMMAND MappedSceneTests)
+    add_executable(MappedSceneConfigurationTests tests/MappedSceneConfigurationTests.cpp
+        src/MappedScene.cpp src/MappedSceneConfiguration.cpp)
+    target_compile_features(MappedSceneConfigurationTests PRIVATE cxx_std_17)
+    target_link_libraries(MappedSceneConfigurationTests PRIVATE yaml-cpp::yaml-cpp)
+    add_test(NAME mapped_scene_configuration COMMAND MappedSceneConfigurationTests)
+    add_executable(MappedPedestrianSemanticTests tests/MappedPedestrianSemanticTests.cpp)
+    target_compile_features(MappedPedestrianSemanticTests PRIVATE cxx_std_17)
+    target_link_libraries(MappedPedestrianSemanticTests PRIVATE ump_semantic)
+    add_test(NAME mapped_pedestrian_semantics COMMAND MappedPedestrianSemanticTests)
+    set_tests_properties(mapped_scene mapped_scene_configuration mapped_pedestrian_semantics
+        PROPERTIES LABELS "unit;mapped_scene" TIMEOUT 15)
+endif()

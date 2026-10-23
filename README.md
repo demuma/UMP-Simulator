@@ -59,14 +59,40 @@ synthetic results and verification are recorded in the October 19 test report. T
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 
+**October 23 bounded mapped-scene gate:** the maintained Simulator now runs an
+opt-in 80 × 80-m Mönckebergstraße scene at D6 (1.25-m finest cells). Explicit routes,
+one verified entrance and private indoor visits produce 64 modeled people, 80
+visible-episode tracks and 16 visits over 90 s. Stroller and mobility-aid profiles
+join Adult, Child and Senior under the truthful Pedestrian semantic parent.
+The normal Region → PolicyTree path supplies four local constraint patches.
+Stable person identity stays in private GT; sensors/aggregation receive episode
+tracks only. This controlled source requires hidden gaps longer than retained
+history; a separate short-gap regression demonstrates two tracks from one person.
+It does not provide general person-level support or re-identification guarantees.
+
+[77 CTest suites and eight generator tests pass](docs/MAPPED_SCENE_TEST_REPORT_2026-10-23.md).
+Two native runs with renamed private GT IDs have identical sensor and recipient
+contents. All 1,050 releases pass independent policy/count checks; 87.04% of measured
+observation contributions survive, all generalized to Pedestrian. Actual output
+uses 1.25 / 2.5 / 5 / 10-m cells and 0.4–4-s windows. This demonstrates bounded
+source/aggregation correctness, not baseline superiority or measured privacy gain.
+Motion is kinematic; crowd collision, body clearance and calibrated visit rates
+remain open. The [run guide](tools/mapped_scene/README.md) starts the native demo;
+the [identity contract](docs/MAPPED_SCENE_IDENTITY_CONTRACT_2026-10-23.md) and
+[compact results](docs/MAPPED_SCENE_RESULTS_2026-10-23.json) define its scope.
+Next review the source/tasks and compare fair fixed/adaptive settings, then revisit
+measured runtime costs, including 9,531 private empty-retirement checkpoints.
+
 **October 23 optional OSM feasibility gate:**
 [Real Mönckebergstraße map figures and production PolicyTree checks](docs/OSM_MOENCKEBERG_FEASIBILITY_2026-10-23.md)
 are available. Separate D6 domains of 1,024 / 160 / 80 m produce 16 / 2.5 / 1.25-m
 leaves. Every exported grid and inherited regional constraint is checked; the
 compact source and reproduction tools are in `tools/osm_regions/`. This is map
 preprocessing and core-policy compilation, with explicit geometry assumptions.
-Full Simulator map/movement integration and privacy results remain open. The
-three controlled scenarios still come next, starting with residential entrances.
+The subsequent bounded mapped-scene gate above integrates checked routes and four
+normal policy patches into the Simulator. Full-map traversal, a complete obstacle
+model and the three controlled effectiveness scenarios remain open. Rappolthaus is
+a verified entrance, with unverified building function; it is not labeled residential.
 
 **October 23 diagnostic-cost and presentation gate:**
 [74 CTest suites pass](docs/DIAGNOSTIC_COST_TEST_REPORT_2026-10-23.md). Explicit

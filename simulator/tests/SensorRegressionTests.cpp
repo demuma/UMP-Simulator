@@ -1,3 +1,4 @@
+#include "MappedScene.hpp"
 #include "AgentBasedSensor.hpp"
 #include "GridBasedSensor.hpp"
 #include "AdaptiveGridBasedSensor.hpp"
@@ -50,6 +51,134 @@ void verifyGrid(mongocxx::collection collection, TimePoint origin, const Counts&
     }
     require(observed == expected, "Grid cadence or occupancy differs from expected observations");
 }
+// Exercise real sensors with visible-episode tracks and a private one-person
+// oracle. Reuse only this fixture's UUID-owned database and separate collections.
+void verifyMappedSensorLifecycle(const std::shared_ptr<mongocxx::client>& client,
+    const std::string& databaseName, TestDatabase& fixture, TimePoint origin) {
+    // This deliberately short hidden gap is a support counterexample, not the
+    // integrated first scene's stricter one-episode-per-retained-history mode.
+    const ump::MappedScene scene({20, 20,
+        {{"mapped-fixture-in", {{0, 1}, {2, 1}}, "", "mapped-fixture-door"},
+            {"mapped-fixture-out", {{2, 1}, {0, 1}}, "mapped-fixture-door", ""}},
+        {{"private-oracle-person-not-observable", "Adult Pedestrian", 10,
+            {{"opaque-first-track", "mapped-fixture-in", 0},
+                {"opaque-second-track", "mapped-fixture-out", 1200}}}}});
+    require(scene.episodeEndMs("opaque-first-track") == 200
+        && scene.episodeEndMs("opaque-second-track") == 1400
+        && scene.minimumHiddenGapMs() == 1000, "Mapped sensor fixture schedule is wrong");
+
+    const sf::FloatRect area({0.f, 0.f}, {20.f, 20.f});
+    AgentBasedSensor abs(10.f, area, databaseName, "mapped_abs", client, "mapped-abs");
+    GridBasedSensor gbs(10.f, area, 5.f, databaseName, "mapped_gbs", client, "mapped-gbs");
+    AdaptiveGridBasedSensor agbs(10.f, area, 10.f, 2, databaseName, "mapped_agbs", client, "mapped-agbs");
+    std::vector<ump::AggregationCandidate> candidates;
+    agbs.enableAggregation({"mapped-regression", agbs.sensorId, "track-support-counterexample",
+        {0, 0, 20, 20, 2}, 100, 2000}, .05f, origin,
+        [&](const auto& candidate) { candidates.push_back(candidate); });
+
+    Agent::AgentTypeAttributes attributes{};
+    std::set<std::string> observedTracks, privatePeople;
+    std::size_t measuredFrames = 0, hiddenMeasurements = 0;
+    for (int ms = 0; ms < 2000; ms += 50) {
+        const auto visible = scene.frameAt(ms);
+        std::vector<Agent> agents;
+        for (const auto& track : visible) {
+            agents.emplace_back(attributes);
+            auto& agent = agents.back();
+            // This is the entire observation identity bridge. Stable private
+            // person identity is never assigned to Agent or supplied to sensors.
+            agent.agentId = track.trackId;
+            agent.type = track.type;
+            agent.position = {static_cast<float>(track.position.x), static_cast<float>(track.position.y)};
+            agent.velocity = {static_cast<float>(track.velocity.x), static_cast<float>(track.velocity.y)};
+            agent.bodyRadius = .25f;
+        }
+        const auto timestamp = origin + std::chrono::milliseconds{ms};
+        SensorFrameBuilder builder(timestamp);
+        for (Sensor* sensor : {static_cast<Sensor*>(&abs), static_cast<Sensor*>(&gbs), static_cast<Sensor*>(&agbs)}) {
+            sensor->update(agents, .05f, timestamp);
+            if (auto sample = sensor->takeSample())
+                builder.add(sensor->sensorId, sensor->timestamp, std::move(*sample));
+            sensor->postData();
+        }
+        const bool due = ms > 0 && ms % 100 == 0;
+        const auto frame = std::move(builder).finish();
+        require(static_cast<bool>(frame) == due, "Mapped source changed fixed sensor cadence");
+        if (!due) continue;
+        ++measuredFrames;
+        require(frame->first == timestamp && frame->second.size() == 3,
+            "Mapped sensors lost their common timestamp or a measured-empty contribution");
+        const auto* absSample = findSensorSample<AgentSensorSample>(frame->second, abs.sensorId);
+        const auto* gbsSample = findSensorSample<GridSensorSample>(frame->second, gbs.sensorId);
+        const auto* agbsSample = findSensorSample<AdaptiveGridSensorSample>(frame->second, agbs.sensorId);
+        require(absSample && gbsSample && agbsSample, "Mapped sensor payload type/identity missing");
+        require(absSample->detectedAgents == visible.size(), "ABS detected a hidden person or missed a visible track");
+        int gridTotal = 0, adaptiveTotal = 0;
+        for (const auto& cell : gbsSample->cells) gridTotal += cell.counts.totalAgents;
+        for (const auto& cell : agbsSample->cells) adaptiveTotal += cell.second.totalAgents;
+        require(gridTotal == static_cast<int>(visible.size())
+            && adaptiveTotal == static_cast<int>(visible.size()),
+            "Grid sensors observed private hidden dwell state");
+        if (visible.empty()) {
+            ++hiddenMeasurements;
+            require(absSample->agents.empty() && gbsSample->cells.empty() && agbsSample->cells.empty(),
+                "A hidden interval reused old ABS, GBS or AGBS data");
+        }
+        if (ms == 1200)
+            require(absSample->detectedAgents == 1 && absSample->agents.empty(),
+                "Fresh return track bypassed ABS velocity warm-up");
+        if (ms == 1300)
+            require(absSample->agents.size() == 1
+                && absSample->agents.front().agentId == "opaque-second-track"
+                && std::abs(absSample->agents.front().estimatedVelocity.x + 10.f) < 1e-5,
+                "ABS failed to estimate return velocity from two observations of the new track");
+        // Oracle use is confined to this independent test audit, after sensors
+        // have processed operational Agent objects. It never changes their input.
+        for (const auto& track : visible) {
+            observedTracks.insert(track.trackId);
+            privatePeople.insert(scene.privatePersonForTrack(track.trackId));
+        }
+    }
+    agbs.finishAggregation(origin + std::chrono::milliseconds{2000});
+    require(measuredFrames == 19 && hiddenMeasurements == 16,
+        "Mapped source did not preserve scheduled empty observations");
+    require(candidates.size() == 1 && candidates.front().startMs == 0
+        && candidates.front().endMs == 2000 && !candidates.front().truncated
+        && candidates.front().coverage == ump::WindowCoverage::Complete
+        && candidates.front().measuredSamples == 19
+        && candidates.front().counts.observationContributions == 3,
+        "Mapped AGBS source interval/capture accounting is wrong");
+    require(candidates.front().counts.distinctContributors == 2 && observedTracks.size() == 2
+        && privatePeople.size() == 1,
+        "AGBS must expose two-track/one-person inflation rather than silently receive GT reconnection");
+
+    const Counts gridCounts{{100, 1}, {1200, 1}, {1300, 1}};
+    verifyGrid(fixture.db["mapped_gbs"], origin, gridCounts);
+    verifyGrid(fixture.db["mapped_agbs"], origin, gridCounts);
+    Counts absCounts;
+    std::set<std::pair<int64_t, std::string>> absKeys;
+    for (auto row : fixture.db["mapped_abs"].find({})) {
+        const auto ms = sampleTime(row, origin);
+        const std::string track{row["agent_id"].get_string().value};
+        require(track == "opaque-first-track" || track == "opaque-second-track",
+            "Private person identifier crossed the ABS database boundary");
+        require(!row["private_person_id"] && !row["person_id"], "ABS row exposed a private person field");
+        require(absKeys.emplace(ms, track).second, "Mapped ABS duplicated a track/timestamp");
+        ++absCounts[ms];
+        const auto velocity = row["estimated_velocity"].get_document().view();
+        require(std::abs(velocity["x"].get_double().value - (ms == 100 ? 10. : -10.)) < 1e-5
+            && std::abs(velocity["y"].get_double().value) < 1e-5,
+            "Mapped ABS emitted a wrong initial/return interval velocity");
+    }
+    require(absCounts == Counts{{100, 1}, {1300, 1}}
+        && absKeys.count({1200, "opaque-second-track"}) == 0,
+        "Mapped ABS first sightings or hidden frames leaked into stored observations");
+    for (const auto* collectionName : {"mapped_gbs", "mapped_agbs"})
+        for (auto row : fixture.db[collectionName].find({}))
+            require(!row["agent_id"] && !row["private_person_id"] && !row["person_id"],
+                "Grid capture exposed an individual/private identifier");
+}
+
 }
 
 int main() {
@@ -69,6 +198,7 @@ int main() {
         require(!renderOnly.getAggregationManager() && !agbs.getAggregationManager(),
             "Disabled/render-only AGBS unexpectedly instantiated a manager");
         const auto origin = TimePoint{std::chrono::milliseconds{1744191000000LL}};
+        verifyMappedSensorLifecycle(client, name, fixture, origin);
         std::vector<ump::AggregationCandidate> fastCandidates, slowCandidates;
         ump::AggregationConfig fastConfig{"fixture", agbs.sensorId, "baseline", {0, 0, 20, 20, 2}, 100, 400};
         fastConfig.history = ump::HistoryLimits{1000, 16, 1000, 64000, 16};
