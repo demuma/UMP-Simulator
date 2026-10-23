@@ -32,7 +32,7 @@ Membership attacks remain deferred. The recipient-contract and runtime-diagnosti
 gates below are complete. Prefix-based ownership lookup and dedicated occupied-leaf
 history discovery, sorted history ranges and targeted merge ownership lookup are
 implemented and verified with unchanged full logical output;
-paced/live latency validation remains open. Shared sampling
+paced/live latency is now measured, with integrated deadline compliance still open. Shared sampling
 initialization, single-use ABS batches and local observation assembly are implemented
 and regression-tested. Complete typed sensor frames, stable renderer identity routing and
 bounded, nonblocking renderer consumption are implemented (S04/S01). S05 now paces
@@ -58,6 +58,18 @@ public-only calibrated empirical membership benchmark are now implemented. Contr
 synthetic results and verification are recorded in the October 19 test report. The historical
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
+
+**October 23 paced/live gate:** [73 CTest suites pass](docs/PACED_LIVE_TEST_REPORT_2026-10-23.md).
+Independently paced 100-ms replay preserves the complete frozen output: ordinary
+service p95 73.90 ms, maximum 87.97 ms, peak queue 1/8. A two-minute live run takes
+122.26 s headless and a separate rendered realization 142.26 s; dense early steps
+miss their 50-ms target. Drawing is comparatively small; detailed diagnostics,
+durable publication and additional live progress calls need separate cost review.
+All 18,257 long-run releases match committed journals; all owned test databases and
+large generated diagnostics were removed. The planned longer paired movement capture
+awaits explicit temporary-storage permission after automatic approval rejection.
+See [compact results](docs/PACED_LIVE_RESULTS_2026-10-23.json). These measurements
+establish neither a hard real-time bound nor a new privacy guarantee.
 
 **October 23 recipient/runtime gate:** [forty frozen evaluations](docs/RECIPIENT_CONTRACT_REPORT_2026-10-23.md)
 now distinguish exact answers from optional uniform occupancy estimates, using
@@ -102,8 +114,9 @@ and not established beyond run variability. With both changes, local core time i
 is 66.02–68.04 ms, while maxima remain variable at 77.34–86.19 ms. No policy,
 publication or threading changes. See the
 [stage-by-stage runtime report](docs/HISTORY_MERGE_OPTIMIZATION_RUNTIME_REPORT_2026-10-23.md).
-Paced/live queue and receipt measurements remain necessary; this does not establish
-a hard per-tick deadline, end-to-end real-time operation or measured privacy improvement.
+The subsequent paced/live measurements above still leave dense integrated deadline
+compliance open. These optimizations do not establish a hard per-tick deadline or
+measured privacy improvement.
 
 The bounded [recorded moving-data pilot](docs/MOVING_REPLAY.md) uses the existing C++
 Simulator with its seven maintained Road User profiles, verified GT/AGBS capture and
@@ -430,9 +443,11 @@ all ten full logical outputs while reducing local runtime. The subsequent
 [occupied-leaf query](docs/OCCUPIED_LEAF_QUERY_RUNTIME_REPORT_2026-10-23.md) reduces
 refinement reconstruction further, without changing policies or output. Subsequent
 [history/merge range lookup](docs/HISTORY_MERGE_OPTIMIZATION_RUNTIME_REPORT_2026-10-23.md)
-reduces local core time further to 9.448–9.501 s on the same 20-s input. Validate longer paced
-and live operation before a real-time claim; keep application/semantic-cap studies
-separate from implementation throughput.
+reduces local core time further to 9.448–9.501 s on the same 20-s input. The
+[paced/live gate](docs/PACED_LIVE_TEST_REPORT_2026-10-23.md) now preserves all logical
+outputs under paced input but exposes dense live deadline misses. Next separate
+live diagnostic serialization/flush costs from aggregation and publication; keep
+application/semantic-cap studies separate from implementation throughput.
 Review the aggregator's agreed requirements and remaining limits at every gate. Privacy evaluation then follows with a declared protected secret and
 recipient model; its policies and scenarios need explicit design. A new utility
 optimizer, movement generator or attack matrix is not started automatically.

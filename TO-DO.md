@@ -7,7 +7,7 @@ requirements and stated limits before broadening the mechanism. Membership attac
 remain deferred. Recipient-contract diagnosis, runtime profiling and prefix-based
 ownership lookup, occupied-leaf discovery, sorted history ranges and merge-range
 lookup are complete, with unchanged policy/coordination/publication output.
-Next validate longer paced/live latency and predeclare the semantic-cap comparison. October 18 is historical.**
+Paced/live latency has been measured; next profile the integrated diagnostic path and predeclare the semantic-cap comparison. October 18 is historical.**
 
 **October 22–23 checkpoint:**
 
@@ -137,14 +137,35 @@ Next validate longer paced/live latency and predeclare the semantic-cap comparis
   versus fresh baseline 11.430 s. Final p95 is 66.02–68.04 ms and maxima
   77.34–86.19 ms, with 0/597 services above 100 ms. Keep scan counts distinct from
   lookup comparisons and CPU time. [Runtime report](docs/HISTORY_MERGE_OPTIMIZATION_RUNTIME_REPORT_2026-10-23.md).
-- [ ] **Next real-time verification gate:** use longer paced input and then the live
-  sensor/renderer/database path, measuring actual receipt latency, queue growth and
-  memory over time. Preserve logical window age separately from wall-clock service,
-  queue and transport delay; define overload/backpressure behavior. The latest
-  measured input maxima stay below 100 ms, but this short offline trace is not a
-  hard deadline bound. Sorted history ranges and merge lookup are now implemented;
-  further caching or parallelization requires a new measured bottleneck and must
-  preserve exact identity unions, expiry and retry checks.
+- [x] **Paced/live measurement gate:** add opt-in independent input pacing with a
+  bounded FIFO, explicit overload failure, per-event timing and separate history/RSS
+  sampling. All 73 CTest suites pass; complete 20-s output equals its unpaced and
+  historical references. Service p95 is 73.90 ms, maximum 87.97 ms; EOF scheduled
+  completion is 101.27 ms and is reported separately. See the
+  [protocol](docs/PACED_LIVE_PROTOCOL_2026-10-23.md) and
+  [test report](docs/PACED_LIVE_TEST_REPORT_2026-10-23.md).
+- [x] Measure two-minute live headless and rendered paths with isolated owned
+  databases, exact cadence and recipient/journal reconciliation. Headless takes
+  122.26 s; separate rendered realization takes 142.26 s. First 20 s headless
+  requires 26.07 s service; declining population makes total averages optimistic.
+  Renderer source-to-draw p95 is 461.55 ms, drawing itself p95 4.76 ms. All 12 owned
+  test databases and 2.004 GB generated diagnostics were removed after verification.
+- [ ] Complete the longer identical-moving-input paced comparison if temporary
+  local capture is explicitly approved. Automatic approval review rejected the
+  planned 60-s export under the earlier storage restriction; permission is pending.
+  Neither long live run exported movement data. Do not label the current 20-s
+  paired trace as a longer paired recording.
+- [ ] **Next integrated latency gate:** separately time detailed diagnostic
+  construction/serialization/flush and publication on the live event ordering.
+  Headless diagnostics reach 958.5 MB in 120 logical seconds, but their CPU/I/O
+  cost is not yet isolated. Consider a bounded configurable diagnostic path only
+  after exact-output checks. Do not skip 50-ms progress calls or parallelize the
+  controller without proving unchanged window/expiry/publication semantics.
+- [ ] Review renderer progress drift and backpressure: capacity 8 bounds queued
+  frames, yet measured playback is 0.8464x. The clock schedules from actual
+  consumption and does not catch up. Decide acceptable presentation lag separately
+  from source processing and scientific aggregation age; enlarging queues is not
+  a real-time fix. No hard real-time or sustained-density guarantee is established.
 - [ ] Review agreed aggregator requirements at each gate: hard eligibility versus
   preference, intermediate tiers, regional bounds, independent starts, current
   merges/future handoffs, irreversible publication, complete source retirement,

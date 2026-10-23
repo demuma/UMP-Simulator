@@ -1,0 +1,2097 @@
+{
+  "schema": "ump.paced-live-gate.v1",
+  "date": "2026-10-23",
+  "base_revision": "5d3cc4b07e216753219ea05bc2c8e1b74e5c5071",
+  "protocol_sha256": "100be9b0ecd16abae5f2e50fc1eb35223d12d5744268a04c4db99b942a1b3ed1",
+  "tests": {
+    "initial_ctest_passed": 71,
+    "initial_ctest_total": 71,
+    "initial_wall_seconds": 18.52,
+    "final_ctest_passed": 73,
+    "final_ctest_total": 73,
+    "final_wall_seconds": 18.88,
+    "small_paced_equivalence_cases": 8,
+    "summary_unit_methods": 6,
+    "live_helper_unit_methods": 11
+  },
+  "frozen_paced": {
+    "artifacts": {
+      "binary": {
+        "bytes": 774448,
+        "sha256": "085ed26b672d97eddc1cafebf13243f70de4257ecdf6fa0f4ba2ed441abaf53b"
+      },
+      "paced_output": {
+        "bytes": 22647992,
+        "sha256": "cabb8ea58b578e469d8fe1ed556296e10015065baba5ddbea1386f11c202bd9c"
+      },
+      "protocol": {
+        "bytes": 4310,
+        "sha256": "100be9b0ecd16abae5f2e50fc1eb35223d12d5744268a04c4db99b942a1b3ed1"
+      },
+      "source": {
+        "bytes": 13245379,
+        "sha256": "ab4fadf254bfb5432018ff4bd305cd16d82a7475ae3d934c14c4f9af67dd5cf1"
+      },
+      "summarizer": {
+        "bytes": 12444,
+        "sha256": "7713f7302a29b7b560b698228228b88f93ef7832519bc965839658f253ebc75a"
+      },
+      "unpaced_output": {
+        "bytes": 21893161,
+        "sha256": "b2b682f0a568f62df81ac093650b7511ae96e8739cd7ed9d85ad0d829497c3fb"
+      }
+    },
+    "cadence": {
+      "actual_enqueue_to_completion": {
+        "count": 199,
+        "max_ms": 87.98462499999914,
+        "mean_ms": 53.530734306532686,
+        "p50_ms": 49.92783299999974,
+        "p95_ms": 73.91520899999887,
+        "p99_ms": 83.71950000000015
+      },
+      "enqueue_lock_delay": {
+        "count": 199,
+        "max_ms": 0.018083999999817024,
+        "mean_ms": 0.0002478894472143887,
+        "p50_ms": 0.0001249999995707185,
+        "p95_ms": 0.00033400000029359944,
+        "p99_ms": 0.0009580000005371403
+      },
+      "queue_wait": {
+        "count": 199,
+        "max_ms": 0.08724999999958527,
+        "mean_ms": 0.017373331658305846,
+        "p50_ms": 0.014083000000027823,
+        "p95_ms": 0.048166999999921245,
+        "p99_ms": 0.0782920000001468
+      },
+      "scheduled_arrival_to_completion": {
+        "count": 199,
+        "max_ms": 98.00820799999929,
+        "mean_ms": 60.979594216080415,
+        "p50_ms": 58.86591700000008,
+        "p95_ms": 82.75329199999999,
+        "p99_ms": 93.74162500000011
+      },
+      "service": {
+        "count": 199,
+        "max_ms": 87.97120799999902,
+        "mean_ms": 53.513360974874374,
+        "p50_ms": 49.91229100000055,
+        "p95_ms": 73.90074999999888,
+        "p99_ms": 83.70533300000034
+      },
+      "source_scheduling_lateness": {
+        "count": 199,
+        "max_ms": 10.247416999999587,
+        "mean_ms": 7.44861202010052,
+        "p50_ms": 9.679583000000093,
+        "p95_ms": 10.02929199999926,
+        "p99_ms": 10.061041999999986
+      }
+    },
+    "cadence_service_over_offered_interval": 0,
+    "consumer_busy_fraction": 0.5343138141676528,
+    "consumer_service_total_ms": 10740.385709,
+    "coordination": "cell_local",
+    "finish": {
+      "actual_enqueue_to_completion": {
+        "count": 1,
+        "max_ms": 91.24529199999961,
+        "mean_ms": 91.24529199999961,
+        "p50_ms": 91.24529199999961,
+        "p95_ms": 91.24529199999961,
+        "p99_ms": 91.24529199999961
+      },
+      "enqueue_lock_delay": {
+        "count": 1,
+        "max_ms": 8.299999899463728e-05,
+        "mean_ms": 8.299999899463728e-05,
+        "p50_ms": 8.299999899463728e-05,
+        "p95_ms": 8.299999899463728e-05,
+        "p99_ms": 8.299999899463728e-05
+      },
+      "queue_wait": {
+        "count": 1,
+        "max_ms": 0.01841699999931734,
+        "mean_ms": 0.01841699999931734,
+        "p50_ms": 0.01841699999931734,
+        "p95_ms": 0.01841699999931734,
+        "p99_ms": 0.01841699999931734
+      },
+      "scheduled_arrival_to_completion": {
+        "count": 1,
+        "max_ms": 101.26900000000023,
+        "mean_ms": 101.26900000000023,
+        "p50_ms": 101.26900000000023,
+        "p95_ms": 101.26900000000023,
+        "p99_ms": 101.26900000000023
+      },
+      "service": {
+        "count": 1,
+        "max_ms": 91.22687500000029,
+        "mean_ms": 91.22687500000029,
+        "p50_ms": 91.22687500000029,
+        "p95_ms": 91.22687500000029,
+        "p99_ms": 91.22687500000029
+      },
+      "source_scheduling_lateness": {
+        "count": 1,
+        "max_ms": 10.02362500000163,
+        "mean_ms": 10.02362500000163,
+        "p50_ms": 10.02362500000163,
+        "p95_ms": 10.02362500000163,
+        "p99_ms": 10.02362500000163
+      }
+    },
+    "limitations": [
+      "The producer replays preloaded observations; parsing, validation and core setup precede the arrival origin.",
+      "Service includes per-step in-memory serialization and telemetry; consumer busy fraction is wall-clock occupancy, not CPU utilization.",
+      "EOF is separate from ordinary cadence events; paced processing time includes intentional waits.",
+      "Release timing is an in-memory acknowledgement, not external application or MongoDB receipt.",
+      "Process RSS includes preloaded input and retained research diagnostics; history counters are sampled and not total heap accounting.",
+      "Sampled maxima are not continuous peaks, except the process high-water RSS counter itself.",
+      "Logical equivalence and measured latency do not establish a hard realtime guarantee."
+    ],
+    "logical_output_equal_excluding_runtime": true,
+    "memory": {
+      "counters": {
+        "history_bins": {
+          "final": 20,
+          "initial": 0,
+          "sampled_max": 21
+        },
+        "history_buckets": {
+          "final": 0,
+          "initial": 0,
+          "sampled_max": 0
+        },
+        "history_identity_bytes": {
+          "final": 524850,
+          "initial": 0,
+          "sampled_max": 555975
+        },
+        "history_observations": {
+          "final": 9911,
+          "initial": 0,
+          "sampled_max": 10500
+        },
+        "process_peak_resident_bytes": {
+          "final": 608288768,
+          "initial": 608288768,
+          "sampled_max": 608288768
+        },
+        "process_resident_bytes": {
+          "final": 119799808,
+          "initial": 100941824,
+          "sampled_max": 119799808
+        },
+        "retained_result_bytes": {
+          "final": 22582990,
+          "initial": 0,
+          "sampled_max": 22582990
+        }
+      },
+      "sample_count": 21
+    },
+    "mode": "semantic_first",
+    "offered_load": {
+      "peak_queue_depth": 1,
+      "queue_capacity": 8,
+      "rate": 1,
+      "wall_cadence_ms": 100.0
+    },
+    "paced_processing_ms_including_waits": 20101.294792,
+    "quantile_definition": "nearest rank, ceil(p*n)",
+    "release": {
+      "count": 2554,
+      "logical_sealing_delay": {
+        "count": 2554,
+        "max_ms": 0,
+        "mean_ms": 0.0,
+        "p50_ms": 0,
+        "p95_ms": 0,
+        "p99_ms": 0
+      },
+      "scheduled_logical_seal_to_in_memory_ack": {
+        "count": 2554,
+        "max_ms": 75.34924999999998,
+        "mean_ms": 57.93967081127643,
+        "p50_ms": 58.86866700000064,
+        "p95_ms": 67.99666699999989,
+        "p99_ms": 71.17820799999998
+      },
+      "scheduled_window_end_to_in_memory_ack": {
+        "count": 2554,
+        "max_ms": 75.34924999999998,
+        "mean_ms": 57.93967081127643,
+        "p50_ms": 58.86866700000064,
+        "p95_ms": 67.99666699999989,
+        "p99_ms": 71.17820799999998
+      }
+    },
+    "schema": "ump.paced-replay-summary.v1",
+    "source": {
+      "accounted_observation_contributions": 99140,
+      "input_observation_contributions": 99140,
+      "logical_duration_ms": 20000,
+      "sampling_period_ms": 100
+    },
+    "unpaced_control_processing_ms": 9169.498417,
+    "wall_horizon_through_finish_ms": 20101.269
+  },
+  "frozen_runs": {
+    "binary_sha256": "085ed26b672d97eddc1cafebf13243f70de4257ecdf6fa0f4ba2ed441abaf53b",
+    "input_sha256": "ab4fadf254bfb5432018ff4bd305cd16d82a7475ae3d934c14c4f9af67dd5cf1",
+    "policy_sha256": "5c21a59e5bec746aac92433ab9c3378f9dba5d9f678da48d3e37f9ba8b85b949",
+    "runs": [
+      {
+        "name": "reference",
+        "argv": [
+          "/Users/maxdemu/Developer/UMP-Simulator/simulator/build/AggregationReplay",
+          "--input",
+          "results/moving-replay-2026-10-21/n500/capture/observations.json",
+          "--config",
+          "/Users/maxdemu/Developer/UMP-Simulator/results/moving-scoped-comparison-2026-10-22/cell_local_temporal_first/policy.json",
+          "--mode",
+          "semantic_first",
+          "--output",
+          "/private/tmp/ump-live-2026-10-23/frozen20/reference.json"
+        ],
+        "wall_seconds": 10.599162625,
+        "returncode": 0
+      },
+      {
+        "name": "paced",
+        "argv": [
+          "/Users/maxdemu/Developer/UMP-Simulator/simulator/build/AggregationReplay",
+          "--input",
+          "results/moving-replay-2026-10-21/n500/capture/observations.json",
+          "--config",
+          "/Users/maxdemu/Developer/UMP-Simulator/results/moving-scoped-comparison-2026-10-22/cell_local_temporal_first/policy.json",
+          "--mode",
+          "semantic_first",
+          "--output",
+          "/private/tmp/ump-live-2026-10-23/frozen20/paced.json",
+          "--pace-rate",
+          "1",
+          "--queue-capacity",
+          "8"
+        ],
+        "wall_seconds": 21.483271000000002,
+        "returncode": 0
+      }
+    ],
+    "full_logical_output_equalities": 2
+  },
+  "overload_smoke": {
+    "returncode": 1,
+    "result_exists": false,
+    "stderr": "AggregationReplay: Paced replay overloaded/cancelled: logical_time_ms=300, queue_capacity=1, peak_queue_depth=1, scheduled_arrival_ms=0.300000, enqueue_attempt_ms=0.334209; no successful replay result was written\n",
+    "argv": [
+      "/Users/maxdemu/Developer/UMP-Simulator/simulator/build/AggregationReplay",
+      "--input",
+      "/Users/maxdemu/Developer/UMP-Simulator/results/moving-replay-2026-10-21/n500/capture/observations.json",
+      "--config",
+      "/Users/maxdemu/Developer/UMP-Simulator/results/moving-scoped-comparison-2026-10-22/cell_local_temporal_first/policy.json",
+      "--mode",
+      "semantic_first",
+      "--output",
+      "/private/tmp/ump-live-2026-10-23/overload.json",
+      "--pace-rate",
+      "1000",
+      "--queue-capacity",
+      "1"
+    ]
+  },
+  "live": {
+    "schema": "ump.live-pipeline-results.v1",
+    "date": "2026-10-23",
+    "source_revision": "5d3cc4b07e216753219ea05bc2c8e1b74e5c5071",
+    "instrumentation_only": true,
+    "production_pacing_changed": false,
+    "policy_sha256": "5c21a59e5bec746aac92433ab9c3378f9dba5d9f678da48d3e37f9ba8b85b949",
+    "history_limits": {
+      "retention_ms": 2000,
+      "max_bins": 32,
+      "max_observations": 100000,
+      "max_identity_bytes": 16000000,
+      "max_buckets": 128
+    },
+    "queue_capacity": 8,
+    "maintained_example_default_capacity": 128,
+    "timings_inclusive_nonadditive": true,
+    "stochastic_runs_not_paired": true,
+    "runs": [
+      {
+        "id": "live-smoke",
+        "manifest_phase": "verified_with_cleanup_recovery",
+        "owned_databases_dropped": true,
+        "config_sha256": "593c97c40dd65b7f2735eac2f4efbd76ea17bea35fdac7bdde494a65fe1dc9cf",
+        "instrumented_simulator_sha256": "b93f934f925977e67ad788810c22317b728b82b06483769642472e40500b5494",
+        "executed_harness_sha256": "b55b8066a207cb30bd86ecaacc1a01fa987a8589a267798c5bd24319fad38ddc",
+        "summary": {
+          "wall_seconds": 7.619924167,
+          "requested_logical_seconds": 5,
+          "source_steps": 100,
+          "renderer_frames": 0,
+          "max_rss_kib": 76176,
+          "stages": {
+            "aggregation_advance": {
+              "count": 100,
+              "total_ms": 6091.998373999999,
+              "mean_ms": 60.91998373999999,
+              "p50_ms": 9.347792,
+              "p95_ms": 326.716584,
+              "p99_ms": 344.135792,
+              "max_ms": 413.001958
+            },
+            "aggregation_finish": {
+              "count": 1,
+              "total_ms": 150.058084,
+              "mean_ms": 150.058084,
+              "p50_ms": 150.058084,
+              "p95_ms": 150.058084,
+              "p99_ms": 150.058084,
+              "max_ms": 150.058084
+            },
+            "aggregation_ingest": {
+              "count": 49,
+              "total_ms": 258.917454,
+              "mean_ms": 5.284029673469388,
+              "p50_ms": 5.379,
+              "p95_ms": 7.975708,
+              "p99_ms": 8.676209,
+              "max_ms": 8.676209
+            },
+            "ground_truth_write": {
+              "count": 100,
+              "total_ms": 440.749913,
+              "mean_ms": 4.40749913,
+              "p50_ms": 4.282,
+              "p95_ms": 5.751417,
+              "p99_ms": 6.427542,
+              "max_ms": 7.759333
+            },
+            "history_state": {
+              "count": 49,
+              "total_ms": 0.0010830000000000004,
+              "mean_ms": 2.2102040816326538e-05,
+              "p50_ms": 4.1e-05,
+              "p95_ms": 4.2e-05,
+              "p99_ms": 4.2e-05,
+              "max_ms": 4.2e-05
+            },
+            "local_state": {
+              "count": 149,
+              "total_ms": 0.005627000000000001,
+              "mean_ms": 3.776510067114095e-05,
+              "p50_ms": 0,
+              "p95_ms": 0.000167,
+              "p99_ms": 0.000292,
+              "max_ms": 0.000333
+            },
+            "motion_collision": {
+              "count": 100,
+              "total_ms": 35.27195999999998,
+              "mean_ms": 0.3527195999999998,
+              "p50_ms": 0.318375,
+              "p95_ms": 0.52425,
+              "p99_ms": 0.594375,
+              "max_ms": 0.614042
+            },
+            "publication_ack": {
+              "count": 673,
+              "total_ms": 483.0534899999996,
+              "mean_ms": 0.7177615007429414,
+              "p50_ms": 0.631458,
+              "p95_ms": 0.984709,
+              "p99_ms": 1.50225,
+              "max_ms": 30.687208
+            },
+            "publication_commit": {
+              "count": 673,
+              "total_ms": 549.4034309999997,
+              "mean_ms": 0.8163498231797915,
+              "p50_ms": 0.788042,
+              "p95_ms": 1.174375,
+              "p99_ms": 1.622417,
+              "max_ms": 2.178292
+            },
+            "publication_prepare": {
+              "count": 673,
+              "total_ms": 432.5337720000002,
+              "mean_ms": 0.6426950549777121,
+              "p50_ms": 0.504625,
+              "p95_ms": 1.103167,
+              "p99_ms": 2.396542,
+              "max_ms": 31.488667
+            },
+            "publication_publish": {
+              "count": 673,
+              "total_ms": 482.97999100000015,
+              "mean_ms": 0.7176522897473999,
+              "p50_ms": 0.631416,
+              "p95_ms": 0.984625,
+              "p99_ms": 1.502208,
+              "max_ms": 30.686958
+            },
+            "raw_sensor_write": {
+              "count": 100,
+              "total_ms": 211.94369899999998,
+              "mean_ms": 2.1194369899999996,
+              "p50_ms": 0.000125,
+              "p95_ms": 4.942208,
+              "p99_ms": 5.379584,
+              "max_ms": 6.344125
+            },
+            "sensor_update": {
+              "count": 100,
+              "total_ms": 6373.491044,
+              "mean_ms": 63.73491044,
+              "p50_ms": 9.379083,
+              "p95_ms": 332.439583,
+              "p99_ms": 349.22025,
+              "max_ms": 415.474584
+            },
+            "simulation_step": {
+              "count": 100,
+              "total_ms": 7065.169915999999,
+              "mean_ms": 70.65169915999999,
+              "p50_ms": 16.200542,
+              "p95_ms": 343.149334,
+              "p99_ms": 358.564958,
+              "max_ms": 425.393333
+            },
+            "source_state": {
+              "count": 100,
+              "total_ms": 0.004041999999999999,
+              "mean_ms": 4.041999999999999e-05,
+              "p50_ms": 4.1e-05,
+              "p95_ms": 4.2e-05,
+              "p99_ms": 4.2e-05,
+              "max_ms": 0.001542
+            },
+            "timing_buffer": {
+              "count": 1,
+              "total_ms": 4.1e-05,
+              "mean_ms": 4.1e-05,
+              "p50_ms": 4.1e-05,
+              "p95_ms": 4.1e-05,
+              "p99_ms": 4.1e-05,
+              "max_ms": 4.1e-05
+            },
+            "source_to_receipt": {
+              "count": 0
+            },
+            "source_to_draw": {
+              "count": 0
+            },
+            "source_wall_intervals": {
+              "count": 99,
+              "total_ms": 7052.3577080000005,
+              "mean_ms": 71.23593644444445,
+              "p50_ms": 16.285416999999597,
+              "p95_ms": 343.44441700000016,
+              "p99_ms": 425.39337500000005,
+              "max_ms": 425.39337500000005
+            },
+            "population": {
+              "initial": 500,
+              "final": 498,
+              "minimum": 498,
+              "maximum": 500
+            },
+            "source_steps_over_50ms": 45,
+            "history_maxima": {
+              "bins": 21,
+              "observations": 10497,
+              "identity_bytes": 555825,
+              "buckets": 0
+            },
+            "local_maxima": {
+              "frontier": 2308,
+              "handoffs": 0,
+              "handoff_intents": 0,
+              "pending": 0
+            },
+            "instrumentation_buffer_bytes": 262144,
+            "publication_start_to_ack": {
+              "count": 673,
+              "total_ms": 495780.45438699983,
+              "mean_ms": 736.6722947800889,
+              "p50_ms": 756.1907080000001,
+              "p95_ms": 899.9444169999997,
+              "p99_ms": 946.340708,
+              "max_ms": 1587.3477090000001
+            },
+            "publication_end_to_ack": {
+              "count": 671,
+              "total_ms": 119091.93490900009,
+              "mean_ms": 177.4842547078988,
+              "p50_ms": 176.10725000000093,
+              "p95_ms": 305.9185000000002,
+              "p99_ms": 368.68300000000005,
+              "max_ms": 399.71441599999997
+            },
+            "queue_high_water": {
+              "agent": 0,
+              "sensor": 0
+            }
+          },
+          "mongo_release_count": 673,
+          "mongo_journal_count": 673
+        },
+        "diagnostic_files_removed_after_audit": [
+          {
+            "file": "candidates-1177039C-263F-4145-A7A6-CCB6E0E0F05D.jsonl",
+            "bytes": 19535939
+          },
+          {
+            "file": "selection-4FA0B268-BF5E-4578-B248-7A8093D6DB22.jsonl",
+            "bytes": 35838012
+          }
+        ],
+        "cleanup_note": "Initial mongosh convenience property for underscore-prefixed collection failed. Explicit getCollection owner check succeeded; only the three owned UUID databases were then dropped."
+      },
+      {
+        "id": "live-smoke-verified",
+        "manifest_phase": "verified",
+        "owned_databases_dropped": true,
+        "config_sha256": "0b7f0d99e1212fb95bf9cada5817a9907ebb6345be62b5bd1a7af661895a7c7b",
+        "instrumented_simulator_sha256": "b93f934f925977e67ad788810c22317b728b82b06483769642472e40500b5494",
+        "executed_harness_sha256": "858bf381c5f7c8ce8e96b3416d02c9cd51dd57e255621f8ac64cdb2630e665c7",
+        "summary": {
+          "wall_seconds": 7.606821666000001,
+          "requested_logical_seconds": 5,
+          "source_steps": 100,
+          "renderer_frames": 0,
+          "max_rss_kib": 73440,
+          "stages": {
+            "aggregation_advance": {
+              "count": 100,
+              "total_ms": 5976.293339000001,
+              "mean_ms": 59.76293339000001,
+              "p50_ms": 9.552625,
+              "p95_ms": 334.067917,
+              "p99_ms": 342.073875,
+              "max_ms": 411.303791
+            },
+            "aggregation_finish": {
+              "count": 1,
+              "total_ms": 156.823083,
+              "mean_ms": 156.823083,
+              "p50_ms": 156.823083,
+              "p95_ms": 156.823083,
+              "p99_ms": 156.823083,
+              "max_ms": 156.823083
+            },
+            "aggregation_ingest": {
+              "count": 49,
+              "total_ms": 244.49204300000005,
+              "mean_ms": 4.989633530612246,
+              "p50_ms": 4.953125,
+              "p95_ms": 8.133292,
+              "p99_ms": 8.853166,
+              "max_ms": 8.853166
+            },
+            "ground_truth_write": {
+              "count": 100,
+              "total_ms": 449.3512539999999,
+              "mean_ms": 4.493512539999999,
+              "p50_ms": 4.366458,
+              "p95_ms": 6.301833,
+              "p99_ms": 7.363791,
+              "max_ms": 7.394833
+            },
+            "history_state": {
+              "count": 49,
+              "total_ms": 0.0010410000000000005,
+              "mean_ms": 2.1244897959183683e-05,
+              "p50_ms": 4.1e-05,
+              "p95_ms": 4.2e-05,
+              "p99_ms": 4.2e-05,
+              "max_ms": 4.2e-05
+            },
+            "local_state": {
+              "count": 149,
+              "total_ms": 0.005914999999999998,
+              "mean_ms": 3.96979865771812e-05,
+              "p50_ms": 4.1e-05,
+              "p95_ms": 0.000166,
+              "p99_ms": 0.000333,
+              "max_ms": 0.000458
+            },
+            "motion_collision": {
+              "count": 100,
+              "total_ms": 34.506253000000015,
+              "mean_ms": 0.34506253000000014,
+              "p50_ms": 0.317083,
+              "p95_ms": 0.466292,
+              "p99_ms": 0.493833,
+              "max_ms": 0.500791
+            },
+            "publication_ack": {
+              "count": 702,
+              "total_ms": 507.5216299999998,
+              "mean_ms": 0.7229652849002846,
+              "p50_ms": 0.615292,
+              "p95_ms": 1.220459,
+              "p99_ms": 2.064416,
+              "max_ms": 31.310458
+            },
+            "publication_commit": {
+              "count": 702,
+              "total_ms": 583.0113600000003,
+              "mean_ms": 0.8305005128205133,
+              "p50_ms": 0.776333,
+              "p95_ms": 1.301375,
+              "p99_ms": 2.148667,
+              "max_ms": 5.406334
+            },
+            "publication_prepare": {
+              "count": 702,
+              "total_ms": 502.7162420000003,
+              "mean_ms": 0.7161200028490032,
+              "p50_ms": 0.517042,
+              "p95_ms": 1.529375,
+              "p99_ms": 2.80725,
+              "max_ms": 32.815375
+            },
+            "publication_publish": {
+              "count": 702,
+              "total_ms": 507.4217300000006,
+              "mean_ms": 0.7228229772079781,
+              "p50_ms": 0.61525,
+              "p95_ms": 1.220417,
+              "p99_ms": 2.06425,
+              "max_ms": 31.310041
+            },
+            "raw_sensor_write": {
+              "count": 100,
+              "total_ms": 237.25622000000004,
+              "mean_ms": 2.3725622000000004,
+              "p50_ms": 0.00025,
+              "p95_ms": 5.581042,
+              "p99_ms": 6.594125,
+              "max_ms": 6.646834
+            },
+            "sensor_update": {
+              "count": 100,
+              "total_ms": 6243.884290999999,
+              "mean_ms": 62.43884290999999,
+              "p50_ms": 9.575708,
+              "p95_ms": 338.777166,
+              "p99_ms": 348.222083,
+              "max_ms": 413.214167
+            },
+            "simulation_step": {
+              "count": 100,
+              "total_ms": 6968.873338,
+              "mean_ms": 69.68873338,
+              "p50_ms": 15.63475,
+              "p95_ms": 349.1015,
+              "p99_ms": 357.828708,
+              "max_ms": 421.981625
+            },
+            "source_state": {
+              "count": 100,
+              "total_ms": 0.0023339999999999993,
+              "mean_ms": 2.3339999999999993e-05,
+              "p50_ms": 0,
+              "p95_ms": 4.2e-05,
+              "p99_ms": 4.2e-05,
+              "max_ms": 0.000584
+            },
+            "timing_buffer": {
+              "count": 1,
+              "total_ms": 0,
+              "mean_ms": 0.0,
+              "p50_ms": 0,
+              "p95_ms": 0,
+              "p99_ms": 0,
+              "max_ms": 0
+            },
+            "source_to_receipt": {
+              "count": 0
+            },
+            "source_to_draw": {
+              "count": 0
+            },
+            "source_wall_intervals": {
+              "count": 99,
+              "total_ms": 6953.638124999999,
+              "mean_ms": 70.23876893939392,
+              "p50_ms": 15.681208999999853,
+              "p95_ms": 352.68045800000004,
+              "p99_ms": 421.98175000000003,
+              "max_ms": 421.98175000000003
+            },
+            "population": {
+              "initial": 500,
+              "final": 498,
+              "minimum": 498,
+              "maximum": 500
+            },
+            "source_steps_over_50ms": 43,
+            "history_maxima": {
+              "bins": 21,
+              "observations": 10489,
+              "identity_bytes": 555370,
+              "buckets": 0
+            },
+            "local_maxima": {
+              "frontier": 2275,
+              "handoffs": 0,
+              "handoff_intents": 0,
+              "pending": 0
+            },
+            "instrumentation_buffer_bytes": 262144,
+            "publication_start_to_ack": {
+              "count": 702,
+              "total_ms": 515355.46965900046,
+              "mean_ms": 734.1246006538468,
+              "p50_ms": 753.3432920000005,
+              "p95_ms": 900.1293749999998,
+              "p99_ms": 940.1005,
+              "max_ms": 1591.8383329999997
+            },
+            "publication_end_to_ack": {
+              "count": 700,
+              "total_ms": 130586.23448999996,
+              "mean_ms": 186.5517635571428,
+              "p50_ms": 186.36408299999948,
+              "p95_ms": 313.20066600000064,
+              "p99_ms": 369.8731250000001,
+              "max_ms": 402.85129200000006
+            },
+            "queue_high_water": {
+              "agent": 0,
+              "sensor": 0
+            }
+          },
+          "mongo_release_count": 702,
+          "mongo_journal_count": 702
+        },
+        "diagnostic_files_removed_after_audit": [
+          {
+            "file": "candidates-FDC7C1F5-BD18-458D-BF64-82136BEE85E7.jsonl",
+            "bytes": 19167471
+          },
+          {
+            "file": "selection-1637F5E0-AC9D-438E-AA12-2C5A6310050F.jsonl",
+            "bytes": 34178713
+          }
+        ]
+      },
+      {
+        "id": "live-headless-120",
+        "manifest_phase": "verified",
+        "owned_databases_dropped": true,
+        "config_sha256": "445600c5903c65102508d34e972e238738ef71167ba6ba7f4d4c90445f576bc4",
+        "instrumented_simulator_sha256": "b93f934f925977e67ad788810c22317b728b82b06483769642472e40500b5494",
+        "executed_harness_sha256": "d0a966373f66078d45237d20867a5a1782033b6cd8a0a62886edaf32ea4bed34",
+        "summary": {
+          "wall_seconds": 122.26189225,
+          "requested_logical_seconds": 120,
+          "source_steps": 2400,
+          "renderer_frames": 0,
+          "max_rss_kib": 119200,
+          "stages": {
+            "aggregation_advance": {
+              "count": 2400,
+              "total_ms": 105271.35294300006,
+              "mean_ms": 43.863063726250026,
+              "p50_ms": 11.537,
+              "p95_ms": 166.6055,
+              "p99_ms": 258.629167,
+              "max_ms": 370.684833
+            },
+            "aggregation_finish": {
+              "count": 1,
+              "total_ms": 16.514125,
+              "mean_ms": 16.514125,
+              "p50_ms": 16.514125,
+              "p95_ms": 16.514125,
+              "p99_ms": 16.514125,
+              "max_ms": 16.514125
+            },
+            "aggregation_ingest": {
+              "count": 1199,
+              "total_ms": 6679.817786999993,
+              "mean_ms": 5.57115745371142,
+              "p50_ms": 6.211375,
+              "p95_ms": 8.774542,
+              "p99_ms": 9.505334,
+              "max_ms": 15.185834
+            },
+            "ground_truth_write": {
+              "count": 2400,
+              "total_ms": 5810.03422799999,
+              "mean_ms": 2.420847594999996,
+              "p50_ms": 2.209417,
+              "p95_ms": 4.216583,
+              "p99_ms": 5.26175,
+              "max_ms": 14.545084
+            },
+            "history_state": {
+              "count": 1199,
+              "total_ms": 0.019643000000000122,
+              "mean_ms": 1.6382819015846642e-05,
+              "p50_ms": 0,
+              "p95_ms": 4.2e-05,
+              "p99_ms": 4.2e-05,
+              "max_ms": 4.2e-05
+            },
+            "local_state": {
+              "count": 3599,
+              "total_ms": 0.14855500000000002,
+              "mean_ms": 4.127674353987219e-05,
+              "p50_ms": 4.1e-05,
+              "p95_ms": 0.000167,
+              "p99_ms": 0.000458,
+              "max_ms": 0.001333
+            },
+            "motion_collision": {
+              "count": 2400,
+              "total_ms": 368.80066899999963,
+              "mean_ms": 0.1536669454166665,
+              "p50_ms": 0.142458,
+              "p95_ms": 0.301667,
+              "p99_ms": 0.374917,
+              "max_ms": 0.473208
+            },
+            "publication_ack": {
+              "count": 9314,
+              "total_ms": 5393.265604000003,
+              "mean_ms": 0.5790493455013961,
+              "p50_ms": 0.526917,
+              "p95_ms": 1.055,
+              "p99_ms": 1.641,
+              "max_ms": 135.446916
+            },
+            "publication_commit": {
+              "count": 9314,
+              "total_ms": 6352.758776999998,
+              "mean_ms": 0.682065576229332,
+              "p50_ms": 0.659,
+              "p95_ms": 1.183417,
+              "p99_ms": 1.68425,
+              "max_ms": 12.943292
+            },
+            "publication_prepare": {
+              "count": 9314,
+              "total_ms": 5194.203432999988,
+              "mean_ms": 0.5576769844320365,
+              "p50_ms": 0.436417,
+              "p95_ms": 1.064333,
+              "p99_ms": 1.62325,
+              "max_ms": 238.504667
+            },
+            "publication_publish": {
+              "count": 9314,
+              "total_ms": 5392.2529620000105,
+              "mean_ms": 0.5789406229332199,
+              "p50_ms": 0.526708,
+              "p95_ms": 1.055,
+              "p99_ms": 1.640917,
+              "max_ms": 135.446667
+            },
+            "raw_sensor_write": {
+              "count": 2400,
+              "total_ms": 3114.2548750000024,
+              "mean_ms": 1.2976061979166678,
+              "p50_ms": 0.000375,
+              "p95_ms": 4.103166,
+              "p99_ms": 4.909625,
+              "max_ms": 15.641583
+            },
+            "sensor_update": {
+              "count": 2400,
+              "total_ms": 112298.28427600003,
+              "mean_ms": 46.79095178166668,
+              "p50_ms": 11.586791,
+              "p95_ms": 174.61925,
+              "p99_ms": 265.84075,
+              "max_ms": 382.35025
+            },
+            "simulation_step": {
+              "count": 2400,
+              "total_ms": 121665.61428800006,
+              "mean_ms": 50.69400595333336,
+              "p50_ms": 15.538084,
+              "p95_ms": 180.505292,
+              "p99_ms": 272.418208,
+              "max_ms": 390.389791
+            },
+            "source_state": {
+              "count": 2400,
+              "total_ms": 0.04422900000000019,
+              "mean_ms": 1.842875000000008e-05,
+              "p50_ms": 0,
+              "p95_ms": 4.2e-05,
+              "p99_ms": 4.2e-05,
+              "max_ms": 0.000708
+            },
+            "timing_buffer": {
+              "count": 1,
+              "total_ms": 0,
+              "mean_ms": 0.0,
+              "p50_ms": 0,
+              "p95_ms": 0,
+              "p99_ms": 0,
+              "max_ms": 0
+            },
+            "source_to_receipt": {
+              "count": 0,
+              "unmatched_count": 0
+            },
+            "source_to_draw": {
+              "count": 0,
+              "unmatched_count": 0
+            },
+            "source_wall_intervals": {
+              "count": 2399,
+              "total_ms": 121664.70608300003,
+              "mean_ms": 50.714758684035026,
+              "p50_ms": 15.565708000001905,
+              "p95_ms": 181.23483299999498,
+              "p99_ms": 272.95412499999975,
+              "max_ms": 390.3897500000021
+            },
+            "population": {
+              "initial": 500,
+              "final": 28,
+              "minimum": 28,
+              "maximum": 500
+            },
+            "source_steps_over_50ms": 978,
+            "source_step_groups": {
+              "sensor_due_100ms": {
+                "count": 1199,
+                "total_ms": 110374.73518200008,
+                "mean_ms": 92.05565903419523,
+                "p50_ms": 77.826458,
+                "p95_ms": 238.937875,
+                "p99_ms": 289.523,
+                "max_ms": 390.389791
+              },
+              "no_sensor_sample_50ms": {
+                "count": 1201,
+                "total_ms": 11290.879106000006,
+                "mean_ms": 9.401231562031645,
+                "p50_ms": 10.122292,
+                "p95_ms": 14.980208,
+                "p99_ms": 16.864625,
+                "max_ms": 24.734208
+              }
+            },
+            "source_step_group_scope": "50-ms simulation / 100-ms sensor configuration; includes all synchronous writes and queue blocking",
+            "history_maxima": {
+              "bins": 21,
+              "observations": 10500,
+              "identity_bytes": 555975,
+              "buckets": 0,
+              "sample_count": 1199
+            },
+            "local_maxima": {
+              "frontier": 2227,
+              "handoffs": 0,
+              "handoff_intents": 0,
+              "pending": 0,
+              "sample_count": 3599
+            },
+            "state_maxima_scope": "sampled after normal sensor ingest/local advance; not peaks within a call or EOF",
+            "instrumentation_buffer_bytes": 4194304,
+            "publication_ack_counts": {
+              "acknowledged_calls": 9314,
+              "unacknowledged_calls": 0,
+              "during_eof": 0
+            },
+            "publication_start_to_ack": {
+              "count": 9314,
+              "total_ms": 5344251.826690997,
+              "mean_ms": 573.7869687235342,
+              "p50_ms": 590.0835000000006,
+              "p95_ms": 759.3861250000045,
+              "p99_ms": 966.0465409999997,
+              "max_ms": 1526.2047500000044,
+              "unmatched_count": 0,
+              "during_eof": {
+                "count": 0
+              },
+              "during_regular_steps": {
+                "count": 9314,
+                "total_ms": 5344251.826690997,
+                "mean_ms": 573.7869687235342,
+                "p50_ms": 590.0835000000006,
+                "p95_ms": 759.3861250000045,
+                "p99_ms": 966.0465409999997,
+                "max_ms": 1526.2047500000044
+              }
+            },
+            "publication_end_to_ack": {
+              "count": 9314,
+              "total_ms": 877542.2056630016,
+              "mean_ms": 94.21754409093855,
+              "p50_ms": 79.04145799999242,
+              "p95_ms": 207.16520899999887,
+              "p99_ms": 250.66829099999995,
+              "max_ms": 344.6064170000027,
+              "unmatched_count": 0,
+              "during_eof": {
+                "count": 0
+              },
+              "during_regular_steps": {
+                "count": 9314,
+                "total_ms": 877542.2056630016,
+                "mean_ms": 94.21754409093855,
+                "p50_ms": 79.04145799999242,
+                "p95_ms": 207.16520899999887,
+                "p99_ms": 250.66829099999995,
+                "max_ms": 344.6064170000027
+              }
+            },
+            "publication_seal_to_ack": {
+              "count": 9314,
+              "total_ms": 877542.2056630016,
+              "mean_ms": 94.21754409093855,
+              "p50_ms": 79.04145799999242,
+              "p95_ms": 207.16520899999887,
+              "p99_ms": 250.66829099999995,
+              "max_ms": 344.6064170000027,
+              "unmatched_count": 0,
+              "during_eof": {
+                "count": 0
+              },
+              "during_regular_steps": {
+                "count": 9314,
+                "total_ms": 877542.2056630016,
+                "mean_ms": 94.21754409093855,
+                "p50_ms": 79.04145799999242,
+                "p95_ms": 207.16520899999887,
+                "p99_ms": 250.66829099999995,
+                "max_ms": 344.6064170000027
+              }
+            },
+            "publication_latency_scope": "Start/end/seal refer to logical window boundaries mapped to source-state wall starts; EOF uses aggregation_finish start. ACK is recipient database acknowledgment before private-journal commit, not external client receipt. No external source schedule is implied.",
+            "queue_high_water": {
+              "agent": 0,
+              "sensor": 0
+            }
+          },
+          "mongo_release_count": 9314,
+          "mongo_journal_count": 9314,
+          "verification": {
+            "trace": {
+              "source_steps": 2400,
+              "renderer_frames": 0,
+              "exclusive_end_ms": 120000,
+              "queue_capacity": 8
+            },
+            "mongo": {
+              "ground_truth_frames": 2400,
+              "sensor_frames": 1199,
+              "acknowledged_releases": 9314,
+              "publication_contract": "fresh no-retry namespace; complete recipient/journal payload equality checked by Mongo audit"
+            }
+          }
+        },
+        "diagnostic_files_removed_after_audit": [
+          {
+            "file": "candidates-2C5E279B-5A1B-4C47-A05F-3347B072C3C5.jsonl",
+            "bytes": 296288468
+          },
+          {
+            "file": "selection-AB213822-FDFD-4E1A-80E0-C16E0A775B20.jsonl",
+            "bytes": 662215782
+          }
+        ],
+        "phases": [
+          {
+            "start_ms": 0,
+            "end_ms": 20000,
+            "population_start": 500,
+            "population_end": 487,
+            "step_service": {
+              "count": 400,
+              "total_ms": 26067.473830999992,
+              "mean_ms": 65.16868457749997,
+              "p50_ms": 16.229667,
+              "p95_ms": 272.954083,
+              "p99_ms": 294.204417,
+              "max_ms": 354.461958
+            },
+            "sensor_due_step_service": {
+              "count": 199,
+              "total_ms": 23737.135205999995,
+              "mean_ms": 119.28208646231154,
+              "p50_ms": 74.139291,
+              "p95_ms": 285.812542,
+              "p99_ms": 309.586,
+              "max_ms": 354.461958
+            },
+            "publication_store_service_ms": 4477.241445000006,
+            "acknowledged_releases": 2529
+          },
+          {
+            "start_ms": 20000,
+            "end_ms": 40000,
+            "population_start": 487,
+            "population_end": 436,
+            "step_service": {
+              "count": 400,
+              "total_ms": 27559.024408999994,
+              "mean_ms": 68.89756102249999,
+              "p50_ms": 24.277792,
+              "p95_ms": 227.308292,
+              "p99_ms": 245.767792,
+              "max_ms": 390.389791
+            },
+            "sensor_due_step_service": {
+              "count": 200,
+              "total_ms": 24805.010500000004,
+              "mean_ms": 124.02505250000002,
+              "p50_ms": 95.622167,
+              "p95_ms": 238.937875,
+              "p99_ms": 252.171291,
+              "max_ms": 390.389791
+            },
+            "publication_store_service_ms": 4364.262576999982,
+            "acknowledged_releases": 2153
+          },
+          {
+            "start_ms": 40000,
+            "end_ms": 60000,
+            "population_start": 436,
+            "population_end": 356,
+            "step_service": {
+              "count": 400,
+              "total_ms": 24288.027510999993,
+              "mean_ms": 60.72006877749998,
+              "p50_ms": 24.734208,
+              "p95_ms": 181.374375,
+              "p99_ms": 201.4025,
+              "max_ms": 213.457459
+            },
+            "sensor_due_step_service": {
+              "count": 200,
+              "total_ms": 21859.191222999998,
+              "mean_ms": 109.295956115,
+              "p50_ms": 87.811333,
+              "p95_ms": 192.976375,
+              "p99_ms": 204.619667,
+              "max_ms": 213.457459
+            },
+            "publication_store_service_ms": 2955.9231130000016,
+            "acknowledged_releases": 1815
+          },
+          {
+            "start_ms": 60000,
+            "end_ms": 80000,
+            "population_start": 356,
+            "population_end": 264,
+            "step_service": {
+              "count": 400,
+              "total_ms": 20523.52333499999,
+              "mean_ms": 51.308808337499975,
+              "p50_ms": 13.922417,
+              "p95_ms": 151.49525,
+              "p99_ms": 160.725625,
+              "max_ms": 167.631167
+            },
+            "sensor_due_step_service": {
+              "count": 200,
+              "total_ms": 18618.80858299999,
+              "mean_ms": 93.09404291499996,
+              "p50_ms": 78.668208,
+              "p95_ms": 157.86825,
+              "p99_ms": 161.339417,
+              "max_ms": 167.631167
+            },
+            "publication_store_service_ms": 2560.0296399999984,
+            "acknowledged_releases": 1564
+          },
+          {
+            "start_ms": 80000,
+            "end_ms": 100000,
+            "population_start": 264,
+            "population_end": 152,
+            "step_service": {
+              "count": 400,
+              "total_ms": 15395.773957,
+              "mean_ms": 38.4894348925,
+              "p50_ms": 10.433708,
+              "p95_ms": 119.567959,
+              "p99_ms": 136.718125,
+              "max_ms": 165.913542
+            },
+            "sensor_due_step_service": {
+              "count": 200,
+              "total_ms": 14080.841959999996,
+              "mean_ms": 70.40420979999998,
+              "p50_ms": 58.9715,
+              "p95_ms": 127.369375,
+              "p99_ms": 144.327291,
+              "max_ms": 165.913542
+            },
+            "publication_store_service_ms": 1869.4372870000009,
+            "acknowledged_releases": 931
+          },
+          {
+            "start_ms": 100000,
+            "end_ms": 120000,
+            "population_start": 152,
+            "population_end": 28,
+            "step_service": {
+              "count": 400,
+              "total_ms": 7831.791245,
+              "mean_ms": 19.579478112500002,
+              "p50_ms": 5.942708,
+              "p95_ms": 62.326167,
+              "p99_ms": 101.436125,
+              "max_ms": 333.587834
+            },
+            "sensor_due_step_service": {
+              "count": 200,
+              "total_ms": 7273.74771,
+              "mean_ms": 36.368738549999996,
+              "p50_ms": 32.843417,
+              "p95_ms": 73.129167,
+              "p99_ms": 110.422208,
+              "max_ms": 333.587834
+            },
+            "publication_store_service_ms": 712.3211100000011,
+            "acknowledged_releases": 322
+          }
+        ],
+        "verification": {
+          "trace": {
+            "source_steps": 2400,
+            "renderer_frames": 0,
+            "exclusive_end_ms": 120000,
+            "queue_capacity": 8
+          },
+          "mongo": {
+            "ground_truth_frames": 2400,
+            "sensor_frames": 1199,
+            "acknowledged_releases": 9314,
+            "publication_contract": "fresh no-retry namespace; complete recipient/journal payload equality checked by Mongo audit"
+          }
+        },
+        "event_count": 60055,
+        "trace_sha256": "eb980cbb09407bd047116cc5f9a89985748ce95deee99c7ab8ff0bdc8d80dd40"
+      },
+      {
+        "id": "live-renderer-120",
+        "manifest_phase": "verified",
+        "owned_databases_dropped": true,
+        "config_sha256": "86d87220943848b70c34f5aa888a8f59b92c55bc4006a3551274a815e49254ec",
+        "instrumented_simulator_sha256": "b93f934f925977e67ad788810c22317b728b82b06483769642472e40500b5494",
+        "executed_harness_sha256": "976fb97509cb3066995a93abf31b2b48de13d77fd9fd21f890d97673647dcf02",
+        "summary": {
+          "wall_seconds": 142.26118,
+          "requested_logical_seconds": 120,
+          "source_steps": 2400,
+          "renderer_frames": 2400,
+          "max_rss_kib": 245904,
+          "stages": {
+            "agent_queue_write": {
+              "count": 2400,
+              "total_ms": 20168.275922999976,
+              "mean_ms": 8.40344830124999,
+              "p50_ms": 0.000292,
+              "p95_ms": 48.248917,
+              "p99_ms": 49.6105,
+              "max_ms": 51.723709
+            },
+            "aggregation_advance": {
+              "count": 2400,
+              "total_ms": 104904.27044799998,
+              "mean_ms": 43.71011268666666,
+              "p50_ms": 11.701416,
+              "p95_ms": 179.601125,
+              "p99_ms": 260.3425,
+              "max_ms": 397.194833
+            },
+            "aggregation_finish": {
+              "count": 1,
+              "total_ms": 20.31325,
+              "mean_ms": 20.31325,
+              "p50_ms": 20.31325,
+              "p95_ms": 20.31325,
+              "p99_ms": 20.31325,
+              "max_ms": 20.31325
+            },
+            "aggregation_ingest": {
+              "count": 1199,
+              "total_ms": 6728.963663999999,
+              "mean_ms": 5.612146508757297,
+              "p50_ms": 6.403708,
+              "p95_ms": 9.129833,
+              "p99_ms": 9.898125,
+              "max_ms": 12.544208
+            },
+            "ground_truth_write": {
+              "count": 2400,
+              "total_ms": 5569.666611,
+              "mean_ms": 2.32069442125,
+              "p50_ms": 2.36375,
+              "p95_ms": 3.785,
+              "p99_ms": 4.473084,
+              "max_ms": 16.600041
+            },
+            "history_state": {
+              "count": 1199,
+              "total_ms": 0.02316400000000015,
+              "mean_ms": 1.931943286071739e-05,
+              "p50_ms": 0,
+              "p95_ms": 4.2e-05,
+              "p99_ms": 4.2e-05,
+              "max_ms": 4.2e-05
+            },
+            "local_state": {
+              "count": 3599,
+              "total_ms": 0.2195679999999997,
+              "mean_ms": 6.100805779383154e-05,
+              "p50_ms": 4.1e-05,
+              "p95_ms": 0.00025,
+              "p99_ms": 0.0005,
+              "max_ms": 0.015334
+            },
+            "motion_collision": {
+              "count": 2400,
+              "total_ms": 356.7931709999998,
+              "mean_ms": 0.1486638212499999,
+              "p50_ms": 0.131125,
+              "p95_ms": 0.307375,
+              "p99_ms": 0.370208,
+              "max_ms": 0.469583
+            },
+            "publication_ack": {
+              "count": 8943,
+              "total_ms": 5071.467391999996,
+              "mean_ms": 0.567087933802974,
+              "p50_ms": 0.539417,
+              "p95_ms": 0.832583,
+              "p99_ms": 1.249417,
+              "max_ms": 29.368209
+            },
+            "publication_commit": {
+              "count": 8943,
+              "total_ms": 6395.279124999974,
+              "mean_ms": 0.7151156351336211,
+              "p50_ms": 0.687625,
+              "p95_ms": 1.092625,
+              "p99_ms": 1.437583,
+              "max_ms": 3.523917
+            },
+            "publication_prepare": {
+              "count": 8943,
+              "total_ms": 5090.2331260000165,
+              "mean_ms": 0.5691863050430522,
+              "p50_ms": 0.481292,
+              "p95_ms": 0.988792,
+              "p99_ms": 1.57175,
+              "max_ms": 84.110375
+            },
+            "publication_publish": {
+              "count": 8943,
+              "total_ms": 5071.02909499999,
+              "mean_ms": 0.5670389237392363,
+              "p50_ms": 0.539375,
+              "p95_ms": 0.8325,
+              "p99_ms": 1.249375,
+              "max_ms": 29.368083
+            },
+            "raw_sensor_write": {
+              "count": 2400,
+              "total_ms": 3054.6606959999967,
+              "mean_ms": 1.2727752899999987,
+              "p50_ms": 0.000916,
+              "p95_ms": 3.7825,
+              "p99_ms": 4.212291,
+              "max_ms": 27.043167
+            },
+            "renderer_draw": {
+              "count": 2677,
+              "total_ms": 4612.0664449999995,
+              "mean_ms": 1.722848877474785,
+              "p50_ms": 1.134916,
+              "p95_ms": 4.756125,
+              "p99_ms": 5.88275,
+              "max_ms": 22.655833
+            },
+            "renderer_receipt": {
+              "count": 2400,
+              "total_ms": 0.37191300000000155,
+              "mean_ms": 0.00015496375000000065,
+              "p50_ms": 0.000125,
+              "p95_ms": 0.000375,
+              "p99_ms": 0.000708,
+              "max_ms": 0.00425
+            },
+            "sensor_queue_write": {
+              "count": 1199,
+              "total_ms": 0.45761999999999703,
+              "mean_ms": 0.0003816680567139258,
+              "p50_ms": 0.000333,
+              "p95_ms": 0.000708,
+              "p99_ms": 0.001333,
+              "max_ms": 0.007875
+            },
+            "sensor_update": {
+              "count": 2400,
+              "total_ms": 112009.81942999992,
+              "mean_ms": 46.6707580958333,
+              "p50_ms": 11.785125,
+              "p95_ms": 186.9335,
+              "p99_ms": 269.362709,
+              "max_ms": 398.800167
+            },
+            "simulation_step": {
+              "count": 2400,
+              "total_ms": 141334.13543100015,
+              "mean_ms": 58.88922309625006,
+              "p50_ms": 50.957792,
+              "p95_ms": 193.599041,
+              "p99_ms": 276.867209,
+              "max_ms": 406.303792
+            },
+            "source_state": {
+              "count": 2400,
+              "total_ms": 0.08414100000000022,
+              "mean_ms": 3.505875000000009e-05,
+              "p50_ms": 4.1e-05,
+              "p95_ms": 8.4e-05,
+              "p99_ms": 0.000333,
+              "max_ms": 0.000542
+            },
+            "timing_buffer": {
+              "count": 2,
+              "total_ms": 0.000166,
+              "mean_ms": 8.3e-05,
+              "p50_ms": 8.3e-05,
+              "p95_ms": 8.3e-05,
+              "p99_ms": 8.3e-05,
+              "max_ms": 8.3e-05
+            },
+            "source_to_receipt": {
+              "count": 2400,
+              "total_ms": 560645.3428230034,
+              "mean_ms": 233.60222617625143,
+              "p50_ms": 119.66770899999938,
+              "p95_ms": 458.7872919999936,
+              "p99_ms": 459.6606250000041,
+              "max_ms": 460.04595800000243,
+              "unmatched_count": 0
+            },
+            "source_to_draw": {
+              "count": 2400,
+              "total_ms": 566340.0329299999,
+              "mean_ms": 235.9750137208333,
+              "p50_ms": 122.71725000000151,
+              "p95_ms": 461.5480840000091,
+              "p99_ms": 463.96783300000243,
+              "max_ms": 469.39674999998533,
+              "unmatched_count": 0
+            },
+            "source_wall_intervals": {
+              "count": 2399,
+              "total_ms": 141283.203792,
+              "mean_ms": 58.89254013839099,
+              "p50_ms": 50.9577500000014,
+              "p95_ms": 194.12937500000407,
+              "p99_ms": 284.3658749999995,
+              "max_ms": 406.30387500000006
+            },
+            "population": {
+              "initial": 500,
+              "final": 7,
+              "minimum": 7,
+              "maximum": 500
+            },
+            "source_steps_over_50ms": 1421,
+            "source_step_groups": {
+              "sensor_due_100ms": {
+                "count": 1199,
+                "total_ms": 114777.23604000008,
+                "mean_ms": 95.72746959132617,
+                "p50_ms": 78.471166,
+                "p95_ms": 235.806542,
+                "p99_ms": 308.222333,
+                "max_ms": 406.303792
+              },
+              "no_sensor_sample_50ms": {
+                "count": 1201,
+                "total_ms": 26556.899391000017,
+                "mean_ms": 22.112322557035817,
+                "p50_ms": 13.604875,
+                "p95_ms": 51.102,
+                "p99_ms": 51.254875,
+                "max_ms": 53.225584
+              }
+            },
+            "source_step_group_scope": "50-ms simulation / 100-ms sensor configuration; includes all synchronous writes and queue blocking",
+            "history_maxima": {
+              "bins": 21,
+              "observations": 10500,
+              "identity_bytes": 555975,
+              "buckets": 0,
+              "sample_count": 1199
+            },
+            "local_maxima": {
+              "frontier": 2281,
+              "handoffs": 0,
+              "handoff_intents": 0,
+              "pending": 0,
+              "sample_count": 3599
+            },
+            "state_maxima_scope": "sampled after normal sensor ingest/local advance; not peaks within a call or EOF",
+            "instrumentation_buffer_bytes": 4718592,
+            "publication_ack_counts": {
+              "acknowledged_calls": 8943,
+              "unacknowledged_calls": 0,
+              "during_eof": 0
+            },
+            "publication_start_to_ack": {
+              "count": 8943,
+              "total_ms": 5500263.6968780095,
+              "mean_ms": 615.0356364618148,
+              "p50_ms": 617.4255419999972,
+              "p95_ms": 799.1096660000003,
+              "p99_ms": 932.3215829999972,
+              "max_ms": 1641.2711659999986,
+              "unmatched_count": 0,
+              "during_eof": {
+                "count": 0
+              },
+              "during_regular_steps": {
+                "count": 8943,
+                "total_ms": 5500263.6968780095,
+                "mean_ms": 615.0356364618148,
+                "p50_ms": 617.4255419999972,
+                "p95_ms": 799.1096660000003,
+                "p99_ms": 932.3215829999972,
+                "max_ms": 1641.2711659999986
+              }
+            },
+            "publication_end_to_ack": {
+              "count": 8943,
+              "total_ms": 913811.106713002,
+              "mean_ms": 102.18171829509136,
+              "p50_ms": 88.6314579999962,
+              "p95_ms": 215.39099999999962,
+              "p99_ms": 274.210834,
+              "max_ms": 389.997834,
+              "unmatched_count": 0,
+              "during_eof": {
+                "count": 0
+              },
+              "during_regular_steps": {
+                "count": 8943,
+                "total_ms": 913811.106713002,
+                "mean_ms": 102.18171829509136,
+                "p50_ms": 88.6314579999962,
+                "p95_ms": 215.39099999999962,
+                "p99_ms": 274.210834,
+                "max_ms": 389.997834
+              }
+            },
+            "publication_seal_to_ack": {
+              "count": 8943,
+              "total_ms": 913811.106713002,
+              "mean_ms": 102.18171829509136,
+              "p50_ms": 88.6314579999962,
+              "p95_ms": 215.39099999999962,
+              "p99_ms": 274.210834,
+              "max_ms": 389.997834,
+              "unmatched_count": 0,
+              "during_eof": {
+                "count": 0
+              },
+              "during_regular_steps": {
+                "count": 8943,
+                "total_ms": 913811.106713002,
+                "mean_ms": 102.18171829509136,
+                "p50_ms": 88.6314579999962,
+                "p95_ms": 215.39099999999962,
+                "p99_ms": 274.210834,
+                "max_ms": 389.997834
+              }
+            },
+            "publication_latency_scope": "Start/end/seal refer to logical window boundaries mapped to source-state wall starts; EOF uses aggregation_finish start. ACK is recipient database acknowledgment before private-journal commit, not external client receipt. No external source schedule is implied.",
+            "queue_high_water": {
+              "agent": 8,
+              "sensor": 4
+            },
+            "renderer_progress": {
+              "observed_wall_ms": 141716.4835,
+              "logical_progress_ms": 119950,
+              "wall_minus_logical_ms": 21766.483500000002,
+              "logical_per_wall_ratio": 0.8464082443874639,
+              "scope": "first-to-last frame read; excludes initial wait, final draw and shutdown; requested playback 1x"
+            }
+          },
+          "mongo_release_count": 8943,
+          "mongo_journal_count": 8943
+        },
+        "diagnostic_files_removed_after_audit": [
+          {
+            "file": "candidates-6A86EE2B-43F6-494C-872D-B7A129FCBAD5.jsonl",
+            "bytes": 288896039
+          },
+          {
+            "file": "selection-DD0DC1FB-8442-49CC-809E-46C488EA9D28.jsonl",
+            "bytes": 647481774
+          }
+        ],
+        "phases": [
+          {
+            "start_ms": 0,
+            "end_ms": 20000,
+            "population_start": 500,
+            "population_end": 492,
+            "step_service": {
+              "count": 400,
+              "total_ms": 27954.709965000005,
+              "mean_ms": 69.88677491250002,
+              "p50_ms": 16.963333,
+              "p95_ms": 289.12075,
+              "p99_ms": 326.557875,
+              "max_ms": 406.303792
+            },
+            "sensor_due_step_service": {
+              "count": 199,
+              "total_ms": 25340.71163,
+              "mean_ms": 127.34025944723619,
+              "p50_ms": 84.288167,
+              "p95_ms": 311.484042,
+              "p99_ms": 331.669166,
+              "max_ms": 406.303792
+            },
+            "publication_store_service_ms": 4699.380507999999,
+            "acknowledged_releases": 2561
+          },
+          {
+            "start_ms": 20000,
+            "end_ms": 40000,
+            "population_start": 492,
+            "population_end": 440,
+            "step_service": {
+              "count": 400,
+              "total_ms": 26929.611671999995,
+              "mean_ms": 67.32402917999998,
+              "p50_ms": 16.849458,
+              "p95_ms": 229.765083,
+              "p99_ms": 243.575583,
+              "max_ms": 296.858792
+            },
+            "sensor_due_step_service": {
+              "count": 200,
+              "total_ms": 24208.639663999984,
+              "mean_ms": 121.04319831999992,
+              "p50_ms": 88.25525,
+              "p95_ms": 237.344708,
+              "p99_ms": 247.867959,
+              "max_ms": 296.858792
+            },
+            "publication_store_service_ms": 3889.2428219999997,
+            "acknowledged_releases": 2135
+          },
+          {
+            "start_ms": 40000,
+            "end_ms": 60000,
+            "population_start": 440,
+            "population_end": 350,
+            "step_service": {
+              "count": 400,
+              "total_ms": 24992.086999999996,
+              "mean_ms": 62.48021749999999,
+              "p50_ms": 14.817709,
+              "p95_ms": 194.129125,
+              "p99_ms": 229.84925,
+              "max_ms": 372.073917
+            },
+            "sensor_due_step_service": {
+              "count": 200,
+              "total_ms": 22551.222708999994,
+              "mean_ms": 112.75611354499998,
+              "p50_ms": 88.6655,
+              "p95_ms": 207.0075,
+              "p99_ms": 230.328125,
+              "max_ms": 372.073917
+            },
+            "publication_store_service_ms": 3418.1583690000025,
+            "acknowledged_releases": 1928
+          },
+          {
+            "start_ms": 60000,
+            "end_ms": 80000,
+            "population_start": 350,
+            "population_end": 248,
+            "step_service": {
+              "count": 400,
+              "total_ms": 20776.051248999993,
+              "mean_ms": 51.940128122499985,
+              "p50_ms": 50.636792,
+              "p95_ms": 157.14275,
+              "p99_ms": 173.801417,
+              "max_ms": 179.984666
+            },
+            "sensor_due_step_service": {
+              "count": 200,
+              "total_ms": 18423.515994999998,
+              "mean_ms": 92.11757997499998,
+              "p50_ms": 77.421292,
+              "p95_ms": 167.406625,
+              "p99_ms": 175.490583,
+              "max_ms": 179.984666
+            },
+            "publication_store_service_ms": 2752.4068420000003,
+            "acknowledged_releases": 1503
+          },
+          {
+            "start_ms": 80000,
+            "end_ms": 100000,
+            "population_start": 248,
+            "population_end": 109,
+            "step_service": {
+              "count": 400,
+              "total_ms": 20333.809838,
+              "mean_ms": 50.834524595000005,
+              "p50_ms": 50.9125,
+              "p95_ms": 95.619958,
+              "p99_ms": 117.702334,
+              "max_ms": 180.016083
+            },
+            "sensor_due_step_service": {
+              "count": 200,
+              "total_ms": 13925.29638,
+              "mean_ms": 69.6264819,
+              "p50_ms": 65.610541,
+              "p95_ms": 102.932708,
+              "p99_ms": 123.118084,
+              "max_ms": 180.016083
+            },
+            "publication_store_service_ms": 1553.9793429999997,
+            "acknowledged_releases": 724
+          },
+          {
+            "start_ms": 100000,
+            "end_ms": 120000,
+            "population_start": 109,
+            "population_end": 7,
+            "step_service": {
+              "count": 400,
+              "total_ms": 20347.865707,
+              "mean_ms": 50.8696642675,
+              "p50_ms": 50.988792,
+              "p95_ms": 51.343792,
+              "p99_ms": 61.69075,
+              "max_ms": 86.706541
+            },
+            "sensor_due_step_service": {
+              "count": 200,
+              "total_ms": 10327.849661999999,
+              "mean_ms": 51.63924830999999,
+              "p50_ms": 51.007209,
+              "p95_ms": 55.64675,
+              "p99_ms": 68.732,
+              "max_ms": 86.706541
+            },
+            "publication_store_service_ms": 243.373462,
+            "acknowledged_releases": 92
+          }
+        ],
+        "verification": {
+          "trace": {
+            "source_steps": 2400,
+            "renderer_frames": 2400,
+            "exclusive_end_ms": 120000,
+            "queue_capacity": 8
+          },
+          "mongo": {
+            "ground_truth_frames": 2400,
+            "sensor_frames": 1199,
+            "acknowledged_releases": 8943,
+            "publication_contract": "fresh no-retry namespace; complete recipient/journal payload equality checked by Mongo audit"
+          }
+        },
+        "event_count": 67248,
+        "trace_sha256": "e967abaf1bfe0a0eea0c5766b54a2a69c7fbd15547d11ed36fa28b46eebcd13e"
+      }
+    ],
+    "generated_movement_exports_removed": {
+      "removed_owned_generated_movement_files": [
+        {
+          "run": "live-smoke",
+          "file": "raw-agents.json",
+          "bytes": 10060731,
+          "sha256": "5efbe34b17b01bf34ff126777729c44e477b51c824083bf174c9d3ecd71a1116"
+        },
+        {
+          "run": "live-smoke",
+          "file": "raw-agbs.json",
+          "bytes": 6041257,
+          "sha256": "c033660139a5774a3b30dc3a86ade7954fb35a9cc29c5cb669bf672c77b41972"
+        },
+        {
+          "run": "live-smoke",
+          "file": "observations.json",
+          "bytes": 3268698,
+          "sha256": "0531f70304b92477a161e48f2a70a051a8a12ab8c78d1e25e0bb1e6e867ec089"
+        },
+        {
+          "run": "live-smoke-verified",
+          "file": "raw-agents.json",
+          "bytes": 10055042,
+          "sha256": "43a6b82b82555c70dfc0eeea3045b09095382fd2f0ebe142fb557eb868cf9501"
+        },
+        {
+          "run": "live-smoke-verified",
+          "file": "raw-agbs.json",
+          "bytes": 6080582,
+          "sha256": "df58319c5117944a76f0d9d6782f11c65c94fe2809a2ceb22a288dc497435252"
+        },
+        {
+          "run": "live-smoke-verified",
+          "file": "observations.json",
+          "bytes": 3265932,
+          "sha256": "83658be29dcf70963c5b08efaf9818ae7ae34ecc67a179bb1d7d55e76dd70da8"
+        }
+      ],
+      "existing_user_inputs_modified": false
+    },
+    "owned_generated_diagnostics_removed": [
+      {
+        "run": "live-smoke",
+        "file": "diagnostics/candidates-1177039C-263F-4145-A7A6-CCB6E0E0F05D.jsonl",
+        "bytes": 19535939
+      },
+      {
+        "run": "live-smoke",
+        "file": "diagnostics/selection-4FA0B268-BF5E-4578-B248-7A8093D6DB22.jsonl",
+        "bytes": 35838012
+      },
+      {
+        "run": "live-smoke-verified",
+        "file": "diagnostics/candidates-FDC7C1F5-BD18-458D-BF64-82136BEE85E7.jsonl",
+        "bytes": 19167471
+      },
+      {
+        "run": "live-smoke-verified",
+        "file": "diagnostics/selection-1637F5E0-AC9D-438E-AA12-2C5A6310050F.jsonl",
+        "bytes": 34178713
+      },
+      {
+        "run": "live-headless-120",
+        "file": "diagnostics/candidates-2C5E279B-5A1B-4C47-A05F-3347B072C3C5.jsonl",
+        "bytes": 296288468
+      },
+      {
+        "run": "live-headless-120",
+        "file": "diagnostics/selection-AB213822-FDFD-4E1A-80E0-C16E0A775B20.jsonl",
+        "bytes": 662215782
+      },
+      {
+        "run": "live-renderer-120",
+        "file": "diagnostics/candidates-6A86EE2B-43F6-494C-872D-B7A129FCBAD5.jsonl",
+        "bytes": 288896039
+      },
+      {
+        "run": "live-renderer-120",
+        "file": "diagnostics/selection-DD0DC1FB-8442-49CC-809E-46C488EA9D28.jsonl",
+        "bytes": 647481774
+      }
+    ],
+    "notes": [
+      "The proposed60-second movement capture was rejected by automatic approval review; neither120-second run exported movement data.",
+      "The first smoke failed only at the underscore-prefixed collection convenience lookup during cleanup. Explicit getCollection ownership validation then removed the same three owned databases.",
+      "The two independently stochastic120-second runs cannot isolate causal renderer overhead.",
+      "Diagnostic serialization time was not isolated; byte volumes identify a follow-up measurement target rather than attributed wall time."
+    ],
+    "production_source_sha256": {
+      "simulator/src/AdaptiveAggregation.cpp": "ef68658d2b6cdc1fa1de624fa076c9d4c3b8d52b73b89ce38eb799e4096ea2eb",
+      "simulator/src/AdaptiveGridBasedSensor.cpp": "fe2ce468051a6b083e9998e395e5dff2d9e37b6825ef74753ebe4648a5a4e659",
+      "simulator/src/Agent.cpp": "3032461d81c2752b023c0bf64c14ec872b8a7f0e1e23aa8fdf7b98d262e18702",
+      "simulator/src/AgentBasedSensor.cpp": "cf188e45d8ce7f320b55c0631db55da790733e31acc3599a2de1e0824fae1ccd",
+      "simulator/src/AggregationConfiguration.cpp": "7ab73b445001fc697919987e0f4d448be22303815e14a9abd47254deb65d666c",
+      "simulator/src/AggregationDiagnostics.cpp": "81e372623410e0e3e6f042a4bc7a4c0a65332232a74e0e6c419592c3e03c97eb",
+      "simulator/src/AggregationHistory.cpp": "7af64daedbb9ca2b9e4456f953a461c7c69aefeb835ebc3113d515f9b9d92e39",
+      "simulator/src/AggregationManager.cpp": "864aff1db7678da8a2e5ae38db2c43b7825b6f60c7efb1b26797b462db65ecb9",
+      "simulator/src/CandidateMetrics.cpp": "22ac9e5840b6c164f132555b76c80986735e68467967d756768aaef899ea9f19",
+      "simulator/src/CellLocalAggregation.cpp": "6525c75562599410c44c4873d6d494948e8086bcd5ef633c6bb869765d7b09f6",
+      "simulator/src/CollisionAvoidance.cpp": "d00afab69e4b6c720158caf7f32cb4eb2711795cbcf1d9db45ed3c656fce756e",
+      "simulator/src/CollisionGrid.cpp": "42a8896038a2a3359ceb8cd08319e4308c39ad744bb9321402d3d43adec3e019",
+      "simulator/src/GridBasedSensor.cpp": "b9b68f0ad21706949bff0a31fdcdf056ee224e16ead724feda69c6912b9a3a53",
+      "simulator/src/Main.cpp": "93661f3167aed7c823bb7b5381db1a65cc4b7dc587a80d68757643b9b953023e",
+      "simulator/src/Obstacle.cpp": "dc3d0398e45408cd02e8dddb8fabed71a3cff18d4854f91b6f0d37b1f38376b9",
+      "simulator/src/PathGeneration.cpp": "85f52f4815dfb4cbf3cf12cd99c4d7b52f277c2dda6f3b42a251ce1e286b8496",
+      "simulator/src/PerlinNoise.cpp": "275e6f688f135b3ba9a51f4a0a800bf48d3a3acb7c74069fc53504aca9b3203f",
+      "simulator/src/PolicyConfiguration.cpp": "8b5b7009808d79a306c982e81e5b37f1f85ecdbd5739401e8733aadcd3f4fac6",
+      "simulator/src/PolicyTree.cpp": "42f701335eeed78260edd046bf6f600df0eae12087622b94801ff27dbc27adba",
+      "simulator/src/PublicationCoordinator.cpp": "ecb9cd7a80c76c31ad7aa72a7b17c2339a3e86f5b57b48e15b685d94e846b727",
+      "simulator/src/PublicationStore.cpp": "5ab95d39174b484674d493a662229276b593b8f9d2b34b31bc14fb973aa3499f",
+      "simulator/src/Quadtree.cpp": "7b289fa3e7e3341859685fb27206e3124429287cd9ad594c28cd1a1f8d40982d",
+      "simulator/src/QuadtreeSnapshot.cpp": "6c72d7287c4f5e731256dd3a05ddac0ff8b6cc4e1180e7562c54b42d9471c09e",
+      "simulator/src/Region.cpp": "e100ce93b980cdf6076fefac201115b70f05cce8819428111018c40d40683ccf",
+      "simulator/src/Renderer.cpp": "4db86a3d8d3fae627edc587ef28cec64818281f609ce6e0dc63aaf407de3631b",
+      "simulator/src/SemanticTaxonomy.cpp": "4345f1519eaaeae3501366a225fa89ddf0e80bc78497011dcc19f5879e4b7342",
+      "simulator/src/Sensor.cpp": "5560e31690db14a0a54f28b6f5eb9a3ea09aeed457f2fd647c6e526e61204ca1",
+      "simulator/src/Simulation.cpp": "b48b62dfc930a4c28648641a42fb8f9f46bd3614b1a57f8fce4b1b82dbd5ff94",
+      "simulator/src/SpatialSelection.cpp": "3fe08bb88815b76c9336f53b38fb772ba66c7031208bd5cbf0aec493bf5ddf95",
+      "simulator/src/ThreadPool.cpp": "6c703a9ead3214de2904a8373e74699b47b5e5a88fb8b54c94c6b576ca8ae5d1",
+      "simulator/src/ThreadPool_V2.cpp": "79516886442bba4757677512df8f501aa613d44657c2ccf4f805856a1382787d",
+      "simulator/src/Utilities.cpp": "76a21cabf921a1e8a4e449a5c55b7bbe2e87d480faf1a9a4ad8a912668fa1331",
+      "simulator/include/AdaptiveAggregation.hpp": "9a1aa3a6043c698f10bf1484da6c5af62903541abbb95868dded6804ae50af38",
+      "simulator/include/AdaptiveGridBasedSensor.hpp": "9d5886c5a692527fa3812616dee1fc0dfb91377d16ed0e70b0b42f9cf1594eba",
+      "simulator/include/AdaptiveGridDisplayState.hpp": "10b4ef5ac2a1e2e20679cadaa9640b6a44751a8514b803982cc88456bf2d43ef",
+      "simulator/include/Agent.hpp": "a2f061cf9b50f82f056d6394d559a6c3867f980daef76200537b9c0af2c3de74",
+      "simulator/include/AgentBasedSensor.hpp": "2bc7b49635ec5c29b62e9bb6f0d55c08a56aaa2a5e2a8df0da1685013f59bcee",
+      "simulator/include/AggregationConfiguration.hpp": "bd622a19e9dcc7e0f8e714fec661518b01888c2091693230c646a4853837673f",
+      "simulator/include/AggregationDiagnostics.hpp": "4299acd593c1cc164991703097224f7f50c71e291d27430d46bd3e090e5b8533",
+      "simulator/include/AggregationHistory.hpp": "997f6188e7585c0f03186bc14b805efee7e7b571a3d331b5fb2a5fa7ee5c4302",
+      "simulator/include/AggregationInput.hpp": "ac7baef85aba864c368a060e342a813f48fe55ef6ec6a7f6d486c0d14b437646",
+      "simulator/include/AggregationManager.hpp": "171ade80f2662a87aa617e9b4c09ff109130efbba96417ad0821f95491e9faad",
+      "simulator/include/AggregationPresentation.hpp": "00796a234b5da46e62f4778cae40d8ee7a5a9599cce73c4cd1816019461548f2",
+      "simulator/include/AggregationProgress.hpp": "b87a8f5b2d77b90685b46b3a5c79a8b987a06d9a45efc440d95552ac07a7e8bc",
+      "simulator/include/CandidateMetrics.hpp": "63d4fee50b20538e1a97f2734d643d96c45114bbe44af03bb503d1f5c1ae64e1",
+      "simulator/include/CellLocalAggregation.hpp": "8ec49ef189e81af8b46aba86cceddb3464bf6dccf28a1f6a00e390407702d191",
+      "simulator/include/CellWindowLedger.hpp": "624d8bf6cd3003e73b7ac58694c13231f40db286ffd90b0275bbb91b135fcd29",
+      "simulator/include/CollisionAvoidance.hpp": "0b1bf42a9bb24e44e4f6c77698298d88b89448e7e89c55377cf96a482e2f5009",
+      "simulator/include/CollisionGrid.hpp": "f6e8b689660ad4aea3c35cff29981aaf61494fc2aaddceaa0f98d6444826d096",
+      "simulator/include/GridBasedSensor.hpp": "7c1288d82c03a00518db0430c057f612181668e3492dcedf47c7e6c9a6f76662",
+      "simulator/include/Logging.hpp": "d1c6c97359aa400b1c9d68b6a28805678a695e1c5bdafb2685eb98ad83fa7c45",
+      "simulator/include/Obstacle.hpp": "fdc2c7c5117b5b5e5217d35f38ce26c1efcec6bd820d7cb08329184d0781726f",
+      "simulator/include/PerlinNoise.hpp": "b7b5bd3730ec544dbc74cba187cc1fb5ecd86c7df0b270773e3b81a5649a1c7b",
+      "simulator/include/PlaybackClock.hpp": "12f5688ca418d73d7afb0665ccb60cb89f559ad206892063dbd8bda9d8e65032",
+      "simulator/include/PolicyConfiguration.hpp": "dbffb09ffed390c47e632059c3abbb7f709cdecb989addabdb42df1f4ec5424e",
+      "simulator/include/PolicyTree.hpp": "09d0c6b1f697b32fa18700bc94c2526c564de4c572d3f167ae8e2c3ee93f2693",
+      "simulator/include/PublicationCoordinator.hpp": "92b3b35963eea5e464579133e949ba2516b08269a2812b3a0c9933849fcfb552",
+      "simulator/include/PublicationStore.hpp": "4227db29158f2fe0031a213def0c96f36c6b32675df9ba0dc9dce09ee6530859",
+      "simulator/include/Quadtree.hpp": "16c3af3270ae19622bebb23e0d8d76c98fcff722a563a28e03b066d0efbae087",
+      "simulator/include/QuadtreeSnapshot.hpp": "45420d6a2b85635a3f160351ab4e97aedc4af7bcfeb656acfd9d18afd94a000d",
+      "simulator/include/Region.hpp": "27577a77b569032f06a22b4f9d47dd810f881847ed7b5309783f497485776007",
+      "simulator/include/Renderer.hpp": "2169afb3289ba854275763fa54b9aacc29467df68929406ac05da9ab4b8aa062",
+      "simulator/include/SemanticTaxonomy.hpp": "c963709b53c240eff5683477437050af80935a21b89cf1b3bee2f50fb92d9c6c",
+      "simulator/include/Sensor.hpp": "a9a96cb4f2e272c0a1d9eefa73e19d236461a860fd7063f0753884f52270fa99",
+      "simulator/include/SensorFrame.hpp": "9e810c4e71d33ed225e2319b6a80b789411cb364f233e796b1f935b6e0fe17c0",
+      "simulator/include/SensorFrameCursor.hpp": "e2781fea051cab1701a3aafe66aaae1258eb64722fb22c85e6287f8f7c65cbd2",
+      "simulator/include/SharedBuffer.hpp": "f783a29d9342ca9b61990756a5a1c13cb3da1c18aa5f198b1a449c5b086e14b2",
+      "simulator/include/SharedBuffer.tpp": "af73526e94719837f6d14ebf0995e948a6534d30329cef44b5f53817d9a68e4c",
+      "simulator/include/Simulation.hpp": "2035cefc8e87b7df12acbd9841c001c7b087de5ac5125d19345a8f979c668c3a",
+      "simulator/include/SpatialSelection.hpp": "bad7a94a7230d2625747ca66b38d47b939a3cf8e0ba413ce5f32b6eb17d1d746",
+      "simulator/include/ThreadPool.hpp": "76752701e8474a2dd8be047221f8565543d211260c5b9e99a3400041bd12eadd",
+      "simulator/include/ThreadPool_V2.hpp": "cd85ae0d026914c7508fb819d582ddde8bc9506ceb0b492f1ed199546dc31cf4",
+      "simulator/include/Utilities.hpp": "f2be8354f45bb47e9ba4128189314fe1ea73235930dee5e299ef5d5c15bf0b7e"
+    },
+    "instrumented_source_sha256": {
+      "CMakeLists.txt": "5200d38549c18d96f557964c3361105013703b3e590b1780b9e243381c155435",
+      "include/ThreadPool.hpp": "76752701e8474a2dd8be047221f8565543d211260c5b9e99a3400041bd12eadd",
+      "include/PlaybackClock.hpp": "12f5688ca418d73d7afb0665ccb60cb89f559ad206892063dbd8bda9d8e65032",
+      "include/AggregationPresentation.hpp": "00796a234b5da46e62f4778cae40d8ee7a5a9599cce73c4cd1816019461548f2",
+      "include/Region.hpp": "27577a77b569032f06a22b4f9d47dd810f881847ed7b5309783f497485776007",
+      "include/Quadtree.hpp": "16c3af3270ae19622bebb23e0d8d76c98fcff722a563a28e03b066d0efbae087",
+      "include/AggregationInput.hpp": "ac7baef85aba864c368a060e342a813f48fe55ef6ec6a7f6d486c0d14b437646",
+      "include/GridBasedSensor.hpp": "7c1288d82c03a00518db0430c057f612181668e3492dcedf47c7e6c9a6f76662",
+      "include/Simulation.hpp": "2035cefc8e87b7df12acbd9841c001c7b087de5ac5125d19345a8f979c668c3a",
+      "include/AggregationDiagnostics.hpp": "4299acd593c1cc164991703097224f7f50c71e291d27430d46bd3e090e5b8533",
+      "include/Renderer.hpp": "2169afb3289ba854275763fa54b9aacc29467df68929406ac05da9ab4b8aa062",
+      "include/AgentBasedSensor.hpp": "2bc7b49635ec5c29b62e9bb6f0d55c08a56aaa2a5e2a8df0da1685013f59bcee",
+      "include/PolicyTree.hpp": "09d0c6b1f697b32fa18700bc94c2526c564de4c572d3f167ae8e2c3ee93f2693",
+      "include/Agent.hpp": "a2f061cf9b50f82f056d6394d559a6c3867f980daef76200537b9c0af2c3de74",
+      "include/CandidateMetrics.hpp": "63d4fee50b20538e1a97f2734d643d96c45114bbe44af03bb503d1f5c1ae64e1",
+      "include/AggregationManager.hpp": "171ade80f2662a87aa617e9b4c09ff109130efbba96417ad0821f95491e9faad",
+      "include/SpatialSelection.hpp": "bad7a94a7230d2625747ca66b38d47b939a3cf8e0ba413ce5f32b6eb17d1d746",
+      "include/SemanticTaxonomy.hpp": "c963709b53c240eff5683477437050af80935a21b89cf1b3bee2f50fb92d9c6c",
+      "include/SharedBuffer.hpp": "f783a29d9342ca9b61990756a5a1c13cb3da1c18aa5f198b1a449c5b086e14b2",
+      "include/AdaptiveAggregation.hpp": "9a1aa3a6043c698f10bf1484da6c5af62903541abbb95868dded6804ae50af38",
+      "include/AdaptiveGridDisplayState.hpp": "10b4ef5ac2a1e2e20679cadaa9640b6a44751a8514b803982cc88456bf2d43ef",
+      "include/CollisionGrid.hpp": "f6e8b689660ad4aea3c35cff29981aaf61494fc2aaddceaa0f98d6444826d096",
+      "include/SharedBuffer.tpp": "edc6effe8746ecd843ca9acfd9b5bf04318913d206fc30900ca6f072228ac6d5",
+      "include/Sensor.hpp": "a9a96cb4f2e272c0a1d9eefa73e19d236461a860fd7063f0753884f52270fa99",
+      "include/QuadtreeSnapshot.hpp": "45420d6a2b85635a3f160351ab4e97aedc4af7bcfeb656acfd9d18afd94a000d",
+      "include/AggregationHistory.hpp": "997f6188e7585c0f03186bc14b805efee7e7b571a3d331b5fb2a5fa7ee5c4302",
+      "include/SensorFrame.hpp": "9e810c4e71d33ed225e2319b6a80b789411cb364f233e796b1f935b6e0fe17c0",
+      "include/AggregationConfiguration.hpp": "bd622a19e9dcc7e0f8e714fec661518b01888c2091693230c646a4853837673f",
+      "include/PolicyConfiguration.hpp": "dbffb09ffed390c47e632059c3abbb7f709cdecb989addabdb42df1f4ec5424e",
+      "include/SensorFrameCursor.hpp": "e2781fea051cab1701a3aafe66aaae1258eb64722fb22c85e6287f8f7c65cbd2",
+      "include/CellLocalAggregation.hpp": "8ec49ef189e81af8b46aba86cceddb3464bf6dccf28a1f6a00e390407702d191",
+      "include/AdaptiveGridBasedSensor.hpp": "9d5886c5a692527fa3812616dee1fc0dfb91377d16ed0e70b0b42f9cf1594eba",
+      "include/PerlinNoise.hpp": "b7b5bd3730ec544dbc74cba187cc1fb5ecd86c7df0b270773e3b81a5649a1c7b",
+      "include/CollisionAvoidance.hpp": "0b1bf42a9bb24e44e4f6c77698298d88b89448e7e89c55377cf96a482e2f5009",
+      "include/Utilities.hpp": "f2be8354f45bb47e9ba4128189314fe1ea73235930dee5e299ef5d5c15bf0b7e",
+      "include/PublicationCoordinator.hpp": "92b3b35963eea5e464579133e949ba2516b08269a2812b3a0c9933849fcfb552",
+      "include/Obstacle.hpp": "fdc2c7c5117b5b5e5217d35f38ce26c1efcec6bd820d7cb08329184d0781726f",
+      "include/PublicationStore.hpp": "4227db29158f2fe0031a213def0c96f36c6b32675df9ba0dc9dce09ee6530859",
+      "include/CellWindowLedger.hpp": "624d8bf6cd3003e73b7ac58694c13231f40db286ffd90b0275bbb91b135fcd29",
+      "include/AggregationProgress.hpp": "b87a8f5b2d77b90685b46b3a5c79a8b987a06d9a45efc440d95552ac07a7e8bc",
+      "include/Logging.hpp": "d1c6c97359aa400b1c9d68b6a28805678a695e1c5bdafb2685eb98ad83fa7c45",
+      "include/LiveTiming.hpp": "51af7fc3e01d872073544816668401795c9dbf029a0f6e74c962e2f46ad72e07",
+      "include/ThreadPool_V2.hpp": "cd85ae0d026914c7508fb819d582ddde8bc9506ceb0b492f1ed199546dc31cf4",
+      "src/PublicationCoordinator.cpp": "ecb9cd7a80c76c31ad7aa72a7b17c2339a3e86f5b57b48e15b685d94e846b727",
+      "src/Obstacle.cpp": "dc3d0398e45408cd02e8dddb8fabed71a3cff18d4854f91b6f0d37b1f38376b9",
+      "src/PublicationStore.cpp": "460a6ed18deab66c88c15adc919a0599fe46fede164c5b0a7f24ea4fae1c435a",
+      "src/ThreadPool_V2.cpp": "79516886442bba4757677512df8f501aa613d44657c2ccf4f805856a1382787d",
+      "src/PolicyConfiguration.cpp": "8b5b7009808d79a306c982e81e5b37f1f85ecdbd5739401e8733aadcd3f4fac6",
+      "src/AggregationConfiguration.cpp": "7ab73b445001fc697919987e0f4d448be22303815e14a9abd47254deb65d666c",
+      "src/CellLocalAggregation.cpp": "384980cff3b51f8a73d4d4d37c20d80e767d7c1f2f532f5067d6b0cb66d766e5",
+      "src/AdaptiveGridBasedSensor.cpp": "ebd6d111bc8ade148859e997659f5def9909e5d2a3488541eddc4fcf46261bf6",
+      "src/PerlinNoise.cpp": "275e6f688f135b3ba9a51f4a0a800bf48d3a3acb7c74069fc53504aca9b3203f",
+      "src/CollisionAvoidance.cpp": "d00afab69e4b6c720158caf7f32cb4eb2711795cbcf1d9db45ed3c656fce756e",
+      "src/Utilities.cpp": "76a21cabf921a1e8a4e449a5c55b7bbe2e87d480faf1a9a4ad8a912668fa1331",
+      "src/CandidateMetrics.cpp": "22ac9e5840b6c164f132555b76c80986735e68467967d756768aaef899ea9f19",
+      "src/AggregationManager.cpp": "864aff1db7678da8a2e5ae38db2c43b7825b6f60c7efb1b26797b462db65ecb9",
+      "src/SpatialSelection.cpp": "3fe08bb88815b76c9336f53b38fb772ba66c7031208bd5cbf0aec493bf5ddf95",
+      "src/SemanticTaxonomy.cpp": "4345f1519eaaeae3501366a225fa89ddf0e80bc78497011dcc19f5879e4b7342",
+      "src/AdaptiveAggregation.cpp": "ef68658d2b6cdc1fa1de624fa076c9d4c3b8d52b73b89ce38eb799e4096ea2eb",
+      "src/CollisionGrid.cpp": "42a8896038a2a3359ceb8cd08319e4308c39ad744bb9321402d3d43adec3e019",
+      "src/Sensor.cpp": "5560e31690db14a0a54f28b6f5eb9a3ea09aeed457f2fd647c6e526e61204ca1",
+      "src/QuadtreeSnapshot.cpp": "6c72d7287c4f5e731256dd3a05ddac0ff8b6cc4e1180e7562c54b42d9471c09e",
+      "src/AggregationHistory.cpp": "7af64daedbb9ca2b9e4456f953a461c7c69aefeb835ebc3113d515f9b9d92e39",
+      "src/ThreadPool.cpp": "6c703a9ead3214de2904a8373e74699b47b5e5a88fb8b54c94c6b576ca8ae5d1",
+      "src/Region.cpp": "e100ce93b980cdf6076fefac201115b70f05cce8819428111018c40d40683ccf",
+      "src/Quadtree.cpp": "7b289fa3e7e3341859685fb27206e3124429287cd9ad594c28cd1a1f8d40982d",
+      "src/GridBasedSensor.cpp": "b9b68f0ad21706949bff0a31fdcdf056ee224e16ead724feda69c6912b9a3a53",
+      "src/Simulation.cpp": "16925eb891abafc1fc4fecf533ce35bee787366a9744d50bd5ba8c5f2235793b",
+      "src/AggregationDiagnostics.cpp": "81e372623410e0e3e6f042a4bc7a4c0a65332232a74e0e6c419592c3e03c97eb",
+      "src/PathGeneration.cpp": "85f52f4815dfb4cbf3cf12cd99c4d7b52f277c2dda6f3b42a251ce1e286b8496",
+      "src/Main.cpp": "93661f3167aed7c823bb7b5381db1a65cc4b7dc587a80d68757643b9b953023e",
+      "src/AgentBasedSensor.cpp": "cf188e45d8ce7f320b55c0631db55da790733e31acc3599a2de1e0824fae1ccd",
+      "src/Renderer.cpp": "3f080b4720dc8e2f664a92c09716b5d5269e08d0576e1850387b289b80bd9cf6",
+      "src/Agent.cpp": "3032461d81c2752b023c0bf64c14ec872b8a7f0e1e23aa8fdf7b98d262e18702",
+      "src/PolicyTree.cpp": "42f701335eeed78260edd046bf6f600df0eae12087622b94801ff27dbc27adba"
+    },
+    "instrumentation_header_sha256": "51af7fc3e01d872073544816668401795c9dbf029a0f6e74c962e2f46ad72e07",
+    "staging_script_sha256": "bb3d430ab34f4f518def01988ebcdd80aefb1a93b5f62c6532a029727022b6fe"
+  },
+  "implemented_file_sha256": {
+    "simulator/tools/AggregationReplay.cpp": "3600767fbb8145ace4cd809862d752f5b7ca8f91172cbac39a0c3b7f0b76493e",
+    "simulator/tools/PacedReplay.hpp": "ef337c6f8d5b5fb4c4963956378b39d55fc34a32a50e095759df8db5984abc35",
+    "simulator/tests/PacedReplayTests.cpp": "4467ff23a9591d4198a5edfc1e4110bb38e6a7968b36e0ea6f9094307e8e535d",
+    "simulator/tests/ReplayRegressionTests.cpp": "dcc4db34bcee3073ed521c53243361ad6e779b578125e0c2c524abc8e2513acb",
+    "simulator/CMakeLists.txt": "8dae68481e7908ff087f7f22d9bae5ef995f87f251ef67e32c69f5f06e933e37",
+    "tools/profiling/summarize_paced_replay.py": "7713f7302a29b7b560b698228228b88f93ef7832519bc965839658f253ebc75a",
+    "tools/profiling/live/LiveTiming.hpp": "51af7fc3e01d872073544816668401795c9dbf029a0f6e74c962e2f46ad72e07",
+    "tools/profiling/live/README.md": "c0abf63f6ffc1388bdfea757615a181024f82abf8a94088fe35cf5db9ebdd5a8",
+    "tools/profiling/live/build_live.py": "d87ce53fefc70b8fd978bb62b39f50cbb09e310f784ca2313e1a775c7b0255dd",
+    "tools/profiling/live/live_measurement.py": "acdcb43657b8df101dbdd50014edc32e6b0d2f478914708f6014ba59d34a66cc",
+    "tools/profiling/live/run_live.py": "ddf05d61783425bb86ad5af45f5dd2b4410065beaceb6ff355f4ddd22bc23b81",
+    "tools/profiling/live/semantic_local_policy.json": "5c21a59e5bec746aac92433ab9c3378f9dba5d9f678da48d3e37f9ba8b85b949",
+    "tools/profiling/live/stage_instrumentation.py": "bb3d430ab34f4f518def01988ebcdd80aefb1a93b5f62c6532a029727022b6fe",
+    "tools/profiling/live/test_live_configuration.py": "91569fcb66fcf8c8e7be6ee5096981d8afc0838f8d88a820a41b6b01014eb8cb",
+    "tools/profiling/live/test_live_measurement.py": "b22dec6f42dc3ddadb3518ad5ea74400a485fedd8cc725f09cf4801980ddb603"
+  },
+  "scope_changes": [
+    "Long headless run preceded frozen paced pair during input preparation.",
+    "Automatic approval review rejected temporary new 60s movement export under prior storage restriction; explicit permission requested and pending.",
+    "Both 120s live runs proceeded without movement export; no long paired moving replay result is claimed."
+  ],
+  "remaining": [
+    "Sustained dense live deadline compliance is not established.",
+    "Separate diagnostic serialization/flush from core and publication costs before another optimization.",
+    "Long identical-moving-input paced comparison awaits temporary capture permission."
+  ]
+}

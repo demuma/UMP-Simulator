@@ -148,11 +148,89 @@ void strictValidationAndIsolation() {
     } catch (...) { std::filesystem::remove(path); throw; }
     std::filesystem::remove(path);
 }
+
+// Pacing changes arrival scheduling only. Compare the complete parsed result,
+// including all private decisions and public fields, with only runtime removed.
+void pacedCoreEquivalence() {
+    auto semantic = configuration();
+    semantic["semantic_taxonomy"] = YAML::Load(R"(
+id: replay-pacing-types
+version: '1'
+nodes:
+  - {id: road_user, loss: 1}
+  - {id: pedestrian, parent: road_user, loss: 0, input_types: [pedestrian]}
+)");
+    semantic["policy_tree"]["root"]["min_category_distinct_contributors"]["min"] = 2;
+    semantic["policy_tree"]["root"]["semantic_max_loss"]["max"] = 1;
+    for (const std::string mode : {"fixed", "spatial", "temporal_first", "spatial_first", "semantic_first"}) {
+        for (bool local : {false, true}) {
+            if (local && (mode == "fixed" || mode == "spatial")) continue;
+            auto config = YAML::Clone(mode == "semantic_first" ? semantic : configuration());
+            config["policy_tree"]["execution"]["strategy"] = mode == "fixed" || mode == "spatial"
+                ? "spatial_first" : mode;
+            if (local) {
+                config["temporal_adaptation"]["coordination"] = "cell_local";
+                config["temporal_adaptation"]["max_active_cells"] = 64;
+                config["spatial_selection"]["max_evaluations"] = 256;
+            }
+            auto input = source();
+            // Unavailable and missing cadence events, measured empties and an
+            // off-cadence EOF all have to retain their original meaning.
+            input["batches"][1]["status"] = "unavailable";
+            input["batches"][1]["observations"] = YAML::Node(YAML::NodeType::Sequence);
+            input["batches"].remove(2);
+            input["end_ms"] = 850;
+            const auto parsed = umpReplay::parseInput(input);
+            umpReplay::Options options; options.mode = mode;
+            const auto settings = umpReplay::parseSettings(config, parsed, options);
+            auto expected = YAML::Load(umpReplay::run(parsed, settings, options));
+            options.paceRate = 100.; options.queueCapacity = 16;
+            auto actual = YAML::Load(umpReplay::run(parsed, settings, options));
+            const auto timing = actual["runtime"]["pacing"];
+            require(timing && timing["events"].size() == 9
+                && timing["events"][8]["kind"].as<std::string>() == "finish"
+                && timing["events"][8]["logical_time_ms"].as<int>() == 850,
+                "Paced replay omitted missing/empty cadence steps or off-cadence EOF");
+            require(timing["peak_queue_depth"].as<int>() <= 16,
+                "Paced replay exceeded its pending-input budget");
+            expected.remove("runtime"); actual.remove("runtime");
+            require(YAML::Dump(actual) == YAML::Dump(expected),
+                "Pacing changed a full core output beyond runtime");
+        }
+    }
+}
+void pacingCliValidation() {
+    const std::vector<std::string> base{"AggregationReplay", "--input", "/unused/input.json",
+        "--config", "/unused/policy.json", "--mode", "fixed", "--output",
+        (std::filesystem::temp_directory_path() / ("ump-paced-unused-" + std::to_string(::getpid()) + ".json")).string()};
+    const auto parse = [&](std::initializer_list<const char*> extra) {
+        auto args = base;
+        for (const char* value : extra) args.emplace_back(value);
+        std::vector<char*> argv;
+        for (auto& value : args) argv.push_back(value.data());
+        return umpReplay::arguments(static_cast<int>(argv.size()), argv.data());
+    };
+    const auto defaults = parse({});
+    require(!defaults.paceRate, "Offline CLI implicitly enabled pacing");
+    const auto paced = parse({"--pace-rate", "1", "--queue-capacity", "8"});
+    require(paced.paceRate == std::optional<double>{1} && paced.queueCapacity == 8,
+        "Valid paced CLI options not retained");
+    for (const char* value : {"0", "-1", "nan", "inf", "1001", "1junk"})
+        rejects([&] { parse({"--pace-rate", value}); }, "Malformed pace rate accepted");
+    for (const char* value : {"0", "-1", "100001", "2.5", "1junk"})
+        rejects([&] { parse({"--pace-rate", "1", "--queue-capacity", value}); }, "Malformed queue capacity accepted");
+    rejects([&] { parse({"--queue-capacity", "8"}); }, "Queue option silently ignored without pacing");
+    rejects([&] { parse({"--pace-rate", "1", "--pace-rate", "2"}); }, "Duplicate pace rate accepted");
+    rejects([&] { parse({"--pace-rate"}); }, "Missing pace rate accepted");
+    require(!std::filesystem::exists(base.back()), "CLI parsing wrote a result file");
+}
+
 }
 int main() {
     try {
         policiesAndStrategies(); missingEmptyAndTruncation(); strictValidationAndIsolation();
-        std::cout << "PASS: frozen replay, actual core modes, policy-controlled fixed baselines, conservation, determinism, gaps and private/public separation.\n";
+        pacedCoreEquivalence(); pacingCliValidation();
+        std::cout << "PASS: frozen replay, actual core modes, policy-controlled fixed baselines, conservation, determinism, gaps, paced equivalence, CLI validation and private/public separation.\n";
         return 0;
     } catch (const std::exception& error) { std::cerr << "FAIL: " << error.what() << '\n'; return 1; }
 }

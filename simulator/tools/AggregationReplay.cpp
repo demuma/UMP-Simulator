@@ -5,6 +5,7 @@
 #include "PolicyConfiguration.hpp"
 #include "PolicyTree.hpp"
 #include "PublicationCoordinator.hpp"
+#include "PacedReplay.hpp"
 #include <yaml-cpp/yaml.h>
 #include <algorithm>
 #include <cerrno>
@@ -22,6 +23,10 @@
 #include <string>
 #include <fcntl.h>
 #include <unistd.h>
+#include <sys/resource.h>
+#ifdef __APPLE__
+#include <mach/mach.h>
+#endif
 
 // This executable is an offline, private research adapter. It uses the same
 // aggregation/policy/publication cores as the simulator; it never opens MongoDB.
@@ -207,6 +212,8 @@ struct Options {
     std::string mode;
     std::optional<int> fixedDepth;
     std::optional<AggregationTime> fixedWindowMs;
+    std::optional<double> paceRate;
+    std::size_t queueCapacity = 64;
 };
 struct Settings {
     AggregationConfig aggregation;
@@ -371,6 +378,33 @@ std::string serializeRelease(const ReleaseSnapshot& release) {
         {"policy_version", quoted(release.policyVersion)}, {"cells", array(cells)}}, release.coordinationCell);
 }
 
+// Process RSS includes parsed input, allocators and retained research output.
+// History counters below identify bounded algorithm storage separately.
+std::optional<std::uint64_t> residentBytes() {
+#ifdef __APPLE__
+    mach_task_basic_info_data_t info;
+    mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
+    if (task_info(mach_task_self(), MACH_TASK_BASIC_INFO, reinterpret_cast<task_info_t>(&info), &count) == KERN_SUCCESS)
+        return static_cast<std::uint64_t>(info.resident_size);
+#elif defined(__linux__)
+    std::ifstream statm("/proc/self/statm");
+    std::uint64_t total = 0, resident = 0;
+    const long pageSize = ::sysconf(_SC_PAGESIZE);
+    if (statm >> total >> resident && pageSize > 0) return resident * static_cast<std::uint64_t>(pageSize);
+#endif
+    return std::nullopt;
+}
+std::optional<std::uint64_t> peakResidentBytes() {
+    struct rusage usage {};
+    if (::getrusage(RUSAGE_SELF, &usage) != 0) return std::nullopt;
+#ifdef __APPLE__
+    return static_cast<std::uint64_t>(usage.ru_maxrss);
+#else
+    return static_cast<std::uint64_t>(usage.ru_maxrss) * 1024;
+#endif
+}
+std::string optionalBytes(std::optional<std::uint64_t> bytes) { return bytes ? number(*bytes) : "null"; }
+
 std::string run(const Input& input, const Settings& settings, const Options& options) {
     const auto started = std::chrono::steady_clock::now();
     const auto& config = settings.aggregation;
@@ -379,7 +413,10 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
     if (localMode) publicationLimits.maxCoordinationNodes = settings.temporal->maxActiveCells * 2;
     PublicationCoordinator publication(config, settings.evaluator, publicationLimits,
         settings.temporal ? std::optional<AggregationTime>{settings.temporal->maxWindowMs} : std::nullopt, localMode);
-    std::vector<std::string> windows, releases;
+    std::vector<std::string> windows, releases, releaseTimings, memorySamples;
+    ReplayClock::time_point pacingEpoch;
+    std::optional<PacingReport> pacing;
+    AggregationTime currentEventMs = 0;
     std::size_t serializedBytes = 0;
     const auto retain = [&](std::vector<std::string>& destination, std::string value) {
         if (value.size() > maxDocumentBytes - serializedBytes)
@@ -391,7 +428,14 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
     const auto terminal = [&](const SpatialSelection& selection) {
         publication.seal(selection, selection.candidate.closedAtMs);
         if (!publication.deliver(selection.candidate.closedAtMs, [&](const auto& release) {
-            retain(releases, serializeRelease(release)); return SinkResult::Acknowledged;
+            retain(releases, serializeRelease(release));
+            if (options.paceRate) retain(releaseTimings, object({
+                {"release_id", quoted(release.releaseId)},
+                {"input_event_ms", number(currentEventMs)},
+                {"logical_window_end_ms", number(release.endMs)},
+                {"logical_sealed_at_ms", number(release.sealedAtMs)},
+                {"in_memory_ack_ms", number(replayOffsetMs(pacingEpoch))}}));
+            return SinkResult::Acknowledged;
         })) throw std::runtime_error("Offline release was not acknowledged");
         accountedContributions += selection.candidate.counts.observationContributions;
         retain(windows, serializeWindow(selection));
@@ -425,16 +469,57 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
         });
     }
     std::size_t batchIndex = 0;
-    // Advance every declared sensor cadence, including missing samples. Advancing
-    // only at observed timestamps would introduce strategy-dependent latency.
-    for (AggregationTime time = input.periodMs; time < input.endMs;) {
-        if (batchIndex < input.batches.size() && input.batches[batchIndex].observedAtMs == time)
+    const auto consume = [&](AggregationTime time, bool finishing) {
+        currentEventMs = time;
+        if (finishing) manager.finish(time);
+        else if (batchIndex < input.batches.size() && input.batches[batchIndex].observedAtMs == time)
             manager.ingest(input.batches[batchIndex++]);
         else manager.advance(time);
-        if (time > std::numeric_limits<AggregationTime>::max() - input.periodMs) break;
-        time += input.periodMs;
+    };
+    if (options.paceRate) {
+        // Build a small immutable arrival schedule, not copies of observations.
+        // Missing samples advance the same clock; EOF is a separately timed event.
+        const auto count = static_cast<std::uint64_t>((input.endMs - 1) / input.periodMs) + 1;
+        if (count > 100000) throw std::invalid_argument("Pacing supports at most 100000 cadence/finish events");
+        std::vector<PacedEvent> events;
+        events.reserve(static_cast<std::size_t>(count));
+        for (AggregationTime time = input.periodMs; time < input.endMs;) {
+            events.push_back({time, false});
+            if (time > std::numeric_limits<AggregationTime>::max() - input.periodMs) break;
+            time += input.periodMs;
+        }
+        events.push_back({input.endMs, true});
+        validatePacing(events, *options.paceRate, options.queueCapacity);
+        const auto sampleMemory = [&](AggregationTime logicalTime) {
+            const auto state = manager.history()->debugState();
+            retain(memorySamples, object({{"logical_time_ms", number(logicalTime)},
+                {"wall_ms", number(replayOffsetMs(pacingEpoch))},
+                {"process_resident_bytes", optionalBytes(residentBytes())},
+                {"process_peak_resident_bytes", optionalBytes(peakResidentBytes())},
+                {"history_bins", number(state.bins)}, {"history_observations", number(state.observations)},
+                {"history_identity_bytes", number(state.identityBytes)}, {"history_buckets", number(state.buckets)},
+                {"retained_result_bytes", number(serializedBytes)}}));
+        };
+        // Parsing, validation and core construction precede the arrival origin.
+        pacingEpoch = ReplayClock::now();
+        sampleMemory(0);
+        AggregationTime nextMemorySample = 1000;
+        pacing = runPaced(events, *options.paceRate, options.queueCapacity, pacingEpoch, [&](const auto& event) {
+            consume(event.logicalTimeMs, event.finishing);
+            if (event.logicalTimeMs >= nextMemorySample || event.finishing) {
+                sampleMemory(event.logicalTimeMs);
+                nextMemorySample = event.logicalTimeMs + 1000;
+            }
+        });
+    } else {
+        // Advance every declared sensor cadence, including missing samples.
+        for (AggregationTime time = input.periodMs; time < input.endMs;) {
+            consume(time, false);
+            if (time > std::numeric_limits<AggregationTime>::max() - input.periodMs) break;
+            time += input.periodMs;
+        }
+        consume(input.endMs, true);
     }
-    manager.finish(input.endMs);
     if (batchIndex != input.batches.size() || publication.state().retiredThroughMs != input.endMs
         || inputContributions != accountedContributions)
         throw std::runtime_error("Replay failed interval retirement or observation conservation");
@@ -451,6 +536,29 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
             settings.temporal->semanticSecondaryStrategy)));
         parameters.emplace_back("release_trigger", quoted(releaseTriggerName(settings.temporal->releaseTrigger)));
     }
+    Fields runtime{{"processing_ms", number(elapsed)}, {"clock", quoted("steady_clock")},
+        {"scope", quoted(options.paceRate
+            ? "core replay, pacing waits, telemetry and in-memory serialization; excludes input validation and file I/O"
+            : "core replay and in-memory result serialization; excludes input validation and file I/O")}};
+    if (pacing) {
+        std::vector<std::string> timings;
+        for (const auto& event : pacing->events) retain(timings, object({
+            {"logical_time_ms", number(event.event.logicalTimeMs)},
+            {"kind", quoted(event.event.finishing ? "finish" : "cadence")},
+            {"scheduled_arrival_ms", number(event.scheduledArrivalMs)},
+            {"enqueue_attempt_ms", number(event.enqueueAttemptMs)}, {"enqueued_ms", number(event.enqueuedMs)},
+            {"service_start_ms", number(event.serviceStartMs)}, {"service_finish_ms", number(event.serviceFinishMs)},
+            {"queue_depth_after_enqueue", number(event.queueDepthAfterEnqueue)}}));
+        runtime.emplace_back("pacing", object({{"schema", quoted("ump.paced-replay.v1")},
+            {"rate", number(*options.paceRate)}, {"queue_capacity", number(options.queueCapacity)},
+            {"peak_queue_depth", number(pacing->peakQueueDepth)}, {"overload_behavior", quoted("fail_without_successful_output")},
+            {"arrival_origin", quoted("steady_clock after parsing, validation and core setup")},
+            {"release_timing_scope", quoted("serialized in-memory sink acknowledgement; file publication occurs after replay")},
+            {"memory_scope", quoted("process RSS includes preloaded input and retained diagnostics; history counters separately describe bounded core storage")},
+            {"service_scope", quoted("aggregation plus per-step in-memory serialization and telemetry")},
+            {"events", array(timings)}, {"release_acknowledgements", array(releaseTimings)},
+            {"memory_samples", array(memorySamples)}}));
+    }
     return object({{"schema", quoted("ump.replay-result.v1")}, {"classification", quoted("private_research_diagnostics")},
         {"mode", quoted(options.mode)},
         {"configuration_yaml", quoted(settings.configurationYaml)},
@@ -460,8 +568,7 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
             {"coverage", object({{"x", number(g.x)}, {"y", number(g.y)}, {"width", number(g.width)},
                 {"height", number(g.height)}, {"leaf_depth", number(g.leafDepth)}})}})},
         {"parameters", object(parameters)},
-        {"runtime", object({{"processing_ms", number(elapsed)}, {"clock", quoted("steady_clock")},
-            {"scope", quoted("core replay and in-memory result serialization; excludes input validation and file I/O")}})},
+        {"runtime", object(runtime)},
         {"input_observation_contributions", number(inputContributions)},
         {"accounted_observation_contributions", number(accountedContributions)},
         {"empty_area_semantics", quoted("Only occupied footprints are released; absent public cells are unknown, never assumed zero")},
@@ -513,6 +620,17 @@ Options arguments(int argc, char** argv) {
         else if (key == "--output") result.output = value;
         else if (key == "--mode") result.mode = value;
         else if (key == "--fixed-window-ms") result.fixedWindowMs = integer();
+        else if (key == "--pace-rate") {
+            std::size_t consumed = 0;
+            const double rate = std::stod(value, &consumed);
+            if (consumed != value.size() || !std::isfinite(rate) || rate <= 0 || rate > 1000)
+                throw std::invalid_argument("Pace rate must be finite and in (0,1000]");
+            result.paceRate = rate;
+        } else if (key == "--queue-capacity") {
+            const auto capacity = integer();
+            if (capacity < 1 || capacity > 100000) throw std::invalid_argument("Queue capacity must be in [1,100000]");
+            result.queueCapacity = static_cast<std::size_t>(capacity);
+        }
         else if (key == "--fixed-depth") {
             const auto depth = integer();
             if (depth < 1 || depth > 14) throw std::invalid_argument("Fixed depth must be in [1,14]");
@@ -521,6 +639,8 @@ Options arguments(int argc, char** argv) {
     }
     if (result.input.empty() || result.config.empty() || result.output.empty() || result.mode.empty())
         throw std::invalid_argument("Required: --input FILE --config FILE --mode fixed|spatial|temporal_first|spatial_first|semantic_first --output NEW_FILE");
+    if (seen.count("--queue-capacity") && !result.paceRate)
+        throw std::invalid_argument("--queue-capacity requires --pace-rate");
     if (std::filesystem::exists(result.output)) throw std::invalid_argument("Output already exists");
     return result;
 }
