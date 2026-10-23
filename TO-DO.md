@@ -32,6 +32,15 @@ fixed/adaptive settings (M02) and revisit measured performance (M03). The full t
   failed-candidate diagnostics unavailable, rather than reconstructing decisions.
   Verify cell inspection, rewind, source completeness and exact agreement with the
   native recipient stream before calling browser replay integration complete.
+- [ ] **M01 visualization truth gate:** the native G overlay currently shows only
+  the latest finalized local decision; an empty retirement can replace earlier
+  successful releases before the next 100-ms display sample. Add an explicit
+  latest-decision label and trustworthy cumulative release/cell-window counters;
+  provide a scope-aware historical mosaic if cumulative geometry is displayed.
+  Dashed amber means the active owner's dated last check failed/unavailable, not
+  final suppression. Draw configured policy-region bounds separately from OSM
+  context and explain root/region inheritance. Verify overlays against actual
+  recipient events; do not infer total publications from visible rectangles.
 - [ ] **M01 follow-up, movement before density:** retain the four-route source as
   the historical integration fixture. Current motion has one arrival burst over
   0..12.6 s and no collision response. Add seeded spatial route variation inside
