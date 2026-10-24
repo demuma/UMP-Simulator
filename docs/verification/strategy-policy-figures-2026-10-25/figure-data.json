@@ -1,0 +1,1085 @@
+{
+  "schema": "ump.e25-scientific-figure-data.v1",
+  "static_derived": [
+    {
+      "evidence": "Derived utility only; no online runtime",
+      "full_input_semantic_distortion": 0.823046822620165,
+      "input_observations": 82033,
+      "method": "static_regional_10m",
+      "policy": "control",
+      "retained_fraction": 0.4712859458998208,
+      "retained_semantic_loss": 0.6245311812938102,
+      "source": "mixed"
+    },
+    {
+      "evidence": "Derived utility only; no online runtime",
+      "full_input_semantic_distortion": 0.8039935148050175,
+      "input_observations": 82033,
+      "method": "static_regional_20m",
+      "policy": "control",
+      "retained_fraction": 0.5521802201553033,
+      "retained_semantic_loss": 0.6450316798021944,
+      "source": "mixed"
+    },
+    {
+      "evidence": "Derived utility only; no online runtime",
+      "full_input_semantic_distortion": 0.8267038874599246,
+      "input_observations": 82033,
+      "method": "static_regional_10m",
+      "policy": "local400",
+      "retained_fraction": 0.46324040325234966,
+      "retained_semantic_loss": 0.6259045814583827,
+      "source": "mixed"
+    },
+    {
+      "evidence": "Derived utility only; no online runtime",
+      "full_input_semantic_distortion": 0.8126546633671815,
+      "input_observations": 82033,
+      "method": "static_regional_20m",
+      "policy": "local400",
+      "retained_fraction": 0.5410993136908318,
+      "retained_semantic_loss": 0.6537690366765793,
+      "source": "mixed"
+    },
+    {
+      "evidence": "Derived utility only; no online runtime",
+      "full_input_semantic_distortion": 0.7337275806541174,
+      "input_observations": 90045,
+      "method": "static_regional_10m",
+      "policy": "control",
+      "retained_fraction": 0.5325448386917653,
+      "retained_semantic_loss": 0.5,
+      "source": "pedestrians"
+    },
+    {
+      "evidence": "Derived utility only; no online runtime",
+      "full_input_semantic_distortion": 0.5340829585207396,
+      "input_observations": 90045,
+      "method": "static_regional_20m",
+      "policy": "control",
+      "retained_fraction": 0.8102393247820534,
+      "retained_semantic_loss": 0.42496367773239396,
+      "source": "pedestrians"
+    },
+    {
+      "evidence": "Derived utility only; no online runtime",
+      "full_input_semantic_distortion": 0.7390027208617913,
+      "input_observations": 90045,
+      "method": "static_regional_10m",
+      "policy": "local400",
+      "retained_fraction": 0.5219945582764174,
+      "retained_semantic_loss": 0.5,
+      "source": "pedestrians"
+    },
+    {
+      "evidence": "Derived utility only; no online runtime",
+      "full_input_semantic_distortion": 0.5462546504525515,
+      "input_observations": 90045,
+      "method": "static_regional_20m",
+      "policy": "local400",
+      "retained_fraction": 0.8065411738575157,
+      "retained_semantic_loss": 0.4374182444061962,
+      "source": "pedestrians"
+    }
+  ],
+  "strategy_comparison": [
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.8536869308692843,
+      "input_observations": 82033,
+      "method": "adaptive_immediate",
+      "retained_fraction": 0.399436812014677,
+      "retained_semantic_loss": 0.6337015900143437,
+      "role": "verified_corrected_adaptive_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.8507490887813441,
+      "input_observations": 82033,
+      "method": "adaptive_spatial_first",
+      "retained_fraction": 0.4026915997220631,
+      "retained_semantic_loss": 0.6293667130834898,
+      "role": "verified_corrected_adaptive_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.7668438311411261,
+      "input_observations": 82033,
+      "method": "adaptive_immediate",
+      "retained_fraction": 0.639559689393293,
+      "retained_semantic_loss": 0.6354426760697608,
+      "role": "verified_corrected_adaptive_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.7746638547901454,
+      "input_observations": 82033,
+      "method": "adaptive_spatial_first",
+      "retained_fraction": 0.6041349213121548,
+      "retained_semantic_loss": 0.6270102302306342,
+      "role": "verified_corrected_adaptive_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.7937031484257872,
+      "input_observations": 90045,
+      "method": "adaptive_immediate",
+      "retained_fraction": 0.4115053584318952,
+      "retained_semantic_loss": 0.4986776056566093,
+      "role": "verified_corrected_adaptive_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.7928035982008995,
+      "input_observations": 90045,
+      "method": "adaptive_spatial_first",
+      "retained_fraction": 0.4143928035982009,
+      "retained_semantic_loss": 0.5,
+      "role": "verified_corrected_adaptive_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.5707257482369926,
+      "input_observations": 90045,
+      "method": "adaptive_immediate",
+      "retained_fraction": 0.7788883336109723,
+      "retained_semantic_loss": 0.448862907250303,
+      "role": "verified_corrected_adaptive_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.6068132600366484,
+      "input_observations": 90045,
+      "method": "adaptive_spatial_first",
+      "retained_fraction": 0.7621078349714032,
+      "retained_semantic_loss": 0.48407991373280485,
+      "role": "verified_corrected_adaptive_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.9839454853534553,
+      "input_observations": 82033,
+      "method": "fixed_5m_400ms",
+      "retained_fraction": 0.03639998537174064,
+      "retained_semantic_loss": 0.5589417280643001,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.9782770348518279,
+      "input_observations": 82033,
+      "method": "fixed_5m_1000ms",
+      "retained_fraction": 0.04979703290139334,
+      "retained_semantic_loss": 0.5637698898408813,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.8971328611656285,
+      "input_observations": 82033,
+      "method": "fixed_10m_400ms",
+      "retained_fraction": 0.2696841515000061,
+      "retained_semantic_loss": 0.6185643900013561,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.8889958918971633,
+      "input_observations": 82033,
+      "method": "fixed_10m_1000ms",
+      "retained_fraction": 0.3013177623639267,
+      "retained_semantic_loss": 0.6316044987458532,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 1.0,
+      "input_observations": 82033,
+      "method": "fixed_20m_400ms",
+      "retained_fraction": 0.0,
+      "retained_semantic_loss": null,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 1.0,
+      "input_observations": 82033,
+      "method": "fixed_20m_1000ms",
+      "retained_fraction": 0.0,
+      "retained_semantic_loss": null,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.9839454853534553,
+      "input_observations": 82033,
+      "method": "fixed_5m_400ms",
+      "retained_fraction": 0.03639998537174064,
+      "retained_semantic_loss": 0.5589417280643001,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.9782770348518279,
+      "input_observations": 82033,
+      "method": "fixed_5m_1000ms",
+      "retained_fraction": 0.04979703290139334,
+      "retained_semantic_loss": 0.5637698898408813,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.8738068825960285,
+      "input_observations": 82033,
+      "method": "fixed_10m_400ms",
+      "retained_fraction": 0.3163361086392062,
+      "retained_semantic_loss": 0.6010789980732177,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.8626833103750929,
+      "input_observations": 82033,
+      "method": "fixed_10m_1000ms",
+      "retained_fraction": 0.3539429254080675,
+      "retained_semantic_loss": 0.6120371964869985,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.8180427388977607,
+      "input_observations": 82033,
+      "method": "fixed_20m_400ms",
+      "retained_fraction": 0.5066010020357661,
+      "retained_semantic_loss": 0.6408272775398238,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.8205843989613936,
+      "input_observations": 82033,
+      "method": "fixed_20m_1000ms",
+      "retained_fraction": 0.5056623553935611,
+      "retained_semantic_loss": 0.645186953062848,
+      "role": "verified_historical_fixed_reference",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.9491420956188572,
+      "input_observations": 90045,
+      "method": "fixed_5m_400ms",
+      "retained_fraction": 0.10171580876228552,
+      "retained_semantic_loss": 0.5,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.9344272308290299,
+      "input_observations": 90045,
+      "method": "fixed_5m_1000ms",
+      "retained_fraction": 0.13114553834194015,
+      "retained_semantic_loss": 0.5,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.8549225387306347,
+      "input_observations": 90045,
+      "method": "fixed_10m_400ms",
+      "retained_fraction": 0.29015492253873065,
+      "retained_semantic_loss": 0.5,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.8445332889111,
+      "input_observations": 90045,
+      "method": "fixed_10m_1000ms",
+      "retained_fraction": 0.3109334221778,
+      "retained_semantic_loss": 0.5,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 1.0,
+      "input_observations": 90045,
+      "method": "fixed_20m_400ms",
+      "retained_fraction": 0.0,
+      "retained_semantic_loss": null,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 1.0,
+      "input_observations": 90045,
+      "method": "fixed_20m_1000ms",
+      "retained_fraction": 0.0,
+      "retained_semantic_loss": null,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.9491420956188572,
+      "input_observations": 90045,
+      "method": "fixed_5m_400ms",
+      "retained_fraction": 0.10171580876228552,
+      "retained_semantic_loss": 0.5,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.9344272308290299,
+      "input_observations": 90045,
+      "method": "fixed_5m_1000ms",
+      "retained_fraction": 0.13114553834194015,
+      "retained_semantic_loss": 0.5,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.8063801432617025,
+      "input_observations": 90045,
+      "method": "fixed_10m_400ms",
+      "retained_fraction": 0.387239713476595,
+      "retained_semantic_loss": 0.5,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.7917485701593647,
+      "input_observations": 90045,
+      "method": "fixed_10m_1000ms",
+      "retained_fraction": 0.4165028596812705,
+      "retained_semantic_loss": 0.5,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.5893109001055028,
+      "input_observations": 90045,
+      "method": "fixed_20m_400ms",
+      "retained_fraction": 0.7430618024321173,
+      "retained_semantic_loss": 0.4473015588336397,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.5810206008107057,
+      "input_observations": 90045,
+      "method": "fixed_20m_1000ms",
+      "retained_fraction": 0.7568771169970571,
+      "retained_semantic_loss": 0.4464366939092923,
+      "role": "verified_historical_fixed_reference",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.8536869308692843,
+      "input_observations": 82033,
+      "method": "adaptive_temporal_first",
+      "retained_fraction": 0.399436812014677,
+      "retained_semantic_loss": 0.6337015900143437,
+      "role": "standalone_temporal_priority",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.9687808564845855,
+      "input_observations": 82033,
+      "method": "fixed_5m_2000ms",
+      "retained_fraction": 0.07594504650567455,
+      "retained_semantic_loss": 0.5889245585874799,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.9444857557324491,
+      "input_observations": 82033,
+      "method": "fixed_5m_4000ms",
+      "retained_fraction": 0.15108553874660197,
+      "retained_semantic_loss": 0.6325641439406164,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.8773176648421976,
+      "input_observations": 82033,
+      "method": "fixed_10m_2000ms",
+      "retained_fraction": 0.33946094864261944,
+      "retained_semantic_loss": 0.6385966172298632,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.8573561859251765,
+      "input_observations": 82033,
+      "method": "fixed_10m_4000ms",
+      "retained_fraction": 0.402667219289798,
+      "retained_semantic_loss": 0.6457526035359651,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 1.0,
+      "input_observations": 82033,
+      "method": "fixed_20m_2000ms",
+      "retained_fraction": 0.0,
+      "retained_semantic_loss": null,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 1.0,
+      "input_observations": 82033,
+      "method": "fixed_20m_4000ms",
+      "retained_fraction": 0.0,
+      "retained_semantic_loss": null,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.7668438311411261,
+      "input_observations": 82033,
+      "method": "adaptive_temporal_first",
+      "retained_fraction": 0.639559689393293,
+      "retained_semantic_loss": 0.6354426760697608,
+      "role": "standalone_temporal_priority",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.9687808564845855,
+      "input_observations": 82033,
+      "method": "fixed_5m_2000ms",
+      "retained_fraction": 0.07594504650567455,
+      "retained_semantic_loss": 0.5889245585874799,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.9444857557324491,
+      "input_observations": 82033,
+      "method": "fixed_5m_4000ms",
+      "retained_fraction": 0.15108553874660197,
+      "retained_semantic_loss": 0.6325641439406164,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.8773176648421976,
+      "input_observations": 82033,
+      "method": "fixed_10m_2000ms",
+      "retained_fraction": 0.33946094864261944,
+      "retained_semantic_loss": 0.6385966172298632,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.8573561859251765,
+      "input_observations": 82033,
+      "method": "fixed_10m_4000ms",
+      "retained_fraction": 0.402667219289798,
+      "retained_semantic_loss": 0.6457526035359651,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.8478539124498677,
+      "input_observations": 82033,
+      "method": "fixed_20m_2000ms",
+      "retained_fraction": 0.4561335072470835,
+      "retained_semantic_loss": 0.6664439574536319,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.8341277290846366,
+      "input_observations": 82033,
+      "method": "fixed_20m_4000ms",
+      "retained_fraction": 0.491911791596065,
+      "retained_semantic_loss": 0.6628007830892375,
+      "role": "matched_long_fixed_window",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.7937031484257872,
+      "input_observations": 90045,
+      "method": "adaptive_temporal_first",
+      "retained_fraction": 0.4115053584318952,
+      "retained_semantic_loss": 0.4986776056566093,
+      "role": "standalone_temporal_priority",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.9206563384974179,
+      "input_observations": 90045,
+      "method": "fixed_5m_2000ms",
+      "retained_fraction": 0.15868732300516408,
+      "retained_semantic_loss": 0.5,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.882403242823033,
+      "input_observations": 90045,
+      "method": "fixed_5m_4000ms",
+      "retained_fraction": 0.23519351435393415,
+      "retained_semantic_loss": 0.5,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.8287633960797379,
+      "input_observations": 90045,
+      "method": "fixed_10m_2000ms",
+      "retained_fraction": 0.3424732078405242,
+      "retained_semantic_loss": 0.5,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 0.8018712865789328,
+      "input_observations": 90045,
+      "method": "fixed_10m_4000ms",
+      "retained_fraction": 0.3962574268421345,
+      "retained_semantic_loss": 0.5,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 1.0,
+      "input_observations": 90045,
+      "method": "fixed_20m_2000ms",
+      "retained_fraction": 0.0,
+      "retained_semantic_loss": null,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "full_input_semantic_distortion": 1.0,
+      "input_observations": 90045,
+      "method": "fixed_20m_4000ms",
+      "retained_fraction": 0.0,
+      "retained_semantic_loss": null,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.5730301515908712,
+      "input_observations": 90045,
+      "method": "adaptive_temporal_first",
+      "retained_fraction": 0.7788883336109723,
+      "retained_semantic_loss": 0.4518214871319598,
+      "role": "standalone_temporal_priority",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.9206563384974179,
+      "input_observations": 90045,
+      "method": "fixed_5m_2000ms",
+      "retained_fraction": 0.15868732300516408,
+      "retained_semantic_loss": 0.5,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.882403242823033,
+      "input_observations": 90045,
+      "method": "fixed_5m_4000ms",
+      "retained_fraction": 0.23519351435393415,
+      "retained_semantic_loss": 0.5,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.8287633960797379,
+      "input_observations": 90045,
+      "method": "fixed_10m_2000ms",
+      "retained_fraction": 0.3424732078405242,
+      "retained_semantic_loss": 0.5,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.8018712865789328,
+      "input_observations": 90045,
+      "method": "fixed_10m_4000ms",
+      "retained_fraction": 0.3962574268421345,
+      "retained_semantic_loss": 0.5,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.6593592092842467,
+      "input_observations": 90045,
+      "method": "fixed_20m_2000ms",
+      "retained_fraction": 0.5873951912932422,
+      "retained_semantic_loss": 0.42008243212584134,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "full_input_semantic_distortion": 0.6318951635293465,
+      "input_observations": 90045,
+      "method": "fixed_20m_4000ms",
+      "retained_fraction": 0.6146149147648398,
+      "retained_semantic_loss": 0.4010805341235567,
+      "role": "matched_long_fixed_window",
+      "source": "pedestrians"
+    }
+  ],
+  "temporal_native": [
+    {
+      "full_input_semantic_distortion": 0.7606633915619324,
+      "input_observations": 82033,
+      "method": "adaptive_semantic_first",
+      "policy": "control",
+      "retained_fraction": 0.6541879487523313,
+      "retained_semantic_loss": 0.6341470231994782,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.7658808040666562,
+      "input_observations": 82033,
+      "method": "adaptive_spatial_first",
+      "policy": "control",
+      "retained_fraction": 0.6254434191118209,
+      "retained_semantic_loss": 0.6256748591810084,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.7606633915619324,
+      "input_observations": 82033,
+      "method": "adaptive_temporal_first",
+      "policy": "control",
+      "retained_fraction": 0.6541879487523313,
+      "retained_semantic_loss": 0.6341470231994782,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8626833103750929,
+      "input_observations": 82033,
+      "method": "fixed_10m_1000ms",
+      "policy": "control",
+      "retained_fraction": 0.3539429254080675,
+      "retained_semantic_loss": 0.6120371964869985,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8475308717223556,
+      "input_observations": 82033,
+      "method": "fixed_10m_2000ms",
+      "policy": "control",
+      "retained_fraction": 0.39903453488230345,
+      "retained_semantic_loss": 0.6179049306531436,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.823046822620165,
+      "input_observations": 82033,
+      "method": "fixed_10m_4000ms",
+      "policy": "control",
+      "retained_fraction": 0.4712859458998208,
+      "retained_semantic_loss": 0.6245311812938102,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8738068825960285,
+      "input_observations": 82033,
+      "method": "fixed_10m_400ms",
+      "policy": "control",
+      "retained_fraction": 0.3163361086392062,
+      "retained_semantic_loss": 0.6010789980732177,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8205843989613936,
+      "input_observations": 82033,
+      "method": "fixed_20m_1000ms",
+      "policy": "control",
+      "retained_fraction": 0.5056623553935611,
+      "retained_semantic_loss": 0.645186953062848,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.818737581217315,
+      "input_observations": 82033,
+      "method": "fixed_20m_2000ms",
+      "policy": "control",
+      "retained_fraction": 0.514366169712189,
+      "retained_semantic_loss": 0.6476004265908283,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8039935148050175,
+      "input_observations": 82033,
+      "method": "fixed_20m_4000ms",
+      "policy": "control",
+      "retained_fraction": 0.5521802201553033,
+      "retained_semantic_loss": 0.6450316798021944,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8180427388977607,
+      "input_observations": 82033,
+      "method": "fixed_20m_400ms",
+      "policy": "control",
+      "retained_fraction": 0.5066010020357661,
+      "retained_semantic_loss": 0.6408272775398238,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.7616081333122037,
+      "input_observations": 82033,
+      "method": "adaptive_semantic_first",
+      "policy": "local400",
+      "retained_fraction": 0.6488730145185474,
+      "retained_semantic_loss": 0.6326062860470796,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.7643021710774932,
+      "input_observations": 82033,
+      "method": "adaptive_spatial_first",
+      "policy": "local400",
+      "retained_fraction": 0.6174588275450124,
+      "retained_semantic_loss": 0.6182776593224354,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.7616081333122037,
+      "input_observations": 82033,
+      "method": "adaptive_temporal_first",
+      "policy": "local400",
+      "retained_fraction": 0.6488730145185474,
+      "retained_semantic_loss": 0.6326062860470796,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8947131032633209,
+      "input_observations": 82033,
+      "method": "fixed_10m_1000ms",
+      "policy": "local400",
+      "retained_fraction": 0.29049285043823825,
+      "retained_semantic_loss": 0.6375577003776752,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8808833030609633,
+      "input_observations": 82033,
+      "method": "fixed_10m_2000ms",
+      "policy": "local400",
+      "retained_fraction": 0.3323296722050882,
+      "retained_semantic_loss": 0.6415706844692246,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8578133190301465,
+      "input_observations": 82033,
+      "method": "fixed_10m_4000ms",
+      "policy": "local400",
+      "retained_fraction": 0.4017529530798581,
+      "retained_semantic_loss": 0.6460842916527596,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8738068825960285,
+      "input_observations": 82033,
+      "method": "fixed_10m_400ms",
+      "policy": "local400",
+      "retained_fraction": 0.3163361086392062,
+      "retained_semantic_loss": 0.6010789980732177,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8464337522704277,
+      "input_observations": 82033,
+      "method": "fixed_20m_1000ms",
+      "policy": "local400",
+      "retained_fraction": 0.4539636487754928,
+      "retained_semantic_loss": 0.6617212674543501,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8445869345263491,
+      "input_observations": 82033,
+      "method": "fixed_20m_2000ms",
+      "policy": "local400",
+      "retained_fraction": 0.46266746309412066,
+      "retained_semantic_loss": 0.6640933761922327,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.838625918837541,
+      "input_observations": 82033,
+      "method": "fixed_20m_4000ms",
+      "policy": "local400",
+      "retained_fraction": 0.48915680275011275,
+      "retained_semantic_loss": 0.6700974406260124,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.8180427388977607,
+      "input_observations": 82033,
+      "method": "fixed_20m_400ms",
+      "policy": "local400",
+      "retained_fraction": 0.5066010020357661,
+      "retained_semantic_loss": 0.6408272775398238,
+      "source": "mixed"
+    },
+    {
+      "full_input_semantic_distortion": 0.5671164417791105,
+      "input_observations": 90045,
+      "method": "adaptive_semantic_first",
+      "policy": "control",
+      "retained_fraction": 0.7861069465267366,
+      "retained_semantic_loss": 0.44933248569612205,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.6134210672441557,
+      "input_observations": 90045,
+      "method": "adaptive_spatial_first",
+      "policy": "control",
+      "retained_fraction": 0.7488922205563885,
+      "retained_semantic_loss": 0.48379897381143044,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.5694208451329891,
+      "input_observations": 90045,
+      "method": "adaptive_temporal_first",
+      "policy": "control",
+      "retained_fraction": 0.7861069465267366,
+      "retained_semantic_loss": 0.45226389771844316,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.7917485701593647,
+      "input_observations": 90045,
+      "method": "fixed_10m_1000ms",
+      "policy": "control",
+      "retained_fraction": 0.4165028596812705,
+      "retained_semantic_loss": 0.5,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.7701204953079016,
+      "input_observations": 90045,
+      "method": "fixed_10m_2000ms",
+      "policy": "control",
+      "retained_fraction": 0.4597590093841968,
+      "retained_semantic_loss": 0.5,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.7337275806541174,
+      "input_observations": 90045,
+      "method": "fixed_10m_4000ms",
+      "policy": "control",
+      "retained_fraction": 0.5325448386917653,
+      "retained_semantic_loss": 0.5,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.8063801432617025,
+      "input_observations": 90045,
+      "method": "fixed_10m_400ms",
+      "policy": "control",
+      "retained_fraction": 0.387239713476595,
+      "retained_semantic_loss": 0.5,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.5810206008107057,
+      "input_observations": 90045,
+      "method": "fixed_20m_1000ms",
+      "policy": "control",
+      "retained_fraction": 0.7568771169970571,
+      "retained_semantic_loss": 0.4464366939092923,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.563968015992004,
+      "input_observations": 90045,
+      "method": "fixed_20m_2000ms",
+      "policy": "control",
+      "retained_fraction": 0.7781775778777278,
+      "retained_semantic_loss": 0.4396754720212356,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.5340829585207396,
+      "input_observations": 90045,
+      "method": "fixed_20m_4000ms",
+      "policy": "control",
+      "retained_fraction": 0.8102393247820534,
+      "retained_semantic_loss": 0.42496367773239396,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.5893109001055028,
+      "input_observations": 90045,
+      "method": "fixed_20m_400ms",
+      "policy": "control",
+      "retained_fraction": 0.7430618024321173,
+      "retained_semantic_loss": 0.4473015588336397,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.5685879282580931,
+      "input_observations": 90045,
+      "method": "adaptive_semantic_first",
+      "policy": "local400",
+      "retained_fraction": 0.7831639735687712,
+      "retained_semantic_loss": 0.44914208735110606,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.5779721250485869,
+      "input_observations": 90045,
+      "method": "adaptive_spatial_first",
+      "policy": "local400",
+      "retained_fraction": 0.7698039868954412,
+      "retained_semantic_loss": 0.4517722925112166,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.5708923316119718,
+      "input_observations": 90045,
+      "method": "adaptive_temporal_first",
+      "policy": "local400",
+      "retained_fraction": 0.7831639735687712,
+      "retained_semantic_loss": 0.45208451503119684,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.8411627519573547,
+      "input_observations": 90045,
+      "method": "fixed_10m_1000ms",
+      "policy": "local400",
+      "retained_fraction": 0.3176744960852907,
+      "retained_semantic_loss": 0.5,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.8203786995391193,
+      "input_observations": 90045,
+      "method": "fixed_10m_2000ms",
+      "policy": "local400",
+      "retained_fraction": 0.35924260092176136,
+      "retained_semantic_loss": 0.5,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.7870342606474541,
+      "input_observations": 90045,
+      "method": "fixed_10m_4000ms",
+      "policy": "local400",
+      "retained_fraction": 0.4259314787050919,
+      "retained_semantic_loss": 0.5,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.8063801432617025,
+      "input_observations": 90045,
+      "method": "fixed_10m_400ms",
+      "policy": "local400",
+      "retained_fraction": 0.387239713476595,
+      "retained_semantic_loss": 0.5,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.6799267033150092,
+      "input_observations": 90045,
+      "method": "fixed_20m_1000ms",
+      "policy": "local400",
+      "retained_fraction": 0.6221555888722305,
+      "retained_semantic_loss": 0.4855413944521795,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.6676328502415458,
+      "input_observations": 90045,
+      "method": "fixed_20m_2000ms",
+      "policy": "local400",
+      "retained_fraction": 0.6434560497529014,
+      "retained_semantic_loss": 0.48346565412495685,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.644744294519407,
+      "input_observations": 90045,
+      "method": "fixed_20m_4000ms",
+      "policy": "local400",
+      "retained_fraction": 0.6719973346660003,
+      "retained_semantic_loss": 0.4713435795736242,
+      "source": "pedestrians"
+    },
+    {
+      "full_input_semantic_distortion": 0.5893109001055028,
+      "input_observations": 90045,
+      "method": "fixed_20m_400ms",
+      "policy": "local400",
+      "retained_fraction": 0.7430618024321173,
+      "retained_semantic_loss": 0.4473015588336397,
+      "source": "pedestrians"
+    }
+  ]
+}

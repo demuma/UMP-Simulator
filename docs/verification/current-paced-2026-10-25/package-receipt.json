@@ -1,0 +1,35 @@
+{
+  "files": {
+    "mixed-policy.json": {
+      "bytes": 4908,
+      "sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda"
+    },
+    "native-receipts.json": {
+      "bytes": 5050,
+      "sha256": "24feaf366bd301fcde0bebea138c15cd055a2404a505bb7a0db5482ca0ad5f4b"
+    },
+    "old_dense-policy.json": {
+      "bytes": 4781,
+      "sha256": "cb7e7a7b3869f0c2ca0191e759924efb30d85ea580abfd78c3dafe4d24efc73f"
+    },
+    "pedestrians-policy.json": {
+      "bytes": 4908,
+      "sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda"
+    },
+    "protocol-receipt.json": {
+      "bytes": 190,
+      "sha256": "74d55d6fa6b82b145255958046640fe723c7369a7fc2152759f8eb1eb261bff5"
+    },
+    "protocol.json": {
+      "bytes": 56884,
+      "sha256": "d2b7fe465d013487a28086f1beb9880dbec370f61c1353b40461b50a78852370"
+    },
+    "study-summary.json": {
+      "bytes": 51537,
+      "sha256": "89fc2ebbc56bd4a64c2bdee9fa673a303c811557ff1fec5f8d636b11aaa846bc"
+    }
+  },
+  "local_source": "results/current-paced-2026-10-25-v1",
+  "schema": "ump.aggregate-evidence-package.v1",
+  "scope": "Compact all-nine-case evidence including the measured failed dense gate; no input observations, native result, binary or telemetry event rows."
+}

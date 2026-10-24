@@ -458,6 +458,21 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS AND UMP_MAPPED_SCENE_PYTHON)
     set_tests_properties(run_spatial20_correction_evaluation PROPERTIES
         LABELS "unit;evaluation;mapped_scene;tools" TIMEOUT 30
         ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1")
+    # Frozen-source strategy/policy studies share the mapped helper environment.
+    foreach(study_test run_strategy_window_extension run_temporal_region_study static_regional_schedule)
+        add_test(NAME ${study_test}_evaluation COMMAND "${UMP_MAPPED_SCENE_PYTHON}"
+            -m unittest discover -s "${CMAKE_CURRENT_SOURCE_DIR}/../tools/evaluation"
+            -p test_${study_test}.py)
+        set_tests_properties(${study_test}_evaluation PROPERTIES
+            LABELS "unit;evaluation;mapped_scene;tools" TIMEOUT 30
+            ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1")
+    endforeach()
+    add_test(NAME run_current_paced_study_profiling COMMAND "${UMP_MAPPED_SCENE_PYTHON}"
+        -m unittest discover -s "${CMAKE_CURRENT_SOURCE_DIR}/../tools/profiling"
+        -p test_run_current_paced_study.py)
+    set_tests_properties(run_current_paced_study_profiling PROPERTIES
+        LABELS "unit;profiling;tools" TIMEOUT 30
+        ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1")
     # The seeded multi-geometry suite takes about 53 s in isolation; allow
     # bounded headroom for parallel CI without including native drainage here.
     set_tests_properties(mapped_build_mapped_scene_tools PROPERTIES TIMEOUT 120)

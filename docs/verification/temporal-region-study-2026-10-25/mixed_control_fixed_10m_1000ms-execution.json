@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/Users/maxdemu/Developer/UMP-Simulator/results/temporal-region-study-2026-10-25-v1/provenance/AggregationReplay",
+    "--input",
+    "/Users/maxdemu/Developer/UMP-Simulator/results/temporal-region-study-2026-10-25-v1/mixed-observations.json",
+    "--config",
+    "/Users/maxdemu/Developer/UMP-Simulator/results/temporal-region-study-2026-10-25-v1/mixed_control_fixed_10m_1000ms-policy.json",
+    "--mode",
+    "fixed",
+    "--output",
+    "/Users/maxdemu/Developer/UMP-Simulator/results/temporal-region-study-2026-10-25-v1/mixed_control_fixed_10m_1000ms.json",
+    "--progress-step-ms",
+    "50",
+    "--fixed-depth",
+    "3",
+    "--fixed-window-ms",
+    "1000"
+  ],
+  "native_process_wall_seconds": 1.6427734170000008,
+  "returncode": 0,
+  "timing_scope": "Unpaced native subprocess wall time and native processing_ms, excluding movement generation, Python audits and report writing; not a real-time deadline guarantee."
+}

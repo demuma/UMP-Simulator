@@ -1,0 +1,60 @@
+{
+  "environment": {
+    "matplotlib": "3.9.4",
+    "python": "3.9.6"
+  },
+  "inputs": {
+    "static_summary": {
+      "bytes": 83688,
+      "path": "/Users/maxdemu/Developer/UMP-Simulator/docs/verification/static-regional-schedule-2026-10-25/summary.json",
+      "sha256": "09fa374fa0161bad7d93f481cb4badbe30406dbfb57092e63f3c7bd06805ca07"
+    },
+    "strategy_summary": {
+      "bytes": 591148,
+      "path": "/Users/maxdemu/Developer/UMP-Simulator/docs/verification/strategy-window-extension-2026-10-25/summary.json",
+      "sha256": "9971da1a1d44dfcbcfd7fcde9439a40b5685699a8dfc7a63cd9b2b55224e58f5"
+    },
+    "temporal_summary": {
+      "bytes": 434530,
+      "path": "/Users/maxdemu/Developer/UMP-Simulator/docs/verification/temporal-region-study-2026-10-25/summary.json",
+      "sha256": "f407269b24893f4962d77a10d7440558a3557de74d09565d76f8e0057643ee09"
+    }
+  },
+  "objective": "J=(N_input-N_retained+sum_retained taxonomy_loss)/N_input; unit omission cost. Experimental utility, not privacy risk.",
+  "outputs": {
+    "figure-data.json": {
+      "bytes": 36430,
+      "sha256": "459fb66fef1d34219a6e93a6b3d904b4c2e502027678d005a11dc9439df3af1c"
+    },
+    "strategy-retention-distortion.png": {
+      "bytes": 382346,
+      "sha256": "81a068d7698767a5d5df3d6f79de5569ffba678b820ad3feb4e75150e1f3406f"
+    },
+    "strategy-retention-distortion.svg": {
+      "bytes": 64442,
+      "sha256": "92418c318035cce2b53b211a4c3c5e69d88f33b61b044265869be73f9a1a7f35"
+    },
+    "temporal-region-full-input-loss.png": {
+      "bytes": 357301,
+      "sha256": "46b9ffc71ffa72fc290a60adcd1a26fd2648c55efeff2e6b9c2b6cebf43056ad"
+    },
+    "temporal-region-full-input-loss.svg": {
+      "bytes": 43873,
+      "sha256": "9190640771efeb69ce3b601b6c94db7d126b2b90bd6f2bbd797f1223bdc814b2"
+    },
+    "temporal-region-retention.png": {
+      "bytes": 352360,
+      "sha256": "b3781fb20adeeb001a8250dcca7fa9cba833abe8db9f7e521e220307b1c82a18"
+    },
+    "temporal-region-retention.svg": {
+      "bytes": 43847,
+      "sha256": "04a0e44d26652696ddbffc4a1c611a1251c6bae0437c9e09cae48651ff7203d3"
+    }
+  },
+  "plotting_script": {
+    "path": "/Users/maxdemu/Developer/UMP-Simulator/docs/verification/plot_strategy_policy_results.py",
+    "sha256": "f08eae16bce759c27b5a9413ac6ae467c7b16f97b698e57ec279b13695ab101c"
+  },
+  "schema": "ump.e25-scientific-figure-receipt.v1",
+  "scope": "Exact aggregate outcomes; no fitting, interpolation, CDF or generated measurements. Derived static results carry no runtime claim. One frozen realization per source."
+}

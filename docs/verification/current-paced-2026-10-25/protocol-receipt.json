@@ -1,0 +1,7 @@
+{
+  "protocol_fingerprint": {
+    "bytes": 56884,
+    "sha256": "d2b7fe465d013487a28086f1beb9880dbec370f61c1353b40461b50a78852370"
+  },
+  "schema": "ump.current-paced-protocol-receipt.v1"
+}

@@ -1,0 +1,155 @@
+[
+  {
+    "artifacts_unchanged": true,
+    "completed_utc": "2026-10-24T22:46:15.374245+00:00",
+    "id": "mixed/full_unpaced",
+    "output_fingerprint": {
+      "bytes": 126432174,
+      "sha256": "ec168dff730762e5d60ca165a5a1cb32cc754b0e1ad00a962627dd5d2867ec50"
+    },
+    "return_code": 0,
+    "started_utc": "2026-10-24T22:45:40.587136+00:00",
+    "status": "validated",
+    "summary_fingerprint": {
+      "bytes": 2007,
+      "sha256": "a6fa3c6f590579c8f720d5cc51490078e227c2c85582c19ebd9dc4ab72cc54e9"
+    },
+    "wall_seconds": 34.786623542
+  },
+  {
+    "artifacts_unchanged": true,
+    "completed_utc": "2026-10-24T22:46:50.911494+00:00",
+    "id": "mixed/minimal_unpaced",
+    "output_fingerprint": {
+      "bytes": 1511280,
+      "sha256": "01b2c7a2ff7b350284396648c8901390c53b38db42b140fdd5f1d12dd8a93749"
+    },
+    "return_code": 0,
+    "started_utc": "2026-10-24T22:46:18.151990+00:00",
+    "status": "validated",
+    "summary_fingerprint": {
+      "bytes": 2013,
+      "sha256": "dbfb9e340ea72d46c3c0b567bc979b66dc5763247c8a82d22420b90479e7a2d1"
+    },
+    "wall_seconds": 32.759193083
+  },
+  {
+    "artifacts_unchanged": true,
+    "completed_utc": "2026-10-24T22:51:53.619212+00:00",
+    "id": "mixed/minimal_paced_1x",
+    "output_fingerprint": {
+      "bytes": 3501429,
+      "sha256": "78bb708ed47c0d1f67ff50ea860dc8a0301953d51d1de03eaa706572a29286c9"
+    },
+    "return_code": 0,
+    "started_utc": "2026-10-24T22:46:52.345019+00:00",
+    "status": "validated",
+    "summary_fingerprint": {
+      "bytes": 9984,
+      "sha256": "2860cc824ccdf86772134f6781f8e417701b933e44886977c6de241b47979163"
+    },
+    "wall_seconds": 301.27148995799996
+  },
+  {
+    "artifacts_unchanged": true,
+    "completed_utc": "2026-10-24T22:52:25.707468+00:00",
+    "id": "pedestrians/full_unpaced",
+    "output_fingerprint": {
+      "bytes": 101149955,
+      "sha256": "06677005abe4a68fbbf084f590b1996475a34e818f1acece3bddf23381501a07"
+    },
+    "return_code": 0,
+    "started_utc": "2026-10-24T22:51:55.086936+00:00",
+    "status": "validated",
+    "summary_fingerprint": {
+      "bytes": 2010,
+      "sha256": "1cbcb0b292a5dc915d03ff6234496565d41e568c53268c9fc2cd4528a307c327"
+    },
+    "wall_seconds": 30.62024174999999
+  },
+  {
+    "artifacts_unchanged": true,
+    "completed_utc": "2026-10-24T22:52:57.697573+00:00",
+    "id": "pedestrians/minimal_unpaced",
+    "output_fingerprint": {
+      "bytes": 1696847,
+      "sha256": "a1af756eab7b6992d86d7b751e435cf109e98bad19377d3d0d3000c579dd354e"
+    },
+    "return_code": 0,
+    "started_utc": "2026-10-24T22:52:27.833087+00:00",
+    "status": "validated",
+    "summary_fingerprint": {
+      "bytes": 2013,
+      "sha256": "0291137b1b37f5b2a79c5f38c696435bd5102a1d20af825c196c1d08137893b8"
+    },
+    "wall_seconds": 29.864199375
+  },
+  {
+    "artifacts_unchanged": true,
+    "completed_utc": "2026-10-24T22:58:00.316914+00:00",
+    "id": "pedestrians/minimal_paced_1x",
+    "output_fingerprint": {
+      "bytes": 3733471,
+      "sha256": "f48ee46aaa96c5c78df3ef48220b1f2dd02087bdfabb0010c82ba1e8f33d4c25"
+    },
+    "return_code": 0,
+    "started_utc": "2026-10-24T22:52:58.908328+00:00",
+    "status": "validated",
+    "summary_fingerprint": {
+      "bytes": 9999,
+      "sha256": "c3aae0bfcece65deac19b99966053f83efdc4a8ecaa81764933eadc1bd4749e8"
+    },
+    "wall_seconds": 301.4058825
+  },
+  {
+    "artifacts_unchanged": true,
+    "completed_utc": "2026-10-24T23:00:05.393611+00:00",
+    "id": "old_dense/full_unpaced",
+    "output_fingerprint": {
+      "bytes": 240504349,
+      "sha256": "329c4496fd160fcbc85dd10853059358017f92d6d91ff098d2b988a9d07c7982"
+    },
+    "return_code": 0,
+    "started_utc": "2026-10-24T22:58:01.539068+00:00",
+    "status": "validated",
+    "summary_fingerprint": {
+      "bytes": 3077,
+      "sha256": "a5545df74e6660b1cab76f362534c2aea93b374816c7c9f4ef21803bdc163770"
+    },
+    "wall_seconds": 123.85341237499995
+  },
+  {
+    "artifacts_unchanged": true,
+    "completed_utc": "2026-10-24T23:02:35.300550+00:00",
+    "id": "old_dense/minimal_unpaced",
+    "output_fingerprint": {
+      "bytes": 2924741,
+      "sha256": "22a9326c9fbf472ba7848f48f97280409fe18826a65e5719130a96d026746303"
+    },
+    "return_code": 0,
+    "started_utc": "2026-10-24T23:00:31.499688+00:00",
+    "status": "validated",
+    "summary_fingerprint": {
+      "bytes": 2016,
+      "sha256": "633cd19848b6c6cdffb2f236d9455ae4014ab4100274d80ab2e77091750db06a"
+    },
+    "wall_seconds": 123.79972487499992
+  },
+  {
+    "artifacts_unchanged": true,
+    "completed_utc": "2026-10-24T23:03:07.620511+00:00",
+    "failure_fingerprint": {
+      "bytes": 137389,
+      "sha256": "889c68f34eb67bcecfc72d0bd3f3fe75a7a221ad00ac06ba1251d4bbde31e1e8"
+    },
+    "id": "old_dense/minimal_paced_1x",
+    "return_code": 1,
+    "started_utc": "2026-10-24T23:02:38.007248+00:00",
+    "status": "bounded_queue_overflow",
+    "summary_fingerprint": {
+      "bytes": 7345,
+      "sha256": "ffdcfa97f3a185bbeaadbccc3201eed32c6f0be97e97b09f5f6778783f7c8b5f"
+    },
+    "wall_seconds": 29.61297466699989
+  }
+]

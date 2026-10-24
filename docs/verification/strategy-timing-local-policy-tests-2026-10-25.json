@@ -1,0 +1,598 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "simulator/build",
+    "--output-on-failure",
+    "-j",
+    "2",
+    "--output-junit",
+    "/private/tmp/ump-e25-ctest.xml"
+  ],
+  "ctest_reported_wall_seconds": 308.62,
+  "failures": 0,
+  "groups": [
+    {
+      "name": "timestamp_utilities",
+      "seconds": 0.0461052,
+      "status": "passed"
+    },
+    {
+      "name": "sensor_regression",
+      "seconds": 0.417905,
+      "status": "passed"
+    },
+    {
+      "name": "frame_regression",
+      "seconds": 0.0998097,
+      "status": "passed"
+    },
+    {
+      "name": "aggregation_regression",
+      "seconds": 0.00243,
+      "status": "passed"
+    },
+    {
+      "name": "metric_regression",
+      "seconds": 0.00444821,
+      "status": "passed"
+    },
+    {
+      "name": "playback_regression",
+      "seconds": 3.01163,
+      "status": "passed"
+    },
+    {
+      "name": "policy_regression",
+      "seconds": 0.00750175,
+      "status": "passed"
+    },
+    {
+      "name": "policy_configuration",
+      "seconds": 0.0481458,
+      "status": "passed"
+    },
+    {
+      "name": "aggregation_diagnostics",
+      "seconds": 0.0535176,
+      "status": "passed"
+    },
+    {
+      "name": "history_regression",
+      "seconds": 0.00820313,
+      "status": "passed"
+    },
+    {
+      "name": "occupied_history",
+      "seconds": 0.005114,
+      "status": "passed"
+    },
+    {
+      "name": "history_query_range",
+      "seconds": 0.0277035,
+      "status": "passed"
+    },
+    {
+      "name": "spatial_regression",
+      "seconds": 0.0139705,
+      "status": "passed"
+    },
+    {
+      "name": "selective_suppression_regression",
+      "seconds": 0.00356258,
+      "status": "passed"
+    },
+    {
+      "name": "publication_regression",
+      "seconds": 0.006076,
+      "status": "passed"
+    },
+    {
+      "name": "adaptive_aggregation_regression",
+      "seconds": 0.00405267,
+      "status": "passed"
+    },
+    {
+      "name": "publication_store_regression",
+      "seconds": 0.0836435,
+      "status": "passed"
+    },
+    {
+      "name": "publication_pipeline_regression",
+      "seconds": 0.105506,
+      "status": "passed"
+    },
+    {
+      "name": "aggregation_presentation",
+      "seconds": 0.00187242,
+      "status": "passed"
+    },
+    {
+      "name": "paced_replay",
+      "seconds": 0.0219241,
+      "status": "passed"
+    },
+    {
+      "name": "replay_regression",
+      "seconds": 0.23487,
+      "status": "passed"
+    },
+    {
+      "name": "live_measurement_helpers",
+      "seconds": 0.0528327,
+      "status": "passed"
+    },
+    {
+      "name": "paced_replay_summary",
+      "seconds": 0.159464,
+      "status": "passed"
+    },
+    {
+      "name": "occupancy_evaluation",
+      "seconds": 0.0627967,
+      "status": "passed"
+    },
+    {
+      "name": "privacy_evaluation",
+      "seconds": 0.0626485,
+      "status": "passed"
+    },
+    {
+      "name": "comparison_evaluation",
+      "seconds": 0.84072,
+      "status": "passed"
+    },
+    {
+      "name": "capture_evaluation",
+      "seconds": 0.0846912,
+      "status": "passed"
+    },
+    {
+      "name": "oracle_evaluation",
+      "seconds": 0.51346,
+      "status": "passed"
+    },
+    {
+      "name": "privacy_dataset_evaluation",
+      "seconds": 1.84562,
+      "status": "passed"
+    },
+    {
+      "name": "empirical_privacy_evaluation",
+      "seconds": 0.0946905,
+      "status": "passed"
+    },
+    {
+      "name": "privacy_study_evaluation",
+      "seconds": 11.858,
+      "status": "passed"
+    },
+    {
+      "name": "coordination_evaluation",
+      "seconds": 0.949459,
+      "status": "passed"
+    },
+    {
+      "name": "coordination_metrics_evaluation",
+      "seconds": 0.0555878,
+      "status": "passed"
+    },
+    {
+      "name": "coordination_scenarios_evaluation",
+      "seconds": 0.476566,
+      "status": "passed"
+    },
+    {
+      "name": "coordination_study_evaluation",
+      "seconds": 3.49757,
+      "status": "passed"
+    },
+    {
+      "name": "plot_coordination_study_evaluation",
+      "seconds": 0.0872339,
+      "status": "passed"
+    },
+    {
+      "name": "compare_coordination_studies_evaluation",
+      "seconds": 0.515574,
+      "status": "passed"
+    },
+    {
+      "name": "plot_privacy_coordination_evaluation",
+      "seconds": 0.073555,
+      "status": "passed"
+    },
+    {
+      "name": "robustness_attacks_evaluation",
+      "seconds": 0.0569158,
+      "status": "passed"
+    },
+    {
+      "name": "run_privacy_robustness_evaluation",
+      "seconds": 4.18565,
+      "status": "passed"
+    },
+    {
+      "name": "plot_privacy_robustness_evaluation",
+      "seconds": 0.0737032,
+      "status": "passed"
+    },
+    {
+      "name": "privacy_repair_evaluation",
+      "seconds": 5.92681,
+      "status": "passed"
+    },
+    {
+      "name": "causal_privacy_evaluation",
+      "seconds": 0.165717,
+      "status": "passed"
+    },
+    {
+      "name": "online_occupancy_evaluation",
+      "seconds": 0.060179,
+      "status": "passed"
+    },
+    {
+      "name": "run_privacy_prefix_study_evaluation",
+      "seconds": 9.42514,
+      "status": "passed"
+    },
+    {
+      "name": "selective_suppression_evaluation",
+      "seconds": 7.1038,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_adaptation_evaluation",
+      "seconds": 3.12957,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_tradeoffs_evaluation",
+      "seconds": 0.0514129,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_queries_evaluation",
+      "seconds": 0.0564919,
+      "status": "passed"
+    },
+    {
+      "name": "scoped_semantic_queries_evaluation",
+      "seconds": 0.0722342,
+      "status": "passed"
+    },
+    {
+      "name": "run_scoped_semantic_utility_evaluation",
+      "seconds": 1.80882,
+      "status": "passed"
+    },
+    {
+      "name": "recipient_support_evaluation",
+      "seconds": 0.0917182,
+      "status": "passed"
+    },
+    {
+      "name": "run_recipient_contract_study_evaluation",
+      "seconds": 1.0531,
+      "status": "passed"
+    },
+    {
+      "name": "run_semantic_priority_study_evaluation",
+      "seconds": 1.13333,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_first_evaluation",
+      "seconds": 1.89144,
+      "status": "passed"
+    },
+    {
+      "name": "moving_comparison_evaluation",
+      "seconds": 1.37369,
+      "status": "passed"
+    },
+    {
+      "name": "moving_scoped_audit_evaluation",
+      "seconds": 0.0397972,
+      "status": "passed"
+    },
+    {
+      "name": "run_moving_scoped_comparison_evaluation",
+      "seconds": 0.284549,
+      "status": "passed"
+    },
+    {
+      "name": "cell_size_caps_evaluation",
+      "seconds": 3.33344,
+      "status": "passed"
+    },
+    {
+      "name": "four_second_window_evaluation",
+      "seconds": 0.872329,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_release_evaluation",
+      "seconds": 1.32116,
+      "status": "passed"
+    },
+    {
+      "name": "local_policy_replay_evaluation",
+      "seconds": 0.384438,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_local_policy_evaluation",
+      "seconds": 1.02993,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_suppression_audit_evaluation",
+      "seconds": 6.09095,
+      "status": "passed"
+    },
+    {
+      "name": "run_suppression_study_evaluation",
+      "seconds": 0.527353,
+      "status": "passed"
+    },
+    {
+      "name": "replay_data_evaluation",
+      "seconds": 0.0492806,
+      "status": "passed"
+    },
+    {
+      "name": "diagnose_spatial20_gap_evaluation",
+      "seconds": 0.0594665,
+      "status": "passed"
+    },
+    {
+      "name": "report_spatial20_correction_evaluation",
+      "seconds": 0.0394559,
+      "status": "passed"
+    },
+    {
+      "name": "replay_viewer_evaluation",
+      "seconds": 1.78026,
+      "status": "passed"
+    },
+    {
+      "name": "replay_viewer_compact_projection",
+      "seconds": 0.159463,
+      "status": "passed"
+    },
+    {
+      "name": "replay_viewer_model",
+      "seconds": 0.107614,
+      "status": "passed"
+    },
+    {
+      "name": "cell_local_coordination",
+      "seconds": 0.0353007,
+      "status": "passed"
+    },
+    {
+      "name": "cell_local_coordination_stress",
+      "seconds": 0.775727,
+      "status": "passed"
+    },
+    {
+      "name": "scoped_publication",
+      "seconds": 0.00595904,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_taxonomy",
+      "seconds": 0.00388912,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_history",
+      "seconds": 0.00304583,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_pipeline",
+      "seconds": 0.00347025,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_suppression",
+      "seconds": 0.00533117,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_first_core",
+      "seconds": 0.00681817,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_cell_local",
+      "seconds": 0.0214492,
+      "status": "passed"
+    },
+    {
+      "name": "semantic_publication_store",
+      "seconds": 0.134537,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_scene",
+      "seconds": 0.695244,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_scene_configuration",
+      "seconds": 0.0136472,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_motion_probe_contract",
+      "seconds": 0.0740832,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_pedestrian_semantics",
+      "seconds": 0.002169,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_audit_building_access_tools",
+      "seconds": 0.957876,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_build_mapped_scene_tools",
+      "seconds": 70.3367,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_storefront_router_tools",
+      "seconds": 104.648,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_transit_access_tools",
+      "seconds": 13.7222,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_export_replay_tools",
+      "seconds": 3.41355,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_analyze_tracks_tools",
+      "seconds": 0.230104,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_run_comparison_tools",
+      "seconds": 2.21033,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_plot_policy_comparison_tools",
+      "seconds": 0.437812,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_plot_spatial_portfolio_tools",
+      "seconds": 0.582719,
+      "status": "passed"
+    },
+    {
+      "name": "run_spatial20_correction_evaluation",
+      "seconds": 0.575759,
+      "status": "passed"
+    },
+    {
+      "name": "run_strategy_window_extension_evaluation",
+      "seconds": 0.835082,
+      "status": "passed"
+    },
+    {
+      "name": "run_temporal_region_study_evaluation",
+      "seconds": 0.927153,
+      "status": "passed"
+    },
+    {
+      "name": "static_regional_schedule_evaluation",
+      "seconds": 0.609336,
+      "status": "passed"
+    },
+    {
+      "name": "run_current_paced_study_profiling",
+      "seconds": 0.139125,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_transit_access_drain_tools",
+      "seconds": 21.0369,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_dense_corridor_drain_tools",
+      "seconds": 8.23376,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_building_drain_tools",
+      "seconds": 17.6183,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_storefront_drain_tools",
+      "seconds": 41.8597,
+      "status": "passed"
+    },
+    {
+      "name": "mapped_urban_traffic_drain_tools",
+      "seconds": 79.5499,
+      "status": "passed"
+    }
+  ],
+  "junit_fingerprint": {
+    "bytes": 60919,
+    "sha256": "93a67edf391a80de3271a3cdb4608fdb2dbb483193cfa01f3b434c9b8ab23074"
+  },
+  "junit_metadata": {
+    "disabled": "0",
+    "failures": "0",
+    "hostname": "",
+    "name": "(empty)",
+    "skipped": "0",
+    "tests": "104",
+    "time": "308",
+    "timestamp": "2026-10-25T01:15:34"
+  },
+  "native_binary": {
+    "bytes": 866336,
+    "sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f"
+  },
+  "new_python_test_methods": 51,
+  "passed_groups": 104,
+  "registered_groups": 104,
+  "schema": "ump.strategy-policy-tests.v1",
+  "skipped": 0,
+  "source_files": {
+    "simulator/CMakeLists.txt": {
+      "bytes": 33346,
+      "sha256": "759c073dab92155052b068d9ff66626cd7b6566180958cb7465bd0dd42e9d631"
+    },
+    "tools/evaluation/run_strategy_window_extension.py": {
+      "bytes": 20752,
+      "sha256": "8053240f51db36accb519b134ef7f512af00926f4b023af71dce5d38f3a453da"
+    },
+    "tools/evaluation/run_temporal_region_study.py": {
+      "bytes": 25695,
+      "sha256": "629cd0a23fbd38b462aaf14089dfe68cadad28cf1802888be68af493fe4f3054"
+    },
+    "tools/evaluation/static_regional_schedule.py": {
+      "bytes": 31364,
+      "sha256": "3bc241da47219dae61035e4dcbe7adab6035148ab1662c20b3f1e71671b1d0fd"
+    },
+    "tools/evaluation/test_run_strategy_window_extension.py": {
+      "bytes": 11981,
+      "sha256": "bb075463dcbd8487d26acd97413af78788f2e909ab2b2766f2d8f51e640e38b4"
+    },
+    "tools/evaluation/test_run_temporal_region_study.py": {
+      "bytes": 18169,
+      "sha256": "48124b4a1f19cc7833de794511d78c04473ebb778eb0e3f06cde14df4269f91b"
+    },
+    "tools/evaluation/test_static_regional_schedule.py": {
+      "bytes": 18696,
+      "sha256": "df4f15c7df7fc7d95f33126ecafee33f29775c9e327cfa5e81f0261bf270efe9"
+    },
+    "tools/profiling/run_current_paced_study.py": {
+      "bytes": 25938,
+      "sha256": "a4e607f80c791695a5d5d7dd93f04185b46c9f7cd0b13ffeb1fbeec490b9e482"
+    },
+    "tools/profiling/test_run_current_paced_study.py": {
+      "bytes": 23430,
+      "sha256": "690f4a5cbd8c0cd23b21e7d5240486720cfb9b17da62fde369353ce79b185144"
+    }
+  },
+  "status": "passed"
+}

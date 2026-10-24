@@ -1,0 +1,247 @@
+{
+  "files": {
+    "implementation-receipt.json": {
+      "bytes": 583,
+      "sha256": "d4c9338de1d1c7a729adf8ddde881eb5dac10a492ad91d40daaa5671d7c87cd4"
+    },
+    "mixed_original_adaptive_temporal_first_off-execution.json": {
+      "bytes": 878,
+      "sha256": "7c9bcc258c1e2f39190b2b9e5bae728e7965306eea294a285184a9f549fef7dc"
+    },
+    "mixed_original_adaptive_temporal_first_off-policy.json": {
+      "bytes": 4940,
+      "sha256": "ee4e4853b56e5c2c46f36cbd85435b895bd9b64509b05afc3cd8ed31d9db82bc"
+    },
+    "mixed_original_fixed_10m_2000ms_off-execution.json": {
+      "bytes": 931,
+      "sha256": "63371dca58f63b2abf44b71c5312a8d0c6f44d874b844517803d3fd9adaffc1e"
+    },
+    "mixed_original_fixed_10m_2000ms_off-policy.json": {
+      "bytes": 4981,
+      "sha256": "52593d53319adef8792dcac2e762b1118e2be38120a433b9cc5ec2101243df0d"
+    },
+    "mixed_original_fixed_10m_4000ms_off-execution.json": {
+      "bytes": 931,
+      "sha256": "9c56a9ec9a108c42ccb168a9d376ba027b191c0c5da22a25d20fadfbd9ac913b"
+    },
+    "mixed_original_fixed_10m_4000ms_off-policy.json": {
+      "bytes": 4981,
+      "sha256": "32913e1b4b3f5222d1413027ecadce47567b71cd94dcf5b55e0307538bde7220"
+    },
+    "mixed_original_fixed_20m_2000ms_off-execution.json": {
+      "bytes": 931,
+      "sha256": "30c9e9f80a1f32fa70f3c70bc3bd5a94f9a98357f4978d5384022a9da05c46c8"
+    },
+    "mixed_original_fixed_20m_2000ms_off-policy.json": {
+      "bytes": 4981,
+      "sha256": "15d69064c299e92f6df83808c9e6f0b5b813db8203968d173dee30d2faa31781"
+    },
+    "mixed_original_fixed_20m_4000ms_off-execution.json": {
+      "bytes": 930,
+      "sha256": "5aede9002e1d9d6eaa9e46d713740e795a9da38f9a3fca1010627da4716ba9fe"
+    },
+    "mixed_original_fixed_20m_4000ms_off-policy.json": {
+      "bytes": 4981,
+      "sha256": "dca398019618579f7b8bbb6f748152224adfda378db007b538917d3a30795cc6"
+    },
+    "mixed_original_fixed_5m_2000ms_off-execution.json": {
+      "bytes": 929,
+      "sha256": "923a16c77dc4da7e74ac8e219f91b314cf34d9d682ddfcf12b6bd9e97a785380"
+    },
+    "mixed_original_fixed_5m_2000ms_off-policy.json": {
+      "bytes": 4979,
+      "sha256": "084af6dfb01ebc80efcf563679474eebf9ba997e99351e59d4ceba377b5c3c05"
+    },
+    "mixed_original_fixed_5m_4000ms_off-execution.json": {
+      "bytes": 929,
+      "sha256": "9686b92feabdad81adcbc7794c2043b68c348dc3d7d50a811ba5ee77854a295b"
+    },
+    "mixed_original_fixed_5m_4000ms_off-policy.json": {
+      "bytes": 4979,
+      "sha256": "b87fd609c66e8db4fa8672c4b795cf62b28514049996ac234106fdcc00633ef4"
+    },
+    "mixed_spatial20_adaptive_temporal_first_off-execution.json": {
+      "bytes": 888,
+      "sha256": "80184ebdbacf01a2e1ff47cd2ed3288ee82003a2186ca9a99cbbc2ac723411fc"
+    },
+    "mixed_spatial20_adaptive_temporal_first_off-policy.json": {
+      "bytes": 4953,
+      "sha256": "91eabf700b49ca97d5ceb1f13d234de2c5c7652b2bbcba7752ec857173e2cac1"
+    },
+    "mixed_spatial20_fixed_10m_2000ms_off-execution.json": {
+      "bytes": 933,
+      "sha256": "382dc168bb12d3b3e33e4961f9a5849cbfad7c26d6ef95fdf0f3789fb25a7760"
+    },
+    "mixed_spatial20_fixed_10m_2000ms_off-policy.json": {
+      "bytes": 4994,
+      "sha256": "3f1f1531e10165b6d777c19694b482d6023b933422ec176bb1dcc6962240039e"
+    },
+    "mixed_spatial20_fixed_10m_4000ms_off-execution.json": {
+      "bytes": 932,
+      "sha256": "5696b81d791ba8a7c248c3b740fe8b7ad060246c9863fb428c911592534c0043"
+    },
+    "mixed_spatial20_fixed_10m_4000ms_off-policy.json": {
+      "bytes": 4994,
+      "sha256": "4b96b262d8c0b6033e0dc6acb1090a22ad80819fbdf794cbeba9b76b6a220bda"
+    },
+    "mixed_spatial20_fixed_20m_2000ms_off-execution.json": {
+      "bytes": 933,
+      "sha256": "e5672261dbf0a5813d0d5500412ef6420fd4fe80c0f67c444d068cf871a03f65"
+    },
+    "mixed_spatial20_fixed_20m_2000ms_off-policy.json": {
+      "bytes": 4994,
+      "sha256": "d9442a4e3f72af598e1c98ff666ca678a445419caf8439868cc96caf8a8c086d"
+    },
+    "mixed_spatial20_fixed_20m_4000ms_off-execution.json": {
+      "bytes": 933,
+      "sha256": "fe9501ff4e26feea65b92dcaee44bd1d4a7ce24eb96fe09b7a7d20f12ed2c735"
+    },
+    "mixed_spatial20_fixed_20m_4000ms_off-policy.json": {
+      "bytes": 4994,
+      "sha256": "8bc30d47e62fc0d0433743fca67690ec1e9908c90d45806776793ccb91cec2ed"
+    },
+    "mixed_spatial20_fixed_5m_2000ms_off-execution.json": {
+      "bytes": 930,
+      "sha256": "5057d0d17708026928644bf138640082dd3390a15280a0102f960b0f0fed47c8"
+    },
+    "mixed_spatial20_fixed_5m_2000ms_off-policy.json": {
+      "bytes": 4992,
+      "sha256": "dedf629073103a5167e0e3b62332f3fa3611057377899294fe641d406b090ac4"
+    },
+    "mixed_spatial20_fixed_5m_4000ms_off-execution.json": {
+      "bytes": 931,
+      "sha256": "8e82fed1c342aa336f4e98e4ac8282d400089ead1d25b145ed94f58c3b35477c"
+    },
+    "mixed_spatial20_fixed_5m_4000ms_off-policy.json": {
+      "bytes": 4992,
+      "sha256": "b31760c1279376780857dd76ffef4dc3204cce0f720ff9cf24d64a9c0e61343f"
+    },
+    "pedestrians_original_adaptive_temporal_first_off-execution.json": {
+      "bytes": 899,
+      "sha256": "72f84d65ce376e2037c3351efd6059460d91f1806e8d40094e1154f5f49fe842"
+    },
+    "pedestrians_original_adaptive_temporal_first_off-policy.json": {
+      "bytes": 4940,
+      "sha256": "ee4e4853b56e5c2c46f36cbd85435b895bd9b64509b05afc3cd8ed31d9db82bc"
+    },
+    "pedestrians_original_fixed_10m_2000ms_off-execution.json": {
+      "bytes": 949,
+      "sha256": "d11bbe21528c1672756ec08fb32b04d0b8263564d6e91d954c6a1fa5a36f5fdd"
+    },
+    "pedestrians_original_fixed_10m_2000ms_off-policy.json": {
+      "bytes": 4981,
+      "sha256": "52593d53319adef8792dcac2e762b1118e2be38120a433b9cc5ec2101243df0d"
+    },
+    "pedestrians_original_fixed_10m_4000ms_off-execution.json": {
+      "bytes": 949,
+      "sha256": "e98190afe5984332583e092c6f00958f389596cd7afe16bdc21b902ca6bac7ff"
+    },
+    "pedestrians_original_fixed_10m_4000ms_off-policy.json": {
+      "bytes": 4981,
+      "sha256": "32913e1b4b3f5222d1413027ecadce47567b71cd94dcf5b55e0307538bde7220"
+    },
+    "pedestrians_original_fixed_20m_2000ms_off-execution.json": {
+      "bytes": 949,
+      "sha256": "c8b36d7a6f2ac1e3a6d133b2eb277d781bda97911d87f931ff8bf9a898238394"
+    },
+    "pedestrians_original_fixed_20m_2000ms_off-policy.json": {
+      "bytes": 4981,
+      "sha256": "15d69064c299e92f6df83808c9e6f0b5b813db8203968d173dee30d2faa31781"
+    },
+    "pedestrians_original_fixed_20m_4000ms_off-execution.json": {
+      "bytes": 949,
+      "sha256": "00ccd4ff2773aebe379c76d5c45dde97faba22299644f0b230183a02b24330ec"
+    },
+    "pedestrians_original_fixed_20m_4000ms_off-policy.json": {
+      "bytes": 4981,
+      "sha256": "dca398019618579f7b8bbb6f748152224adfda378db007b538917d3a30795cc6"
+    },
+    "pedestrians_original_fixed_5m_2000ms_off-execution.json": {
+      "bytes": 947,
+      "sha256": "f849c94a70d0fdddeed8ea9d24914749c2959c277c2a4cadaeb5c086dce66d6b"
+    },
+    "pedestrians_original_fixed_5m_2000ms_off-policy.json": {
+      "bytes": 4979,
+      "sha256": "084af6dfb01ebc80efcf563679474eebf9ba997e99351e59d4ceba377b5c3c05"
+    },
+    "pedestrians_original_fixed_5m_4000ms_off-execution.json": {
+      "bytes": 945,
+      "sha256": "6502617d6c4277ade87440495a86c1f308394441c2edd3f13df1797f58c2eddb"
+    },
+    "pedestrians_original_fixed_5m_4000ms_off-policy.json": {
+      "bytes": 4979,
+      "sha256": "b87fd609c66e8db4fa8672c4b795cf62b28514049996ac234106fdcc00633ef4"
+    },
+    "pedestrians_spatial20_adaptive_temporal_first_off-execution.json": {
+      "bytes": 907,
+      "sha256": "9a5236a19cac3a78728f0f34a4fc394829165e31eb76ba87ae7b59a4adce8409"
+    },
+    "pedestrians_spatial20_adaptive_temporal_first_off-policy.json": {
+      "bytes": 4953,
+      "sha256": "91eabf700b49ca97d5ceb1f13d234de2c5c7652b2bbcba7752ec857173e2cac1"
+    },
+    "pedestrians_spatial20_fixed_10m_2000ms_off-execution.json": {
+      "bytes": 951,
+      "sha256": "234d95fe78ca6622aa019da211457cc122b43f200f04e5682596ad85438b60d4"
+    },
+    "pedestrians_spatial20_fixed_10m_2000ms_off-policy.json": {
+      "bytes": 4994,
+      "sha256": "3f1f1531e10165b6d777c19694b482d6023b933422ec176bb1dcc6962240039e"
+    },
+    "pedestrians_spatial20_fixed_10m_4000ms_off-execution.json": {
+      "bytes": 951,
+      "sha256": "d246e78ad7058d57e39fe31ea68dcdefb585aa238b9b159433f4189591b9f0df"
+    },
+    "pedestrians_spatial20_fixed_10m_4000ms_off-policy.json": {
+      "bytes": 4994,
+      "sha256": "4b96b262d8c0b6033e0dc6acb1090a22ad80819fbdf794cbeba9b76b6a220bda"
+    },
+    "pedestrians_spatial20_fixed_20m_2000ms_off-execution.json": {
+      "bytes": 951,
+      "sha256": "b462f23c38bb5be770549f351e3aceb0e2986e9e6fb3f7ff98bc98a3a59d36e4"
+    },
+    "pedestrians_spatial20_fixed_20m_2000ms_off-policy.json": {
+      "bytes": 4994,
+      "sha256": "d9442a4e3f72af598e1c98ff666ca678a445419caf8439868cc96caf8a8c086d"
+    },
+    "pedestrians_spatial20_fixed_20m_4000ms_off-execution.json": {
+      "bytes": 951,
+      "sha256": "3a993d542f47b29319063e8cc97c09e0f770653f9e0b9ab23e52b811ecf7de51"
+    },
+    "pedestrians_spatial20_fixed_20m_4000ms_off-policy.json": {
+      "bytes": 4994,
+      "sha256": "8bc30d47e62fc0d0433743fca67690ec1e9908c90d45806776793ccb91cec2ed"
+    },
+    "pedestrians_spatial20_fixed_5m_2000ms_off-execution.json": {
+      "bytes": 949,
+      "sha256": "b571eec0f0dbe3df3e36c2ae9679125ee341fa72b48038aa1cce6e15e110622e"
+    },
+    "pedestrians_spatial20_fixed_5m_2000ms_off-policy.json": {
+      "bytes": 4992,
+      "sha256": "dedf629073103a5167e0e3b62332f3fa3611057377899294fe641d406b090ac4"
+    },
+    "pedestrians_spatial20_fixed_5m_4000ms_off-execution.json": {
+      "bytes": 948,
+      "sha256": "f610dbd30a0be27864ae789705375319afaa3269916c03a2084ac228c489166c"
+    },
+    "pedestrians_spatial20_fixed_5m_4000ms_off-policy.json": {
+      "bytes": 4992,
+      "sha256": "b31760c1279376780857dd76ffef4dc3204cce0f720ff9cf24d64a9c0e61343f"
+    },
+    "protocol.json": {
+      "bytes": 39707,
+      "sha256": "8fd00fc3062efc1d067de00be9dd167c26757b6536d22d2963cf4d6d9ccc52f2"
+    },
+    "report.md": {
+      "bytes": 10024,
+      "sha256": "fa5da40ccc19a6311991233a422b3e760fd745e50aec3bc2b6959bc1e1ae0019"
+    },
+    "summary.json": {
+      "bytes": 591148,
+      "sha256": "9971da1a1d44dfcbcfd7fcde9439a40b5685699a8dfc7a63cd9b2b55224e58f5"
+    }
+  },
+  "local_source": "results/strategy-window-extension-2026-10-25-v1",
+  "schema": "ump.aggregate-evidence-package.v1",
+  "scope": "Aggregate metrics, exact policies and execution receipts only; no observation stream, native result, binary or movement recording."
+}

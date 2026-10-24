@@ -1,0 +1,230 @@
+{
+  "application_id": "mapped-entrance-occupancy/spatial20_adaptive_immediate/strategy-window-extension/fixed_10m_2000ms",
+  "history": {
+    "max_bins": 64,
+    "max_buckets": 8192,
+    "max_identity_bytes": 16000000,
+    "max_observations": 100000,
+    "retention_ms": 6000
+  },
+  "policy_regions": [
+    {
+      "height": 10,
+      "id": "entrance-vicinity",
+      "requirements": {},
+      "type": "mapped_entrance",
+      "type_requirements": {
+        "distinct_contributors": {
+          "min": 10
+        }
+      },
+      "width": 10,
+      "x": 20,
+      "y": 65
+    },
+    {
+      "height": 12.5,
+      "id": "west-footway-control",
+      "requirements": {},
+      "type": "mapped_fresh_footway",
+      "type_requirements": {
+        "age_at_evaluation_ms": {
+          "max": 1000
+        },
+        "cell_side_m": {
+          "max": 20
+        },
+        "semantic_max_loss": {
+          "max": 0.5
+        },
+        "window_duration_ms": {
+          "max": 1000
+        }
+      },
+      "width": 15,
+      "x": 0,
+      "y": 62.5
+    },
+    {
+      "height": 12.5,
+      "id": "central-through-footway",
+      "requirements": {},
+      "type": "mapped_through",
+      "type_requirements": {
+        "semantic_max_loss": {
+          "max": 0.5
+        }
+      },
+      "width": 20,
+      "x": 40,
+      "y": 50
+    },
+    {
+      "height": 12.5,
+      "id": "east-footway-control",
+      "requirements": {},
+      "type": "mapped_fresh_footway",
+      "type_requirements": {
+        "age_at_evaluation_ms": {
+          "max": 1000
+        },
+        "cell_side_m": {
+          "max": 20
+        },
+        "semantic_max_loss": {
+          "max": 0.5
+        },
+        "window_duration_ms": {
+          "max": 1000
+        }
+      },
+      "width": 15,
+      "x": 65,
+      "y": 40
+    }
+  ],
+  "policy_tree": {
+    "execution": {
+      "publication_model": "private_final_snapshot",
+      "release_trigger": "policy_satisfied",
+      "semantic_secondary_strategy": "temporal_first",
+      "strategy": "semantic_first"
+    },
+    "id": "mapped-entrance-illustrative-policy-spatial20/adaptive_immediate/strategy-window-extension/fixed_10m_2000ms",
+    "max_nodes": 65536,
+    "regions": [
+      "entrance-vicinity",
+      "west-footway-control",
+      "central-through-footway",
+      "east-footway-control"
+    ],
+    "root": {
+      "age_at_evaluation_ms": {
+        "max": 4000
+      },
+      "cell_side_m": {
+        "max": 20,
+        "min": 1.25
+      },
+      "distinct_contributors": {
+        "min": 5
+      },
+      "min_category_distinct_contributors": {
+        "min": 5
+      },
+      "semantic_max_loss": {
+        "max": 1
+      },
+      "semantic_suppression_fraction": {
+        "max": 0
+      },
+      "window_duration_ms": {
+        "max": 4000,
+        "min": 400
+      }
+    },
+    "version": "1"
+  },
+  "semantic_taxonomy": {
+    "id": "ump-mapped-mixed-road-user-release",
+    "nodes": [
+      {
+        "id": "road_user",
+        "loss": 1
+      },
+      {
+        "id": "pedestrian",
+        "loss": 0.5,
+        "parent": "road_user"
+      },
+      {
+        "id": "adult_pedestrian",
+        "input_types": [
+          "Adult Pedestrian"
+        ],
+        "loss": 0,
+        "parent": "pedestrian"
+      },
+      {
+        "id": "child_pedestrian",
+        "input_types": [
+          "Child Pedestrian"
+        ],
+        "loss": 0,
+        "parent": "pedestrian"
+      },
+      {
+        "id": "senior_pedestrian",
+        "input_types": [
+          "Senior Pedestrian"
+        ],
+        "loss": 0,
+        "parent": "pedestrian"
+      },
+      {
+        "id": "pedestrian_with_stroller",
+        "input_types": [
+          "Pedestrian With Stroller"
+        ],
+        "loss": 0,
+        "parent": "pedestrian"
+      },
+      {
+        "id": "pedestrian_with_mobility_aid",
+        "input_types": [
+          "Pedestrian With Mobility Aid"
+        ],
+        "loss": 0,
+        "parent": "pedestrian"
+      },
+      {
+        "id": "cyclist",
+        "loss": 0.5,
+        "parent": "road_user"
+      },
+      {
+        "id": "e_scooter_rider",
+        "loss": 0.5,
+        "parent": "road_user"
+      },
+      {
+        "id": "adult_cyclist",
+        "input_types": [
+          "Adult Cyclist"
+        ],
+        "loss": 0,
+        "parent": "cyclist"
+      },
+      {
+        "id": "senior_cyclist",
+        "input_types": [
+          "Senior Cyclist"
+        ],
+        "loss": 0,
+        "parent": "cyclist"
+      },
+      {
+        "id": "adult_e_scooter_rider",
+        "input_types": [
+          "Adult E-Scooter Driver"
+        ],
+        "loss": 0,
+        "parent": "e_scooter_rider"
+      }
+    ],
+    "version": "1"
+  },
+  "spatial_selection": {
+    "max_evaluations": 8192,
+    "min_depth": 2,
+    "preserve_valid_descendants": false
+  },
+  "temporal_adaptation": {
+    "coordination": "cell_local",
+    "extension_step_ms": 100,
+    "max_active_cells": 4096,
+    "max_evaluations": 64,
+    "max_window_ms": 4000
+  },
+  "window_ms": 400
+}

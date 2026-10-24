@@ -1,0 +1,9 @@
+{
+  "files_sha256": {
+    "CellLocalAggregation.cpp": "79f8dce35a649a14d31a0d3605967c0b37712fcfcb3d4c76599d37b7551bdd70",
+    "CellLocalAggregation.hpp": "8ec49ef189e81af8b46aba86cceddb3464bf6dccf28a1f6a00e390407702d191",
+    "run_spatial20_correction.py": "6075640d2bb59aee144c4a9f12f7591d03b8df2300748dd3acb4d3277374c1aa",
+    "run_strategy_window_extension.py": "8053240f51db36accb519b134ef7f512af00926f4b023af71dce5d38f3a453da"
+  },
+  "scope": "Copied orchestration and controller files at protocol freeze. Native binary digest is the execution identity; no clean-tree claim."
+}

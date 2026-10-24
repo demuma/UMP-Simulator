@@ -1,6 +1,38 @@
 # TO-DO — UMP-Simulator
 
 
+## Strategy, real-time and local-policy sequence — 2026-10-25
+
+Follow the [frozen-study protocol](docs/STRATEGY_TIMING_LOCAL_POLICY_PROTOCOL_2026-10-25.md).
+Do not change historical sources/results or run heavy jobs alongside timing cases.
+
+- [x] E25.1: complete standalone Temporal First and fixed 5/10/20 m × 2/4 s
+  controls under unchanged Original/Spatial20 bounds on both frozen streams;
+  independently audit all 28 new cases and report the entire tested envelope.
+- [x] E25.2: run full/minimal equality controls and queue-eight, wall-clock 1×
+  paced processing on both current sources plus the exact historical failed
+  dense source. Preserve failures and completed-prefix limitations. Report
+  service/queue/response tails separately from intentional aggregation delay.
+- [x] E25.3: execute the predeclared control/local400 policy pair on identical
+  sources, varying only one local duration/age requirement. Include all three
+  adaptive strategies and matched global fixed windows (44 native cases).
+- [x] E25.4: derive static policy-aware regional-window utility references from
+  audited native fixed executions; validate raw accounting and exact uniform
+  control equality. Label online runtime unavailable for this derived baseline.
+- [x] E25.5: document observed wins and losses, local constraint effects, remaining
+  timing/test gaps and reproducible commands; test all changed tools and publish
+  only compact aggregate evidence. Keep generated motion/full replays local.
+
+The measured dense runtime failure remains open under **RT03**; the correction
+has not fixed it. Reuse **U01/U02** for decision tracing and immediate-release
+ablations before changing coordination heuristics. Further validation should add
+independent sources/seeds and stronger spatially regional static references.
+Privacy follow-up builds on the existing controlled **E02-A–C** path; **E02-D/E03**
+(sensitive visits/attributes/linking) and application-specific privacy evidence
+remain separate. These utility studies do not reset or replace historical
+privacy work. See the [results](docs/STRATEGY_TIMING_LOCAL_POLICY_RESULTS_2026-10-25.md).
+
+
 ## Map corrections before the spatial baseline portfolio — 2026-10-24, evening
 
 Follow this order: correct the visible map and real visit targets, verify completed

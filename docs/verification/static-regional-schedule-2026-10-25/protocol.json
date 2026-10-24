@@ -1,0 +1,583 @@
+{
+  "implementation_sha256": {
+    "oracle.py": "5d8e60a8b8850ffdc8b76d60204520f66fda1b513cfbc6ed714da9afeb150e1c",
+    "semantic_suppression_audit.py": "ecb89dc09eb8ea498b172da496da17e983f067fad669bb9093d5bb76cdcfe2cf",
+    "static_regional_schedule.py": "3bc241da47219dae61035e4dcbe7adab6035148ab1662c20b3f1e71671b1d0fd"
+  },
+  "public_coverage": {
+    "height": 80,
+    "leaf_depth": 6,
+    "width": 80,
+    "x": 0,
+    "y": 0
+  },
+  "runtime_scope": "Derived utility composition only. No online scheduler was implemented or timed; runtime is null.",
+  "schedules": {
+    "mixed_control_static_10m": {
+      "cell_window_ms": {
+        "192": 4000,
+        "193": 4000,
+        "194": 4000,
+        "195": 4000,
+        "196": 4000,
+        "197": 4000,
+        "198": 4000,
+        "199": 4000,
+        "200": 4000,
+        "201": 4000,
+        "202": 4000,
+        "203": 4000,
+        "204": 4000,
+        "205": 4000,
+        "206": 4000,
+        "207": 4000,
+        "208": 4000,
+        "209": 4000,
+        "210": 4000,
+        "211": 4000,
+        "212": 4000,
+        "213": 4000,
+        "214": 4000,
+        "215": 4000,
+        "216": 4000,
+        "217": 4000,
+        "218": 4000,
+        "219": 4000,
+        "220": 4000,
+        "221": 4000,
+        "222": 4000,
+        "223": 4000,
+        "224": 4000,
+        "225": 4000,
+        "226": 4000,
+        "227": 4000,
+        "228": 4000,
+        "229": 4000,
+        "230": 4000,
+        "231": 4000,
+        "232": 4000,
+        "233": 4000,
+        "234": 4000,
+        "235": 4000,
+        "236": 4000,
+        "237": 4000,
+        "238": 4000,
+        "239": 4000,
+        "240": 4000,
+        "241": 4000,
+        "242": 4000,
+        "243": 4000,
+        "244": 4000,
+        "245": 4000,
+        "246": 4000,
+        "247": 4000,
+        "248": 4000,
+        "249": 4000,
+        "250": 4000,
+        "251": 4000,
+        "252": 4000,
+        "253": 4000,
+        "254": 4000,
+        "255": 4000
+      },
+      "depth": 3,
+      "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+      "side_m": 10
+    },
+    "mixed_control_static_20m": {
+      "cell_window_ms": {
+        "48": 4000,
+        "49": 4000,
+        "50": 4000,
+        "51": 4000,
+        "52": 4000,
+        "53": 4000,
+        "54": 4000,
+        "55": 4000,
+        "56": 4000,
+        "57": 4000,
+        "58": 4000,
+        "59": 4000,
+        "60": 4000,
+        "61": 4000,
+        "62": 4000,
+        "63": 4000
+      },
+      "depth": 2,
+      "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+      "side_m": 20
+    },
+    "mixed_local400_static_10m": {
+      "cell_window_ms": {
+        "192": 4000,
+        "193": 4000,
+        "194": 4000,
+        "195": 4000,
+        "196": 4000,
+        "197": 4000,
+        "198": 4000,
+        "199": 4000,
+        "200": 4000,
+        "201": 4000,
+        "202": 4000,
+        "203": 4000,
+        "204": 4000,
+        "205": 4000,
+        "206": 4000,
+        "207": 4000,
+        "208": 4000,
+        "209": 4000,
+        "210": 4000,
+        "211": 4000,
+        "212": 4000,
+        "213": 4000,
+        "214": 4000,
+        "215": 4000,
+        "216": 4000,
+        "217": 4000,
+        "218": 4000,
+        "219": 4000,
+        "220": 4000,
+        "221": 4000,
+        "222": 4000,
+        "223": 4000,
+        "224": 4000,
+        "225": 4000,
+        "226": 4000,
+        "227": 4000,
+        "228": 4000,
+        "229": 4000,
+        "230": 4000,
+        "231": 4000,
+        "232": 4000,
+        "233": 4000,
+        "234": 4000,
+        "235": 4000,
+        "236": 4000,
+        "237": 4000,
+        "238": 4000,
+        "239": 4000,
+        "240": 4000,
+        "241": 4000,
+        "242": 400,
+        "243": 400,
+        "244": 4000,
+        "245": 4000,
+        "246": 4000,
+        "247": 4000,
+        "248": 400,
+        "249": 400,
+        "250": 4000,
+        "251": 4000,
+        "252": 4000,
+        "253": 4000,
+        "254": 4000,
+        "255": 4000
+      },
+      "depth": 3,
+      "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+      "side_m": 10
+    },
+    "mixed_local400_static_20m": {
+      "cell_window_ms": {
+        "48": 4000,
+        "49": 4000,
+        "50": 4000,
+        "51": 4000,
+        "52": 4000,
+        "53": 4000,
+        "54": 4000,
+        "55": 4000,
+        "56": 4000,
+        "57": 4000,
+        "58": 4000,
+        "59": 4000,
+        "60": 400,
+        "61": 4000,
+        "62": 400,
+        "63": 4000
+      },
+      "depth": 2,
+      "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+      "side_m": 20
+    },
+    "pedestrians_control_static_10m": {
+      "cell_window_ms": {
+        "192": 4000,
+        "193": 4000,
+        "194": 4000,
+        "195": 4000,
+        "196": 4000,
+        "197": 4000,
+        "198": 4000,
+        "199": 4000,
+        "200": 4000,
+        "201": 4000,
+        "202": 4000,
+        "203": 4000,
+        "204": 4000,
+        "205": 4000,
+        "206": 4000,
+        "207": 4000,
+        "208": 4000,
+        "209": 4000,
+        "210": 4000,
+        "211": 4000,
+        "212": 4000,
+        "213": 4000,
+        "214": 4000,
+        "215": 4000,
+        "216": 4000,
+        "217": 4000,
+        "218": 4000,
+        "219": 4000,
+        "220": 4000,
+        "221": 4000,
+        "222": 4000,
+        "223": 4000,
+        "224": 4000,
+        "225": 4000,
+        "226": 4000,
+        "227": 4000,
+        "228": 4000,
+        "229": 4000,
+        "230": 4000,
+        "231": 4000,
+        "232": 4000,
+        "233": 4000,
+        "234": 4000,
+        "235": 4000,
+        "236": 4000,
+        "237": 4000,
+        "238": 4000,
+        "239": 4000,
+        "240": 4000,
+        "241": 4000,
+        "242": 4000,
+        "243": 4000,
+        "244": 4000,
+        "245": 4000,
+        "246": 4000,
+        "247": 4000,
+        "248": 4000,
+        "249": 4000,
+        "250": 4000,
+        "251": 4000,
+        "252": 4000,
+        "253": 4000,
+        "254": 4000,
+        "255": 4000
+      },
+      "depth": 3,
+      "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+      "side_m": 10
+    },
+    "pedestrians_control_static_20m": {
+      "cell_window_ms": {
+        "48": 4000,
+        "49": 4000,
+        "50": 4000,
+        "51": 4000,
+        "52": 4000,
+        "53": 4000,
+        "54": 4000,
+        "55": 4000,
+        "56": 4000,
+        "57": 4000,
+        "58": 4000,
+        "59": 4000,
+        "60": 4000,
+        "61": 4000,
+        "62": 4000,
+        "63": 4000
+      },
+      "depth": 2,
+      "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+      "side_m": 20
+    },
+    "pedestrians_local400_static_10m": {
+      "cell_window_ms": {
+        "192": 4000,
+        "193": 4000,
+        "194": 4000,
+        "195": 4000,
+        "196": 4000,
+        "197": 4000,
+        "198": 4000,
+        "199": 4000,
+        "200": 4000,
+        "201": 4000,
+        "202": 4000,
+        "203": 4000,
+        "204": 4000,
+        "205": 4000,
+        "206": 4000,
+        "207": 4000,
+        "208": 4000,
+        "209": 4000,
+        "210": 4000,
+        "211": 4000,
+        "212": 4000,
+        "213": 4000,
+        "214": 4000,
+        "215": 4000,
+        "216": 4000,
+        "217": 4000,
+        "218": 4000,
+        "219": 4000,
+        "220": 4000,
+        "221": 4000,
+        "222": 4000,
+        "223": 4000,
+        "224": 4000,
+        "225": 4000,
+        "226": 4000,
+        "227": 4000,
+        "228": 4000,
+        "229": 4000,
+        "230": 4000,
+        "231": 4000,
+        "232": 4000,
+        "233": 4000,
+        "234": 4000,
+        "235": 4000,
+        "236": 4000,
+        "237": 4000,
+        "238": 4000,
+        "239": 4000,
+        "240": 4000,
+        "241": 4000,
+        "242": 400,
+        "243": 400,
+        "244": 4000,
+        "245": 4000,
+        "246": 4000,
+        "247": 4000,
+        "248": 400,
+        "249": 400,
+        "250": 4000,
+        "251": 4000,
+        "252": 4000,
+        "253": 4000,
+        "254": 4000,
+        "255": 4000
+      },
+      "depth": 3,
+      "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+      "side_m": 10
+    },
+    "pedestrians_local400_static_20m": {
+      "cell_window_ms": {
+        "48": 4000,
+        "49": 4000,
+        "50": 4000,
+        "51": 4000,
+        "52": 4000,
+        "53": 4000,
+        "54": 4000,
+        "55": 4000,
+        "56": 4000,
+        "57": 4000,
+        "58": 4000,
+        "59": 4000,
+        "60": 400,
+        "61": 4000,
+        "62": 400,
+        "63": 4000
+      },
+      "depth": 2,
+      "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+      "side_m": 20
+    }
+  },
+  "schema": "ump.static-regional-schedule-protocol.v1",
+  "selection_scope": "Grid fixed at 10m or 20m; per-cell longest admissible window uses only public whole-footprint constraints, before reading observations.",
+  "source_native_binary_sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+  "source_native_cases": {
+    "mixed_control_static_10m": {
+      "1000": {
+        "config_sha256": "be852389891290afca7ab2e6e6e9c7aeb762ccaefe315d892b1cf9d46ca119fd",
+        "id": "mixed_control_fixed_10m_1000ms",
+        "result_sha256": "abbf1df387de077ca0b6f5dbc12f84b41e7def55d8023ba247bbd7617380e1d6"
+      },
+      "2000": {
+        "config_sha256": "933129f9c151ec7f6f9dd5f306f85d67815708ba04ae7c5f72df9b27b4baf6d0",
+        "id": "mixed_control_fixed_10m_2000ms",
+        "result_sha256": "2348c9edb317e52a1fdfede66692030daa96ac2e5e65255c5d3258a268bef2fe"
+      },
+      "400": {
+        "config_sha256": "3221c22272e55d4cbb3558a4588d9661a9034e5cc74445bd696e45456b126be6",
+        "id": "mixed_control_fixed_10m_400ms",
+        "result_sha256": "01e88c7698dd273af82b866d356d212bd53bb41d9988f946dea58f59ab24e054"
+      },
+      "4000": {
+        "config_sha256": "74ec7b7287b77561bccd3eeb484b497a5fc07f05a73baea44b22bd8140e17061",
+        "id": "mixed_control_fixed_10m_4000ms",
+        "result_sha256": "43f003723195cbced655d4f59923b87b65e64e40ef444e301f75daa0b96a6d81"
+      }
+    },
+    "mixed_control_static_20m": {
+      "1000": {
+        "config_sha256": "0aede21e73f955bffec139b727f691884b7d11c253fc6066004e0a1975c6f2fd",
+        "id": "mixed_control_fixed_20m_1000ms",
+        "result_sha256": "9166aa76a4ebdafe97161b8150aeb93282008c8e87d30ae7100c6dac24eb687e"
+      },
+      "2000": {
+        "config_sha256": "bdbf3abb0ee2bd7d4b3bbb792d5bef7ba0fbfa05475d53e4e8b78b55a1259c19",
+        "id": "mixed_control_fixed_20m_2000ms",
+        "result_sha256": "d25fd5e480f6abcb91e77567c14c64f753eac3a7ab85786833443eb4190433a2"
+      },
+      "400": {
+        "config_sha256": "278f3fccbc276bfe44ad992b46cf2aec7469b9f64ac6d9de5b52531b17860d1e",
+        "id": "mixed_control_fixed_20m_400ms",
+        "result_sha256": "204b6b8278045e78d88e23e5068f8c76bdd0fd70407a700b5a491b60ada5b7dd"
+      },
+      "4000": {
+        "config_sha256": "999826b8cf224f80d4d0084cdce9ec8c7a411d1b569503700cf5c515e5949a2d",
+        "id": "mixed_control_fixed_20m_4000ms",
+        "result_sha256": "9860633162f6571807439d60e096ff46cb3b681cc8f49d77ccc42768dca683a4"
+      }
+    },
+    "mixed_local400_static_10m": {
+      "1000": {
+        "config_sha256": "21fe9d47e93a2b241e49d68a388b4799c47ec696787879d42b28a6ecb5ef2ab0",
+        "id": "mixed_local400_fixed_10m_1000ms",
+        "result_sha256": "7199179cbc3a146eeddb68bdabee9bee26a7072918b1d5272bf825f32cccce17"
+      },
+      "2000": {
+        "config_sha256": "2d79af4d4be283525f133990a357a19c9d4e4bb4f2ff6008f1cc279e981c2533",
+        "id": "mixed_local400_fixed_10m_2000ms",
+        "result_sha256": "02003743cf08f8249b0a32c37785becc07c1e0c57f43665ff9730ded44ca06ac"
+      },
+      "400": {
+        "config_sha256": "19828824cea9429208b66d08a514b19508f67a793c67e3f0ff1875da91ee741d",
+        "id": "mixed_local400_fixed_10m_400ms",
+        "result_sha256": "40a216ca4824d33dd27141d3a4c95ce9606c7d3e7fdd9791ec88f16ad9125e9a"
+      },
+      "4000": {
+        "config_sha256": "42eadcef7287ba9ac89b3d51127b86d37e281a428152f69b56524066499e9739",
+        "id": "mixed_local400_fixed_10m_4000ms",
+        "result_sha256": "0473980f79ef68d350caf8fc3cff947a984b50f6dc40607414db840e4f4be944"
+      }
+    },
+    "mixed_local400_static_20m": {
+      "1000": {
+        "config_sha256": "43e4f3adf75adf8a7ab2b21d800efeb7be1461169f3803b2303c9f82901ddf42",
+        "id": "mixed_local400_fixed_20m_1000ms",
+        "result_sha256": "66de674dcb138b4c2451c9d3dca9558127c634c493f2df7ab2e1be564207f0cd"
+      },
+      "2000": {
+        "config_sha256": "93d3e86c092e3daf8b4cf7f9742c74bb248f3d447bab528e455fb6c41e1ee9e8",
+        "id": "mixed_local400_fixed_20m_2000ms",
+        "result_sha256": "05626af579e323423d485fb4e29b71a757377156a71812a3b903ad79fcaf0066"
+      },
+      "400": {
+        "config_sha256": "ae75ccf53097af1a8d0b7f7e4ec545c6246a61a30164210c4f562406bc32134a",
+        "id": "mixed_local400_fixed_20m_400ms",
+        "result_sha256": "cd466ee43b28adbe8d1f186239d56fdf53bb16b13e651c061b62a4d2bc41906b"
+      },
+      "4000": {
+        "config_sha256": "dc175581849b9e19115f673f3ea0de93a6d86e747a36c362d0bc03361656b275",
+        "id": "mixed_local400_fixed_20m_4000ms",
+        "result_sha256": "51732f00afc0303fbd0ec6e6bdbfd217454a8566c580b5cab36dad5d357da4eb"
+      }
+    },
+    "pedestrians_control_static_10m": {
+      "1000": {
+        "config_sha256": "be852389891290afca7ab2e6e6e9c7aeb762ccaefe315d892b1cf9d46ca119fd",
+        "id": "pedestrians_control_fixed_10m_1000ms",
+        "result_sha256": "5214fdef46cf9ce1754cb9644c059e7dadcc5f558133c9c098612cdeb08eebc0"
+      },
+      "2000": {
+        "config_sha256": "933129f9c151ec7f6f9dd5f306f85d67815708ba04ae7c5f72df9b27b4baf6d0",
+        "id": "pedestrians_control_fixed_10m_2000ms",
+        "result_sha256": "c97ad6da01079a6c8fc80dc7ab48da168bd4dc8449e9e6e1d9fc7a7f9f8dbac3"
+      },
+      "400": {
+        "config_sha256": "3221c22272e55d4cbb3558a4588d9661a9034e5cc74445bd696e45456b126be6",
+        "id": "pedestrians_control_fixed_10m_400ms",
+        "result_sha256": "6c5744a47397d73f5584e5bf983d319cfd61203768b1a07a307e37160bd6b89a"
+      },
+      "4000": {
+        "config_sha256": "74ec7b7287b77561bccd3eeb484b497a5fc07f05a73baea44b22bd8140e17061",
+        "id": "pedestrians_control_fixed_10m_4000ms",
+        "result_sha256": "1c80bcc1f959fcca983065822ec7c6b7c1d819b7019a70a53dc22522bea22303"
+      }
+    },
+    "pedestrians_control_static_20m": {
+      "1000": {
+        "config_sha256": "0aede21e73f955bffec139b727f691884b7d11c253fc6066004e0a1975c6f2fd",
+        "id": "pedestrians_control_fixed_20m_1000ms",
+        "result_sha256": "ed3f716322b153196ad5c18e459e7b2038051f9ef4f965750df3485928381200"
+      },
+      "2000": {
+        "config_sha256": "bdbf3abb0ee2bd7d4b3bbb792d5bef7ba0fbfa05475d53e4e8b78b55a1259c19",
+        "id": "pedestrians_control_fixed_20m_2000ms",
+        "result_sha256": "06f917c4a3a226f545e3f37fac9c370f5bf4037c8e72bd6b474e2f38609cc6eb"
+      },
+      "400": {
+        "config_sha256": "278f3fccbc276bfe44ad992b46cf2aec7469b9f64ac6d9de5b52531b17860d1e",
+        "id": "pedestrians_control_fixed_20m_400ms",
+        "result_sha256": "88468bd9a60d1d5967f6c1819cd97534d0c96e6127e89626f2bbe336792e49a9"
+      },
+      "4000": {
+        "config_sha256": "999826b8cf224f80d4d0084cdce9ec8c7a411d1b569503700cf5c515e5949a2d",
+        "id": "pedestrians_control_fixed_20m_4000ms",
+        "result_sha256": "4282dd6a03b8fbef3d7cc22e8e2f56296031b04f0637d2ca448caf91ebef7123"
+      }
+    },
+    "pedestrians_local400_static_10m": {
+      "1000": {
+        "config_sha256": "21fe9d47e93a2b241e49d68a388b4799c47ec696787879d42b28a6ecb5ef2ab0",
+        "id": "pedestrians_local400_fixed_10m_1000ms",
+        "result_sha256": "3db063966323d819508d920ffdbad76c783ff9504f4cbe1b8f466de3921f3fe3"
+      },
+      "2000": {
+        "config_sha256": "2d79af4d4be283525f133990a357a19c9d4e4bb4f2ff6008f1cc279e981c2533",
+        "id": "pedestrians_local400_fixed_10m_2000ms",
+        "result_sha256": "fcc0cf0678109b2ffb14cfafaa9817ea0edc15dc8b4d13f5c34af6242e0a40b1"
+      },
+      "400": {
+        "config_sha256": "19828824cea9429208b66d08a514b19508f67a793c67e3f0ff1875da91ee741d",
+        "id": "pedestrians_local400_fixed_10m_400ms",
+        "result_sha256": "7e946923cee5bf43350856a44186199bcf27eb7c053355922866a392c258cac5"
+      },
+      "4000": {
+        "config_sha256": "42eadcef7287ba9ac89b3d51127b86d37e281a428152f69b56524066499e9739",
+        "id": "pedestrians_local400_fixed_10m_4000ms",
+        "result_sha256": "0c608bc352d86a3f462173efd3c151d47d6c8b34d8ad31a743cd894375b2ed83"
+      }
+    },
+    "pedestrians_local400_static_20m": {
+      "1000": {
+        "config_sha256": "43e4f3adf75adf8a7ab2b21d800efeb7be1461169f3803b2303c9f82901ddf42",
+        "id": "pedestrians_local400_fixed_20m_1000ms",
+        "result_sha256": "7da06273a19688e066fb01c1f10a4d78246cfd6b5074a63ff89783415650301b"
+      },
+      "2000": {
+        "config_sha256": "93d3e86c092e3daf8b4cf7f9742c74bb248f3d447bab528e455fb6c41e1ee9e8",
+        "id": "pedestrians_local400_fixed_20m_2000ms",
+        "result_sha256": "25fa7f1ecfc8567d46ddf96e7acdbb7b4f959eb5af5151ffe4721991363f79a9"
+      },
+      "400": {
+        "config_sha256": "ae75ccf53097af1a8d0b7f7e4ec545c6246a61a30164210c4f562406bc32134a",
+        "id": "pedestrians_local400_fixed_20m_400ms",
+        "result_sha256": "31c4067f1c8ba55f969a3734cd6f9b6307288f8b5d11a2755550d9bbb0aee63f"
+      },
+      "4000": {
+        "config_sha256": "dc175581849b9e19115f673f3ea0de93a6d86e747a36c362d0bc03361656b275",
+        "id": "pedestrians_local400_fixed_20m_4000ms",
+        "result_sha256": "c0845d37b4591835f9bbcbf7a638247a955193edd4682c4bc568f3fa0c99f284"
+      }
+    }
+  },
+  "source_protocol_sha256": "23c5d3a893f58d2bd778836263f82a0b63d93507b87eed2ca99b36ccc3b98182",
+  "source_scope": "All unchanged source observations; no generated motion, individual IDs or movement positions are exported.",
+  "source_summary_sha256": "f407269b24893f4962d77a10d7440558a3557de74d09565d76f8e0057643ee09",
+  "windows_ms": [
+    400,
+    1000,
+    2000,
+    4000
+  ]
+}

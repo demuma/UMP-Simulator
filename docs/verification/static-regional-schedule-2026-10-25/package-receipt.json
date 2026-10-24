@@ -1,0 +1,19 @@
+{
+  "files": {
+    "protocol.json": {
+      "bytes": 18900,
+      "sha256": "6605b1de6c07161a25bd91b8061ca85bbc1a90fac2d538a231451e82890a54cb"
+    },
+    "report.md": {
+      "bytes": 1929,
+      "sha256": "c09fd03eb12618420396ed98430a9ab5e84c8983509ac679dbc56e415c7b1bee"
+    },
+    "summary.json": {
+      "bytes": 83688,
+      "sha256": "09fa374fa0161bad7d93f481cb4badbe30406dbfb57092e63f3c7bd06805ca07"
+    }
+  },
+  "local_source": "results/static-regional-schedule-2026-10-25-v1",
+  "schema": "ump.aggregate-evidence-package.v1",
+  "scope": "Aggregate utility, exact policies and receipts only. Static regional results are derived utility, not timed native executions. No generated motion or complete native result is included."
+}

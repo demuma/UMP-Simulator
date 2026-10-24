@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/Users/maxdemu/Developer/UMP-Simulator/results/temporal-region-study-2026-10-25-v1/provenance/AggregationReplay",
+    "--input",
+    "/Users/maxdemu/Developer/UMP-Simulator/results/temporal-region-study-2026-10-25-v1/pedestrians-observations.json",
+    "--config",
+    "/Users/maxdemu/Developer/UMP-Simulator/results/temporal-region-study-2026-10-25-v1/pedestrians_local400_adaptive_spatial_first-policy.json",
+    "--mode",
+    "spatial_first",
+    "--output",
+    "/Users/maxdemu/Developer/UMP-Simulator/results/temporal-region-study-2026-10-25-v1/pedestrians_local400_adaptive_spatial_first.json",
+    "--progress-step-ms",
+    "50"
+  ],
+  "native_process_wall_seconds": 38.611895083000036,
+  "returncode": 0,
+  "timing_scope": "Unpaced native subprocess wall time and native processing_ms, excluding movement generation, Python audits and report writing; not a real-time deadline guarantee."
+}

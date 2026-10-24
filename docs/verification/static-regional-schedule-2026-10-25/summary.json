@@ -1,0 +1,2194 @@
+{
+  "cases": {
+    "mixed_control_static_10m": {
+      "cell_window_ms": {
+        "192": 4000,
+        "193": 4000,
+        "194": 4000,
+        "195": 4000,
+        "196": 4000,
+        "197": 4000,
+        "198": 4000,
+        "199": 4000,
+        "200": 4000,
+        "201": 4000,
+        "202": 4000,
+        "203": 4000,
+        "204": 4000,
+        "205": 4000,
+        "206": 4000,
+        "207": 4000,
+        "208": 4000,
+        "209": 4000,
+        "210": 4000,
+        "211": 4000,
+        "212": 4000,
+        "213": 4000,
+        "214": 4000,
+        "215": 4000,
+        "216": 4000,
+        "217": 4000,
+        "218": 4000,
+        "219": 4000,
+        "220": 4000,
+        "221": 4000,
+        "222": 4000,
+        "223": 4000,
+        "224": 4000,
+        "225": 4000,
+        "226": 4000,
+        "227": 4000,
+        "228": 4000,
+        "229": 4000,
+        "230": 4000,
+        "231": 4000,
+        "232": 4000,
+        "233": 4000,
+        "234": 4000,
+        "235": 4000,
+        "236": 4000,
+        "237": 4000,
+        "238": 4000,
+        "239": 4000,
+        "240": 4000,
+        "241": 4000,
+        "242": 4000,
+        "243": 4000,
+        "244": 4000,
+        "245": 4000,
+        "246": 4000,
+        "247": 4000,
+        "248": 4000,
+        "249": 4000,
+        "250": 4000,
+        "251": 4000,
+        "252": 4000,
+        "253": 4000,
+        "254": 4000,
+        "255": 4000
+      },
+      "independent_composition_audit": {
+        "positive_control_equal_native_4s": true,
+        "published_policy_violations": 0,
+        "source_assigned_once": true,
+        "status": "verified"
+      },
+      "method": "static_regional_10m",
+      "native_process_wall_seconds": null,
+      "native_runtime": null,
+      "observations_sha256": "c24134c724acf2df38a85b2906a2e80f8de7b420529a4b8cda3f9e5f98a3eff5",
+      "policy": "control",
+      "side_m": 10,
+      "source": "mixed",
+      "source_native_cases": {
+        "1000": {
+          "config_sha256": "be852389891290afca7ab2e6e6e9c7aeb762ccaefe315d892b1cf9d46ca119fd",
+          "id": "mixed_control_fixed_10m_1000ms",
+          "result_sha256": "abbf1df387de077ca0b6f5dbc12f84b41e7def55d8023ba247bbd7617380e1d6"
+        },
+        "2000": {
+          "config_sha256": "933129f9c151ec7f6f9dd5f306f85d67815708ba04ae7c5f72df9b27b4baf6d0",
+          "id": "mixed_control_fixed_10m_2000ms",
+          "result_sha256": "2348c9edb317e52a1fdfede66692030daa96ac2e5e65255c5d3258a268bef2fe"
+        },
+        "400": {
+          "config_sha256": "3221c22272e55d4cbb3558a4588d9661a9034e5cc74445bd696e45456b126be6",
+          "id": "mixed_control_fixed_10m_400ms",
+          "result_sha256": "01e88c7698dd273af82b866d356d212bd53bb41d9988f946dea58f59ab24e054"
+        },
+        "4000": {
+          "config_sha256": "74ec7b7287b77561bccd3eeb484b497a5fc07f05a73baea44b22bd8140e17061",
+          "id": "mixed_control_fixed_10m_4000ms",
+          "result_sha256": "43f003723195cbced655d4f59923b87b65e64e40ef444e301f75daa0b96a6d81"
+        }
+      },
+      "stats": {
+        "core_processing_ms": null,
+        "exact_subtype_fraction_of_input": 0.0,
+        "exact_subtype_fraction_of_retained": 0.0,
+        "exact_subtype_observation_contributions": 0,
+        "full_input_semantic_distortion": 0.823046822620165,
+        "input_observation_contributions": 82033,
+        "observation_weighted_age_at_release_ms": 4000.0,
+        "observation_weighted_cell_side_m": 10.0,
+        "observation_weighted_interval_duration_ms": 4000.0,
+        "observation_weighted_semantic_loss": 0.6245311812938102,
+        "partition_audit": {
+          "empty_cell_intervals": 3672,
+          "empty_scope": "Every fixed cell is partitioned by [k*w,min((k+1)*w,horizon)); empty groups have zero source and require no native cell record.",
+          "input_assigned_once": 82033,
+          "nonempty_cell_intervals": 1128,
+          "scheduled_cell_intervals": 4800,
+          "status": "verified"
+        },
+        "published_category_observations": {
+          "pedestrian": 29032,
+          "road_user": 9629
+        },
+        "published_cell_sizes": {
+          "10.0": 210
+        },
+        "published_cell_windows": 210,
+        "published_policy_violations": 0,
+        "retained_fraction": 0.4712859458998208,
+        "retained_observation_contributions": 38661,
+        "source_accounting": {
+          "by_source_point_region": {
+            "central-through-footway": {
+              "input_observation_contributions": 8149,
+              "retained_fraction": 0.699963185666953,
+              "retained_observation_contributions": 5704,
+              "unpublished_observation_contributions": 2445
+            },
+            "east-footway-control": {
+              "input_observation_contributions": 6410,
+              "retained_fraction": 0.29297971918876753,
+              "retained_observation_contributions": 1878,
+              "unpublished_observation_contributions": 4532
+            },
+            "entrance-vicinity": {
+              "input_observation_contributions": 1057,
+              "retained_fraction": 0.0,
+              "retained_observation_contributions": 0,
+              "unpublished_observation_contributions": 1057
+            },
+            "outside_policy_regions": {
+              "input_observation_contributions": 62383,
+              "retained_fraction": 0.4850199573601783,
+              "retained_observation_contributions": 30257,
+              "unpublished_observation_contributions": 32126
+            },
+            "west-footway-control": {
+              "input_observation_contributions": 4034,
+              "retained_fraction": 0.20376797223599405,
+              "retained_observation_contributions": 822,
+              "unpublished_observation_contributions": 3212
+            }
+          },
+          "by_source_type": {
+            "Adult Cyclist": {
+              "input_observation_contributions": 2867,
+              "retained_fraction": 0.6079525636553889,
+              "retained_observation_contributions": 1743,
+              "unpublished_observation_contributions": 1124
+            },
+            "Adult E-Scooter Driver": {
+              "input_observation_contributions": 2404,
+              "retained_fraction": 0.6476705490848585,
+              "retained_observation_contributions": 1557,
+              "unpublished_observation_contributions": 847
+            },
+            "Adult Pedestrian": {
+              "input_observation_contributions": 14047,
+              "retained_fraction": 0.49483875560617924,
+              "retained_observation_contributions": 6951,
+              "unpublished_observation_contributions": 7096
+            },
+            "Child Pedestrian": {
+              "input_observation_contributions": 15200,
+              "retained_fraction": 0.4343421052631579,
+              "retained_observation_contributions": 6602,
+              "unpublished_observation_contributions": 8598
+            },
+            "Pedestrian With Mobility Aid": {
+              "input_observation_contributions": 16639,
+              "retained_fraction": 0.4419135765370515,
+              "retained_observation_contributions": 7353,
+              "unpublished_observation_contributions": 9286
+            },
+            "Pedestrian With Stroller": {
+              "input_observation_contributions": 13060,
+              "retained_fraction": 0.35551301684532927,
+              "retained_observation_contributions": 4643,
+              "unpublished_observation_contributions": 8417
+            },
+            "Senior Cyclist": {
+              "input_observation_contributions": 2837,
+              "retained_fraction": 0.6517448008459641,
+              "retained_observation_contributions": 1849,
+              "unpublished_observation_contributions": 988
+            },
+            "Senior Pedestrian": {
+              "input_observation_contributions": 14979,
+              "retained_fraction": 0.531610921957407,
+              "retained_observation_contributions": 7963,
+              "unpublished_observation_contributions": 7016
+            }
+          },
+          "input_observations": 82033,
+          "observation_to_release_delay_ms": {
+            "maximum": 4000,
+            "mean": 2041.232766871007,
+            "p50": 2000,
+            "p95": 3800,
+            "p99": 4000
+          },
+          "region_scope": "Nonexclusive half-open source-point cohorts; hard constraints use whole-cell positive-area intersections.",
+          "retained_observations": 38661,
+          "selectively_suppressed_observations": 0,
+          "whole_footprint_suppressed_observations": 43372
+        },
+        "unique_published_spatial_ids": 31,
+        "unpublished_observation_contributions": 43372
+      }
+    },
+    "mixed_control_static_20m": {
+      "cell_window_ms": {
+        "48": 4000,
+        "49": 4000,
+        "50": 4000,
+        "51": 4000,
+        "52": 4000,
+        "53": 4000,
+        "54": 4000,
+        "55": 4000,
+        "56": 4000,
+        "57": 4000,
+        "58": 4000,
+        "59": 4000,
+        "60": 4000,
+        "61": 4000,
+        "62": 4000,
+        "63": 4000
+      },
+      "independent_composition_audit": {
+        "positive_control_equal_native_4s": true,
+        "published_policy_violations": 0,
+        "source_assigned_once": true,
+        "status": "verified"
+      },
+      "method": "static_regional_20m",
+      "native_process_wall_seconds": null,
+      "native_runtime": null,
+      "observations_sha256": "c24134c724acf2df38a85b2906a2e80f8de7b420529a4b8cda3f9e5f98a3eff5",
+      "policy": "control",
+      "side_m": 20,
+      "source": "mixed",
+      "source_native_cases": {
+        "1000": {
+          "config_sha256": "0aede21e73f955bffec139b727f691884b7d11c253fc6066004e0a1975c6f2fd",
+          "id": "mixed_control_fixed_20m_1000ms",
+          "result_sha256": "9166aa76a4ebdafe97161b8150aeb93282008c8e87d30ae7100c6dac24eb687e"
+        },
+        "2000": {
+          "config_sha256": "bdbf3abb0ee2bd7d4b3bbb792d5bef7ba0fbfa05475d53e4e8b78b55a1259c19",
+          "id": "mixed_control_fixed_20m_2000ms",
+          "result_sha256": "d25fd5e480f6abcb91e77567c14c64f753eac3a7ab85786833443eb4190433a2"
+        },
+        "400": {
+          "config_sha256": "278f3fccbc276bfe44ad992b46cf2aec7469b9f64ac6d9de5b52531b17860d1e",
+          "id": "mixed_control_fixed_20m_400ms",
+          "result_sha256": "204b6b8278045e78d88e23e5068f8c76bdd0fd70407a700b5a491b60ada5b7dd"
+        },
+        "4000": {
+          "config_sha256": "999826b8cf224f80d4d0084cdce9ec8c7a411d1b569503700cf5c515e5949a2d",
+          "id": "mixed_control_fixed_20m_4000ms",
+          "result_sha256": "9860633162f6571807439d60e096ff46cb3b681cc8f49d77ccc42768dca683a4"
+        }
+      },
+      "stats": {
+        "core_processing_ms": null,
+        "exact_subtype_fraction_of_input": 0.006241390659856399,
+        "exact_subtype_fraction_of_retained": 0.011303176810826324,
+        "exact_subtype_observation_contributions": 512,
+        "full_input_semantic_distortion": 0.8039935148050175,
+        "input_observation_contributions": 82033,
+        "observation_weighted_age_at_release_ms": 4000.0,
+        "observation_weighted_cell_side_m": 20.0,
+        "observation_weighted_interval_duration_ms": 4000.0,
+        "observation_weighted_semantic_loss": 0.6450316798021944,
+        "partition_audit": {
+          "empty_cell_intervals": 728,
+          "empty_scope": "Every fixed cell is partitioned by [k*w,min((k+1)*w,horizon)); empty groups have zero source and require no native cell record.",
+          "input_assigned_once": 82033,
+          "nonempty_cell_intervals": 472,
+          "scheduled_cell_intervals": 1200,
+          "status": "verified"
+        },
+        "published_category_observations": {
+          "adult_cyclist": 120,
+          "adult_e_scooter_rider": 250,
+          "cyclist": 205,
+          "pedestrian": 30929,
+          "road_user": 13651,
+          "senior_cyclist": 142
+        },
+        "published_cell_sizes": {
+          "20.0": 140
+        },
+        "published_cell_windows": 140,
+        "published_policy_violations": 0,
+        "retained_fraction": 0.5521802201553033,
+        "retained_observation_contributions": 45297,
+        "source_accounting": {
+          "by_source_point_region": {
+            "central-through-footway": {
+              "input_observation_contributions": 8149,
+              "retained_fraction": 0.3775923426187262,
+              "retained_observation_contributions": 3077,
+              "unpublished_observation_contributions": 5072
+            },
+            "east-footway-control": {
+              "input_observation_contributions": 6410,
+              "retained_fraction": 0.2469578783151326,
+              "retained_observation_contributions": 1583,
+              "unpublished_observation_contributions": 4827
+            },
+            "entrance-vicinity": {
+              "input_observation_contributions": 1057,
+              "retained_fraction": 0.13528855250709557,
+              "retained_observation_contributions": 143,
+              "unpublished_observation_contributions": 914
+            },
+            "outside_policy_regions": {
+              "input_observation_contributions": 62383,
+              "retained_fraction": 0.624032188256416,
+              "retained_observation_contributions": 38929,
+              "unpublished_observation_contributions": 23454
+            },
+            "west-footway-control": {
+              "input_observation_contributions": 4034,
+              "retained_fraction": 0.38795240456122954,
+              "retained_observation_contributions": 1565,
+              "unpublished_observation_contributions": 2469
+            }
+          },
+          "by_source_type": {
+            "Adult Cyclist": {
+              "input_observation_contributions": 2867,
+              "retained_fraction": 0.6114405301709104,
+              "retained_observation_contributions": 1753,
+              "unpublished_observation_contributions": 1114
+            },
+            "Adult E-Scooter Driver": {
+              "input_observation_contributions": 2404,
+              "retained_fraction": 0.6742928452579035,
+              "retained_observation_contributions": 1621,
+              "unpublished_observation_contributions": 783
+            },
+            "Adult Pedestrian": {
+              "input_observation_contributions": 14047,
+              "retained_fraction": 0.5391186730262689,
+              "retained_observation_contributions": 7573,
+              "unpublished_observation_contributions": 6474
+            },
+            "Child Pedestrian": {
+              "input_observation_contributions": 15200,
+              "retained_fraction": 0.5167105263157895,
+              "retained_observation_contributions": 7854,
+              "unpublished_observation_contributions": 7346
+            },
+            "Pedestrian With Mobility Aid": {
+              "input_observation_contributions": 16639,
+              "retained_fraction": 0.551475449245748,
+              "retained_observation_contributions": 9176,
+              "unpublished_observation_contributions": 7463
+            },
+            "Pedestrian With Stroller": {
+              "input_observation_contributions": 13060,
+              "retained_fraction": 0.44961715160796323,
+              "retained_observation_contributions": 5872,
+              "unpublished_observation_contributions": 7188
+            },
+            "Senior Cyclist": {
+              "input_observation_contributions": 2837,
+              "retained_fraction": 0.6912231230172717,
+              "retained_observation_contributions": 1961,
+              "unpublished_observation_contributions": 876
+            },
+            "Senior Pedestrian": {
+              "input_observation_contributions": 14979,
+              "retained_fraction": 0.6333533613725882,
+              "retained_observation_contributions": 9487,
+              "unpublished_observation_contributions": 5492
+            }
+          },
+          "input_observations": 82033,
+          "observation_to_release_delay_ms": {
+            "maximum": 4000,
+            "mean": 2051.917345519571,
+            "p50": 2100,
+            "p95": 3900,
+            "p99": 4000
+          },
+          "region_scope": "Nonexclusive half-open source-point cohorts; hard constraints use whole-cell positive-area intersections.",
+          "retained_observations": 45297,
+          "selectively_suppressed_observations": 0,
+          "whole_footprint_suppressed_observations": 36736
+        },
+        "unique_published_spatial_ids": 12,
+        "unpublished_observation_contributions": 36736
+      }
+    },
+    "mixed_local400_static_10m": {
+      "cell_window_ms": {
+        "192": 4000,
+        "193": 4000,
+        "194": 4000,
+        "195": 4000,
+        "196": 4000,
+        "197": 4000,
+        "198": 4000,
+        "199": 4000,
+        "200": 4000,
+        "201": 4000,
+        "202": 4000,
+        "203": 4000,
+        "204": 4000,
+        "205": 4000,
+        "206": 4000,
+        "207": 4000,
+        "208": 4000,
+        "209": 4000,
+        "210": 4000,
+        "211": 4000,
+        "212": 4000,
+        "213": 4000,
+        "214": 4000,
+        "215": 4000,
+        "216": 4000,
+        "217": 4000,
+        "218": 4000,
+        "219": 4000,
+        "220": 4000,
+        "221": 4000,
+        "222": 4000,
+        "223": 4000,
+        "224": 4000,
+        "225": 4000,
+        "226": 4000,
+        "227": 4000,
+        "228": 4000,
+        "229": 4000,
+        "230": 4000,
+        "231": 4000,
+        "232": 4000,
+        "233": 4000,
+        "234": 4000,
+        "235": 4000,
+        "236": 4000,
+        "237": 4000,
+        "238": 4000,
+        "239": 4000,
+        "240": 4000,
+        "241": 4000,
+        "242": 400,
+        "243": 400,
+        "244": 4000,
+        "245": 4000,
+        "246": 4000,
+        "247": 4000,
+        "248": 400,
+        "249": 400,
+        "250": 4000,
+        "251": 4000,
+        "252": 4000,
+        "253": 4000,
+        "254": 4000,
+        "255": 4000
+      },
+      "independent_composition_audit": {
+        "positive_control_equal_native_4s": null,
+        "published_policy_violations": 0,
+        "source_assigned_once": true,
+        "status": "verified"
+      },
+      "method": "static_regional_10m",
+      "native_process_wall_seconds": null,
+      "native_runtime": null,
+      "observations_sha256": "c24134c724acf2df38a85b2906a2e80f8de7b420529a4b8cda3f9e5f98a3eff5",
+      "policy": "local400",
+      "side_m": 10,
+      "source": "mixed",
+      "source_native_cases": {
+        "1000": {
+          "config_sha256": "21fe9d47e93a2b241e49d68a388b4799c47ec696787879d42b28a6ecb5ef2ab0",
+          "id": "mixed_local400_fixed_10m_1000ms",
+          "result_sha256": "7199179cbc3a146eeddb68bdabee9bee26a7072918b1d5272bf825f32cccce17"
+        },
+        "2000": {
+          "config_sha256": "2d79af4d4be283525f133990a357a19c9d4e4bb4f2ff6008f1cc279e981c2533",
+          "id": "mixed_local400_fixed_10m_2000ms",
+          "result_sha256": "02003743cf08f8249b0a32c37785becc07c1e0c57f43665ff9730ded44ca06ac"
+        },
+        "400": {
+          "config_sha256": "19828824cea9429208b66d08a514b19508f67a793c67e3f0ff1875da91ee741d",
+          "id": "mixed_local400_fixed_10m_400ms",
+          "result_sha256": "40a216ca4824d33dd27141d3a4c95ce9606c7d3e7fdd9791ec88f16ad9125e9a"
+        },
+        "4000": {
+          "config_sha256": "42eadcef7287ba9ac89b3d51127b86d37e281a428152f69b56524066499e9739",
+          "id": "mixed_local400_fixed_10m_4000ms",
+          "result_sha256": "0473980f79ef68d350caf8fc3cff947a984b50f6dc40607414db840e4f4be944"
+        }
+      },
+      "stats": {
+        "core_processing_ms": null,
+        "exact_subtype_fraction_of_input": 0.0007314129679519218,
+        "exact_subtype_fraction_of_retained": 0.0015789058182679404,
+        "exact_subtype_observation_contributions": 60,
+        "full_input_semantic_distortion": 0.8267038874599246,
+        "input_observation_contributions": 82033,
+        "observation_weighted_age_at_release_ms": 3522.1599431593904,
+        "observation_weighted_cell_side_m": 10.0,
+        "observation_weighted_interval_duration_ms": 3522.1599431593904,
+        "observation_weighted_semantic_loss": 0.6259045814583827,
+        "partition_audit": {
+          "empty_cell_intervals": 5767,
+          "empty_scope": "Every fixed cell is partitioned by [k*w,min((k+1)*w,horizon)); empty groups have zero source and require no native cell record.",
+          "input_assigned_once": 82033,
+          "nonempty_cell_intervals": 1733,
+          "scheduled_cell_intervals": 7500,
+          "status": "verified"
+        },
+        "published_category_observations": {
+          "pedestrian": 28312,
+          "pedestrian_with_mobility_aid": 60,
+          "road_user": 9629
+        },
+        "published_cell_sizes": {
+          "10.0": 370
+        },
+        "published_cell_windows": 370,
+        "published_policy_violations": 0,
+        "retained_fraction": 0.46324040325234966,
+        "retained_observation_contributions": 38001,
+        "source_accounting": {
+          "by_source_point_region": {
+            "central-through-footway": {
+              "input_observation_contributions": 8149,
+              "retained_fraction": 0.6189716529635538,
+              "retained_observation_contributions": 5044,
+              "unpublished_observation_contributions": 3105
+            },
+            "east-footway-control": {
+              "input_observation_contributions": 6410,
+              "retained_fraction": 0.29297971918876753,
+              "retained_observation_contributions": 1878,
+              "unpublished_observation_contributions": 4532
+            },
+            "entrance-vicinity": {
+              "input_observation_contributions": 1057,
+              "retained_fraction": 0.0,
+              "retained_observation_contributions": 0,
+              "unpublished_observation_contributions": 1057
+            },
+            "outside_policy_regions": {
+              "input_observation_contributions": 62383,
+              "retained_fraction": 0.4850199573601783,
+              "retained_observation_contributions": 30257,
+              "unpublished_observation_contributions": 32126
+            },
+            "west-footway-control": {
+              "input_observation_contributions": 4034,
+              "retained_fraction": 0.20376797223599405,
+              "retained_observation_contributions": 822,
+              "unpublished_observation_contributions": 3212
+            }
+          },
+          "by_source_type": {
+            "Adult Cyclist": {
+              "input_observation_contributions": 2867,
+              "retained_fraction": 0.6079525636553889,
+              "retained_observation_contributions": 1743,
+              "unpublished_observation_contributions": 1124
+            },
+            "Adult E-Scooter Driver": {
+              "input_observation_contributions": 2404,
+              "retained_fraction": 0.6476705490848585,
+              "retained_observation_contributions": 1557,
+              "unpublished_observation_contributions": 847
+            },
+            "Adult Pedestrian": {
+              "input_observation_contributions": 14047,
+              "retained_fraction": 0.489499537267744,
+              "retained_observation_contributions": 6876,
+              "unpublished_observation_contributions": 7171
+            },
+            "Child Pedestrian": {
+              "input_observation_contributions": 15200,
+              "retained_fraction": 0.42401315789473687,
+              "retained_observation_contributions": 6445,
+              "unpublished_observation_contributions": 8755
+            },
+            "Pedestrian With Mobility Aid": {
+              "input_observation_contributions": 16639,
+              "retained_fraction": 0.43662479716329106,
+              "retained_observation_contributions": 7265,
+              "unpublished_observation_contributions": 9374
+            },
+            "Pedestrian With Stroller": {
+              "input_observation_contributions": 13060,
+              "retained_fraction": 0.3504594180704441,
+              "retained_observation_contributions": 4577,
+              "unpublished_observation_contributions": 8483
+            },
+            "Senior Cyclist": {
+              "input_observation_contributions": 2837,
+              "retained_fraction": 0.6517448008459641,
+              "retained_observation_contributions": 1849,
+              "unpublished_observation_contributions": 988
+            },
+            "Senior Pedestrian": {
+              "input_observation_contributions": 14979,
+              "retained_fraction": 0.5133186461045464,
+              "retained_observation_contributions": 7689,
+              "unpublished_observation_contributions": 7290
+            }
+          },
+          "input_observations": 82033,
+          "observation_to_release_delay_ms": {
+            "maximum": 4000,
+            "mean": 1804.2025209862898,
+            "p50": 1700,
+            "p95": 3800,
+            "p99": 4000
+          },
+          "region_scope": "Nonexclusive half-open source-point cohorts; hard constraints use whole-cell positive-area intersections.",
+          "retained_observations": 38001,
+          "selectively_suppressed_observations": 0,
+          "whole_footprint_suppressed_observations": 44032
+        },
+        "unique_published_spatial_ids": 31,
+        "unpublished_observation_contributions": 44032
+      }
+    },
+    "mixed_local400_static_20m": {
+      "cell_window_ms": {
+        "48": 4000,
+        "49": 4000,
+        "50": 4000,
+        "51": 4000,
+        "52": 4000,
+        "53": 4000,
+        "54": 4000,
+        "55": 4000,
+        "56": 4000,
+        "57": 4000,
+        "58": 4000,
+        "59": 4000,
+        "60": 400,
+        "61": 4000,
+        "62": 400,
+        "63": 4000
+      },
+      "independent_composition_audit": {
+        "positive_control_equal_native_4s": null,
+        "published_policy_violations": 0,
+        "source_assigned_once": true,
+        "status": "verified"
+      },
+      "method": "static_regional_20m",
+      "native_process_wall_seconds": null,
+      "native_runtime": null,
+      "observations_sha256": "c24134c724acf2df38a85b2906a2e80f8de7b420529a4b8cda3f9e5f98a3eff5",
+      "policy": "local400",
+      "side_m": 20,
+      "source": "mixed",
+      "source_native_cases": {
+        "1000": {
+          "config_sha256": "43e4f3adf75adf8a7ab2b21d800efeb7be1461169f3803b2303c9f82901ddf42",
+          "id": "mixed_local400_fixed_20m_1000ms",
+          "result_sha256": "66de674dcb138b4c2451c9d3dca9558127c634c493f2df7ab2e1be564207f0cd"
+        },
+        "2000": {
+          "config_sha256": "93d3e86c092e3daf8b4cf7f9742c74bb248f3d447bab528e455fb6c41e1ee9e8",
+          "id": "mixed_local400_fixed_20m_2000ms",
+          "result_sha256": "05626af579e323423d485fb4e29b71a757377156a71812a3b903ad79fcaf0066"
+        },
+        "400": {
+          "config_sha256": "ae75ccf53097af1a8d0b7f7e4ec545c6246a61a30164210c4f562406bc32134a",
+          "id": "mixed_local400_fixed_20m_400ms",
+          "result_sha256": "cd466ee43b28adbe8d1f186239d56fdf53bb16b13e651c061b62a4d2bc41906b"
+        },
+        "4000": {
+          "config_sha256": "dc175581849b9e19115f673f3ea0de93a6d86e747a36c362d0bc03361656b275",
+          "id": "mixed_local400_fixed_20m_4000ms",
+          "result_sha256": "51732f00afc0303fbd0ec6e6bdbfd217454a8566c580b5cab36dad5d357da4eb"
+        }
+      },
+      "stats": {
+        "core_processing_ms": null,
+        "exact_subtype_fraction_of_input": 0.0,
+        "exact_subtype_fraction_of_retained": 0.0,
+        "exact_subtype_observation_contributions": 0,
+        "full_input_semantic_distortion": 0.8126546633671815,
+        "input_observation_contributions": 82033,
+        "observation_weighted_age_at_release_ms": 3654.4201135442013,
+        "observation_weighted_cell_side_m": 20.0,
+        "observation_weighted_interval_duration_ms": 3654.4201135442013,
+        "observation_weighted_semantic_loss": 0.6537690366765793,
+        "partition_audit": {
+          "empty_cell_intervals": 1625,
+          "empty_scope": "Every fixed cell is partitioned by [k*w,min((k+1)*w,horizon)); empty groups have zero source and require no native cell record.",
+          "input_assigned_once": 82033,
+          "nonempty_cell_intervals": 925,
+          "scheduled_cell_intervals": 2550,
+          "status": "verified"
+        },
+        "published_category_observations": {
+          "pedestrian": 30737,
+          "road_user": 13651
+        },
+        "published_cell_sizes": {
+          "20.0": 216
+        },
+        "published_cell_windows": 216,
+        "published_policy_violations": 0,
+        "retained_fraction": 0.5410993136908318,
+        "retained_observation_contributions": 44388,
+        "source_accounting": {
+          "by_source_point_region": {
+            "central-through-footway": {
+              "input_observation_contributions": 8149,
+              "retained_fraction": 0.34421401398944657,
+              "retained_observation_contributions": 2805,
+              "unpublished_observation_contributions": 5344
+            },
+            "east-footway-control": {
+              "input_observation_contributions": 6410,
+              "retained_fraction": 0.2469578783151326,
+              "retained_observation_contributions": 1583,
+              "unpublished_observation_contributions": 4827
+            },
+            "entrance-vicinity": {
+              "input_observation_contributions": 1057,
+              "retained_fraction": 0.13528855250709557,
+              "retained_observation_contributions": 143,
+              "unpublished_observation_contributions": 914
+            },
+            "outside_policy_regions": {
+              "input_observation_contributions": 62383,
+              "retained_fraction": 0.6138210730487472,
+              "retained_observation_contributions": 38292,
+              "unpublished_observation_contributions": 24091
+            },
+            "west-footway-control": {
+              "input_observation_contributions": 4034,
+              "retained_fraction": 0.38795240456122954,
+              "retained_observation_contributions": 1565,
+              "unpublished_observation_contributions": 2469
+            }
+          },
+          "by_source_type": {
+            "Adult Cyclist": {
+              "input_observation_contributions": 2867,
+              "retained_fraction": 0.5333100802232299,
+              "retained_observation_contributions": 1529,
+              "unpublished_observation_contributions": 1338
+            },
+            "Adult E-Scooter Driver": {
+              "input_observation_contributions": 2404,
+              "retained_fraction": 0.5702995008319468,
+              "retained_observation_contributions": 1371,
+              "unpublished_observation_contributions": 1033
+            },
+            "Adult Pedestrian": {
+              "input_observation_contributions": 14047,
+              "retained_fraction": 0.5379796397807362,
+              "retained_observation_contributions": 7557,
+              "unpublished_observation_contributions": 6490
+            },
+            "Child Pedestrian": {
+              "input_observation_contributions": 15200,
+              "retained_fraction": 0.5230263157894737,
+              "retained_observation_contributions": 7950,
+              "unpublished_observation_contributions": 7250
+            },
+            "Pedestrian With Mobility Aid": {
+              "input_observation_contributions": 16639,
+              "retained_fraction": 0.5484103611995913,
+              "retained_observation_contributions": 9125,
+              "unpublished_observation_contributions": 7514
+            },
+            "Pedestrian With Stroller": {
+              "input_observation_contributions": 13060,
+              "retained_fraction": 0.44318529862174577,
+              "retained_observation_contributions": 5788,
+              "unpublished_observation_contributions": 7272
+            },
+            "Senior Cyclist": {
+              "input_observation_contributions": 2837,
+              "retained_fraction": 0.6055692633063094,
+              "retained_observation_contributions": 1718,
+              "unpublished_observation_contributions": 1119
+            },
+            "Senior Pedestrian": {
+              "input_observation_contributions": 14979,
+              "retained_fraction": 0.624207223446158,
+              "retained_observation_contributions": 9350,
+              "unpublished_observation_contributions": 5629
+            }
+          },
+          "input_observations": 82033,
+          "observation_to_release_delay_ms": {
+            "maximum": 4000,
+            "mean": 1876.4012796251238,
+            "p50": 1800,
+            "p95": 3800,
+            "p99": 4000
+          },
+          "region_scope": "Nonexclusive half-open source-point cohorts; hard constraints use whole-cell positive-area intersections.",
+          "retained_observations": 44388,
+          "selectively_suppressed_observations": 0,
+          "whole_footprint_suppressed_observations": 37645
+        },
+        "unique_published_spatial_ids": 12,
+        "unpublished_observation_contributions": 37645
+      }
+    },
+    "pedestrians_control_static_10m": {
+      "cell_window_ms": {
+        "192": 4000,
+        "193": 4000,
+        "194": 4000,
+        "195": 4000,
+        "196": 4000,
+        "197": 4000,
+        "198": 4000,
+        "199": 4000,
+        "200": 4000,
+        "201": 4000,
+        "202": 4000,
+        "203": 4000,
+        "204": 4000,
+        "205": 4000,
+        "206": 4000,
+        "207": 4000,
+        "208": 4000,
+        "209": 4000,
+        "210": 4000,
+        "211": 4000,
+        "212": 4000,
+        "213": 4000,
+        "214": 4000,
+        "215": 4000,
+        "216": 4000,
+        "217": 4000,
+        "218": 4000,
+        "219": 4000,
+        "220": 4000,
+        "221": 4000,
+        "222": 4000,
+        "223": 4000,
+        "224": 4000,
+        "225": 4000,
+        "226": 4000,
+        "227": 4000,
+        "228": 4000,
+        "229": 4000,
+        "230": 4000,
+        "231": 4000,
+        "232": 4000,
+        "233": 4000,
+        "234": 4000,
+        "235": 4000,
+        "236": 4000,
+        "237": 4000,
+        "238": 4000,
+        "239": 4000,
+        "240": 4000,
+        "241": 4000,
+        "242": 4000,
+        "243": 4000,
+        "244": 4000,
+        "245": 4000,
+        "246": 4000,
+        "247": 4000,
+        "248": 4000,
+        "249": 4000,
+        "250": 4000,
+        "251": 4000,
+        "252": 4000,
+        "253": 4000,
+        "254": 4000,
+        "255": 4000
+      },
+      "independent_composition_audit": {
+        "positive_control_equal_native_4s": true,
+        "published_policy_violations": 0,
+        "source_assigned_once": true,
+        "status": "verified"
+      },
+      "method": "static_regional_10m",
+      "native_process_wall_seconds": null,
+      "native_runtime": null,
+      "observations_sha256": "4abf12b390f29ce6685d37cbe5167793ed62dfc5c9207ffc42688e7419af5b5a",
+      "policy": "control",
+      "side_m": 10,
+      "source": "pedestrians",
+      "source_native_cases": {
+        "1000": {
+          "config_sha256": "be852389891290afca7ab2e6e6e9c7aeb762ccaefe315d892b1cf9d46ca119fd",
+          "id": "pedestrians_control_fixed_10m_1000ms",
+          "result_sha256": "5214fdef46cf9ce1754cb9644c059e7dadcc5f558133c9c098612cdeb08eebc0"
+        },
+        "2000": {
+          "config_sha256": "933129f9c151ec7f6f9dd5f306f85d67815708ba04ae7c5f72df9b27b4baf6d0",
+          "id": "pedestrians_control_fixed_10m_2000ms",
+          "result_sha256": "c97ad6da01079a6c8fc80dc7ab48da168bd4dc8449e9e6e1d9fc7a7f9f8dbac3"
+        },
+        "400": {
+          "config_sha256": "3221c22272e55d4cbb3558a4588d9661a9034e5cc74445bd696e45456b126be6",
+          "id": "pedestrians_control_fixed_10m_400ms",
+          "result_sha256": "6c5744a47397d73f5584e5bf983d319cfd61203768b1a07a307e37160bd6b89a"
+        },
+        "4000": {
+          "config_sha256": "74ec7b7287b77561bccd3eeb484b497a5fc07f05a73baea44b22bd8140e17061",
+          "id": "pedestrians_control_fixed_10m_4000ms",
+          "result_sha256": "1c80bcc1f959fcca983065822ec7c6b7c1d819b7019a70a53dc22522bea22303"
+        }
+      },
+      "stats": {
+        "core_processing_ms": null,
+        "exact_subtype_fraction_of_input": 0.0,
+        "exact_subtype_fraction_of_retained": 0.0,
+        "exact_subtype_observation_contributions": 0,
+        "full_input_semantic_distortion": 0.7337275806541174,
+        "input_observation_contributions": 90045,
+        "observation_weighted_age_at_release_ms": 4000.0,
+        "observation_weighted_cell_side_m": 10.0,
+        "observation_weighted_interval_duration_ms": 4000.0,
+        "observation_weighted_semantic_loss": 0.5,
+        "partition_audit": {
+          "empty_cell_intervals": 3658,
+          "empty_scope": "Every fixed cell is partitioned by [k*w,min((k+1)*w,horizon)); empty groups have zero source and require no native cell record.",
+          "input_assigned_once": 90045,
+          "nonempty_cell_intervals": 1142,
+          "scheduled_cell_intervals": 4800,
+          "status": "verified"
+        },
+        "published_category_observations": {
+          "pedestrian": 47953
+        },
+        "published_cell_sizes": {
+          "10.0": 224
+        },
+        "published_cell_windows": 224,
+        "published_policy_violations": 0,
+        "retained_fraction": 0.5325448386917653,
+        "retained_observation_contributions": 47953,
+        "source_accounting": {
+          "by_source_point_region": {
+            "central-through-footway": {
+              "input_observation_contributions": 11716,
+              "retained_fraction": 0.8193922840559918,
+              "retained_observation_contributions": 9600,
+              "unpublished_observation_contributions": 2116
+            },
+            "east-footway-control": {
+              "input_observation_contributions": 5829,
+              "retained_fraction": 0.6251501115114084,
+              "retained_observation_contributions": 3644,
+              "unpublished_observation_contributions": 2185
+            },
+            "entrance-vicinity": {
+              "input_observation_contributions": 1629,
+              "retained_fraction": 0.28115408225905464,
+              "retained_observation_contributions": 458,
+              "unpublished_observation_contributions": 1171
+            },
+            "outside_policy_regions": {
+              "input_observation_contributions": 65286,
+              "retained_fraction": 0.4835033544710964,
+              "retained_observation_contributions": 31566,
+              "unpublished_observation_contributions": 33720
+            },
+            "west-footway-control": {
+              "input_observation_contributions": 5585,
+              "retained_fraction": 0.4807520143240824,
+              "retained_observation_contributions": 2685,
+              "unpublished_observation_contributions": 2900
+            }
+          },
+          "by_source_type": {
+            "Adult Pedestrian": {
+              "input_observation_contributions": 20736,
+              "retained_fraction": 0.5562307098765432,
+              "retained_observation_contributions": 11534,
+              "unpublished_observation_contributions": 9202
+            },
+            "Child Pedestrian": {
+              "input_observation_contributions": 17796,
+              "retained_fraction": 0.5853562598336705,
+              "retained_observation_contributions": 10417,
+              "unpublished_observation_contributions": 7379
+            },
+            "Pedestrian With Mobility Aid": {
+              "input_observation_contributions": 16954,
+              "retained_fraction": 0.494042703786717,
+              "retained_observation_contributions": 8376,
+              "unpublished_observation_contributions": 8578
+            },
+            "Pedestrian With Stroller": {
+              "input_observation_contributions": 19842,
+              "retained_fraction": 0.4946073984477371,
+              "retained_observation_contributions": 9814,
+              "unpublished_observation_contributions": 10028
+            },
+            "Senior Pedestrian": {
+              "input_observation_contributions": 14717,
+              "retained_fraction": 0.5308147040837127,
+              "retained_observation_contributions": 7812,
+              "unpublished_observation_contributions": 6905
+            }
+          },
+          "input_observations": 90045,
+          "observation_to_release_delay_ms": {
+            "maximum": 4000,
+            "mean": 2050.8602172961023,
+            "p50": 2100,
+            "p95": 3900,
+            "p99": 4000
+          },
+          "region_scope": "Nonexclusive half-open source-point cohorts; hard constraints use whole-cell positive-area intersections.",
+          "retained_observations": 47953,
+          "selectively_suppressed_observations": 0,
+          "whole_footprint_suppressed_observations": 42092
+        },
+        "unique_published_spatial_ids": 39,
+        "unpublished_observation_contributions": 42092
+      }
+    },
+    "pedestrians_control_static_20m": {
+      "cell_window_ms": {
+        "48": 4000,
+        "49": 4000,
+        "50": 4000,
+        "51": 4000,
+        "52": 4000,
+        "53": 4000,
+        "54": 4000,
+        "55": 4000,
+        "56": 4000,
+        "57": 4000,
+        "58": 4000,
+        "59": 4000,
+        "60": 4000,
+        "61": 4000,
+        "62": 4000,
+        "63": 4000
+      },
+      "independent_composition_audit": {
+        "positive_control_equal_native_4s": true,
+        "published_policy_violations": 0,
+        "source_assigned_once": true,
+        "status": "verified"
+      },
+      "method": "static_regional_20m",
+      "native_process_wall_seconds": null,
+      "native_runtime": null,
+      "observations_sha256": "4abf12b390f29ce6685d37cbe5167793ed62dfc5c9207ffc42688e7419af5b5a",
+      "policy": "control",
+      "side_m": 20,
+      "source": "pedestrians",
+      "source_native_cases": {
+        "1000": {
+          "config_sha256": "0aede21e73f955bffec139b727f691884b7d11c253fc6066004e0a1975c6f2fd",
+          "id": "pedestrians_control_fixed_20m_1000ms",
+          "result_sha256": "ed3f716322b153196ad5c18e459e7b2038051f9ef4f965750df3485928381200"
+        },
+        "2000": {
+          "config_sha256": "bdbf3abb0ee2bd7d4b3bbb792d5bef7ba0fbfa05475d53e4e8b78b55a1259c19",
+          "id": "pedestrians_control_fixed_20m_2000ms",
+          "result_sha256": "06f917c4a3a226f545e3f37fac9c370f5bf4037c8e72bd6b474e2f38609cc6eb"
+        },
+        "400": {
+          "config_sha256": "278f3fccbc276bfe44ad992b46cf2aec7469b9f64ac6d9de5b52531b17860d1e",
+          "id": "pedestrians_control_fixed_20m_400ms",
+          "result_sha256": "88468bd9a60d1d5967f6c1819cd97534d0c96e6127e89626f2bbe336792e49a9"
+        },
+        "4000": {
+          "config_sha256": "999826b8cf224f80d4d0084cdce9ec8c7a411d1b569503700cf5c515e5949a2d",
+          "id": "pedestrians_control_fixed_20m_4000ms",
+          "result_sha256": "4282dd6a03b8fbef3d7cc22e8e2f56296031b04f0637d2ca448caf91ebef7123"
+        }
+      },
+      "stats": {
+        "core_processing_ms": null,
+        "exact_subtype_fraction_of_input": 0.12159475817646732,
+        "exact_subtype_fraction_of_retained": 0.15007264453521205,
+        "exact_subtype_observation_contributions": 10949,
+        "full_input_semantic_distortion": 0.5340829585207396,
+        "input_observation_contributions": 90045,
+        "observation_weighted_age_at_release_ms": 4000.0,
+        "observation_weighted_cell_side_m": 20.0,
+        "observation_weighted_interval_duration_ms": 4000.0,
+        "observation_weighted_semantic_loss": 0.42496367773239396,
+        "partition_audit": {
+          "empty_cell_intervals": 733,
+          "empty_scope": "Every fixed cell is partitioned by [k*w,min((k+1)*w,horizon)); empty groups have zero source and require no native cell record.",
+          "input_assigned_once": 90045,
+          "nonempty_cell_intervals": 467,
+          "scheduled_cell_intervals": 1200,
+          "status": "verified"
+        },
+        "published_category_observations": {
+          "adult_pedestrian": 2864,
+          "child_pedestrian": 2193,
+          "pedestrian": 62009,
+          "pedestrian_with_mobility_aid": 1923,
+          "pedestrian_with_stroller": 2259,
+          "senior_pedestrian": 1710
+        },
+        "published_cell_sizes": {
+          "20.0": 203
+        },
+        "published_cell_windows": 203,
+        "published_policy_violations": 0,
+        "retained_fraction": 0.8102393247820534,
+        "retained_observation_contributions": 72958,
+        "source_accounting": {
+          "by_source_point_region": {
+            "central-through-footway": {
+              "input_observation_contributions": 11716,
+              "retained_fraction": 0.8659952202116763,
+              "retained_observation_contributions": 10146,
+              "unpublished_observation_contributions": 1570
+            },
+            "east-footway-control": {
+              "input_observation_contributions": 5829,
+              "retained_fraction": 0.9202264539372105,
+              "retained_observation_contributions": 5364,
+              "unpublished_observation_contributions": 465
+            },
+            "entrance-vicinity": {
+              "input_observation_contributions": 1629,
+              "retained_fraction": 0.5979128299570289,
+              "retained_observation_contributions": 974,
+              "unpublished_observation_contributions": 655
+            },
+            "outside_policy_regions": {
+              "input_observation_contributions": 65286,
+              "retained_fraction": 0.7903838495236345,
+              "retained_observation_contributions": 51601,
+              "unpublished_observation_contributions": 13685
+            },
+            "west-footway-control": {
+              "input_observation_contributions": 5585,
+              "retained_fraction": 0.8725156669650851,
+              "retained_observation_contributions": 4873,
+              "unpublished_observation_contributions": 712
+            }
+          },
+          "by_source_type": {
+            "Adult Pedestrian": {
+              "input_observation_contributions": 20736,
+              "retained_fraction": 0.8473668981481481,
+              "retained_observation_contributions": 17571,
+              "unpublished_observation_contributions": 3165
+            },
+            "Child Pedestrian": {
+              "input_observation_contributions": 17796,
+              "retained_fraction": 0.8197909642616318,
+              "retained_observation_contributions": 14589,
+              "unpublished_observation_contributions": 3207
+            },
+            "Pedestrian With Mobility Aid": {
+              "input_observation_contributions": 16954,
+              "retained_fraction": 0.778872242538634,
+              "retained_observation_contributions": 13205,
+              "unpublished_observation_contributions": 3749
+            },
+            "Pedestrian With Stroller": {
+              "input_observation_contributions": 19842,
+              "retained_fraction": 0.7673621610724726,
+              "retained_observation_contributions": 15226,
+              "unpublished_observation_contributions": 4616
+            },
+            "Senior Pedestrian": {
+              "input_observation_contributions": 14717,
+              "retained_fraction": 0.8403207175375417,
+              "retained_observation_contributions": 12367,
+              "unpublished_observation_contributions": 2350
+            }
+          },
+          "input_observations": 90045,
+          "observation_to_release_delay_ms": {
+            "maximum": 4000,
+            "mean": 2049.639518627155,
+            "p50": 2000,
+            "p95": 3900,
+            "p99": 4000
+          },
+          "region_scope": "Nonexclusive half-open source-point cohorts; hard constraints use whole-cell positive-area intersections.",
+          "retained_observations": 72958,
+          "selectively_suppressed_observations": 0,
+          "whole_footprint_suppressed_observations": 17087
+        },
+        "unique_published_spatial_ids": 15,
+        "unpublished_observation_contributions": 17087
+      }
+    },
+    "pedestrians_local400_static_10m": {
+      "cell_window_ms": {
+        "192": 4000,
+        "193": 4000,
+        "194": 4000,
+        "195": 4000,
+        "196": 4000,
+        "197": 4000,
+        "198": 4000,
+        "199": 4000,
+        "200": 4000,
+        "201": 4000,
+        "202": 4000,
+        "203": 4000,
+        "204": 4000,
+        "205": 4000,
+        "206": 4000,
+        "207": 4000,
+        "208": 4000,
+        "209": 4000,
+        "210": 4000,
+        "211": 4000,
+        "212": 4000,
+        "213": 4000,
+        "214": 4000,
+        "215": 4000,
+        "216": 4000,
+        "217": 4000,
+        "218": 4000,
+        "219": 4000,
+        "220": 4000,
+        "221": 4000,
+        "222": 4000,
+        "223": 4000,
+        "224": 4000,
+        "225": 4000,
+        "226": 4000,
+        "227": 4000,
+        "228": 4000,
+        "229": 4000,
+        "230": 4000,
+        "231": 4000,
+        "232": 4000,
+        "233": 4000,
+        "234": 4000,
+        "235": 4000,
+        "236": 4000,
+        "237": 4000,
+        "238": 4000,
+        "239": 4000,
+        "240": 4000,
+        "241": 4000,
+        "242": 400,
+        "243": 400,
+        "244": 4000,
+        "245": 4000,
+        "246": 4000,
+        "247": 4000,
+        "248": 400,
+        "249": 400,
+        "250": 4000,
+        "251": 4000,
+        "252": 4000,
+        "253": 4000,
+        "254": 4000,
+        "255": 4000
+      },
+      "independent_composition_audit": {
+        "positive_control_equal_native_4s": null,
+        "published_policy_violations": 0,
+        "source_assigned_once": true,
+        "status": "verified"
+      },
+      "method": "static_regional_10m",
+      "native_process_wall_seconds": null,
+      "native_runtime": null,
+      "observations_sha256": "4abf12b390f29ce6685d37cbe5167793ed62dfc5c9207ffc42688e7419af5b5a",
+      "policy": "local400",
+      "side_m": 10,
+      "source": "pedestrians",
+      "source_native_cases": {
+        "1000": {
+          "config_sha256": "21fe9d47e93a2b241e49d68a388b4799c47ec696787879d42b28a6ecb5ef2ab0",
+          "id": "pedestrians_local400_fixed_10m_1000ms",
+          "result_sha256": "3db063966323d819508d920ffdbad76c783ff9504f4cbe1b8f466de3921f3fe3"
+        },
+        "2000": {
+          "config_sha256": "2d79af4d4be283525f133990a357a19c9d4e4bb4f2ff6008f1cc279e981c2533",
+          "id": "pedestrians_local400_fixed_10m_2000ms",
+          "result_sha256": "fcc0cf0678109b2ffb14cfafaa9817ea0edc15dc8b4d13f5c34af6242e0a40b1"
+        },
+        "400": {
+          "config_sha256": "19828824cea9429208b66d08a514b19508f67a793c67e3f0ff1875da91ee741d",
+          "id": "pedestrians_local400_fixed_10m_400ms",
+          "result_sha256": "7e946923cee5bf43350856a44186199bcf27eb7c053355922866a392c258cac5"
+        },
+        "4000": {
+          "config_sha256": "42eadcef7287ba9ac89b3d51127b86d37e281a428152f69b56524066499e9739",
+          "id": "pedestrians_local400_fixed_10m_4000ms",
+          "result_sha256": "0c608bc352d86a3f462173efd3c151d47d6c8b34d8ad31a743cd894375b2ed83"
+        }
+      },
+      "stats": {
+        "core_processing_ms": null,
+        "exact_subtype_fraction_of_input": 0.0,
+        "exact_subtype_fraction_of_retained": 0.0,
+        "exact_subtype_observation_contributions": 0,
+        "full_input_semantic_distortion": 0.7390027208617913,
+        "input_observation_contributions": 90045,
+        "observation_weighted_age_at_release_ms": 3337.4890964406527,
+        "observation_weighted_cell_side_m": 10.0,
+        "observation_weighted_interval_duration_ms": 3337.4890964406527,
+        "observation_weighted_semantic_loss": 0.5,
+        "partition_audit": {
+          "empty_cell_intervals": 5778,
+          "empty_scope": "Every fixed cell is partitioned by [k*w,min((k+1)*w,horizon)); empty groups have zero source and require no native cell record.",
+          "input_assigned_once": 90045,
+          "nonempty_cell_intervals": 1722,
+          "scheduled_cell_intervals": 7500,
+          "status": "verified"
+        },
+        "published_category_observations": {
+          "pedestrian": 47003
+        },
+        "published_cell_sizes": {
+          "10.0": 403
+        },
+        "published_cell_windows": 403,
+        "published_policy_violations": 0,
+        "retained_fraction": 0.5219945582764174,
+        "retained_observation_contributions": 47003,
+        "source_accounting": {
+          "by_source_point_region": {
+            "central-through-footway": {
+              "input_observation_contributions": 11716,
+              "retained_fraction": 0.7383065892796176,
+              "retained_observation_contributions": 8650,
+              "unpublished_observation_contributions": 3066
+            },
+            "east-footway-control": {
+              "input_observation_contributions": 5829,
+              "retained_fraction": 0.6251501115114084,
+              "retained_observation_contributions": 3644,
+              "unpublished_observation_contributions": 2185
+            },
+            "entrance-vicinity": {
+              "input_observation_contributions": 1629,
+              "retained_fraction": 0.28115408225905464,
+              "retained_observation_contributions": 458,
+              "unpublished_observation_contributions": 1171
+            },
+            "outside_policy_regions": {
+              "input_observation_contributions": 65286,
+              "retained_fraction": 0.4835033544710964,
+              "retained_observation_contributions": 31566,
+              "unpublished_observation_contributions": 33720
+            },
+            "west-footway-control": {
+              "input_observation_contributions": 5585,
+              "retained_fraction": 0.4807520143240824,
+              "retained_observation_contributions": 2685,
+              "unpublished_observation_contributions": 2900
+            }
+          },
+          "by_source_type": {
+            "Adult Pedestrian": {
+              "input_observation_contributions": 20736,
+              "retained_fraction": 0.550733024691358,
+              "retained_observation_contributions": 11420,
+              "unpublished_observation_contributions": 9316
+            },
+            "Child Pedestrian": {
+              "input_observation_contributions": 17796,
+              "retained_fraction": 0.5749044729152618,
+              "retained_observation_contributions": 10231,
+              "unpublished_observation_contributions": 7565
+            },
+            "Pedestrian With Mobility Aid": {
+              "input_observation_contributions": 16954,
+              "retained_fraction": 0.48560811607880144,
+              "retained_observation_contributions": 8233,
+              "unpublished_observation_contributions": 8721
+            },
+            "Pedestrian With Stroller": {
+              "input_observation_contributions": 19842,
+              "retained_fraction": 0.4844269730873904,
+              "retained_observation_contributions": 9612,
+              "unpublished_observation_contributions": 10230
+            },
+            "Senior Pedestrian": {
+              "input_observation_contributions": 14717,
+              "retained_fraction": 0.5100903716790107,
+              "retained_observation_contributions": 7507,
+              "unpublished_observation_contributions": 7210
+            }
+          },
+          "input_observations": 90045,
+          "observation_to_release_delay_ms": {
+            "maximum": 4000,
+            "mean": 1718.8200753143417,
+            "p50": 1600,
+            "p95": 3800,
+            "p99": 4000
+          },
+          "region_scope": "Nonexclusive half-open source-point cohorts; hard constraints use whole-cell positive-area intersections.",
+          "retained_observations": 47003,
+          "selectively_suppressed_observations": 0,
+          "whole_footprint_suppressed_observations": 43042
+        },
+        "unique_published_spatial_ids": 38,
+        "unpublished_observation_contributions": 43042
+      }
+    },
+    "pedestrians_local400_static_20m": {
+      "cell_window_ms": {
+        "48": 4000,
+        "49": 4000,
+        "50": 4000,
+        "51": 4000,
+        "52": 4000,
+        "53": 4000,
+        "54": 4000,
+        "55": 4000,
+        "56": 4000,
+        "57": 4000,
+        "58": 4000,
+        "59": 4000,
+        "60": 400,
+        "61": 4000,
+        "62": 400,
+        "63": 4000
+      },
+      "independent_composition_audit": {
+        "positive_control_equal_native_4s": null,
+        "published_policy_violations": 0,
+        "source_assigned_once": true,
+        "status": "verified"
+      },
+      "method": "static_regional_20m",
+      "native_process_wall_seconds": null,
+      "native_runtime": null,
+      "observations_sha256": "4abf12b390f29ce6685d37cbe5167793ed62dfc5c9207ffc42688e7419af5b5a",
+      "policy": "local400",
+      "side_m": 20,
+      "source": "pedestrians",
+      "source_native_cases": {
+        "1000": {
+          "config_sha256": "43e4f3adf75adf8a7ab2b21d800efeb7be1461169f3803b2303c9f82901ddf42",
+          "id": "pedestrians_local400_fixed_20m_1000ms",
+          "result_sha256": "7da06273a19688e066fb01c1f10a4d78246cfd6b5074a63ff89783415650301b"
+        },
+        "2000": {
+          "config_sha256": "93d3e86c092e3daf8b4cf7f9742c74bb248f3d447bab528e455fb6c41e1ee9e8",
+          "id": "pedestrians_local400_fixed_20m_2000ms",
+          "result_sha256": "25fa7f1ecfc8567d46ddf96e7acdbb7b4f959eb5af5151ffe4721991363f79a9"
+        },
+        "400": {
+          "config_sha256": "ae75ccf53097af1a8d0b7f7e4ec545c6246a61a30164210c4f562406bc32134a",
+          "id": "pedestrians_local400_fixed_20m_400ms",
+          "result_sha256": "31c4067f1c8ba55f969a3734cd6f9b6307288f8b5d11a2755550d9bbb0aee63f"
+        },
+        "4000": {
+          "config_sha256": "dc175581849b9e19115f673f3ea0de93a6d86e747a36c362d0bc03361656b275",
+          "id": "pedestrians_local400_fixed_20m_4000ms",
+          "result_sha256": "c0845d37b4591835f9bbcbf7a638247a955193edd4682c4bc568f3fa0c99f284"
+        }
+      },
+      "stats": {
+        "core_processing_ms": null,
+        "exact_subtype_fraction_of_input": 0.10094952523738131,
+        "exact_subtype_fraction_of_retained": 0.12516351118760757,
+        "exact_subtype_observation_contributions": 9090,
+        "full_input_semantic_distortion": 0.5462546504525515,
+        "input_observation_contributions": 90045,
+        "observation_weighted_age_at_release_ms": 3399.4629948364886,
+        "observation_weighted_cell_side_m": 20.0,
+        "observation_weighted_interval_duration_ms": 3399.4629948364886,
+        "observation_weighted_semantic_loss": 0.4374182444061962,
+        "partition_audit": {
+          "empty_cell_intervals": 1648,
+          "empty_scope": "Every fixed cell is partitioned by [k*w,min((k+1)*w,horizon)); empty groups have zero source and require no native cell record.",
+          "input_assigned_once": 90045,
+          "nonempty_cell_intervals": 902,
+          "scheduled_cell_intervals": 2550,
+          "status": "verified"
+        },
+        "published_category_observations": {
+          "adult_pedestrian": 2364,
+          "child_pedestrian": 1829,
+          "pedestrian": 63535,
+          "pedestrian_with_mobility_aid": 1545,
+          "pedestrian_with_stroller": 1880,
+          "senior_pedestrian": 1472
+        },
+        "published_cell_sizes": {
+          "20.0": 356
+        },
+        "published_cell_windows": 356,
+        "published_policy_violations": 0,
+        "retained_fraction": 0.8065411738575157,
+        "retained_observation_contributions": 72625,
+        "source_accounting": {
+          "by_source_point_region": {
+            "central-through-footway": {
+              "input_observation_contributions": 11716,
+              "retained_fraction": 0.8403038579720041,
+              "retained_observation_contributions": 9845,
+              "unpublished_observation_contributions": 1871
+            },
+            "east-footway-control": {
+              "input_observation_contributions": 5829,
+              "retained_fraction": 0.9202264539372105,
+              "retained_observation_contributions": 5364,
+              "unpublished_observation_contributions": 465
+            },
+            "entrance-vicinity": {
+              "input_observation_contributions": 1629,
+              "retained_fraction": 0.5979128299570289,
+              "retained_observation_contributions": 974,
+              "unpublished_observation_contributions": 655
+            },
+            "outside_policy_regions": {
+              "input_observation_contributions": 65286,
+              "retained_fraction": 0.789893698495849,
+              "retained_observation_contributions": 51569,
+              "unpublished_observation_contributions": 13717
+            },
+            "west-footway-control": {
+              "input_observation_contributions": 5585,
+              "retained_fraction": 0.8725156669650851,
+              "retained_observation_contributions": 4873,
+              "unpublished_observation_contributions": 712
+            }
+          },
+          "by_source_type": {
+            "Adult Pedestrian": {
+              "input_observation_contributions": 20736,
+              "retained_fraction": 0.8446180555555556,
+              "retained_observation_contributions": 17514,
+              "unpublished_observation_contributions": 3222
+            },
+            "Child Pedestrian": {
+              "input_observation_contributions": 17796,
+              "retained_fraction": 0.812766913913239,
+              "retained_observation_contributions": 14464,
+              "unpublished_observation_contributions": 3332
+            },
+            "Pedestrian With Mobility Aid": {
+              "input_observation_contributions": 16954,
+              "retained_fraction": 0.7748613896425622,
+              "retained_observation_contributions": 13137,
+              "unpublished_observation_contributions": 3817
+            },
+            "Pedestrian With Stroller": {
+              "input_observation_contributions": 19842,
+              "retained_fraction": 0.7673621610724726,
+              "retained_observation_contributions": 15226,
+              "unpublished_observation_contributions": 4616
+            },
+            "Senior Pedestrian": {
+              "input_observation_contributions": 14717,
+              "retained_fraction": 0.8346809811782293,
+              "retained_observation_contributions": 12284,
+              "unpublished_observation_contributions": 2433
+            }
+          },
+          "input_observations": 90045,
+          "observation_to_release_delay_ms": {
+            "maximum": 4000,
+            "mean": 1748.2134251290877,
+            "p50": 1600,
+            "p95": 3800,
+            "p99": 4000
+          },
+          "region_scope": "Nonexclusive half-open source-point cohorts; hard constraints use whole-cell positive-area intersections.",
+          "retained_observations": 72625,
+          "selectively_suppressed_observations": 0,
+          "whole_footprint_suppressed_observations": 17420
+        },
+        "unique_published_spatial_ids": 14,
+        "unpublished_observation_contributions": 17420
+      }
+    }
+  },
+  "executed_case_count": 8,
+  "protocol": {
+    "implementation_sha256": {
+      "oracle.py": "5d8e60a8b8850ffdc8b76d60204520f66fda1b513cfbc6ed714da9afeb150e1c",
+      "semantic_suppression_audit.py": "ecb89dc09eb8ea498b172da496da17e983f067fad669bb9093d5bb76cdcfe2cf",
+      "static_regional_schedule.py": "3bc241da47219dae61035e4dcbe7adab6035148ab1662c20b3f1e71671b1d0fd"
+    },
+    "public_coverage": {
+      "height": 80,
+      "leaf_depth": 6,
+      "width": 80,
+      "x": 0,
+      "y": 0
+    },
+    "runtime_scope": "Derived utility composition only. No online scheduler was implemented or timed; runtime is null.",
+    "schedules": {
+      "mixed_control_static_10m": {
+        "cell_window_ms": {
+          "192": 4000,
+          "193": 4000,
+          "194": 4000,
+          "195": 4000,
+          "196": 4000,
+          "197": 4000,
+          "198": 4000,
+          "199": 4000,
+          "200": 4000,
+          "201": 4000,
+          "202": 4000,
+          "203": 4000,
+          "204": 4000,
+          "205": 4000,
+          "206": 4000,
+          "207": 4000,
+          "208": 4000,
+          "209": 4000,
+          "210": 4000,
+          "211": 4000,
+          "212": 4000,
+          "213": 4000,
+          "214": 4000,
+          "215": 4000,
+          "216": 4000,
+          "217": 4000,
+          "218": 4000,
+          "219": 4000,
+          "220": 4000,
+          "221": 4000,
+          "222": 4000,
+          "223": 4000,
+          "224": 4000,
+          "225": 4000,
+          "226": 4000,
+          "227": 4000,
+          "228": 4000,
+          "229": 4000,
+          "230": 4000,
+          "231": 4000,
+          "232": 4000,
+          "233": 4000,
+          "234": 4000,
+          "235": 4000,
+          "236": 4000,
+          "237": 4000,
+          "238": 4000,
+          "239": 4000,
+          "240": 4000,
+          "241": 4000,
+          "242": 4000,
+          "243": 4000,
+          "244": 4000,
+          "245": 4000,
+          "246": 4000,
+          "247": 4000,
+          "248": 4000,
+          "249": 4000,
+          "250": 4000,
+          "251": 4000,
+          "252": 4000,
+          "253": 4000,
+          "254": 4000,
+          "255": 4000
+        },
+        "depth": 3,
+        "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+        "side_m": 10
+      },
+      "mixed_control_static_20m": {
+        "cell_window_ms": {
+          "48": 4000,
+          "49": 4000,
+          "50": 4000,
+          "51": 4000,
+          "52": 4000,
+          "53": 4000,
+          "54": 4000,
+          "55": 4000,
+          "56": 4000,
+          "57": 4000,
+          "58": 4000,
+          "59": 4000,
+          "60": 4000,
+          "61": 4000,
+          "62": 4000,
+          "63": 4000
+        },
+        "depth": 2,
+        "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+        "side_m": 20
+      },
+      "mixed_local400_static_10m": {
+        "cell_window_ms": {
+          "192": 4000,
+          "193": 4000,
+          "194": 4000,
+          "195": 4000,
+          "196": 4000,
+          "197": 4000,
+          "198": 4000,
+          "199": 4000,
+          "200": 4000,
+          "201": 4000,
+          "202": 4000,
+          "203": 4000,
+          "204": 4000,
+          "205": 4000,
+          "206": 4000,
+          "207": 4000,
+          "208": 4000,
+          "209": 4000,
+          "210": 4000,
+          "211": 4000,
+          "212": 4000,
+          "213": 4000,
+          "214": 4000,
+          "215": 4000,
+          "216": 4000,
+          "217": 4000,
+          "218": 4000,
+          "219": 4000,
+          "220": 4000,
+          "221": 4000,
+          "222": 4000,
+          "223": 4000,
+          "224": 4000,
+          "225": 4000,
+          "226": 4000,
+          "227": 4000,
+          "228": 4000,
+          "229": 4000,
+          "230": 4000,
+          "231": 4000,
+          "232": 4000,
+          "233": 4000,
+          "234": 4000,
+          "235": 4000,
+          "236": 4000,
+          "237": 4000,
+          "238": 4000,
+          "239": 4000,
+          "240": 4000,
+          "241": 4000,
+          "242": 400,
+          "243": 400,
+          "244": 4000,
+          "245": 4000,
+          "246": 4000,
+          "247": 4000,
+          "248": 400,
+          "249": 400,
+          "250": 4000,
+          "251": 4000,
+          "252": 4000,
+          "253": 4000,
+          "254": 4000,
+          "255": 4000
+        },
+        "depth": 3,
+        "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+        "side_m": 10
+      },
+      "mixed_local400_static_20m": {
+        "cell_window_ms": {
+          "48": 4000,
+          "49": 4000,
+          "50": 4000,
+          "51": 4000,
+          "52": 4000,
+          "53": 4000,
+          "54": 4000,
+          "55": 4000,
+          "56": 4000,
+          "57": 4000,
+          "58": 4000,
+          "59": 4000,
+          "60": 400,
+          "61": 4000,
+          "62": 400,
+          "63": 4000
+        },
+        "depth": 2,
+        "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+        "side_m": 20
+      },
+      "pedestrians_control_static_10m": {
+        "cell_window_ms": {
+          "192": 4000,
+          "193": 4000,
+          "194": 4000,
+          "195": 4000,
+          "196": 4000,
+          "197": 4000,
+          "198": 4000,
+          "199": 4000,
+          "200": 4000,
+          "201": 4000,
+          "202": 4000,
+          "203": 4000,
+          "204": 4000,
+          "205": 4000,
+          "206": 4000,
+          "207": 4000,
+          "208": 4000,
+          "209": 4000,
+          "210": 4000,
+          "211": 4000,
+          "212": 4000,
+          "213": 4000,
+          "214": 4000,
+          "215": 4000,
+          "216": 4000,
+          "217": 4000,
+          "218": 4000,
+          "219": 4000,
+          "220": 4000,
+          "221": 4000,
+          "222": 4000,
+          "223": 4000,
+          "224": 4000,
+          "225": 4000,
+          "226": 4000,
+          "227": 4000,
+          "228": 4000,
+          "229": 4000,
+          "230": 4000,
+          "231": 4000,
+          "232": 4000,
+          "233": 4000,
+          "234": 4000,
+          "235": 4000,
+          "236": 4000,
+          "237": 4000,
+          "238": 4000,
+          "239": 4000,
+          "240": 4000,
+          "241": 4000,
+          "242": 4000,
+          "243": 4000,
+          "244": 4000,
+          "245": 4000,
+          "246": 4000,
+          "247": 4000,
+          "248": 4000,
+          "249": 4000,
+          "250": 4000,
+          "251": 4000,
+          "252": 4000,
+          "253": 4000,
+          "254": 4000,
+          "255": 4000
+        },
+        "depth": 3,
+        "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+        "side_m": 10
+      },
+      "pedestrians_control_static_20m": {
+        "cell_window_ms": {
+          "48": 4000,
+          "49": 4000,
+          "50": 4000,
+          "51": 4000,
+          "52": 4000,
+          "53": 4000,
+          "54": 4000,
+          "55": 4000,
+          "56": 4000,
+          "57": 4000,
+          "58": 4000,
+          "59": 4000,
+          "60": 4000,
+          "61": 4000,
+          "62": 4000,
+          "63": 4000
+        },
+        "depth": 2,
+        "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+        "side_m": 20
+      },
+      "pedestrians_local400_static_10m": {
+        "cell_window_ms": {
+          "192": 4000,
+          "193": 4000,
+          "194": 4000,
+          "195": 4000,
+          "196": 4000,
+          "197": 4000,
+          "198": 4000,
+          "199": 4000,
+          "200": 4000,
+          "201": 4000,
+          "202": 4000,
+          "203": 4000,
+          "204": 4000,
+          "205": 4000,
+          "206": 4000,
+          "207": 4000,
+          "208": 4000,
+          "209": 4000,
+          "210": 4000,
+          "211": 4000,
+          "212": 4000,
+          "213": 4000,
+          "214": 4000,
+          "215": 4000,
+          "216": 4000,
+          "217": 4000,
+          "218": 4000,
+          "219": 4000,
+          "220": 4000,
+          "221": 4000,
+          "222": 4000,
+          "223": 4000,
+          "224": 4000,
+          "225": 4000,
+          "226": 4000,
+          "227": 4000,
+          "228": 4000,
+          "229": 4000,
+          "230": 4000,
+          "231": 4000,
+          "232": 4000,
+          "233": 4000,
+          "234": 4000,
+          "235": 4000,
+          "236": 4000,
+          "237": 4000,
+          "238": 4000,
+          "239": 4000,
+          "240": 4000,
+          "241": 4000,
+          "242": 400,
+          "243": 400,
+          "244": 4000,
+          "245": 4000,
+          "246": 4000,
+          "247": 4000,
+          "248": 400,
+          "249": 400,
+          "250": 4000,
+          "251": 4000,
+          "252": 4000,
+          "253": 4000,
+          "254": 4000,
+          "255": 4000
+        },
+        "depth": 3,
+        "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+        "side_m": 10
+      },
+      "pedestrians_local400_static_20m": {
+        "cell_window_ms": {
+          "48": 4000,
+          "49": 4000,
+          "50": 4000,
+          "51": 4000,
+          "52": 4000,
+          "53": 4000,
+          "54": 4000,
+          "55": 4000,
+          "56": 4000,
+          "57": 4000,
+          "58": 4000,
+          "59": 4000,
+          "60": 400,
+          "61": 4000,
+          "62": 400,
+          "63": 4000
+        },
+        "depth": 2,
+        "selection_scope": "Longest admissible predeclared window from footprint size, duration, age and post-window delay bounds; fixed before reading observations.",
+        "side_m": 20
+      }
+    },
+    "schema": "ump.static-regional-schedule-protocol.v1",
+    "selection_scope": "Grid fixed at 10m or 20m; per-cell longest admissible window uses only public whole-footprint constraints, before reading observations.",
+    "source_native_binary_sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+    "source_native_cases": {
+      "mixed_control_static_10m": {
+        "1000": {
+          "config_sha256": "be852389891290afca7ab2e6e6e9c7aeb762ccaefe315d892b1cf9d46ca119fd",
+          "id": "mixed_control_fixed_10m_1000ms",
+          "result_sha256": "abbf1df387de077ca0b6f5dbc12f84b41e7def55d8023ba247bbd7617380e1d6"
+        },
+        "2000": {
+          "config_sha256": "933129f9c151ec7f6f9dd5f306f85d67815708ba04ae7c5f72df9b27b4baf6d0",
+          "id": "mixed_control_fixed_10m_2000ms",
+          "result_sha256": "2348c9edb317e52a1fdfede66692030daa96ac2e5e65255c5d3258a268bef2fe"
+        },
+        "400": {
+          "config_sha256": "3221c22272e55d4cbb3558a4588d9661a9034e5cc74445bd696e45456b126be6",
+          "id": "mixed_control_fixed_10m_400ms",
+          "result_sha256": "01e88c7698dd273af82b866d356d212bd53bb41d9988f946dea58f59ab24e054"
+        },
+        "4000": {
+          "config_sha256": "74ec7b7287b77561bccd3eeb484b497a5fc07f05a73baea44b22bd8140e17061",
+          "id": "mixed_control_fixed_10m_4000ms",
+          "result_sha256": "43f003723195cbced655d4f59923b87b65e64e40ef444e301f75daa0b96a6d81"
+        }
+      },
+      "mixed_control_static_20m": {
+        "1000": {
+          "config_sha256": "0aede21e73f955bffec139b727f691884b7d11c253fc6066004e0a1975c6f2fd",
+          "id": "mixed_control_fixed_20m_1000ms",
+          "result_sha256": "9166aa76a4ebdafe97161b8150aeb93282008c8e87d30ae7100c6dac24eb687e"
+        },
+        "2000": {
+          "config_sha256": "bdbf3abb0ee2bd7d4b3bbb792d5bef7ba0fbfa05475d53e4e8b78b55a1259c19",
+          "id": "mixed_control_fixed_20m_2000ms",
+          "result_sha256": "d25fd5e480f6abcb91e77567c14c64f753eac3a7ab85786833443eb4190433a2"
+        },
+        "400": {
+          "config_sha256": "278f3fccbc276bfe44ad992b46cf2aec7469b9f64ac6d9de5b52531b17860d1e",
+          "id": "mixed_control_fixed_20m_400ms",
+          "result_sha256": "204b6b8278045e78d88e23e5068f8c76bdd0fd70407a700b5a491b60ada5b7dd"
+        },
+        "4000": {
+          "config_sha256": "999826b8cf224f80d4d0084cdce9ec8c7a411d1b569503700cf5c515e5949a2d",
+          "id": "mixed_control_fixed_20m_4000ms",
+          "result_sha256": "9860633162f6571807439d60e096ff46cb3b681cc8f49d77ccc42768dca683a4"
+        }
+      },
+      "mixed_local400_static_10m": {
+        "1000": {
+          "config_sha256": "21fe9d47e93a2b241e49d68a388b4799c47ec696787879d42b28a6ecb5ef2ab0",
+          "id": "mixed_local400_fixed_10m_1000ms",
+          "result_sha256": "7199179cbc3a146eeddb68bdabee9bee26a7072918b1d5272bf825f32cccce17"
+        },
+        "2000": {
+          "config_sha256": "2d79af4d4be283525f133990a357a19c9d4e4bb4f2ff6008f1cc279e981c2533",
+          "id": "mixed_local400_fixed_10m_2000ms",
+          "result_sha256": "02003743cf08f8249b0a32c37785becc07c1e0c57f43665ff9730ded44ca06ac"
+        },
+        "400": {
+          "config_sha256": "19828824cea9429208b66d08a514b19508f67a793c67e3f0ff1875da91ee741d",
+          "id": "mixed_local400_fixed_10m_400ms",
+          "result_sha256": "40a216ca4824d33dd27141d3a4c95ce9606c7d3e7fdd9791ec88f16ad9125e9a"
+        },
+        "4000": {
+          "config_sha256": "42eadcef7287ba9ac89b3d51127b86d37e281a428152f69b56524066499e9739",
+          "id": "mixed_local400_fixed_10m_4000ms",
+          "result_sha256": "0473980f79ef68d350caf8fc3cff947a984b50f6dc40607414db840e4f4be944"
+        }
+      },
+      "mixed_local400_static_20m": {
+        "1000": {
+          "config_sha256": "43e4f3adf75adf8a7ab2b21d800efeb7be1461169f3803b2303c9f82901ddf42",
+          "id": "mixed_local400_fixed_20m_1000ms",
+          "result_sha256": "66de674dcb138b4c2451c9d3dca9558127c634c493f2df7ab2e1be564207f0cd"
+        },
+        "2000": {
+          "config_sha256": "93d3e86c092e3daf8b4cf7f9742c74bb248f3d447bab528e455fb6c41e1ee9e8",
+          "id": "mixed_local400_fixed_20m_2000ms",
+          "result_sha256": "05626af579e323423d485fb4e29b71a757377156a71812a3b903ad79fcaf0066"
+        },
+        "400": {
+          "config_sha256": "ae75ccf53097af1a8d0b7f7e4ec545c6246a61a30164210c4f562406bc32134a",
+          "id": "mixed_local400_fixed_20m_400ms",
+          "result_sha256": "cd466ee43b28adbe8d1f186239d56fdf53bb16b13e651c061b62a4d2bc41906b"
+        },
+        "4000": {
+          "config_sha256": "dc175581849b9e19115f673f3ea0de93a6d86e747a36c362d0bc03361656b275",
+          "id": "mixed_local400_fixed_20m_4000ms",
+          "result_sha256": "51732f00afc0303fbd0ec6e6bdbfd217454a8566c580b5cab36dad5d357da4eb"
+        }
+      },
+      "pedestrians_control_static_10m": {
+        "1000": {
+          "config_sha256": "be852389891290afca7ab2e6e6e9c7aeb762ccaefe315d892b1cf9d46ca119fd",
+          "id": "pedestrians_control_fixed_10m_1000ms",
+          "result_sha256": "5214fdef46cf9ce1754cb9644c059e7dadcc5f558133c9c098612cdeb08eebc0"
+        },
+        "2000": {
+          "config_sha256": "933129f9c151ec7f6f9dd5f306f85d67815708ba04ae7c5f72df9b27b4baf6d0",
+          "id": "pedestrians_control_fixed_10m_2000ms",
+          "result_sha256": "c97ad6da01079a6c8fc80dc7ab48da168bd4dc8449e9e6e1d9fc7a7f9f8dbac3"
+        },
+        "400": {
+          "config_sha256": "3221c22272e55d4cbb3558a4588d9661a9034e5cc74445bd696e45456b126be6",
+          "id": "pedestrians_control_fixed_10m_400ms",
+          "result_sha256": "6c5744a47397d73f5584e5bf983d319cfd61203768b1a07a307e37160bd6b89a"
+        },
+        "4000": {
+          "config_sha256": "74ec7b7287b77561bccd3eeb484b497a5fc07f05a73baea44b22bd8140e17061",
+          "id": "pedestrians_control_fixed_10m_4000ms",
+          "result_sha256": "1c80bcc1f959fcca983065822ec7c6b7c1d819b7019a70a53dc22522bea22303"
+        }
+      },
+      "pedestrians_control_static_20m": {
+        "1000": {
+          "config_sha256": "0aede21e73f955bffec139b727f691884b7d11c253fc6066004e0a1975c6f2fd",
+          "id": "pedestrians_control_fixed_20m_1000ms",
+          "result_sha256": "ed3f716322b153196ad5c18e459e7b2038051f9ef4f965750df3485928381200"
+        },
+        "2000": {
+          "config_sha256": "bdbf3abb0ee2bd7d4b3bbb792d5bef7ba0fbfa05475d53e4e8b78b55a1259c19",
+          "id": "pedestrians_control_fixed_20m_2000ms",
+          "result_sha256": "06f917c4a3a226f545e3f37fac9c370f5bf4037c8e72bd6b474e2f38609cc6eb"
+        },
+        "400": {
+          "config_sha256": "278f3fccbc276bfe44ad992b46cf2aec7469b9f64ac6d9de5b52531b17860d1e",
+          "id": "pedestrians_control_fixed_20m_400ms",
+          "result_sha256": "88468bd9a60d1d5967f6c1819cd97534d0c96e6127e89626f2bbe336792e49a9"
+        },
+        "4000": {
+          "config_sha256": "999826b8cf224f80d4d0084cdce9ec8c7a411d1b569503700cf5c515e5949a2d",
+          "id": "pedestrians_control_fixed_20m_4000ms",
+          "result_sha256": "4282dd6a03b8fbef3d7cc22e8e2f56296031b04f0637d2ca448caf91ebef7123"
+        }
+      },
+      "pedestrians_local400_static_10m": {
+        "1000": {
+          "config_sha256": "21fe9d47e93a2b241e49d68a388b4799c47ec696787879d42b28a6ecb5ef2ab0",
+          "id": "pedestrians_local400_fixed_10m_1000ms",
+          "result_sha256": "3db063966323d819508d920ffdbad76c783ff9504f4cbe1b8f466de3921f3fe3"
+        },
+        "2000": {
+          "config_sha256": "2d79af4d4be283525f133990a357a19c9d4e4bb4f2ff6008f1cc279e981c2533",
+          "id": "pedestrians_local400_fixed_10m_2000ms",
+          "result_sha256": "fcc0cf0678109b2ffb14cfafaa9817ea0edc15dc8b4d13f5c34af6242e0a40b1"
+        },
+        "400": {
+          "config_sha256": "19828824cea9429208b66d08a514b19508f67a793c67e3f0ff1875da91ee741d",
+          "id": "pedestrians_local400_fixed_10m_400ms",
+          "result_sha256": "7e946923cee5bf43350856a44186199bcf27eb7c053355922866a392c258cac5"
+        },
+        "4000": {
+          "config_sha256": "42eadcef7287ba9ac89b3d51127b86d37e281a428152f69b56524066499e9739",
+          "id": "pedestrians_local400_fixed_10m_4000ms",
+          "result_sha256": "0c608bc352d86a3f462173efd3c151d47d6c8b34d8ad31a743cd894375b2ed83"
+        }
+      },
+      "pedestrians_local400_static_20m": {
+        "1000": {
+          "config_sha256": "43e4f3adf75adf8a7ab2b21d800efeb7be1461169f3803b2303c9f82901ddf42",
+          "id": "pedestrians_local400_fixed_20m_1000ms",
+          "result_sha256": "7da06273a19688e066fb01c1f10a4d78246cfd6b5074a63ff89783415650301b"
+        },
+        "2000": {
+          "config_sha256": "93d3e86c092e3daf8b4cf7f9742c74bb248f3d447bab528e455fb6c41e1ee9e8",
+          "id": "pedestrians_local400_fixed_20m_2000ms",
+          "result_sha256": "25fa7f1ecfc8567d46ddf96e7acdbb7b4f959eb5af5151ffe4721991363f79a9"
+        },
+        "400": {
+          "config_sha256": "ae75ccf53097af1a8d0b7f7e4ec545c6246a61a30164210c4f562406bc32134a",
+          "id": "pedestrians_local400_fixed_20m_400ms",
+          "result_sha256": "31c4067f1c8ba55f969a3734cd6f9b6307288f8b5d11a2755550d9bbb0aee63f"
+        },
+        "4000": {
+          "config_sha256": "dc175581849b9e19115f673f3ea0de93a6d86e747a36c362d0bc03361656b275",
+          "id": "pedestrians_local400_fixed_20m_4000ms",
+          "result_sha256": "c0845d37b4591835f9bbcbf7a638247a955193edd4682c4bc568f3fa0c99f284"
+        }
+      }
+    },
+    "source_protocol_sha256": "23c5d3a893f58d2bd778836263f82a0b63d93507b87eed2ca99b36ccc3b98182",
+    "source_scope": "All unchanged source observations; no generated motion, individual IDs or movement positions are exported.",
+    "source_summary_sha256": "f407269b24893f4962d77a10d7440558a3557de74d09565d76f8e0057643ee09",
+    "windows_ms": [
+      400,
+      1000,
+      2000,
+      4000
+    ]
+  },
+  "protocol_sha256": "6605b1de6c07161a25bd91b8061ca85bbc1a90fac2d538a231451e82890a54cb",
+  "schema": "ump.static-regional-schedule.v1",
+  "status": "verified"
+}

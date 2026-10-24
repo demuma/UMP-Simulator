@@ -1,0 +1,1120 @@
+{
+  "cases": [
+    {
+      "case": "full_unpaced",
+      "command": [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/mixed-observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/mixed-policy.json",
+        "--mode",
+        "semantic_first",
+        "--progress-step-ms",
+        "50",
+        "--decision-digest",
+        "sha256",
+        "--diagnostics",
+        "full",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/full_unpaced.json"
+      ],
+      "execution": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/full_unpaced-execution.json",
+      "failure": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/full_unpaced-failure.json",
+      "full_validation": "historical_corrected_equality",
+      "historical_full": "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/mixed_spatial20_adaptive_immediate_off.json",
+      "id": "mixed/full_unpaced",
+      "output": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/full_unpaced.json",
+      "source": "mixed",
+      "summary": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/full_unpaced-summary.json"
+    },
+    {
+      "case": "minimal_unpaced",
+      "command": [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/mixed-observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/mixed-policy.json",
+        "--mode",
+        "semantic_first",
+        "--progress-step-ms",
+        "50",
+        "--decision-digest",
+        "sha256",
+        "--diagnostics",
+        "minimal",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/minimal_unpaced.json"
+      ],
+      "execution": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/minimal_unpaced-execution.json",
+      "failure": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/minimal_unpaced-failure.json",
+      "full_validation": "historical_corrected_equality",
+      "historical_full": "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/mixed_spatial20_adaptive_immediate_off.json",
+      "id": "mixed/minimal_unpaced",
+      "output": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/minimal_unpaced.json",
+      "source": "mixed",
+      "summary": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/minimal_unpaced-summary.json"
+    },
+    {
+      "case": "minimal_paced_1x",
+      "command": [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/mixed-observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/mixed-policy.json",
+        "--mode",
+        "semantic_first",
+        "--progress-step-ms",
+        "50",
+        "--decision-digest",
+        "sha256",
+        "--diagnostics",
+        "minimal",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/minimal_paced_1x.json",
+        "--pace-rate",
+        "1",
+        "--queue-capacity",
+        "8",
+        "--failure-output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/minimal_paced_1x-failure.json"
+      ],
+      "execution": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/minimal_paced_1x-execution.json",
+      "failure": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/minimal_paced_1x-failure.json",
+      "full_validation": "historical_corrected_equality",
+      "historical_full": "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/mixed_spatial20_adaptive_immediate_off.json",
+      "id": "mixed/minimal_paced_1x",
+      "output": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/minimal_paced_1x.json",
+      "source": "mixed",
+      "summary": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/mixed/minimal_paced_1x-summary.json"
+    },
+    {
+      "case": "full_unpaced",
+      "command": [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/pedestrians-observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/pedestrians-policy.json",
+        "--mode",
+        "semantic_first",
+        "--progress-step-ms",
+        "50",
+        "--decision-digest",
+        "sha256",
+        "--diagnostics",
+        "full",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/full_unpaced.json"
+      ],
+      "execution": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/full_unpaced-execution.json",
+      "failure": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/full_unpaced-failure.json",
+      "full_validation": "historical_corrected_equality",
+      "historical_full": "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/pedestrians_spatial20_adaptive_immediate_off.json",
+      "id": "pedestrians/full_unpaced",
+      "output": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/full_unpaced.json",
+      "source": "pedestrians",
+      "summary": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/full_unpaced-summary.json"
+    },
+    {
+      "case": "minimal_unpaced",
+      "command": [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/pedestrians-observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/pedestrians-policy.json",
+        "--mode",
+        "semantic_first",
+        "--progress-step-ms",
+        "50",
+        "--decision-digest",
+        "sha256",
+        "--diagnostics",
+        "minimal",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/minimal_unpaced.json"
+      ],
+      "execution": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/minimal_unpaced-execution.json",
+      "failure": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/minimal_unpaced-failure.json",
+      "full_validation": "historical_corrected_equality",
+      "historical_full": "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/pedestrians_spatial20_adaptive_immediate_off.json",
+      "id": "pedestrians/minimal_unpaced",
+      "output": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/minimal_unpaced.json",
+      "source": "pedestrians",
+      "summary": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/minimal_unpaced-summary.json"
+    },
+    {
+      "case": "minimal_paced_1x",
+      "command": [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/pedestrians-observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/pedestrians-policy.json",
+        "--mode",
+        "semantic_first",
+        "--progress-step-ms",
+        "50",
+        "--decision-digest",
+        "sha256",
+        "--diagnostics",
+        "minimal",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/minimal_paced_1x.json",
+        "--pace-rate",
+        "1",
+        "--queue-capacity",
+        "8",
+        "--failure-output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/minimal_paced_1x-failure.json"
+      ],
+      "execution": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/minimal_paced_1x-execution.json",
+      "failure": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/minimal_paced_1x-failure.json",
+      "full_validation": "historical_corrected_equality",
+      "historical_full": "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/pedestrians_spatial20_adaptive_immediate_off.json",
+      "id": "pedestrians/minimal_paced_1x",
+      "output": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/minimal_paced_1x.json",
+      "source": "pedestrians",
+      "summary": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/pedestrians/minimal_paced_1x-summary.json"
+    },
+    {
+      "case": "full_unpaced",
+      "command": [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/old_dense-observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/old_dense-policy.json",
+        "--mode",
+        "semantic_first",
+        "--progress-step-ms",
+        "50",
+        "--decision-digest",
+        "sha256",
+        "--diagnostics",
+        "full",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/full_unpaced.json"
+      ],
+      "execution": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/full_unpaced-execution.json",
+      "failure": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/full_unpaced-failure.json",
+      "full_validation": "independent_policy_audit",
+      "historical_full": null,
+      "id": "old_dense/full_unpaced",
+      "output": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/full_unpaced.json",
+      "source": "old_dense",
+      "summary": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/full_unpaced-summary.json"
+    },
+    {
+      "case": "minimal_unpaced",
+      "command": [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/old_dense-observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/old_dense-policy.json",
+        "--mode",
+        "semantic_first",
+        "--progress-step-ms",
+        "50",
+        "--decision-digest",
+        "sha256",
+        "--diagnostics",
+        "minimal",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/minimal_unpaced.json"
+      ],
+      "execution": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/minimal_unpaced-execution.json",
+      "failure": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/minimal_unpaced-failure.json",
+      "full_validation": "independent_policy_audit",
+      "historical_full": null,
+      "id": "old_dense/minimal_unpaced",
+      "output": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/minimal_unpaced.json",
+      "source": "old_dense",
+      "summary": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/minimal_unpaced-summary.json"
+    },
+    {
+      "case": "minimal_paced_1x",
+      "command": [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/old_dense-observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/old_dense-policy.json",
+        "--mode",
+        "semantic_first",
+        "--progress-step-ms",
+        "50",
+        "--decision-digest",
+        "sha256",
+        "--diagnostics",
+        "minimal",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/minimal_paced_1x.json",
+        "--pace-rate",
+        "1",
+        "--queue-capacity",
+        "8",
+        "--failure-output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/minimal_paced_1x-failure.json"
+      ],
+      "execution": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/minimal_paced_1x-execution.json",
+      "failure": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/minimal_paced_1x-failure.json",
+      "full_validation": "independent_policy_audit",
+      "historical_full": null,
+      "id": "old_dense/minimal_paced_1x",
+      "output": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/minimal_paced_1x.json",
+      "source": "old_dense",
+      "summary": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/old_dense/minimal_paced_1x-summary.json"
+    }
+  ],
+  "created_utc": "2026-10-24T22:45:34.150745+00:00",
+  "deadline_contract": {
+    "cadence_response_ms": 50,
+    "fixed_schedule": true,
+    "secondary_sensor_response_ms": 100
+  },
+  "equality_gate": "Mixed/pedestrian full output equals historical corrected control outside runtime. Dense historical source full output passes independent policy/retirement audit; old-binary output equality is not required. New audited full/minimal controls have exact common/public fields and complete typed SHA-256 retirement/release audits. Paced success must equal the new unpaced control.",
+  "expected_sources": {
+    "mixed": {
+      "duration_ms": 300000,
+      "sensor_sampling_ms": 100
+    },
+    "old_dense": {
+      "duration_ms": 240000,
+      "sensor_sampling_ms": 100
+    },
+    "pedestrians": {
+      "duration_ms": 300000,
+      "sensor_sampling_ms": 100
+    }
+  },
+  "frozen_artifacts": {
+    "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/AggregationReplay": {
+      "bytes": 866336,
+      "sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/mixed-observations.json": {
+      "bytes": 11411862,
+      "sha256": "c24134c724acf2df38a85b2906a2e80f8de7b420529a4b8cda3f9e5f98a3eff5"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/mixed-policy.json": {
+      "bytes": 4908,
+      "sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/old_dense-observations.json": {
+      "bytes": 25757699,
+      "sha256": "f43a28abaa253816e34732f29f07f63b953ecc40f57aae884c349329c6b9a1a1"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/old_dense-policy.json": {
+      "bytes": 4781,
+      "sha256": "cb7e7a7b3869f0c2ca0191e759924efb30d85ea580abfd78c3dafe4d24efc73f"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/pedestrians-observations.json": {
+      "bytes": 12531117,
+      "sha256": "4abf12b390f29ce6685d37cbe5167793ed62dfc5c9207ffc42688e7419af5b5a"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1/provenance/pedestrians-policy.json": {
+      "bytes": 4908,
+      "sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda"
+    }
+  },
+  "git_revision": "4a284ea069e28a01b5fab568bbe1166b745b1523",
+  "historical_failed_gate": {
+    "contrast": "Identical input and policy, corrected current binary; old/current logical decisions may differ.",
+    "old_binary": {
+      "bytes": 866336,
+      "sha256": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9"
+    },
+    "old_cadence_response_misses": 170,
+    "old_completed_events": 528,
+    "old_rejected_logical_time_ms": 26850,
+    "old_result": "bounded_queue_overflow",
+    "old_sensor_response_misses": 42,
+    "policy": {
+      "bytes": 4781,
+      "sha256": "cb7e7a7b3869f0c2ca0191e759924efb30d85ea580abfd78c3dafe4d24efc73f"
+    },
+    "source": {
+      "bytes": 25757699,
+      "sha256": "f43a28abaa253816e34732f29f07f63b953ecc40f57aae884c349329c6b9a1a1"
+    }
+  },
+  "isolation": "Operator must exclude builds, simulations, captures, renderers, other native measurements and intentionally scheduled heavy jobs for the whole serial execution. Postprocessing occurs between native processes.",
+  "limitation": "One isolated paced run per source; observed deadlines are empirical, not a hard realtime guarantee.",
+  "max_case_wall_seconds": 420,
+  "offered_load": {
+    "progress_step_ms": 50,
+    "queue_capacity": 8,
+    "rate": 1
+  },
+  "original_artifacts": {
+    "/Users/maxdemu/Developer/UMP-Simulator/docs/verification/urban-minimal-paced-2026-10-24.json": {
+      "bytes": 29225,
+      "sha256": "bc4c528708b8840c12e371745d2a18d2166387b0fe0730110e3ee729f553d101"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/mixed-observations.json": {
+      "bytes": 11411862,
+      "sha256": "c24134c724acf2df38a85b2906a2e80f8de7b420529a4b8cda3f9e5f98a3eff5"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/mixed_spatial20_adaptive_immediate_off-policy.json": {
+      "bytes": 4908,
+      "sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/mixed_spatial20_adaptive_immediate_off.json": {
+      "bytes": 126430658,
+      "sha256": "18db9f973edab2dd9ed0de23aeed8874f421a42d40d306a676e7d035c85f9f56"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/pedestrians-observations.json": {
+      "bytes": 12531117,
+      "sha256": "4abf12b390f29ce6685d37cbe5167793ed62dfc5c9207ffc42688e7419af5b5a"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/pedestrians_spatial20_adaptive_immediate_off-policy.json": {
+      "bytes": 4908,
+      "sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/spatial20-controller-correction-2026-10-24-v2/pedestrians_spatial20_adaptive_immediate_off.json": {
+      "bytes": 101148440,
+      "sha256": "b36053cc46e520a78eb2cba92b33244b882d604b0974a7eef2608603913167d1"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/urban-traffic-2026-10-24-256-policy-comparison/original_adaptive_immediate-policy.json": {
+      "bytes": 4781,
+      "sha256": "cb7e7a7b3869f0c2ca0191e759924efb30d85ea580abfd78c3dafe4d24efc73f"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/results/urban-traffic-2026-10-24-256/replay/observations.json": {
+      "bytes": 25757699,
+      "sha256": "f43a28abaa253816e34732f29f07f63b953ecc40f57aae884c349329c6b9a1a1"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/build/AggregationReplay": {
+      "bytes": 866336,
+      "sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f"
+    }
+  },
+  "overload_policy": "Keep bounded-queue failure; no retry, larger queue, slower clock, shifted deadlines or successful-output claim.",
+  "platform": "macOS-15.7.7-arm64-arm-64bit",
+  "repo": "/Users/maxdemu/Developer/UMP-Simulator",
+  "schema": "ump.current-paced-study-protocol.v2",
+  "source_files": {
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/CMakeLists.txt": {
+      "bytes": 33346,
+      "sha256": "759c073dab92155052b068d9ff66626cd7b6566180958cb7465bd0dd42e9d631"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/AdaptiveAggregation.hpp": {
+      "bytes": 3069,
+      "sha256": "9a1aa3a6043c698f10bf1484da6c5af62903541abbb95868dded6804ae50af38"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/AdaptiveGridBasedSensor.hpp": {
+      "bytes": 3522,
+      "sha256": "9d5886c5a692527fa3812616dee1fc0dfb91377d16ed0e70b0b42f9cf1594eba"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/AdaptiveGridDisplayState.hpp": {
+      "bytes": 1933,
+      "sha256": "10b4ef5ac2a1e2e20679cadaa9640b6a44751a8514b803982cc88456bf2d43ef"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/Agent.hpp": {
+      "bytes": 2713,
+      "sha256": "a2f061cf9b50f82f056d6394d559a6c3867f980daef76200537b9c0af2c3de74"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/AgentBasedSensor.hpp": {
+      "bytes": 1421,
+      "sha256": "6ae46809a484f7adfc38420c16aa5aaf12211c065ff925c04c0de930b575282e"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/AggregationConfiguration.hpp": {
+      "bytes": 1944,
+      "sha256": "a9ae92700c47f03ecd9a3e8a9fa07a3fd83637d4a5b6501cc268f5a2bdfd1280"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/AggregationDiagnostics.hpp": {
+      "bytes": 719,
+      "sha256": "4299acd593c1cc164991703097224f7f50c71e291d27430d46bd3e090e5b8533"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/AggregationHistory.hpp": {
+      "bytes": 3811,
+      "sha256": "997f6188e7585c0f03186bc14b805efee7e7b571a3d331b5fb2a5fa7ee5c4302"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/AggregationInput.hpp": {
+      "bytes": 3239,
+      "sha256": "ac7baef85aba864c368a060e342a813f48fe55ef6ec6a7f6d486c0d14b437646"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/AggregationManager.hpp": {
+      "bytes": 2211,
+      "sha256": "171ade80f2662a87aa617e9b4c09ff109130efbba96417ad0821f95491e9faad"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/AggregationPresentation.hpp": {
+      "bytes": 4680,
+      "sha256": "281aa791a7d51ed32070ef7c30f5e0d3532a736a195fb3841769a2d769f97657"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/AggregationProgress.hpp": {
+      "bytes": 1672,
+      "sha256": "b87a8f5b2d77b90685b46b3a5c79a8b987a06d9a45efc440d95552ac07a7e8bc"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/CandidateMetrics.hpp": {
+      "bytes": 4438,
+      "sha256": "302ddaeca90e5caf206af8e32593b20959c21bdd828550bca9ea872037a3bfdd"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/CellLocalAggregation.hpp": {
+      "bytes": 6336,
+      "sha256": "8ec49ef189e81af8b46aba86cceddb3464bf6dccf28a1f6a00e390407702d191"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/CellWindowLedger.hpp": {
+      "bytes": 5543,
+      "sha256": "624d8bf6cd3003e73b7ac58694c13231f40db286ffd90b0275bbb91b135fcd29"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/CollisionAvoidance.hpp": {
+      "bytes": 642,
+      "sha256": "0b1bf42a9bb24e44e4f6c77698298d88b89448e7e89c55377cf96a482e2f5009"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/CollisionGrid.hpp": {
+      "bytes": 1371,
+      "sha256": "f6e8b689660ad4aea3c35cff29981aaf61494fc2aaddceaa0f98d6444826d096"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/GridBasedSensor.hpp": {
+      "bytes": 1833,
+      "sha256": "7c1288d82c03a00518db0430c057f612181668e3492dcedf47c7e6c9a6f76662"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/Logging.hpp": {
+      "bytes": 611,
+      "sha256": "d1c6c97359aa400b1c9d68b6a28805678a695e1c5bdafb2685eb98ad83fa7c45"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/MappedScene.hpp": {
+      "bytes": 12779,
+      "sha256": "391c757624cfc3b07170c3612ed38cf42ce145b82fd06a66493a3767aa8b9dd5"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/MappedSceneConfiguration.hpp": {
+      "bytes": 918,
+      "sha256": "7891b9df9d990d106aecdef35cac2adb7908a1274fa91e406fe8a1e6a8b2d205"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/Obstacle.hpp": {
+      "bytes": 468,
+      "sha256": "fdc2c7c5117b5b5e5217d35f38ce26c1efcec6bd820d7cb08329184d0781726f"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/PerlinNoise.hpp": {
+      "bytes": 415,
+      "sha256": "b7b5bd3730ec544dbc74cba187cc1fb5ecd86c7df0b270773e3b81a5649a1c7b"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/PlaybackClock.hpp": {
+      "bytes": 3678,
+      "sha256": "12f5688ca418d73d7afb0665ccb60cb89f559ad206892063dbd8bda9d8e65032"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/PolicyConfiguration.hpp": {
+      "bytes": 528,
+      "sha256": "dbffb09ffed390c47e632059c3abbb7f709cdecb989addabdb42df1f4ec5424e"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/PolicyTree.hpp": {
+      "bytes": 2198,
+      "sha256": "09d0c6b1f697b32fa18700bc94c2526c564de4c572d3f167ae8e2c3ee93f2693"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/PublicationCoordinator.hpp": {
+      "bytes": 3440,
+      "sha256": "92b3b35963eea5e464579133e949ba2516b08269a2812b3a0c9933849fcfb552"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/PublicationStore.hpp": {
+      "bytes": 2548,
+      "sha256": "5609a2cb5278156423ecfa456b3de2910fd2b779d9c5f7db7589eaab58b9419f"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/Quadtree.hpp": {
+      "bytes": 5518,
+      "sha256": "16c3af3270ae19622bebb23e0d8d76c98fcff722a563a28e03b066d0efbae087"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/QuadtreeSnapshot.hpp": {
+      "bytes": 421,
+      "sha256": "45420d6a2b85635a3f160351ab4e97aedc4af7bcfeb656acfd9d18afd94a000d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/Region.hpp": {
+      "bytes": 1213,
+      "sha256": "27577a77b569032f06a22b4f9d47dd810f881847ed7b5309783f497485776007"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/Renderer.hpp": {
+      "bytes": 5595,
+      "sha256": "e8edc6ddfc23eeedf96364f8612186b13b0caf91a6fb981b83d547ceef7975ac"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/SemanticTaxonomy.hpp": {
+      "bytes": 3459,
+      "sha256": "c45167d203e8134a19770338c94faab76d6adf32eaae90481e49286f088b5ec1"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/Sensor.hpp": {
+      "bytes": 2352,
+      "sha256": "b084ac7c03c8613dadfffad49519112842508bbcea766b6c8f503193b4b2d08a"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/SensorFrame.hpp": {
+      "bytes": 3099,
+      "sha256": "9e810c4e71d33ed225e2319b6a80b789411cb364f233e796b1f935b6e0fe17c0"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/SensorFrameCursor.hpp": {
+      "bytes": 1922,
+      "sha256": "e2781fea051cab1701a3aafe66aaae1258eb64722fb22c85e6287f8f7c65cbd2"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/SharedBuffer.hpp": {
+      "bytes": 2597,
+      "sha256": "f783a29d9342ca9b61990756a5a1c13cb3da1c18aa5f198b1a449c5b086e14b2"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/SharedBuffer.tpp": {
+      "bytes": 5117,
+      "sha256": "af73526e94719837f6d14ebf0995e948a6534d30329cef44b5f53817d9a68e4c"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/Simulation.hpp": {
+      "bytes": 4032,
+      "sha256": "d3ae9aaf4fc576b87c4fab5962f4b9de01bfd94dfc891b2adcb0cf8f49d4c750"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/SpatialSelection.hpp": {
+      "bytes": 3851,
+      "sha256": "bad7a94a7230d2625747ca66b38d47b939a3cf8e0ba413ce5f32b6eb17d1d746"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/ThreadPool.hpp": {
+      "bytes": 2312,
+      "sha256": "76752701e8474a2dd8be047221f8565543d211260c5b9e99a3400041bd12eadd"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/ThreadPool_V2.hpp": {
+      "bytes": 3452,
+      "sha256": "cd85ae0d026914c7508fb819d582ddde8bc9506ceb0b492f1ed199546dc31cf4"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/include/Utilities.hpp": {
+      "bytes": 1372,
+      "sha256": "883e1b168548e0e473f897a7b4b866fc28dd73d0adcbdf4e185dd5b65860c6ed"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/AdaptiveAggregation.cpp": {
+      "bytes": 17609,
+      "sha256": "21e2267357064e046a50595e53abff3b56e2cff64d985438e4ea08e70f061d94"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/AdaptiveGridBasedSensor.cpp": {
+      "bytes": 12637,
+      "sha256": "fe2ce468051a6b083e9998e395e5dff2d9e37b6825ef74753ebe4648a5a4e659"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/Agent.cpp": {
+      "bytes": 5971,
+      "sha256": "3032461d81c2752b023c0bf64c14ec872b8a7f0e1e23aa8fdf7b98d262e18702"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/AgentBasedSensor.cpp": {
+      "bytes": 8051,
+      "sha256": "8fb985711da5e393b4fb77fd3bccfd39fee986d1e5970a0da61b7b780c5f801d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/AggregationConfiguration.cpp": {
+      "bytes": 16317,
+      "sha256": "1bd71232b9c042a52004c0d6e8fc12ef497aa21d55dab3e3594be69bc4c01d03"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/AggregationDiagnostics.cpp": {
+      "bytes": 16241,
+      "sha256": "180b2ef9be43704e657865eb985b3a31748af2e3e1bd49007217403077cdb1ec"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/AggregationHistory.cpp": {
+      "bytes": 19973,
+      "sha256": "7af64daedbb9ca2b9e4456f953a461c7c69aefeb835ebc3113d515f9b9d92e39"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/AggregationManager.cpp": {
+      "bytes": 10969,
+      "sha256": "864aff1db7678da8a2e5ae38db2c43b7825b6f60c7efb1b26797b462db65ecb9"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/CandidateMetrics.cpp": {
+      "bytes": 24253,
+      "sha256": "06e5b3d05fa6e55cb1bf52aea732584e6cf733c4bda4b3bf4445aff0164d74b3"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/CellLocalAggregation.cpp": {
+      "bytes": 59931,
+      "sha256": "79f8dce35a649a14d31a0d3605967c0b37712fcfcb3d4c76599d37b7551bdd70"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/CollisionAvoidance.cpp": {
+      "bytes": 12148,
+      "sha256": "d00afab69e4b6c720158caf7f32cb4eb2711795cbcf1d9db45ed3c656fce756e"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/CollisionGrid.cpp": {
+      "bytes": 3385,
+      "sha256": "42a8896038a2a3359ceb8cd08319e4308c39ad744bb9321402d3d43adec3e019"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/GridBasedSensor.cpp": {
+      "bytes": 9483,
+      "sha256": "b9b68f0ad21706949bff0a31fdcdf056ee224e16ead724feda69c6912b9a3a53"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/Main.cpp": {
+      "bytes": 3782,
+      "sha256": "93661f3167aed7c823bb7b5381db1a65cc4b7dc587a80d68757643b9b953023e"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/MappedScene.cpp": {
+      "bytes": 129022,
+      "sha256": "8bcbde4758776f999fe1c214a008d7e20ddcd3a37b2470f3b1e96954fcb01ccd"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/MappedSceneConfiguration.cpp": {
+      "bytes": 15597,
+      "sha256": "1780d18766d7f230d34c51262285dc389838597db40697d3d86eae4260a7de83"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/Obstacle.cpp": {
+      "bytes": 169,
+      "sha256": "dc3d0398e45408cd02e8dddb8fabed71a3cff18d4854f91b6f0d37b1f38376b9"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/PathGeneration.cpp": {
+      "bytes": 159,
+      "sha256": "85f52f4815dfb4cbf3cf12cd99c4d7b52f277c2dda6f3b42a251ce1e286b8496"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/PerlinNoise.cpp": {
+      "bytes": 2421,
+      "sha256": "275e6f688f135b3ba9a51f4a0a800bf48d3a3acb7c74069fc53504aca9b3203f"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/PolicyConfiguration.cpp": {
+      "bytes": 4560,
+      "sha256": "8b5b7009808d79a306c982e81e5b37f1f85ecdbd5739401e8733aadcd3f4fac6"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/PolicyTree.cpp": {
+      "bytes": 11139,
+      "sha256": "e49575e803aa0be7d1e928504d1b50baf5195992cf1b37e728de9a46b2a63ee1"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/PublicationCoordinator.cpp": {
+      "bytes": 10086,
+      "sha256": "18ecc71abf26bc9076e6b1cdef3e2091ab73c3e2d3035c6e3b29ed06ae6b1601"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/PublicationStore.cpp": {
+      "bytes": 27895,
+      "sha256": "cec6a72d80509e9e6ca4f657761d88db79de05fe30f706d14d761cb5365071bb"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/Quadtree.cpp": {
+      "bytes": 22057,
+      "sha256": "7b289fa3e7e3341859685fb27206e3124429287cd9ad594c28cd1a1f8d40982d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/QuadtreeSnapshot.cpp": {
+      "bytes": 238,
+      "sha256": "6c72d7287c4f5e731256dd3a05ddac0ff8b6cc4e1180e7562c54b42d9471c09e"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/Region.cpp": {
+      "bytes": 173,
+      "sha256": "e100ce93b980cdf6076fefac201115b70f05cce8819428111018c40d40683ccf"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/Renderer.cpp": {
+      "bytes": 64730,
+      "sha256": "2a88873c49705e763db28602bfc09222e51d9cd57cb819948abcc6be6b0c42aa"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/SemanticTaxonomy.cpp": {
+      "bytes": 16910,
+      "sha256": "9ece8a96765f3d7e7b3e053e0c024537fb077e842a90a7a98d732d475604caaf"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/Sensor.cpp": {
+      "bytes": 2307,
+      "sha256": "7fbeab3f9422aa369950255dbaae83525e213de9d83fae7b0b86a1c16814383f"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/Simulation.cpp": {
+      "bytes": 60679,
+      "sha256": "53862efbbd8696d9a3ff443880bea20ff8be2c11b748233d4d6dbf17b4b503c7"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/SpatialSelection.cpp": {
+      "bytes": 12244,
+      "sha256": "3fe08bb88815b76c9336f53b38fb772ba66c7031208bd5cbf0aec493bf5ddf95"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/ThreadPool.cpp": {
+      "bytes": 1673,
+      "sha256": "6c703a9ead3214de2904a8373e74699b47b5e5a88fb8b54c94c6b576ca8ae5d1"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/ThreadPool_V2.cpp": {
+      "bytes": 2247,
+      "sha256": "79516886442bba4757677512df8f501aa613d44657c2ccf4f805856a1382787d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/Utilities.cpp": {
+      "bytes": 8798,
+      "sha256": "eb7fbb0bf508ac7ef65d0b9ecffd8312b0e29652b9c9106bde8fe17ba94ae2ea"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/tools/AggregationReplay.cpp": {
+      "bytes": 52680,
+      "sha256": "a0ff2b31b9bed65d614d6869e58f484984eb8557740a4adcfcfa4742ccab600f"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/tools/PacedReplay.hpp": {
+      "bytes": 8322,
+      "sha256": "5a3905915ec669a0cba42700a8aa637c431035485c5c0d583d7da1047b922f0f"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/simulator/tools/ReplayDecisionDigest.hpp": {
+      "bytes": 12875,
+      "sha256": "1f7b209c6f6df50f862c54963d9026551a9e277aee591011fec489dfb0b5f8fa"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/capture_simulator.py": {
+      "bytes": 29449,
+      "sha256": "737ce1d2113054fa6dfa47f2879629dbaa64e53cfb44a825e6d0c0d6ae7ed9de"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/causal_privacy.py": {
+      "bytes": 11170,
+      "sha256": "1ba96ed5346cc680dd59a85de2e29b9888403b35529cdc6edfee902fb10ced60"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/compare_coordination_studies.py": {
+      "bytes": 14303,
+      "sha256": "b4f5e03d2f8cd24261456b9c0ed1de6478b03a0d1f30af2f15c271acba05d767"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/coordination_metrics.py": {
+      "bytes": 7172,
+      "sha256": "987b5979250921868ed94648afbbd26557a7bfc82aaf1f27415301c1f5bace1d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/coordination_scenarios.py": {
+      "bytes": 16476,
+      "sha256": "f23db1b69d620d01d18b2270a3079aca0f6cfc0ba241ed0dda5fa69bff6f7248"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/diagnose_spatial20_gap.py": {
+      "bytes": 19985,
+      "sha256": "831b76984cd98648da44d620e04b571116448f11ba3be11b5920199d6e50c67b"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/empirical_privacy.py": {
+      "bytes": 27675,
+      "sha256": "b21d36bfdcfbfa1978ad6a70db9c72a423944372e8b3c3fd34c894da4572c796"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/make_fixture.py": {
+      "bytes": 4821,
+      "sha256": "756424671cb4edd781e76d313369b172a6df3440c2bfdbeb2ec939cf6d9e6f68"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/moving_scoped_audit.py": {
+      "bytes": 16214,
+      "sha256": "0dec25ad995b32f1b3245e030148b8adedd4d24f3d89e0711095c3cae7211c9d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/occupancy.py": {
+      "bytes": 24444,
+      "sha256": "7bc648004a925454d481e3111effe5e91c4e91272aabe5889f7538291bc0a5b3"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/online_occupancy.py": {
+      "bytes": 20526,
+      "sha256": "f80b3b1070d695be70fccb73cbdcb115621346be0c58152de0dc9b23f18f881e"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/oracle.py": {
+      "bytes": 42526,
+      "sha256": "5d8e60a8b8850ffdc8b76d60204520f66fda1b513cfbc6ed714da9afeb150e1c"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/plot_coordination_study.py": {
+      "bytes": 11433,
+      "sha256": "baab6d3f20478a1ded395fe83aaa5635f865def3c5d0a13992e882b4a882f8cd"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/plot_privacy_coordination.py": {
+      "bytes": 8268,
+      "sha256": "84a292eb64b99c616f56a733f657fa3db97e1762361ce91c6a297f3bad06bdc8"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/plot_privacy_robustness.py": {
+      "bytes": 12544,
+      "sha256": "b2f4aab09df23b0df535c8a69c5f5630993613775108068d6fe1a6d445290fdf"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/plot_privacy_study.py": {
+      "bytes": 4000,
+      "sha256": "2b923ab3b0e3f317d87a2dc7eccdd597898eddde46f2412b77d47c2727aa9743"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/plot_semantic_suppression.py": {
+      "bytes": 5170,
+      "sha256": "2a934bc17a614130b0bb991fcd78b41a80599f84a612caebb57bd783f03437b9"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/plot_summary.py": {
+      "bytes": 2899,
+      "sha256": "bc8e2750df5a7be63c0d43604a01311cf111ef3c6ead392012161ba6f02d0357"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/privacy.py": {
+      "bytes": 11730,
+      "sha256": "3a60d91e4bfe6309a6cbd770e67c50c775e69c6f09cfba8c79bc3107c2700fe4"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/privacy_dataset.py": {
+      "bytes": 40136,
+      "sha256": "5d76bc2622fd56ce20deb9a6d63e8e6e84d024ff3c1208b5f1f8714fa986151b"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/recipient_support.py": {
+      "bytes": 17018,
+      "sha256": "782f3c793fbf0023c3b7b599e54b01211991c16f9e59b8633b3e6aeefb8c15bb"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/replay_data.py": {
+      "bytes": 10011,
+      "sha256": "a0ef75707a9c268a24898bed69a4c1ada60e1d361b19369859488dcd5a0e9151"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/report_spatial20_correction.py": {
+      "bytes": 18278,
+      "sha256": "4eccdf102d490a2fa8497c96c024efbe2c2f2df252362a0126b5e623e3a1969c"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/robustness_attacks.py": {
+      "bytes": 9820,
+      "sha256": "7919298df7358ebd9c3872ffaf75d9709add0360f57141ec7e39cfb88a7eca36"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_comparison.py": {
+      "bytes": 11622,
+      "sha256": "4518ab2330eba412fad54b3f78e08d6387d85c4fc2d658ef834db65818996bf2"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_coordination_study.py": {
+      "bytes": 17086,
+      "sha256": "8be0f79f0bc118ac3779746270f8f6038b14f750af9ca883bb05fe8da50b9944"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_local_policy_replay.py": {
+      "bytes": 17917,
+      "sha256": "24c6937d37c95654b96fed0442201183df9470527c5095a0f0c2aa65da60503f"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_moving_comparison.py": {
+      "bytes": 22706,
+      "sha256": "9bc0bbb96e488c607274151428bceabc3db7c21465ff456cdcd767b9eb95b303"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_moving_scoped_comparison.py": {
+      "bytes": 21467,
+      "sha256": "fca8453d21477cac32c1b9a969c19d04be4d2cdada678283ed0a3fcb05f553ee"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_oracle.py": {
+      "bytes": 3515,
+      "sha256": "253a4d6e47833092bd41c24c283563611015fb5bb4345fc983d6603512203e9d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_privacy_prefix_study.py": {
+      "bytes": 30963,
+      "sha256": "63f3e0fafb19dd78074791713bd0a1d32b380f68ccb935a3739dd3ea9a9e23f6"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_privacy_robustness.py": {
+      "bytes": 35680,
+      "sha256": "7171bdd0728416b2c993a61b6ec4b0ab7cbd88931d95ef3e68ca9a0aa522e773"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_privacy_study.py": {
+      "bytes": 32307,
+      "sha256": "0d4bcfd34349a9af011f00128487c5e014094b6a4a5340f7ed4455fb254e0bd7"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_recipient_contract_study.py": {
+      "bytes": 14284,
+      "sha256": "db31c23f110eaab5cdfb5f161772c3359debe8240685efbd6f830f43c8326ab6"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_scoped_semantic_utility.py": {
+      "bytes": 14502,
+      "sha256": "1d568a589e887fe39e3f3b823d0dc50f53bf7b2b609ee307fd0dc519c6f1d881"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_semantic_local_policy.py": {
+      "bytes": 8319,
+      "sha256": "1e71e8655d6fd4921b1e79e258f9cb5d4d0cf5d7d7426c396db767a6257c2c3a"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_semantic_priority_study.py": {
+      "bytes": 18853,
+      "sha256": "ab8b3cddccc7210b0fb99ace1e7d399bee4c23f2a125939adadfe04c83dcde23"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_spatial20_correction.py": {
+      "bytes": 20323,
+      "sha256": "6075640d2bb59aee144c4a9f12f7591d03b8df2300748dd3acb4d3277374c1aa"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_strategy_window_extension.py": {
+      "bytes": 20752,
+      "sha256": "8053240f51db36accb519b134ef7f512af00926f4b023af71dce5d38f3a453da"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_suppression_study.py": {
+      "bytes": 13976,
+      "sha256": "1e0b9e823707bcf3a6e3b5cf19c68f8b929284d3103b4c84bc16bdde948e478a"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/run_temporal_region_study.py": {
+      "bytes": 25695,
+      "sha256": "629cd0a23fbd38b462aaf14089dfe68cadad28cf1802888be68af493fe4f3054"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/scoped_semantic_queries.py": {
+      "bytes": 31694,
+      "sha256": "696e8884619109c259c7b0c1d187b1f495a2122d0621349cd5587afcfdac3fa5"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/semantic_queries.py": {
+      "bytes": 18908,
+      "sha256": "d187d8d86b034ad391e524f263d24b72c40024759947b2b282c7531386ba9605"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/semantic_suppression_audit.py": {
+      "bytes": 24277,
+      "sha256": "ecb89dc09eb8ea498b172da496da17e983f067fad669bb9093d5bb76cdcfe2cf"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/semantic_tradeoffs.py": {
+      "bytes": 27542,
+      "sha256": "ab2f93e5528318c3954da544ee89fdf16955fdab114e83f7f2ec9b7211b9d959"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/static_regional_schedule.py": {
+      "bytes": 31364,
+      "sha256": "3bc241da47219dae61035e4dcbe7adab6035148ab1662c20b3f1e71671b1d0fd"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_capture.py": {
+      "bytes": 14217,
+      "sha256": "556915541154dce4ab81a31a91b6feed6f150ad88e38d4eb30e9d1fa9e1dca83"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_causal_privacy.py": {
+      "bytes": 16295,
+      "sha256": "da8358ab4f73bea51a7bdbcbbcae561c1cbb473dd1cb3eb2bb15b06629c06dfb"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_cell_size_caps.py": {
+      "bytes": 12179,
+      "sha256": "3aad113e7385ed50dcf28baa8c54b934fc4af3407c129183e0e6884170bca4dd"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_compare_coordination_studies.py": {
+      "bytes": 12558,
+      "sha256": "9ad6770593a1ffc4937627fa15a2b1c7a72f0c41e1681078730fcdc851721234"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_comparison.py": {
+      "bytes": 10850,
+      "sha256": "c9ce9df58eb9e29f9110d54c66fc55cf2afbfc261ceb8dba43e6b391b447810d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_coordination.py": {
+      "bytes": 12557,
+      "sha256": "7ff0efd27be709cc6eba7c6310876e50f2ef9a694b5a3db6f42f0928254f70c5"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_coordination_metrics.py": {
+      "bytes": 5441,
+      "sha256": "71acb8a5597f27b0c4989c81bcae9c77da0b6cd8269b6969288ae1b4ceb60bac"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_coordination_scenarios.py": {
+      "bytes": 8750,
+      "sha256": "36fbc26f670ea38d58216bb2ba8882d355708f64dbf4d696411b368427d41b08"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_coordination_study.py": {
+      "bytes": 14068,
+      "sha256": "2a85f0606c495029fbccd33b85eaa3980e6ecc8eb577746a2d695fcd7e989a5d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_diagnose_spatial20_gap.py": {
+      "bytes": 7034,
+      "sha256": "6341b43247e8b440f2691d91d18f4cb30ce5bf012ea3d0fce786b4f4fe488ada"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_empirical_privacy.py": {
+      "bytes": 19265,
+      "sha256": "46ee3721698eefe183213de7bee55b888b4ea0859aedd04ab50c8390594f1ad7"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_four_second_window.py": {
+      "bytes": 12364,
+      "sha256": "61d03720da382d7899755004855b7c85eef296e43d78b09d937d7e9240eeefe8"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_local_policy_replay.py": {
+      "bytes": 7490,
+      "sha256": "33d7ec9e0e778eeac05c21c735127ab0fa12f7719b964aa86f5a5526f7f788d2"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_moving_comparison.py": {
+      "bytes": 18105,
+      "sha256": "aea34a03835f66de373b9e1cff5a3867b8ef7986903c7471be93ad8da33a38fa"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_moving_scoped_audit.py": {
+      "bytes": 15075,
+      "sha256": "ca64c31014733e37199105e93382c2ec96a07e51cdb6e03c06c8cfe85247cbc1"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_occupancy.py": {
+      "bytes": 18999,
+      "sha256": "e999316a47fe80d4c26736c1134b53cd6d0198a04ef18194392590ebf989592d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_online_occupancy.py": {
+      "bytes": 18355,
+      "sha256": "efed155487b0f8254a756c5545d4f17b4f3b7dbfafe86972e153785b27bbb715"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_oracle.py": {
+      "bytes": 26472,
+      "sha256": "ef0337cd79ee13b6ffa0a49d5416fcb844d51a9518bad21986e837acb6419295"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_plot_coordination_study.py": {
+      "bytes": 4068,
+      "sha256": "a07063037dc30c951255f0056bd696bf1fe855598fd8a1c8d1503817102d2797"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_plot_privacy_coordination.py": {
+      "bytes": 2699,
+      "sha256": "47bc45737be6c56b26bd769272d72ebcaf7860632692e1873f317b896174e643"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_plot_privacy_robustness.py": {
+      "bytes": 5657,
+      "sha256": "b465495b4f19923ce8b8a178e649184f974d1f0603cb7f47135f0a70459a86c6"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_privacy.py": {
+      "bytes": 9135,
+      "sha256": "4e4889d53529c29027b943c9446c4c7fa265f6d3f23ca284dda7ab5de292f4c0"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_privacy_dataset.py": {
+      "bytes": 27073,
+      "sha256": "37e77fb2be9bde7ad4d03cf0cab9ffb3158ccabd615ae4178dd05dbed5129e37"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_privacy_repair.py": {
+      "bytes": 13233,
+      "sha256": "f76b3bfc32fdf155ea6754d29fcfbc73e0d8d0b1be369a007f47116c98451a21"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_privacy_study.py": {
+      "bytes": 13506,
+      "sha256": "6471c733fade8fbbd98af2ec6439275304168879d81197ac61aa0b7d635dbb2f"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_recipient_support.py": {
+      "bytes": 21096,
+      "sha256": "0fd6dc8e93e3bd799e2eb085b4f07482cdd086b99b4ded0ca031ee0b2713eb7e"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_replay_data.py": {
+      "bytes": 5400,
+      "sha256": "95828d831a684885ea34eb9dc6937f0358c1f2f1e720da8dc8d07bfe5a94f5ff"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_report_spatial20_correction.py": {
+      "bytes": 6470,
+      "sha256": "1584597655a503944cfaa631632cf3ae3108bb82d08bd47006946e309484ca73"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_robustness_attacks.py": {
+      "bytes": 7766,
+      "sha256": "e37c2bd35b962989b08610c871eda7cddc7b6897138a1c5f0c36e450651ab9e0"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_run_moving_scoped_comparison.py": {
+      "bytes": 20971,
+      "sha256": "54feb05710917a769d63d95f012badf1a2101070df0a7a550bbed0e940f1fa9d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_run_privacy_prefix_study.py": {
+      "bytes": 17280,
+      "sha256": "34954e6fb87debb1d57121f7b39febb80693c3324d8cc236e2d3751e91d53042"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_run_privacy_robustness.py": {
+      "bytes": 15286,
+      "sha256": "2c6b7932429ea38b6cea27f93f399b4154f1e9e1407e44863fc493c8cac37b51"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_run_recipient_contract_study.py": {
+      "bytes": 18517,
+      "sha256": "02dff682f1f171e7d4e5d6dc473e0d75995b4989410ff6b7869ffede80678c8d"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_run_scoped_semantic_utility.py": {
+      "bytes": 10576,
+      "sha256": "2720f23875fbd27fe99e50b1bec2b8e9fb73c75a68c6b1d5c779f0639e986a53"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_run_semantic_priority_study.py": {
+      "bytes": 19545,
+      "sha256": "92dbd8c8372367fbe890b3b070083186096241640485b401cd9e2877c4bd870a"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_run_spatial20_correction.py": {
+      "bytes": 14028,
+      "sha256": "10f7377d1cf46d8e4528a11383c1879b089638804f8d3eccce6be02b33ef6546"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_run_strategy_window_extension.py": {
+      "bytes": 11981,
+      "sha256": "bb075463dcbd8487d26acd97413af78788f2e909ab2b2766f2d8f51e640e38b4"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_run_suppression_study.py": {
+      "bytes": 3972,
+      "sha256": "86f1b86610338acad1f72cabc22c2d56e4b85ad0c3a66a62ebaec94d729c4364"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_run_temporal_region_study.py": {
+      "bytes": 18169,
+      "sha256": "48124b4a1f19cc7833de794511d78c04473ebb778eb0e3f06cde14df4269f91b"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_scoped_semantic_queries.py": {
+      "bytes": 33057,
+      "sha256": "63484ac5d069acd4f049e73a5e2ac0000e61b5ca353a862628e777bd2669bcaf"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_selective_suppression.py": {
+      "bytes": 15405,
+      "sha256": "ca6aafc4ff8b65a84cc8415fa10f2404250a357bc93424b1348aecaddd4f7c36"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_semantic_adaptation.py": {
+      "bytes": 24607,
+      "sha256": "0bcd6e3568643b8f2eb42f5fd2cd89c5a09ea1e59aa8eaa13dec6be341a19d54"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_semantic_first.py": {
+      "bytes": 21713,
+      "sha256": "f7ba72aa7e310cb2407ff22eda2045e3ca3f2e8b508fce70c6a0a3f1773aa347"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_semantic_local_policy.py": {
+      "bytes": 7229,
+      "sha256": "93c0f345dea6f9baee17331e86c70546100109ffa9955dfa41f61cbe4e80bcce"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_semantic_queries.py": {
+      "bytes": 16036,
+      "sha256": "a0429525a0c0da0df6e3ec122d4b460f1d9c1a9a63b4f0ece6f76db9c57063f2"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_semantic_release.py": {
+      "bytes": 24904,
+      "sha256": "64196c8dd7923c2ae0058192ce100336e3cc19df78cbd8116c8a56c7761de075"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_semantic_suppression_audit.py": {
+      "bytes": 10092,
+      "sha256": "0ba6343c330d13fa3abdfdb91ee08142ce350278cc830e930f42ce0fd11be658"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_semantic_tradeoffs.py": {
+      "bytes": 13012,
+      "sha256": "81542bf96a59d9822ae22f88aade62496b0b8f578596603d724b3749b8e74f55"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/evaluation/test_static_regional_schedule.py": {
+      "bytes": 18696,
+      "sha256": "df4f15c7df7fc7d95f33126ecafee33f29775c9e327cfa5e81f0261bf270efe9"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/profiling/run_current_paced_study.py": {
+      "bytes": 25938,
+      "sha256": "a4e607f80c791695a5d5d7dd93f04185b46c9f7cd0b13ffeb1fbeec490b9e482"
+    },
+    "/Users/maxdemu/Developer/UMP-Simulator/tools/profiling/summarize_paced_replay.py": {
+      "bytes": 23719,
+      "sha256": "f51b8a517bbb8ac0653acf0391d277014d00ddfaa401c22c4b6900e80d7cffc4"
+    }
+  },
+  "sources": [
+    "mixed",
+    "pedestrians",
+    "old_dense"
+  ],
+  "study_directory": "/Users/maxdemu/Developer/UMP-Simulator/results/current-paced-2026-10-25-v1"
+}

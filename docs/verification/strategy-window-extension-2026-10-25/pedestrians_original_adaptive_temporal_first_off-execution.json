@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/Users/maxdemu/Developer/UMP-Simulator/results/strategy-window-extension-2026-10-25-v1/provenance/AggregationReplay",
+    "--input",
+    "/Users/maxdemu/Developer/UMP-Simulator/results/strategy-window-extension-2026-10-25-v1/pedestrians-observations.json",
+    "--config",
+    "/Users/maxdemu/Developer/UMP-Simulator/results/strategy-window-extension-2026-10-25-v1/pedestrians_original_adaptive_temporal_first_off-policy.json",
+    "--mode",
+    "temporal_first",
+    "--output",
+    "/Users/maxdemu/Developer/UMP-Simulator/results/strategy-window-extension-2026-10-25-v1/pedestrians_original_adaptive_temporal_first_off.json",
+    "--progress-step-ms",
+    "50"
+  ],
+  "native_process_wall_seconds": 64.537013084,
+  "returncode": 0,
+  "timing_scope": "Native core and subprocess wall time exclude Python audit and motion generation; offline unpaced, no deadline guarantee."
+}

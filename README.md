@@ -3,6 +3,31 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
+**Latest experiment checkpoint — 2026-10-25.** Standalone Temporal First,
+fixed 5/10/20 m at 2/4 s, and a paired regional freshness study add **72 independently
+audited native utility cases**, with no published hard-policy violations. Eight
+policy-only regional fixed schedules are separately derived and audited; their
+online runtime is unavailable. Under the local 400-ms tree, Semantic First retains
+64.89% of mixed observations versus 54.11% for regional static20. On pedestrians,
+regional static20 retains more (80.65% versus 78.32%), while adaptive mean delay is
+306 ms rather than 1748 ms. Longer fixed windows also nearly erase the Original
+mixed-source retention advantage. These are explicit tradeoffs, not universal
+adaptive superiority or measured privacy gains.
+
+Two current 300-s paced streams complete with exact logical control equality,
+queue peak one, and zero observed 100-ms sensor-response misses. The stricter
+50-ms cadence has 122/64 misses. The exact historical dense source still
+overflows queue eight at logical 26.85 s with the corrected executable. The
+correction does not solve that high-density runtime bottleneck. No engine source
+was changed for this experiment sequence. All **104/104 CTest groups pass**
+(308.62 s), including 51 new protocol test methods in four groups. Read the
+[results and presentation figures](docs/STRATEGY_TIMING_LOCAL_POLICY_RESULTS_2026-10-25.md),
+[predeclared protocol](docs/STRATEGY_TIMING_LOCAL_POLICY_PROTOCOL_2026-10-25.md), and
+[test report](docs/STRATEGY_TIMING_LOCAL_POLICY_TEST_REPORT_2026-10-25.md).
+Generated movement and full native outputs remain local; only compact aggregate
+evidence, exact policies and figures enter Git. Older checkpoints below preserve
+historical findings, including results superseded by the controller correction.
+
 **Controller correction — 2026-10-24:** the Spatial20 investigation found a lost
 handoff boundary when a fresh compressed owner was refined. New children now
 inherit the actual active rendezvous cap. All 16 same-input correction/filtering
@@ -86,7 +111,7 @@ python tools/replay_viewer/serve.py --bundle results/semantic-suppression-2026-1
 ```
 
 
-The isolated dense [paced replay](docs/URBAN_PACED_TEST_REPORT_2026-10-24.md)
+The historical pre-correction isolated dense [paced replay](docs/URBAN_PACED_TEST_REPORT_2026-10-24.md)
 still overflows its eight-event queue with minimal diagnostics (logical 26.85 s;
 original full mode: 27.35 s). Exact full/minimal public output and complete logical
 SHA-256 audits agree. Removing private window JSON reduces artifact size from
