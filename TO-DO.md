@@ -1,5 +1,33 @@
 # TO-DO — UMP-Simulator
 
+## Utility interpretation and deployment boundary — 2026-10-24
+
+Read the [utility/realtime diagnosis](docs/UTILITY_REALTIME_REVIEW_2026-10-24.md).
+This checkpoint records verified code/results behavior; it changes no controller,
+policy threshold or frozen experiment output.
+
+- [ ] U01: add decision-reason tracing and a paired common-retained-observation
+  detail analysis. Current spatial/semantic means condition on different retained
+  sets; show coverage and exact-label preservation alongside them.
+- [ ] U02: compare early `policy_satisfied` release with `priority_satisfied`, then
+  secondary priorities. Confirm the tested branch gives the priorities an effect;
+  current immediate release can admit spatial/semantic fallback before waiting.
+- [ ] U03: separately test semantic ceilings 1 and 0.5 under identical method
+  policies; report suppression, type retention, spatial detail and delay. Keep
+  support floors unchanged within a policy comparison. Selective type suppression
+  remains a later consistency/complementary-suppression design question.
+- [ ] RT01: run the existing independent-clock 1x paced replay on the frozen
+  dense urban recording with 50-ms progress, 100-ms samples and bounded queue.
+  Compare complete logical output and report service/queue/deadline tails. Current
+  urban experiment is unpaced; logical release delay is separate from CPU time.
+- [ ] RT02: define detector-to-release boundary/deadlines. Include detection-to-cell
+  adapter, core updates and required output ACK; keep source motion, neural
+  perception, renderer and offline audits outside the isolated core test.
+- [ ] MAP10: distinguish explicit overhead roofs from solid ground obstacles,
+  preserve subway/ref/access/stop-area metadata and add A1/A2 as explicit transit
+  surface portals with compatible source/sink routes. Preserve old snapshots;
+  follow the [subway access plan](docs/SUBWAY_ACCESS_PLAN_2026-10-24.md).
+
 ## Current urban traffic work — 2026-10-24
 
 Work sequentially against [the acceptance contract](docs/URBAN_TRAFFIC_EXTENSION_2026-10-24.md).

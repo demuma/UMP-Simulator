@@ -1,0 +1,295 @@
+{
+  "schema": "ump.subway-access-feasibility.v1",
+  "date": "2026-10-24",
+  "status": "Read-only source inspection and counterfactual geometry feasibility; NOT implemented or end-to-end tested",
+  "source": {
+    "frozen_compressed_path": "/Users/maxdemu/Developer/UMP-Simulator/tools/osm_regions/data/moenckeberg/source_geometry.geojson.gz",
+    "frozen_compressed_sha256": "508ca79545419b1f1028b79a1f8a12684b8a6ed53e95b2d94fb36094298388f3",
+    "frozen_decompressed_sha256": "afa2690e408f467af5ff679770bf872816cc568714d9171cf4efb493809e40ed",
+    "source_manifest_path": "/Users/maxdemu/Developer/UMP-Simulator/tools/osm_regions/data/moenckeberg/source_manifest.json",
+    "source_manifest_sha256": "3a2ffc3fb6c5270198e69e3c68ef0bcdc6c2e2b98a06f0b2d37f588b11b97f58",
+    "original_xml_local_path": "/private/tmp/ump-osm-moenckeberg-2026-10-23/map.osm",
+    "original_xml_sha256": "230dd159d3d01233a6cc641ae826a664bb9228b6833c6ed7f7ddea0c6a7cccec",
+    "original_xml_matches_acquisition_manifest": true,
+    "original_xml_not_in_git": true,
+    "retrieved_at_utc": "2026-10-23T13:51:42.725651+00:00",
+    "acquisition_url": "https://api.openstreetmap.org/api/0.6/map?bbox=9.9925,53.5455,10.0165,53.5565",
+    "coordinate_transform": {
+      "source_crs": "EPSG:25832",
+      "x_equals_easting_minus": 566277.8310511189,
+      "y_equals_top_northing_minus_northing": 5934095.84809249
+    },
+    "crs": "EPSG:25832; local metres x east/y south",
+    "attribution": "© OpenStreetMap contributors; ODbL 1.0"
+  },
+  "map_difference": {
+    "domain_side_m": 80,
+    "local_center_lon_lat": [
+      10.001000000000001,
+      53.5512
+    ],
+    "user_map_center_lon_lat": [
+      10.00133,
+      53.551128
+    ],
+    "custom_functional_geometry_raster_not_downloaded_map_tiles": true,
+    "assumed_line_width_defaults_m": {
+      "walking": 2.5,
+      "cycling": 2.5,
+      "crossing": 3,
+      "pedestrian_street": 10,
+      "road": 6,
+      "service": 4
+    },
+    "notes": [
+      "Explicit numeric OSM widths override defaults where supported.",
+      "Current urban source adds five synthetic crossing/curb connectors; they are scenario assumptions.",
+      "D6 observation/policy discretization is separate from continuous movement geometry and the 0.5-m routing lattice."
+    ]
+  },
+  "stop_area": {
+    "osm_type": "relation",
+    "osm_id": 300934,
+    "version": 7,
+    "timestamp": "2023-01-16T08:47:29Z",
+    "tags": {
+      "name": "Mönckebergstraße",
+      "public_transport": "stop_area",
+      "subway": "yes",
+      "type": "public_transport"
+    },
+    "both_nodes_are_members": true
+  },
+  "entrances": [
+    {
+      "reference": "A1",
+      "name": "Barkhof",
+      "node": {
+        "osm_type": "node",
+        "osm_id": 280355670,
+        "version": 11,
+        "timestamp": "2026-04-17T07:20:08Z",
+        "longitude": 10.0015621,
+        "latitude": 53.5509984,
+        "tags": {
+          "entrance": "yes",
+          "name": "Barkhof",
+          "public_transport": "entrance",
+          "railway": "subway_entrance",
+          "ref": "A1",
+          "wheelchair": "no"
+        },
+        "local_point_m": [
+          77.55428756435867,
+          61.90388976410031
+        ],
+        "compact_tags": {
+          "entrance": "yes",
+          "name": "Barkhof"
+        }
+      },
+      "overhead_roof": {
+        "osm_type": "way",
+        "osm_id": 425508817,
+        "version": 1,
+        "timestamp": "2016-06-17T09:13:39Z",
+        "tags": {
+          "building": "roof",
+          "layer": "1"
+        },
+        "entrance_distance_to_roof_boundary_m": 2.7240574581221124
+      },
+      "connected_steps": {
+        "osm_type": "way",
+        "osm_id": 43028024,
+        "tags": {
+          "handrail": "yes",
+          "highway": "steps",
+          "incline": "up",
+          "level": "-1;0",
+          "lit": "yes",
+          "ramp": "no",
+          "step_count": "25",
+          "surface": "paving_stones",
+          "tactile_paving": "no"
+        }
+      },
+      "connected_surface_way": {
+        "osm_type": "way",
+        "osm_id": 44330705,
+        "tags": {
+          "check_date:smoothness": "2024-10-18",
+          "highway": "footway",
+          "lit": "yes",
+          "name": "Barkhof",
+          "smoothness": "intermediate",
+          "surface": "paving_stones"
+        }
+      },
+      "geometry_check": {
+        "current_walk_contains_entrance": false,
+        "current_distance_to_walk_boundary_m": 2.7240574581221133,
+        "current_disk_outside_walk_m2": 0.7904227658115428,
+        "candidate_walk_contains_entrance": true,
+        "candidate_distance_to_walk_boundary_m": 2.445712435641326,
+        "candidate_disk_outside_walk_m2": 0.0,
+        "candidate_distance_to_ground_obstacles_m": 15.63180642254024
+      }
+    },
+    {
+      "reference": "A2",
+      "name": "Spitalerstraße",
+      "node": {
+        "osm_type": "node",
+        "osm_id": 348025368,
+        "version": 13,
+        "timestamp": "2026-04-17T07:20:08Z",
+        "longitude": 10.0013746,
+        "latitude": 53.5514323,
+        "tags": {
+          "check_date:wheelchair": "2024-08-21",
+          "entrance": "yes",
+          "name": "Spitalerstraße",
+          "public_transport": "entrance",
+          "railway": "subway_entrance",
+          "ref": "A2",
+          "wheelchair": "no"
+        },
+        "local_point_m": [
+          64.45375276682898,
+          13.808432191610336
+        ],
+        "compact_tags": {
+          "entrance": "yes",
+          "name": "Spitalerstraße"
+        }
+      },
+      "overhead_roof": {
+        "osm_type": "way",
+        "osm_id": 425508816,
+        "version": 2,
+        "timestamp": "2018-08-04T07:47:28Z",
+        "tags": {
+          "building": "roof",
+          "layer": "1"
+        },
+        "entrance_distance_to_roof_boundary_m": 1.1366431552329768
+      },
+      "connected_steps": {
+        "osm_type": "way",
+        "osm_id": 43028025,
+        "tags": {
+          "covered": "yes",
+          "handrail": "yes",
+          "highway": "steps",
+          "incline": "up",
+          "layer": "-1",
+          "level": "-1;0",
+          "lit": "yes",
+          "ramp": "no",
+          "step_count": "24",
+          "surface": "paving_stones",
+          "tactile_paving": "no"
+        }
+      },
+      "connected_surface_way": {
+        "osm_type": "way",
+        "osm_id": 44330704,
+        "tags": {
+          "highway": "pedestrian",
+          "lit": "yes",
+          "name": "Barkhof",
+          "smoothness": "good",
+          "surface": "paving_stones"
+        }
+      },
+      "geometry_check": {
+        "current_walk_contains_entrance": false,
+        "current_distance_to_walk_boundary_m": 1.1366431552329768,
+        "current_disk_outside_walk_m2": 0.790422765811541,
+        "candidate_walk_contains_entrance": true,
+        "candidate_distance_to_walk_boundary_m": 5.495545256617353,
+        "candidate_disk_outside_walk_m2": 0.0,
+        "candidate_distance_to_ground_obstacles_m": 5.495545256617355
+      }
+    }
+  ],
+  "counterfactual_geometry": {
+    "excluded_obstacle_way_ids": [
+      425508816,
+      425508817
+    ],
+    "exclusion_rule_for_this_check": "Only these two explicitly tagged building=roof,layer=1 ways are removed from the obstacle union. All other building polygons are unchanged.",
+    "test_disk_radius_m": 0.502,
+    "radius_components_m": {
+      "largest_current_urban_pedestrian_radius": 0.45,
+      "hard_clearance": 0.05,
+      "numerical_erosion_margin": 0.002
+    },
+    "footprint_approximation": "Shapely Point.buffer(radius) using its default polygon resolution; feasibility only, not a complete swept-route audit.",
+    "walking_source": "Frozen corridor_layers walking geometry, before body erosion and after ground-obstacle subtraction.",
+    "proof_scope": "Both exact OSM surface access points fit in existing 2D derived walking geometry after explicit canopy separation. No complete route, stairs, dynamic admission, exit scheduling or accessibility behavior is proven."
+  },
+  "metadata_loss": {
+    "file": "tools/osm_regions/build_map.py",
+    "keep_tags_line": 44,
+    "entrance_filter_line": 131,
+    "discarded_required_node_keys": [
+      "railway",
+      "public_transport",
+      "ref",
+      "wheelchair"
+    ],
+    "relation_association_not_retained": true,
+    "affected_ground_obstacle_code": [
+      {
+        "file": "tools/mapped_scene/storefront_scene.py",
+        "line": 54
+      },
+      {
+        "file": "tools/mapped_scene/storefront_scene.py",
+        "line": 159
+      },
+      {
+        "file": "tools/mapped_scene/building_access.py",
+        "line": 57
+      }
+    ]
+  },
+  "implementation_state": {
+    "source_code_changed": false,
+    "existing_recordings_changed": false,
+    "native_portals_supported": "Only building-facade portals; subway surface portals require a deliberate schema/validation extension.",
+    "proposed_stages": [
+      "Preserve original benchmark; extract compact transit metadata tied to exact source/XML hashes.",
+      "Distinguish overhead roof display from solid ground movement obstacles; retain explicit level-aware rules.",
+      "Introduce a typed surface access portal without a fabricated building facade.",
+      "Generate independent, seeded pedestrian arrivals/departures at A1/A2 on checked walking routes.",
+      "Audit geometry, source lifecycle, inaccessible classes, tracking boundaries and deterministic replay before new comparisons."
+    ]
+  },
+  "limitations": [
+    "No measured station demand or train-arrival schedule is available.",
+    "No stairwell footprint, stairs dynamics, surveyed entrance width or legal/accessibility survey is inferred.",
+    "wheelchair=no and ramp=no must constrain source eligibility; generic mobility-aid/stroller labels are insufficient to infer stair access.",
+    "A new observed track after hidden travel does not prove a new person; operational distinct-track support must not be called person-level k-anonymity.",
+    "Region privacy constraints remain explicit research-policy choices, not facts inferred from the map."
+  ],
+  "references": [
+    {
+      "title": "OSM subway entrance tagging",
+      "url": "https://wiki.openstreetmap.org/wiki/Tag:railway=subway_entrance"
+    },
+    {
+      "title": "User map view",
+      "url": "https://karte.openstreetmap.de/#map=18.4/53.551128/10.00133"
+    }
+  ],
+  "inspection_code_sha256": {
+    "tools/osm_regions/build_map.py": "fcb86b023818d60c0082d62ad9510fdb0367228981dc9a80089081f1094c39d3",
+    "tools/mapped_scene/build_mapped_scene.py": "9386b31f0c2b4b77b6dc4e125f1e569f097ddb95073e590da9c4e09c6d4f5f18",
+    "tools/mapped_scene/storefront_scene.py": "6af056a4a712ec0f222020049036bddd8098046bea8faac266ff33474aa123d7",
+    "simulator/include/MappedScene.hpp": "bb371ab63eee758afec6e0825bb3f5d11f80597ba27be84a1a1cdba7d74396f1",
+    "simulator/src/MappedSceneConfiguration.cpp": "6f09b8c15da8d50682366be16a99b708040e565bf301c2dac66a573b284093eb"
+  }
+}

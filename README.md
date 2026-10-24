@@ -34,6 +34,14 @@ python tools/replay_viewer/serve.py \
   --bundle results/urban-traffic-2026-10-24-256-policy-comparison --port 8790
 ```
 
+The [utility/realtime review](docs/UTILITY_REALTIME_REVIEW_2026-10-24.md)
+explains conditional detail metrics, logical release delay, current early-release
+behavior and the independent-clock paced-test boundary. The
+[subway access plan](docs/SUBWAY_ACCESS_PLAN_2026-10-24.md) identifies A1/A2 in the
+frozen OSM source and the roof-versus-ground-obstacle issue. These follow-ups are
+documented; controller changes, the current dense paced run and transit portals
+are not implemented/executed by that review.
+
 The checkpoint notes below preserve earlier implementation history; the latest
 report above supersedes their pending mixed-mode and source-capacity claims.
 
