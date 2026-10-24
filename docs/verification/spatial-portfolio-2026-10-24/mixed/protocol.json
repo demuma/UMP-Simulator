@@ -1,0 +1,538 @@
+{
+  "schema": "ump.mapped-comparison-protocol.v1",
+  "matrix": [
+    {
+      "id": "original_adaptive_immediate",
+      "mode": "semantic_first",
+      "trigger": "policy_satisfied",
+      "policy_profile": "original",
+      "method_id": "adaptive_immediate",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "original_adaptive_spatial_first",
+      "mode": "spatial_first",
+      "trigger": "policy_satisfied",
+      "policy_profile": "original",
+      "method_id": "adaptive_spatial_first",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "original_fixed_5m_400ms",
+      "mode": "fixed",
+      "depth": 4,
+      "window": 400,
+      "side_m": 5,
+      "policy_profile": "original",
+      "method_id": "fixed_5m_400ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "original_fixed_5m_1000ms",
+      "mode": "fixed",
+      "depth": 4,
+      "window": 1000,
+      "side_m": 5,
+      "policy_profile": "original",
+      "method_id": "fixed_5m_1000ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "original_fixed_10m_400ms",
+      "mode": "fixed",
+      "depth": 3,
+      "window": 400,
+      "side_m": 10,
+      "policy_profile": "original",
+      "method_id": "fixed_10m_400ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "original_fixed_10m_1000ms",
+      "mode": "fixed",
+      "depth": 3,
+      "window": 1000,
+      "side_m": 10,
+      "policy_profile": "original",
+      "method_id": "fixed_10m_1000ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "original_fixed_20m_400ms",
+      "mode": "fixed",
+      "depth": 2,
+      "window": 400,
+      "side_m": 20,
+      "policy_profile": "original",
+      "method_id": "fixed_20m_400ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "original_fixed_20m_1000ms",
+      "mode": "fixed",
+      "depth": 2,
+      "window": 1000,
+      "side_m": 20,
+      "policy_profile": "original",
+      "method_id": "fixed_20m_1000ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "spatial20_adaptive_immediate",
+      "mode": "semantic_first",
+      "trigger": "policy_satisfied",
+      "policy_profile": "spatial20",
+      "method_id": "adaptive_immediate",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "spatial20_adaptive_spatial_first",
+      "mode": "spatial_first",
+      "trigger": "policy_satisfied",
+      "policy_profile": "spatial20",
+      "method_id": "adaptive_spatial_first",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "spatial20_fixed_5m_400ms",
+      "mode": "fixed",
+      "depth": 4,
+      "window": 400,
+      "side_m": 5,
+      "policy_profile": "spatial20",
+      "method_id": "fixed_5m_400ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "spatial20_fixed_5m_1000ms",
+      "mode": "fixed",
+      "depth": 4,
+      "window": 1000,
+      "side_m": 5,
+      "policy_profile": "spatial20",
+      "method_id": "fixed_5m_1000ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "spatial20_fixed_10m_400ms",
+      "mode": "fixed",
+      "depth": 3,
+      "window": 400,
+      "side_m": 10,
+      "policy_profile": "spatial20",
+      "method_id": "fixed_10m_400ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "spatial20_fixed_10m_1000ms",
+      "mode": "fixed",
+      "depth": 3,
+      "window": 1000,
+      "side_m": 10,
+      "policy_profile": "spatial20",
+      "method_id": "fixed_10m_1000ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "spatial20_fixed_20m_400ms",
+      "mode": "fixed",
+      "depth": 2,
+      "window": 400,
+      "side_m": 20,
+      "policy_profile": "spatial20",
+      "method_id": "fixed_20m_400ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    },
+    {
+      "id": "spatial20_fixed_20m_1000ms",
+      "mode": "fixed",
+      "depth": 2,
+      "window": 1000,
+      "side_m": 20,
+      "policy_profile": "spatial20",
+      "method_id": "fixed_20m_1000ms",
+      "spatial_portfolio": true,
+      "suppression_cap": 0,
+      "minimum_candidate_depth": 2
+    }
+  ],
+  "queries": {
+    "target_cells": [
+      {
+        "cell_id": 192,
+        "depth": 3
+      },
+      {
+        "cell_id": 193,
+        "depth": 3
+      },
+      {
+        "cell_id": 194,
+        "depth": 3
+      },
+      {
+        "cell_id": 195,
+        "depth": 3
+      },
+      {
+        "cell_id": 196,
+        "depth": 3
+      },
+      {
+        "cell_id": 197,
+        "depth": 3
+      },
+      {
+        "cell_id": 198,
+        "depth": 3
+      },
+      {
+        "cell_id": 199,
+        "depth": 3
+      },
+      {
+        "cell_id": 200,
+        "depth": 3
+      },
+      {
+        "cell_id": 201,
+        "depth": 3
+      },
+      {
+        "cell_id": 202,
+        "depth": 3
+      },
+      {
+        "cell_id": 203,
+        "depth": 3
+      },
+      {
+        "cell_id": 204,
+        "depth": 3
+      },
+      {
+        "cell_id": 205,
+        "depth": 3
+      },
+      {
+        "cell_id": 206,
+        "depth": 3
+      },
+      {
+        "cell_id": 207,
+        "depth": 3
+      },
+      {
+        "cell_id": 208,
+        "depth": 3
+      },
+      {
+        "cell_id": 209,
+        "depth": 3
+      },
+      {
+        "cell_id": 210,
+        "depth": 3
+      },
+      {
+        "cell_id": 211,
+        "depth": 3
+      },
+      {
+        "cell_id": 212,
+        "depth": 3
+      },
+      {
+        "cell_id": 213,
+        "depth": 3
+      },
+      {
+        "cell_id": 214,
+        "depth": 3
+      },
+      {
+        "cell_id": 215,
+        "depth": 3
+      },
+      {
+        "cell_id": 216,
+        "depth": 3
+      },
+      {
+        "cell_id": 217,
+        "depth": 3
+      },
+      {
+        "cell_id": 218,
+        "depth": 3
+      },
+      {
+        "cell_id": 219,
+        "depth": 3
+      },
+      {
+        "cell_id": 220,
+        "depth": 3
+      },
+      {
+        "cell_id": 221,
+        "depth": 3
+      },
+      {
+        "cell_id": 222,
+        "depth": 3
+      },
+      {
+        "cell_id": 223,
+        "depth": 3
+      },
+      {
+        "cell_id": 224,
+        "depth": 3
+      },
+      {
+        "cell_id": 225,
+        "depth": 3
+      },
+      {
+        "cell_id": 226,
+        "depth": 3
+      },
+      {
+        "cell_id": 227,
+        "depth": 3
+      },
+      {
+        "cell_id": 228,
+        "depth": 3
+      },
+      {
+        "cell_id": 229,
+        "depth": 3
+      },
+      {
+        "cell_id": 230,
+        "depth": 3
+      },
+      {
+        "cell_id": 231,
+        "depth": 3
+      },
+      {
+        "cell_id": 232,
+        "depth": 3
+      },
+      {
+        "cell_id": 233,
+        "depth": 3
+      },
+      {
+        "cell_id": 234,
+        "depth": 3
+      },
+      {
+        "cell_id": 235,
+        "depth": 3
+      },
+      {
+        "cell_id": 236,
+        "depth": 3
+      },
+      {
+        "cell_id": 237,
+        "depth": 3
+      },
+      {
+        "cell_id": 238,
+        "depth": 3
+      },
+      {
+        "cell_id": 239,
+        "depth": 3
+      },
+      {
+        "cell_id": 240,
+        "depth": 3
+      },
+      {
+        "cell_id": 241,
+        "depth": 3
+      },
+      {
+        "cell_id": 242,
+        "depth": 3
+      },
+      {
+        "cell_id": 243,
+        "depth": 3
+      },
+      {
+        "cell_id": 244,
+        "depth": 3
+      },
+      {
+        "cell_id": 245,
+        "depth": 3
+      },
+      {
+        "cell_id": 246,
+        "depth": 3
+      },
+      {
+        "cell_id": 247,
+        "depth": 3
+      },
+      {
+        "cell_id": 248,
+        "depth": 3
+      },
+      {
+        "cell_id": 249,
+        "depth": 3
+      },
+      {
+        "cell_id": 250,
+        "depth": 3
+      },
+      {
+        "cell_id": 251,
+        "depth": 3
+      },
+      {
+        "cell_id": 252,
+        "depth": 3
+      },
+      {
+        "cell_id": 253,
+        "depth": 3
+      },
+      {
+        "cell_id": 254,
+        "depth": 3
+      },
+      {
+        "cell_id": 255,
+        "depth": 3
+      }
+    ],
+    "categories": [
+      "cyclist",
+      "e_scooter_rider",
+      "pedestrian",
+      "road_user"
+    ],
+    "window_ms": 1000,
+    "lags_ms": [
+      0,
+      1000
+    ]
+  },
+  "binary_sha256": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9",
+  "observations_sha256": "c24134c724acf2df38a85b2906a2e80f8de7b420529a4b8cda3f9e5f98a3eff5",
+  "progress_step_ms": 50,
+  "query_count": 153600,
+  "query_budget": 200000,
+  "native_process_wall_budget_s": 900,
+  "policy_scope": "Original: all original hard root/region constraints remain. Spatial20: every existing root/region cell_side_m.max becomes20 m, equally for every method. All support, temporal and semantic bounds, regions and taxonomy remain. Selective contribution suppression is disabled in every case. Compare methods within one contract.",
+  "comparison_kind": "spatial_resolution_portfolio",
+  "analysis_status": "predeclared_matrix",
+  "portfolio_scope": "Two adaptive strategies and fixed 5/10/20 m crossed with 400/1000 ms under each selected contract. Original 20 m is a deliberate negative control. Adaptive windows may reach 4000 ms. Connected fixed-grid measurements are empirical guides only: no fitted regression, statistical significance or claim for intermediate cell sizes.",
+  "policy_changes": [
+    {
+      "scope": "root",
+      "metric": "cell_side_m",
+      "before": 10,
+      "after": 20
+    },
+    {
+      "scope": "region:west-footway-control:type_requirements",
+      "metric": "cell_side_m",
+      "before": 5,
+      "after": 20
+    },
+    {
+      "scope": "region:east-footway-control:type_requirements",
+      "metric": "cell_side_m",
+      "before": 5,
+      "after": 20
+    }
+  ],
+  "query_category_scope": "Total and immediate taxonomy families, identical across both contracts. Exact subtype preservation is separately source-denominated.",
+  "recipient_scope": "Conservative exact answers plus separately evaluated uniform spatial/temporal occupancy estimates. Missing support never becomes zero.",
+  "replication": "One deterministic source; no population-level statistical generalization or privacy-improvement claim.",
+  "spatial_profiles": [
+    "original",
+    "spatial20"
+  ],
+  "source_completion_gate": "All scheduled episodes complete; zero pending/active if reported; required complete sensor-observability proof.",
+  "shared_execution_changes": [
+    {
+      "setting": "spatial_selection.min_depth",
+      "before": 3,
+      "after": 2,
+      "scope": "Every method under both contracts; candidate search permits20 m while strict original numeric policy rejects20 m"
+    },
+    {
+      "setting": "semantic_suppression_fraction.max",
+      "before": 0,
+      "after": 0,
+      "scope": "Every method under both contracts; contribution filtering disabled"
+    }
+  ],
+  "source_proof_sha256": "eba903f5cf22ad97083cee0735b2397e78fece8dda4f8b7e45274840b5265640",
+  "pre_execution_artifacts_sha256": {
+    "original_fixed_20m_1000ms-policy.json": "7c8810318221f3cb008a1d5fd4d518ec5b7f882b8c945f7487f192646035e7d7",
+    "spatial20_fixed_10m_1000ms-policy.json": "e45dbf9493c8f2cf5386f21b5fe402bf45535d65a1d203861c7e0aecdafebd78",
+    "original_fixed_10m_400ms-policy.json": "d021bc305967726b8eb020d8f2b842a718bd1a91e0623d8dcf4f6464e7f385be",
+    "spatial20_fixed_5m_400ms-policy.json": "f49fb886a2a9bf97363daa2bf95cec909447ecd11bc6b6365babf9beea48a805",
+    "original_fixed_5m_1000ms-policy.json": "7ffe60da8795558435388c6ce8b50bdd89212a82247251af66289ac6c6adcd8b",
+    "original_fixed_20m_400ms-policy.json": "4e2e8eedc24211726cc4bd8a60eee06e805487135f1ab9f9d1cb6d76abd64e47",
+    "original_adaptive_spatial_first-policy.json": "2926799f2e6f7e00035c2a161285879defd93e67d977287b42859fec54793f64",
+    "query-bank.json": "5fc6718689bf6bb60193a1fa72b5307ed0e54d1ef9014155f3dc1f7d68695b6f",
+    "spatial20_fixed_5m_1000ms-policy.json": "a0604d1cd68c1411cf413930426f6343d7d7705c95fe714b97adc4c0a83b84eb",
+    "spatial20_fixed_20m_400ms-policy.json": "cb5d998244f2b176a3247d112f44503329976c94ed129d8b737df7d12914f8a1",
+    "original_fixed_5m_400ms-policy.json": "9d6d7c10a3d0c806681e8637287e71f48f2d4fb1c4bae2a8d9154eb6355779b6",
+    "observations.json": "c24134c724acf2df38a85b2906a2e80f8de7b420529a4b8cda3f9e5f98a3eff5",
+    "spatial20_fixed_10m_400ms-policy.json": "073ef9aa430637b8d6195a7f25f7a24332218ad47646bc727b4b514394734a97",
+    "spatial20_fixed_20m_1000ms-policy.json": "b77d5fb5d002c9854e5498d0f32b4b1b03dd0fbce8eb37b85f6ad7d980656fc7",
+    "spatial20_adaptive_spatial_first-policy.json": "b96093993b8f82870026a3c772afe6eff34c71ff27f34364740992e1307a2074",
+    "spatial20_adaptive_immediate-policy.json": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda",
+    "original_fixed_10m_1000ms-policy.json": "a9c125fe4c3a7f7b51e9ffcf5b71e25f81c4bdd30b1fad31ef9b3c3b08941c64",
+    "original_adaptive_immediate-policy.json": "bf1f46819b0fdc64e67820bfda8989adab20990bae2b9e60b9bc0a74aecc363c",
+    "provenance/capture-proof.json": "eba903f5cf22ad97083cee0735b2397e78fece8dda4f8b7e45274840b5265640",
+    "provenance/AggregationReplay": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9"
+  },
+  "binary_execution": "Frozen local provenance/AggregationReplay copy; all configurations and query-bank written and hashed before first execution.",
+  "offline_audit_max_cells": 1000000,
+  "offline_audit_capacity_scope": "Explicit bound for independently checked private windows/releases and cells; every geometry/count/coverage/policy/retirement check is retained. This is offline validator capacity, not an aggregation-policy change."
+}

@@ -120,16 +120,17 @@ def effective(config, cell):
     return bounds, touched
 
 
-def audit(data, config, actual):
-    from semantic_suppression_audit import suppression_configured, audit_suppression
+def audit(data, config, actual, *, max_cells=None):
+    from semantic_suppression_audit import suppression_configured, audit_suppression, audit_budget
     if suppression_configured(config):
-        return audit_suppression(data, config, actual)
+        return audit_suppression(data, config, actual, max_cells=audit_budget(max_cells,200000))
+    max_cells = audit_budget(max_cells,100000)
     scalar_config, scalar_result = scalar_projection(config, actual)
     scalar_config['policy_tree']['execution']['strategy'] = 'temporal_first'
     scalar_result['mode'] = 'temporal_first'
     for window in scalar_result['windows']:
         window['strategy'] = 'temporal_first'
-    scalar = validate_result(data, scalar_config, scalar_result, max_cells=100000)
+    scalar = validate_result(data, scalar_config, scalar_result, max_cells=max_cells)
     if not scalar['valid']:
         raise ValueError('Independent scalar/retirement audit failed: ' + repr(scalar['violations'][:4]))
     nodes = {node['id']: node for node in config['semantic_taxonomy']['nodes']}

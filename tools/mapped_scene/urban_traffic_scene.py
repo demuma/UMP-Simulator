@@ -157,7 +157,8 @@ def repair_boundary_pairs(routes, boundary_rows, router, seed):
 
 
 def make_scene(storefront, repo, local, layers, access, source_hash, seed, people, interval,
-               overrides, road_user_fraction=.2, crossing_fraction=.2, clearance=.05, subway_access=False, rider_priority=False):
+               overrides, road_user_fraction=.2, crossing_fraction=.2, clearance=.05, subway_access=False, rider_priority=False,
+               expanded_shop_access=False, pedestrians_only=False):
     validate_options(len(people), road_user_fraction, crossing_fraction, clearance)
     original_local=local
     transit=None;transit_data=None
@@ -166,13 +167,15 @@ def make_scene(storefront, repo, local, layers, access, source_hash, seed, peopl
         transit=importlib.util.module_from_spec(spec);spec.loader.exec_module(transit)
         local,layers,transit_data=transit.ground_environment(repo,local,layers,source_hash)
     people = copy.deepcopy(people)
-    rider_indices = rider_people(people, seed, road_user_fraction)
+    rider_indices = set() if pedestrians_only else rider_people(people, seed, road_user_fraction)
     roadline, connectors, crossing_rows = crossing_connectors(local, layers)
     walking = layers["walking"].union(connectors)
     body_clearance = .45 + clearance
     context, internals, safe, rows = storefront.build_geometry(
         repo, local, layers, access, source_hash, overrides,
-        walking_geometry=walking, body_clearance_m=body_clearance)
+        walking_geometry=walking, body_clearance_m=body_clearance, expanded_shop_access=expanded_shop_access)
+    if expanded_shop_access:
+        walking=walking.union(storefront.access_connector_surface(context,layers["building"]))
     facade_portals=copy.deepcopy(context["portals"])
     surface_portals=[];transit_selection={}
     if subway_access:
@@ -239,6 +242,7 @@ def make_scene(storefront, repo, local, layers, access, source_hash, seed, peopl
     # Extend before offsetting so the lane intersects the actual map edge rather
     # than inheriting a clipped endpoint slightly inside the domain.
     targeted=0
+    visit_number=0
     for index, person in enumerate(people):
         first=person["episodes"][0]
         if index in rider_indices:
@@ -270,8 +274,10 @@ def make_scene(storefront, repo, local, layers, access, source_hash, seed, peopl
             continue
         visit=index%2==0
         if visit:
-            portal=facade_portals[(index//2)%len(facade_portals)]
-            approach=internals[(index//2)%len(facade_portals)]["approach"]
+            selected=(visit_number if expanded_shop_access else index//2)%len(facade_portals)
+            visit_number+=1
+            portal=facade_portals[selected]
+            approach=internals[selected]["approach"]
             options=eligible(approach)
             origin,destination=rng.choice(options),rng.choice(options)
             first["route_id"]=add(router.varied_route(endpoint(origin),approach,rng)+[portal["point"]], origin["id"],portal["id"])
@@ -362,6 +368,19 @@ def make_scene(storefront, repo, local, layers, access, source_hash, seed, peopl
             "selected_people":len(transit_selection),"fraction_of_people":.15,
             "eligible_profiles":sorted(transit.ELIGIBLE_PROFILES),"overhead_roof_way_ids":sorted(transit.OVERHEAD_WAY_IDS),
             "scope":"Independent seeded single-episode station entry/exit trips; staircase widths and demand are synthetic. No underground routes or cross-visit identity linkage."}
+    if expanded_shop_access:
+        construction["expanded_shop_access"]=storefront.expanded_shop_inventory(context,source_hash)
+        construction["demand"]["destination_weights"]={p["id"]:1 for p in facade_portals}
+        construction["demand"]["destination_assignment"]="Cycle over all enabled shop destinations among actual visiting pedestrians, after rider/station selection."
+    if pedestrians_only:
+        construction["scope"]="Opt-in pedestrian-only urban cohort with explicit synthetic crossing/forecourt connectors and source-bound shop/station access. Road direction geometry remains contextual; no riders are generated. No calibrated demand or empirical behavior claim."
+        construction["rider_direction_scope"]="Context-only independently eroded road direction spaces, preserved for geometric comparability; this source generates no rider trips."
+        construction["rider_speed_mps"]["scope"]="Context-only rider parameter; no riders are generated in the pedestrian-only source."
+        construction["pedestrians_only"]={"enabled":True,"scope":"Regenerate the complete finite cohort with the base pedestrian profiles and unchanged walking/crossing/entrance geometry; no rider relabeling and no deletion of an existing motion stream."}
+        construction["demand"]["configured_road_user_fraction"]=road_user_fraction
+        construction["demand"]["road_user_fraction"]=0.
+        for boundary in context["boundary_intervals"]:
+            if boundary["mode"]=="road": boundary["spawn_supported"]=False
     if rider_priority:
         construction["rider_priority"]=copy.deepcopy(context["navigation"]["crossing_priority"])
     audit=audit_scene(storefront,local,layers,scene,context,walking,body_clearance,road_clearance)

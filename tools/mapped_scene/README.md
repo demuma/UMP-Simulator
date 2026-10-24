@@ -1,5 +1,37 @@
 # Mapped pedestrian visits, local recordings and comparisons
 
+## Expanded access and the spatial portfolio
+
+Use `--urban-traffic --subway-access --expanded-shop-access --rider-priority`
+with storefront mode for the corrected mixed scenario. The separate
+`--pedestrians-only` source uses the same geometry and full pedestrian cohort;
+omit `--rider-priority`, since there is no rider demand. Both options are opt-in.
+The café door is a source-authenticated point; tenant association, its bounded
+3 m approach surface and the Konzertkasse target are explicit scenario assumptions.
+All six shops receive incoming and fresh-ID outgoing episodes.
+
+After source completion, exact sensor-episode observability and the independent
+physical-motion audit pass, run the same observations through the portfolio:
+
+```sh
+python tools/mapped_scene/run_comparison.py \
+  --recording results/YOUR_ACCEPTED_SOURCE/replay \
+  --output results/YOUR_FRESH_PORTFOLIO \
+  --spatial-portfolio --native-wall-budget-s 900
+python tools/mapped_scene/plot_spatial_portfolio.py \
+  --summary results/YOUR_FRESH_PORTFOLIO/summary.json \
+  --output results/YOUR_FRESH_PORTFOLIO/figures
+```
+
+The 16 cases use the original and Spatial20 contracts, each with two adaptive
+strategies and fixed 5/10/20 m at 0.4/1 s. Original-policy 20 m cells are rejection
+controls. Spatial20 relaxes the same spatial maxima for every method, preserving
+other hard bounds. Adaptive methods may use policy-permitted windows up to 4 s;
+this is not a matched-window-only test of adaptation. The plot connects measured
+fixed-grid points and keeps adaptive references separate.
+See the [full protocol](../../docs/SPATIAL_PORTFOLIO_PROTOCOL_2026-10-24.md).
+
+
 The maintained C++ Simulator, its sensors and normal Region → PolicyTree adapter
 run this opt-in 80 × 80-m Mönckebergstraße source. The frozen OSM snapshot is local;
 no live map request is needed. Native observations, actual immutable releases and

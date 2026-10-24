@@ -346,14 +346,26 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
         lookup={portal['id']:portal for portal in portals}
         for front in fronts:
             required={'id','destination_id','building_id','poi','portal_id','frontage','provenance','projection_method'}
-            if not isinstance(front,dict) or set(front)!=required: raise ValueError('Storefront contains unsupported or private fields')
+            if not isinstance(front,dict) or not required.issubset(front) or set(front)-required-{'entrance_source'}: raise ValueError('Storefront contains unsupported or private fields')
             for field in ('id','destination_id','building_id','portal_id'): text(front[field],'storefront '+field,128)
             if front['id'] in front_ids or front['destination_id'] in destinations or front['portal_id'] in front_portals:
                 raise ValueError('Duplicate storefront, destination or entrance')
             front_ids.add(front['id']);destinations.add(front['destination_id']);front_portals.add(front['portal_id'])
             portal=lookup.get(front['portal_id'])
-            if portal is None or front['building_id']!=portal['building_id']: raise ValueError('Storefront references unknown or inconsistent building/portal')
-            if front['provenance']!='synthetic_poi_projection' or front['projection_method'] not in ('orthogonal_to_reachable_original_facade','manual_original_facade_override'):
+            if portal is None or front['building_id']!=portal.get('building_id'): raise ValueError('Storefront references unknown or inconsistent building/portal')
+            source_association=front['provenance']=='osm_entrance_association'
+            if source_association:
+                source=front.get('entrance_source')
+                fields={'osm_type','osm_id','osm_version','osm_timestamp','scope'}
+                if (front['projection_method']!='source_entrance_on_original_facade' or portal['provenance']!='osm'
+                        or not isinstance(source,dict) or set(source)!=fields or source['osm_type']!='node'
+                        or type(source['osm_id']) is not int or source['osm_id']<=0
+                        or type(source['osm_version']) is not int or source['osm_version']<=0
+                        or not isinstance(source['osm_timestamp'],str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z',source['osm_timestamp'])
+                        or source['scope']!='Exact frozen OSM entrance point; association to the named tenant is modeled.'):
+                    raise ValueError('Invalid explicit storefront source entrance metadata')
+            elif (front['provenance']!='synthetic_poi_projection' or 'entrance_source' in front
+                    or front['projection_method'] not in ('orthogonal_to_reachable_original_facade','manual_original_facade_override')):
                 raise ValueError('Unknown storefront construction provenance')
             poi=front['poi']
             if not isinstance(poi,dict) or set(poi)!={'osm_type','osm_id','name','point'}: raise ValueError('Storefront POI contains unsupported or private fields')
@@ -395,9 +407,13 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
             if boundary['mode'] not in ('walking','cycling','road') or boundary['side'] not in ('west','east','north','south') or type(boundary['spawn_supported']) is not bool: raise ValueError('Invalid boundary mode/side/eligibility')
             road_source=boundary['spawn_supported'] and boundary['mode']=='road'
             if boundary['spawn_supported'] and boundary['mode'] not in ('walking','road'): raise ValueError('Unsupported boundary spawning mode')
-            expected_provenance=('synthetic_rider_source_on_body_safe_frozen_carriageway' if road_source
-                                 else 'derived_frozen_functional_zone_boundary')
-            if boundary['provenance']!=expected_provenance: raise ValueError('Invalid boundary construction provenance')
+            derived='derived_frozen_functional_zone_boundary'
+            rider='synthetic_rider_source_on_body_safe_frozen_carriageway'
+            # Source eligibility may be disabled for a pedestrians-only run;
+            # the recorded construction of that road interval stays truthful.
+            allowed_provenance=({rider} if road_source else
+                                {derived,rider} if boundary['mode']=='road' else {derived})
+            if boundary['provenance'] not in allowed_provenance: raise ValueError('Invalid boundary construction provenance')
             length=segment(boundary['points'],'Boundary interval');numeric(boundary['length_m'],'boundary length',0)
             if abs(length-boundary['length_m'])>1e-5: raise ValueError('Boundary interval length disagrees with geometry')
             axis,coordinate={'west':(0,coverage['x']),'east':(0,coverage['x']+coverage['width']),
@@ -406,7 +422,7 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
         navigation=value['navigation']
         required={'body_clearance_m','allowed_center_polygons_sha256','scope'}
         if (not isinstance(navigation,dict) or not required.issubset(navigation)
-                or set(navigation)-required-{'spaces','synthetic_crossing_connectors','crossing_priority'}):
+                or set(navigation)-required-{'spaces','synthetic_crossing_connectors','synthetic_access_connectors','crossing_priority'}):
             raise ValueError('Navigation summary contains unsupported or private fields')
         numeric(navigation['body_clearance_m'],'navigation body clearance',.01)
         if navigation['body_clearance_m']>10 or not isinstance(navigation['allowed_center_polygons_sha256'],str) or not re.fullmatch(r'[a-f0-9]{64}',navigation['allowed_center_polygons_sha256']): raise ValueError('Invalid navigation geometry digest/clearance')
@@ -427,8 +443,8 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
             if (space['body_clearance_m']>10 or not isinstance(space['allowed_center_polygons_sha256'],str)
                     or not re.fullmatch(r'[a-f0-9]{64}',space['allowed_center_polygons_sha256'])):
                 raise ValueError('Invalid navigation space geometry digest/clearance')
-        if any(row['spawn_supported'] and row['mode']=='road' for row in value['boundary_intervals']) and not any(space.get('mode','road' if space['id']=='carriageway' else None)=='road' for space in spaces):
-            raise ValueError('Road rider sources require an explicit road navigation space')
+        if any(row['mode']=='road' and (row['spawn_supported'] or row['provenance']=='synthetic_rider_source_on_body_safe_frozen_carriageway') for row in value['boundary_intervals']) and not any(space.get('mode','road' if space['id']=='carriageway' else None)=='road' for space in spaces):
+            raise ValueError('Constructed road rider intervals require an explicit road navigation space')
         connectors=navigation.get('synthetic_crossing_connectors',[])
         if not isinstance(connectors,list) or len(connectors)>64: raise ValueError('Crossing connectors require a bounded array')
         connector_ids=set()
@@ -443,6 +459,30 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
             segment(connector['centerline'],'Crossing connector')
             numeric(connector['width_m'],'crossing width',.1)
             if connector['width_m']>20: raise ValueError('Crossing connector width exceeds 20 m')
+        access_connectors=navigation.get('synthetic_access_connectors',[])
+        if not isinstance(access_connectors,list) or len(access_connectors)>16:
+            raise ValueError('Access connectors require a bounded array')
+        access_portals=set()
+        for connector in access_connectors:
+            if not isinstance(connector,dict) or set(connector)!={'id','portal_id','centerline','width_m','provenance'}:
+                raise ValueError('Access connector contains unsupported or private fields')
+            text(connector['id'],'access connector ID',128);text(connector['portal_id'],'access connector portal ID',128)
+            if connector['id'] in connector_ids or connector['portal_id'] in access_portals:
+                raise ValueError('Duplicate access connector or portal')
+            connector_ids.add(connector['id']);access_portals.add(connector['portal_id'])
+            portal=lookup.get(connector['portal_id'])
+            if (connector['provenance']!='synthetic_approach_to_source_osm_entrance' or portal is None
+                    or not any(front['portal_id']==connector['portal_id'] and front['provenance']=='osm_entrance_association' for front in fronts)):
+                raise ValueError('Access connector requires an explicit source-bound storefront entrance')
+            line=connector['centerline']
+            if not isinstance(line,list) or not 2<=len(line)<=8:
+                raise ValueError('Access connector requires a bounded polyline')
+            for coordinate in line: point(coordinate)
+            distances=[math.dist(a,b) for a,b in zip(line,line[1:])]
+            if min(distances)<=1e-7 or sum(distances)>12 or math.dist(line[0],portal['point'])>1e-5:
+                raise ValueError('Access connector must start at its entrance and stay within 12 m')
+            numeric(connector['width_m'],'access connector width',1.2)
+            if connector['width_m']>4: raise ValueError('Access connector width exceeds 4 m')
         priority=navigation.get('crossing_priority')
         if priority is not None:
             if not isinstance(priority,dict) or set(priority)!={'resources','scope'}:

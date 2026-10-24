@@ -1,0 +1,126 @@
+{
+  "schema": "ump.spatial-portfolio-figure.v1",
+  "summary_sha256": "86c2c3c83838783c7b32d57697a1f9ad63d5b809971ac9f5f2d47aa8381a5f1e",
+  "artifacts": [
+    "spatial-portfolio-original.png",
+    "spatial-portfolio-original.svg",
+    "spatial-portfolio-spatial20.png",
+    "spatial-portfolio-spatial20.svg"
+  ],
+  "measured_series": {
+    "profiles": [
+      "original",
+      "spatial20"
+    ],
+    "cases": {
+      "original_adaptive_immediate": {
+        "retained_fraction": 40.495307901604754,
+        "observation_weighted_semantic_loss": 49.86562088635366,
+        "full_input_semantic_distortion": 79.69792881337109,
+        "delay_p95_ms": 2.2
+      },
+      "original_adaptive_spatial_first": {
+        "retained_fraction": 41.43928035982009,
+        "observation_weighted_semantic_loss": 50.0,
+        "full_input_semantic_distortion": 79.28035982008996,
+        "delay_p95_ms": 3.8000000000000003
+      },
+      "original_fixed_5m_400ms": {
+        "retained_fraction": 10.171580876228552,
+        "observation_weighted_semantic_loss": 50.0,
+        "full_input_semantic_distortion": 94.91420956188573,
+        "delay_p95_ms": 0.4
+      },
+      "original_fixed_5m_1000ms": {
+        "retained_fraction": 13.114553834194014,
+        "observation_weighted_semantic_loss": 50.0,
+        "full_input_semantic_distortion": 93.44272308290299,
+        "delay_p95_ms": 1.0
+      },
+      "original_fixed_10m_400ms": {
+        "retained_fraction": 29.015492253873067,
+        "observation_weighted_semantic_loss": 50.0,
+        "full_input_semantic_distortion": 85.49225387306348,
+        "delay_p95_ms": 0.4
+      },
+      "original_fixed_10m_1000ms": {
+        "retained_fraction": 31.093342217780002,
+        "observation_weighted_semantic_loss": 50.0,
+        "full_input_semantic_distortion": 84.45332889111,
+        "delay_p95_ms": 1.0
+      },
+      "original_fixed_20m_400ms": {
+        "retained_fraction": 0.0,
+        "observation_weighted_semantic_loss": null,
+        "full_input_semantic_distortion": 100.0,
+        "delay_p95_ms": null
+      },
+      "original_fixed_20m_1000ms": {
+        "retained_fraction": 0.0,
+        "observation_weighted_semantic_loss": null,
+        "full_input_semantic_distortion": 100.0,
+        "delay_p95_ms": null
+      },
+      "spatial20_adaptive_immediate": {
+        "retained_fraction": 67.8760619690155,
+        "observation_weighted_semantic_loss": 44.13193933146812,
+        "full_input_semantic_distortion": 62.078960519740136,
+        "delay_p95_ms": 0.4
+      },
+      "spatial20_adaptive_spatial_first": {
+        "retained_fraction": 70.09606307957132,
+        "observation_weighted_semantic_loss": 48.2691149909693,
+        "full_input_semantic_distortion": 63.73868621244934,
+        "delay_p95_ms": 3.8000000000000003
+      },
+      "spatial20_fixed_5m_400ms": {
+        "retained_fraction": 10.171580876228552,
+        "observation_weighted_semantic_loss": 50.0,
+        "full_input_semantic_distortion": 94.91420956188573,
+        "delay_p95_ms": 0.4
+      },
+      "spatial20_fixed_5m_1000ms": {
+        "retained_fraction": 13.114553834194014,
+        "observation_weighted_semantic_loss": 50.0,
+        "full_input_semantic_distortion": 93.44272308290299,
+        "delay_p95_ms": 1.0
+      },
+      "spatial20_fixed_10m_400ms": {
+        "retained_fraction": 38.7239713476595,
+        "observation_weighted_semantic_loss": 50.0,
+        "full_input_semantic_distortion": 80.63801432617025,
+        "delay_p95_ms": 0.4
+      },
+      "spatial20_fixed_10m_1000ms": {
+        "retained_fraction": 41.65028596812705,
+        "observation_weighted_semantic_loss": 50.0,
+        "full_input_semantic_distortion": 79.17485701593647,
+        "delay_p95_ms": 1.0
+      },
+      "spatial20_fixed_20m_400ms": {
+        "retained_fraction": 74.30618024321173,
+        "observation_weighted_semantic_loss": 44.73015588336397,
+        "full_input_semantic_distortion": 58.93109001055028,
+        "delay_p95_ms": 0.4
+      },
+      "spatial20_fixed_20m_1000ms": {
+        "retained_fraction": 75.6877116997057,
+        "observation_weighted_semantic_loss": 44.64366939092923,
+        "full_input_semantic_distortion": 58.102060081070576,
+        "delay_p95_ms": 1.0
+      }
+    }
+  },
+  "fixed_grid_sides_m": [
+    5,
+    10,
+    20
+  ],
+  "fixed_windows_ms": [
+    400,
+    1000
+  ],
+  "trend_scope": "Straight segments only connect measured fixed schedules; no regression, confidence interval, interpolation claim or extrapolation.",
+  "adaptive_scope": "Horizontal aggregate references under the same Policy Tree; they do not imply uniform adaptive cell size.",
+  "missing_value_rule": "Missing conditional utility is n/a, never zero; zero retained fraction remains an actual measured zero."
+}

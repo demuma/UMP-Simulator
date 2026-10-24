@@ -1,11 +1,16 @@
 """Independent capture audit rejects early disappearance, wrong exits and overlap."""
+import copy
+import json
 import math
+from pathlib import Path
 import unittest
 from datetime import datetime, timedelta, timezone
 
-from shapely.geometry import box
+from shapely.geometry import LineString, Point, box
+from shapely.ops import unary_union
 
 from audit_building_access import audit
+from validate_source_access import SOURCE_SHA256, SOURCE_SCOPE, connector_surface, validate_expanded_shop_context
 
 
 def fixture():
@@ -151,6 +156,41 @@ class NavigationAuditTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'body leaves derived walking'):
             audit(cfg, raw, public_context=context, map_layers=layers)
 
+    def test_explicit_access_surface_fills_only_walking_gap_and_cannot_open_other_building_walls(self):
+        cfg,raw,context,layers=navigation_fixture()
+        cfg['simulation']['height']=8
+        for portal in cfg['mapped_scene']['portals']:
+            portal['point'][1]=5
+            for endpoint in portal['facade']:endpoint[1]=5
+        for route in cfg['mapped_scene']['routes']:
+            for point in route['points']:point[1]*=5
+        for person in cfg['mapped_scene']['people']:person['speed_mps']*=5
+        cfg['mapped_scene']['motion']['navigation']['allowed_center_polygons']=[{'outer':[[0,0],[10,0],[10,5],[0,5]]}]
+        for row in raw['agents']:
+            if row.get('data_type')=='agent data':
+                row['position']['y']*=5;row['velocity']['y']*=5
+        context.update(portals=copy.deepcopy(cfg['mapped_scene']['portals']),store_fronts=[],navigation={
+            'body_clearance_m':.35,'synthetic_access_connectors':[]})
+        for portal in context['portals']:
+            portal['provenance']='osm'
+            context['store_fronts'].append({'portal_id':portal['id'],'provenance':'osm_entrance_association',
+                'projection_method':'source_entrance_on_original_facade','entrance_source':{'scope':SOURCE_SCOPE}})
+            x=portal['point'][0]
+            context['navigation']['synthetic_access_connectors'].append({'id':'access-'+portal['id'],
+                'portal_id':portal['id'],'centerline':[[x,5],[x,0]],'width_m':3.,
+                'provenance':'synthetic_approach_to_source_osm_entrance'})
+        layers['walking']=box(0,-.5,10,1)
+        layers['buildings']=box(0,5.3,10,8)
+        result=audit(cfg,raw,public_context=context,map_layers=layers)
+        self.assertGreater(result['navigation_static_body_checks'],40)
+        removed=context['navigation'].pop('synthetic_access_connectors')
+        with self.assertRaisesRegex(ValueError,'body leaves derived walking'):
+            audit(cfg,raw,public_context=context,map_layers=layers)
+        context['navigation']['synthetic_access_connectors']=removed
+        layers['buildings']=box(.5,2.42,1.5,2.55)
+        with self.assertRaisesRegex(ValueError,'connector crosses a building'):
+            audit(cfg,raw,public_context=context,map_layers=layers)
+
     def test_crossing_bodies_are_rejected_between_separated_frames(self):
         cfg, raw, _, _ = navigation_fixture()
         for person in cfg['mapped_scene']['people']:
@@ -269,6 +309,83 @@ class BuildingAccessAuditTests(unittest.TestCase):
         later['position'] = {'x': 7.65, 'y': .95}
         with self.assertRaisesRegex(ValueError, 'body-clearance'):
             audit(cfg, raw)
+
+
+class SourceAccessValidationTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        from build_mapped_scene import load_source
+        cls.repo=Path(__file__).resolve().parents[2]
+        _,cls.local,cls.layers,_,cls.provenance=load_source(cls.repo)
+        cls.lookup={(props['osm_type'],props['osm_id']):(props,geometry) for props,geometry in cls.local}
+
+    def context(self):
+        props,door=self.lookup[('node',9370793427)]
+        building=self.lookup[('way',32529387)][1]
+        vertices=list(building.exterior.coords);index=next(i for i,p in enumerate(vertices) if Point(p).distance(door)<1e-8)
+        before,after=vertices[index-1],vertices[index+1]
+        dx,dy=after[0]-before[0],after[1]-before[1];length=math.hypot(dx,dy)
+        facade=[[door.x+sign*dx/length,door.y+sign*dy/length] for sign in (-1,1)]
+        labels=json.loads((self.repo/'tools/osm_regions/data/moenckeberg/close/poi_labels.json').read_text())
+        poi=next(row for row in labels['labels'] if row['osm_id']==442443891)
+        portal={'id':'shop-442443891','building_id':'osm-way-32529387','point':[door.x,door.y],
+            'facade':facade,'width_m':1.2,'provenance':'osm'}
+        return {'bounds':dict(x=0,y=0,width=80,height=80),
+            'buildings':[{'id':portal['building_id'],'osm_type':'way','osm_id':32529387}],
+            'portals':[portal],'store_fronts':[{'portal_id':portal['id'],'building_id':portal['building_id'],
+                'provenance':'osm_entrance_association','projection_method':'source_entrance_on_original_facade',
+                'frontage':facade,'poi':{'osm_type':'node','osm_id':poi['osm_id'],'name':poi['text'],'point':[poi['x'],poi['y']]},
+                'entrance_source':{'osm_type':'node','osm_id':9370793427,'osm_version':2,
+                    'osm_timestamp':'2023-07-22T18:14:47Z','scope':SOURCE_SCOPE}}],
+            'navigation':{'body_clearance_m':.55,'synthetic_access_connectors':[{
+                'id':'synthetic-cafe-main-access','portal_id':portal['id'],
+                'centerline':[[door.x,door.y],[33.896603674673436,29.23568635922742],[30.025075189322543,24.542352311244144]],
+                'width_m':3.,'provenance':'synthetic_approach_to_source_osm_entrance'}]}}
+
+    def test_exact_source_door_and_bounded_synthetic_approach_are_independently_authenticated(self):
+        context=self.context()
+        result=validate_expanded_shop_context(self.repo,self.local,self.layers,SOURCE_SHA256,context)
+        self.assertEqual(result['status'],'pass');self.assertEqual(result['source_entrances'],1)
+        self.assertEqual(result['access_connectors'],1);self.assertGreater(result['synthetic_access_surface_area_m2'],15)
+        buildings=unary_union([geometry for props,geometry in self.local if props['kind']=='building'])
+        surface=connector_surface(context,self.layers['walking'],buildings,box(0,0,80,80))
+        self.assertLess(surface.intersection(buildings).area,1e-8,'access surface never becomes a building-wall exemption')
+
+    def test_source_door_identity_location_wall_and_tenant_evidence_cannot_be_replaced(self):
+        for mutation in ('source_hash','node','point','version','timestamp','scope','private','name','poi_point','building','facade'):
+            with self.subTest(mutation=mutation):
+                context=self.context();front=context['store_fronts'][0];portal=context['portals'][0]
+                source_hash=SOURCE_SHA256
+                if mutation=='source_hash':source_hash='0'*64
+                if mutation=='node':front['entrance_source']['osm_id']=1
+                if mutation=='point':portal['point'][0]+=.01
+                if mutation=='version':front['entrance_source']['osm_version']+=1
+                if mutation=='timestamp':front['entrance_source']['osm_timestamp']='2024-01-01T00:00:00Z'
+                if mutation=='scope':front['entrance_source']['scope']='Verified shop identity'
+                if mutation=='private':front['entrance_source']['person_id']='secret'
+                if mutation=='name':front['poi']['name']='Different tenant'
+                if mutation=='poi_point':front['poi']['point'][0]+=.01
+                if mutation=='building':context['buildings'][0]['osm_id']=43117523
+                if mutation=='facade':portal['facade'][0][0]+=.01
+                with self.assertRaises(ValueError):
+                    validate_expanded_shop_context(self.repo,self.local,self.layers,source_hash,context)
+
+    def test_connector_cannot_invent_walkable_routes_through_walls_or_unconnected_space(self):
+        for mutation in ('private','target','off_target','width','repeated','loop','outside','length','disconnected','wall'):
+            with self.subTest(mutation=mutation):
+                context=self.context();row=context['navigation']['synthetic_access_connectors'][0]
+                if mutation=='private':row['person_id']='secret'
+                if mutation=='target':row['portal_id']='other-door'
+                if mutation=='off_target':row['centerline'][0][0]-=.1
+                if mutation=='width':row['width_m']=4.1
+                if mutation=='repeated':row['centerline'][1]=row['centerline'][0]
+                if mutation=='loop':row['centerline'].append(row['centerline'][0])
+                if mutation=='outside':row['centerline'][1]=[-1,40]
+                if mutation=='length':row['centerline'][1]=[10,40]
+                if mutation=='disconnected':row['centerline']=row['centerline'][:2]
+                if mutation=='wall':row['centerline'][1]=[36,28]
+                with self.assertRaises(ValueError):
+                    validate_expanded_shop_context(self.repo,self.local,self.layers,SOURCE_SHA256,context)
 
 
 if __name__ == '__main__':

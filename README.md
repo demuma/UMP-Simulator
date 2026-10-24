@@ -3,6 +3,32 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
+**Evening extension — 2026-10-24: corrected access and a spatial baseline portfolio.**
+The replay uses rounded text halos and equal-size entrance diamonds. A1/A2 labels
+stay close to their surface targets and inside the map. Optional
+`--expanded-shop-access` adds the exact frozen Café main door and a separate
+modeled Konzertkasse facade destination; actual visits use all six shops.
+The Café approach is an explicit modeled exterior surface, not inferred OSM
+walkability. `--pedestrians-only` regenerates a full pedestrian cohort rather
+than deleting riders from an existing capture. See the
+[source/access contract](docs/EXPANDED_SHOP_ACCESS_2026-10-24.md).
+
+The opt-in `--spatial-portfolio` compares fixed 5/10/20 m grids at 0.4/1 s and
+adaptive Semantic First/Spatial First on one frozen observation stream. The
+original 10/5 m spatial bounds deliberately reject 20 m output; a separate
+Spatial20 tree permits 20 m for every method. Every case's policies, executable,
+input and query bank are frozen before execution. Connected measured points
+are descriptive response curves, not fitted regressions. Read the
+[predeclared comparison protocol](docs/SPATIAL_PORTFOLIO_PROTOCOL_2026-10-24.md).
+Generated movement and complete replay artifacts remain local under `results/`.
+Verified local comparisons: [mixed](http://127.0.0.1:8793/) and
+[pedestrian-only](http://127.0.0.1:8794/); restart commands are in the result report.
+All 32 runs are verified; [measured results and curves](docs/SPATIAL_PORTFOLIO_RESULTS_2026-10-24.md)
+show a policy-dependent outcome: adaptive methods retain more under the original
+tree, while fixed 20 m retains more under Spatial20 in both sources. No universal
+adaptive advantage or measured privacy gain is claimed. The aggregate Git package
+is about 5 MB before compression and contains no generated motion.
+
 **Current extension — 2026-10-24: bounded semantic contribution suppression,
 subway surface access and rider priority.** Suppression is policy controlled and
 off by default. It filters rare taxonomy contributions only when the retained
@@ -33,8 +59,11 @@ The initial receiving-apron deadlock is preserved as a negative case. The matche
 priority-off control finishes sooner (180.85 s): this rule adds behavior and costs,
 not a universal throughput improvement. See the [source acceptance report](docs/SUBWAY_AND_PRIORITY_TEST_REPORT_2026-10-24.md).
 
-All 95 registered CTest groups pass; the final filtered-viewer checks pass separately.
-Read the [combined implementation/test report](docs/EXTENSION_TEST_REPORT_2026-10-24.md).
+At the preceding checkpoint, all 95 then-registered CTest groups passed.
+The evening access/visual changes have their own
+[test report](docs/EXPANDED_ACCESS_TEST_REPORT_2026-10-24.md); the newly registered
+spatial-plot and compact-viewer CTest groups also pass. The earlier
+[combined report](docs/EXTENSION_TEST_REPORT_2026-10-24.md) retains that checkpoint's exact scope.
 Local verified views (no live Simulator/MongoDB required):
 
 ```sh

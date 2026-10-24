@@ -1,0 +1,215 @@
+{
+  "schema": "ump.spatial-portfolio-git-package.v1",
+  "scope": "Aggregate summaries, exact executed policies, figures and compact source proofs only. No generated observations, trajectories, native results or private audits.",
+  "files": {
+    "mixed/capture-proof.json": {
+      "bytes": 5348,
+      "sha256": "eba903f5cf22ad97083cee0735b2397e78fece8dda4f8b7e45274840b5265640"
+    },
+    "mixed/figures/figure-provenance.json": {
+      "bytes": 4883,
+      "sha256": "43ac922f1eaaa5550d5ee94019345a14f9755ba0a9ef4d414cb265644aa17471"
+    },
+    "mixed/figures/spatial-portfolio-original.png": {
+      "bytes": 237447,
+      "sha256": "500073bd8527cdd6c175f1b79fc76ac145825a99c8b8e11573dc7470a892c6d6"
+    },
+    "mixed/figures/spatial-portfolio-original.svg": {
+      "bytes": 37508,
+      "sha256": "2c0db73c20f77b235ca08995c64b26a2a2de14585b4a13f4a046d7b92c973bb2"
+    },
+    "mixed/figures/spatial-portfolio-spatial20.png": {
+      "bytes": 235854,
+      "sha256": "d132be4789555dd80931b39eafbdcf3655280baed82a4b068f4feda67b4d72ba"
+    },
+    "mixed/figures/spatial-portfolio-spatial20.svg": {
+      "bytes": 37287,
+      "sha256": "09efcd9644dd772e52a26532c39e3b0f909f1888e4dff7e107304f8245ffb46e"
+    },
+    "mixed/original_adaptive_immediate-policy.json": {
+      "bytes": 4895,
+      "sha256": "bf1f46819b0fdc64e67820bfda8989adab20990bae2b9e60b9bc0a74aecc363c"
+    },
+    "mixed/original_adaptive_spatial_first-policy.json": {
+      "bytes": 4847,
+      "sha256": "2926799f2e6f7e00035c2a161285879defd93e67d977287b42859fec54793f64"
+    },
+    "mixed/original_fixed_10m_1000ms-policy.json": {
+      "bytes": 4891,
+      "sha256": "a9c125fe4c3a7f7b51e9ffcf5b71e25f81c4bdd30b1fad31ef9b3c3b08941c64"
+    },
+    "mixed/original_fixed_10m_400ms-policy.json": {
+      "bytes": 4889,
+      "sha256": "d021bc305967726b8eb020d8f2b842a718bd1a91e0623d8dcf4f6464e7f385be"
+    },
+    "mixed/original_fixed_20m_1000ms-policy.json": {
+      "bytes": 4891,
+      "sha256": "7c8810318221f3cb008a1d5fd4d518ec5b7f882b8c945f7487f192646035e7d7"
+    },
+    "mixed/original_fixed_20m_400ms-policy.json": {
+      "bytes": 4889,
+      "sha256": "4e2e8eedc24211726cc4bd8a60eee06e805487135f1ab9f9d1cb6d76abd64e47"
+    },
+    "mixed/original_fixed_5m_1000ms-policy.json": {
+      "bytes": 4889,
+      "sha256": "7ffe60da8795558435388c6ce8b50bdd89212a82247251af66289ac6c6adcd8b"
+    },
+    "mixed/original_fixed_5m_400ms-policy.json": {
+      "bytes": 4887,
+      "sha256": "9d6d7c10a3d0c806681e8637287e71f48f2d4fb1c4bae2a8d9154eb6355779b6"
+    },
+    "mixed/physical-audit.json": {
+      "bytes": 3756,
+      "sha256": "705ad28045853dbb1bbd89f20d67f70498ab4563bc038cc4d27b2ba3124ac82e"
+    },
+    "mixed/protocol.json": {
+      "bytes": 14419,
+      "sha256": "66dd4dd8df8eb8fd280d6db5952218117445f05defa76b9f74d1677a09a8d5d4"
+    },
+    "mixed/report.md": {
+      "bytes": 31307,
+      "sha256": "2de4ca29b2c896e7b103eebed7a04424b28aa2ce7265833e08089242e23fc46c"
+    },
+    "mixed/spatial20_adaptive_immediate-policy.json": {
+      "bytes": 4908,
+      "sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda"
+    },
+    "mixed/spatial20_adaptive_spatial_first-policy.json": {
+      "bytes": 4860,
+      "sha256": "b96093993b8f82870026a3c772afe6eff34c71ff27f34364740992e1307a2074"
+    },
+    "mixed/spatial20_fixed_10m_1000ms-policy.json": {
+      "bytes": 4904,
+      "sha256": "e45dbf9493c8f2cf5386f21b5fe402bf45535d65a1d203861c7e0aecdafebd78"
+    },
+    "mixed/spatial20_fixed_10m_400ms-policy.json": {
+      "bytes": 4902,
+      "sha256": "073ef9aa430637b8d6195a7f25f7a24332218ad47646bc727b4b514394734a97"
+    },
+    "mixed/spatial20_fixed_20m_1000ms-policy.json": {
+      "bytes": 4904,
+      "sha256": "b77d5fb5d002c9854e5498d0f32b4b1b03dd0fbce8eb37b85f6ad7d980656fc7"
+    },
+    "mixed/spatial20_fixed_20m_400ms-policy.json": {
+      "bytes": 4902,
+      "sha256": "cb5d998244f2b176a3247d112f44503329976c94ed129d8b737df7d12914f8a1"
+    },
+    "mixed/spatial20_fixed_5m_1000ms-policy.json": {
+      "bytes": 4902,
+      "sha256": "a0604d1cd68c1411cf413930426f6343d7d7705c95fe714b97adc4c0a83b84eb"
+    },
+    "mixed/spatial20_fixed_5m_400ms-policy.json": {
+      "bytes": 4900,
+      "sha256": "f49fb886a2a9bf97363daa2bf95cec909447ecd11bc6b6365babf9beea48a805"
+    },
+    "mixed/summary.json": {
+      "bytes": 1883160,
+      "sha256": "429f41572f4a377662c9698141f00a8aa928ad129c95e4779a76335ca4f2d3e0"
+    },
+    "pedestrians/capture-proof.json": {
+      "bytes": 5337,
+      "sha256": "2652ab50a75730c79e8c8d99ba62c78cc1fce49b57541f6f907a260727daa3f0"
+    },
+    "pedestrians/figures/figure-provenance.json": {
+      "bytes": 4754,
+      "sha256": "8203b79e7a842af38173706249337545ead5f96b84a0fb99f6db1c400ea75e6e"
+    },
+    "pedestrians/figures/spatial-portfolio-original.png": {
+      "bytes": 235319,
+      "sha256": "cdc9c03e68715118deebd2d4f6e579233448f628183acd0f3ee5f737d628aabf"
+    },
+    "pedestrians/figures/spatial-portfolio-original.svg": {
+      "bytes": 37488,
+      "sha256": "c94d33bd2e8a55c1cf2f12431f6aba3d3884be4167e3f95e269c6ae1286abba8"
+    },
+    "pedestrians/figures/spatial-portfolio-spatial20.png": {
+      "bytes": 246862,
+      "sha256": "2c7a5e57c1c1dfbcce53439e15ad622858ae49b5e4cfa2b033803bb0d099c694"
+    },
+    "pedestrians/figures/spatial-portfolio-spatial20.svg": {
+      "bytes": 37271,
+      "sha256": "68f14c21bc92a25e9ed200c372186a0a402b3a72142c1bca41bae6dbc7fe079d"
+    },
+    "pedestrians/original_adaptive_immediate-policy.json": {
+      "bytes": 4895,
+      "sha256": "bf1f46819b0fdc64e67820bfda8989adab20990bae2b9e60b9bc0a74aecc363c"
+    },
+    "pedestrians/original_adaptive_spatial_first-policy.json": {
+      "bytes": 4847,
+      "sha256": "2926799f2e6f7e00035c2a161285879defd93e67d977287b42859fec54793f64"
+    },
+    "pedestrians/original_fixed_10m_1000ms-policy.json": {
+      "bytes": 4891,
+      "sha256": "a9c125fe4c3a7f7b51e9ffcf5b71e25f81c4bdd30b1fad31ef9b3c3b08941c64"
+    },
+    "pedestrians/original_fixed_10m_400ms-policy.json": {
+      "bytes": 4889,
+      "sha256": "d021bc305967726b8eb020d8f2b842a718bd1a91e0623d8dcf4f6464e7f385be"
+    },
+    "pedestrians/original_fixed_20m_1000ms-policy.json": {
+      "bytes": 4891,
+      "sha256": "7c8810318221f3cb008a1d5fd4d518ec5b7f882b8c945f7487f192646035e7d7"
+    },
+    "pedestrians/original_fixed_20m_400ms-policy.json": {
+      "bytes": 4889,
+      "sha256": "4e2e8eedc24211726cc4bd8a60eee06e805487135f1ab9f9d1cb6d76abd64e47"
+    },
+    "pedestrians/original_fixed_5m_1000ms-policy.json": {
+      "bytes": 4889,
+      "sha256": "7ffe60da8795558435388c6ce8b50bdd89212a82247251af66289ac6c6adcd8b"
+    },
+    "pedestrians/original_fixed_5m_400ms-policy.json": {
+      "bytes": 4887,
+      "sha256": "9d6d7c10a3d0c806681e8637287e71f48f2d4fb1c4bae2a8d9154eb6355779b6"
+    },
+    "pedestrians/physical-audit.json": {
+      "bytes": 3757,
+      "sha256": "c8151ac866ca47a4a02826629ef28ccaca3d2c6c2a98ef9e5bf89d57f831af31"
+    },
+    "pedestrians/protocol.json": {
+      "bytes": 14419,
+      "sha256": "0d2cdc59735ac179e71fdbd7f3bf8ccd62035ce3560ad10cbed864e871109302"
+    },
+    "pedestrians/report.md": {
+      "bytes": 27191,
+      "sha256": "894a40fd0bd67e6164501b37b10ff7ede9a59584d220eaf3064908abcd6f1056"
+    },
+    "pedestrians/spatial20_adaptive_immediate-policy.json": {
+      "bytes": 4908,
+      "sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda"
+    },
+    "pedestrians/spatial20_adaptive_spatial_first-policy.json": {
+      "bytes": 4860,
+      "sha256": "b96093993b8f82870026a3c772afe6eff34c71ff27f34364740992e1307a2074"
+    },
+    "pedestrians/spatial20_fixed_10m_1000ms-policy.json": {
+      "bytes": 4904,
+      "sha256": "e45dbf9493c8f2cf5386f21b5fe402bf45535d65a1d203861c7e0aecdafebd78"
+    },
+    "pedestrians/spatial20_fixed_10m_400ms-policy.json": {
+      "bytes": 4902,
+      "sha256": "073ef9aa430637b8d6195a7f25f7a24332218ad47646bc727b4b514394734a97"
+    },
+    "pedestrians/spatial20_fixed_20m_1000ms-policy.json": {
+      "bytes": 4904,
+      "sha256": "b77d5fb5d002c9854e5498d0f32b4b1b03dd0fbce8eb37b85f6ad7d980656fc7"
+    },
+    "pedestrians/spatial20_fixed_20m_400ms-policy.json": {
+      "bytes": 4902,
+      "sha256": "cb5d998244f2b176a3247d112f44503329976c94ed129d8b737df7d12914f8a1"
+    },
+    "pedestrians/spatial20_fixed_5m_1000ms-policy.json": {
+      "bytes": 4902,
+      "sha256": "a0604d1cd68c1411cf413930426f6343d7d7705c95fe714b97adc4c0a83b84eb"
+    },
+    "pedestrians/spatial20_fixed_5m_400ms-policy.json": {
+      "bytes": 4900,
+      "sha256": "f49fb886a2a9bf97363daa2bf95cec909447ecd11bc6b6365babf9beea48a805"
+    },
+    "pedestrians/summary.json": {
+      "bytes": 1870698,
+      "sha256": "86c2c3c83838783c7b32d57697a1f9ad63d5b809971ac9f5f2d47aa8381a5f1e"
+    }
+  },
+  "total_bytes": 5130585
+}

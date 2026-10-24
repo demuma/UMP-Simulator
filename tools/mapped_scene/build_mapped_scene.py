@@ -277,7 +277,7 @@ def storefront_module():
 @functools.lru_cache(maxsize=8)
 def storefront_scene(repo, seed, population, duration_s, interval_ms=None, overrides_json=None,
                      experimental_narrow_passages=False, urban_traffic=False, road_user_fraction=.2,
-                     distributed_crossing_fraction=.2, pedestrian_clearance_m=.05, subway_access=False, rider_priority=False):
+                     distributed_crossing_fraction=.2, pedestrian_clearance_m=.05, subway_access=False, rider_priority=False, expanded_shop_access=False, pedestrians_only=False):
     repo = pathlib.Path(repo)
     _, local, layers, _, provenance = load_source(repo)
     people, interval = corridor_people(seed, population, duration_s, interval_ms)
@@ -290,9 +290,9 @@ def storefront_scene(repo, seed, population, duration_s, interval_ms=None, overr
         spec.loader.exec_module(urban)
         return urban.make_scene(storefront_module(), repo, local, layers, access_module(),
             provenance["source_geometry_sha256"], seed, people, interval, overrides,
-            road_user_fraction, distributed_crossing_fraction, pedestrian_clearance_m, subway_access, rider_priority)
+            road_user_fraction, distributed_crossing_fraction, pedestrian_clearance_m, subway_access, rider_priority, expanded_shop_access=expanded_shop_access, pedestrians_only=pedestrians_only)
     return storefront_module().make_scene(repo, local, layers, access_module(),
-        provenance["source_geometry_sha256"], seed, people, interval, overrides, experimental_narrow_passages)
+        provenance["source_geometry_sha256"], seed, people, interval, overrides, experimental_narrow_passages, expanded_shop_access=expanded_shop_access)
 
 
 def profiles():
@@ -367,7 +367,13 @@ def regions():
 
 def make_config(repo, database, duration, render, seed, motion_mode="integration", population=64,
                 arrival_interval_ms=None, shop_overrides=None, experimental_narrow_passages=False,
-                urban_traffic=False, road_user_fraction=.2, distributed_crossing_fraction=.2, pedestrian_clearance_m=.05, subway_access=False, rider_priority=False):
+                urban_traffic=False, road_user_fraction=.2, distributed_crossing_fraction=.2, pedestrian_clearance_m=.05, subway_access=False, rider_priority=False, expanded_shop_access=False, pedestrians_only=False):
+    if expanded_shop_access and motion_mode != "storefronts":
+        raise ValueError("Expanded shop access requires storefronts mode")
+    if pedestrians_only and not urban_traffic:
+        raise ValueError("Pedestrians-only requires urban traffic geometry")
+    if pedestrians_only and rider_priority:
+        raise ValueError("Pedestrians-only omits rider-priority admission on the empty road")
     if (subway_access or rider_priority) and not urban_traffic:
         raise ValueError("Subway access and rider priority require urban traffic")
     if urban_traffic and motion_mode != "storefronts":
@@ -416,7 +422,7 @@ def make_config(repo, database, duration, render, seed, motion_mode="integration
         cfg["simulation"]["datetime"] = "2026-10-24T00:00:00Z"
         cfg["mapped_scene"], _, _, _ = copy.deepcopy(storefront_scene(str(repo), seed, population, duration, arrival_interval_ms,
             json.dumps(shop_overrides, sort_keys=True) if shop_overrides is not None else None,
-            experimental_narrow_passages, urban_traffic, road_user_fraction, distributed_crossing_fraction, pedestrian_clearance_m, subway_access, rider_priority))
+            experimental_narrow_passages, urban_traffic, road_user_fraction, distributed_crossing_fraction, pedestrian_clearance_m, subway_access, rider_priority, expanded_shop_access=expanded_shop_access, pedestrians_only=pedestrians_only))
         if urban_traffic:
             add_urban_profiles_and_taxonomy(cfg, repo)
         cfg["agents"]["num_agents"] = population
@@ -533,6 +539,17 @@ def audit_config(cfg):
             portal_scope="Exact source-bound A1/A2 surface targets plus synthetic shop facade entrances; station trips are independent episodes with stairs-compatible profiles. No underground movement or hidden re-identification.")
     if cfg["mapped_scene"].get("motion",{}).get("navigation",{}).get("crossings"):
         result["crossing_priority_scope"]="Synthetic rider-priority entry, aged pedestrian requests and finite batches; already crossing bodies clear. Physical separation remains authoritative; no universal liveness or legal priority claim."
+    facades=[p for p in cfg["mapped_scene"].get("portals",[]) if p.get("kind")!="surface_access"]
+    source_facades=[portal for portal in facades if portal.get("provenance")=="osm"]
+    if source_facades:
+        result["portal_scope"]=(f"{len(facades)} shop facade targets: {len(source_facades)} exact source OSM entrance point(s) with modeled tenant association and "
+            f"{len(facades)-len(source_facades)} synthetic POI projections; {len(surfaces)} separate station surface targets. "
+            "Original building outlines are retained. Added exterior approach surfaces, widths and visitation are explicit scenario assumptions.")
+    if cfg["mapped_scene"].get("motion",{}).get("navigation",{}).get("spaces") and not any(kind in counts for kind in ("Adult Cyclist","Senior Cyclist","Adult E-Scooter Driver")):
+        observed_pedestrian_profiles=sum(kind in counts for kind in PROFILES)
+        result.update(profile_assumptions=f"Pedestrians-only cohort with {observed_pedestrian_profiles} observed pedestrian profiles, explicit 1.1–1.5 m/s speeds and unchanged physical radii. Road/cycling surfaces remain map context; no rider demand.",
+            motion_scope="Seeded full pedestrian cohort on original walking surfaces plus explicitly declared crossing/approach connectors. Road direction spaces remain contextual and have no rider demand. Not empirical demand or legal access guidance.",
+            route_variation_scope="Continuous pedestrian boundary origins and seeded detours with explicit shop/station endpoints. No rider lane trips; this is a regenerated source rather than a filtered recorded stream.")
     return result
 
 
@@ -613,6 +630,8 @@ def main():
     parser.add_argument("--shop-overrides", type=pathlib.Path, help="Optional source-hash-bound synthetic shop entrance overrides")
     parser.add_argument("--urban-traffic", action="store_true", help="Opt-in mixed riders and explicit synthetic pedestrian crossing corridors")
     parser.add_argument("--subway-access", action="store_true", help="Opt-in source-bound A1/A2 surface access and overhead roof classification; requires urban traffic")
+    parser.add_argument("--expanded-shop-access", action="store_true", help="Add source-bound cafe/concert access and an explicit modeled approach")
+    parser.add_argument("--pedestrians-only", action="store_true", help="Generate a full pedestrian cohort on urban geometry; no rider demand")
     parser.add_argument("--rider-priority", action="store_true", help="Opt-in bounded pedestrian yielding at declared crossings; requires urban traffic")
     parser.add_argument("--road-user-fraction", type=float, default=.2, help="Rider fraction of the total cohort, urban traffic only (default .2)")
     parser.add_argument("--distributed-crossing-fraction", type=float, default=.2, help="Targeted distributed crossings among through pedestrian requests (default .2)")
@@ -620,6 +639,12 @@ def main():
     parser.add_argument("--experimental-narrow-passages", action="store_true",
         help="EXPERIMENTAL storefront routing and passage coordination; larger-cohort acceptance remains open")
     args = parser.parse_args()
+    if args.expanded_shop_access and args.motion_mode != "storefronts":
+        parser.error("--expanded-shop-access requires --motion-mode storefronts")
+    if args.pedestrians_only and not args.urban_traffic:
+        parser.error("--pedestrians-only requires --urban-traffic")
+    if args.pedestrians_only and args.rider_priority:
+        parser.error("--pedestrians-only omits --rider-priority")
     if args.experimental_narrow_passages and args.motion_mode != "storefronts":
         parser.error("--experimental-narrow-passages requires --motion-mode storefronts")
     if args.urban_traffic and args.motion_mode != "storefronts":
@@ -638,12 +663,12 @@ def main():
     _, local, layers, assumptions, provenance = load_source(repo)
     cfg = make_config(repo, args.database, args.duration_s, args.render, args.seed,args.motion_mode,args.population,args.arrival_interval_ms,
         json.loads(args.shop_overrides.read_text()) if args.shop_overrides else None, args.experimental_narrow_passages,
-        args.urban_traffic,args.road_user_fraction,args.distributed_crossing_fraction,args.pedestrian_clearance_m,args.subway_access,args.rider_priority)
+        args.urban_traffic,args.road_user_fraction,args.distributed_crossing_fraction,args.pedestrian_clearance_m,args.subway_access,args.rider_priority,args.expanded_shop_access,args.pedestrians_only)
     context, construction = None, None
     if args.motion_mode == "storefronts":
         _, context, construction, geometry = copy.deepcopy(storefront_scene(str(repo), args.seed, args.population, args.duration_s, args.arrival_interval_ms,
             json.dumps(json.loads(args.shop_overrides.read_text()), sort_keys=True) if args.shop_overrides else None,
-            args.experimental_narrow_passages,args.urban_traffic,args.road_user_fraction,args.distributed_crossing_fraction,args.pedestrian_clearance_m,args.subway_access,args.rider_priority))
+            args.experimental_narrow_passages,args.urban_traffic,args.road_user_fraction,args.distributed_crossing_fraction,args.pedestrian_clearance_m,args.subway_access,args.rider_priority,args.expanded_shop_access,args.pedestrians_only))
     elif args.motion_mode == "buildings":
         context, _, construction = copy.deepcopy(building_geometry(str(repo)))
         geometry = access_module().audit_access(local, layers, cfg["mapped_scene"]["routes"], context["portals"])
@@ -667,6 +692,9 @@ def main():
               "policy_scope": "Four illustrative disjoint raster-aligned regions through the normal Region/PolicyTree adapter. Requirements are declared experimental choices, not validated privacy protection or map-derived law.",
               "execution": "cd to this output folder, then run the maintained simulator/build/Simulator; no simulation or DB operation was executed by this generator."}
     if args.motion_mode in ("corridor", "buildings", "storefronts"): report["motion_mode"] = args.motion_mode
+    if args.expanded_shop_access or args.pedestrians_only:
+        report["source_options"]={"expanded_shop_access":args.expanded_shop_access,"pedestrians_only":args.pedestrians_only,
+            "subway_access":args.subway_access,"rider_priority":args.rider_priority}
     if context is not None:
         report["building_access"] = construction
         report["building_access_sha256"] = sha((args.output / "building_access.json").read_bytes())

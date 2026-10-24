@@ -35,6 +35,77 @@ test('Map shop names retain normal typography independently of entrance markers 
  assert.deepEqual(calls.filter(call=>call.method==='fillText').map(call=>call.args[0]),['Example shop']);
  assert.equal(calls.filter(call=>call.method==='lineTo').length,0,'names remain independently visible with entrance markers off');
 });
+/* Exercise the shipped Canvas renderer with stateful save/restore rather than
+   duplicating layout formulas in tests. Calls retain the style used to paint. */
+function rendererCanvas(){
+ const vm=require('node:vm'),fs=require('node:fs'),calls=[],saved=[];
+ const controls={mapNames:{checked:true},entranceMarkers:{checked:true},buildingBoundaries:{checked:false},storeFronts:{checked:false},boundaryIntervals:{checked:false}};
+ const target={measureText:text=>({width:text.length*5})};
+ const fields=['font','textAlign','textBaseline','lineJoin','miterLimit','lineWidth','strokeStyle','fillStyle'];
+ const ctx=new Proxy(target,{get(object,key){
+   if(key in object)return object[key];
+   if(key==='save')return ()=>saved.push(Object.fromEntries(fields.map(field=>[field,object[field]])));
+   if(key==='restore')return ()=>Object.assign(object,saved.pop());
+   return (...args)=>calls.push({method:key,args,...Object.fromEntries(fields.map(field=>[field,object[field]]))});
+ }});
+ const context=vm.createContext({UMPReplay:M,document:{getElementById:id=>controls[id]},fetch:()=>new Promise(()=>{}),canvas:ctx});
+ vm.runInContext(fs.readFileSync(require.resolve('./viewer.js'),'utf8'),context);
+ return {calls,controls,run:code=>vm.runInContext(code,context)};
+}
+test('Small map-name halos have round joins and displaced labels create no spike-like leaders',()=>{
+ const canvas=rendererCanvas();
+ canvas.run(`manifest={map:{labels:[{text:'H&M HOME',kind:'shop',x:18,y:16},{text:'Mo Grill',kind:'shop',x:18,y:16},{text:'Mönckebergstraße',kind:'street',x:18,y:16}]}};
+ var labelLayout={ctx:canvas,left:10,top:20,w:240,h:240,scale:3,viewport:{x:0,y:0,width:80,height:80}};
+ geographyLabels(labelLayout);`);
+ const halos=canvas.calls.filter(call=>call.method==='strokeText');
+ assert.equal(halos.length,3);
+ for(const halo of halos){assert.equal(halo.font,'600 10px -apple-system,sans-serif');assert.equal(halo.lineJoin,'round');assert.equal(halo.miterLimit,2);assert.equal(halo.lineWidth,2);}
+ assert.equal(canvas.calls.filter(call=>call.method==='lineTo'||call.method==='moveTo').length,0,'name collision packing never draws a leader line');
+ assert.equal(new Set(halos.map(call=>call.args.slice(1).join('/'))).size,3,'overlapping names still receive separate positions');
+});
+test('A1 and A2 use one compact label each and equal-size blue diamonds beside the exact targets',()=>{
+ const canvas=rendererCanvas();
+ canvas.run(`manifest={map:{labels:[{text:'A1',kind:'shop',x:79.5,y:.5},{text:'Nearby shop',kind:'shop',x:74,y:6}]}};
+ buildingAccess={buildings:[],portals:[
+ {id:'A1',kind:'surface_access',point:[79.5,.5],admission_segment:[[78.9,.5],[80.1,.5]],width_m:1.2,provenance:'osm',surface_access:{reference:'A1'}},
+ {id:'A2',kind:'surface_access',point:[.5,79.5],admission_segment:[[-.1,79.5],[1.1,79.5]],width_m:1.2,provenance:'osm',surface_access:{reference:'A2'}},
+ {id:'shop',point:[40,40],facade:[[38,40],[42,40]],width_m:1.2,provenance:'synthetic'}]};
+ var labelLayout={ctx:canvas,left:10,top:20,w:240,h:240,scale:3,viewport:{x:0,y:0,width:80,height:80}};
+ drawBuildingAccess(labelLayout);geographyLabels(labelLayout);`);
+ const references=canvas.calls.filter(call=>call.method==='fillText'&&/^A[12]$/.test(call.args[0]));
+ assert.deepEqual(references.map(call=>call.args[0]),['A1','A2'],'a supplied map name cannot duplicate its access reference');
+ for(const label of references){
+   assert.equal(label.font,'600 10px -apple-system,sans-serif');assert.equal(label.fillStyle,'#12658a');
+   const [text,x,y]=label.args;assert.ok(x>=13&&x+text.length*5<=247);assert.ok(y-10>=23&&y+3<=257,'complete halo remains inside the map');
+ }
+ const a1=references[0].args,a2=references[1].args;
+ assert.ok(a1[1]<248.5,'the right-edge reference is placed to the left of its target');
+ assert.ok(Math.hypot(a1[1]+a1[0].length*5-248.5,a1[2]-21.5)<=18,'A1 remains close to the entrance');
+ assert.ok(Math.hypot(a2[1]-11.5,a2[2]-258.5)<=18,'A2 remains close to the entrance');
+ const fills=canvas.calls.map((call,index)=>({call,index})).filter(({call})=>call.method==='fill');
+ assert.equal(fills.length,3);
+ for(const [i,{call,index}]of fills.entries()){
+   const begin=canvas.calls.slice(0,index).map(item=>item.method).lastIndexOf('beginPath');
+   const path=canvas.calls.slice(begin+1,index);
+   assert.deepEqual(path.map(item=>item.method),['moveTo','lineTo','lineTo','lineTo','closePath']);
+   const [cx,cy]=i===0?[248.5,21.5]:i===1?[11.5,258.5]:[130,140];
+   assert.deepEqual(path.slice(0,4).map(item=>item.args),[[cx,cy-6],[cx+6,cy],[cx,cy+6],[cx-6,cy]]);
+   assert.equal(call.fillStyle,i<2?'#e6f6ff':'#fff4e9');
+ }
+ assert.equal(canvas.calls.filter(call=>call.method==='rect').length,2,'only clipping rectangles exist; entrances are never squares');
+ const source=require('node:fs').readFileSync(require.resolve('./viewer.js'),'utf8');
+ assert.ok(source.includes('OSM entrance · diamond'));assert.ok(!source.includes('OSM entrance · square'),'legend follows the rendered glyph even for legacy bundles');
+});
+test('Focused cells do not acquire clamped labels for subway entrances outside their viewport',()=>{
+ const canvas=rendererCanvas();
+ canvas.run(`buildingAccess={buildings:[],portals:[{id:'A1',kind:'surface_access',point:[79.5,.5],admission_segment:[[78.9,.5],[80.1,.5]],width_m:1.2,provenance:'osm',surface_access:{reference:'A1'}}]};
+ var labelLayout={ctx:canvas,left:10,top:20,w:240,h:240,scale:48,viewport:{x:30,y:30,width:5,height:5}};
+ drawBuildingAccess(labelLayout);`);
+ assert.equal(canvas.calls.filter(call=>call.method==='fillText'||call.method==='strokeText').length,0);
+ canvas.controls.entranceMarkers.checked=false;
+ canvas.run('drawBuildingAccess(labelLayout);');
+ assert.equal(canvas.calls.filter(call=>call.method==='fillText').length,0);
+});
 test('Policy labels separate the tree identity/version from its execution method',()=>{
  const v={id:'native',label:'Actual native aggregation',policy_tree_id:'mapped-policy',result:{parameters:{strategy:'semantic_first'},releases:[{policy_id:'mapped-policy',policy_version:'1'}]}};
  const before=JSON.stringify(v),label=M.variantIdentity(v);

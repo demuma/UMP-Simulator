@@ -426,5 +426,116 @@ class UrbanTrafficTests(unittest.TestCase):
         self.assertIn("--urban-traffic",command)
 
 
+class ExpandedShopAccessTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        _,cls.local,cls.layers,_,cls.provenance=builder.load_source(REPO)
+        cls.people,cls.interval=builder.corridor_people(20261024,128,180,150)
+        spec=importlib.util.spec_from_file_location("expanded_shop_urban",HERE/"urban_traffic_scene.py")
+        cls.urban=importlib.util.module_from_spec(spec);spec.loader.exec_module(cls.urban)
+        cls.mixed=cls.urban.make_scene(storefront,REPO,cls.local,cls.layers,builder.access_module(),
+            cls.provenance["source_geometry_sha256"],20261024,cls.people,cls.interval,None,
+            subway_access=True,rider_priority=True,expanded_shop_access=True)
+        cls.pedestrian=cls.urban.make_scene(storefront,REPO,cls.local,cls.layers,builder.access_module(),
+            cls.provenance["source_geometry_sha256"],20261024,cls.people,cls.interval,None,
+            subway_access=True,expanded_shop_access=True,pedestrians_only=True)
+
+    def test_exact_cafe_main_and_separate_concert_destination_are_not_fake_buildings(self):
+        scene,context,construction,audit=self.mixed
+        self.assertEqual(audit["status"],"pass")
+        self.assertEqual((len(context["portals"]),len(context["store_fronts"])),(8,6))
+        portals={row["id"]:row for row in context["portals"]}
+        fronts={row["poi"]["osm_id"]:row for row in context["store_fronts"]}
+        cafe=portals["shop-442443891"];concert=portals["shop-13739289193"]
+        source,point=next((p,g) for p,g in self.local if p["kind"]=="entrance" and p["osm_id"]==9370793427)
+        self.assertEqual(cafe["point"],list(point.coords[0]))
+        self.assertEqual(cafe["provenance"],"osm")
+        self.assertEqual(cafe["building_id"],"osm-way-32529387")
+        self.assertEqual(fronts[442443891]["provenance"],"osm_entrance_association")
+        self.assertEqual(fronts[442443891]["entrance_source"]["osm_version"],source["osm_version"])
+        self.assertEqual(fronts[442443891]["projection_method"],"source_entrance_on_original_facade")
+        self.assertNotIn("entrance_source",fronts[13739289193])
+        self.assertEqual(concert["provenance"],"synthetic")
+        self.assertLess(LineString(concert["facade"]).distance(Point(concert["point"])),1e-8)
+        self.assertGreater(math.dist(cafe["point"],concert["point"]),5)
+        for portal in (cafe,concert):
+            original=next(g for p,g in self.local if p["kind"]=="building" and p["osm_id"]==32529387)
+            self.assertLess(original.boundary.distance(Point(portal["point"])),1e-8)
+        original_ids={f"osm-{p['osm_type']}-{p['osm_id']}" for p,g in self.local if p["kind"]=="building" and g.intersects(box(0,0,80,80))}
+        self.assertEqual({row["id"] for row in context["buildings"]},original_ids)
+
+    def test_access_connector_is_explicit_bounded_and_does_not_grant_wall_penetration(self):
+        scene,context,construction,audit=self.mixed
+        connectors=context["navigation"]["synthetic_access_connectors"]
+        self.assertEqual(len(connectors),1)
+        connector=connectors[0];line=LineString(connector["centerline"])
+        self.assertEqual(connector["portal_id"],"shop-442443891")
+        self.assertEqual(connector["width_m"],3.)
+        self.assertEqual(connector["provenance"],"synthetic_approach_to_source_osm_entrance")
+        self.assertLess(line.length,12)
+        self.assertGreater(line.length,5)
+        self.assertTrue(box(0,0,80,80).covers(line))
+        self.assertTrue(self.layers["walking"].covers(Point(connector["centerline"][-1])))
+        ground=unary_union([g for p,g in self.local if p["kind"]=="building" and p["osm_id"] not in (425508816,425508817)])
+        self.assertLess(line.intersection(ground.buffer(-1e-7)).length,1e-8)
+        self.assertLess(storefront.access_connector_surface(context,ground).intersection(ground).area,1e-8)
+        self.assertNotIn(connector["id"],{row["id"] for row in context["navigation"]["synthetic_crossing_connectors"]})
+        self.assertLess(max(row["body_building_intersection_outside_portal_m2"] for row in audit["routes"].values()),1e-6)
+        inventory=construction["expanded_shop_access"]
+        self.assertEqual({row["poi_osm_id"] for row in inventory["destinations"]}|{row["poi_osm_id"] for row in inventory["excluded_pois"]},
+                         {442443889,442443891,990030917,2887815990,4248082207,10771056021,13739289193})
+
+    def test_every_enabled_shop_gets_real_incoming_and_outgoing_route_demand(self):
+        for scene,context,construction,audit in (self.mixed,self.pedestrian):
+            routes={row["id"]:row for row in scene["routes"]}
+            visitors=[person for person in scene["people"] if len(person["episodes"])==2]
+            expected={front["portal_id"] for front in context["store_fronts"]}
+            actual=set()
+            for person in visitors:
+                incoming,outgoing=[routes[episode["route_id"]] for episode in person["episodes"]]
+                self.assertEqual(incoming["end_portal"],outgoing["start_portal"])
+                self.assertNotEqual(person["episodes"][0]["track_id"],person["episodes"][1]["track_id"])
+                actual.add(incoming["end_portal"])
+            self.assertEqual(actual,expected)
+            self.assertEqual(audit["status"],"pass")
+
+    def test_pedestrian_only_regenerates_whole_cohort_without_removing_people(self):
+        scene,context,construction,audit=self.pedestrian
+        self.assertEqual(len(scene["people"]),128)
+        self.assertEqual({p["type"] for p in scene["people"]},{p["type"] for p in self.people})
+        self.assertFalse({p["type"] for p in scene["people"]}&set(self.urban.RIDER_PROFILES))
+        base={p["person_id"]:p for p in self.people}
+        self.assertEqual({p["person_id"] for p in scene["people"]},set(base))
+        for person in scene["people"]:
+            for field in ("type","radius_m","speed_mps"):
+                self.assertEqual(person[field],base[person["person_id"]][field])
+            for episode in person["episodes"]:
+                self.assertNotIn("navigation_space",next(r for r in scene["routes"] if r["id"]==episode["route_id"]))
+        self.assertEqual(construction["demand"]["road_user_fraction"],0)
+        self.assertEqual(construction["demand"]["rider_people"],0)
+        self.assertNotIn("crossings",scene["motion"]["navigation"])
+        self.assertTrue(all(not r["spawn_supported"] for r in context["boundary_intervals"] if r["mode"]=="road"))
+
+    def test_default_four_shop_geometry_remains_separate_and_source_checks_fail_closed(self):
+        context,_,_,_=storefront.build_geometry(REPO,self.local,self.layers,builder.access_module(),self.provenance["source_geometry_sha256"])
+        self.assertEqual(len(context["portals"]),4)
+        self.assertNotIn("synthetic_access_connectors",context["navigation"])
+        self.assertEqual({row["poi"]["name"] for row in context["store_fronts"]},storefront.SHOP_NAMES)
+        with self.assertRaisesRegex(ValueError,"exact reviewed frozen source"):
+            storefront.projected_shops(REPO,self.local,self.layers,builder.access_module(),"0"*64,expanded_shop_access=True)
+        changed=copy.deepcopy(self.local)
+        for props,geometry in changed:
+            if props["kind"]=="entrance" and props["osm_id"]==9370793427:props["osm_version"]+=1
+        with self.assertRaisesRegex(ValueError,"identity or exact original facade"):
+            storefront.projected_shops(REPO,changed,self.layers,builder.access_module(),self.provenance["source_geometry_sha256"],expanded_shop_access=True)
+        override={"schema":"ump.shop-entrance-overrides.v1","source_geometry_sha256":self.provenance["source_geometry_sha256"],
+                  "entrances":[{"poi_osm_id":13739289193,"point":[40,28]}]}
+        with self.assertRaisesRegex(ValueError,"No body-safe original-facade"):
+            storefront.projected_shops(REPO,self.local,self.layers,builder.access_module(),self.provenance["source_geometry_sha256"],override,True)
+        override["entrances"][0]["poi_osm_id"]=442443891
+        with self.assertRaisesRegex(ValueError,"enabled declared POIs"):
+            storefront.projected_shops(REPO,self.local,self.layers,builder.access_module(),self.provenance["source_geometry_sha256"],override,True)
+
+
 if __name__ == "__main__":
     unittest.main()

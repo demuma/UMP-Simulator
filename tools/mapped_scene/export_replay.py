@@ -331,6 +331,17 @@ def build_recording(cfg, raw):
             counts[point['type']]+=1
         batches.append({'sequence':time//period,'observed_at_ms':time,'status':'measured',
                         'observations':sorted(observations,key=lambda o:o['id'])})
+    observed_tracks={o['id'] for batch in batches for o in batch['observations']}
+    configured_people=cfg.get('mapped_scene',{}).get('people')
+    observability=None
+    if configured_people is not None:
+        scheduled_tracks={episode['track_id'] for person in configured_people for episode in person['episodes']}
+        missing=scheduled_tracks-observed_tracks;unexpected=observed_tracks-scheduled_tracks
+        observability={'schema':'ump.source-sensor-episode-observability.v1',
+            'status':'pass' if not missing and not unexpected else 'fail',
+            'scheduled_tracks':len(scheduled_tracks),'sensor_observed_tracks':len(observed_tracks),
+            'missing_track_count':len(missing),'unexpected_track_count':len(unexpected),
+            'scope':'Exact configured visible-episode token set versus all in-coverage sensor-cadence observations; no identities in compact proof.'}
     actual={}
     for row in raw['sensor']:
         if row.get('data_type')!='adaptive grid data': continue
@@ -464,6 +475,7 @@ def build_recording(cfg, raw):
            'track_person_inflated_published_cells':inflation,
            'scope':'Exact recorded source/lifecycle/count/category/policy and committed journal agreement. No general motion liveness, empirical privacy or baseline superiority claim.',
            'empty_measurement_evidence':'Completed source horizon, event-audited GT coverage, fail-fast GT writes and configured sensor clock; raw rows alone do not prove empty measurement.'}
+    if observability is not None: proof['sensor_observability']=observability
     return replay,result,proof
 
 
@@ -569,16 +581,20 @@ def validate_scene_building_access(scene, cfg, access_path):
     insist(len(by_id)==len(declared) and len(public_native)==len(access['portals']) and by_id==public_native,
            'Public building access portals differ from native scene configuration')
     surface=[portal for portal in access['portals'] if portal.get('kind')=='surface_access']
-    if surface:
-        # Reconstruct public source metadata from the exact frozen geometry;
-        # the native/public portal equality alone cannot authenticate OSM tags.
-        import importlib.util
+    expanded=any('entrance_source' in front or front.get('provenance')=='osm_entrance_association'
+                 for front in access.get('store_fronts',[])) or bool(access.get('navigation',{}).get('synthetic_access_connectors'))
+    source_access_validation=None
+    if surface or expanded:
         repo=Path(__file__).resolve().parents[2]
         def load_helper(name):
             spec=importlib.util.spec_from_file_location('ump_export_'+name,Path(__file__).with_name(name+'.py'))
             module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
-        builder=load_helper('build_mapped_scene');transit=load_helper('transit_access')
+        builder=load_helper('build_mapped_scene')
         _,local,layers,_,provenance=builder.load_source(repo)
+    if surface:
+        # Reconstruct public source metadata from the exact frozen geometry;
+        # the native/public portal equality alone cannot authenticate OSM tags.
+        transit=load_helper('transit_access')
         data=transit.metadata(repo,local,provenance['source_geometry_sha256'])
         meta={row['reference']:row for row in data['entrances']}
         insist(access.get('transit_access',{}).get('source_geometry_sha256')==transit.SOURCE_SHA256
@@ -595,6 +611,14 @@ def validate_scene_building_access(scene, cfg, access_path):
                    'Public subway identity, point or accessibility differs from frozen source')
     else:
         insist('transit_access' not in access, 'Transit metadata requires native surface access portals')
+    if expanded:
+        source_access=load_helper('validate_source_access')
+        if surface:
+            ground_local,ground_layers,_=transit.ground_environment(repo,local,layers,provenance['source_geometry_sha256'])
+        else:
+            ground_local,ground_layers=local,layers
+        source_access_validation=source_access.validate_expanded_shop_context(
+            repo,ground_local,ground_layers,provenance['source_geometry_sha256'],access)
     v2=access.get('schema')=='ump.building-access.v2'
     if v2:
         navigation=cfg.get('mapped_scene',{}).get('motion',{}).get('navigation',{})
@@ -667,6 +691,7 @@ def validate_scene_building_access(scene, cfg, access_path):
     return {'status':'verified_native_portal_agreement','building_footprints':len(access['buildings']),
             'routable_portals':len(access['portals']),
             'surface_access_portals':len(surface),
+            **({'expanded_source_access':source_access_validation} if source_access_validation is not None else {}),
             'generated_manifest_geometry_digest_verified':'building_access_sha256' in manifest,
             'generated_manifest_config_and_background_verified':generated,
             **({'storefront_destinations':len(access['store_fronts']),

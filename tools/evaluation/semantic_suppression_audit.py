@@ -15,6 +15,14 @@ from run_semantic_priority_study import scalar_projection
 
 METRIC = 'semantic_suppression_fraction'
 TOL = 1e-12
+MAX_OFFLINE_AUDIT_CELLS = 1_000_000
+
+
+def audit_budget(value, default=200000):
+    value = default if value is None else value
+    require(type(value) is int and 1 <= value <= MAX_OFFLINE_AUDIT_CELLS,
+            'Offline audit max_cells must be an integer from 1 to 1000000')
+    return value
 
 
 def close(a, b):
@@ -162,8 +170,9 @@ def _scope_key(record):
     return record['start_ms'], record['end_ms'], None if scope is None else (scope['cell_id'], scope['depth'])
 
 
-def _raw_projection(data, config, actual, index):
+def _raw_projection(data, config, actual, index, *, max_cells=200000):
     """Counterfactual raw support ONLY for the established retirement oracle."""
+    max_cells = audit_budget(max_cells)
     cfg, projected = scalar_projection(config, actual)
     cfg['policy_tree']['execution']['strategy'] = 'temporal_first'
     projected['mode'] = 'temporal_first'
@@ -191,15 +200,15 @@ def _raw_projection(data, config, actual, index):
             cell['observation_contributions'] = len(raw)
             cell['distinct_road_users'] = len({r['id'] for _, r in raw})
             cell['mean_sample_occupancy'] = len(raw) / measured if measured else None
-    checked = validate_result(data, cfg, projected, max_cells=200000)
+    checked = validate_result(data, cfg, projected, max_cells=max_cells)
     require(checked['valid'], 'Independent raw ownership/retirement audit failed: ' + repr(checked['violations'][:4]))
     checked['scope']['projection'] = 'Original RAW counts restored solely for geometry, sample coverage and full-interval retirement; recipient counts and ALL hard bounds independently checked on retained population.'
     return checked
 
 
-def audit_suppression(data, config, actual):
+def audit_suppression(data, config, actual, *, max_cells=200000):
     index, catalog = SourceIndex(data), Catalog(config)
-    scalar = _raw_projection(data, config, actual, index)
+    scalar = _raw_projection(data, config, actual, index, max_cells=max_cells)
     selected = {}
     for window in actual['windows']:
         for cell in window['cells']:

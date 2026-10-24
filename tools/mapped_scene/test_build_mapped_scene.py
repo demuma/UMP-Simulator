@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Offline generator/geometry gates; no sampled movement files or MongoDB."""
 import copy
+import contextlib
+import io
 import importlib.util
 import json
 import math
@@ -539,6 +541,89 @@ class MappedSceneGeneratorTests(unittest.TestCase):
                 builder.make_config(REPO,DATABASE,90,False,20261023,**kwargs)
         for population,interval in [(4,None),(2049,None),(64,51),(64,0)]:
             with self.assertRaises(ValueError): builder.corridor_people(20261023,population,90,interval)
+
+
+class ExpandedSourceCliTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        spec=importlib.util.spec_from_file_location("expanded_scene_cli_runner",HERE/"run_scene.py")
+        cls.runner=importlib.util.module_from_spec(spec);spec.loader.exec_module(cls.runner)
+
+    def test_api_rejects_invalid_source_combinations_before_reading_any_source(self):
+        missing_repo=pathlib.Path("/nonexistent-ump-cli-regression-repository")
+        for mode in ("integration","corridor","buildings"):
+            with self.subTest(mode=mode),self.assertRaisesRegex(ValueError,"Expanded shop access requires storefronts"):
+                builder.make_config(missing_repo,DATABASE,90,False,20261024,mode,20,1000,expanded_shop_access=True)
+        with self.assertRaisesRegex(ValueError,"Pedestrians-only requires urban traffic"):
+            builder.make_config(missing_repo,DATABASE,90,False,20261024,"storefronts",20,1000,pedestrians_only=True)
+        with self.assertRaisesRegex(ValueError,"Pedestrians-only omits rider-priority"):
+            builder.make_config(missing_repo,DATABASE,90,False,20261024,"storefronts",20,1000,
+                urban_traffic=True,pedestrians_only=True,rider_priority=True)
+
+    def test_cli_rejects_incompatible_options_before_source_or_database_access(self):
+        cases=[(["--motion-mode","corridor","--expanded-shop-access"],"--expanded-shop-access requires"),
+               (["--pedestrians-only"],"--pedestrians-only requires --urban-traffic"),
+               (["--urban-traffic","--pedestrians-only","--rider-priority"],"--pedestrians-only omits --rider-priority")]
+        for args,message in cases:
+            for module,prefix in ((builder,["--output","/nonexistent-ump-cli-output","--database",DATABASE]),(self.runner,[])):
+                error=io.StringIO()
+                with self.subTest(module=module.__name__,args=args), \
+                     mock.patch.object(sys,"argv",["scene",*prefix,*args]), \
+                     mock.patch.object(builder,"load_source",side_effect=AssertionError("Unexpected source read")), \
+                     mock.patch.object(self.runner,"mongo",side_effect=AssertionError("Unexpected database access")), \
+                     contextlib.redirect_stderr(error),self.assertRaises(SystemExit) as raised:
+                    module.main()
+                self.assertEqual(raised.exception.code,2)
+                self.assertIn(message,error.getvalue())
+
+    def test_runner_forwards_valid_mixed_and_pedestrian_source_flags_without_running_native(self):
+        class FirstBuilderInvocation(Exception):
+            pass
+        for extra in (["--rider-priority"],["--pedestrians-only"]):
+            args=["scene","--urban-traffic","--subway-access","--expanded-shop-access",*extra,
+                  "--population","128","--arrival-interval-ms","150","--seed","20261024","--no-record"]
+            with self.subTest(extra=extra),mock.patch.object(sys,"argv",args), \
+                 mock.patch.object(pathlib.Path,"is_file",return_value=True), \
+                 mock.patch.object(self.runner.shutil,"which",return_value="mock-mongosh"), \
+                 mock.patch.object(self.runner.importlib.util,"find_spec",return_value=object()), \
+                 mock.patch.object(self.runner,"mongo",return_value=[]), \
+                 mock.patch.object(self.runner.subprocess,"run",side_effect=FirstBuilderInvocation) as invoke, \
+                 self.assertRaises(FirstBuilderInvocation):
+                self.runner.main()
+            self.assertEqual(invoke.call_count,1)
+            command=invoke.call_args.args[0]
+            self.assertEqual(pathlib.Path(command[1]).name,"build_mapped_scene.py")
+            for flag in ("--urban-traffic","--subway-access","--expanded-shop-access",*extra):
+                self.assertEqual(command.count(flag),1)
+            self.assertEqual(command[command.index("--population")+1],"128")
+            self.assertEqual(command[command.index("--arrival-interval-ms")+1],"150")
+            self.assertEqual(command[command.index("--seed")+1],"20261024")
+            if "--pedestrians-only" in extra:self.assertNotIn("--rider-priority",command)
+
+    def test_builder_cache_separates_expanded_mixed_and_pedestrian_sources(self):
+        common=dict(urban_traffic=True,subway_access=True)
+        legacy=builder.make_config(REPO,DATABASE,90,False,20261024,"storefronts",20,1000,**common)
+        expanded=builder.make_config(REPO,DATABASE,90,False,20261024,"storefronts",20,1000,
+            **common,expanded_shop_access=True)
+        pedestrian=builder.make_config(REPO,DATABASE,90,False,20261024,"storefronts",20,1000,
+            **common,expanded_shop_access=True,pedestrians_only=True)
+        self.assertEqual(len(legacy["mapped_scene"]["portals"]),6)
+        self.assertEqual(len(expanded["mapped_scene"]["portals"]),8)
+        self.assertEqual(len(pedestrian["mapped_scene"]["portals"]),8)
+        self.assertEqual(len(pedestrian["mapped_scene"]["people"]),20)
+        rider_types={"Adult Cyclist","Senior Cyclist","Adult E-Scooter Driver"}
+        self.assertTrue({p["type"] for p in expanded["mapped_scene"]["people"]}&rider_types)
+        self.assertFalse({p["type"] for p in pedestrian["mapped_scene"]["people"]}&rider_types)
+        self.assertEqual({p["type"] for p in pedestrian["mapped_scene"]["people"]},set(builder.PROFILES))
+        self.assertNotIn("crossings",pedestrian["mapped_scene"]["motion"]["navigation"])
+        self.assertEqual(sum(r["probability"] for r in pedestrian["agents"]["road_user_taxonomy"] if r["type"] in rider_types),0)
+        self.assertAlmostEqual(sum(r["probability"] for r in pedestrian["agents"]["road_user_taxonomy"]),1)
+        report=builder.audit_config(pedestrian)
+        self.assertIn("6 shop facade targets",report["portal_scope"])
+        self.assertIn("1 exact source OSM entrance",report["portal_scope"])
+        self.assertIn("5 observed pedestrian profiles",report["profile_assumptions"])
+        self.assertIn("no rider demand",report["motion_scope"])
+        self.assertNotIn("crossing_priority_scope",report)
 
 
 if __name__ == "__main__":

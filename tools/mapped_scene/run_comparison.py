@@ -6,7 +6,9 @@ execute. The maximum-window mode is explicitly post-hoc after the main study.
 Full inputs/results stay local under ignored results/. Only aggregate summaries are
 suitable for the repository. The default method matrix preserves every hard
 requirement. The explicit support-policy comparison lowers only declared support
-floors; neither mode regenerates source motion or measures empirical privacy.
+floors. The opt-in spatial portfolio adds fixed20 m controls under an original
+and an explicitly relaxed spatial20 contract, applied equally to every method.
+No mode regenerates source motion or measures empirical privacy.
 """
 from __future__ import annotations
 import argparse
@@ -60,6 +62,110 @@ def max_window_variants():
                  policy_profile=profile,method_id=f'fixed_{side}m_4000ms')
             for profile in ('original','support60') for side,depth in ((5,4),(10,3))]
 
+
+
+SPATIAL_PROFILES=('original','spatial20')
+
+
+def fixed_depth(coverage,side):
+    """Resolve an exact grid side from the frozen square quadtree geometry."""
+    width,height,leaf_depth=(coverage.get(key) for key in ('width','height','leaf_depth'))
+    if (type(width) not in (int,float) or not math.isfinite(width) or width<=0 or
+        type(height) not in (int,float) or height!=width or type(leaf_depth) is not int or not 1<=leaf_depth<=14):
+        raise ValueError('Spatial portfolio requires finite square quadtree coverage')
+    ratio=width/side
+    depth=round(math.log2(ratio))
+    if not 1<=depth<=leaf_depth or not math.isclose(width/(2**depth),side,rel_tol=0,abs_tol=1e-9):
+        raise ValueError(f'Fixed {side:g} m is not an exact representable quadtree depth')
+    return depth
+
+
+def spatial_portfolio_variants(coverage,profiles=SPATIAL_PROFILES):
+    """Two adaptive strategies plus six declared uniform schedules per contract."""
+    if (not isinstance(profiles,(tuple,list)) or not profiles or len(set(profiles))!=len(profiles)
+        or any(profile not in SPATIAL_PROFILES for profile in profiles)):
+        raise ValueError('Spatial profiles must be a nonempty distinct subset of original/spatial20')
+    methods=[dict(id='adaptive_immediate',mode='semantic_first',trigger='policy_satisfied'),
+             dict(id='adaptive_spatial_first',mode='spatial_first',trigger='policy_satisfied')]+[
+        dict(id=f'fixed_{side}m_{window}ms',mode='fixed',depth=fixed_depth(coverage,side),window=window,side_m=side)
+        for side in (5,10,20) for window in (400,1000)]
+    return [dict(method,id=profile+'_'+method['id'],policy_profile=profile,method_id=method['id'],
+                 spatial_portfolio=True,suppression_cap=0,minimum_candidate_depth=fixed_depth(coverage,20))
+            for profile in profiles for method in methods]
+
+
+
+def spatial_variant_label(variant):
+    contract='Original' if variant['policy_profile']=='original' else 'Spatial20'
+    if variant['mode']=='fixed':
+        label=f"{contract} · Fixed {variant['side_m']:g} m · {variant['window']/1000:g} s"
+        if contract=='Original' and variant['side_m']==20: label+=' · rejection control'
+        return label
+    strategy='Semantic First' if variant['mode']=='semantic_first' else 'Spatial First'
+    return contract+' · Adaptive '+strategy
+
+def relaxed_spatial20(base):
+    """Declare one common spatial contract; preserve every nonspatial bound.
+
+    Existing root/region cell-side maxima become 20 m. Absent regional maxima
+    inherit the root. This relaxation applies to adaptive and fixed methods;
+    it is never a method-specific exemption from the strict original contract.
+    """
+    config=copy.deepcopy(base)
+    config['policy_tree']['id']+='-spatial20'
+    scopes=[('root',config['policy_tree']['root'])]
+    for region in config.get('policy_regions',[]):
+        for kind in ('type_requirements','requirements'):
+            scopes.append(('region:'+region['id']+':'+kind,region.get(kind,{})))
+    changes=[]
+    if 'max' not in config['policy_tree']['root'].get('cell_side_m',{}):
+        raise ValueError('Spatial portfolio requires a declared original root cell-side maximum')
+    for scope,requirements in scopes:
+        bounds=requirements.get('cell_side_m',{})
+        if 'max' not in bounds: continue
+        before=bounds['max']
+        if type(before) not in (int,float) or not math.isfinite(before) or not 0<before<=20:
+            raise ValueError('Spatial20 may only relax finite positive cell-side maxima up to 20 m')
+        if 'min' in bounds and bounds['min']>20:
+            raise ValueError('Spatial20 conflicts with an existing minimum cell side')
+        bounds['max']=20
+        if before!=20:changes.append(dict(scope=scope,metric='cell_side_m',before=before,after=20))
+    return config,changes
+
+
+def validate_completed_source(proof,data=None):
+    """New spatial studies reject censored cohorts; old studies stay compatible."""
+    if proof.get('all_scheduled_episodes_completed') is not True:
+        raise ValueError('Spatial portfolio requires all scheduled episodes completed')
+    lifecycle=proof.get('lifecycle_quality',{})
+    for field in ('pending_episodes_at_horizon','active_episodes_at_horizon'):
+        if field in lifecycle and (type(lifecycle[field]) is not int or lifecycle[field]!=0):
+            raise ValueError('Spatial portfolio rejects pending or active episodes at the horizon')
+    observation=proof.get('sensor_observability')
+    if not isinstance(observation,dict):
+        raise ValueError('Spatial portfolio requires a complete sensor-observability proof')
+    if observation is not None:
+        counts=[observation.get(key) for key in ('scheduled_tracks','sensor_observed_tracks','missing_track_count','unexpected_track_count')]
+        if (observation.get('schema')!='ump.source-sensor-episode-observability.v1' or
+            observation.get('status')!='pass' or any(type(value) is not int or value<0 for value in counts) or
+            counts[0]!=counts[1] or counts[2:]!=[0,0]):
+            raise ValueError('Spatial portfolio requires a passing sensor-observability proof')
+        if 'scheduled_episodes' in lifecycle and lifecycle['scheduled_episodes']!=counts[0]:
+            raise ValueError('Sensor-observability and lifecycle scheduled counts disagree')
+        if data is not None:
+            observed={item['id'] for batch in data['batches'] for item in batch['observations']}
+            if len(observed)!=counts[1]:
+                raise ValueError('Sensor-observability count disagrees with the frozen observation stream')
+            if 'sensor_period_ms' in observation and observation['sensor_period_ms']!=data['sampling_period_ms']:
+                raise ValueError('Sensor-observability cadence disagrees with the frozen source')
+            if 'observations' in observation and observation['observations']!=sum(len(batch['observations']) for batch in data['batches']):
+                raise ValueError('Sensor-observability contribution count disagrees with the frozen source')
+
+
+def check_frozen_artifacts(output,digests):
+    for name,digest in digests.items():
+        if not (Path(output)/name).is_file() or sha(Path(output)/name)!=digest:
+            raise ValueError('Frozen portfolio artifact changed: '+name)
 
 def relaxed_support(base):
     """Relax support minima only, including both Region type and instance bounds.
@@ -173,8 +279,20 @@ def native_config(cfg):
 
 
 def settings_for(base,variant):
-    config=relaxed_support(base)[0] if variant.get('policy_profile')=='support60' else copy.deepcopy(base)
+    config=relaxed_support(base)[0] if variant.get('policy_profile')=='support60' else (
+        relaxed_spatial20(base)[0] if variant.get('policy_profile')=='spatial20' else copy.deepcopy(base))
     config['policy_tree']['execution']['release_trigger']=variant.get('trigger','policy_satisfied')
+    if variant.get('spatial_portfolio'):
+        # This controlled portfolio separates strategy from selective filtering.
+        config['policy_tree']['root']['semantic_suppression_fraction']={'max':0}
+        selection=config.setdefault('spatial_selection',{})
+        selection['min_depth']=variant['minimum_candidate_depth']
+        execution=config['policy_tree']['execution']
+        execution['strategy']='semantic_first' if variant['mode']=='fixed' else variant['mode']
+        if execution['strategy']!='semantic_first': execution.pop('semantic_secondary_strategy',None)
+        else: execution.setdefault('semantic_secondary_strategy','temporal_first')
+        config['policy_tree']['id']+='/'+variant['method_id']
+        config['application_id']+='/'+variant['id']
     return config
 
 
@@ -208,6 +326,7 @@ def summarize(data,config,result):
             'exact_subtype_observation_contributions':exact,'exact_subtype_fraction_of_input':exact/total if total else None,
             'exact_subtype_fraction_of_retained':exact/retained if retained else None,
             'observation_weighted_semantic_loss':loss/retained if retained else None,
+            'full_input_semantic_distortion':(total-retained+loss)/total if total else None,
             'observation_weighted_cell_side_m':side/retained if retained else None,
             'observation_weighted_interval_duration_ms':duration/retained if retained else None,
             'observation_weighted_age_at_release_ms':age/retained if retained else None,
@@ -279,23 +398,29 @@ def report_markdown(summary):
                 lines.append('| '+' | '.join([name,kind,group,str(values['input_observation_contributions']),
                     str(values['retained_observation_contributions']),percent(values['retained_fraction'])])+' |')
     lines += ['', '## Interpretation limits', '',
-              summary['protocol'].get('portfolio_scope','The tested fixed portfolio covers 5/10 m crossed with 400/1000 ms; adaptive windows may extend to 4000 ms, so this alone cannot isolate adaptation from longer permitted windows.')+' Compare controller choices within one policy. Relaxing support changes the protection contract, so improved utility across policies does not establish a privacy gain.', '',
+              summary['protocol'].get('portfolio_scope','The tested fixed portfolio covers 5/10 m crossed with 400/1000 ms; adaptive windows may extend to 4000 ms, so this alone cannot isolate adaptation from longer permitted windows.')+(' Compare controller choices within one policy. Changing spatial utility bounds changes the output contract; between-policy utility differences do not establish a privacy gain.' if summary['protocol'].get('comparison_kind')=='spatial_resolution_portfolio' else ' Compare controller choices within one policy. Relaxing support changes the protection contract, so improved utility across policies does not establish a privacy gain.'), '',
               summary['protocol']['replication'], '',
               'Distinct observed-track support is an operational release condition. It is not automatically classical trajectory k-anonymity, and this comparison contains no membership, linkage or re-identification attack.', '']
     return '\n'.join(lines)
 
 
-def compare(recording,output,binary,*,policy_comparison=False,max_window_sensitivity=False,native_wall_budget_s=240):
+def compare(recording,output,binary,*,policy_comparison=False,max_window_sensitivity=False,
+            spatial_portfolio=False,spatial_profiles=SPATIAL_PROFILES,native_wall_budget_s=240,audit_max_cells=None):
     if type(native_wall_budget_s) is not int or not 1<=native_wall_budget_s<=3600:
         raise ValueError('Native wall budget must be an integer from 1 to 3600 seconds')
-    if policy_comparison and max_window_sensitivity:
-        raise ValueError('Choose either the predeclared policy comparison or the post-hoc maximum-window sensitivity')
+    if sum(bool(value) for value in (policy_comparison,max_window_sensitivity,spatial_portfolio))>1:
+        raise ValueError('Choose either one comparison mode or one sensitivity portfolio')
+    if not spatial_portfolio and tuple(spatial_profiles)!=SPATIAL_PROFILES:
+        raise ValueError('Spatial profiles are only valid with the spatial portfolio')
+    from semantic_suppression_audit import audit_budget
+    effective_audit_budget=audit_budget(audit_max_cells,1000000) if spatial_portfolio or audit_max_cells is not None else None
     support_study=policy_comparison or max_window_sensitivity
     recording=Path(recording).resolve();output=Path(output).resolve();binary=Path(binary).resolve()
     if output.exists(): raise ValueError('Choose a new comparison directory')
     proof=read(recording/'capture-proof.json')
     if proof.get('schema')!='ump.mapped-recording-proof.v1' or proof.get('status')!='verified' or proof.get('source_completed') is not True:
         raise ValueError('Require a completed verified mapped recording')
+    if spatial_portfolio: validate_completed_source(proof)
     hashes=proof.get('files_sha256',{})
     required={'observations.json','native_result.json','private/native_source.json','private/config.yaml','map_background.png','bundle.json'}
     if not isinstance(hashes,dict) or not required.issubset(hashes):raise ValueError('Incomplete recording digest set')
@@ -311,14 +436,20 @@ def compare(recording,output,binary,*,policy_comparison=False,max_window_sensiti
         if 'building_access.json' not in hashes: raise ValueError('Missing building access recording digest')
         shared_files.append('building_access.json')
     data=read(recording/'observations.json');native_cfg=yaml.safe_load((recording/'private/config.yaml').read_text());base=native_config(native_cfg)
+    if spatial_portfolio: validate_completed_source(proof,data)
     progress_step=round(native_cfg['simulation']['time_step']*1000)
     if progress_step<=0 or data['sampling_period_ms']%progress_step or abs(native_cfg['simulation']['time_step']*1000-progress_step)>1e-9:
         raise ValueError('Native progress step must be whole milliseconds dividing sensor cadence')
-    matrix=max_window_variants() if max_window_sensitivity else policy_variants() if policy_comparison else variants()
-    changes=relaxed_support(base)[1] if support_study else []
-    query={'target_cells':[{'cell_id':identity,'depth':3} for identity in range(3<<6,4<<6)],
+    matrix=(spatial_portfolio_variants(data['coverage'],spatial_profiles) if spatial_portfolio else
+            max_window_variants() if max_window_sensitivity else policy_variants() if policy_comparison else variants())
+    changes=relaxed_support(base)[1] if support_study else relaxed_spatial20(base)[1] if spatial_portfolio else []
+    if spatial_portfolio:
+        original_max=base['policy_tree']['root']['cell_side_m']['max']
+        if not original_max<20: raise ValueError('Original spatial contract must prohibit 20 m for its declared negative control')
+    query_depth=fixed_depth(data['coverage'],10) if spatial_portfolio else 3
+    query={'target_cells':[{'cell_id':identity,'depth':query_depth} for identity in range(3<<(2*query_depth),4<<(2*query_depth))],
            'categories':sorted(node['id'] for node in base['semantic_taxonomy']['nodes']
-                               if not support_study or 'parent' not in node or
+                               if not (support_study or spatial_portfolio) or 'parent' not in node or
                                any(parent['id']==node.get('parent') and 'parent' not in parent for parent in base['semantic_taxonomy']['nodes'])),
            'window_ms':1000,'lags_ms':[0,1000]}
     query_count=(data['end_ms']//query['window_ms'])*len(query['target_cells'])*len(query['categories'])*len(query['lags_ms'])
@@ -326,6 +457,17 @@ def compare(recording,output,binary,*,policy_comparison=False,max_window_sensiti
         raise ValueError('Declared mapped comparison exceeds query budget; shorten the source horizon')
     output.mkdir(parents=True,mode=0o700)
     binary_sha=sha(binary);source_sha=sha(recording/'observations.json')
+    frozen={}
+    if spatial_portfolio:
+        provenance=output/'provenance';provenance.mkdir(mode=0o700)
+        shutil.copy2(binary,provenance/'AggregationReplay')
+        shutil.copyfile(recording/'capture-proof.json',provenance/'capture-proof.json')
+        shutil.copyfile(recording/'observations.json',output/'observations.json')
+        if sha(provenance/'AggregationReplay')!=binary_sha or sha(output/'observations.json')!=source_sha:
+            raise ValueError('Source or binary changed while preparing the frozen portfolio')
+        write(output/'query-bank.json',query)
+        for variant in matrix: write(output/(variant['id']+'-policy.json'),settings_for(base,variant))
+        frozen={str(path.relative_to(output)):sha(path) for path in output.rglob('*') if path.is_file()}
     protocol={'schema':'ump.mapped-comparison-protocol.v1','matrix':matrix,'queries':query,
               'binary_sha256':binary_sha,'observations_sha256':source_sha,'progress_step_ms':progress_step,'query_count':query_count,'query_budget':QUERY_BUDGET,
               'native_process_wall_budget_s':native_wall_budget_s,
@@ -339,24 +481,44 @@ def compare(recording,output,binary,*,policy_comparison=False,max_window_sensiti
               'query_category_scope':'Total and immediate taxonomy families; fine-label preservation is reported separately.' if support_study else 'Every declared taxonomy node.',
               'recipient_scope':'Conservative exact answers plus separately evaluated uniform spatial/temporal occupancy estimates. Missing support never becomes zero.',
               'replication':'One deterministic source; no population-level statistical generalization or privacy-improvement claim.'}
+    if spatial_portfolio:
+        protocol.update(comparison_kind='spatial_resolution_portfolio',analysis_status='predeclared_matrix',
+            policy_scope='Original: all original hard root/region constraints remain. Spatial20: every existing root/region cell_side_m.max becomes20 m, equally for every method. All support, temporal and semantic bounds, regions and taxonomy remain. Selective contribution suppression is disabled in every case. Compare methods within one contract.',
+            portfolio_scope='Two adaptive strategies and fixed 5/10/20 m crossed with 400/1000 ms under each selected contract. Original 20 m is a deliberate negative control. Adaptive windows may reach 4000 ms. Connected fixed-grid measurements are empirical guides only: no fitted regression, statistical significance or claim for intermediate cell sizes.',
+            spatial_profiles=list(spatial_profiles),source_completion_gate='All scheduled episodes complete; zero pending/active if reported; required complete sensor-observability proof.',
+            shared_execution_changes=[dict(setting='spatial_selection.min_depth',before=base.get('spatial_selection',{}).get('min_depth'),after=fixed_depth(data['coverage'],20),scope='Every method under both contracts; candidate search permits20 m while strict original numeric policy rejects20 m'),
+                dict(setting='semantic_suppression_fraction.max',before=base['policy_tree']['root'].get('semantic_suppression_fraction',{}).get('max',0),after=0,scope='Every method under both contracts; contribution filtering disabled')],
+            source_proof_sha256=sha(recording/'capture-proof.json'),pre_execution_artifacts_sha256=frozen,
+            query_category_scope='Total and immediate taxonomy families, identical across both contracts. Exact subtype preservation is separately source-denominated.',
+            binary_execution='Frozen local provenance/AggregationReplay copy; all configurations and query-bank written and hashed before first execution.')
+    if effective_audit_budget is not None:
+        protocol['offline_audit_max_cells']=effective_audit_budget
+        protocol['offline_audit_capacity_scope']='Explicit bound for independently checked private windows/releases and cells; every geometry/count/coverage/policy/retirement check is retained. This is offline validator capacity, not an aggregation-policy change.'
     write(output/'protocol.json',protocol)
-    summary={'schema':'ump.mapped-comparison.v1','status':'verified','protocol':protocol,'cases':{},'scientific_repetitions':0,
+    summary={'schema':'ump.mapped-comparison.v1','status':'running' if spatial_portfolio else 'verified','protocol':protocol,'cases':{},'scientific_repetitions':0,
              'source':dict(horizon_ms=data['end_ms'],sampling_period_ms=data['sampling_period_ms'],
                  input_observation_contributions=sum(len(batch['observations']) for batch in data['batches']),
                  peak_observed_simultaneous_tracks=max((len(batch['observations']) for batch in data['batches']),default=0),
                  recorded_lifecycle_counts={key:proof.get('lifecycle_quality',{}).get(key) for key in
                      ('scheduled_people','scheduled_episodes','realized_starts','realized_ends','pending_episodes_at_horizon','active_episodes_at_horizon')})}
     viewer=copy.deepcopy(read(recording/'bundle.json'))
-    viewer['title']=('Mönckebergstraße · post-hoc maximum-window sensitivity on one source' if max_window_sensitivity else
+    viewer['title']=('Mönckebergstraße · original and spatial20 contracts · same-source resolution portfolio' if spatial_portfolio else
+                     'Mönckebergstraße · post-hoc maximum-window sensitivity on one source' if max_window_sensitivity else
                      'Mönckebergstraße · original and relaxed support policies on one source' if policy_comparison else
                      'Mönckebergstraße · same-source fixed and adaptive comparison')
     viewer['variants']=[]; viewer['sha256']={}
     # Local copies allow a self-contained persistent comparison; original remains frozen.
-    for name in shared_files: shutil.copyfile(recording/name,output/name)
+    for name in shared_files:
+        if spatial_portfolio and name=='observations.json': continue
+        shutil.copyfile(recording/name,output/name)
     for variant in matrix:
         name=variant['id'];config=settings_for(base,variant)
-        config_path=output/(name+'-policy.json');result_path=output/(name+'.json');write(config_path,config)
-        command=[str(binary),'--input',str(recording/'observations.json'),'--config',str(config_path),
+        config_path=output/(name+'-policy.json');result_path=output/(name+'.json')
+        if not spatial_portfolio: write(config_path,config)
+        if spatial_portfolio: check_frozen_artifacts(output,frozen)
+        execution_binary=output/'provenance/AggregationReplay' if spatial_portfolio else binary
+        execution_input=output/'observations.json' if spatial_portfolio else recording/'observations.json'
+        command=[str(execution_binary),'--input',str(execution_input),'--config',str(config_path),
                  '--mode',variant['mode'],'--output',str(result_path),'--progress-step-ms',str(progress_step)]
         if variant['mode']=='fixed':command+=['--fixed-depth',str(variant['depth']),'--fixed-window-ms',str(variant['window'])]
         start=time.perf_counter(); completed=subprocess.run(command,text=True,capture_output=True,timeout=native_wall_budget_s)
@@ -369,7 +531,7 @@ def compare(recording,output,binary,*,policy_comparison=False,max_window_sensiti
         # adaptive configuration selects local ownership. This changes only
         # independent retirement validation, never a hard policy or execution.
         audit_config.setdefault('temporal_adaptation',{})['coordination']=result['parameters']['coordination']
-        audit=run_local_policy_replay.audit(data,audit_config,result)
+        audit=run_local_policy_replay.audit(data,audit_config,result,**({'max_cells':effective_audit_budget} if effective_audit_budget is not None else {}))
         stats=summarize(data,config,result)
         stats['source_accounting']=source_accounting(data,config,result)
         evaluation=recipient_support.evaluate(data,config,result['releases'],**query,max_queries=QUERY_BUDGET,uniform_estimate=True)
@@ -394,7 +556,11 @@ def compare(recording,output,binary,*,policy_comparison=False,max_window_sensiti
         # The comparison viewer explicitly identifies every panel as an offline rerun.
         metadata=copy.deepcopy(read(recording/'bundle.json')['variants'][0])
         metadata.update(id=name,label=name.replace('_',' '),result=result_path.name,**policy_metadata(config))
+        if spatial_portfolio:
+            metadata['contribution_selection']='all_contributions'
+            metadata['label']=spatial_variant_label(variant)
         viewer['variants'].append(metadata)
+        if spatial_portfolio: check_frozen_artifacts(output,frozen)
         if sha(binary)!=binary_sha or sha(recording/'observations.json')!=source_sha:
             raise ValueError('Frozen binary/source changed during comparison')
         print(json.dumps({'variant':name,'status':'verified','retained_fraction':stats['retained_fraction'],
@@ -409,6 +575,7 @@ def compare(recording,output,binary,*,policy_comparison=False,max_window_sensiti
     viewer['input_provenance']+=' Comparison panels are actual offline AggregationReplay executions on these identical observations, not the native sink stream.'
     write(output/'bundle.json',viewer)
     spec=importlib.util.spec_from_file_location('viewer_validation',ROOT/'tools/replay_viewer/serve.py');validator=importlib.util.module_from_spec(spec);spec.loader.exec_module(validator);validator.validate_bundle(output)
+    summary['status']='verified'
     with (output/'report.md').open('x') as stream: stream.write(report_markdown(summary))
     write(output/'summary.json',summary)
     return summary
@@ -424,10 +591,17 @@ def main():
                         help='Predeclare original versus support60 policies on the identical recorded source; other hard bounds stay fixed')
     study.add_argument('--max-window-sensitivity',action='store_true',
                        help='Separate post-hoc original/support60 fixed5m/10m 4000-ms sensitivity; never replaces the ten-case study')
+    study.add_argument('--spatial-portfolio',action='store_true',
+                       help='Predeclare original/spatial20 same-source adaptive and fixed 5/10/20 m ×400/1000 ms contracts')
+    parser.add_argument('--spatial-profiles',nargs='+',choices=SPATIAL_PROFILES,default=list(SPATIAL_PROFILES),
+                        help='Spatial portfolio contracts (default: original spatial20); compare methods within each contract')
+    parser.add_argument('--audit-max-cells',type=int,default=None,
+                        help='Explicit offline audit bound1..1000000; spatial portfolio defaults1000000, legacy modes keep previous defaults')
     parser.add_argument('--native-wall-budget-s',type=int,default=240,
                         help='Per-case native process wall budget, 1..3600 seconds (default: 240); execution limit only')
     args=parser.parse_args(); compare(args.recording,args.output,args.binary,policy_comparison=args.policy_comparison,
-                                     max_window_sensitivity=args.max_window_sensitivity,native_wall_budget_s=args.native_wall_budget_s)
+                                     max_window_sensitivity=args.max_window_sensitivity,spatial_portfolio=args.spatial_portfolio,
+                                     spatial_profiles=args.spatial_profiles,native_wall_budget_s=args.native_wall_budget_s,audit_max_cells=args.audit_max_cells)
 
 
 if __name__=='__main__':main()

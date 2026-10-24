@@ -298,6 +298,10 @@ if(UMP_BUILD_REPLAY)
         -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/replay_viewer -p test_viewer.py)
     set_tests_properties(replay_viewer_evaluation PROPERTIES LABELS "unit;evaluation;viewer"
         ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1" TIMEOUT 30)
+    add_test(NAME replay_viewer_compact_projection COMMAND ${Python3_EXECUTABLE} -m unittest discover
+        -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/replay_viewer -p test_compact_bundle.py)
+    set_tests_properties(replay_viewer_compact_projection PROPERTIES LABELS "unit;evaluation;viewer"
+        ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1" TIMEOUT 30)
     find_program(UMP_NODE_EXECUTABLE node)
     if(UMP_NODE_EXECUTABLE)
         add_test(NAME replay_viewer_model COMMAND ${UMP_NODE_EXECUTABLE}
@@ -430,7 +434,7 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS AND UMP_MAPPED_SCENE_PYTHON)
     if(NOT EXISTS "${UMP_MAPPED_SCENE_PYTHON}")
         message(FATAL_ERROR "UMP_MAPPED_SCENE_PYTHON does not exist")
     endif()
-    foreach(mapped_test audit_building_access build_mapped_scene storefront_router transit_access export_replay analyze_tracks run_comparison plot_policy_comparison)
+    foreach(mapped_test audit_building_access build_mapped_scene storefront_router transit_access export_replay analyze_tracks run_comparison plot_policy_comparison plot_spatial_portfolio)
         if(mapped_test STREQUAL "build_mapped_scene")
             # Keep geometry/config checks fast. Native finite-drain cases have
             # separate budgets below, independent of inherited shell settings.

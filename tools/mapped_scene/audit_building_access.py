@@ -17,6 +17,8 @@ from shapely.geometry import GeometryCollection, LineString, Point, Polygon, box
 from shapely.ops import unary_union
 from shapely.prepared import prep
 
+from validate_source_access import connector_surface, validate_expanded_shop_context
+
 
 def require(condition, message):
     if not condition:
@@ -147,7 +149,8 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
                     'Unknown synthetic crossing provenance')
             crossing_surfaces.append(LineString(connector['centerline']).buffer(connector['width_m']/2,cap_style=2)
                 .intersection(physical_domain).difference(map_layers['buildings']))
-        walking_surface=map_layers['walking'].union(unary_union(crossing_surfaces))
+        access_surface=connector_surface(public_context or {},map_layers['walking'],map_layers['buildings'],physical_domain)
+        walking_surface=map_layers['walking'].union(unary_union(crossing_surfaces)).union(access_surface)
         physical_masks = {}
         for space, portal_ids in {(track_spaces[track], ids) for track,ids in track_portals.items()}:
             mode=space_modes.get(space)
@@ -394,6 +397,7 @@ def main():
     cfg = yaml.safe_load(config_path.read_text())
     context = None
     layers = None
+    source_access_validation=None
     if cfg['mapped_scene'].get('motion', {}).get('mode') == 'local_navigation':
         import importlib.util
         context = json.loads((args.scene / 'building_access.json').read_text())
@@ -411,7 +415,10 @@ def main():
                     'Surface physical audit requires verified frozen source metadata')
         layers = dict(layers)
         layers['buildings'] = unary_union([geom for props, geom in local if props['kind'] == 'building'])
+        source_access_validation=validate_expanded_shop_context(Path(__file__).resolve().parents[2],local,layers,provenance['source_geometry_sha256'],context)
     result = audit(cfg, json.loads(raw_path.read_text()), public_context=context, map_layers=layers)
+    if source_access_validation and source_access_validation['status']=='pass':
+        result['source_access_validation']=source_access_validation
     result['config_sha256'] = hashlib.sha256(config_path.read_bytes()).hexdigest()
     result['native_source_sha256'] = hashlib.sha256(raw_path.read_bytes()).hexdigest()
     args.output.write_text(json.dumps(result, indent=2) + '\n')

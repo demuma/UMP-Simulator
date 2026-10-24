@@ -4,6 +4,7 @@ const $ = id => document.getElementById(id);
 const M = UMPReplay;
 const frontagePalette=['#a95829','#1c7d78','#7954a0','#ad4264','#4e751e','#2469a2'];
 const boundaryColors={walking:'#248056',cycling:'#805ca6',road:'#526f8b'};
+const mapLabelFont='600 10px -apple-system,sans-serif';
 const palette = ['#236594','#a95f27','#438360','#925fa3','#b14f6c','#8b8330','#4a7e82','#755f4a'];
 const seconds = ms => (ms / 1000).toFixed(2) + ' s';
 const number = value => value == null ? '—' : Number(value).toLocaleString('en-US',{maximumFractionDigits:3});
@@ -41,15 +42,31 @@ function baseMap(id,g=replay.coverage) {
  ctx.textAlign='right';ctx.fillText('x / y (m)',left+w,top+h+31);
  return layout;
 }
+/* Surface-access references stay close to their exact target, including at
+   the map edge. These screen-space label bounds never move a physical portal. */
+function entranceReferenceLabels(layout){
+ if(!buildingAccess||!$('entranceMarkers').checked)return [];
+ const {ctx,left,top,w,h,viewport:g}=layout,labels=[];
+ ctx.save();ctx.font=mapLabelFont;
+ for(const portal of buildingAccess.portals){
+   if(portal.kind!=='surface_access'||portal.point[0]<g.x||portal.point[0]>g.x+g.width||portal.point[1]<g.y||portal.point[1]>g.y+g.height)continue;
+   const point=M.mapPoint(portal.point,g,layout),text=portal.surface_access.reference,width=ctx.measureText(text).width;
+   const preferredX=point.x+8+width<=left+w-3?point.x+8:point.x-8-width;
+   const x=Math.max(left+3,Math.min(left+w-width-3,preferredX));
+   const preferredY=point.y-7>=top+13?point.y-7:point.y+15;
+   const y=Math.max(top+13,Math.min(top+h-6,preferredY));
+   labels.push({text,x,y,box:{x:x-2,y:y-10,width:width+4,height:13}});
+ }
+ ctx.restore();return labels;
+}
 function geographyLabels(layout){
  if(!manifest.map||!$('mapNames').checked)return;
  const {ctx,left,top,w,h,scale,viewport:g}=layout;
- ctx.save();ctx.beginPath();ctx.rect(left,top,w,h);ctx.clip();ctx.font='600 10px -apple-system,sans-serif';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='rgba(255,255,255,.95)';
- // Supplied map names retain their normal font and location even when the
- // same POI is also a modeled shop destination. Entrance diagnostics do not
- // replace geographic labels with numbered callouts.
- const placed=[];
- for(const label of manifest.map.labels??[]){if(label.x<g.x||label.x>g.x+g.width||label.y<g.y||label.y>g.y+g.height)continue;
+ ctx.save();ctx.beginPath();ctx.rect(left,top,w,h);ctx.clip();ctx.font=mapLabelFont;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.lineJoin='round';ctx.miterLimit=2;ctx.lineWidth=2;ctx.strokeStyle='rgba(255,255,255,.95)';
+ // Rounded text halos prevent sharp joins on small glyphs. Geographic names
+ // remain ordinary labels; packing must not add debug leader lines.
+ const references=entranceReferenceLabels(layout),placed=references.map(label=>label.box),referenceNames=new Set(references.map(label=>label.text));
+ for(const label of manifest.map.labels??[]){if(referenceNames.has(label.text)||label.x<g.x||label.x>g.x+g.width||label.y<g.y||label.y>g.y+g.height)continue;
    const targetX=left+(label.x-g.x)*scale,targetY=top+(label.y-g.y)*scale,width=ctx.measureText(label.text).width+6,height=13;
    let box=null;
    for(const dy of [0,-15,15,-30,30,-45,45]){for(const dx of [0,-25,25,-50,50]){
@@ -57,8 +74,7 @@ function geographyLabels(layout){
      if(!placed.some(other=>x<other.x+other.width&&other.x<x+width&&y<other.y+height&&other.y<y+height)){box={x,y,width,height};break;}
    }if(box)break;}
    if(!box)continue;placed.push(box);const x=box.x+width/2,y=box.y+9;
-   if(Math.hypot(x-targetX,y-targetY)>4){ctx.beginPath();ctx.moveTo(targetX,targetY);ctx.lineTo(x,y-4);ctx.lineWidth=.7;ctx.strokeStyle='#8996a0';ctx.stroke();}
-   ctx.lineWidth=3;ctx.strokeStyle='rgba(255,255,255,.95)';ctx.fillStyle=label.kind==='street'?'#41546a':'#68482b';ctx.strokeText(label.text,x,y);ctx.fillText(label.text,x,y);
+   ctx.fillStyle=label.kind==='street'?'#41546a':'#68482b';ctx.strokeText(label.text,x,y);ctx.fillText(label.text,x,y);
  }
  ctx.restore();
 }
@@ -105,11 +121,11 @@ function drawBuildingAccess(layout){
      // size is independent of zoom and is not a physical admission radius;
      // the separately drawn facade stroke retains the recorded door width.
      ctx.beginPath();
-     if(synthetic){ctx.moveTo(point.x,point.y-6);ctx.lineTo(point.x+6,point.y);ctx.lineTo(point.x,point.y+6);ctx.lineTo(point.x-6,point.y);ctx.closePath();}
-     else ctx.rect(point.x-5.5,point.y-5.5,11,11);
+     ctx.moveTo(point.x,point.y-6);ctx.lineTo(point.x+6,point.y);ctx.lineTo(point.x,point.y+6);ctx.lineTo(point.x-6,point.y);ctx.closePath();
      ctx.fillStyle=synthetic?'#fff4e9':'#e6f6ff';ctx.fill();ctx.lineWidth=2;ctx.stroke();
-     if(portal.kind==='surface_access'){ctx.font='700 12px -apple-system,sans-serif';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='white';ctx.strokeText(portal.surface_access.reference,point.x+9,point.y-8);ctx.fillStyle='#12658a';ctx.fillText(portal.surface_access.reference,point.x+9,point.y-8);}
    }
+   ctx.font=mapLabelFont;ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.lineJoin='round';ctx.miterLimit=2;ctx.lineWidth=2;ctx.strokeStyle='rgba(255,255,255,.95)';ctx.fillStyle='#12658a';
+   for(const label of entranceReferenceLabels(layout)){ctx.strokeText(label.text,label.x,label.y);ctx.fillText(label.text,label.x,label.y);}
  }
  ctx.restore();
 }
@@ -297,7 +313,7 @@ function legends(){
  else geography.hidden=true;
  if(buildingAccess){
    geography.append(element('span',`${number(buildingAccess.buildings.length)} separate building footprints`));
-   for(const [label,color]of [['Building boundary highlight','#364c67'],[buildingAccess.schema==='ump.building-access.v2'?'Synthetic shop entrance · diamond':'Synthetic facade midpoint · diamond','#b44720'],['OSM entrance · square','#12658a']]){const item=element('span'),swatch=element('i',null,'swatch');swatch.style.background=color;item.append(swatch,document.createTextNode(label));geography.append(item);}
+   for(const [label,color]of [['Building boundary highlight','#364c67'],[buildingAccess.schema==='ump.building-access.v2'?'Synthetic shop entrance · diamond':'Synthetic facade midpoint · diamond','#b44720'],['OSM entrance · diamond','#12658a']]){const item=element('span'),swatch=element('i',null,'swatch');swatch.style.background=color;item.append(swatch,document.createTextNode(label));geography.append(item);}
    const v2=buildingAccess.schema==='ump.building-access.v2';
    if(v2){for(const [label,color]of [['Modeled shop frontages · colors','#a95829'],['Short facade divisions · assumed','#535369'],['Walking boundary · arrows = spawn/exit eligible',boundaryColors.walking],['Cycling boundary · context only',boundaryColors.cycling],[buildingAccess.boundary_intervals.some(b=>b.mode==='road'&&b.spawn_supported)?'Road rider boundary · arrows = spawn/exit eligible':'Road boundary · context only',boundaryColors.road]]){const item=element('span'),swatch=element('i',null,'swatch');swatch.style.background=color;item.append(swatch,document.createTextNode(label));geography.append(item);}}
    const osm=buildingAccess.portals.filter(portal=>portal.provenance==='osm').length;

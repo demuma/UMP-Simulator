@@ -135,6 +135,51 @@ class NativeRecordingTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,expected):self.build()
                 ends[0].clear();ends[0].update(old)
 
+    def configure_fixture_people(self, count=5):
+        self.cfg['mapped_scene']={'people':[
+            {'person_id':f'private-person-{i+1:03d}','episodes':[
+                {'track_id':f'track-{i+1:03d}','route_id':'fixture-route'}]}
+            for i in range(count)]}
+
+    def test_configured_completed_tracks_are_all_observed_by_the_sensor(self):
+        self.configure_fixture_people()
+        proof=self.build()[2]
+        self.assertTrue(proof['all_scheduled_episodes_completed'])
+        self.assertEqual(proof['sensor_observability'],{
+            'schema':'ump.source-sensor-episode-observability.v1','status':'pass',
+            'scheduled_tracks':5,'sensor_observed_tracks':5,'missing_track_count':0,'unexpected_track_count':0,
+            'scope':'Exact configured visible-episode token set versus all in-coverage sensor-cadence observations; no identities in compact proof.'})
+        self.assertNotIn('private-person-',json.dumps(proof['sensor_observability']))
+        self.assertNotIn('track-001',json.dumps(proof['sensor_observability']))
+
+    def test_lifecycle_complete_short_episode_can_fail_sensor_observability_without_missing_gt(self):
+        self.configure_fixture_people(6)
+        summary=next(row for row in self.raw['agents'] if row.get('data_type')=='mapped source summary')
+        summary.update(scheduled_people=6,scheduled_tracks=6)
+        # A genuine 50-ms episode has its complete GT and both lifecycle events,
+        # but lies wholly before the first 100-ms sensor sample. Raw sensor and
+        # recipient counts remain unchanged rather than inventing observations.
+        self.raw['agents'].append({'data_type':'agent data','timestamp':stamp(0),'agent_id':'track-006',
+            'observation_track_id':'track-006','private_person_id':'private-person-006','type':'Adult Pedestrian',
+            'position':{'x':2,'y':2},'velocity':{'x':0,'y':0}})
+        for event,at in [('episode_start',0),('episode_end',50)]:
+            self.raw['agents'].append({'data_type':'mapped lifecycle event','event':event,'at_ms':at,
+                'private_person_id':'private-person-006','observation_track_id':'track-006',
+                'route_id':'fixture-route','portal_id':'fixture-portal'})
+        replay,result,proof=self.build()
+        self.assertTrue(proof['all_scheduled_episodes_completed']);self.assertEqual(proof['gt_rows'],51)
+        visibility=proof['sensor_observability']
+        self.assertEqual(visibility['status'],'fail');self.assertEqual(visibility['scheduled_tracks'],6)
+        self.assertEqual(visibility['sensor_observed_tracks'],5);self.assertEqual(visibility['missing_track_count'],1)
+        self.assertEqual(visibility['unexpected_track_count'],0)
+        self.assertFalse(any(o['id']=='track-006' for batch in replay['batches'] for o in batch['observations']))
+        self.assertEqual(proof['published_cell_windows'],1)
+
+    def test_legacy_capture_without_configured_people_does_not_claim_sensor_observability(self):
+        proof=self.build()[2]
+        self.assertNotIn('sensor_observability',proof)
+        self.assertTrue(proof['all_scheduled_episodes_completed'])
+
     def test_filtered_product_cannot_receive_a_complete_source_footprint_capture_proof(self):
         self.cfg['sensors'][0]['aggregation']['policy_tree']['root']['semantic_suppression_fraction']={'max':.1}
         with self.assertRaisesRegex(ValueError,'retained-population accounting'):
@@ -846,6 +891,41 @@ global.print=text=>process.stdout.write(text+'\\n');
                     path.write_text(json.dumps(context))
                     with self.assertRaisesRegex(ValueError,'native|Native'):
                         export.validate_scene_building_access(scene,changed,path)
+
+    def test_expanded_source_entrance_export_proof_authenticates_frozen_evidence_and_approach(self):
+        import build_mapped_scene as builder
+        import storefront_scene
+        import building_access
+        repo=Path(__file__).resolve().parents[2]
+        _,local,layers,_,provenance=builder.load_source(repo)
+        context,_,_,polygons=storefront_scene.build_geometry(repo,local,layers,building_access,
+            provenance['source_geometry_sha256'],expanded_shop_access=True)
+        cfg={'simulation':dict(width=80,height=80),'mapped_scene':{
+            'portals':copy.deepcopy(context['portals']),
+            'routes':[{'id':'door-to-door','points':[context['portals'][0]['point'],context['portals'][-1]['point']],
+                'start_portal':context['portals'][0]['id'],'end_portal':context['portals'][-1]['id']}],
+            'motion':{'mode':'local_navigation','navigation':{'allowed_center_polygons':polygons,'center_clearance_m':.55}}}}
+        cfg=json.loads(json.dumps(cfg))  # Native YAML/JSON coordinates are arrays.
+        with tempfile.TemporaryDirectory() as folder:
+            scene=Path(folder);path=scene/'building_access.json';path.write_text(json.dumps(context))
+            proof=export.validate_scene_building_access(scene,cfg,path)
+            source=proof['expanded_source_access']
+            self.assertEqual(source['status'],'pass');self.assertEqual(source['source_entrances'],1)
+            self.assertEqual(source['access_connectors'],1);self.assertGreater(source['synthetic_access_surface_area_m2'],15)
+            for mutation in ('source_version','tenant_name','connector_wall','connector_width','point'):
+                with self.subTest(mutation=mutation):
+                    value=copy.deepcopy(context);native=copy.deepcopy(cfg)
+                    front=next(front for front in value['store_fronts'] if 'entrance_source' in front)
+                    if mutation=='source_version':front['entrance_source']['osm_version']+=1
+                    if mutation=='tenant_name':front['poi']['name']='Different tenant'
+                    if mutation=='connector_wall':value['navigation']['synthetic_access_connectors'][0]['centerline'][1]=[36,28]
+                    if mutation=='connector_width':value['navigation']['synthetic_access_connectors'][0]['width_m']=4.1
+                    if mutation=='point':
+                        portal=next(portal for portal in value['portals'] if portal['id']==front['portal_id'])
+                        portal['point'][0]+=.01
+                        next(portal for portal in native['mapped_scene']['portals'] if portal['id']==front['portal_id'])['point'][0]+=.01
+                    path.write_text(json.dumps(value))
+                    with self.assertRaises(ValueError):export.validate_scene_building_access(scene,native,path)
 
     def test_map_metadata_only_references_optional_local_public_building_artifact(self):
         with tempfile.TemporaryDirectory() as directory:

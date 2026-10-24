@@ -12,12 +12,17 @@ import math
 import random
 import uuid
 from shapely.geometry import LineString, Point, Polygon, box
-from shapely.ops import unary_union, linemerge
+from shapely.ops import unary_union, linemerge, nearest_points
 from shapely.prepared import prep
 
 SIDE = 80
 CLEARANCE = .55
 SHOP_NAMES = {"Apollo", "Ditsch", "Adidas Originals", "H&M HOME"}
+EXPANDED_SOURCE_SHA256 = "afa2690e408f467af5ff679770bf872816cc568714d9171cf4efb493809e40ed"
+CAFE_POI_ID = 442443891
+CONCERT_POI_ID = 13739289193
+CAFE_MAIN_ENTRANCE_ID = 9370793427
+EXPANDED_ACCESS_SCOPE = "Exact frozen OSM entrance point; association to the named tenant is modeled."
 
 
 def canonical_hash(value):
@@ -49,7 +54,7 @@ def _segments(geom):
             yield a, b
 
 
-def projected_shops(repo, local, layers, access, source_hash, overrides=None):
+def projected_shops(repo, local, layers, access, source_hash, overrides=None, expanded_shop_access=False):
     labels = json.loads((repo / "tools/osm_regions/data/moenckeberg/close/poi_labels.json").read_text())
     originals = {f"osm-{p['osm_type']}-{p['osm_id']}": g for p,g in local if p["kind"] == "building"}
     building_id = "osm-way-43117523"
@@ -60,8 +65,8 @@ def projected_shops(repo, local, layers, access, source_hash, overrides=None):
         if (not isinstance(overrides, dict) or set(overrides) != {"schema", "source_geometry_sha256", "entrances"}
                 or overrides["schema"] != "ump.shop-entrance-overrides.v1" or overrides["source_geometry_sha256"] != source_hash):
             raise ValueError("Shop overrides must declare the exact frozen source hash and supported schema")
-        if not isinstance(overrides["entrances"], list) or len(overrides["entrances"]) > 4:
-            raise ValueError("Shop overrides require a bounded list of at most four entrances")
+        if not isinstance(overrides["entrances"], list) or len(overrides["entrances"]) > (6 if expanded_shop_access else 4):
+            raise ValueError("Shop overrides require a bounded list matching the enabled destination inventory")
         for row in overrides["entrances"]:
             if not isinstance(row, dict) or set(row) != {"poi_osm_id", "point"} or row["poi_osm_id"] in override_points:
                 raise ValueError("Duplicate or invalid shop override")
@@ -71,8 +76,9 @@ def projected_shops(repo, local, layers, access, source_hash, overrides=None):
             override_points[row["poi_osm_id"]] = point
     portals, fronts, internals = [], [], []
     selected = sorted([row for row in labels["labels"] if row["text"] in SHOP_NAMES], key=lambda r:r["x"])
-    if len(selected) != 4 or set(override_points)-{r["osm_id"] for r in selected}:
-        raise ValueError("Frozen storefronts or override targets do not match the four declared POIs")
+    allowed_pois = {r["osm_id"] for r in selected} | ({CONCERT_POI_ID} if expanded_shop_access else set())
+    if len(selected) != 4 or set(override_points)-allowed_pois:
+        raise ValueError("Frozen storefronts or override targets do not match the enabled declared POIs")
     for row in selected:
         poi = Point(row["x"], row["y"])
         if not building.covers(poi):
@@ -147,16 +153,132 @@ def projected_shops(repo, local, layers, access, source_hash, overrides=None):
                                "points":[a,b],"provenance":"synthetic_frontage_division_not_interior_wall"})
     context = access.building_context(local)
     context.update(schema="ump.building-access.v2",portals=portals,store_fronts=fronts,facade_separators=separators)
+    if expanded_shop_access:
+        _expand_shop_targets(context, internals, local, layers, labels, source_hash, override_points)
     return context, internals, all_buildings
 
 
+def access_connector_surface(context, buildings):
+    """Only explicit modeled approach surfaces, never implicit wall exceptions."""
+    return unary_union([LineString(row["centerline"]).buffer(row["width_m"]/2, cap_style=2)
+                        for row in context.get("navigation", {}).get("synthetic_access_connectors", [])]) \
+        .intersection(box(0, 0, SIDE, SIDE)).difference(buildings)
+
+
+def expanded_shop_inventory(context, source_hash):
+    """Public destination assumptions, including source POIs that are excluded."""
+    return {"schema":"ump.expanded-shop-access.v1", "source_geometry_sha256":source_hash,
+        "destinations":[{"poi_osm_id":front["poi"]["osm_id"],"name":front["poi"]["name"],
+                         "portal_id":front["portal_id"],"provenance":front["provenance"]}
+                        for front in context["store_fronts"]],
+        "excluded_pois":[{"poi_osm_id":4248082207,"name":"Mö Grill",
+            "reason":"POI lies below the A1 overhead roof, without a source ground-level enclosing building/facade; a food-service counter is not modeled as disappearance into a building."}],
+        "unselected_source_entrances":[
+            {"osm_node_id":11062053180,"reason":"Civic building secondary entrance remains source context; the first extension uses one primary target per business rather than assuming this door belongs to another tenant."},
+            {"osm_node_id":6244468529,"reason":"Rappolthaus main door is preserved in source context, but the snapshot does not identify which of the four southern tenants it serves; their existing synthetic storefront targets remain explicit assumptions."},
+            {"osm_node_id":4616972979,"reason":"Entrance is tagged level=1; no validated ground-level access/stair connector is modeled."}],
+        "scope":"Six named source POIs are explicit synthetic visit destinations. Door-to-tenant associations, forecourt width, demand and hidden dwell are modeling assumptions, not surveyed access rights or calibrated visitation."}
+
+
+def _expand_shop_targets(context, internals, local, layers, labels, source_hash, override_points):
+    """Add one exact source door and one POI projection on a second real building.
+
+    The original four-shop fixture remains byte-for-byte unchanged when disabled.
+    The civic building outline is never changed: a locally tangent admission line
+    orients the finite throat at the exact OSM door vertex (sub-mm wall kink).
+    """
+    if source_hash != EXPANDED_SOURCE_SHA256:
+        raise ValueError("Expanded shop access requires the exact reviewed frozen source hash")
+    lookup={(props["kind"],props["osm_type"],props["osm_id"]):(props,geom) for props,geom in local}
+    building_id="osm-way-32529387"
+    _,building=lookup[("building","way",32529387)]
+    buildings=unary_union([geom for props,geom in local if props["kind"]=="building"])
+    pois={row["osm_id"]:row for row in labels["labels"]}
+    if pois.get(CAFE_POI_ID,{}).get("text")!="Elbphilharmonie Kultur Café Starbucks" or pois.get(CONCERT_POI_ID,{}).get("text")!="Konzertkasse Mönckebergstraße":
+        raise ValueError("Expanded shop POI identities differ from the reviewed source")
+    if any(not building.covers(Point(pois[key]["x"],pois[key]["y"])) for key in (CAFE_POI_ID,CONCERT_POI_ID)):
+        raise ValueError("Expanded shop POI is outside its original source building")
+    props,door=lookup[("entrance","node",CAFE_MAIN_ENTRANCE_ID)]
+    if (props["osm_version"]!=2 or props["osm_timestamp"]!="2023-07-22T18:14:47Z"
+            or props["tags"]!={"entrance":"main"} or door.distance(building.boundary)>1e-8):
+        raise ValueError("Café main entrance identity or exact original facade point differs from source")
+    ring=list(building.exterior.coords)[:-1]
+    index=min(range(len(ring)),key=lambda i:Point(ring[i]).distance(door))
+    before,after=ring[(index-1)%len(ring)],ring[(index+1)%len(ring)]
+    chord=LineString([before,after])
+    if chord.distance(door)>.005:
+        raise ValueError("Source café entrance corner is too sharp for a straight admission tangent")
+    tangent=((after[0]-before[0])/chord.length,(after[1]-before[1])/chord.length)
+    center=list(door.coords)[0]
+    normals=[(-tangent[1],tangent[0]),(tangent[1],-tangent[0])]
+    normal=next(n for n in normals if not building.covers(Point([center[i]+n[i]*1.5 for i in (0,1)])))
+    approach=[center[i]+normal[i]*1.5 for i in (0,1)]
+    body_safe=layers["walking"].difference(buildings).buffer(-(CLEARANCE+.002),resolution=16)
+    if body_safe.is_empty:
+        raise ValueError("Expanded source door has no existing body-safe walking connection")
+    _,anchor=nearest_points(Point(approach),body_safe)
+    centerline=[list(center),approach,list(anchor.coords[0])]
+    if LineString(centerline).length>12 or LineString(centerline).intersection(buildings.buffer(-1e-7)).length>1e-8:
+        raise ValueError("Bounded café source-door approach intersects a real building")
+    connector={"id":"synthetic-cafe-main-access","portal_id":f"shop-{CAFE_POI_ID}",
+        "centerline":centerline,"width_m":3.,"provenance":"synthetic_approach_to_source_osm_entrance"}
+    context["navigation"]={"synthetic_access_connectors":[connector]}
+    walking=layers["walking"].union(access_connector_surface(context,buildings))
+    facade=[[center[i]+sign*tangent[i]*2 for i in (0,1)] for sign in (-1,1)]
+    throat=Polygon([[center[i]+normal[i]*d+tangent[i]*w for i in (0,1)]
+                    for d,w in [(-.56,-.6),(1.7,-.6),(1.7,.6),(-.56,.6)]])
+    footprint=LineString(centerline).buffer(CLEARANCE)
+    if footprint.difference(walking.union(throat)).area>1e-8 or footprint.intersection(buildings.difference(throat)).area>1e-8:
+        raise ValueError("Café access fails full-body walking/building clearance")
+    row=pois[CAFE_POI_ID];identifier=f"shop-{CAFE_POI_ID}"
+    context["portals"].append({"id":identifier,"building_id":building_id,"point":list(center),
+        "facade":facade,"width_m":1.2,"provenance":"osm"})
+    context["store_fronts"].append({"id":"front-"+identifier,"destination_id":identifier,"building_id":building_id,
+        "poi":{"osm_type":row["osm_type"],"osm_id":row["osm_id"],"name":row["text"],"point":[row["x"],row["y"]]},
+        "portal_id":identifier,"frontage":copy.deepcopy(facade),"provenance":"osm_entrance_association",
+        "projection_method":"source_entrance_on_original_facade",
+        "entrance_source":{"osm_type":"node","osm_id":CAFE_MAIN_ENTRANCE_ID,"osm_version":props["osm_version"],
+                           "osm_timestamp":props["osm_timestamp"],"scope":EXPANDED_ACCESS_SCOPE}})
+    internals.append({"normal":normal,"tangent":tangent,"throat":throat,"approach":approach})
+    row=pois[CONCERT_POI_ID];poi=Point(row["x"],row["y"]);choices=[]
+    for a,b in _segments(building):
+        wall=LineString([a,b]);length=wall.length
+        projection=Point(override_points[row["osm_id"]]) if row["osm_id"] in override_points else wall.interpolate(wall.project(poi))
+        if projection.distance(wall)>1e-7 or min(projection.distance(Point(a)),projection.distance(Point(b)))<.65:
+            continue
+        tangent=((b[0]-a[0])/length,(b[1]-a[1])/length)
+        for normal in [(-tangent[1],tangent[0]),(tangent[1],-tangent[0])]:
+            center=list(projection.coords)[0];approach=[center[i]+normal[i]*1.5 for i in (0,1)]
+            if building.covers(Point(approach)) or not box(0,0,SIDE,SIDE).covers(projection):
+                continue
+            throat=Polygon([[center[i]+normal[i]*d+tangent[i]*w for i in (0,1)]
+                            for d,w in [(-.56,-.6),(1.7,-.6),(1.7,.6),(-.56,.6)]])
+            footprint=LineString([center,approach]).buffer(CLEARANCE)
+            if footprint.difference(walking.union(throat)).area>1e-8 or footprint.intersection(buildings.difference(throat)).area>1e-8:
+                continue
+            choices.append((poi.distance(projection),center,list(a),list(b),normal,tangent,throat,approach))
+    if not choices:
+        raise ValueError("No body-safe original-facade projection for Konzertkasse")
+    _,center,a,b,normal,tangent,throat,approach=min(choices,key=lambda q:q[0])
+    identifier=f"shop-{CONCERT_POI_ID}"
+    context["portals"].append({"id":identifier,"building_id":building_id,"point":center,"facade":[a,b],"width_m":1.2,"provenance":"synthetic"})
+    context["store_fronts"].append({"id":"front-"+identifier,"destination_id":identifier,"building_id":building_id,
+        "poi":{"osm_type":row["osm_type"],"osm_id":row["osm_id"],"name":row["text"],"point":[row["x"],row["y"]]},
+        "portal_id":identifier,"frontage":[a,b],"provenance":"synthetic_poi_projection",
+        "projection_method":"manual_original_facade_override" if CONCERT_POI_ID in override_points else "orthogonal_to_reachable_original_facade"})
+    internals.append({"normal":normal,"tangent":tangent,"throat":throat,"approach":approach})
+
+
 def build_geometry(repo, local, layers, access, source_hash, overrides=None,
-                   walking_geometry=None, body_clearance_m=CLEARANCE):
-    context, internals, buildings = projected_shops(repo,local,layers,access,source_hash,overrides)
+                   walking_geometry=None, body_clearance_m=CLEARANCE, expanded_shop_access=False):
+    context, internals, buildings = projected_shops(repo,local,layers,access,source_hash,overrides,expanded_shop_access)
     domain = box(0,0,SIDE,SIDE)
     # Outside-domain padding makes partial circular bodies at open map edges
     # valid. Actual buildings beyond the clipping edge remain obstacles.
-    padded = (layers["walking"] if walking_geometry is None else walking_geometry).union(domain.buffer(1).difference(domain)).difference(buildings)
+    walking = layers["walking"] if walking_geometry is None else walking_geometry
+    if expanded_shop_access:
+        walking = walking.union(access_connector_surface(context, buildings))
+    padded = walking.union(domain.buffer(1).difference(domain)).difference(buildings)
     safe = padded.buffer(-(body_clearance_m + .002), resolution=16).intersection(domain)
     strips = []
     for portal,internal in zip(context["portals"],internals):
@@ -189,8 +311,8 @@ def build_geometry(repo, local, layers, access, source_hash, overrides=None,
     if len([r for r in intervals if r["spawn_supported"]]) < 2:
         raise ValueError("Insufficient positive-length body-safe walking boundaries")
     context["boundary_intervals"] = intervals
-    context["navigation"] = {"body_clearance_m":body_clearance_m,"allowed_center_polygons_sha256":canonical_hash(rows),
-        "scope":"Pre-eroded derived walking geometry with clipped-edge circular-body access and narrow declared facade transitions. Road/cycle boundaries are context only; active sources are pedestrians."}
+    context.setdefault("navigation", {}).update(body_clearance_m=body_clearance_m,allowed_center_polygons_sha256=canonical_hash(rows),
+        scope="Pre-eroded derived walking geometry with clipped-edge circular-body access and narrow declared facade transitions. Road/cycle boundaries are context only; active sources are pedestrians.")
     return context, internals, safe, rows
 
 
@@ -425,8 +547,9 @@ def controlled_barkhof_passage(router, routes, portal_ids):
 
 
 def make_scene(repo, local, layers, access, source_hash, seed, people, interval, overrides=None,
-               experimental_narrow_passages=False):
-    context, internals, safe, rows = build_geometry(repo,local,layers,access,source_hash,overrides)
+               experimental_narrow_passages=False, expanded_shop_access=False):
+    context, internals, safe, rows = build_geometry(repo,local,layers,access,source_hash,overrides,
+        expanded_shop_access=expanded_shop_access)
     router=SafeRouter(safe,experimental_narrow_passages=experimental_narrow_passages)
     rng=random.Random(seed ^ 0x6A09E667F3BCC909)
     tokens=random.Random(seed ^ 0xCBBB9D5DC1059ED8)
@@ -512,6 +635,9 @@ def make_scene(repo, local, layers, access, source_hash, seed, people, interval,
             "holding_endpoint_exclusion_radius_m": 3.55,
             "nonparticipant_rule": "exact_safe_route_outside_protected_tube_with_polygon_margin",
             "scope": "Experimental frozen-map movement resource, independent of privacy PolicyTrees."}
+    if expanded_shop_access:
+        construction["scope"] = expanded_shop_inventory(context, source_hash)["scope"]
+        construction["expanded_shop_access"] = expanded_shop_inventory(context, source_hash)
     audit=audit_scene(local,layers,scene,context)
     return scene,context,construction,audit
 
@@ -545,7 +671,7 @@ def audit_scene(local,layers,scene,context):
                 raise ValueError("Route endpoint is not on an eligible walking boundary interval")
         exemption=unary_union(exemptions)
         body=line.buffer(CLEARANCE,resolution=32).intersection(domain)
-        outside=body.difference(layers["walking"].union(exemption)).area
+        outside=body.difference(layers["walking"].union(access_connector_surface(context,buildings)).union(exemption)).area
         wall=body.intersection(buildings.difference(exemption)).area
         interior=line.intersection(buildings.buffer(-1e-7)).length
         if outside>1e-6 or wall>1e-6 or interior>1e-6:

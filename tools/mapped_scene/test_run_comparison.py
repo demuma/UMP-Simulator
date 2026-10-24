@@ -107,22 +107,31 @@ class ComparisonTests(unittest.TestCase):
     def write_proof(self):
         self.write_json(self.recording/'capture-proof.json',self.proof)
 
-    def run_mocked(self,output,*,empty=False,after_run=None,policy_comparison=False,max_window_sensitivity=False,native_wall_budget_s=240):
+    def run_mocked(self,output,*,empty=False,after_run=None,policy_comparison=False,max_window_sensitivity=False,
+                   spatial_portfolio=False,spatial_profiles=comparison.SPATIAL_PROFILES,native_wall_budget_s=240):
         calls=[];queries=[];policies=[]
         audit={'status':'verified','scalar':{'valid':True},'semantic_published_cells':2,'semantic_published_bins':2,
                'regional_recomputations':[{}],'retained_by_source_group':{'private-oracle-not-browser-data':95}}
         def binary_run(command,**kwargs):
             protocol=comparison.read(output/'protocol.json')
-            self.assertEqual(protocol['matrix'],comparison.max_window_variants() if max_window_sensitivity else comparison.policy_variants() if policy_comparison else comparison.variants())
+            self.assertEqual(protocol['matrix'],comparison.spatial_portfolio_variants(self.data['coverage'],spatial_profiles) if spatial_portfolio else
+                             comparison.max_window_variants() if max_window_sensitivity else comparison.policy_variants() if policy_comparison else comparison.variants())
+            if spatial_portfolio:
+                frozen=protocol['pre_execution_artifacts_sha256']
+                self.assertEqual(len([name for name in frozen if name.endswith('-policy.json')]),len(protocol['matrix']))
+                comparison.check_frozen_artifacts(output,frozen)
+                self.assertEqual(Path(command[0]),output.resolve()/'provenance/AggregationReplay')
+                self.assertEqual(comparison.read(output/'query-bank.json'),protocol['queries'])
             self.assertFalse((output/'summary.json').exists(),'Summary may only claim verified after every case passes')
             self.assertEqual(protocol['observations_sha256'],comparison.sha(self.recording/'observations.json'))
             if not calls:
                 self.assertFalse(any(output.glob('adaptive_immediate.json')))
-            self.assertEqual(Path(command[command.index('--input')+1]),self.recording.resolve()/'observations.json')
+            self.assertEqual(Path(command[command.index('--input')+1]),(output.resolve() if spatial_portfolio else self.recording.resolve())/'observations.json')
             self.assertEqual(comparison.sha(command[command.index('--input')+1]),protocol['observations_sha256'])
             policy=comparison.read(command[command.index('--config')+1]);policies.append(policy)
             result=copy.deepcopy(self.result)
-            if empty:result['releases']=[];result['windows']=[]
+            if empty or (spatial_portfolio and Path(command[command.index('--output')+1]).name.startswith('original_fixed_20m_')):
+                result['releases']=[];result['windows']=[]
             result['mode']=command[command.index('--mode')+1]
             self.write_json(Path(command[command.index('--output')+1]),result)
             calls.append(command)
@@ -140,7 +149,8 @@ class ComparisonTests(unittest.TestCase):
              mock.patch.object(comparison.recipient_support,'compact',return_value={'exact':{'count':1},'uniform_estimate':{'count':1}}),\
              contextlib.redirect_stdout(io.StringIO()):
             summary=comparison.compare(self.recording,output,self.binary,policy_comparison=policy_comparison,
-                                       max_window_sensitivity=max_window_sensitivity,native_wall_budget_s=native_wall_budget_s)
+                                       max_window_sensitivity=max_window_sensitivity,spatial_portfolio=spatial_portfolio,
+                                       spatial_profiles=spatial_profiles,native_wall_budget_s=native_wall_budget_s)
         return summary,calls,queries,policies
 
     def test_matrix_predeclares_fixed_and_adaptive_methods_without_outcome_selection(self):
@@ -186,6 +196,7 @@ class ComparisonTests(unittest.TestCase):
         self.assertAlmostEqual(stats['exact_subtype_fraction_of_input'],1/12)
         self.assertAlmostEqual(stats['exact_subtype_fraction_of_retained'],.1)
         self.assertAlmostEqual(stats['observation_weighted_semantic_loss'],.45)
+        self.assertAlmostEqual(stats['full_input_semantic_distortion'],(20+45)/120)
         self.assertAlmostEqual(stats['observation_weighted_cell_side_m'],9.5)
         self.assertAlmostEqual(stats['observation_weighted_interval_duration_ms'],940)
         self.assertAlmostEqual(stats['observation_weighted_age_at_release_ms'],1040)
@@ -197,7 +208,7 @@ class ComparisonTests(unittest.TestCase):
     def test_zero_denominators_are_unknown_instead_of_perfect_utility(self):
         stats=comparison.summarize({'batches':[]},self.base,{'releases':[]})
         for key in ('retained_fraction','exact_subtype_fraction_of_input','exact_subtype_fraction_of_retained',
-                    'observation_weighted_semantic_loss','observation_weighted_cell_side_m',
+                    'observation_weighted_semantic_loss','full_input_semantic_distortion','observation_weighted_cell_side_m',
                     'observation_weighted_interval_duration_ms','observation_weighted_age_at_release_ms'):
             self.assertIsNone(stats[key],key)
         nonempty=comparison.summarize({'batches':[{'observations':[{},{}]}]},self.base,{'releases':[]})
@@ -500,6 +511,153 @@ class ComparisonTests(unittest.TestCase):
                     comparison.compare(self.recording,output,self.binary,native_wall_budget_s=budget)
                 run.assert_not_called()
                 self.assertFalse(output.exists())
+
+    def complete_source_proof(self):
+        self.proof.update(all_scheduled_episodes_completed=True,
+            lifecycle_quality=dict(pending_episodes_at_horizon=0,active_episodes_at_horizon=0),
+            sensor_observability=dict(schema='ump.source-sensor-episode-observability.v1',status='pass',
+                scheduled_tracks=5,sensor_observed_tracks=5,missing_track_count=0,unexpected_track_count=0))
+        self.write_proof()
+
+    def test_spatial_portfolio_declares_exact_depths_two_strategies_and_both_contracts(self):
+        matrix=comparison.spatial_portfolio_variants(self.data['coverage'])
+        self.assertEqual(len(matrix),16)
+        for profile in comparison.SPATIAL_PROFILES:
+            methods=[row for row in matrix if row['policy_profile']==profile]
+            self.assertEqual(len(methods),8)
+            self.assertEqual({row['mode'] for row in methods},{'fixed','semantic_first','spatial_first'})
+            self.assertEqual({(row['depth'],row['window']) for row in methods if row['mode']=='fixed'},
+                             {(depth,window) for depth in (2,3,4) for window in (400,1000)})
+            self.assertTrue(all(row['suppression_cap']==0 and row['minimum_candidate_depth']==2 for row in methods))
+        larger={**self.data['coverage'],'width':160,'height':160}
+        self.assertEqual(comparison.fixed_depth(larger,20),3)
+        for coverage in ({**self.data['coverage'],'height':79},{**self.data['coverage'],'width':75,'height':75},
+                         {**self.data['coverage'],'leaf_depth':2},{**self.data['coverage'],'width':True}):
+            with self.subTest(coverage=coverage),self.assertRaises(ValueError):
+                comparison.spatial_portfolio_variants(coverage)
+        for profiles in ([],['original','original'],['unknown'],'original'):
+            with self.subTest(profiles=profiles),self.assertRaises(ValueError):
+                comparison.spatial_portfolio_variants(self.data['coverage'],profiles)
+
+    def test_spatial20_relaxes_only_all_existing_spatial_maxima_and_keeps_geometry(self):
+        base=copy.deepcopy(self.base)
+        base['spatial_selection']={'min_depth':3,'max_depth':6}
+        base['policy_regions'][0]['type_requirements']['cell_side_m']={'max':5}
+        base['policy_regions'][0]['requirements']['cell_side_m']={'max':7.5,'min':1.25}
+        before=copy.deepcopy(base)
+        relaxed,changes=comparison.relaxed_spatial20(base)
+        self.assertEqual(len(changes),3)
+        restored=copy.deepcopy(relaxed);restored['policy_tree']['id']=base['policy_tree']['id']
+        for change in changes:
+            target=restored['policy_tree']['root'] if change['scope']=='root' else restored['policy_regions'][0][change['scope'].split(':')[-1]]
+            self.assertEqual(target['cell_side_m']['max'],20)
+            target['cell_side_m']['max']=change['before']
+        self.assertEqual(restored,before)
+        for variant in comparison.spatial_portfolio_variants(self.data['coverage']):
+            config=comparison.settings_for(base,variant)
+            self.assertEqual(config['spatial_selection'],{'min_depth':2,'max_depth':6})
+            self.assertEqual(config['policy_tree']['root']['semantic_suppression_fraction'],{'max':0})
+            self.assertEqual(config['policy_tree']['root']['cell_side_m']['max'],20 if variant['policy_profile']=='spatial20' else 10)
+            self.assertEqual(config['policy_tree']['root']['distinct_contributors'],base['policy_tree']['root']['distinct_contributors'])
+            self.assertEqual(config['semantic_taxonomy'],base['semantic_taxonomy'])
+            self.assertEqual(config['history'],base['history'])
+            self.assertTrue(config['policy_tree']['id'].endswith('/'+variant['method_id']))
+            self.assertTrue(config['application_id'].endswith('/'+variant['id']))
+            if variant['mode']=='spatial_first':
+                self.assertNotIn('semantic_secondary_strategy',config['policy_tree']['execution'])
+        self.assertEqual(base,before)
+        for invalid in (True,-1,0,21,float('inf')):
+            bad=copy.deepcopy(base);bad['policy_tree']['root']['cell_side_m']['max']=invalid
+            with self.subTest(invalid=invalid),self.assertRaises(ValueError):comparison.relaxed_spatial20(bad)
+
+    def test_spatial_portfolio_requires_completed_observable_source_without_affecting_legacy(self):
+        self.complete_source_proof()
+        good=copy.deepcopy(self.proof)
+        for mutation in ('incomplete','pending','active','observability_missing','unobserved','unexpected','count_mismatch','bool_count','status'):
+            bad=copy.deepcopy(good)
+            if mutation=='incomplete':bad['all_scheduled_episodes_completed']=False
+            if mutation=='pending':bad['lifecycle_quality']['pending_episodes_at_horizon']=1
+            if mutation=='active':bad['lifecycle_quality']['active_episodes_at_horizon']=1
+            if mutation=='observability_missing':bad.pop('sensor_observability')
+            if mutation=='unobserved':bad['sensor_observability']['missing_track_count']=1
+            if mutation=='unexpected':bad['sensor_observability']['unexpected_track_count']=1
+            if mutation=='count_mismatch':bad['sensor_observability']['sensor_observed_tracks']=4
+            if mutation=='bool_count':bad['sensor_observability']['scheduled_tracks']=True
+            if mutation=='status':bad['sensor_observability']['status']='pending'
+            self.proof=bad;self.write_proof();output=self.root/('bad-spatial-'+mutation)
+            with self.subTest(mutation=mutation),mock.patch.object(comparison.subprocess,'run') as run:
+                with self.assertRaises(ValueError):comparison.compare(self.recording,output,self.binary,spatial_portfolio=True)
+                run.assert_not_called();self.assertFalse(output.exists())
+        self.proof=good;self.write_proof()
+        bad=copy.deepcopy(good);bad['sensor_observability'].update(scheduled_tracks=4,sensor_observed_tracks=4)
+        with self.assertRaisesRegex(ValueError,'frozen observation stream'):
+            comparison.validate_completed_source(bad,self.data)
+        bad=copy.deepcopy(good);bad['lifecycle_quality']['scheduled_episodes']=6
+        with self.assertRaisesRegex(ValueError,'scheduled counts disagree'):
+            comparison.validate_completed_source(bad,self.data)
+        summary,calls,queries,policies=self.run_mocked(self.root/'spatial',spatial_portfolio=True)
+        self.assertEqual(len(calls),16)
+        self.assertEqual(summary['protocol']['comparison_kind'],'spatial_resolution_portfolio')
+        self.assertEqual(summary['protocol']['offline_audit_max_cells'],1000000)
+        self.assertEqual(summary['status'],'verified')
+        self.assertEqual({tuple(q['categories']) for q in queries},{('pedestrian','road_user')})
+        self.assertEqual(len({cfg['application_id'] for cfg in policies}),16)
+        self.assertEqual(len({cfg['policy_tree']['id'] for cfg in policies}),16)
+        self.assertEqual(summary['cases']['original_fixed_20m_400ms']['stats']['retained_fraction'],0)
+        self.assertIn('negative control',summary['protocol']['portfolio_scope'])
+        self.assertIn('no fitted regression',summary['protocol']['portfolio_scope'])
+        self.assertEqual(summary['protocol']['policy_changes'],comparison.relaxed_spatial20(self.base)[1])
+        viewer=comparison.read(self.root/'spatial'/'bundle.json')
+        labels={row['id']:row['label'] for row in viewer['variants']}
+        self.assertEqual(labels['original_adaptive_immediate'],'Original · Adaptive Semantic First')
+        self.assertEqual(labels['spatial20_adaptive_spatial_first'],'Spatial20 · Adaptive Spatial First')
+        self.assertIn('rejection control',labels['original_fixed_20m_400ms'])
+        self.assertTrue(all(row['contribution_selection']=='all_contributions' for row in viewer['variants']))
+
+    def test_spatial_profile_subset_and_shared_frozen_artifacts_are_checked_before_every_case(self):
+        self.complete_source_proof()
+        summary,calls,_,_=self.run_mocked(self.root/'only-spatial20',spatial_portfolio=True,spatial_profiles=('spatial20',))
+        self.assertEqual(len(calls),8)
+        self.assertTrue(all(name.startswith('spatial20_') for name in summary['cases']))
+        for filename in ('provenance/AggregationReplay','spatial20_fixed_20m_1000ms-policy.json','query-bank.json','observations.json'):
+            output=self.root/('mutated-'+filename.replace('/','-'))
+            def change(count):
+                if count==1:
+                    path=output/filename;path.write_bytes(path.read_bytes()+b' ')
+            with self.subTest(filename=filename),self.assertRaisesRegex(ValueError,'Frozen portfolio artifact changed'):
+                self.run_mocked(output,spatial_portfolio=True,after_run=change)
+            self.assertFalse((output/'summary.json').exists())
+        with mock.patch.object(comparison.subprocess,'run') as run:
+            with self.assertRaisesRegex(ValueError,'only valid'):
+                comparison.compare(self.recording,self.root/'subset-without-study',self.binary,spatial_profiles=('original',))
+            run.assert_not_called()
+
+    @unittest.skipUnless(os.environ.get('UMP_REPLAY_BINARY'),'native replay binary is an opt-in contract test')
+    def test_native_spatial20_negative_control_and_permissive_release(self):
+        cfg=copy.deepcopy(self.cfg);aggregation=cfg['sensors'][0]['aggregation']
+        aggregation['history'].update(max_bins=64,max_observations=10000,max_identity_bytes=1000000,max_buckets=512)
+        aggregation['spatial_selection']={'min_depth':3,'max_evaluations':8192,'preserve_valid_descendants':False}
+        aggregation['temporal_adaptation']={'coordination':'cell_local','extension_step_ms':100,
+                                           'max_window_ms':4000,'max_evaluations':64,'max_active_cells':4096}
+        (self.recording/'private/config.yaml').write_text(comparison.yaml.safe_dump(cfg))
+        self.proof['files_sha256']['private/config.yaml']=comparison.sha(self.recording/'private/config.yaml')
+        self.complete_source_proof()
+        with contextlib.redirect_stdout(io.StringIO()):
+            summary=comparison.compare(self.recording,self.root/'native-spatial',os.environ['UMP_REPLAY_BINARY'],spatial_portfolio=True)
+        for name,case in summary['cases'].items():
+            self.assertEqual(case['independent_audit']['status'],'verified')
+            if name.startswith('original_fixed_20m_'):self.assertEqual(case['stats']['retained_fraction'],0)
+            if name.startswith('spatial20_fixed_20m_'):
+                self.assertGreater(case['stats']['retained_fraction'],0)
+                self.assertEqual({float(side) for side in case['stats']['published_cell_sizes']},{20.0})
+
+    def test_invalid_offline_audit_capacity_is_rejected_before_any_execution(self):
+        for budget in (0,-1,True,1000001,1000000.0):
+            output=self.root/('bad-audit-'+str(budget))
+            with self.subTest(budget=budget),mock.patch.object(comparison.subprocess,'run') as run:
+                with self.assertRaisesRegex(ValueError,'1 to 1000000'):
+                    comparison.compare(self.recording,output,self.binary,audit_max_cells=budget)
+                run.assert_not_called();self.assertFalse(output.exists())
 
     def test_query_budget_is_predeclared_and_checked_before_binary_execution(self):
         # Same verified input, smaller test-only resource cap; no adaptive

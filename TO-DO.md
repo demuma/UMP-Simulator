@@ -1,5 +1,94 @@
 # TO-DO — UMP-Simulator
 
+
+## Map corrections before the spatial baseline portfolio — 2026-10-24, evening
+
+Follow this order: correct the visible map and real visit targets, verify completed
+recordings, then execute comparisons on frozen observations. Historical controls
+remain unchanged. Source generation and policy evaluation are separate stages.
+
+- [x] C24.1: complete the visible replay acceptance check for label outlines and
+  markers. Remove the white three-point label artifacts, expose both A1 and A2,
+  place their labels close to their access points, and use the same-size blue
+  diamond language as shop entrances. Keep readable street/business names and
+  attribution without duplicate baked labels. Inspect a fresh scene, not an old
+  replay; code-level geometry/model checks alone do not close this visual gate.
+- [x] C24.2: add default-off `--expanded-shop-access`. Retain the four existing
+  southern shop targets; add the exact frozen Café main OSM door and a distinct
+  reachable synthetic Konzertkasse facade target. Declare the three-meter-wide
+  exterior Café approach surface and keep original building outlines unchanged.
+  Assign actual visiting pedestrians across all six shops, with separate incoming
+  and fresh outgoing observation episodes. Record source provenance and all seven
+  business POIs, including the reason Mö Grill is not an indoor sink.
+  [Source/access contract](docs/EXPANDED_SHOP_ACCESS_2026-10-24.md).
+  Construction/body checks and 26 storefront/router regressions pass; independent
+  closed-schema and frozen-source checks accept the expanded public geometry.
+- [x] C24.3: close the new mixed-source gate before experiments: every scheduled
+  episode must start, finish and be observed; no final pending/active/stalled
+  source state; independently verify observed position/swept-body separation,
+  exact entrances, return lifecycle and completed visits at every enabled shop.
+  Preserve failed attempts as negative cases rather than trimming stalled tracks.
+- [x] C24.4: implement `--pedestrians-only` as a complete regenerated cohort on the
+  same urban map and entrance geometry, with all five base pedestrian profiles.
+  Do not filter riders from an existing recording. Record effective rider demand
+  zero and retain the configured ignored fraction separately. Omit rider-priority
+  admission on the empty road. API/CLI validation and argument forwarding must
+  reject incompatible modes before source/database work.
+- [x] C24.5: close the independent pedestrian-only native recording gate with the
+  same completion, observability and physical checks as C24.3. Report realized
+  density, type mix and contribution counts separately: composition changes
+  routes/interactions, so equal seeds do not make the motion streams identical.
+- [x] C24.6: predeclare the fixed 5/10/20 m × 0.4/1 s portfolio and adaptive
+  Semantic First/Spatial First variants, with separate application/Policy Tree
+  IDs on identical frozen observations within each source. Preserve the original
+  root/regional 10/5 m policy as one contract; fixed 20 m is an explicit rejection
+  control there. Add a separate shared `spatial20` contract that permits 20 m
+  everywhere, including matching adaptive minimum search depth 2. Keep all
+  nonspatial bounds unchanged and contribution suppression disabled in this
+  portfolio. [Predeclared protocol](docs/SPATIAL_PORTFOLIO_PROTOCOL_2026-10-24.md).
+- [x] C24.7: run and independently audit all 16 declared cases on the corrected
+  mixed recording; then the same portfolio on the regenerated pedestrian source.
+  Keep raw motion, private diagnostics and playable replays local under ignored
+  `results/`. Commit only compact aggregate summaries/figures/reports. A failed
+  case must not yield a verified complete summary.
+- [x] C24.8: show measured fixed-grid response curves, separate for 0.4 and 1 s,
+  with same-contract adaptive references. With only discrete 5/10/20 m choices,
+  connecting measured points is a visual guide, not a fitted regression or a
+  continuous interpolation claim. Broaden independent seeds/densities before
+  estimating statistical trends or population-level superiority.
+- [x] C24.9: explain each comparison jointly through retention, full-input and
+  retained-only semantic loss, exact subtype preservation, spatial detail,
+  logical delay, release counts, per-type/region losses and recipient query
+  support/error. Coarser 20 m cells can improve retention while reducing exact
+  10 m query coverage. Zero output with zero violations is vacuous compliance.
+  This stage measures policy satisfaction and utility; an actual privacy gain
+  remains a separate attack/model evaluation. Continue RT03 profiling separately.
+
+
+Completed C24 evidence: [all 32 cases and measured curves](docs/SPATIAL_PORTFOLIO_RESULTS_2026-10-24.md),
+[source/visual tests](docs/EXPANDED_ACCESS_TEST_REPORT_2026-10-24.md), and the compact
+aggregate package under `docs/verification/spatial-portfolio-2026-10-24/`.
+The initial mixed portfolio remains an incomplete negative operational attempt:
+its first Spatial20 audit exceeded the old 200,000-record limit. Fresh v2 runs
+predeclared a bounded 1,000,000-record audit capacity and passed every check.
+Under Spatial20, fixed 20 m wins retention in both sources. This outcome must
+remain visible; do not tune requirements merely to manufacture an adaptive win.
+
+- [x] C24.10: implement separately derived compact replay packaging, preserving
+  every empty retirement, all nonempty diagnostic cells and every release. Keep
+  full native evidence unchanged. Verify JavaScript event-boundary/reverse-seek
+  equivalence and all original/derived hashes.
+- [x] C24.11: close fresh-browser acceptance on both complete compact 16-case
+  replays, including actual method switching, current motion, A1/A2/shop labels
+  and the private empty-retirement view; keep heavy native data local. Browser
+  acceptance passes for both complete bundles at 30 s and private end-of-run
+  clearing at 300 s. Cold loads and long private-history seeks remain expensive;
+  defer bounded lazy loading/indexed private-event rendering to renderer work.
+- [ ] C24.12 — next research step: explain the Spatial20 fixed-grid advantage
+  through matched-window and causal decision/coordination traces before changing
+  the algorithm. Broaden seeds/densities only after the comparison contract is
+  fixed. These results demonstrate policy compliance/utility, not privacy gain.
+
 ## Active extension gate — 2026-10-24
 
 Work on one unchanged observation stream for policy comparisons. Source changes

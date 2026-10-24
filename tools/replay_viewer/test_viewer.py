@@ -152,6 +152,26 @@ class ViewerTests(unittest.TestCase):
     def test_mixed_traffic_navigation_spaces_and_declared_road_sources_validate(self):
         self.add_mixed_traffic_access();self.write();serve.validate_bundle(self.root)
 
+    def test_disabled_road_source_keeps_its_construction_provenance_as_context(self):
+        value=self.add_mixed_traffic_access();boundary=value['boundary_intervals'][-1]
+        boundary['spawn_supported']=False
+        before=copy.deepcopy(boundary)
+        (self.root/'building_access.json').write_text(json.dumps(value));self.write()
+        serve.validate_bundle(self.root)
+        self.assertEqual(json.loads((self.root/'building_access.json').read_text())['boundary_intervals'][-1],before)
+        self.assertEqual(boundary['provenance'],'synthetic_rider_source_on_body_safe_frozen_carriageway')
+
+    def test_context_only_rider_intervals_still_require_road_mode_space_and_exact_provenance(self):
+        for mutation in ('walking','cycling','no_road_space','wrong_space_mode','unknown_provenance'):
+            with self.subTest(mutation=mutation):
+                value=self.add_mixed_traffic_access();boundary=value['boundary_intervals'][-1]
+                boundary['spawn_supported']=False
+                if mutation in ('walking','cycling'):boundary['mode']=mutation
+                if mutation=='no_road_space':value['navigation']['spaces']=[]
+                if mutation=='wrong_space_mode':value['navigation']['spaces'][0]['mode']='walking'
+                if mutation=='unknown_provenance':boundary['provenance']='measured_road_source'
+                (self.root/'building_access.json').write_text(json.dumps(value));self.rejected()
+
     def test_mixed_traffic_nested_fields_and_geometry_are_strictly_bounded(self):
         for mutation in ('missing_space','space_private','space_digest','space_clearance','duplicate_space',
                          'crossing_private','crossing_provenance','crossing_width','crossing_outside','duplicate_crossing','road_provenance','unknown_mode'):
@@ -179,6 +199,59 @@ class ViewerTests(unittest.TestCase):
         serve.validate_bundle(self.root)
         front['projection_method']='unverified_real_door'
         (self.root/'building_access.json').write_text(json.dumps(value));self.rejected()
+
+    def add_source_storefront_access(self):
+        value=self.add_storefront_access();front=value['store_fronts'][0]
+        value['portals'][0]['provenance']='osm'
+        front.update(provenance='osm_entrance_association',projection_method='source_entrance_on_original_facade',
+            entrance_source={'osm_type':'node','osm_id':9370793427,'osm_version':2,
+                'osm_timestamp':'2023-07-22T18:14:47Z',
+                'scope':'Exact frozen OSM entrance point; association to the named tenant is modeled.'})
+        value['navigation']['synthetic_access_connectors']=[{'id':'access1','portal_id':'door1',
+            'centerline':[[18,10],[18,7],[16,6]],'width_m':3.,
+            'provenance':'synthetic_approach_to_source_osm_entrance'}]
+        (self.root/'building_access.json').write_text(json.dumps(value));return value
+
+    def test_source_storefront_association_and_bounded_synthetic_approach_validate(self):
+        self.add_source_storefront_access();self.write();serve.validate_bundle(self.root)
+
+    def test_source_storefront_metadata_is_closed_and_cannot_upgrade_a_synthetic_door(self):
+        for mutation in ('missing','private','boolean_node','version','timestamp','scope','method','portal_provenance','synthetic_claim'):
+            with self.subTest(mutation=mutation):
+                value=self.add_source_storefront_access();front=value['store_fronts'][0];source=front['entrance_source']
+                if mutation=='missing':front.pop('entrance_source')
+                if mutation=='private':source['person_id']='private'
+                if mutation=='boolean_node':source['osm_id']=True
+                if mutation=='version':source['osm_version']=0
+                if mutation=='timestamp':source['osm_timestamp']='recent'
+                if mutation=='scope':source['scope']='Verified tenant entrance'
+                if mutation=='method':front['projection_method']='manual_original_facade_override'
+                if mutation=='portal_provenance':value['portals'][0]['provenance']='synthetic'
+                if mutation=='synthetic_claim':front['provenance']='synthetic_poi_projection'
+                (self.root/'building_access.json').write_text(json.dumps(value));self.rejected()
+
+    def test_source_access_connectors_are_closed_bounded_and_bound_to_one_named_entrance(self):
+        for mutation in ('private','unknown_portal','duplicate','duplicate_portal','wrong_provenance',
+                         'short','wide','boolean_width','long','off_target','outside','vertices','repeated','not_source'):
+            with self.subTest(mutation=mutation):
+                value=self.add_source_storefront_access();rows=value['navigation']['synthetic_access_connectors'];row=rows[0]
+                if mutation=='private':row['track_id']='private'
+                if mutation=='unknown_portal':row['portal_id']='unknown'
+                if mutation=='duplicate':rows.append(copy.deepcopy(row))
+                if mutation=='duplicate_portal':rows.append(dict(row,id='access2'))
+                if mutation=='wrong_provenance':row['provenance']='measured_forecourt'
+                if mutation=='short':row['width_m']=1
+                if mutation=='wide':row['width_m']=4.1
+                if mutation=='boolean_width':row['width_m']=True
+                if mutation=='long':row['centerline']=[[18,10],[18,23]]
+                if mutation=='off_target':row['centerline'][0]=[18.1,10]
+                if mutation=='outside':row['centerline'][1]=[-1,10]
+                if mutation=='vertices':row['centerline']=[[18,10]]
+                if mutation=='repeated':row['centerline'][1]=[18,10]
+                if mutation=='not_source':
+                    front=value['store_fronts'][0];front.pop('entrance_source')
+                    front.update(provenance='synthetic_poi_projection',projection_method='orthogonal_to_reachable_original_facade')
+                (self.root/'building_access.json').write_text(json.dumps(value));self.rejected()
 
     def test_storefront_v2_rejects_private_fields_at_every_new_level(self):
         for level in ('front','poi','separator','boundary','navigation'):

@@ -39,6 +39,8 @@ def main():
     parser.add_argument('--population', type=int, default=64)
     parser.add_argument('--urban-traffic', action='store_true', help='Opt-in mixed road riders and explicit synthetic crossing corridors')
     parser.add_argument('--subway-access', action='store_true', help='Opt-in A1/A2 surface sources/sinks; requires urban traffic')
+    parser.add_argument('--expanded-shop-access', action='store_true', help='Add source-bound cafe/concert entrances and modeled forecourt access')
+    parser.add_argument('--pedestrians-only', action='store_true', help='Generate a full pedestrian cohort on urban geometry')
     parser.add_argument('--rider-priority', action='store_true', help='Opt-in bounded pedestrian yielding; requires urban traffic')
     parser.add_argument('--road-user-fraction', type=float, default=.2)
     parser.add_argument('--distributed-crossing-fraction', type=float, default=.2)
@@ -53,6 +55,9 @@ def main():
         help='Bounded local source capture file budget (default 2048 MiB); JSON artifacts support up to 2 GiB')
     parser.add_argument('--cleanup', action='store_true', help='Remove only owned DBs after a verified recording/run')
     args = parser.parse_args()
+    if args.expanded_shop_access and args.motion_mode!='storefronts': parser.error('--expanded-shop-access requires storefronts mode')
+    if args.pedestrians_only and not args.urban_traffic: parser.error('--pedestrians-only requires --urban-traffic')
+    if args.pedestrians_only and args.rider_priority: parser.error('--pedestrians-only omits --rider-priority')
     if args.open and not args.replay: parser.error('--open requires --replay')
     if args.no_record and args.replay: parser.error('--replay requires recording')
     if args.shop_overrides is not None and args.motion_mode != 'storefronts':
@@ -96,6 +101,8 @@ def main():
     if args.experimental_narrow_passages: command.append('--experimental-narrow-passages')
     if args.subway_access: command.append('--subway-access')
     if args.rider_priority: command.append('--rider-priority')
+    if args.expanded_shop_access: command.append('--expanded-shop-access')
+    if args.pedestrians_only: command.append('--pedestrians-only')
     if args.urban_traffic:
         command += ['--urban-traffic','--road-user-fraction',str(args.road_user_fraction),
                     '--distributed-crossing-fraction',str(args.distributed_crossing_fraction),
