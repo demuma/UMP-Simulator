@@ -15,6 +15,44 @@ initial correctness/process review and nominal paced runtime measurement are com
 native source/I/O timing and atomic empty checkpoints now pass the first M03 slice;
 remaining controller/source and paced external receipt timing stay open. The full three-scenario effectiveness study remains open. October 18 is historical.**
 
+**October 24 follow-up — policy identity and navigation capacity:** replay panels
+now identify the actual PolicyTree ID/version and method. The current bundle has
+one tree/result selected in both views. Read the
+[capacity report](docs/NAVIGATION_SCALABILITY_REPORT_2026-10-24.md) and
+[ordered map/traffic roadmap](docs/MULTIMODAL_MAP_ROADMAP_2026-10-24.md).
+
+- [x] **M04 source-capacity diagnosis:** separate global guidance preparation,
+  native motion, frame extraction and inclusive component timings. Retain only
+  compact timing/counter evidence. Distinguish cohort size from actual active load.
+- [x] Replace generic Comparison A/B headings with recorded tree ID/version and
+  execution method; keep same-tree/same-result cases explicit and legacy metadata
+  uncertainty visible. Validate in browser and affected tests.
+- [ ] **M04.1 next — exact movement-cost reduction:** static geometry broad phase/
+  conservative free-space cache, followed by nearby-body indexing. Validate fast
+  decisions against the full geometry oracle and preserve frozen source outputs.
+  Current 500-person stress reaches 369 active: mean 134.5 ms, p95 336.7 ms per
+  50-ms source step, eight active stall diagnostics at the censored cutoff. No
+  claim of 500 concurrent realtime actors; aggregation/DB costs are additional.
+- [ ] **M05 map-to-graph correctness:** retain junction/access/direction/crossing
+  metadata; test vector versus navigation-graph connectivity. Fix the Barkhof
+  narrow-connection artifact: geometric footway exists, but all 96 current guidance
+  routes avoid the road and the 0.5-m router cannot cross it. Keep navigation
+  resolution separate from D6 privacy cells; use bounded local topology repair.
+- [ ] **M06 doorway capacity:** configurable single-file/bidirectional entrances,
+  separate normal lane targets and compatible reservations. Preserve logical shop
+  identity across different ingress/egress points. Unknown widths remain explicit;
+  widening a marker or sharing one FIFO point is insufficient.
+- [ ] **M07 controlled mixed modes:** cyclist/scooter age variants, semantic branches,
+  per-mode allowed routes/source intervals and reviewed dimensions/kinematics.
+  Current pedestrian-safe 0.55-m geometry does not fit existing 1.0–1.25-m cyclist
+  envelopes. Keep mode mix/demand/policies separate experimental factors.
+- [ ] **M08 road and crossing behavior:** explicit direction/lane demand, crossing
+  connectors with yielding/gaps or declared signals, waiting and swept inter-mode
+  conflict tests. Delivery exceptions require declared scenario provenance.
+- [ ] **M09 generic import:** area-based fetch/freeze, parameterized geometry/POI
+  association, automatic preprocessing and unresolved-feature/quality report using
+  the validated components. Preserve snapshot hashes and reviewed overrides.
+
 **October 24 storefront/local-navigation implementation checkpoint:** the new
 native motion passes the 64/128-person finite-drain gates. The 64-person source
 also passes full native capture, independent GT/body audits and browser acceptance.

@@ -12,6 +12,38 @@ const replay={sampling_period_ms:100,end_ms:600,batches:[
 const first={start_ms:0,end_ms:200,sealed_at_ms:250,cells:[{observation_contributions:3}]};
 const second={start_ms:200,end_ms:400,sealed_at_ms:400,cells:[{observation_contributions:5},{observation_contributions:2}]};
 const result={releases:[first,second],windows:[{evaluated_at_ms:200,cells:[{selected:true},{selected:false}]}]};
+test('Policy labels separate the tree identity/version from its execution method',()=>{
+ const v={id:'native',label:'Actual native aggregation',policy_tree_id:'mapped-policy',result:{parameters:{strategy:'semantic_first'},releases:[{policy_id:'mapped-policy',policy_version:'1'}]}};
+ const before=JSON.stringify(v),label=M.variantIdentity(v);
+ assert.deepEqual(label,{policyId:'mapped-policy',policyVersion:'1',treeLabel:'mapped-policy · v1',methodLabel:'Actual native aggregation · Semantic First',selectionLabel:'mapped-policy · v1 | Actual native aggregation · Semantic First'});
+ assert.equal(JSON.stringify(v),before);
+});
+test('Legacy results recover only unique recorded tree identities and versions',()=>{
+ const label=M.variantIdentity({label:'Local',result:{mode:'semantic_first',parameters:{semantic_secondary_strategy:'spatial_first'},releases:[{policy_id:'old-policy',policy_version:2}],windows:[{policy_id:'old-policy',policy_version:'2'}]}});
+ assert.equal(label.treeLabel,'old-policy · v2');assert.equal(label.methodLabel,'Local · Semantic First → Spatial First');
+});
+test('Explicit tree versions remain visible before the first release',()=>{
+ const label=M.variantIdentity({label:'Waiting',policy_tree_id:'planned',policy_tree_version:'3',result:{releases:[],windows:[]}});
+ assert.equal(label.treeLabel,'planned · v3');
+});
+test('An absent tree ID is not invented from a result or strategy label',()=>{
+ const label=M.variantIdentity({id:'spatial_first',label:'Spatial First',result:{mode:'spatial_first'}});
+ assert.equal(label.policyId,null);assert.equal(label.treeLabel,'ID not supplied · version not supplied');assert.equal(label.methodLabel,'Spatial First');
+});
+test('Mixed recorded IDs and versions never masquerade as a single policy version',()=>{
+ assert.equal(M.variantIdentity({result:{releases:[{policy_id:'a',policy_version:1},{policy_id:'b',policy_version:2}]}}).policyId,null);
+ assert.equal(M.variantIdentity({policy_tree_id:'a',result:{releases:[{policy_id:'a',policy_version:1},{policy_id:'a',policy_version:2}]}}).treeLabel,'a · version varies');
+});
+test('Execution methods sharing a policy are not presented as different policy trees',()=>{
+ const a={label:'Immediate',policy_tree_id:'same',policy_tree_version:'1'},b={label:'Wait',policy_tree_id:'same',policy_tree_version:'1'};
+ assert.match(M.selectionRelationship(a,b),/same policy tree ID and version/);
+ assert.match(M.selectionRelationship(a,a),/same recorded result/);
+ assert.match(M.selectionRelationship(a,{...b,policy_tree_version:undefined}),/common version is not established/);
+ assert.match(M.selectionRelationship(a,{...b,policy_tree_id:'different'}),/different declared policy tree IDs/);
+});
+test('Unidentified legacy policies stay explicitly unknown in the relationship notice',()=>{
+ assert.match(M.selectionRelationship({label:'A'},{label:'B'}),/identities were not supplied/);
+});
 test('No observation before first sample',()=>assert.equal(M.observationAt(replay,99).status,'not_yet_sampled'));
 test('Exact sampled position is displayed without interpolation',()=>assert.deepEqual(M.observationAt(replay,150).visible,replay.batches[0].observations));
 test('Measured empty is a genuine empty sample',()=>{const f=M.observationAt(replay,200);assert.equal(f.status,'measured');assert.deepEqual(f.visible,[]);});

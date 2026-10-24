@@ -677,6 +677,32 @@ class ViewerTests(unittest.TestCase):
         self.assertEqual([option['value'] for option in controls.options], ['full', 'A', 'B'])
         self.assertFalse(any('selected' in option for option in controls.options[1:]))
 
+    def test_policy_tree_view_controls_keep_distinct_locators_and_method_descriptions(self):
+        class PolicyControls(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.ids = {}
+            def handle_starttag(self, tag, attrs):
+                attrs = dict(attrs)
+                if 'id' in attrs:
+                    self.ids[attrs['id']] = (tag, attrs)
+        html = (Path(__file__).parent/'index.html').read_text()
+        controls = PolicyControls()
+        controls.feed(html)
+        self.assertNotIn('Comparison A', html)
+        self.assertNotIn('Comparison B', html)
+        self.assertEqual(controls.ids['selectionRelationship'][1]['role'], 'status')
+        for side in ('A', 'B'):
+            self.assertEqual(controls.ids['policyTitle'+side][0], 'h2')
+            self.assertEqual(controls.ids['variant'+side][1]['aria-describedby'], 'policyMethod'+side)
+            self.assertIn('Policy tree result and execution method', controls.ids['variant'+side][1]['aria-label'])
+            self.assertIn('view '+side, controls.ids['variant'+side][1]['aria-label'])
+        viewer = (Path(__file__).parent/'viewer.js').read_text()
+        self.assertIn('M.variantIdentity(v)', viewer)
+        self.assertIn('M.selectionRelationship(...selected)', viewer)
+        self.assertIn("identity(v).selectionLabel", viewer)
+        self.assertNotIn('Comparison ${side}', viewer)
+
     def test_storefront_overlay_controls_are_explicitly_highlights_of_fixed_map_context(self):
         html=(Path(__file__).parent/'index.html').read_text()
         self.assertIn('Highlight modeled shop fronts',html)

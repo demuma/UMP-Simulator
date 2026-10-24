@@ -59,6 +59,16 @@ synthetic results and verification are recorded in the October 19 test report. T
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 
+**October 24 policy replay and source capacity:** replay panes now show recorded
+PolicyTree ID/version and method, including an explicit notice for identical
+selections. Source profiling distinguishes configured cohorts from active tracks:
+the stress probe reaches 369 active and exceeds its 50-ms budget substantially.
+Exact geometry checks dominate the measured moderate-load source; realtime support
+for 500 simultaneous actors is not established. See the
+[capacity report](docs/NAVIGATION_SCALABILITY_REPORT_2026-10-24.md) and
+[ordered map/door/multimodal roadmap](docs/MULTIMODAL_MAP_ROADMAP_2026-10-24.md).
+No movement, map access permissions or PolicyTree constraints change in this follow-up.
+
 **October 24 storefront and local-navigation implementation:** the mapped launcher
 now selects `storefronts`. Four modeled shop destinations (Apollo, Ditsch, Adidas
 Originals and H&M HOME) share the original Rappolthaus footprint, with synthetic

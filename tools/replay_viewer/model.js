@@ -6,6 +6,37 @@
   else root.UMPReplay = api;
 }(typeof globalThis !== 'undefined' ? globalThis : this, function () {
   'use strict';
+  /* A result variant is not necessarily a different policy tree. Keep policy
+     identity separate from execution strategy; older bundles can declare the
+     unique identity only on their recorded release/diagnostic rows. */
+  function variantIdentity(variant) {
+    const result=variant.result??{},parameters=result.parameters??{};
+    const text=value=>typeof value==='string'&&value.trim()?value.trim():null;
+    const version=value=>text(value)??(typeof value==='number'&&Number.isFinite(value)?String(value):null);
+    const rows=[...(result.releases??[]),...(result.windows??[])];
+    const recordedIds=[...new Set(rows.map(row=>text(row.policy_id)).filter(Boolean))];
+    const policyId=text(variant.policy_tree_id)??text(parameters.policy_tree_id)??text(result.policy_tree_id)??(recordedIds.length===1?recordedIds[0]:null);
+    const recordedVersions=[...new Set(rows.filter(row=>!policyId||text(row.policy_id)===policyId).map(row=>version(row.policy_version)).filter(Boolean))];
+    const policyVersion=version(variant.policy_tree_version)??version(variant.policy_version)??version(parameters.policy_tree_version)??version(parameters.policy_version)??(recordedVersions.length===1?recordedVersions[0]:null);
+    const treeLabel=(policyId??(recordedIds.length>1?'multiple recorded IDs':'ID not supplied'))+(policyVersion?' · v'+policyVersion:recordedVersions.length>1?' · version varies':' · version not supplied');
+    const title=value=>value.split('_').map(word=>word?word[0].toUpperCase()+word.slice(1):word).join(' ');
+    const strategy=text(variant.strategy)??text(parameters.strategy)??(result.mode!=='native_recorded'?text(result.mode):null);
+    const secondary=text(parameters.semantic_secondary_strategy);
+    const strategyLabel=strategy?title(strategy)+(strategy==='semantic_first'&&secondary?' → '+title(secondary):''):null;
+    const method=text(variant.method)??text(parameters.method)??text(result.method)??text(variant.label)??'Method not supplied';
+    const methodLabel=method+(strategyLabel&&method.toLowerCase()!==strategyLabel.toLowerCase()?' · '+strategyLabel:'');
+    return {policyId,policyVersion,treeLabel,methodLabel,selectionLabel:treeLabel+' | '+methodLabel};
+  }
+  function selectionRelationship(first,second) {
+    if(first===second)return 'Both views show the same recorded result for this policy tree.';
+    const a=variantIdentity(first),b=variantIdentity(second);
+    if(a.policyId&&a.policyId===b.policyId&&a.policyVersion&&a.policyVersion===b.policyVersion)
+      return 'Both results declare the same policy tree ID and version. Execution methods and declared regional constraints are listed separately.';
+    if(a.policyId&&a.policyId===b.policyId)
+      return 'Both results declare the same policy tree ID; a common version is not established.';
+    if(a.policyId&&b.policyId)return 'The views show results for different declared policy tree IDs.';
+    return 'Some policy tree identities were not supplied; the result labels do not establish distinct policy trees.';
+  }
   function lastAtOrBefore(rows, time, key) {
     let lo = 0, hi = rows.length;
     while (lo < hi) { const mid = (lo + hi) >>> 1; if (key(rows[mid]) <= time) lo = mid + 1; else hi = mid; }
@@ -243,5 +274,5 @@
     if(index.cache.size>=32)index.cache.delete(index.cache.keys().next().value);
     index.cache.set(key,summary);return summary;
   }
-  return {lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,referenceSample,inputProvenance,selectCell,mosaicAt,selectEntry,entryContains,MAX_VISIBLE_FRAGMENTS,buildSourceIndex,sourceGroups,releaseAccounting,policyAt,mapImageRectangle,mapPoint,portalSegment,boundaryFrame};
+  return {variantIdentity,selectionRelationship,lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,referenceSample,inputProvenance,selectCell,mosaicAt,selectEntry,entryContains,MAX_VISIBLE_FRAGMENTS,buildSourceIndex,sourceGroups,releaseAccounting,policyAt,mapImageRectangle,mapPoint,portalSegment,boundaryFrame};
 }));

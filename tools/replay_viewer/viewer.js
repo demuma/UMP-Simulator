@@ -14,6 +14,9 @@ const selections = {A:null,B:null};
 const selectionCellIds = {A:null,B:null};
 const selectorRows = {A:undefined,B:undefined};
 const layouts = {};
+const variantIdentities=new Map();
+const identity=v=>variantIdentities.get(v);
+const viewName=side=>`policy view ${side} · ${identity(variant(side)).treeLabel}`;
 let overviewVariants=null;
 const mappedTracks=()=>manifest.identity_unit==='visible_episode_track';
 const identityLabel=()=>mappedTracks()?'distinct tracks':'distinct observed IDs';
@@ -153,7 +156,7 @@ function motion() {
  ctx.restore();
  const labels={not_yet_sampled:'No sensor sample has arrived yet.',unavailable:'The most recent scheduled measurement is unavailable.',missing_sample:'No current sensor sample is available. Previous positions are cleared.'};
  const positionText=frame.status==='measured'?`Current recorded sample at ${seconds(frame.batch.observed_at_ms)} · held for ${seconds(frame.age)} until the next expected sample. Positions are not interpolated.`:labels[frame.status];
- const focusText=chosen?` Viewport: comparison ${focus}, cell ${chosen.cell_id}, ${number(chosen.width)} × ${number(chosen.height)} m. This footprint comes from historical [${seconds(chosenEntry.row.start_ms)}, ${seconds(chosenEntry.row.end_ms)}); the dots above remain the current sample.${chosenEntry.partial?' This is the original whole footprint of a partially covered historical aggregate.':''}`:focus!=='full'?' The selected comparison has no finalized cell yet; the full area is shown.':' Full recorded area.';
+ const focusText=chosen?` Viewport: ${viewName(focus)}, cell ${chosen.cell_id}, ${number(chosen.width)} × ${number(chosen.height)} m. This footprint comes from historical [${seconds(chosenEntry.row.start_ms)}, ${seconds(chosenEntry.row.end_ms)}); the dots above remain the current sample.${chosenEntry.partial?' This is the original whole footprint of a partially covered historical aggregate.':''}`:focus!=='full'?' The selected policy view has no finalized cell yet; the full area is shown.':' Full recorded area.';
  $('referenceCaption').textContent=positionText+focusText;
  stats('referenceStats',[[mappedTracks()?'track IDs in full sample':'observed IDs in full sample',number(sample.totalCount)],['distinct XY in full sample',number(sample.totalPositions)],[mappedTracks()?'track IDs in this viewport':'observed IDs in this viewport',number(sample.visibleCount)]]);
  const detail=$('referenceDetail');detail.replaceChildren(element('h3','Current sample · recorded road-user types'));
@@ -194,9 +197,9 @@ function releaseMap(side) {
  }
  ctx.restore();
  drawBuildingAccess(layouts[id]);geographyLabels(layouts[id]);drawPolicyRegions(layouts[id],[v]);
- $('map'+side).setAttribute('aria-label',`${privateMode?'Finalized decision':'Released aggregation'} mosaic ${side}`);
- const title=$('variant'+side).previousElementSibling;
- title.textContent=`Comparison ${side} · ${privateMode?'Private finalized decisions':'Published history'}${local?' · local windows':' · common window'}`;
+ $('map'+side).setAttribute('aria-label',`${privateMode?'Finalized decision':'Released aggregation'} mosaic · ${viewName(side)}`);
+ $('policyTitle'+side).textContent='Policy tree · '+identity(v).treeLabel;
+ $('policyMethod'+side).textContent=`View ${side} · ${identity(v).methodLabel} · ${privateMode?'Private finalized decisions':'Published history'}${local?' · local windows':' · common window'}`;
  if(!latestEvent)$('caption'+side).textContent=`No ${privateMode?'finalized decision':'release'} is available yet. Blank areas are unknown; they do not mean zero traffic.`;
  else if(local){
    const stamp=privateMode?latestEvent.evaluated_at_ms:latestEvent.sealed_at_ms;
@@ -259,7 +262,7 @@ function details(side) {
 function boundText(requirement){return [requirement.min!=null?'≥ '+number(requirement.min):'',requirement.max!=null?'≤ '+number(requirement.max):''].filter(Boolean).join(' · ');}
 function appendPolicy(detail,v,cell){
  const policy=M.policyAt(v,cell);detail.append(element('h4','Declared effective policy · private metadata'));
- detail.append(element('p',`Tree: ${v.policy_tree_id??v.result.parameters?.policy_tree_id??'ID not supplied'}. ${policy.rootDeclared?'Root requirements supplied.':'Root requirements not supplied; the full effective policy is unknown.'}`,'scope'));
+ detail.append(element('p',`Tree: ${identity(v).treeLabel}. ${policy.rootDeclared?'Root requirements supplied.':'Root requirements not supplied; the full effective policy is unknown.'}`,'scope'));
  const rows=policy.requirements.map(bound=>[readable(bound.metric),boundText(bound)+(bound.conflict?' · CONFLICT':''),bound.sources.map(source=>source.source+' '+boundText(source)).join('; ')]);
  if(rows.length)detail.append(groupTable(['Metric','Combined bounds','Provenance'],rows));
  else detail.append(element('p','No declared bounds are supplied for this footprint.','muted'));
@@ -270,8 +273,14 @@ function appendPolicy(detail,v,cell){
 function policyOverview(){
  const selected=[variant('A'),variant('B')];if(overviewVariants&&selected.every((v,i)=>v===overviewVariants[i]))return;overviewVariants=selected;
  const parent=$('policyOverview');parent.replaceChildren();
- for(const side of ['A','B']){const v=variant(side),box=element('section',null,'policy-card');box.append(element('h3',`Comparison ${side} · ${v.label}`));
-   box.append(element('p',`Tree: ${v.policy_tree_id??v.result.parameters?.policy_tree_id??'ID not supplied'}`,'scope'));
+ $('selectionRelationship').textContent=M.selectionRelationship(...selected);
+ for(const side of ['A','B']){
+   const v=variant(side);$('referenceFocus').querySelector(`option[value="${side}"]`).textContent='Focus selected cell · '+viewName(side);
+   $('variant'+side).setAttribute('aria-label',`Select policy tree result and execution method · view ${side} · ${identity(v).treeLabel}`);
+   document.querySelector(`label[for="cell${side}"]`).textContent='Inspect cell · '+viewName(side);
+ }
+ for(const side of ['A','B']){const v=variant(side),box=element('section',null,'policy-card');box.append(element('h3','Policy tree · '+identity(v).treeLabel));
+   box.append(element('p',`View ${side} · ${identity(v).methodLabel}`,'scope'));
    box.append(element('h4','Root requirements'));
    if(Array.isArray(v.policy_root_requirements))box.append(groupTable(['Metric','Bound'],v.policy_root_requirements.map(bound=>[readable(bound.metric),boundText(bound)])));
    else box.append(element('p','Root requirements were not included in this older bundle.','muted'));
@@ -323,11 +332,11 @@ function legends(){
  $('mapNamesControl').hidden=!manifest.map;
 }
 function history() {
- const {ctx,width,height}=canvasContext('lanes'),left=85,w=width-left-12,privateMode=$('private').checked;
- $('lanes').setAttribute('aria-label',privateMode?'Private finalized decision timeline':'Release event timeline');
+ const {ctx,width,height}=canvasContext('lanes'),left=Math.min(260,width*.42),w=width-left-12,privateMode=$('private').checked;
+ $('lanes').setAttribute('aria-label',(privateMode?'Private finalized decision timeline':'Release event timeline')+' · '+['A','B'].map(viewName).join('; '));
  $('historyTitle').textContent=privateMode?'Finalized decision events · private':'Actual release events';
  $('historyHint').textContent=privateMode?'Marks are evaluation times, including empty and suppressed retirements.':'Marks are sealing times, not measurement times. Click the timeline to seek.';
- for(const [i,side]of ['A','B'].entries()){const y=19+i*27,v=variant(side),rows=privateMode?v.result.windows:v.result.releases;ctx.font='11px -apple-system,sans-serif';ctx.fillStyle='#536574';ctx.textAlign='left';ctx.fillText('Comparison '+side,0,y+4);ctx.strokeStyle='#dce4ea';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(left+w,y);ctx.stroke();for(const row of rows){const stamp=privateMode?row.evaluated_at_ms:row.sealed_at_ms,x=left+w*stamp/replay.end_ms;ctx.fillStyle=stamp<=time?'#258b87':'#b9c9d4';ctx.fillRect(x-1,y-5,2,10);}}
+ for(const [i,side]of ['A','B'].entries()){const y=19+i*27,v=variant(side),rows=privateMode?v.result.windows:v.result.releases;ctx.font='11px -apple-system,sans-serif';ctx.fillStyle='#536574';ctx.textAlign='left';ctx.save();ctx.beginPath();ctx.rect(0,y-10,left-8,21);ctx.clip();ctx.fillText(`View ${side} · ${identity(v).treeLabel}`,0,y+4);ctx.restore();ctx.strokeStyle='#dce4ea';ctx.beginPath();ctx.moveTo(left,y);ctx.lineTo(left+w,y);ctx.stroke();for(const row of rows){const stamp=privateMode?row.evaluated_at_ms:row.sealed_at_ms,x=left+w*stamp/replay.end_ms;ctx.fillStyle=stamp<=time?'#258b87':'#b9c9d4';ctx.fillRect(x-1,y-5,2,10);}}
  const marker=left+w*time/replay.end_ms;ctx.strokeStyle='#215984';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(marker,2);ctx.lineTo(marker,height-3);ctx.stroke();layouts.lanes={left,w};
 }
 let headerAlignmentKey=null;
@@ -355,6 +364,7 @@ async function start(){
  sourceIndex=M.buildSourceIndex(replay);
  allTypes=[...new Set(replay.batches.flatMap(b=>b.observations.map(o=>o.type)))].sort();
  variants=await Promise.all(manifest.variants.map(async v=>({...v,result:await fetchJSON('/bundle/'+v.result)})));
+ for(const v of variants)variantIdentities.set(v,M.variantIdentity(v));
  if(manifest.title)$('title').textContent=manifest.title;
  $('referenceProvenance').textContent=M.inputProvenance(manifest).text;
  legends();
@@ -362,7 +372,7 @@ async function start(){
  $('duration').textContent=seconds(replay.end_ms)+' recorded';$('timeline').max=replay.end_ms;
  $('source').textContent=`${replay.run_id} · ${number(replay.coverage.width)} × ${number(replay.coverage.height)} m · leaf depth ${replay.coverage.leaf_depth}`;
  $('provenance').textContent=`${variants.length} frozen result variants · shared observations`;
- for(const side of ['A','B']){const select=$('variant'+side);for(const [index,v]of variants.entries()){const option=element('option',v.label);option.value=index;select.append(option);}select.value=side==='A'?0:Math.min(1,variants.length-1);select.addEventListener('change',()=>{selections[side]=null;selectionCellIds[side]=null;render();});$('cell'+side).addEventListener('change',event=>{selections[side]=event.target.value;selectionCellIds[side]=displayed(side).entries.find(e=>e.key===event.target.value)?.cell.cell_id??null;render();});$('focus'+side).addEventListener('change',render);$('map'+side).addEventListener('click',event=>{const l=layouts['map'+side],r=event.currentTarget.getBoundingClientRect(),x=(event.clientX-r.left-l.left)/l.scale+l.viewport.x,y=(event.clientY-r.top-l.top)/l.scale+l.viewport.y;const entry=displayed(side).entries.find(e=>M.entryContains(e,x,y));selections[side]=entry?.key??null;selectionCellIds[side]=entry?.cell.cell_id??null;render();});}
+ for(const side of ['A','B']){const select=$('variant'+side);for(const [index,v]of variants.entries()){const option=element('option',identity(v).selectionLabel);option.value=index;select.append(option);}select.value=side==='A'?0:Math.min(1,variants.length-1);select.addEventListener('change',()=>{selections[side]=null;selectionCellIds[side]=null;render();});$('cell'+side).addEventListener('change',event=>{selections[side]=event.target.value;selectionCellIds[side]=displayed(side).entries.find(e=>e.key===event.target.value)?.cell.cell_id??null;render();});$('focus'+side).addEventListener('change',render);$('map'+side).addEventListener('click',event=>{const l=layouts['map'+side],r=event.currentTarget.getBoundingClientRect(),x=(event.clientX-r.left-l.left)/l.scale+l.viewport.x,y=(event.clientY-r.top-l.top)/l.scale+l.viewport.y;const entry=displayed(side).entries.find(e=>M.entryContains(e,x,y));selections[side]=entry?.key??null;selectionCellIds[side]=entry?.cell.cell_id??null;render();});}
  $('play').addEventListener('click',()=>{if(playing){pause();return;}if(time>=replay.end_ms)time=0;playing=true;lastTick=0;$('play').textContent='Ⅱ Pause';});
  $('previous').addEventListener('click',()=>{pause();time=M.eventBefore(events,time);render();});$('next').addEventListener('click',()=>{pause();time=M.eventAfter(events,time);render();});
  $('timeline').addEventListener('input',event=>{pause();time=Number(event.target.value);render();});$('private').addEventListener('change',()=>{events=M.eventTimes(variants,replay.end_ms,$('private').checked);selections.A=null;selections.B=null;selectionCellIds.A=null;selectionCellIds.B=null;render();});$('sourceGroups').addEventListener('change',render);$('policyRegions').addEventListener('change',render);$('mapNames').addEventListener('change',render);$('buildingBoundaries').addEventListener('change',render);$('entranceMarkers').addEventListener('change',render);$('storeFronts').addEventListener('change',render);$('boundaryIntervals').addEventListener('change',render);$('referenceFocus').addEventListener('change',render);

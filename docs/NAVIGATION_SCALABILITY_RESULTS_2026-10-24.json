@@ -1,0 +1,1127 @@
+{
+  "schema": "ump.storefront-navigation-scalability-evidence.v1",
+  "scope": "Source-only timings. No DB, policy, aggregation, rendering or sampled movement export. One quiet serial matrix; not a statistical capacity estimate or a hard real-time guarantee. All runs horizon-censored; stress also wall-budget-censored.",
+  "primary_pristine": {
+    "schema": "ump.mapped-navigation-benchmark-set.v1",
+    "platform": "macOS-15.7.7-arm64-arm-64bit",
+    "machine": "arm64",
+    "seed": 20261023,
+    "horizon_s": 120,
+    "source_hashes": {
+      "simulator/src/MappedScene.cpp": "9b2e949be648c9e17ca47be9bb2e78603959df82342063e90390914c1f05b078",
+      "simulator/src/MappedSceneConfiguration.cpp": "4d3eea4021fa9c028bcb4ed7098c82a3a9038a75082295597dd30ec4eb702b7a",
+      "simulator/include/MappedScene.hpp": "849aaf69c2c93af3e8685c556cdb7c0fa89478d93f00f6eb0387edf837bfc5b8",
+      "tools/mapped_scene/build_mapped_scene.py": "1fa8d096602ca0be94e03e20764ffe2b348dfc615362484e653238ed3a574b4f",
+      "tools/mapped_scene/storefront_scene.py": "0bef514e849af14e4dc1bb29aad835cc02230fc2fef2665525193097adcef161"
+    },
+    "scope": "Single process, serial cases; no concurrent benchmark cases. Not an end-to-end simulator deadline benchmark. All finite runs are horizon-censored unless all scheduled episodes ended.",
+    "cases": [
+      {
+        "id": "people-64-arrival-1000ms",
+        "cohort_people": 64,
+        "arrival_interval_ms": 1000,
+        "global_generation_wall_seconds": 4.971662958,
+        "global_generation_components_inclusive": {
+          "frozen_source_load_and_functional_layers": {
+            "calls": 1,
+            "wall_seconds": 0.3559467920000001
+          }
+        },
+        "config_sha256": "0005f736db1f3b7a7cfbdc75fb4e1790307aa4d6490c83ccdd3c3080b3201926",
+        "native": {
+          "schema": "ump.mapped-navigation-benchmark.v1",
+          "scope": "Source motion only; excludes policy, aggregation, MongoDB and rendering. Censored at requested horizon or wall budget.",
+          "cohort_people": 64,
+          "scheduled_episodes": 96,
+          "requested_horizon_ms": 120000,
+          "reached_horizon_ms": 120000,
+          "wall_budget_exceeded": false,
+          "wall_seconds": 15.220615792,
+          "source_speedup": 7.88404369704,
+          "yaml_read_ms": 9.538625,
+          "configuration_adaptation_ms": 5.976,
+          "constructor_ms": 6.904709,
+          "peak_actual_active_tracks": 55,
+          "mean_actual_active_tracks": 31.6083333333,
+          "navigation_polygon_edges": 528,
+          "advance": {
+            "count": 2400,
+            "mean_ms": 6.32764050375,
+            "p50_ms": 5.923959,
+            "p95_ms": 11.426125,
+            "p99_ms": 12.199791,
+            "max_ms": 45.511375,
+            "over_50ms": 0
+          },
+          "frame": {
+            "count": 2400,
+            "mean_ms": 0.00334299166667,
+            "p50_ms": 0.003209,
+            "p95_ms": 0.006458,
+            "p99_ms": 0.008625,
+            "max_ms": 0.013542,
+            "over_50ms": 0
+          },
+          "realized_starts": 94,
+          "realized_ends": 75,
+          "active_tracks": 19,
+          "pending_tracks": 2,
+          "active_stalled_tracks": 0,
+          "max_stop_ms": 250,
+          "overlap_violations": 0,
+          "navigation_steering_steps": 10596,
+          "navigation_replans": 16,
+          "navigation_replan_failures": 13,
+          "navigation_candidate_checks": 2199418,
+          "navigation_max_search_nodes": 4665,
+          "time_buckets": [
+            {
+              "from_ms": 0,
+              "to_ms": 40000,
+              "peak_active": 35,
+              "advance": {
+                "count": 800,
+                "mean_ms": 3.44445780625,
+                "p50_ms": 3.352084,
+                "p95_ms": 6.313417,
+                "p99_ms": 6.5835,
+                "max_ms": 7.12375,
+                "over_50ms": 0
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.0020595725,
+                "p50_ms": 0.001917,
+                "p95_ms": 0.003791,
+                "p99_ms": 0.007292,
+                "max_ms": 0.013542,
+                "over_50ms": 0
+              }
+            },
+            {
+              "from_ms": 40000,
+              "to_ms": 80000,
+              "peak_active": 55,
+              "advance": {
+                "count": 800,
+                "mean_ms": 9.5006495275,
+                "p50_ms": 9.341125,
+                "p95_ms": 11.874084,
+                "p99_ms": 12.278708,
+                "max_ms": 41.338417,
+                "over_50ms": 0
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.0047053025,
+                "p50_ms": 0.004334,
+                "p95_ms": 0.007459,
+                "p99_ms": 0.009709,
+                "max_ms": 0.012541,
+                "over_50ms": 0
+              }
+            },
+            {
+              "from_ms": 80000,
+              "to_ms": 120000,
+              "peak_active": 45,
+              "advance": {
+                "count": 800,
+                "mean_ms": 6.0378141775,
+                "p50_ms": 4.908042,
+                "p95_ms": 8.997709,
+                "p99_ms": 40.721833,
+                "max_ms": 45.511375,
+                "over_50ms": 0
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.0032641,
+                "p50_ms": 0.002958,
+                "p95_ms": 0.006042,
+                "p99_ms": 0.007916,
+                "max_ms": 0.009875,
+                "over_50ms": 0
+              }
+            }
+          ],
+          "initial_person_requests_due_by_reached_horizon": 64,
+          "last_initial_person_request_ms": 63000,
+          "cohort_not_simultaneous_active": true
+        },
+        "generation_component_repeat": {
+          "global_generation_wall_seconds": 5.142291792,
+          "global_generation_components_inclusive": {
+            "frozen_source_load_and_functional_layers": {
+              "calls": 1,
+              "wall_seconds": 0.38228795800000004
+            },
+            "build_geometry": {
+              "calls": 1,
+              "wall_seconds": 0.08937249999999963
+            },
+            "router___init__": {
+              "calls": 1,
+              "wall_seconds": 0.13367308399999978
+            },
+            "router_route": {
+              "calls": 359,
+              "wall_seconds": 3.4223147889999925
+            },
+            "router_varied_route": {
+              "calls": 96,
+              "wall_seconds": 1.532218625999998
+            },
+            "audit_scene": {
+              "calls": 1,
+              "wall_seconds": 0.8412737079999992
+            }
+          }
+        }
+      },
+      {
+        "id": "people-128-arrival-1000ms",
+        "cohort_people": 128,
+        "arrival_interval_ms": 1000,
+        "global_generation_wall_seconds": 7.105966083,
+        "global_generation_components_inclusive": {
+          "frozen_source_load_and_functional_layers": {
+            "calls": 1,
+            "wall_seconds": 0.335074541
+          }
+        },
+        "config_sha256": "1bc0725e44c8350aa039b2eb51618ba01cbb4262c3b7ef5e9030f44fe4610835",
+        "native": {
+          "schema": "ump.mapped-navigation-benchmark.v1",
+          "scope": "Source motion only; excludes policy, aggregation, MongoDB and rendering. Censored at requested horizon or wall budget.",
+          "cohort_people": 128,
+          "scheduled_episodes": 192,
+          "requested_horizon_ms": 120000,
+          "reached_horizon_ms": 120000,
+          "wall_budget_exceeded": false,
+          "wall_seconds": 23.29391675,
+          "source_speedup": 5.15155958046,
+          "yaml_read_ms": 8.898,
+          "configuration_adaptation_ms": 6.946875,
+          "constructor_ms": 5.04825,
+          "peak_actual_active_tracks": 66,
+          "mean_actual_active_tracks": 42.8420833333,
+          "navigation_polygon_edges": 528,
+          "advance": {
+            "count": 2400,
+            "mean_ms": 9.68904830708,
+            "p50_ms": 10.378917,
+            "p95_ms": 15.948084,
+            "p99_ms": 17.579125,
+            "max_ms": 56.061541,
+            "over_50ms": 5
+          },
+          "frame": {
+            "count": 2400,
+            "mean_ms": 0.00575685708333,
+            "p50_ms": 0.005209,
+            "p95_ms": 0.012,
+            "p99_ms": 0.016708,
+            "max_ms": 0.057834,
+            "over_50ms": 0
+          },
+          "realized_starts": 153,
+          "realized_ends": 87,
+          "active_tracks": 66,
+          "pending_tracks": 39,
+          "active_stalled_tracks": 0,
+          "max_stop_ms": 1450,
+          "overlap_violations": 0,
+          "navigation_steering_steps": 17539,
+          "navigation_replans": 24,
+          "navigation_replan_failures": 14,
+          "navigation_candidate_checks": 2979924,
+          "navigation_max_search_nodes": 4635,
+          "time_buckets": [
+            {
+              "from_ms": 0,
+              "to_ms": 40000,
+              "peak_active": 36,
+              "advance": {
+                "count": 800,
+                "mean_ms": 3.5609807525,
+                "p50_ms": 3.449,
+                "p95_ms": 6.626417,
+                "p99_ms": 6.997,
+                "max_ms": 7.311958,
+                "over_50ms": 0
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.00223311125,
+                "p50_ms": 0.002,
+                "p95_ms": 0.004083,
+                "p99_ms": 0.008958,
+                "max_ms": 0.011708,
+                "over_50ms": 0
+              }
+            },
+            {
+              "from_ms": 40000,
+              "to_ms": 80000,
+              "peak_active": 63,
+              "advance": {
+                "count": 800,
+                "mean_ms": 11.0890721375,
+                "p50_ms": 10.378917,
+                "p95_ms": 14.830375,
+                "p99_ms": 43.946417,
+                "max_ms": 56.061541,
+                "over_50ms": 5
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.0061367225,
+                "p50_ms": 0.00525,
+                "p95_ms": 0.01175,
+                "p99_ms": 0.016792,
+                "max_ms": 0.057834,
+                "over_50ms": 0
+              }
+            },
+            {
+              "from_ms": 80000,
+              "to_ms": 120000,
+              "peak_active": 66,
+              "advance": {
+                "count": 800,
+                "mean_ms": 14.4170920313,
+                "p50_ms": 14.172833,
+                "p95_ms": 16.767542,
+                "p99_ms": 18.30675,
+                "max_ms": 29.722583,
+                "over_50ms": 0
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.0089007375,
+                "p50_ms": 0.008458,
+                "p95_ms": 0.013792,
+                "p99_ms": 0.017917,
+                "max_ms": 0.023333,
+                "over_50ms": 0
+              }
+            }
+          ],
+          "initial_person_requests_due_by_reached_horizon": 121,
+          "last_initial_person_request_ms": 127000,
+          "cohort_not_simultaneous_active": true
+        },
+        "generation_component_repeat": {
+          "global_generation_wall_seconds": 7.4450168340000005,
+          "global_generation_components_inclusive": {
+            "frozen_source_load_and_functional_layers": {
+              "calls": 1,
+              "wall_seconds": 0.345528792
+            },
+            "build_geometry": {
+              "calls": 1,
+              "wall_seconds": 0.08920191700000002
+            },
+            "router___init__": {
+              "calls": 1,
+              "wall_seconds": 0.13711449999999992
+            },
+            "router_route": {
+              "calls": 643,
+              "wall_seconds": 4.710727371000014
+            },
+            "router_varied_route": {
+              "calls": 192,
+              "wall_seconds": 3.010976054000005
+            },
+            "audit_scene": {
+              "calls": 1,
+              "wall_seconds": 1.633246292
+            }
+          }
+        }
+      },
+      {
+        "id": "people-500-arrival-1000ms",
+        "cohort_people": 500,
+        "arrival_interval_ms": 1000,
+        "global_generation_wall_seconds": 20.629489708000005,
+        "global_generation_components_inclusive": {
+          "frozen_source_load_and_functional_layers": {
+            "calls": 1,
+            "wall_seconds": 0.1384393750000008
+          }
+        },
+        "config_sha256": "9d815c5ed586a9f6e7d1581e23448acd495a678aa67a98e27a73b8170da3a94a",
+        "native": {
+          "schema": "ump.mapped-navigation-benchmark.v1",
+          "scope": "Source motion only; excludes policy, aggregation, MongoDB and rendering. Censored at requested horizon or wall budget.",
+          "cohort_people": 500,
+          "scheduled_episodes": 750,
+          "requested_horizon_ms": 120000,
+          "reached_horizon_ms": 120000,
+          "wall_budget_exceeded": false,
+          "wall_seconds": 27.380528292,
+          "source_speedup": 4.38267657659,
+          "yaml_read_ms": 29.641792,
+          "configuration_adaptation_ms": 20.701417,
+          "constructor_ms": 16.266292,
+          "peak_actual_active_tracks": 65,
+          "mean_actual_active_tracks": 43.065,
+          "navigation_polygon_edges": 528,
+          "advance": {
+            "count": 2400,
+            "mean_ms": 11.36790262,
+            "p50_ms": 11.271583,
+            "p95_ms": 16.383208,
+            "p99_ms": 73.180916,
+            "max_ms": 132.218667,
+            "over_50ms": 49
+          },
+          "frame": {
+            "count": 2400,
+            "mean_ms": 0.0106124008333,
+            "p50_ms": 0.0105,
+            "p95_ms": 0.017417,
+            "p99_ms": 0.0205,
+            "max_ms": 0.035125,
+            "over_50ms": 0
+          },
+          "realized_starts": 150,
+          "realized_ends": 87,
+          "active_tracks": 63,
+          "pending_tracks": 600,
+          "active_stalled_tracks": 2,
+          "max_stop_ms": 3150,
+          "overlap_violations": 0,
+          "navigation_steering_steps": 15589,
+          "navigation_replans": 109,
+          "navigation_replan_failures": 86,
+          "navigation_candidate_checks": 2995526,
+          "navigation_max_search_nodes": 4628,
+          "time_buckets": [
+            {
+              "from_ms": 0,
+              "to_ms": 40000,
+              "peak_active": 34,
+              "advance": {
+                "count": 800,
+                "mean_ms": 3.889136635,
+                "p50_ms": 3.794208,
+                "p95_ms": 6.857875,
+                "p99_ms": 7.050291,
+                "max_ms": 8.074708,
+                "over_50ms": 0
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.00710924,
+                "p50_ms": 0.006708,
+                "p95_ms": 0.011959,
+                "p99_ms": 0.015833,
+                "max_ms": 0.035125,
+                "over_50ms": 0
+              }
+            },
+            {
+              "from_ms": 40000,
+              "to_ms": 80000,
+              "peak_active": 65,
+              "advance": {
+                "count": 800,
+                "mean_ms": 11.716252975,
+                "p50_ms": 11.271583,
+                "p95_ms": 15.258958,
+                "p99_ms": 16.043167,
+                "max_ms": 91.329041,
+                "over_50ms": 3
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.01080412125,
+                "p50_ms": 0.010375,
+                "p95_ms": 0.01525,
+                "p99_ms": 0.018042,
+                "max_ms": 0.024584,
+                "over_50ms": 0
+              }
+            },
+            {
+              "from_ms": 80000,
+              "to_ms": 120000,
+              "peak_active": 65,
+              "advance": {
+                "count": 800,
+                "mean_ms": 18.49831825,
+                "p50_ms": 14.896292,
+                "p95_ms": 71.241125,
+                "p99_ms": 75.97825,
+                "max_ms": 132.218667,
+                "over_50ms": 46
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.01392384125,
+                "p50_ms": 0.013292,
+                "p95_ms": 0.018916,
+                "p99_ms": 0.021333,
+                "max_ms": 0.028209,
+                "over_50ms": 0
+              }
+            }
+          ],
+          "initial_person_requests_due_by_reached_horizon": 121,
+          "last_initial_person_request_ms": 499000,
+          "cohort_not_simultaneous_active": true
+        },
+        "generation_component_repeat": {
+          "global_generation_wall_seconds": 21.253594749999998,
+          "global_generation_components_inclusive": {
+            "frozen_source_load_and_functional_layers": {
+              "calls": 1,
+              "wall_seconds": 0.1379452919999995
+            },
+            "build_geometry": {
+              "calls": 1,
+              "wall_seconds": 0.08768266700000016
+            },
+            "router___init__": {
+              "calls": 1,
+              "wall_seconds": 0.12707379099999994
+            },
+            "router_route": {
+              "calls": 2291,
+              "wall_seconds": 12.566498707000012
+            },
+            "router_varied_route": {
+              "calls": 750,
+              "wall_seconds": 12.292023167999956
+            },
+            "audit_scene": {
+              "calls": 1,
+              "wall_seconds": 6.303792916999999
+            }
+          }
+        }
+      },
+      {
+        "id": "people-500-arrival-150ms",
+        "cohort_people": 500,
+        "arrival_interval_ms": 150,
+        "global_generation_wall_seconds": 20.930131916000008,
+        "global_generation_components_inclusive": {
+          "frozen_source_load_and_functional_layers": {
+            "calls": 1,
+            "wall_seconds": 0.1303263329999993
+          }
+        },
+        "config_sha256": "d0d9c6a284cbb639e51b5cc0cb4a1f9f0bcb09c335fc62b9161fbfba020ec168",
+        "native": {
+          "schema": "ump.mapped-navigation-benchmark.v1",
+          "scope": "Source motion only; excludes policy, aggregation, MongoDB and rendering. Censored at requested horizon or wall budget.",
+          "cohort_people": 500,
+          "scheduled_episodes": 750,
+          "requested_horizon_ms": 120000,
+          "reached_horizon_ms": 66850,
+          "wall_budget_exceeded": true,
+          "wall_seconds": 180.016910917,
+          "source_speedup": 0.371354000352,
+          "yaml_read_ms": 28.526416,
+          "configuration_adaptation_ms": 20.933875,
+          "constructor_ms": 16.866084,
+          "peak_actual_active_tracks": 369,
+          "mean_actual_active_tracks": 201.630516081,
+          "navigation_polygon_edges": 528,
+          "advance": {
+            "count": 1337,
+            "mean_ms": 134.545032181,
+            "p50_ms": 109.787458,
+            "p95_ms": 336.74825,
+            "p99_ms": 409.141375,
+            "max_ms": 613.238833,
+            "over_50ms": 928
+          },
+          "frame": {
+            "count": 1337,
+            "mean_ms": 0.0382181525804,
+            "p50_ms": 0.039042,
+            "p95_ms": 0.06775,
+            "p99_ms": 0.074333,
+            "max_ms": 0.1095,
+            "over_50ms": 0
+          },
+          "realized_starts": 452,
+          "realized_ends": 83,
+          "active_tracks": 369,
+          "pending_tracks": 298,
+          "active_stalled_tracks": 8,
+          "max_stop_ms": 11700,
+          "overlap_violations": 0,
+          "navigation_steering_steps": 94217,
+          "navigation_replans": 489,
+          "navigation_replan_failures": 381,
+          "navigation_candidate_checks": 7807148,
+          "navigation_max_search_nodes": 9486,
+          "time_buckets": [
+            {
+              "from_ms": 0,
+              "to_ms": 40000,
+              "peak_active": 241,
+              "advance": {
+                "count": 800,
+                "mean_ms": 57.685439425,
+                "p50_ms": 48.203792,
+                "p95_ms": 132.343917,
+                "p99_ms": 186.974667,
+                "max_ms": 219.878708,
+                "over_50ms": 391
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.0258713525,
+                "p50_ms": 0.026875,
+                "p95_ms": 0.046708,
+                "p99_ms": 0.054459,
+                "max_ms": 0.107791,
+                "over_50ms": 0
+              }
+            },
+            {
+              "from_ms": 40000,
+              "to_ms": 66850,
+              "peak_active": 369,
+              "advance": {
+                "count": 537,
+                "mean_ms": 249.047218782,
+                "p50_ms": 243.354333,
+                "p95_ms": 391.118417,
+                "p99_ms": 474.319792,
+                "max_ms": 613.238833,
+                "over_50ms": 537
+              },
+              "frame": {
+                "count": 537,
+                "mean_ms": 0.0566118957169,
+                "p50_ms": 0.055958,
+                "p95_ms": 0.072125,
+                "p99_ms": 0.076416,
+                "max_ms": 0.1095,
+                "over_50ms": 0
+              }
+            }
+          ],
+          "initial_person_requests_due_by_reached_horizon": 446,
+          "last_initial_person_request_ms": 74850,
+          "cohort_not_simultaneous_active": true
+        },
+        "generation_component_repeat": {
+          "global_generation_wall_seconds": 21.131917624999996,
+          "global_generation_components_inclusive": {
+            "frozen_source_load_and_functional_layers": {
+              "calls": 1,
+              "wall_seconds": 0.13747341699999893
+            },
+            "build_geometry": {
+              "calls": 1,
+              "wall_seconds": 0.09184629199999961
+            },
+            "router___init__": {
+              "calls": 1,
+              "wall_seconds": 0.14042087500000022
+            },
+            "router_route": {
+              "calls": 2291,
+              "wall_seconds": 12.390011322000117
+            },
+            "router_varied_route": {
+              "calls": 750,
+              "wall_seconds": 12.130460416000048
+            },
+            "audit_scene": {
+              "calls": 1,
+              "wall_seconds": 6.334978540999998
+            }
+          }
+        }
+      }
+    ]
+  },
+  "separate_64_component_profile": {
+    "generation_only": false,
+    "component_instrumentation": true,
+    "benchmark_tool_sha256": "745c7ed26da583b0886dec583826f48dceba7c8c5756484e0b95c1e3c43a70fd",
+    "schema": "ump.mapped-navigation-benchmark-set.v1",
+    "platform": "macOS-15.7.7-arm64-arm-64bit",
+    "machine": "arm64",
+    "seed": 20261023,
+    "horizon_s": 120,
+    "source_hashes": {
+      "simulator/src/MappedScene.cpp": "9b2e949be648c9e17ca47be9bb2e78603959df82342063e90390914c1f05b078",
+      "simulator/src/MappedSceneConfiguration.cpp": "4d3eea4021fa9c028bcb4ed7098c82a3a9038a75082295597dd30ec4eb702b7a",
+      "simulator/include/MappedScene.hpp": "849aaf69c2c93af3e8685c556cdb7c0fa89478d93f00f6eb0387edf837bfc5b8",
+      "tools/mapped_scene/build_mapped_scene.py": "1fa8d096602ca0be94e03e20764ffe2b348dfc615362484e653238ed3a574b4f",
+      "tools/mapped_scene/storefront_scene.py": "0bef514e849af14e4dc1bb29aad835cc02230fc2fef2665525193097adcef161"
+    },
+    "scope": "Single process, serial cases; no concurrent benchmark cases. Not an end-to-end simulator deadline benchmark. All finite runs are horizon-censored unless all scheduled episodes ended.",
+    "cases": [
+      {
+        "id": "people-64-arrival-1000ms",
+        "cohort_people": 64,
+        "arrival_interval_ms": 1000,
+        "global_generation_wall_seconds": 5.142291792,
+        "global_generation_components_inclusive": {
+          "frozen_source_load_and_functional_layers": {
+            "calls": 1,
+            "wall_seconds": 0.38228795800000004
+          },
+          "build_geometry": {
+            "calls": 1,
+            "wall_seconds": 0.08937249999999963
+          },
+          "router___init__": {
+            "calls": 1,
+            "wall_seconds": 0.13367308399999978
+          },
+          "router_route": {
+            "calls": 359,
+            "wall_seconds": 3.4223147889999925
+          },
+          "router_varied_route": {
+            "calls": 96,
+            "wall_seconds": 1.532218625999998
+          },
+          "audit_scene": {
+            "calls": 1,
+            "wall_seconds": 0.8412737079999992
+          }
+        },
+        "config_sha256": "0005f736db1f3b7a7cfbdc75fb4e1790307aa4d6490c83ccdd3c3080b3201926",
+        "native": {
+          "schema": "ump.mapped-navigation-benchmark.v1",
+          "scope": "Source motion only; excludes policy, aggregation, MongoDB and rendering. Censored at requested horizon or wall budget.",
+          "cohort_people": 64,
+          "scheduled_episodes": 96,
+          "requested_horizon_ms": 120000,
+          "reached_horizon_ms": 120000,
+          "wall_budget_exceeded": false,
+          "wall_seconds": 16.185823209,
+          "source_speedup": 7.41389538552,
+          "yaml_read_ms": 14.032167,
+          "configuration_adaptation_ms": 8.566666,
+          "constructor_ms": 5.561375,
+          "peak_actual_active_tracks": 55,
+          "mean_actual_active_tracks": 31.6083333333,
+          "navigation_polygon_edges": 528,
+          "advance": {
+            "count": 2400,
+            "mean_ms": 6.72699397333,
+            "p50_ms": 6.261416,
+            "p95_ms": 12.255625,
+            "p99_ms": 12.894583,
+            "max_ms": 47.912084,
+            "over_50ms": 0
+          },
+          "frame": {
+            "count": 2400,
+            "mean_ms": 0.0035846875,
+            "p50_ms": 0.003334,
+            "p95_ms": 0.006959,
+            "p99_ms": 0.010334,
+            "max_ms": 0.018917,
+            "over_50ms": 0
+          },
+          "realized_starts": 94,
+          "realized_ends": 75,
+          "active_tracks": 19,
+          "pending_tracks": 2,
+          "active_stalled_tracks": 0,
+          "max_stop_ms": 250,
+          "overlap_violations": 0,
+          "navigation_steering_steps": 10596,
+          "navigation_replans": 16,
+          "navigation_replan_failures": 13,
+          "navigation_candidate_checks": 2199418,
+          "navigation_max_search_nodes": 4665,
+          "time_buckets": [
+            {
+              "from_ms": 0,
+              "to_ms": 40000,
+              "peak_active": 35,
+              "advance": {
+                "count": 800,
+                "mean_ms": 3.639804335,
+                "p50_ms": 3.544708,
+                "p95_ms": 6.682209,
+                "p99_ms": 7.017583,
+                "max_ms": 7.488416,
+                "over_50ms": 0
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.00220098125,
+                "p50_ms": 0.002042,
+                "p95_ms": 0.00375,
+                "p99_ms": 0.008542,
+                "max_ms": 0.018791,
+                "over_50ms": 0
+              }
+            },
+            {
+              "from_ms": 40000,
+              "to_ms": 80000,
+              "peak_active": 55,
+              "advance": {
+                "count": 800,
+                "mean_ms": 10.1267488213,
+                "p50_ms": 10.009667,
+                "p95_ms": 12.582208,
+                "p99_ms": 12.959666,
+                "max_ms": 43.3845,
+                "over_50ms": 0
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.0051578225,
+                "p50_ms": 0.004792,
+                "p95_ms": 0.008042,
+                "p99_ms": 0.0115,
+                "max_ms": 0.018917,
+                "over_50ms": 0
+              }
+            },
+            {
+              "from_ms": 80000,
+              "to_ms": 120000,
+              "peak_active": 45,
+              "advance": {
+                "count": 800,
+                "mean_ms": 6.41442876375,
+                "p50_ms": 5.19075,
+                "p95_ms": 9.564875,
+                "p99_ms": 43.044584,
+                "max_ms": 47.912084,
+                "over_50ms": 0
+              },
+              "frame": {
+                "count": 800,
+                "mean_ms": 0.00339525875,
+                "p50_ms": 0.003042,
+                "p95_ms": 0.005833,
+                "p99_ms": 0.009417,
+                "max_ms": 0.016208,
+                "over_50ms": 0
+              }
+            }
+          ],
+          "component_timings_inclusive": {
+            "navigation_segment_allowed": {
+              "calls": 2342803,
+              "wall_ms": 12126.751031
+            },
+            "replan_navigation": {
+              "calls": 16,
+              "wall_ms": 483.636499
+            },
+            "update_navigation_doors": {
+              "calls": 4802,
+              "wall_ms": 46.915489
+            }
+          }
+        }
+      }
+    ],
+    "compile_command": [
+      "c++",
+      "-std=c++17",
+      "-O3",
+      "-DNDEBUG",
+      "-I",
+      "/Users/maxdemu/Developer/UMP-Simulator/simulator/include",
+      "-I",
+      "/opt/homebrew/include",
+      "/private/tmp/ump-navigation-components-20261024/mapped_navigation_benchmark.cpp",
+      "/private/tmp/ump-navigation-components-20261024/MappedScene.instrumented.cpp",
+      "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/MappedSceneConfiguration.cpp",
+      "-L",
+      "/opt/homebrew/lib",
+      "-lyaml-cpp",
+      "-Wl,-rpath,/opt/homebrew/lib",
+      "-o",
+      "/private/tmp/ump-navigation-components-20261024/mapped_navigation_benchmark",
+      "-DUMP_NAV_BENCH_COMPONENTS"
+    ]
+  },
+  "instrumentation_equivalence": {
+    "config_sha256_equal": true,
+    "discrete_metrics_equal": true,
+    "compared_fields": [
+      "cohort_people",
+      "scheduled_episodes",
+      "reached_horizon_ms",
+      "peak_actual_active_tracks",
+      "mean_actual_active_tracks",
+      "navigation_polygon_edges",
+      "realized_starts",
+      "realized_ends",
+      "active_tracks",
+      "pending_tracks",
+      "active_stalled_tracks",
+      "max_stop_ms",
+      "overlap_violations",
+      "navigation_steering_steps",
+      "navigation_replans",
+      "navigation_replan_failures",
+      "navigation_candidate_checks",
+      "navigation_max_search_nodes"
+    ]
+  },
+  "component_scope": "Inclusive times overlap: geometry calls occur inside A* and door methods. Do not add percentages. Native component timers include constructor work. Generation route totals include calls nested in varied_route.",
+  "executed_pristine_harness_sha256": "e3ea5bd21510b4a3a1f0743e1b91b52274d1d6da35ff3fa300a93d8a97fd4d82",
+  "executed_pristine_binary_sha256": "139aa65c048a0b907fb828f78da31a2c03bb9513823abe366588c9d0d71a7a9b",
+  "compiler_version": "Apple clang version 17.0.0 (clang-1700.6.3.2)\nTarget: arm64-apple-darwin24.6.0\nThread model: posix\nInstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin",
+  "provenance_note": "The pristine matrix was executed with an earlier revision of the benchmark runner. Later edits added correctly attached Python component wrappers, optional staged native timers, compiler/dependency manifests, and CLI/reuse/overwrite safeguards. The exact executed pristine harness and binary SHA256 witnesses are retained below; the current runner hash is a separately labelled reproducer, not a claim that this revision generated the earlier timings.",
+  "primary_five_production_dependency_hashes_verified_unchanged_postrun": {
+    "simulator/src/MappedScene.cpp": true,
+    "simulator/src/MappedSceneConfiguration.cpp": true,
+    "simulator/include/MappedScene.hpp": true,
+    "tools/mapped_scene/build_mapped_scene.py": true,
+    "tools/mapped_scene/storefront_scene.py": true
+  },
+  "additional_dependency_hashes_recorded_postrun": {
+    "tools/mapped_scene/building_access.py": "84fe022ebec5a48793b1a9d0a898d59a6cc4c3db8c66618cde722e2fb243b05b",
+    "simulator/include/MappedSceneConfiguration.hpp": "7891b9df9d990d106aecdef35cac2adb7908a1274fa91e406fe8a1e6a8b2d205",
+    "tools/osm_regions/build_map.py": "fcb86b023818d60c0082d62ad9510fdb0367228981dc9a80089081f1094c39d3",
+    "tools/osm_regions/data/moenckeberg/source_geometry.geojson.gz": "508ca79545419b1f1028b79a1f8a12684b8a6ed53e95b2d94fb36094298388f3",
+    "tools/osm_regions/data/moenckeberg/close/policy.json": "11e403b37c6b19c42d62e1c5d78a688e68de2523ee843fa4914be358b2e66d7a",
+    "tools/osm_regions/data/moenckeberg/close/poi_labels.json": "20c8054effb92f10843e8ff6c70675f888fd6bec301ef3cf607aacee1e3b4333"
+  },
+  "current_reproducer_tool_sha256": "892af3eac121adf157e59f3299d46648929cbfd6a28800631f639f1832c9baa2",
+  "two_500_cohorts_comparability": {
+    "checks": {
+      "routes_identical": true,
+      "profiles_identical": true,
+      "geometry_identical": true,
+      "speeds_identical": true,
+      "whole_configs_identical_after_zeroing_episode_start_ms": true
+    },
+    "changed_initial_start_times": 499,
+    "scope": "The two 500-person configurations differ only in 499 initial episode start timestamps. Geometry, routes, profiles, speeds, policies and declared horizon are identical. Different population cohorts use population-dependent type/path random streams; the 64/128/500 matrix is a diagnostic, not a controlled causal scaling fit."
+  },
+  "final_reproducer_smoke_and_guards": {
+    "runner_sha256": "892af3eac121adf157e59f3299d46648929cbfd6a28800631f639f1832c9baa2",
+    "generation_only_5_people_1s": "passed",
+    "native_5_people_1s": "passed",
+    "generation_native_config_sha256_equal": true,
+    "reject_nan_inf_nonpositive_budget": "passed",
+    "reject_existing_case_overwrite": "passed",
+    "reject_stale_harness_against_current_embedded_source": "passed",
+    "reject_changed_binary": "passed",
+    "native_result": {
+      "schema": "ump.mapped-navigation-benchmark.v1",
+      "scope": "Source motion only; excludes policy, aggregation, MongoDB and rendering. Censored at requested horizon or wall budget.",
+      "cohort_people": 5,
+      "scheduled_episodes": 8,
+      "requested_horizon_ms": 1000,
+      "reached_horizon_ms": 1000,
+      "wall_budget_exceeded": false,
+      "wall_seconds": 0.019690625,
+      "source_speedup": 50.785589589,
+      "yaml_read_ms": 6.7745,
+      "configuration_adaptation_ms": 4.303417,
+      "constructor_ms": 3.068208,
+      "peak_actual_active_tracks": 2,
+      "mean_actual_active_tracks": 1.05,
+      "navigation_polygon_edges": 525,
+      "navigation_serialized_ring_vertices": 528,
+      "advance": {
+        "count": 20,
+        "mean_ms": 0.27381255,
+        "p50_ms": 0.278375,
+        "p95_ms": 0.3025,
+        "p99_ms": 0.331958,
+        "max_ms": 0.331958,
+        "over_50ms": 0
+      },
+      "frame": {
+        "count": 20,
+        "mean_ms": 0.00020205,
+        "p50_ms": 0.000166,
+        "p95_ms": 0.000458,
+        "p99_ms": 0.000542,
+        "max_ms": 0.000542,
+        "over_50ms": 0
+      },
+      "realized_starts": 2,
+      "realized_ends": 0,
+      "active_tracks": 2,
+      "pending_tracks": 6,
+      "active_stalled_tracks": 0,
+      "max_stop_ms": 0,
+      "overlap_violations": 0,
+      "navigation_steering_steps": 0,
+      "navigation_replans": 0,
+      "navigation_replan_failures": 0,
+      "navigation_candidate_checks": 580,
+      "navigation_max_search_nodes": 0,
+      "time_buckets": [
+        {
+          "from_ms": 0,
+          "to_ms": 1000,
+          "peak_active": 2,
+          "advance": {
+            "count": 20,
+            "mean_ms": 0.27381255,
+            "p50_ms": 0.278375,
+            "p95_ms": 0.3025,
+            "p99_ms": 0.331958,
+            "max_ms": 0.331958,
+            "over_50ms": 0
+          },
+          "frame": {
+            "count": 20,
+            "mean_ms": 0.00020205,
+            "p50_ms": 0.000166,
+            "p95_ms": 0.000458,
+            "p99_ms": 0.000542,
+            "max_ms": 0.000542,
+            "over_50ms": 0
+          }
+        }
+      ]
+    },
+    "scope": "These final-runner smoke checks are separate from the earlier measured scalability matrix.",
+    "normalized_runtime_edge_count": "525 confirmed;528serializedvertices separate"
+  },
+  "geometry_count_note": {
+    "raw_serialized_ring_vertices": 528,
+    "rings": 3,
+    "runtime_normalized_edges": 525,
+    "scope": "The earlier harness field navigation_polygon_edges counts serialized ring vertices before MappedScene removes repeated closing vertices. Runtime scans use the normalized count."
+  },
+  "hardware": {
+    "cpu": "Apple M4 Pro",
+    "memory_bytes": 25769803776,
+    "memory_gib": 24,
+    "scope": "Host hardware queried after the benchmark; native motion code is serial."
+  },
+  "separate_generation_component_repeats": {
+    "generation_only": true,
+    "component_instrumentation": false,
+    "benchmark_tool_sha256": "745c7ed26da583b0886dec583826f48dceba7c8c5756484e0b95c1e3c43a70fd",
+    "schema": "ump.mapped-navigation-benchmark-set.v1",
+    "platform": "macOS-15.7.7-arm64-arm-64bit",
+    "machine": "arm64",
+    "seed": 20261023,
+    "horizon_s": 120,
+    "source_hashes": {
+      "simulator/src/MappedScene.cpp": "9b2e949be648c9e17ca47be9bb2e78603959df82342063e90390914c1f05b078",
+      "simulator/src/MappedSceneConfiguration.cpp": "4d3eea4021fa9c028bcb4ed7098c82a3a9038a75082295597dd30ec4eb702b7a",
+      "simulator/include/MappedScene.hpp": "849aaf69c2c93af3e8685c556cdb7c0fa89478d93f00f6eb0387edf837bfc5b8",
+      "tools/mapped_scene/build_mapped_scene.py": "1fa8d096602ca0be94e03e20764ffe2b348dfc615362484e653238ed3a574b4f",
+      "tools/mapped_scene/storefront_scene.py": "0bef514e849af14e4dc1bb29aad835cc02230fc2fef2665525193097adcef161"
+    },
+    "scope": "Single process, serial cases; no concurrent benchmark cases. Not an end-to-end simulator deadline benchmark. All finite runs are horizon-censored unless all scheduled episodes ended.",
+    "cases": [
+      {
+        "id": "people-128-arrival-1000ms",
+        "cohort_people": 128,
+        "arrival_interval_ms": 1000,
+        "global_generation_wall_seconds": 7.4450168340000005,
+        "global_generation_components_inclusive": {
+          "frozen_source_load_and_functional_layers": {
+            "calls": 1,
+            "wall_seconds": 0.345528792
+          },
+          "build_geometry": {
+            "calls": 1,
+            "wall_seconds": 0.08920191700000002
+          },
+          "router___init__": {
+            "calls": 1,
+            "wall_seconds": 0.13711449999999992
+          },
+          "router_route": {
+            "calls": 643,
+            "wall_seconds": 4.710727371000014
+          },
+          "router_varied_route": {
+            "calls": 192,
+            "wall_seconds": 3.010976054000005
+          },
+          "audit_scene": {
+            "calls": 1,
+            "wall_seconds": 1.633246292
+          }
+        },
+        "config_sha256": "1bc0725e44c8350aa039b2eb51618ba01cbb4262c3b7ef5e9030f44fe4610835"
+      },
+      {
+        "id": "people-500-arrival-1000ms",
+        "cohort_people": 500,
+        "arrival_interval_ms": 1000,
+        "global_generation_wall_seconds": 21.253594749999998,
+        "global_generation_components_inclusive": {
+          "frozen_source_load_and_functional_layers": {
+            "calls": 1,
+            "wall_seconds": 0.1379452919999995
+          },
+          "build_geometry": {
+            "calls": 1,
+            "wall_seconds": 0.08768266700000016
+          },
+          "router___init__": {
+            "calls": 1,
+            "wall_seconds": 0.12707379099999994
+          },
+          "router_route": {
+            "calls": 2291,
+            "wall_seconds": 12.566498707000012
+          },
+          "router_varied_route": {
+            "calls": 750,
+            "wall_seconds": 12.292023167999956
+          },
+          "audit_scene": {
+            "calls": 1,
+            "wall_seconds": 6.303792916999999
+          }
+        },
+        "config_sha256": "9d815c5ed586a9f6e7d1581e23448acd495a678aa67a98e27a73b8170da3a94a"
+      },
+      {
+        "id": "people-500-arrival-150ms",
+        "cohort_people": 500,
+        "arrival_interval_ms": 150,
+        "global_generation_wall_seconds": 21.131917624999996,
+        "global_generation_components_inclusive": {
+          "frozen_source_load_and_functional_layers": {
+            "calls": 1,
+            "wall_seconds": 0.13747341699999893
+          },
+          "build_geometry": {
+            "calls": 1,
+            "wall_seconds": 0.09184629199999961
+          },
+          "router___init__": {
+            "calls": 1,
+            "wall_seconds": 0.14042087500000022
+          },
+          "router_route": {
+            "calls": 2291,
+            "wall_seconds": 12.390011322000117
+          },
+          "router_varied_route": {
+            "calls": 750,
+            "wall_seconds": 12.130460416000048
+          },
+          "audit_scene": {
+            "calls": 1,
+            "wall_seconds": 6.334978540999998
+          }
+        },
+        "config_sha256": "d0d9c6a284cbb639e51b5cc0cb4a1f9f0bcb09c335fc62b9161fbfba020ec168"
+      }
+    ]
+  }
+}
