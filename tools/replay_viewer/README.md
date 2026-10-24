@@ -85,6 +85,19 @@ The viewer references existing JSON files rather than embedding large data in HT
 
 The whole bundle remains **private research material**, even when the recipient display filter is selected. It contains identities, raw positions and diagnostic thresholds. A sanitized recipient export is a different artifact.
 
+## Runtime language responsibilities
+
+JavaScript (`viewer.js` / `model.js`) renders supplied PNG/vector context and recorded
+motion/result cells, controls playback/selection, selects historical samples and
+maintains the display mosaic. It also calculates display summaries, source-window
+groups and intersections of declared numeric policy bounds for inspection. The
+bounds inspector does not evaluate runtime metric values or make release decisions.
+No trajectory integration, online privacy/utility metric evaluation, bucket
+coordination or merge/split/publication decision runs in this browser. Native C++
+produces those simulation/aggregation results before this recorded viewer reads them.
+Python handles map/source preparation, exports, server validation and separate
+experiments/evaluation. Recorded positions are shown without interpolation.
+
 ## Optional mapped-scene metadata
 
 The native mapped-scene exporter can add these fields without changing the
@@ -194,10 +207,14 @@ The **Highlight modeled shop fronts** and **Highlight source / sink intervals** 
 work in the reference and both policy-result panels, including cell focus. The frozen background keeps its existing map context when a highlight
 is disabled; these controls affect the additional overlays only. Colored
 fronts distinguish shops sharing one actual footprint. Exact doors keep their
-physical width and use named screen-space callouts; labels may move for
-legibility but a leader remains anchored to the physical target. Matching raw
-shop labels are hidden to avoid duplicate POI labels. The inventory separates
-actual building context, modeled shop destinations and boundary eligibility.
+physical width and their entrance symbols remain independently toggleable.
+Shop names use the ordinary supplied-map typography and POI positions, with
+the same collision avoidance as other map names. Numbered white shop callouts
+and their entrance-to-label construction lines are no longer drawn. Modeled
+frontage edges and short divider ticks remain available through their existing
+highlight toggle; these describe facade assumptions rather than label
+construction. The inventory separates actual building context, modeled shop
+destinations and boundary eligibility.
 
 The server validates public geometry before serving it, rejects unknown fields
 at every new level, and checks bounded coordinates, relationships, supported

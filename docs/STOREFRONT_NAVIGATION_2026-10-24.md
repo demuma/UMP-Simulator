@@ -193,8 +193,10 @@ short assumed divider ticks, named exact entrance targets and eligible boundary
 arrows in all three panels. World coordinates remain aligned under selected-cell
 focus. Walking source/sink arrows are distinct from context-only cycling/road
 intervals. The inventory lists buildings, shop destinations and boundary eligibility
-separately. Name callouts may move in screen space; leader lines retain exact door
-coordinates. No renderer marker changes physical admission geometry. The two shop/boundary
+separately. Ordinary supplied shop names use the normal map font and POI anchors;
+numbered white entrance callouts and their construction lines were removed in the
+October 24 cleanup. Physical doorway symbols remain independent of map names.
+No renderer marker changes physical admission geometry. The two shop/boundary
 controls highlight additional overlays: the frozen background retains its map
 context. Long reference provenance does not change canvas alignment; supplied
 map labels use bounded screen-space placement with geographic leader lines.

@@ -12,6 +12,29 @@ const replay={sampling_period_ms:100,end_ms:600,batches:[
 const first={start_ms:0,end_ms:200,sealed_at_ms:250,cells:[{observation_contributions:3}]};
 const second={start_ms:200,end_ms:400,sealed_at_ms:400,cells:[{observation_contributions:5},{observation_contributions:2}]};
 const result={releases:[first,second],windows:[{evaluated_at_ms:200,cells:[{selected:true},{selected:false}]}]};
+
+test('Map shop names retain normal typography independently of entrance markers without debug callouts',()=>{
+ const vm=require('node:vm'),fs=require('node:fs');
+ const controls={mapNames:{checked:true},entranceMarkers:{checked:true},buildingBoundaries:{checked:false},storeFronts:{checked:false},boundaryIntervals:{checked:false}};
+ const calls=[],ctx=new Proxy({measureText:text=>({width:text.length*5})},{get(target,key){if(key in target)return target[key];return (...args)=>calls.push({method:key,args,font:target.font});}});
+ const context=vm.createContext({UMPReplay:M,document:{getElementById:id=>controls[id]},fetch:()=>new Promise(()=>{}),canvas:ctx});
+ // Loading the actual renderer starts no browser/network work: its initial
+ // fetch stays pending while these canvas functions are exercised directly.
+ vm.runInContext(fs.readFileSync(require.resolve('./viewer.js'),'utf8'),context);
+ vm.runInContext(`manifest={map:{labels:[{text:'Example shop',kind:'shop',x:18,y:16}]}};
+ buildingAccess={buildings:[],portals:[{id:'door',building_id:'building',point:[18,10],facade:[[10,10],[25,10]],width_m:1.2,provenance:'synthetic'}],store_fronts:[{poi:{name:'Example shop'},portal_id:'door',frontage:[[10,10],[25,10]]}]};
+ var labelLayout={ctx:canvas,left:0,top:0,w:200,h:200,scale:2,viewport:{x:0,y:0,width:80,height:80}};
+ geographyLabels(labelLayout);drawBuildingAccess(labelLayout);`,context);
+ const displayed=calls.filter(call=>call.method==='fillText');
+ assert.deepEqual(displayed.map(call=>call.args[0]),['Example shop']);
+ assert.equal(displayed[0].font,'600 10px -apple-system,sans-serif');
+ assert.equal(calls.filter(call=>call.method==='fillRect').length,0,'shop names have no boxed background');
+ assert.equal(calls.filter(call=>call.method==='lineTo').length,4,'only the physical door segment and diamond are drawn, with no entrance-to-name leader');
+ calls.length=0;controls.entranceMarkers.checked=false;
+ vm.runInContext('geographyLabels(labelLayout);drawBuildingAccess(labelLayout);',context);
+ assert.deepEqual(calls.filter(call=>call.method==='fillText').map(call=>call.args[0]),['Example shop']);
+ assert.equal(calls.filter(call=>call.method==='lineTo').length,0,'names remain independently visible with entrance markers off');
+});
 test('Policy labels separate the tree identity/version from its execution method',()=>{
  const v={id:'native',label:'Actual native aggregation',policy_tree_id:'mapped-policy',result:{parameters:{strategy:'semantic_first'},releases:[{policy_id:'mapped-policy',policy_version:'1'}]}};
  const before=JSON.stringify(v),label=M.variantIdentity(v);

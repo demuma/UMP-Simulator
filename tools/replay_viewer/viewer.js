@@ -45,8 +45,11 @@ function geographyLabels(layout){
  if(!manifest.map||!$('mapNames').checked)return;
  const {ctx,left,top,w,h,scale,viewport:g}=layout;
  ctx.save();ctx.beginPath();ctx.rect(left,top,w,h);ctx.clip();ctx.font='600 10px -apple-system,sans-serif';ctx.textAlign='center';ctx.lineWidth=3;ctx.strokeStyle='rgba(255,255,255,.95)';
- const destinationNames=new Set((buildingAccess?.store_fronts??[]).map(front=>front.poi.name)),placed=[];
- for(const label of manifest.map.labels??[]){if(label.kind==='shop'&&destinationNames.has(label.text))continue;if(label.x<g.x||label.x>g.x+g.width||label.y<g.y||label.y>g.y+g.height)continue;
+ // Supplied map names retain their normal font and location even when the
+ // same POI is also a modeled shop destination. Entrance diagnostics do not
+ // replace geographic labels with numbered callouts.
+ const placed=[];
+ for(const label of manifest.map.labels??[]){if(label.x<g.x||label.x>g.x+g.width||label.y<g.y||label.y>g.y+g.height)continue;
    const targetX=left+(label.x-g.x)*scale,targetY=top+(label.y-g.y)*scale,width=ctx.measureText(label.text).width+6,height=13;
    let box=null;
    for(const dy of [0,-15,15,-30,30,-45,45]){for(const dx of [0,-25,25,-50,50]){
@@ -104,21 +107,6 @@ function drawBuildingAccess(layout){
      if(synthetic){ctx.moveTo(point.x,point.y-4);ctx.lineTo(point.x+4,point.y);ctx.lineTo(point.x,point.y+4);ctx.lineTo(point.x-4,point.y);ctx.closePath();}
      else ctx.rect(point.x-3.5,point.y-3.5,7,7);
      ctx.fillStyle=synthetic?'#fff4e9':'#e6f6ff';ctx.fill();ctx.lineWidth=1.6;ctx.stroke();
-   }
- }
- if($('mapNames').checked&&$('entranceMarkers').checked&&buildingAccess.store_fronts){
-   // Names identify the modeled shop destination; they are moved only in
-   // screen space. Leaders retain each exact physical access target.
-   const placed=[];ctx.font='600 10px -apple-system,sans-serif';ctx.textAlign='left';
-   for(const [index,front]of buildingAccess.store_fronts.entries()){
-     const portal=buildingAccess.portals.find(item=>item.id===front.portal_id),p=toCanvas(portal.point);
-     if(p.x<left||p.x>left+w||p.y<top||p.y>top+h)continue;
-     const title=`${index+1} ${front.poi.name}`,width=ctx.measureText(title).width+8,height=14;
-     let x=Math.min(left+w-width-2,Math.max(left+2,p.x-width/2)),y=p.y+12;
-     while(placed.some(box=>x<box.x+box.width&&box.x<x+width&&y<box.y+height&&box.y<y+height))y+=height+2;
-     if(y+height>top+h)y=Math.max(top+2,p.y-22);
-     placed.push({x,y,width});ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(x+width/2,y);ctx.strokeStyle=frontagePalette[index%frontagePalette.length];ctx.lineWidth=1;ctx.stroke();
-     ctx.fillStyle='rgba(255,255,255,.94)';ctx.fillRect(x,y,width,height);ctx.fillStyle=frontagePalette[index%frontagePalette.length];ctx.fillText(title,x+4,y+11);
    }
  }
  ctx.restore();
@@ -314,8 +302,8 @@ function legends(){
 
    if(v2){
      const inventory=$('buildingAccessInventory');
-     inventory.append(element('h3','Modeled shop destinations'),element('p','Shop fronts and their short divider ticks are scenario assumptions. They do not split the OSM building into known buildings or infer indoor walls. Names label exact facade targets; line colors identify separate destination fronts.','scope'),
-       groupTable(['Map number','Shop destination','Shared building','Entrance target x / y (m)','Construction'],buildingAccess.store_fronts.map((front,index)=>{const portal=buildingAccess.portals.find(p=>p.id===front.portal_id);return [String(index+1),front.poi.name,front.building_id,portal.point.map(number).join(' / '),readable(front.projection_method)];})),
+     inventory.append(element('h3','Modeled shop destinations'),element('p','Shop fronts and their short divider ticks are scenario assumptions. They do not split the OSM building into known buildings or infer indoor walls. Map names retain their supplied POI positions; entrance symbols identify exact facade targets and line colors distinguish destination fronts.','scope'),
+       groupTable(['Destination number','Shop destination','Shared building','Entrance target x / y (m)','Construction'],buildingAccess.store_fronts.map((front,index)=>{const portal=buildingAccess.portals.find(p=>p.id===front.portal_id);return [String(index+1),front.poi.name,front.building_id,portal.point.map(number).join(' / '),readable(front.projection_method)];})),
        element('h3','Map-edge source and sink intervals'),
        element('p','Solid green intervals with paired arrows support both pedestrian spawning and exiting. Dashed cycling and dotted road intervals show functional-zone intersections only; this source has no cycling or motor-traffic model. Unsupported walking intervals are context only.','scope'),
        groupTable(['Boundary interval','Mode','Map edge','Length (m)','Source / sink eligible'],buildingAccess.boundary_intervals.map(boundary=>[boundary.id,boundary.mode,boundary.side,number(boundary.length_m),boundary.spawn_supported?'Pedestrian spawn and exit':'Context only'])),
