@@ -8,7 +8,10 @@ No traffic actors, permissions, map geometry or portal widths are changed here.
 The clarified scaling target is 500 total people. At one arrival request per
 second, the full native source cohort completes all 750 episodes with a peak of
 81 concurrent tracks; this is distinct from a dense 500-concurrent stress target.
-Source-only deadline tails remain open.
+Source-only deadline tails remain open. The first boundary-distance fast path
+now preserves raw-bit 64/500-source output and reduces the fresh 500-person
+wall pair from 213.30 to 155.89 s; all 86 suites pass. Read the
+[optimization test report](NAVIGATION_GEOMETRY_TEST_REPORT_2026-10-24.md).
 
 ## Three separate kinds of constraints
 
@@ -50,6 +53,82 @@ a 0.1-m navigation grid. Navigation and privacy discretization are separate; a
 fivefold lattice refinement would multiply the two-dimensional grid size by 25.
 Preserve actual map junction topology, test body-safe connections and use bounded
 local refinement or visibility attachments with declared geometry assumptions.
+
+## Additional observed entrances are not active destinations yet
+
+The frozen map contains the entrances the user identified. The current four-shop
+source activates only its four synthetic Rappolthaus portals; a background entrance
+or a building label does not imply an active trip destination.
+
+| Building / source node | Local target x / y (m) | Retained evidence | Activation gate |
+|---|---|---|---|
+| Upper-left retail building `322716237`, node `4616972979` | 20.36375 / 7.27353 | `entrance=main`, **`level=1`**; exact original facade | Exterior approach is body-safe and connected. Resolve floor/access meaning explicitly before treating this as a ground-floor destination. |
+| Cafe building `32529387`, node `9370793427` | 35.24756 / 28.58382 | `entrance=main`; exact original facade | Door is 5.702 m from current derived walking geometry. Model and audit a traceable connector before routing visits here. |
+| Same cafe building, node `11062053180` | 48.73195 / 21.03941 | `entrance=secondary`; exact original facade | Exterior approach is body-safe and connected; confirm or explicitly assume destination association. |
+
+The named POI `442443891`, "Elbphilharmonie Kultur Café Starbucks", is inside the
+cafe building. Building membership alone does not establish which entrance belongs
+to that business. Use the original supplied name, including its spelling/diacritics,
+for display. Do not silently replace the main door by the secondary door or claim
+that either is a surveyed cafe-specific entrance. Preserve source IDs/tags,
+geometry hashes, provenance, activation status and reasons in the next inventory.
+The previous two-building fixture also omitted both buildings; this is a bounded
+scenario-selection limitation rather than absent source data.
+
+## Preferred and distributed pedestrian crossings
+
+Repair Barkhof as a preferred connection, then allow crossing at multiple locations
+within explicitly declared crossable road surfaces. The intended scene does not
+force every pedestrian through one crossing. Crossable surface, barriers, grade
+separation and mode access belong to the movement/scenario model, not the
+PolicyTree's data-release constraints. Distributed crossing is an explicit scenario
+assumption; neither map color nor a blanket union of every road and walking polygon
+establishes that permission. Keep blocked and incompatible areas excluded.
+
+Route choice can prefer Barkhof while allowing a bounded road-traversal cost and
+seeded, spatially distributed alternatives. Native guidance shortcuts and local
+movement must preserve that preference instead of bypassing its cost through
+hard-visibility shortcuts alone. With moving riders/vehicles, both preferred and
+free crossings additionally need gap/yield decisions, conflict
+reservations, waiting space and a clear exit. Pedestrian swept-body separation alone
+is not a traffic-priority model. Report crossing-position distributions and demand;
+adding free crossings must not covertly change a matched aggregation comparison.
+
+## Wall and corner comfort is a separate movement objective
+
+Current wall hugging follows the implemented objective: hard center geometry is
+eroded by 0.552 m (largest radius 0.45 m + clearance 0.10 m + numerical allowance),
+global A* minimizes route length and visibility simplification removes intermediate
+points. Native navigation again skips to farthest hard-visible guidance and scores
+progress, speed/velocity continuity and predicted person conflicts. It has no
+preferred wall-distance term. A more spacious planned route can therefore be cut
+back to the hard boundary during execution.
+
+Keep mandatory swept-body clearance and preferred comfort separate. Use original
+building-wall geometry as the comfort obstacle layer: center-space boundaries also
+include map edges, walking-region edges and door strips, which are not all walls.
+A soft wall-distance penalty can prefer space around corners while allowing a
+valid narrow passage. Do not globally increase hard erosion and disconnect doors
+or Barkhof. Apply compatible costs to global A*, simplification, native waypoint
+shortcuts, local candidate choice and replanning. A later corner lookahead/turning
+model must remain distinguishable from this first comfort preference.
+
+For a proposed planned path P parameterized by arclength s, an initial experimental
+cost could be length plus
+`lambda * integral(max(0, c_preferred - (d_wall(P(s)) - radius))^2 ds)`.
+Here c_preferred is preferred body-to-wall clearance in metres, d_wall is center-to-
+wall distance and lambda has units m^-2 if the total cost is in metres. This is a
+proposed movement objective, not an implemented release-utility metric or a calibrated
+human-behavior model. Keep the realized trajectory notation phi_u(t) unchanged.
+
+Taper the preference only along the owning track's declared normal door approach;
+the finite route-specific physical facade exception and exact entry/exit endpoint
+remain mandatory. Unrelated passers must not borrow another destination's throat.
+Required gates: improved actual convex-corner clearance, a valid narrow passage
+still completing, no native shortcut undoing the improvement, exact door lifecycle,
+no swept wall/body overlap and complete finite-cohort drain. Report actual wall-
+distance distributions outside intentional door transitions, route length, travel
+time, stops and per-step cost alongside source/aggregation quality.
 
 ## Simultaneous entry and exit need a doorway model
 
@@ -168,19 +247,26 @@ Do not invent an unrequested general car class or infer exceptions from map colo
 ## Ordered implementation gates
 
 1. Completed: accurate PolicyTree/method replay identity and isolated motion profiling.
-2. Next: accelerate exact static geometry checks; then index nearby bodies. Preserve
-   all geometry decisions, opaque-ID tie order, source and publication outputs.
+2. First bounded fast path implemented: conservative edge boxes skip distant
+   boundary-distance checks while retaining the original boundary/ray predicates.
+   Continue prepared geometry/nearby-body indexing only where profiling justifies it.
+   Preserve geometry decisions, opaque-ID tie order, source and publication outputs.
    Repeat the clarified 500-total scenario with full-pipeline timing and measured
    active population. Controlled 250/500 simultaneous-active fixtures are later
    optional headroom tests, not the current user requirement.
 3. Preserve map topology/access metadata and fix the Barkhof graph-connectivity
    artifact with a reproducible regression and explicit geometry assumptions.
-4. Add per-door single-file/bidirectional capacity and logical destinations, with
-   physical/lifecycle/export/replay tests before replacing any existing fixture.
-5. Add cyclist/scooter profiles, per-mode graphs and semantic branches in a bounded
+4. Inventory and activate additional upper-left/cafe accesses only after explicit
+   floor, destination-association and connector gates. Add per-door single-file/
+   bidirectional capacity and logical destinations, with physical/lifecycle/export/
+   replay tests before replacing any existing fixture.
+5. Add consistent soft wall/corner comfort across planning and native execution;
+   retain exact physical clearance and route-specific door transitions.
+6. Add cyclist/scooter profiles, per-mode graphs and semantic branches in a bounded
    mixed-mode scene. Keep demand and policy changes separately controlled.
-6. Activate road traffic and explicit controlled crossings with inter-mode tests.
-7. Generalize arbitrary-area acquisition/configuration and quality reporting using
+7. Activate road traffic plus preferred and distributed crossings with inter-mode
+   conflict tests and declared crossable surfaces.
+8. Generalize arbitrary-area acquisition/configuration and quality reporting using
    the validated components; cache immutable inputs for result reproduction.
 
 These additions improve the source and expose useful rare-type/region scenarios.

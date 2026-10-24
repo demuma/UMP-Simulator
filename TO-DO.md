@@ -27,14 +27,25 @@ one tree/result selected in both views. Read the
 - [x] Replace generic Comparison A/B headings with recorded tree ID/version and
   execution method; keep same-tree/same-result cases explicit and legacy metadata
   uncertainty visible. Validate in browser and affected tests.
+- [x] Remove numbered white shop callouts and entrance-to-label construction
+  lines; restore ordinary supplied map names/font independently of entrance
+  highlights. Keep physical doors/building/frontage overlays inspectable.
 - [x] Clarified load target: **500 total people**, with 1-s arrival requests. The
   exact-source full cohort completes 750 unique episodes by 630.95 s, peak 81
   active, no remaining active/pending/stalled tracks or reported overlaps.
-  Source-only wall time 207.09 s; p99 step 74.77 ms, 385/15,000 steps exceed 50 ms.
+  Pre-optimization wall time 207.09 s; p99 step 74.77 ms, 385/15,000 steps exceed
+  50 ms. The fresh paired improvement below is a separate timing run.
   Full pipeline/external receipt at this load remains open.
-- [ ] **M04.1 next — exact movement-cost reduction:** static geometry broad phase/
-  conservative free-space cache, followed by nearby-body indexing. Validate fast
-  decisions against the full geometry oracle and preserve frozen source outputs.
+- [x] **M04.1a boundary-distance broad phase:** reject distant point/edge
+  distance work with conservative coordinate-scaled boxes; retain the original
+  boundary tolerance and ray arithmetic. Verify raw-bit source frames, diagnostics,
+  lifecycle and geometry probes against the pre-change source. Full 64/500
+  cohorts match bit-for-bit; all 86 suites pass. Fresh 500-person source wall time
+  improves 213.30 → 155.89 s (26.9%); 332/15,000 steps still exceed 50 ms. Read the
+  [test report](docs/NAVIGATION_GEOMETRY_TEST_REPORT_2026-10-24.md).
+- [ ] **M04.1b remaining movement costs:** prepared static geometry index/
+  conservative free-space cache, then nearby-body indexing only as justified by
+  fresh profiling. Preserve exact oracle decisions and frozen source outputs.
   Current 500-person stress reaches 369 active: mean 134.5 ms, p95 336.7 ms per
   50-ms source step, eight active stall diagnostics at the censored cutoff. No
   claim of 500 concurrent realtime actors; that density is a separate headroom
@@ -44,17 +55,30 @@ one tree/result selected in both views. Read the
   narrow-connection artifact: geometric footway exists, but all 96 current guidance
   routes avoid the road and the 0.5-m router cannot cross it. Keep navigation
   resolution separate from D6 privacy cells; use bounded local topology repair.
+- [ ] **M05.1 additional mapped entrances:** upper-left observed main entrance
+  (`4616972979`, `level=1`) and cafe main/secondary nodes (`9370793427`,
+  `11062053180`) exist but are not active destinations. Preserve provenance and
+  activation status; resolve floor/access and cafe association. Main cafe door
+  needs an explicit audited walking connector (current geometry gap 5.702 m).
 - [ ] **M06 doorway capacity:** configurable single-file/bidirectional entrances,
   separate normal lane targets and compatible reservations. Preserve logical shop
   identity across different ingress/egress points. Unknown widths remain explicit;
   widening a marker or sharing one FIFO point is insufficient.
+- [ ] **M06.1 wall/corner comfort:** preserve hard swept-body clearance, add a
+  soft preferred distance to actual building walls consistently in global routing,
+  simplification, native shortcuts/steering and replanning. Avoid disconnecting
+  narrow valid passages; taper only owning door approaches. Verify actual corner
+  clearance, full lifecycle, wall/body safety and runtime, not just nicer guidance.
 - [ ] **M07 controlled mixed modes:** cyclist/scooter age variants, semantic branches,
   per-mode allowed routes/source intervals and reviewed dimensions/kinematics.
   Current pedestrian-safe 0.55-m geometry does not fit existing 1.0–1.25-m cyclist
   envelopes. Keep mode mix/demand/policies separate experimental factors.
 - [ ] **M08 road and crossing behavior:** explicit direction/lane demand, crossing
   connectors with yielding/gaps or declared signals, waiting and swept inter-mode
-  conflict tests. Delivery exceptions require declared scenario provenance.
+  conflict tests. Retain Barkhof as a preferred connection while permitting seeded,
+  distributed pedestrian crossings on explicitly declared crossable surfaces;
+  exclude barriers and incompatible areas. Delivery exceptions require declared
+  scenario provenance.
 - [ ] **M09 generic import:** area-based fetch/freeze, parameterized geometry/POI
   association, automatic preprocessing and unresolved-feature/quality report using
   the validated components. Preserve snapshot hashes and reviewed overrides.

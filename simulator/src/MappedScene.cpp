@@ -87,7 +87,17 @@ int ringLocation(Point p, const std::vector<Point>& ring) {
     bool inside=false;
     for (std::size_t i=0,j=ring.size()-1;i<ring.size();j=i++) {
         const auto a=ring[j],b=ring[i];
-        if (pointSegmentDistance(p,a,b)<1e-8) return 0;
+        // A point closer than the existing boundary tolerance must lie inside
+        // this padded edge box. Reject only distant boundary-distance work;
+        // the original distance predicate and ray-crossing arithmetic below
+        // still decide containment. Coordinate-scaled rounding slack keeps
+        // near-corner/large-coordinate cases on the original exact path.
+        const double padding=1e-8 + 64*std::numeric_limits<double>::epsilon()
+            * (1 + std::abs(p.x) + std::abs(p.y) + std::abs(a.x)
+                + std::abs(a.y) + std::abs(b.x) + std::abs(b.y));
+        if (p.x>=std::min(a.x,b.x)-padding && p.x<=std::max(a.x,b.x)+padding
+            && p.y>=std::min(a.y,b.y)-padding && p.y<=std::max(a.y,b.y)+padding
+            && pointSegmentDistance(p,a,b)<1e-8) return 0;
         if ((a.y>p.y)!=(b.y>p.y)
             && p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x) inside=!inside;
     }

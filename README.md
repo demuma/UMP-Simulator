@@ -59,9 +59,22 @@ synthetic results and verification are recorded in the October 19 test report. T
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 
+**October 24 geometry fast path and clean map labels:** ordinary supplied shop
+names/font replace the numbered white entrance callouts and construction lines.
+A conservative boundary-distance prefilter preserves bit-identical native frames,
+diagnostics and lifecycle in full 64/500-person cohorts. Fresh source-only wall
+time improves 17.86 → 11.93 s (64 people) and 213.30 → 155.89 s (500 total people).
+All 86 regression suites pass; individual 500-person source steps still exceed
+50 ms. See the [test report and compact evidence](docs/NAVIGATION_GEOMETRY_TEST_REPORT_2026-10-24.md).
+The [map roadmap](docs/MULTIMODAL_MAP_ROADMAP_2026-10-24.md) now explicitly includes
+additional upper-left/cafe entrances, preferred plus distributed crossings and
+soft wall/corner comfort. These environment behaviors remain pending. Runtime
+language responsibilities are described in the architecture section below.
+
 **October 24 policy replay and source capacity:** replay panes now show recorded
 PolicyTree ID/version and method, including an explicit notice for identical
-selections. The clarified 500-total cohort completes all 750 episodes at one
+selections. In this pre-optimization checkpoint, the clarified 500-total cohort
+completes all 750 episodes at one
 arrival request per second, peak 81 active, with no remaining tracks or reported
 overlaps. Source-only wall time is 207.09 s; deadline tails remain above 50 ms.
 A separate dense stress reaches 369 active and exceeds its 50-ms budget substantially.
@@ -835,6 +848,20 @@ may already be stopped at the interval endpoint despite movement within the prec
 Compare velocities over the same interval rather than requiring endpoint equality.
 
 ## 6. Architecture: baseline versus proposals
+
+### Runtime languages and responsibilities
+
+| Language | Responsibility |
+|---|---|
+| C++ | Native simulation/movement, virtual sensors, online metric evaluation, PolicyTree checks, bucket coordination and aggregation/publication decisions |
+| Python | Frozen-map preparation, global guidance-route generation, configuration/export/server validation, experiment orchestration and offline evaluation |
+| JavaScript | Browser replay rendering, playback/selection, historical display mosaics, recorded-data summaries/source-group inspection and declared-bound intersections |
+
+The browser does not integrate trajectories or decide online metric compliance,
+merges, splits or releases. It does calculate display summaries, so it is more than
+a passive image renderer. Policy-bound inspection combines supplied declarations;
+it does not recreate unrecorded runtime checks. See the
+[viewer contract](tools/replay_viewer/README.md#runtime-language-responsibilities).
 
 ### Current data flow
 

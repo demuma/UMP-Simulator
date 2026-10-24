@@ -1,0 +1,203 @@
+Test project /Users/maxdemu/Developer/UMP-Simulator/simulator/build
+      Start  1: timestamp_utilities
+ 1/86 Test  #1: timestamp_utilities .......................   Passed    0.05 sec
+      Start  2: sensor_regression
+ 2/86 Test  #2: sensor_regression .........................   Passed    0.61 sec
+      Start  3: frame_regression
+ 3/86 Test  #3: frame_regression ..........................   Passed    0.12 sec
+      Start  4: aggregation_regression
+ 4/86 Test  #4: aggregation_regression ....................   Passed    0.01 sec
+      Start  5: metric_regression
+ 5/86 Test  #5: metric_regression .........................   Passed    0.00 sec
+      Start  6: playback_regression
+ 6/86 Test  #6: playback_regression .......................   Passed    3.03 sec
+      Start  7: policy_regression
+ 7/86 Test  #7: policy_regression .........................   Passed    0.01 sec
+      Start  8: policy_configuration
+ 8/86 Test  #8: policy_configuration ......................   Passed    0.06 sec
+      Start  9: aggregation_diagnostics
+ 9/86 Test  #9: aggregation_diagnostics ...................   Passed    0.04 sec
+      Start 10: history_regression
+10/86 Test #10: history_regression ........................   Passed    0.00 sec
+      Start 11: occupied_history
+11/86 Test #11: occupied_history ..........................   Passed    0.00 sec
+      Start 12: history_query_range
+12/86 Test #12: history_query_range .......................   Passed    0.03 sec
+      Start 13: spatial_regression
+13/86 Test #13: spatial_regression ........................   Passed    0.00 sec
+      Start 14: selective_suppression_regression
+14/86 Test #14: selective_suppression_regression ..........   Passed    0.00 sec
+      Start 15: publication_regression
+15/86 Test #15: publication_regression ....................   Passed    0.00 sec
+      Start 16: adaptive_aggregation_regression
+16/86 Test #16: adaptive_aggregation_regression ...........   Passed    0.00 sec
+      Start 17: publication_store_regression
+17/86 Test #17: publication_store_regression ..............   Passed    0.14 sec
+      Start 18: publication_pipeline_regression
+18/86 Test #18: publication_pipeline_regression ...........   Passed    0.11 sec
+      Start 19: aggregation_presentation
+19/86 Test #19: aggregation_presentation ..................   Passed    0.00 sec
+      Start 20: paced_replay
+20/86 Test #20: paced_replay ..............................   Passed    0.01 sec
+      Start 21: replay_regression
+21/86 Test #21: replay_regression .........................   Passed    0.20 sec
+      Start 22: live_measurement_helpers
+22/86 Test #22: live_measurement_helpers ..................   Passed    0.10 sec
+      Start 23: paced_replay_summary
+23/86 Test #23: paced_replay_summary ......................   Passed    0.10 sec
+      Start 24: occupancy_evaluation
+24/86 Test #24: occupancy_evaluation ......................   Passed    0.04 sec
+      Start 25: privacy_evaluation
+25/86 Test #25: privacy_evaluation ........................   Passed    0.03 sec
+      Start 26: comparison_evaluation
+26/86 Test #26: comparison_evaluation .....................   Passed    0.88 sec
+      Start 27: capture_evaluation
+27/86 Test #27: capture_evaluation ........................   Passed    0.10 sec
+      Start 28: oracle_evaluation
+28/86 Test #28: oracle_evaluation .........................   Passed    0.50 sec
+      Start 29: privacy_dataset_evaluation
+29/86 Test #29: privacy_dataset_evaluation ................   Passed    1.83 sec
+      Start 30: empirical_privacy_evaluation
+30/86 Test #30: empirical_privacy_evaluation ..............   Passed    0.04 sec
+      Start 31: privacy_study_evaluation
+31/86 Test #31: privacy_study_evaluation ..................   Passed   11.72 sec
+      Start 32: coordination_evaluation
+32/86 Test #32: coordination_evaluation ...................   Passed    0.96 sec
+      Start 33: coordination_metrics_evaluation
+33/86 Test #33: coordination_metrics_evaluation ...........   Passed    0.03 sec
+      Start 34: coordination_scenarios_evaluation
+34/86 Test #34: coordination_scenarios_evaluation .........   Passed    0.46 sec
+      Start 35: coordination_study_evaluation
+35/86 Test #35: coordination_study_evaluation .............   Passed    3.67 sec
+      Start 36: plot_coordination_study_evaluation
+36/86 Test #36: plot_coordination_study_evaluation ........   Passed    0.04 sec
+      Start 37: compare_coordination_studies_evaluation
+37/86 Test #37: compare_coordination_studies_evaluation ...   Passed    0.34 sec
+      Start 38: plot_privacy_coordination_evaluation
+38/86 Test #38: plot_privacy_coordination_evaluation ......   Passed    0.03 sec
+      Start 39: robustness_attacks_evaluation
+39/86 Test #39: robustness_attacks_evaluation .............   Passed    0.05 sec
+      Start 40: run_privacy_robustness_evaluation
+40/86 Test #40: run_privacy_robustness_evaluation .........   Passed    4.26 sec
+      Start 41: plot_privacy_robustness_evaluation
+41/86 Test #41: plot_privacy_robustness_evaluation ........   Passed    0.03 sec
+      Start 42: privacy_repair_evaluation
+42/86 Test #42: privacy_repair_evaluation .................   Passed    5.84 sec
+      Start 43: causal_privacy_evaluation
+43/86 Test #43: causal_privacy_evaluation .................   Passed    0.16 sec
+      Start 44: online_occupancy_evaluation
+44/86 Test #44: online_occupancy_evaluation ...............   Passed    0.05 sec
+      Start 45: run_privacy_prefix_study_evaluation
+45/86 Test #45: run_privacy_prefix_study_evaluation .......   Passed    9.35 sec
+      Start 46: selective_suppression_evaluation
+46/86 Test #46: selective_suppression_evaluation ..........   Passed    5.89 sec
+      Start 47: semantic_adaptation_evaluation
+47/86 Test #47: semantic_adaptation_evaluation ............   Passed    2.91 sec
+      Start 48: semantic_tradeoffs_evaluation
+48/86 Test #48: semantic_tradeoffs_evaluation .............   Passed    0.05 sec
+      Start 49: semantic_queries_evaluation
+49/86 Test #49: semantic_queries_evaluation ...............   Passed    0.06 sec
+      Start 50: scoped_semantic_queries_evaluation
+50/86 Test #50: scoped_semantic_queries_evaluation ........   Passed    0.07 sec
+      Start 51: run_scoped_semantic_utility_evaluation
+51/86 Test #51: run_scoped_semantic_utility_evaluation ....   Passed    1.73 sec
+      Start 52: recipient_support_evaluation
+52/86 Test #52: recipient_support_evaluation ..............   Passed    0.09 sec
+      Start 53: run_recipient_contract_study_evaluation
+53/86 Test #53: run_recipient_contract_study_evaluation ...   Passed    1.04 sec
+      Start 54: run_semantic_priority_study_evaluation
+54/86 Test #54: run_semantic_priority_study_evaluation ....   Passed    1.08 sec
+      Start 55: semantic_first_evaluation
+55/86 Test #55: semantic_first_evaluation .................   Passed    1.88 sec
+      Start 56: moving_comparison_evaluation
+56/86 Test #56: moving_comparison_evaluation ..............   Passed    1.37 sec
+      Start 57: moving_scoped_audit_evaluation
+57/86 Test #57: moving_scoped_audit_evaluation ............   Passed    0.04 sec
+      Start 58: run_moving_scoped_comparison_evaluation
+58/86 Test #58: run_moving_scoped_comparison_evaluation ...   Passed    0.28 sec
+      Start 59: cell_size_caps_evaluation
+59/86 Test #59: cell_size_caps_evaluation .................   Passed    3.18 sec
+      Start 60: four_second_window_evaluation
+60/86 Test #60: four_second_window_evaluation .............   Passed    0.86 sec
+      Start 61: semantic_release_evaluation
+61/86 Test #61: semantic_release_evaluation ...............   Passed    1.33 sec
+      Start 62: local_policy_replay_evaluation
+62/86 Test #62: local_policy_replay_evaluation ............   Passed    0.36 sec
+      Start 63: semantic_local_policy_evaluation
+63/86 Test #63: semantic_local_policy_evaluation ..........   Passed    1.02 sec
+      Start 64: replay_data_evaluation
+64/86 Test #64: replay_data_evaluation ....................   Passed    0.05 sec
+      Start 65: replay_viewer_evaluation
+65/86 Test #65: replay_viewer_evaluation ..................   Passed    1.79 sec
+      Start 66: replay_viewer_model
+66/86 Test #66: replay_viewer_model .......................   Passed    0.14 sec
+      Start 67: cell_local_coordination
+67/86 Test #67: cell_local_coordination ...................   Passed    0.03 sec
+      Start 68: cell_local_coordination_stress
+68/86 Test #68: cell_local_coordination_stress ............   Passed    0.71 sec
+      Start 69: scoped_publication
+69/86 Test #69: scoped_publication ........................   Passed    0.01 sec
+      Start 70: semantic_taxonomy
+70/86 Test #70: semantic_taxonomy .........................   Passed    0.01 sec
+      Start 71: semantic_history
+71/86 Test #71: semantic_history ..........................   Passed    0.00 sec
+      Start 72: semantic_pipeline
+72/86 Test #72: semantic_pipeline .........................   Passed    0.00 sec
+      Start 73: semantic_first_core
+73/86 Test #73: semantic_first_core .......................   Passed    0.01 sec
+      Start 74: semantic_cell_local
+74/86 Test #74: semantic_cell_local .......................   Passed    0.01 sec
+      Start 75: semantic_publication_store
+75/86 Test #75: semantic_publication_store ................   Passed    0.12 sec
+      Start 76: mapped_scene
+76/86 Test #76: mapped_scene ..............................   Passed    0.83 sec
+      Start 77: mapped_scene_configuration
+77/86 Test #77: mapped_scene_configuration ................   Passed    0.20 sec
+      Start 78: mapped_pedestrian_semantics
+78/86 Test #78: mapped_pedestrian_semantics ...............   Passed    0.00 sec
+      Start 79: mapped_audit_building_access_tools
+79/86 Test #79: mapped_audit_building_access_tools ........   Passed    0.14 sec
+      Start 80: mapped_build_mapped_scene_tools
+80/86 Test #80: mapped_build_mapped_scene_tools ...........   Passed   52.01 sec
+      Start 81: mapped_export_replay_tools
+81/86 Test #81: mapped_export_replay_tools ................   Passed    0.13 sec
+      Start 82: mapped_analyze_tracks_tools
+82/86 Test #82: mapped_analyze_tracks_tools ...............   Passed    0.26 sec
+      Start 83: mapped_run_comparison_tools
+83/86 Test #83: mapped_run_comparison_tools ...............   Passed    0.31 sec
+      Start 84: mapped_dense_corridor_drain_tools
+84/86 Test #84: mapped_dense_corridor_drain_tools .........   Passed    8.12 sec
+      Start 85: mapped_building_drain_tools
+85/86 Test #85: mapped_building_drain_tools ...............   Passed   17.33 sec
+      Start 86: mapped_storefront_drain_tools
+86/86 Test #86: mapped_storefront_drain_tools .............   Passed   74.76 sec
+
+100% tests passed out of 86
+
+Label Time Summary:
+aggregation     =   0.88 sec*proc (16 tests)
+coordination    =   0.76 sec*proc (4 tests)
+diagnostics     =   0.04 sec*proc (1 test)
+drain           = 100.22 sec*proc (3 tests)
+evaluation      =  65.69 sec*proc (43 tests)
+frames          =   0.12 sec*proc (2 tests)
+history         =   0.04 sec*proc (3 tests)
+integration     = 101.20 sec*proc (7 tests)
+mapped_scene    = 154.11 sec*proc (11 tests)
+metrics         =   0.00 sec*proc (1 test)
+mongodb         =   0.98 sec*proc (4 tests)
+playback        =   3.03 sec*proc (1 test)
+policies        =   0.07 sec*proc (2 tests)
+presentation    =   0.00 sec*proc (1 test)
+publication     =   0.26 sec*proc (5 tests)
+replay          =   0.31 sec*proc (3 tests)
+semantic        =   0.19 sec*proc (8 tests)
+spatial         =   0.01 sec*proc (2 tests)
+stress          =   0.71 sec*proc (1 test)
+temporal        =   0.11 sec*proc (2 tests)
+timing          =   0.26 sec*proc (4 tests)
+tools           =  52.86 sec*proc (5 tests)
+unit            = 124.10 sec*proc (79 tests)
+viewer          =   1.93 sec*proc (2 tests)
+
+Total Test time (real) = 225.33 sec
