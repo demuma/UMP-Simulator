@@ -61,8 +61,10 @@ complete-background stress test remains separate; no formal privacy guarantee is
 
 **October 24 policy replay and source capacity:** replay panes now show recorded
 PolicyTree ID/version and method, including an explicit notice for identical
-selections. Source profiling distinguishes configured cohorts from active tracks:
-the stress probe reaches 369 active and exceeds its 50-ms budget substantially.
+selections. The clarified 500-total cohort completes all 750 episodes at one
+arrival request per second, peak 81 active, with no remaining tracks or reported
+overlaps. Source-only wall time is 207.09 s; deadline tails remain above 50 ms.
+A separate dense stress reaches 369 active and exceeds its 50-ms budget substantially.
 Exact geometry checks dominate the measured moderate-load source; realtime support
 for 500 simultaneous actors is not established. See the
 [capacity report](docs/NAVIGATION_SCALABILITY_REPORT_2026-10-24.md) and

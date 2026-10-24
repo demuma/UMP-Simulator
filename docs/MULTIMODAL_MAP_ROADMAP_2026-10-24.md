@@ -5,6 +5,11 @@ an implementation claim. The [capacity report](NAVIGATION_SCALABILITY_REPORT_202
 records measured motion costs; the replay now labels actual PolicyTrees and methods.
 No traffic actors, permissions, map geometry or portal widths are changed here.
 
+The clarified scaling target is 500 total people. At one arrival request per
+second, the full native source cohort completes all 750 episodes with a peak of
+81 concurrent tracks; this is distinct from a dense 500-concurrent stress target.
+Source-only deadline tails remain open.
+
 ## Three separate kinds of constraints
 
 Map access/connectivity and actor kinematics determine physically modeled movement.
@@ -165,8 +170,9 @@ Do not invent an unrequested general car class or infer exceptions from map colo
 1. Completed: accurate PolicyTree/method replay identity and isolated motion profiling.
 2. Next: accelerate exact static geometry checks; then index nearby bodies. Preserve
    all geometry decisions, opaque-ID tie order, source and publication outputs.
-   Repeat the capacity probe with measured active population and full-pipeline
-   timing; additionally test controlled 250/500 simultaneous-active fixtures.
+   Repeat the clarified 500-total scenario with full-pipeline timing and measured
+   active population. Controlled 250/500 simultaneous-active fixtures are later
+   optional headroom tests, not the current user requirement.
 3. Preserve map topology/access metadata and fix the Barkhof graph-connectivity
    artifact with a reproducible regression and explicit geometry assumptions.
 4. Add per-door single-file/bidirectional capacity and logical destinations, with

@@ -1,6 +1,6 @@
 {
   "schema": "ump.storefront-navigation-scalability-evidence.v1",
-  "scope": "Source-only timings. No DB, policy, aggregation, rendering or sampled movement export. One quiet serial matrix; not a statistical capacity estimate or a hard real-time guarantee. All runs horizon-censored; stress also wall-budget-censored.",
+  "scope": "Source-only timings; no DB, policy, aggregation, rendering or sampled movement export. The initial matrix is horizon-censored and stress is also wall-budget-censored. The clarified 500-total cohort follow-up completes all 750 episodes. Neither is an end-to-end deadline guarantee.",
   "primary_pristine": {
     "schema": "ump.mapped-navigation-benchmark-set.v1",
     "platform": "macOS-15.7.7-arm64-arm-64bit",
@@ -896,7 +896,7 @@
     "tools/osm_regions/data/moenckeberg/close/policy.json": "11e403b37c6b19c42d62e1c5d78a688e68de2523ee843fa4914be358b2e66d7a",
     "tools/osm_regions/data/moenckeberg/close/poi_labels.json": "20c8054effb92f10843e8ff6c70675f888fd6bec301ef3cf607aacee1e3b4333"
   },
-  "current_reproducer_tool_sha256": "892af3eac121adf157e59f3299d46648929cbfd6a28800631f639f1832c9baa2",
+  "current_reproducer_tool_sha256": "de75c0e9392d2163c009e03949e0f46cbc23604b38e108c857b1a7b1ba1cc906",
   "two_500_cohorts_comparability": {
     "checks": {
       "routes_identical": true,
@@ -907,91 +907,6 @@
     },
     "changed_initial_start_times": 499,
     "scope": "The two 500-person configurations differ only in 499 initial episode start timestamps. Geometry, routes, profiles, speeds, policies and declared horizon are identical. Different population cohorts use population-dependent type/path random streams; the 64/128/500 matrix is a diagnostic, not a controlled causal scaling fit."
-  },
-  "final_reproducer_smoke_and_guards": {
-    "runner_sha256": "892af3eac121adf157e59f3299d46648929cbfd6a28800631f639f1832c9baa2",
-    "generation_only_5_people_1s": "passed",
-    "native_5_people_1s": "passed",
-    "generation_native_config_sha256_equal": true,
-    "reject_nan_inf_nonpositive_budget": "passed",
-    "reject_existing_case_overwrite": "passed",
-    "reject_stale_harness_against_current_embedded_source": "passed",
-    "reject_changed_binary": "passed",
-    "native_result": {
-      "schema": "ump.mapped-navigation-benchmark.v1",
-      "scope": "Source motion only; excludes policy, aggregation, MongoDB and rendering. Censored at requested horizon or wall budget.",
-      "cohort_people": 5,
-      "scheduled_episodes": 8,
-      "requested_horizon_ms": 1000,
-      "reached_horizon_ms": 1000,
-      "wall_budget_exceeded": false,
-      "wall_seconds": 0.019690625,
-      "source_speedup": 50.785589589,
-      "yaml_read_ms": 6.7745,
-      "configuration_adaptation_ms": 4.303417,
-      "constructor_ms": 3.068208,
-      "peak_actual_active_tracks": 2,
-      "mean_actual_active_tracks": 1.05,
-      "navigation_polygon_edges": 525,
-      "navigation_serialized_ring_vertices": 528,
-      "advance": {
-        "count": 20,
-        "mean_ms": 0.27381255,
-        "p50_ms": 0.278375,
-        "p95_ms": 0.3025,
-        "p99_ms": 0.331958,
-        "max_ms": 0.331958,
-        "over_50ms": 0
-      },
-      "frame": {
-        "count": 20,
-        "mean_ms": 0.00020205,
-        "p50_ms": 0.000166,
-        "p95_ms": 0.000458,
-        "p99_ms": 0.000542,
-        "max_ms": 0.000542,
-        "over_50ms": 0
-      },
-      "realized_starts": 2,
-      "realized_ends": 0,
-      "active_tracks": 2,
-      "pending_tracks": 6,
-      "active_stalled_tracks": 0,
-      "max_stop_ms": 0,
-      "overlap_violations": 0,
-      "navigation_steering_steps": 0,
-      "navigation_replans": 0,
-      "navigation_replan_failures": 0,
-      "navigation_candidate_checks": 580,
-      "navigation_max_search_nodes": 0,
-      "time_buckets": [
-        {
-          "from_ms": 0,
-          "to_ms": 1000,
-          "peak_active": 2,
-          "advance": {
-            "count": 20,
-            "mean_ms": 0.27381255,
-            "p50_ms": 0.278375,
-            "p95_ms": 0.3025,
-            "p99_ms": 0.331958,
-            "max_ms": 0.331958,
-            "over_50ms": 0
-          },
-          "frame": {
-            "count": 20,
-            "mean_ms": 0.00020205,
-            "p50_ms": 0.000166,
-            "p95_ms": 0.000458,
-            "p99_ms": 0.000542,
-            "max_ms": 0.000542,
-            "over_50ms": 0
-          }
-        }
-      ]
-    },
-    "scope": "These final-runner smoke checks are separate from the earlier measured scalability matrix.",
-    "normalized_runtime_edge_count": "525 confirmed;528serializedvertices separate"
   },
   "geometry_count_note": {
     "raw_serialized_ring_vertices": 528,
@@ -1123,5 +1038,701 @@
         "config_sha256": "d0d9c6a284cbb639e51b5cc0cb4a1f9f0bcb09c335fc62b9161fbfba020ec168"
       }
     ]
-  }
+  },
+  "initial_checkpoint_reproducer_tool_sha256": "892af3eac121adf157e59f3299d46648929cbfd6a28800631f639f1832c9baa2",
+  "initial_checkpoint_reproducer_smoke_and_guards": {
+    "runner_sha256": "892af3eac121adf157e59f3299d46648929cbfd6a28800631f639f1832c9baa2",
+    "generation_only_5_people_1s": "passed",
+    "native_5_people_1s": "passed",
+    "generation_native_config_sha256_equal": true,
+    "reject_nan_inf_nonpositive_budget": "passed",
+    "reject_existing_case_overwrite": "passed",
+    "reject_stale_harness_against_current_embedded_source": "passed",
+    "reject_changed_binary": "passed",
+    "native_result": {
+      "schema": "ump.mapped-navigation-benchmark.v1",
+      "scope": "Source motion only; excludes policy, aggregation, MongoDB and rendering. Censored at requested horizon or wall budget.",
+      "cohort_people": 5,
+      "scheduled_episodes": 8,
+      "requested_horizon_ms": 1000,
+      "reached_horizon_ms": 1000,
+      "wall_budget_exceeded": false,
+      "wall_seconds": 0.019690625,
+      "source_speedup": 50.785589589,
+      "yaml_read_ms": 6.7745,
+      "configuration_adaptation_ms": 4.303417,
+      "constructor_ms": 3.068208,
+      "peak_actual_active_tracks": 2,
+      "mean_actual_active_tracks": 1.05,
+      "navigation_polygon_edges": 525,
+      "navigation_serialized_ring_vertices": 528,
+      "advance": {
+        "count": 20,
+        "mean_ms": 0.27381255,
+        "p50_ms": 0.278375,
+        "p95_ms": 0.3025,
+        "p99_ms": 0.331958,
+        "max_ms": 0.331958,
+        "over_50ms": 0
+      },
+      "frame": {
+        "count": 20,
+        "mean_ms": 0.00020205,
+        "p50_ms": 0.000166,
+        "p95_ms": 0.000458,
+        "p99_ms": 0.000542,
+        "max_ms": 0.000542,
+        "over_50ms": 0
+      },
+      "realized_starts": 2,
+      "realized_ends": 0,
+      "active_tracks": 2,
+      "pending_tracks": 6,
+      "active_stalled_tracks": 0,
+      "max_stop_ms": 0,
+      "overlap_violations": 0,
+      "navigation_steering_steps": 0,
+      "navigation_replans": 0,
+      "navigation_replan_failures": 0,
+      "navigation_candidate_checks": 580,
+      "navigation_max_search_nodes": 0,
+      "time_buckets": [
+        {
+          "from_ms": 0,
+          "to_ms": 1000,
+          "peak_active": 2,
+          "advance": {
+            "count": 20,
+            "mean_ms": 0.27381255,
+            "p50_ms": 0.278375,
+            "p95_ms": 0.3025,
+            "p99_ms": 0.331958,
+            "max_ms": 0.331958,
+            "over_50ms": 0
+          },
+          "frame": {
+            "count": 20,
+            "mean_ms": 0.00020205,
+            "p50_ms": 0.000166,
+            "p95_ms": 0.000458,
+            "p99_ms": 0.000542,
+            "max_ms": 0.000542,
+            "over_50ms": 0
+          }
+        }
+      ]
+    },
+    "scope": "These final-runner smoke checks are separate from the earlier measured scalability matrix.",
+    "normalized_runtime_edge_count": "525 confirmed;528serializedvertices separate"
+  },
+  "complete_500_total_followup": {
+    "schema": "ump.full-cohort-navigation-run.v1",
+    "scope": "Exact earlier 500-person input with 1-s arrival requests; no route regeneration or physics changes. Pure native source motion; no aggregation, database, rendering or movement export. The requested 750,000-ms core horizon exceeds the original 120-s capture field, which is unused by this pure source harness.",
+    "original_primary_config_sha256": "9d815c5ed586a9f6e7d1581e23448acd495a678aa67a98e27a73b8170da3a94a",
+    "config_sha256": "9d815c5ed586a9f6e7d1581e23448acd495a678aa67a98e27a73b8170da3a94a",
+    "requested_horizon_ms": 750000,
+    "wall_budget_seconds": 300,
+    "harness_sha256": "ef39fe13b5718e426a230405153b4438548d392cba4e69b45be52cff00424421",
+    "binary_sha256": "a3403520c05a3f35d6af9f4826bb3e9630324bb7af5bbb58e049b9c39c5769c8",
+    "current_runner_sha256": "de75c0e9392d2163c009e03949e0f46cbc23604b38e108c857b1a7b1ba1cc906",
+    "primary_production_hashes_verified": {
+      "simulator/src/MappedScene.cpp": true,
+      "simulator/src/MappedSceneConfiguration.cpp": true,
+      "simulator/include/MappedScene.hpp": true,
+      "tools/mapped_scene/build_mapped_scene.py": true,
+      "tools/mapped_scene/storefront_scene.py": true
+    },
+    "source_hashes": {
+      "simulator/src/MappedScene.cpp": "9b2e949be648c9e17ca47be9bb2e78603959df82342063e90390914c1f05b078",
+      "simulator/src/MappedSceneConfiguration.cpp": "4d3eea4021fa9c028bcb4ed7098c82a3a9038a75082295597dd30ec4eb702b7a",
+      "simulator/include/MappedScene.hpp": "849aaf69c2c93af3e8685c556cdb7c0fa89478d93f00f6eb0387edf837bfc5b8",
+      "tools/mapped_scene/build_mapped_scene.py": "1fa8d096602ca0be94e03e20764ffe2b348dfc615362484e653238ed3a574b4f",
+      "tools/mapped_scene/storefront_scene.py": "0bef514e849af14e4dc1bb29aad835cc02230fc2fef2665525193097adcef161"
+    },
+    "hardware": {
+      "cpu": "Apple M4 Pro",
+      "memory_gib": 24
+    },
+    "state": "finished",
+    "exit_code": 0,
+    "wrapper_wall_seconds": 207.22344566599998,
+    "native": {
+      "schema": "ump.mapped-navigation-benchmark.v1",
+      "scope": "Source motion only; excludes policy, aggregation, MongoDB and rendering. Censored at requested horizon or wall budget.",
+      "cohort_people": 500,
+      "scheduled_episodes": 750,
+      "requested_horizon_ms": 750000,
+      "reached_horizon_ms": 750000,
+      "wall_budget_exceeded": false,
+      "wall_seconds": 207.089089292,
+      "source_speedup": 3.62162971774,
+      "yaml_read_ms": 36.408833,
+      "configuration_adaptation_ms": 23.3825,
+      "constructor_ms": 17.012459,
+      "peak_actual_active_tracks": 81,
+      "mean_actual_active_tracks": 46.0672,
+      "navigation_polygon_edges": 525,
+      "navigation_serialized_ring_vertices": 528,
+      "advance": {
+        "count": 15000,
+        "mean_ms": 13.7869390307,
+        "p50_ms": 16.856416,
+        "p95_ms": 21.861375,
+        "p99_ms": 74.774792,
+        "max_ms": 112.115417,
+        "over_50ms": 385
+      },
+      "frame": {
+        "count": 15000,
+        "mean_ms": 0.0113772176,
+        "p50_ms": 0.013417,
+        "p95_ms": 0.021084,
+        "p99_ms": 0.0245,
+        "max_ms": 0.242833,
+        "over_50ms": 0
+      },
+      "realized_starts": 750,
+      "realized_ends": 750,
+      "active_tracks": 0,
+      "pending_tracks": 0,
+      "active_stalled_tracks": 0,
+      "max_stop_ms": 3150,
+      "overlap_violations": 0,
+      "navigation_steering_steps": 147743,
+      "navigation_replans": 709,
+      "navigation_replan_failures": 589,
+      "navigation_candidate_checks": 20039261,
+      "navigation_max_search_nodes": 4628,
+      "last_end_ms": 630950,
+      "lifecycle_unique_starts": 750,
+      "lifecycle_unique_ends": 750,
+      "complete_cohort": true,
+      "time_buckets": [
+        {
+          "from_ms": 0,
+          "to_ms": 40000,
+          "peak_active": 34,
+          "advance": {
+            "count": 800,
+            "mean_ms": 3.80311001125,
+            "p50_ms": 3.657875,
+            "p95_ms": 6.6315,
+            "p99_ms": 6.886084,
+            "max_ms": 8.293625,
+            "over_50ms": 0
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.005537535,
+            "p50_ms": 0.005,
+            "p95_ms": 0.010834,
+            "p99_ms": 0.014333,
+            "max_ms": 0.045541,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 40000,
+          "to_ms": 80000,
+          "peak_active": 65,
+          "advance": {
+            "count": 800,
+            "mean_ms": 11.6026866875,
+            "p50_ms": 11.341292,
+            "p95_ms": 15.160167,
+            "p99_ms": 16.567334,
+            "max_ms": 79.009792,
+            "over_50ms": 3
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.0116847775,
+            "p50_ms": 0.011541,
+            "p95_ms": 0.017833,
+            "p99_ms": 0.020541,
+            "max_ms": 0.027292,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 80000,
+          "to_ms": 120000,
+          "peak_active": 65,
+          "advance": {
+            "count": 800,
+            "mean_ms": 18.0508478588,
+            "p50_ms": 14.912375,
+            "p95_ms": 62.399459,
+            "p99_ms": 68.631833,
+            "max_ms": 112.115417,
+            "over_50ms": 46
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.01462447125,
+            "p50_ms": 0.014083,
+            "p95_ms": 0.020791,
+            "p99_ms": 0.025458,
+            "max_ms": 0.113208,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 120000,
+          "to_ms": 160000,
+          "peak_active": 74,
+          "advance": {
+            "count": 800,
+            "mean_ms": 21.456558875,
+            "p50_ms": 18.05025,
+            "p95_ms": 68.909917,
+            "p99_ms": 72.867333,
+            "max_ms": 75.321,
+            "over_50ms": 54
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.01607997875,
+            "p50_ms": 0.015667,
+            "p95_ms": 0.02125,
+            "p99_ms": 0.024833,
+            "max_ms": 0.059542,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 160000,
+          "to_ms": 200000,
+          "peak_active": 73,
+          "advance": {
+            "count": 800,
+            "mean_ms": 22.907954105,
+            "p50_ms": 19.358292,
+            "p95_ms": 72.122458,
+            "p99_ms": 74.699417,
+            "max_ms": 106.533667,
+            "over_50ms": 52
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.0179418125,
+            "p50_ms": 0.0175,
+            "p95_ms": 0.022958,
+            "p99_ms": 0.02875,
+            "max_ms": 0.147917,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 200000,
+          "to_ms": 240000,
+          "peak_active": 74,
+          "advance": {
+            "count": 800,
+            "mean_ms": 22.9408242063,
+            "p50_ms": 19.008,
+            "p95_ms": 71.386875,
+            "p99_ms": 75.57525,
+            "max_ms": 78.689792,
+            "over_50ms": 61
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.01710811375,
+            "p50_ms": 0.016333,
+            "p95_ms": 0.021959,
+            "p99_ms": 0.028875,
+            "max_ms": 0.242833,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 240000,
+          "to_ms": 280000,
+          "peak_active": 81,
+          "advance": {
+            "count": 800,
+            "mean_ms": 24.96041694,
+            "p50_ms": 20.943917,
+            "p95_ms": 75.015958,
+            "p99_ms": 78.419042,
+            "max_ms": 89.921709,
+            "over_50ms": 57
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.0177825675,
+            "p50_ms": 0.016917,
+            "p95_ms": 0.022916,
+            "p99_ms": 0.028291,
+            "max_ms": 0.147292,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 280000,
+          "to_ms": 320000,
+          "peak_active": 74,
+          "advance": {
+            "count": 800,
+            "mean_ms": 23.8537480925,
+            "p50_ms": 19.658792,
+            "p95_ms": 74.531625,
+            "p99_ms": 76.567959,
+            "max_ms": 78.928708,
+            "over_50ms": 60
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.01707375125,
+            "p50_ms": 0.016417,
+            "p95_ms": 0.021959,
+            "p99_ms": 0.026708,
+            "max_ms": 0.098584,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 320000,
+          "to_ms": 360000,
+          "peak_active": 77,
+          "advance": {
+            "count": 800,
+            "mean_ms": 22.4692344788,
+            "p50_ms": 21.367417,
+            "p95_ms": 22.537292,
+            "p99_ms": 76.292958,
+            "max_ms": 81.611916,
+            "over_50ms": 16
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.0174836475,
+            "p50_ms": 0.016875,
+            "p95_ms": 0.022584,
+            "p99_ms": 0.026833,
+            "max_ms": 0.033792,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 360000,
+          "to_ms": 400000,
+          "peak_active": 75,
+          "advance": {
+            "count": 800,
+            "mean_ms": 19.487929135,
+            "p50_ms": 18.946208,
+            "p95_ms": 21.358458,
+            "p99_ms": 25.755583,
+            "max_ms": 80.610417,
+            "over_50ms": 4
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.0159415825,
+            "p50_ms": 0.015125,
+            "p95_ms": 0.02175,
+            "p99_ms": 0.026833,
+            "max_ms": 0.056083,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 400000,
+          "to_ms": 440000,
+          "peak_active": 74,
+          "advance": {
+            "count": 800,
+            "mean_ms": 20.2966254788,
+            "p50_ms": 19.840625,
+            "p95_ms": 21.369875,
+            "p99_ms": 51.323166,
+            "max_ms": 82.034958,
+            "over_50ms": 11
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.01675426375,
+            "p50_ms": 0.016125,
+            "p95_ms": 0.022042,
+            "p99_ms": 0.025458,
+            "max_ms": 0.050334,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 440000,
+          "to_ms": 480000,
+          "peak_active": 73,
+          "advance": {
+            "count": 800,
+            "mean_ms": 21.0261159375,
+            "p50_ms": 19.50425,
+            "p95_ms": 20.998667,
+            "p99_ms": 76.831208,
+            "max_ms": 86.1745,
+            "over_50ms": 19
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.0168197125,
+            "p50_ms": 0.01625,
+            "p95_ms": 0.022041,
+            "p99_ms": 0.024084,
+            "max_ms": 0.053958,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 480000,
+          "to_ms": 520000,
+          "peak_active": 68,
+          "advance": {
+            "count": 800,
+            "mean_ms": 15.9522739037,
+            "p50_ms": 16.922417,
+            "p95_ms": 18.838333,
+            "p99_ms": 19.334083,
+            "max_ms": 69.775583,
+            "over_50ms": 2
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.01351330125,
+            "p50_ms": 0.012875,
+            "p95_ms": 0.020083,
+            "p99_ms": 0.022541,
+            "max_ms": 0.0365,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 520000,
+          "to_ms": 560000,
+          "peak_active": 42,
+          "advance": {
+            "count": 800,
+            "mean_ms": 7.065304725,
+            "p50_ms": 7.275416,
+            "p95_ms": 9.558708,
+            "p99_ms": 9.833333,
+            "max_ms": 10.791708,
+            "over_50ms": 0
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.00710645625,
+            "p50_ms": 0.006792,
+            "p95_ms": 0.010958,
+            "p99_ms": 0.014667,
+            "max_ms": 0.086958,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 560000,
+          "to_ms": 600000,
+          "peak_active": 23,
+          "advance": {
+            "count": 800,
+            "mean_ms": 1.88187101875,
+            "p50_ms": 1.511833,
+            "p95_ms": 4.109083,
+            "p99_ms": 4.429625,
+            "max_ms": 4.641167,
+            "over_50ms": 0
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.0026920275,
+            "p50_ms": 0.002459,
+            "p95_ms": 0.004416,
+            "p99_ms": 0.005,
+            "max_ms": 0.0085,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 600000,
+          "to_ms": 640000,
+          "peak_active": 2,
+          "advance": {
+            "count": 800,
+            "mean_ms": 0.3009412575,
+            "p50_ms": 0.315292,
+            "p95_ms": 0.477083,
+            "p99_ms": 0.490125,
+            "max_ms": 0.550875,
+            "over_50ms": 0
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.0014434975,
+            "p50_ms": 0.001417,
+            "p95_ms": 0.001625,
+            "p99_ms": 0.001709,
+            "max_ms": 0.008375,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 640000,
+          "to_ms": 680000,
+          "peak_active": 0,
+          "advance": {
+            "count": 800,
+            "mean_ms": 0.16419042625,
+            "p50_ms": 0.162208,
+            "p95_ms": 0.174209,
+            "p99_ms": 0.241792,
+            "max_ms": 0.56125,
+            "over_50ms": 0
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.00137655375,
+            "p50_ms": 0.001375,
+            "p95_ms": 0.001458,
+            "p99_ms": 0.001708,
+            "max_ms": 0.0105,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 680000,
+          "to_ms": 720000,
+          "peak_active": 0,
+          "advance": {
+            "count": 800,
+            "mean_ms": 0.16206864,
+            "p50_ms": 0.161709,
+            "p95_ms": 0.171917,
+            "p99_ms": 0.202292,
+            "max_ms": 0.34175,
+            "over_50ms": 0
+          },
+          "frame": {
+            "count": 800,
+            "mean_ms": 0.001339215,
+            "p50_ms": 0.001334,
+            "p95_ms": 0.001417,
+            "p99_ms": 0.001708,
+            "max_ms": 0.003625,
+            "over_50ms": 0
+          }
+        },
+        {
+          "from_ms": 720000,
+          "to_ms": 750000,
+          "peak_active": 0,
+          "advance": {
+            "count": 600,
+            "mean_ms": 0.16320673,
+            "p50_ms": 0.162542,
+            "p95_ms": 0.172625,
+            "p99_ms": 0.192708,
+            "max_ms": 0.221958,
+            "over_50ms": 0
+          },
+          "frame": {
+            "count": 600,
+            "mean_ms": 0.00135942,
+            "p50_ms": 0.001334,
+            "p95_ms": 0.001417,
+            "p99_ms": 0.0015,
+            "max_ms": 0.010083,
+            "over_50ms": 0
+          }
+        }
+      ]
+    },
+    "config_sha256_after": "9d815c5ed586a9f6e7d1581e23448acd495a678aa67a98e27a73b8170da3a94a",
+    "postrun_production_hashes_verified": {
+      "simulator/src/MappedScene.cpp": true,
+      "simulator/src/MappedSceneConfiguration.cpp": true,
+      "simulator/include/MappedScene.hpp": true,
+      "tools/mapped_scene/build_mapped_scene.py": true,
+      "tools/mapped_scene/storefront_scene.py": true
+    },
+    "cohort_completion_gate": "PASS: all 750 unique episodes finished, with no active, pending or stalled tracks and no native-detected physical overlaps.",
+    "conservative_through_completion_speedup": 3.046756360545616,
+    "speedup_scope": "The conservative ratio uses the last realized end rather than the full 750-s requested horizon, so idle-tail simulation time does not count as useful cohort progression. Full wall time includes the idle tail. No hard realtime guarantee; source motion only.",
+    "final_runner_smoke": {
+      "schema": "ump.source-cohort-harness-smoke.v1",
+      "people": 5,
+      "horizon_ms": 1000,
+      "passed": true,
+      "scope": "Final extended benchmark runner compiled and ran a bounded tiny case before the complete500cohort, without production changes."
+    },
+    "generation_750s_reproducer_verification": {
+      "checks": {
+        "mapped_scene_exactly_equal": true,
+        "profiles_exactly_equal": true,
+        "source_epoch_exactly_equal": true,
+        "whole_config_equal_after_restoring_duration_only": true
+      },
+      "executed_original_config_sha256": "9d815c5ed586a9f6e7d1581e23448acd495a678aa67a98e27a73b8170da3a94a",
+      "generated_750s_config_sha256": "7fd7e98bf8b37ae7184fbc839f478e6e023ee18be3e8415dfd8117224aa41a11",
+      "only_semantic_config_difference": {
+        "simulation.duration_seconds": {
+          "executed_saved_config": 120,
+          "fresh_reproducer": 750
+        }
+      },
+      "scope": "The pure native motion harness ignores the capture duration field and uses its explicit horizon argument. This check regenerates configuration only; the completed500cohort itself used the exact earlier120s configuration bytes."
+    },
+    "source_epoch": {
+      "datetime": "2026-10-24T00:00:00Z",
+      "simulation_step_seconds": 0.05,
+      "native_motion_step_ms": 50,
+      "first_person_request_ms": 0,
+      "last_person_request_ms": 499000,
+      "cohort_people": 500,
+      "expected_episode_count": 750,
+      "visit_and_return_people": 250
+    },
+    "full_build_manifest": {
+      "source_hashes": {
+        "simulator/src/MappedScene.cpp": "9b2e949be648c9e17ca47be9bb2e78603959df82342063e90390914c1f05b078",
+        "simulator/src/MappedSceneConfiguration.cpp": "4d3eea4021fa9c028bcb4ed7098c82a3a9038a75082295597dd30ec4eb702b7a",
+        "simulator/include/MappedScene.hpp": "849aaf69c2c93af3e8685c556cdb7c0fa89478d93f00f6eb0387edf837bfc5b8",
+        "tools/mapped_scene/build_mapped_scene.py": "1fa8d096602ca0be94e03e20764ffe2b348dfc615362484e653238ed3a574b4f",
+        "tools/mapped_scene/storefront_scene.py": "0bef514e849af14e4dc1bb29aad835cc02230fc2fef2665525193097adcef161",
+        "tools/mapped_scene/building_access.py": "84fe022ebec5a48793b1a9d0a898d59a6cc4c3db8c66618cde722e2fb243b05b",
+        "simulator/include/MappedSceneConfiguration.hpp": "7891b9df9d990d106aecdef35cac2adb7908a1274fa91e406fe8a1e6a8b2d205",
+        "simulator/examples/temporal-aggregation/config.yaml": "dc443b6ece21333e37468697f8bd75f96accad0fe264f96d35ae20f7e30a1d1c",
+        "tools/osm_regions/build_map.py": "fcb86b023818d60c0082d62ad9510fdb0367228981dc9a80089081f1094c39d3",
+        "tools/osm_regions/data/moenckeberg/source_geometry.geojson.gz": "508ca79545419b1f1028b79a1f8a12684b8a6ed53e95b2d94fb36094298388f3",
+        "tools/osm_regions/data/moenckeberg/close/policy.json": "11e403b37c6b19c42d62e1c5d78a688e68de2523ee843fa4914be358b2e66d7a",
+        "tools/osm_regions/data/moenckeberg/close/poi_labels.json": "20c8054effb92f10843e8ff6c70675f888fd6bec301ef3cf607aacee1e3b4333"
+      },
+      "component_instrumentation": false,
+      "harness_sha256": "ef39fe13b5718e426a230405153b4438548d392cba4e69b45be52cff00424421",
+      "binary_sha256": "a3403520c05a3f35d6af9f4826bb3e9630324bb7af5bbb58e049b9c39c5769c8",
+      "compile_command": [
+        "c++",
+        "-std=c++17",
+        "-O3",
+        "-DNDEBUG",
+        "-I",
+        "/Users/maxdemu/Developer/UMP-Simulator/simulator/include",
+        "-I",
+        "/opt/homebrew/include",
+        "/private/tmp/ump-navigation-cohort-harness-smoke-20261024/mapped_navigation_benchmark.cpp",
+        "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/MappedScene.cpp",
+        "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/MappedSceneConfiguration.cpp",
+        "-L",
+        "/opt/homebrew/lib",
+        "-lyaml-cpp",
+        "-Wl,-rpath,/opt/homebrew/lib",
+        "-o",
+        "/private/tmp/ump-navigation-cohort-harness-smoke-20261024/mapped_navigation_benchmark"
+      ]
+    },
+    "full_build_manifest_sha256": "a807a4337773796e6cacb3f01ceaa5a554de1d922a2b38fd2129154f2099a67d",
+    "reproducer_command": "PYTHON tools/profiling/benchmark_mapped_navigation.py --output FRESH_LOCAL_DIRECTORY --cases 500:1000 --horizon-s 750 --wall-budget-s 300",
+    "reproducer_scope": "Use the mapped-scene Python environment with YAML, Shapely, NumPy, Matplotlib and PyProj. This creates an equivalent 750-s capture config and measures pure native motion; add --generation-only to verify input construction without running motion. Never reuses or overwrites an existing benchmark case."
+  },
+  "followup_scope": "User clarified 500 total over a run, not simultaneously active. Exact original 500/1s configuration is executed through 750s by an extended benchmark-only harness. Normal 750s CLI generation has identical mapped_scene and differs only in simulation.duration_seconds. Production motion, policies and frozen replay files remain unchanged."
 }

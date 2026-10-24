@@ -5,6 +5,10 @@ movement, policies, publication or frozen observations. The only product change
 is more accurate replay labeling. Read the [compact aggregate evidence](NAVIGATION_SCALABILITY_RESULTS_2026-10-24.json)
 and [ordered environment roadmap](MULTIMODAL_MAP_ROADMAP_2026-10-24.md).
 
+The clarified target is **500 people in total over the run**. A full-cohort follow-up
+with one arrival request per second completes every one of its 750 visible episodes;
+the earlier high-density stress is a separate headroom probe.
+
 ## What the replay actually compares
 
 A recorded result variant can change its PolicyTree, execution strategy, window
@@ -87,6 +91,57 @@ cannot demonstrate 500 simultaneous actors. Differences from the 128-person case
 also involve routes/types and 109 versus 24 replans; they are not evidence of a
 pure pending-track overhead effect.
 
+## Complete 500-total cohort after clarification
+
+The full test retains the exact earlier `500 / 1,000 ms` configuration, paths,
+profiles, speeds and source origin (2026-10-24T00:00:00Z). First arrivals are
+requested at 0..499 s. The isolated harness advances the same scene to 750 s with
+a 300-s wall budget, independently of the old config's 120-s capture-clock field.
+No new physics or route generation is substituted for the earlier input.
+
+| Complete finite-cohort measure | Result |
+|---|---:|
+| People / requested visits / visible episodes | 500 / 250 / 750 |
+| Unique realized starts / ends | 750 / 750 |
+| Last realized completion | 630.950 s |
+| Peak simultaneous active tracks | 81 |
+| Active / pending / stalled at the gate | 0 / 0 / 0 |
+| Reported physical overlap violations | 0 |
+| Declared source horizon / wall time | 750 s / 207.089 s |
+| Step mean / p95 / p99 | 13.787 / 21.861 / 74.775 ms |
+| Maximum source step / steps >50 ms | 112.115 ms / 385 of 15,000 |
+| Maximum consecutive zero-motion stop | 3.150 s |
+| Replans / failed attempts | 709 / 589 |
+
+Thus this 500-total source cohort finishes at the stated arrival rate. A failure
+of one replan attempt is not a lost person: all episodes eventually finish. The
+whole horizon includes 119.05 s of empty tail after the last end. Dividing last-end
+simulation time by the entire wall duration gives a conservative through-completion
+ratio of about 3.05×; a headline 750/wall ratio would reward the empty tail.
+The busiest 40-s segment, 240..280 s, has mean 24.96 ms and p95 75.02 ms. The whole-run
+mean is reduced by startup/drain/empty periods. Deadline tails still exceed 50 ms,
+and the aggregator, database, renderer and paced external receipt remain unmeasured
+in this source-only follow-up. No full 500-person replay/GT is exported here.
+
+The earlier 120-s maximum of 132.219 ms and this repeat's 112.115-ms maximum are
+run-to-run timing variation, not an optimization. No production source changes.
+The extended harness only adds aggregate last-end/unique-lifecycle completion and
+progress reporting. Its separate source/binary/tool hashes and smoke are retained.
+
+For normal CLI reproduction, configuration-only generation with `--horizon-s 750`
+has an identical `mapped_scene`, routes, profiles and speeds; the full configuration
+diff is only `simulation.duration_seconds: 120 -> 750`. This was checked separately.
+
+```sh
+/private/tmp/ump-osm-moenckeberg-2026-10-23/venv/bin/python tools/profiling/benchmark_mapped_navigation.py \
+  --output results/navigation-complete-500-new \
+  --cases 500:1000 --horizon-s 750 --wall-budget-s 300
+```
+
+Total cohort size increases statistical evidence across time. It does not by itself
+increase distinct support or permit finer cells within a local 1–4-s aggregation
+window; arrival rate, local concentration, class mix and policy bounds control that.
+
 ## Where the computation occurs
 
 Global guidance is built before native execution. It includes frozen-map loading,
@@ -133,7 +188,7 @@ The benchmark's native build currently targets the maintained macOS/Homebrew set
 Use a fresh ignored directory; configs and temporary binaries remain local.
 
 ```sh
-/private/tmp/ump-mapped-venv/bin/python tools/profiling/benchmark_mapped_navigation.py \
+/private/tmp/ump-osm-moenckeberg-2026-10-23/venv/bin/python tools/profiling/benchmark_mapped_navigation.py \
   --output results/navigation-capacity-new \
   --cases 64:1000,128:1000,500:1000,500:150 \
   --horizon-s 120 --wall-budget-s 180

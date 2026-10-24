@@ -48,18 +48,22 @@ int main(int argc,char**argv){try{
  before=Clock::now();auto config=readMappedSceneConfiguration(yaml["mapped_scene"],yaml["simulation"]["width"].as<double>(),yaml["simulation"]["height"].as<double>(),profiles);const double adaptationMs=ms(before);
  before=Clock::now();ump::MappedScene scene(config);const double constructorMs=ms(before);
  const auto horizon=std::stoll(argv[2]);const double budget=std::stod(argv[3]);
- std::vector<double> advance,frames;std::size_t peak=0,frameCount=0;long long reached=0;bool budgetExceeded=false;
+ std::vector<double> advance,frames;std::size_t peak=0,frameCount=0;long long reached=0;bool budgetExceeded=false;double lastProgressWallMs=0;
  struct Bucket{std::vector<double> advance,frames;std::size_t peak=0;};std::vector<Bucket>buckets((horizon+39999)/40000);
  scene.advanceTo(0);
  for(long long t=config.motionStepMs;t<=horizon;t+=config.motionStepMs){
   before=Clock::now();scene.advanceTo(t);const auto dt=ms(before);advance.push_back(dt);
   before=Clock::now();const auto frame=scene.frameAt(t);const auto ft=ms(before);frames.push_back(ft);frameCount+=frame.size();peak=std::max(peak,frame.size());
   auto&b=buckets[(t-1)/40000];b.advance.push_back(dt);b.frames.push_back(ft);b.peak=std::max(b.peak,frame.size());reached=t;
-  if(ms(begin)>budget*1000){budgetExceeded=true;break;}
+  const auto wallNowMs=ms(begin);
+  if(wallNowMs-lastProgressWallMs>=30000){const auto progress=scene.motionDiagnostics();std::cerr<<"Navigation benchmark progress: sim_ms="<<t<<" wall_s="<<wallNowMs/1000<<" starts="<<progress.realizedStarts<<" ends="<<progress.realizedEnds<<" active="<<progress.activeTracks<<" pending="<<progress.pendingTracks<<"\n";lastProgressWallMs=wallNowMs;}
+  if(wallNowMs>budget*1000){budgetExceeded=true;break;}
  }
  const auto d=scene.motionDiagnostics();const double totalMs=ms(begin);std::size_t expected=0,edges=0,serializedVertices=0;
  for(const auto&p:config.people)expected+=p.episodes.size();for(const auto&p:config.navigation.allowedCenterPolygons){serializedVertices+=p.outer.size();for(const auto&h:p.holes)serializedVertices+=h.size();}
  for(const auto&p:scene.configuration().navigation.allowedCenterPolygons){edges+=p.outer.size();for(const auto&h:p.holes)edges+=h.size();}
+ long long lastEnd=0;std::set<std::string> uniqueStarts,uniqueEnds;for(const auto&e:scene.events()){if(e.kind==ump::MappedEventKind::EpisodeStart)uniqueStarts.insert(e.trackId);else{uniqueEnds.insert(e.trackId);lastEnd=std::max<long long>(lastEnd,e.atMs);}}
+ const bool complete=d.realizedStarts==expected && d.realizedEnds==expected && uniqueStarts.size()==expected && uniqueEnds==uniqueStarts && scene.events().size()==2*expected && d.activeTracks==0 && d.pendingTracks==0 && d.activeStalledTracks==0 && d.overlapViolations==0;
  std::cout<<std::setprecision(12)<<"{\"schema\":\"ump.mapped-navigation-benchmark.v1\",\"scope\":\"Source motion only; excludes policy, aggregation, MongoDB and rendering. Censored at requested horizon or wall budget.\",\"cohort_people\":"<<config.people.size()<<",\"scheduled_episodes\":"<<expected
  <<",\"requested_horizon_ms\":"<<horizon<<",\"reached_horizon_ms\":"<<reached<<",\"wall_budget_exceeded\":"<<(budgetExceeded?"true":"false")
  <<",\"wall_seconds\":"<<totalMs/1000<<",\"source_speedup\":"<<reached/totalMs
@@ -67,6 +71,7 @@ int main(int argc,char**argv){try{
  <<",\"peak_actual_active_tracks\":"<<peak<<",\"mean_actual_active_tracks\":"<<(frames.empty()?0.0:double(frameCount)/frames.size())<<",\"navigation_polygon_edges\":"<<edges<<",\"navigation_serialized_ring_vertices\":"<<serializedVertices<<",\"advance\":";distribution(advance);std::cout<<",\"frame\":";distribution(frames);
  std::cout<<",\"realized_starts\":"<<d.realizedStarts<<",\"realized_ends\":"<<d.realizedEnds<<",\"active_tracks\":"<<d.activeTracks<<",\"pending_tracks\":"<<d.pendingTracks<<",\"active_stalled_tracks\":"<<d.activeStalledTracks<<",\"max_stop_ms\":"<<d.maxConsecutiveStopMs<<",\"overlap_violations\":"<<d.overlapViolations
  <<",\"navigation_steering_steps\":"<<d.navigationSteeringSteps<<",\"navigation_replans\":"<<d.navigationReplans<<",\"navigation_replan_failures\":"<<d.navigationReplanFailures<<",\"navigation_candidate_checks\":"<<d.navigationCandidateChecks<<",\"navigation_max_search_nodes\":"<<d.navigationMaxSearchNodes
+ <<",\"last_end_ms\":"<<lastEnd<<",\"lifecycle_unique_starts\":"<<uniqueStarts.size()<<",\"lifecycle_unique_ends\":"<<uniqueEnds.size()<<",\"complete_cohort\":"<<(complete?"true":"false")
  <<",\"time_buckets\":[";bool first=true;for(std::size_t i=0;i<buckets.size();++i){const auto&b=buckets[i];if(b.advance.empty())continue;if(!first)std::cout<<",";first=false;std::cout<<"{\"from_ms\":"<<i*40000<<",\"to_ms\":"<<std::min<long long>((i+1)*40000,reached)<<",\"peak_active\":"<<b.peak<<",\"advance\":";distribution(b.advance);std::cout<<",\"frame\":";distribution(b.frames);std::cout<<"}";}std::cout<<"]";
 #ifdef UMP_NAV_BENCH_COMPONENTS
  std::cout<<",\"component_timings_inclusive\":";umpNavigationBenchmarkPrintComponents();

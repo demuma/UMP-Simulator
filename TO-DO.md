@@ -27,12 +27,18 @@ one tree/result selected in both views. Read the
 - [x] Replace generic Comparison A/B headings with recorded tree ID/version and
   execution method; keep same-tree/same-result cases explicit and legacy metadata
   uncertainty visible. Validate in browser and affected tests.
+- [x] Clarified load target: **500 total people**, with 1-s arrival requests. The
+  exact-source full cohort completes 750 unique episodes by 630.95 s, peak 81
+  active, no remaining active/pending/stalled tracks or reported overlaps.
+  Source-only wall time 207.09 s; p99 step 74.77 ms, 385/15,000 steps exceed 50 ms.
+  Full pipeline/external receipt at this load remains open.
 - [ ] **M04.1 next — exact movement-cost reduction:** static geometry broad phase/
   conservative free-space cache, followed by nearby-body indexing. Validate fast
   decisions against the full geometry oracle and preserve frozen source outputs.
   Current 500-person stress reaches 369 active: mean 134.5 ms, p95 336.7 ms per
   50-ms source step, eight active stall diagnostics at the censored cutoff. No
-  claim of 500 concurrent realtime actors; aggregation/DB costs are additional.
+  claim of 500 concurrent realtime actors; that density is a separate headroom
+  stress, not the clarified requirement. Aggregation/DB costs are additional.
 - [ ] **M05 map-to-graph correctness:** retain junction/access/direction/crossing
   metadata; test vector versus navigation-graph connectivity. Fix the Barkhof
   narrow-connection artifact: geometric footway exists, but all 96 current guidance
