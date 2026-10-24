@@ -1,0 +1,958 @@
+{
+  "schema": "ump.urban-source-optimization.v1",
+  "scope": "Source-only A* static geometry cache and dynamic-body broad phase. This shared-carriageway pressure control fails finite drainage; it is retained as a counterexample, not presented as the accepted final scenario. Serial single-run timing pair, not statistical repetitions or an integrated live deadline proof.",
+  "cohort_people": 256,
+  "arrival_interval_ms": 150,
+  "requested_simulation_ms": 900000,
+  "config_sha256": "21d9675be68da52d14a1ddb4a73f5dad75e5c65354530f408bed48e3aeedb3c2",
+  "baseline_build": {
+    "source_hashes": {
+      "simulator/src/MappedScene.cpp": "8918181215b6f7f228fff325ff8aca5ce4bc871171eda8db79df0ed9781e63dd",
+      "simulator/src/MappedSceneConfiguration.cpp": "6f09b8c15da8d50682366be16a99b708040e565bf301c2dac66a573b284093eb",
+      "simulator/include/MappedScene.hpp": "18e2334c31e3714cdbc6021deeab8d1512a15b0f4198615fe1990ef7ae0c2c8d",
+      "simulator/tests/MappedMotionProbe.cpp": "b0ddd9ccfe5da408de75e0b3c64647f147217438fd0537360ae53e147067e69b"
+    },
+    "command": [
+      "c++",
+      "-std=c++17",
+      "-O3",
+      "-DNDEBUG",
+      "-I",
+      "/Users/maxdemu/Developer/UMP-Simulator/simulator/include",
+      "-I",
+      "/opt/homebrew/include",
+      "/private/tmp/ump-urban-20261024/interval-baseline/MotionDigest.cpp",
+      "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/MappedScene.cpp",
+      "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/MappedSceneConfiguration.cpp",
+      "-L",
+      "/opt/homebrew/lib",
+      "-lyaml-cpp",
+      "-Wl,-rpath,/opt/homebrew/lib",
+      "-o",
+      "/private/tmp/ump-urban-20261024/interval-baseline/MotionDigest"
+    ],
+    "harness_sha256": "11da9499d7f495811e5cf0adbeb15c789c6deb6543c2340685881571aa583429",
+    "binary_sha256": "ad70acb9f6c2e1f116b3db5452663503c0e7378d3e970bafe112c4142b081855"
+  },
+  "optimized_build": {
+    "source_hashes": {
+      "simulator/src/MappedScene.cpp": "4c7616f8af70d76faada8431647a70b862039f8f5c77ee3085dbe12c6c897baf",
+      "simulator/src/MappedSceneConfiguration.cpp": "6f09b8c15da8d50682366be16a99b708040e565bf301c2dac66a573b284093eb",
+      "simulator/include/MappedScene.hpp": "758c6c2891a198e7774b2c015b2e2f201bf31fa373ffc712908ec807ca6ba9cd",
+      "simulator/tests/MappedMotionProbe.cpp": "b0ddd9ccfe5da408de75e0b3c64647f147217438fd0537360ae53e147067e69b"
+    },
+    "command": [
+      "c++",
+      "-std=c++17",
+      "-O3",
+      "-DNDEBUG",
+      "-I",
+      "/Users/maxdemu/Developer/UMP-Simulator/simulator/include",
+      "-I",
+      "/opt/homebrew/include",
+      "/private/tmp/ump-urban-20261024/interval-optimized/MotionDigest.cpp",
+      "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/MappedScene.cpp",
+      "/Users/maxdemu/Developer/UMP-Simulator/simulator/src/MappedSceneConfiguration.cpp",
+      "-L",
+      "/opt/homebrew/lib",
+      "-lyaml-cpp",
+      "-Wl,-rpath,/opt/homebrew/lib",
+      "-o",
+      "/private/tmp/ump-urban-20261024/interval-optimized/MotionDigest"
+    ],
+    "harness_sha256": "11da9499d7f495811e5cf0adbeb15c789c6deb6543c2340685881571aa583429",
+    "binary_sha256": "0c6177faae32db9d37c93f1ab2af0e77b8015e1e5e27942f3c4104d1e4dd7df8"
+  },
+  "digest_scope": "FNV-1a64 over timestamp, ordered track tokens, positions, velocities and next-guide indexes at every 50ms step; no raw motion or identities in this artifact. This is a deterministic consistency check, not a cryptographic proof.",
+  "all_30_checkpoints_and_logical_counters_equal": true,
+  "final_logical_state": {
+    "simulated_ms": 900000,
+    "expected_episodes": 360,
+    "starts": 356,
+    "ends": 299,
+    "active": 57,
+    "pending": 4,
+    "stalled": 50,
+    "overlaps": 0,
+    "replans": 44774,
+    "replan_failures": 42677,
+    "candidate_checks": 38228501,
+    "max_stop_ms": 865850,
+    "peak_active": 233,
+    "last_end_ms": 206150,
+    "steps": 18000,
+    "motion_digest_fnv1a64": "ed93eff0a94a622a"
+  },
+  "checkpoints": [
+    {
+      "at_ms": 30000,
+      "motion_digest_fnv1a64": "18a939bf9858a9b7",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 0,
+        "step_wall_ms_mean": 11.17476325,
+        "step_wall_ms_p50": 10.694417,
+        "step_wall_ms_p95": 21.675042,
+        "step_wall_ms_p99": 22.498042,
+        "step_wall_ms_max": 24.310292,
+        "advance_wall_ms": 6704.85795,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 6766.5725
+      },
+      "optimized": {
+        "steps_over_50_ms": 0,
+        "step_wall_ms_mean": 11.3860706233,
+        "step_wall_ms_p50": 10.908042,
+        "step_wall_ms_p95": 21.781292,
+        "step_wall_ms_p99": 22.720167,
+        "step_wall_ms_max": 22.96825,
+        "advance_wall_ms": 6831.642374,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 6896.923541
+      }
+    },
+    {
+      "at_ms": 60000,
+      "motion_digest_fnv1a64": "e52e0d8b884535ae",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 127,
+        "step_wall_ms_mean": 27.9957407558,
+        "step_wall_ms_p50": 22.58925,
+        "step_wall_ms_p95": 75.268208,
+        "step_wall_ms_p99": 204.856625,
+        "step_wall_ms_max": 260.06075,
+        "advance_wall_ms": 33594.888907,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 33693.494083
+      },
+      "optimized": {
+        "steps_over_50_ms": 46,
+        "step_wall_ms_mean": 22.181887375,
+        "step_wall_ms_p50": 22.796917,
+        "step_wall_ms_p95": 43.185958,
+        "step_wall_ms_p99": 115.998334,
+        "step_wall_ms_max": 139.050125,
+        "advance_wall_ms": 26618.26485,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 26720.293833
+      }
+    },
+    {
+      "at_ms": 90000,
+      "motion_digest_fnv1a64": "c6f3da50e3285860",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 296,
+        "step_wall_ms_mean": 38.3465187806,
+        "step_wall_ms_p50": 23.381,
+        "step_wall_ms_p95": 182.030791,
+        "step_wall_ms_p99": 227.886667,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 69023.733805,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 69155.496417
+      },
+      "optimized": {
+        "steps_over_50_ms": 137,
+        "step_wall_ms_mean": 26.6624210828,
+        "step_wall_ms_p50": 22.572417,
+        "step_wall_ms_p95": 82.1275,
+        "step_wall_ms_p99": 120.319083,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 47992.357949,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 48127.093541
+      }
+    },
+    {
+      "at_ms": 120000,
+      "motion_digest_fnv1a64": "be759c5ea5e41a4d",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 376,
+        "step_wall_ms_mean": 36.4379876092,
+        "step_wall_ms_p50": 21.565416,
+        "step_wall_ms_p95": 173.068708,
+        "step_wall_ms_p99": 207.9845,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 87451.170262,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 87610.09
+      },
+      "optimized": {
+        "steps_over_50_ms": 159,
+        "step_wall_ms_mean": 24.8684420717,
+        "step_wall_ms_p50": 20.340958,
+        "step_wall_ms_p95": 65.540916,
+        "step_wall_ms_p99": 119.346708,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 59684.260972,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 59845.726041
+      }
+    },
+    {
+      "at_ms": 150000,
+      "motion_digest_fnv1a64": "e9fa3531453991ee",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 414,
+        "step_wall_ms_mean": 33.0043946137,
+        "step_wall_ms_p50": 18.781541,
+        "step_wall_ms_p95": 159.592042,
+        "step_wall_ms_p99": 205.248083,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 99013.183841,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 99195.902708
+      },
+      "optimized": {
+        "steps_over_50_ms": 161,
+        "step_wall_ms_mean": 22.5202712163,
+        "step_wall_ms_p50": 16.85625,
+        "step_wall_ms_p95": 51.912958,
+        "step_wall_ms_p99": 118.8055,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 67560.813649,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 67744.153916
+      }
+    },
+    {
+      "at_ms": 180000,
+      "motion_digest_fnv1a64": "2f48328047dab32b",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 444,
+        "step_wall_ms_mean": 29.8269695297,
+        "step_wall_ms_p50": 16.545709,
+        "step_wall_ms_p95": 137.472583,
+        "step_wall_ms_p99": 202.392666,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 107377.090307,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 107575.203958
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 20.1094871264,
+        "step_wall_ms_p50": 14.054958,
+        "step_wall_ms_p95": 47.272916,
+        "step_wall_ms_p99": 117.07025,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 72394.153655,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 72592.078291
+      }
+    },
+    {
+      "at_ms": 210000,
+      "motion_digest_fnv1a64": "f718d8ff63dd0ed8",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 445,
+        "step_wall_ms_mean": 26.563777216,
+        "step_wall_ms_p50": 13.878958,
+        "step_wall_ms_p95": 90.858917,
+        "step_wall_ms_p99": 201.2645,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 111567.864307,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 111776.53
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 17.8112039431,
+        "step_wall_ms_p50": 12.939792,
+        "step_wall_ms_p95": 42.212875,
+        "step_wall_ms_p99": 115.431042,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 74807.056561,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 75015.957541
+      }
+    },
+    {
+      "at_ms": 240000,
+      "motion_digest_fnv1a64": "d852cb09f5b17efb",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 447,
+        "step_wall_ms_mean": 24.0481186158,
+        "step_wall_ms_p50": 13.211333,
+        "step_wall_ms_p95": 77.110167,
+        "step_wall_ms_p99": 198.278792,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 115430.969356,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 115649.073833
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 16.0050837221,
+        "step_wall_ms_p50": 12.29325,
+        "step_wall_ms_p95": 37.981834,
+        "step_wall_ms_p99": 114.207667,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 76824.401866,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 77042.409041
+      }
+    },
+    {
+      "at_ms": 270000,
+      "motion_digest_fnv1a64": "9cd9e47124b331bf",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 447,
+        "step_wall_ms_mean": 22.0813250572,
+        "step_wall_ms_p50": 12.34875,
+        "step_wall_ms_p95": 69.652292,
+        "step_wall_ms_p99": 196.504375,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 119239.155309,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 119466.532042
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 14.6139965035,
+        "step_wall_ms_p50": 10.568375,
+        "step_wall_ms_p95": 35.97975,
+        "step_wall_ms_p99": 113.043959,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 78915.581119,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 79143.785083
+      }
+    },
+    {
+      "at_ms": 300000,
+      "motion_digest_fnv1a64": "fbb98d7310e53af2",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 448,
+        "step_wall_ms_mean": 20.552969303,
+        "step_wall_ms_p50": 10.4615,
+        "step_wall_ms_p95": 64.888,
+        "step_wall_ms_p99": 194.450833,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 123317.815818,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 123554.466417
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 13.4966756608,
+        "step_wall_ms_p50": 7.891917,
+        "step_wall_ms_p95": 34.629666,
+        "step_wall_ms_p99": 112.3525,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 80980.053965,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 81218.394541
+      }
+    },
+    {
+      "at_ms": 330000,
+      "motion_digest_fnv1a64": "39a808ad4acddb65",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 449,
+        "step_wall_ms_mean": 19.2630328094,
+        "step_wall_ms_p50": 7.849584,
+        "step_wall_ms_p95": 62.817417,
+        "step_wall_ms_p99": 193.091417,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 127136.016542,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 127382.041083
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 12.5733242564,
+        "step_wall_ms_p50": 6.249834,
+        "step_wall_ms_p95": 32.368542,
+        "step_wall_ms_p99": 111.044167,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 82983.940092,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 83231.512458
+      }
+    },
+    {
+      "at_ms": 360000,
+      "motion_digest_fnv1a64": "bd7737f03e49c9a5",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 451,
+        "step_wall_ms_mean": 18.1672688076,
+        "step_wall_ms_p50": 5.81,
+        "step_wall_ms_p95": 60.798209,
+        "step_wall_ms_p99": 190.713417,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 130804.335415,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 131059.736042
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 11.8044199783,
+        "step_wall_ms_p50": 5.0895,
+        "step_wall_ms_p95": 31.273292,
+        "step_wall_ms_p99": 108.833875,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 84991.823844,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 85248.271
+      }
+    },
+    {
+      "at_ms": 390000,
+      "motion_digest_fnv1a64": "bb615f7b909a8c2e",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 454,
+        "step_wall_ms_mean": 17.2764899199,
+        "step_wall_ms_p50": 5.25725,
+        "step_wall_ms_p95": 56.791917,
+        "step_wall_ms_p99": 186.721417,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 134756.621375,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 135022.707458
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 11.1546271919,
+        "step_wall_ms_p50": 4.254708,
+        "step_wall_ms_p95": 30.523333,
+        "step_wall_ms_p99": 107.548625,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 87006.092097,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 87271.861166
+      }
+    },
+    {
+      "at_ms": 420000,
+      "motion_digest_fnv1a64": "6de2877d96efd599",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 456,
+        "step_wall_ms_mean": 16.504827653,
+        "step_wall_ms_p50": 4.861084,
+        "step_wall_ms_p95": 53.815458,
+        "step_wall_ms_p99": 184.579958,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 138640.552285,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 138916.333042
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 10.5988483032,
+        "step_wall_ms_p50": 3.79825,
+        "step_wall_ms_p95": 29.859667,
+        "step_wall_ms_p99": 107.031542,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 89030.325747,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 89305.404416
+      }
+    },
+    {
+      "at_ms": 450000,
+      "motion_digest_fnv1a64": "cc254444c47b83c6",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 464,
+        "step_wall_ms_mean": 15.8295639899,
+        "step_wall_ms_p50": 4.1885,
+        "step_wall_ms_p95": 51.541083,
+        "step_wall_ms_p99": 183.058292,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 142466.075909,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 142751.316667
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 10.1166541712,
+        "step_wall_ms_p50": 3.569541,
+        "step_wall_ms_p95": 29.556084,
+        "step_wall_ms_p99": 104.791209,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 91049.887541,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 91334.279166
+      }
+    },
+    {
+      "at_ms": 480000,
+      "motion_digest_fnv1a64": "9796e1f7d8e87794",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 467,
+        "step_wall_ms_mean": 15.2336808641,
+        "step_wall_ms_p50": 3.905834,
+        "step_wall_ms_p95": 48.543875,
+        "step_wall_ms_p99": 181.047916,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 146243.336295,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 146537.977125
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 9.6938155624,
+        "step_wall_ms_p50": 3.47775,
+        "step_wall_ms_p95": 29.261666,
+        "step_wall_ms_p99": 100.426459,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 93060.629399,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 93354.187166
+      }
+    },
+    {
+      "at_ms": 510000,
+      "motion_digest_fnv1a64": "2eb03d0f2a40836f",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 472,
+        "step_wall_ms_mean": 14.7211080557,
+        "step_wall_ms_p50": 3.672792,
+        "step_wall_ms_p95": 46.794791,
+        "step_wall_ms_p99": 179.030333,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 150155.302168,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 150459.480208
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 9.32188522333,
+        "step_wall_ms_p50": 3.387959,
+        "step_wall_ms_p95": 29.015,
+        "step_wall_ms_p99": 89.700375,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 95083.229278,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 95386.193
+      }
+    },
+    {
+      "at_ms": 540000,
+      "motion_digest_fnv1a64": "6eab60d138128792",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 473,
+        "step_wall_ms_mean": 14.2404014913,
+        "step_wall_ms_p50": 3.528959,
+        "step_wall_ms_p95": 44.907916,
+        "step_wall_ms_p99": 177.930125,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 153796.336106,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 154110.151625
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 8.9883664938,
+        "step_wall_ms_p50": 3.318,
+        "step_wall_ms_p95": 28.592542,
+        "step_wall_ms_p99": 87.394417,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 97074.358133,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 97386.677166
+      }
+    },
+    {
+      "at_ms": 570000,
+      "motion_digest_fnv1a64": "8e482a7a74bdbb6a",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 476,
+        "step_wall_ms_mean": 13.8806364131,
+        "step_wall_ms_p50": 3.478833,
+        "step_wall_ms_p95": 44.297959,
+        "step_wall_ms_p99": 175.613167,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 158239.255109,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 158563.163208
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 8.69553787018,
+        "step_wall_ms_p50": 3.282041,
+        "step_wall_ms_p95": 28.200334,
+        "step_wall_ms_p99": 82.479084,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 99129.13172,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 99450.993583
+      }
+    },
+    {
+      "at_ms": 600000,
+      "motion_digest_fnv1a64": "fb0b1f1a7b19cfe7",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 476,
+        "step_wall_ms_mean": 13.4994441723,
+        "step_wall_ms_p50": 3.449083,
+        "step_wall_ms_p95": 43.933875,
+        "step_wall_ms_p99": 174.547042,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 161993.330068,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 162326.400042
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 8.42584244667,
+        "step_wall_ms_p50": 3.253542,
+        "step_wall_ms_p95": 27.926334,
+        "step_wall_ms_p99": 78.911625,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 101110.10936,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 101441.35625
+      }
+    },
+    {
+      "at_ms": 630000,
+      "motion_digest_fnv1a64": "58b64bb7700a354b",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 477,
+        "step_wall_ms_mean": 13.1514894619,
+        "step_wall_ms_p50": 3.426083,
+        "step_wall_ms_p95": 43.56,
+        "step_wall_ms_p99": 170.356708,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 165708.76722,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 166051.053417
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 8.18226593135,
+        "step_wall_ms_p50": 3.23375,
+        "step_wall_ms_p95": 27.598,
+        "step_wall_ms_p99": 67.247625,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 103096.550735,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 103437.380041
+      }
+    },
+    {
+      "at_ms": 660000,
+      "motion_digest_fnv1a64": "657e2d2a36b87a47",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 478,
+        "step_wall_ms_mean": 12.8192921846,
+        "step_wall_ms_p50": 3.405125,
+        "step_wall_ms_p95": 42.846833,
+        "step_wall_ms_p99": 164.93225,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 169214.656837,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 169566.516625
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 7.95959353091,
+        "step_wall_ms_p50": 3.216084,
+        "step_wall_ms_p95": 27.17325,
+        "step_wall_ms_p99": 60.910459,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 105066.634608,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 105416.7415
+      }
+    },
+    {
+      "at_ms": 690000,
+      "motion_digest_fnv1a64": "80bd3c00711cfe66",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 481,
+        "step_wall_ms_mean": 12.4963050065,
+        "step_wall_ms_p50": 3.383708,
+        "step_wall_ms_p95": 42.588458,
+        "step_wall_ms_p99": 162.611042,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 172449.00909,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 172810.153792
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 7.75423391138,
+        "step_wall_ms_p50": 3.198625,
+        "step_wall_ms_p95": 26.927375,
+        "step_wall_ms_p99": 58.3355,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 107008.427977,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 107367.638458
+      }
+    },
+    {
+      "at_ms": 720000,
+      "motion_digest_fnv1a64": "89a4e3a028384c30",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 486,
+        "step_wall_ms_mean": 12.2231500268,
+        "step_wall_ms_p50": 3.364666,
+        "step_wall_ms_p95": 42.458458,
+        "step_wall_ms_p99": 160.4255,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 176013.360386,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 176383.799583
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 7.56938726326,
+        "step_wall_ms_p50": 3.188584,
+        "step_wall_ms_p95": 26.710208,
+        "step_wall_ms_p99": 55.763083,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 108999.176591,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 109369.039333
+      }
+    },
+    {
+      "at_ms": 750000,
+      "motion_digest_fnv1a64": "9b47d5bc8a99550e",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 490,
+        "step_wall_ms_mean": 11.967553382,
+        "step_wall_ms_p50": 3.350125,
+        "step_wall_ms_p95": 42.4065,
+        "step_wall_ms_p99": 160.081584,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 179513.30073,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 179893.311958
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 7.39811774153,
+        "step_wall_ms_p50": 3.179583,
+        "step_wall_ms_p95": 26.403375,
+        "step_wall_ms_p99": 52.87375,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 110971.766123,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 111351.118875
+      }
+    },
+    {
+      "at_ms": 780000,
+      "motion_digest_fnv1a64": "e523e66aeda12b24",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 491,
+        "step_wall_ms_mean": 11.7370370315,
+        "step_wall_ms_p50": 3.335083,
+        "step_wall_ms_p95": 42.31625,
+        "step_wall_ms_p99": 159.041708,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 183097.777691,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 183487.161667
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 7.24183073481,
+        "step_wall_ms_p50": 3.173208,
+        "step_wall_ms_p95": 26.058167,
+        "step_wall_ms_p99": 51.854291,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 112972.559463,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 113362.328041
+      }
+    },
+    {
+      "at_ms": 810000,
+      "motion_digest_fnv1a64": "5f01a2b3712bf35c",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 491,
+        "step_wall_ms_mean": 11.4993032734,
+        "step_wall_ms_p50": 3.322125,
+        "step_wall_ms_p95": 42.270333,
+        "step_wall_ms_p99": 157.9595,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 186288.713029,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 186687.420292
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 7.09474082321,
+        "step_wall_ms_p50": 3.16675,
+        "step_wall_ms_p95": 25.626083,
+        "step_wall_ms_p99": 50.558,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 114934.801336,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 115334.1405
+      }
+    },
+    {
+      "at_ms": 840000,
+      "motion_digest_fnv1a64": "839d152e996fbb34",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 493,
+        "step_wall_ms_mean": 11.3052191715,
+        "step_wall_ms_p50": 3.312667,
+        "step_wall_ms_p95": 42.236667,
+        "step_wall_ms_p99": 155.421042,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 189927.682082,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 190335.963167
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 6.96028645292,
+        "step_wall_ms_p50": 3.163125,
+        "step_wall_ms_p95": 25.229,
+        "step_wall_ms_p99": 49.37075,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 116932.812409,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 117341.685791
+      }
+    },
+    {
+      "at_ms": 870000,
+      "motion_digest_fnv1a64": "b6baed38efa58471",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 500,
+        "step_wall_ms_mean": 11.105881473,
+        "step_wall_ms_p50": 3.3,
+        "step_wall_ms_p95": 42.215416,
+        "step_wall_ms_p99": 147.127583,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 193242.337631,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 193660.124292
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 6.83386925874,
+        "step_wall_ms_p50": 3.158416,
+        "step_wall_ms_p95": 24.875125,
+        "step_wall_ms_p99": 48.376833,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 118909.325102,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 119327.844083
+      }
+    },
+    {
+      "at_ms": 900000,
+      "motion_digest_fnv1a64": "ed93eff0a94a622a",
+      "logical_fields_equal": true,
+      "baseline": {
+        "steps_over_50_ms": 500,
+        "step_wall_ms_mean": 10.9240329539,
+        "step_wall_ms_p50": 3.287875,
+        "step_wall_ms_p95": 42.195,
+        "step_wall_ms_p99": 137.472583,
+        "step_wall_ms_max": 333.627084,
+        "advance_wall_ms": 196632.59317,
+        "setup_wall_ms": 44.614042,
+        "constructor_wall_ms": 9.775,
+        "total_wall_ms": 197059.840292
+      },
+      "optimized": {
+        "steps_over_50_ms": 166,
+        "step_wall_ms_mean": 6.71646050117,
+        "step_wall_ms_p50": 3.154791,
+        "step_wall_ms_p95": 24.300125,
+        "step_wall_ms_p99": 47.272916,
+        "step_wall_ms_max": 200.226666,
+        "advance_wall_ms": 120896.289021,
+        "setup_wall_ms": 47.995375,
+        "constructor_wall_ms": 10.085459,
+        "total_wall_ms": 121324.912541
+      }
+    }
+  ]
+}

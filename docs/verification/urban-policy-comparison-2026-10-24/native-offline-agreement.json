@@ -1,0 +1,19 @@
+{
+  "schema": "ump.native-offline-release-agreement.v1",
+  "status": "verified",
+  "native_result_sha256": "8c8534a66c35bccb7f1ce9d57d466b3a2e2252be314fa67012bf9fddb4a0e820",
+  "offline_original_result_sha256": "86512fbfc524c6db70ace703ea20f00e538dc99ed56a76cbb3a233a8776e3c0b",
+  "published_cell_windows": 3199,
+  "comparison_fields": [
+    "start_ms",
+    "end_ms",
+    "sealed_at_ms",
+    "policy_id",
+    "policy_version",
+    "coordination_cell",
+    "cells"
+  ],
+  "numeric_relative_tolerance": 1e-10,
+  "numeric_absolute_tolerance": 1e-10,
+  "scope": "Original adaptive release multisets match recorded native recipient output after sorting by seal/start/end/coordination cell; delivery order, synthetic release IDs and adapter-only model metadata excluded. Counts, geometry, semantics, policy and seal timestamps compared. No claim for untested inputs."
+}

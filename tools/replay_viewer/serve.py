@@ -346,18 +346,56 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
             if boundary['id'] in boundary_ids: raise ValueError('Duplicate boundary interval')
             boundary_ids.add(boundary['id'])
             if boundary['mode'] not in ('walking','cycling','road') or boundary['side'] not in ('west','east','north','south') or type(boundary['spawn_supported']) is not bool: raise ValueError('Invalid boundary mode/side/eligibility')
-            if boundary['spawn_supported'] and boundary['mode']!='walking': raise ValueError('Only pedestrian boundary spawning is implemented')
-            if boundary['provenance']!='derived_frozen_functional_zone_boundary': raise ValueError('Invalid boundary construction provenance')
+            road_source=boundary['spawn_supported'] and boundary['mode']=='road'
+            if boundary['spawn_supported'] and boundary['mode'] not in ('walking','road'): raise ValueError('Unsupported boundary spawning mode')
+            expected_provenance=('synthetic_rider_source_on_body_safe_frozen_carriageway' if road_source
+                                 else 'derived_frozen_functional_zone_boundary')
+            if boundary['provenance']!=expected_provenance: raise ValueError('Invalid boundary construction provenance')
             length=segment(boundary['points'],'Boundary interval');numeric(boundary['length_m'],'boundary length',0)
             if abs(length-boundary['length_m'])>1e-5: raise ValueError('Boundary interval length disagrees with geometry')
             axis,coordinate={'west':(0,coverage['x']),'east':(0,coverage['x']+coverage['width']),
                              'north':(1,coverage['y']),'south':(1,coverage['y']+coverage['height'])}[boundary['side']]
             if any(abs(endpoint[axis]-coordinate)>1e-5 for endpoint in boundary['points']): raise ValueError('Boundary interval must lie on its declared map edge')
         navigation=value['navigation']
-        if not isinstance(navigation,dict) or set(navigation)!={'body_clearance_m','allowed_center_polygons_sha256','scope'}: raise ValueError('Navigation summary contains unsupported or private fields')
+        required={'body_clearance_m','allowed_center_polygons_sha256','scope'}
+        if (not isinstance(navigation,dict) or not required.issubset(navigation)
+                or set(navigation)-required-{'spaces','synthetic_crossing_connectors'}):
+            raise ValueError('Navigation summary contains unsupported or private fields')
         numeric(navigation['body_clearance_m'],'navigation body clearance',.01)
         if navigation['body_clearance_m']>10 or not isinstance(navigation['allowed_center_polygons_sha256'],str) or not re.fullmatch(r'[a-f0-9]{64}',navigation['allowed_center_polygons_sha256']): raise ValueError('Invalid navigation geometry digest/clearance')
         text(navigation['scope'],'navigation scope',1024)
+        spaces=navigation.get('spaces',[])
+        if not isinstance(spaces,list) or len(spaces)>16: raise ValueError('Navigation spaces require a bounded array')
+        space_ids=set()
+        for space in spaces:
+            if (not isinstance(space,dict) or not {'id','body_clearance_m','allowed_center_polygons_sha256'}.issubset(space)
+                    or set(space)-{'id','body_clearance_m','allowed_center_polygons_sha256','mode'}):
+                raise ValueError('Navigation space contains unsupported or private fields')
+            text(space['id'],'navigation space ID',128)
+            if space['id'] in space_ids: raise ValueError('Duplicate navigation space ID')
+            space_ids.add(space['id'])
+            mode=space.get('mode','road' if space['id']=='carriageway' else None)
+            if mode not in ('walking','cycling','road'): raise ValueError('Navigation space requires a supported physical mode')
+            numeric(space['body_clearance_m'],'navigation space body clearance',.01)
+            if (space['body_clearance_m']>10 or not isinstance(space['allowed_center_polygons_sha256'],str)
+                    or not re.fullmatch(r'[a-f0-9]{64}',space['allowed_center_polygons_sha256'])):
+                raise ValueError('Invalid navigation space geometry digest/clearance')
+        if any(row['spawn_supported'] and row['mode']=='road' for row in value['boundary_intervals']) and not any(space.get('mode','road' if space['id']=='carriageway' else None)=='road' for space in spaces):
+            raise ValueError('Road rider sources require an explicit road navigation space')
+        connectors=navigation.get('synthetic_crossing_connectors',[])
+        if not isinstance(connectors,list) or len(connectors)>64: raise ValueError('Crossing connectors require a bounded array')
+        connector_ids=set()
+        for connector in connectors:
+            if not isinstance(connector,dict) or set(connector)!={'id','centerline','width_m','provenance'}:
+                raise ValueError('Crossing connector contains unsupported or private fields')
+            text(connector['id'],'crossing connector ID',128)
+            if connector['id'] in connector_ids: raise ValueError('Duplicate crossing connector ID')
+            connector_ids.add(connector['id'])
+            if connector['provenance'] not in ('synthetic_crossing_and_curb_gap_connector','synthetic_widening_of_preferred_barkhof_crossing'):
+                raise ValueError('Unknown synthetic crossing provenance')
+            segment(connector['centerline'],'Crossing connector')
+            numeric(connector['width_m'],'crossing width',.1)
+            if connector['width_m']>20: raise ValueError('Crossing connector width exceeds 20 m')
     return path
 
 

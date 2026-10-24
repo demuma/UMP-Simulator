@@ -1,0 +1,182 @@
+{
+  "schema": "ump.urban-boundary-source-correction.v1",
+  "created_at_utc": "2026-10-24T16:53:31.538859+00:00",
+  "scope": "Generator-only opt-in correction plus test-only native observability acceptance. Existing recorded source, replay, study results and capture proof remain unchanged. No new motion capture or policy comparison is claimed.",
+  "configuration_sha256": {
+    "frozen_recording": "73cc250fde5316289c04cc2cc5fdd2bb871eb96fedcc3a6cc2adea5e95b2cd8b",
+    "corrected_same_namespace_240s": "efdb4e60d8799b143f86a260fd0068611a1e6615e901c7e83aa753458cfc4a0b",
+    "corrected_native_gate_120s": "2596ba2a00205ad6a39fb61cf7933335d4f6be2d72af736666f9c383ae85b121"
+  },
+  "generator_sha256": {
+    "tools/mapped_scene/urban_traffic_scene.py": "bccce3ec8de9e022f0935cc6c9167803e8c628539a22af48a763bd9ab3e80688",
+    "tools/mapped_scene/storefront_scene.py": "6af056a4a712ec0f222020049036bddd8098046bea8faac266ff33474aa123d7",
+    "tools/mapped_scene/build_mapped_scene.py": "9386b31f0c2b4b77b6dc4e125f1e569f097ddb95073e590da9c4e09c6d4f5f18"
+  },
+  "native_gate_binary_sha256": "15ff0013b67c3c2f454de2d454073cf5c7447dc4a50ae760602e9e1418c09f71",
+  "test_source_sha256": {
+    "tools/mapped_scene/test_storefront_router.py": "76e85ddf02440f6e142f2dbb4cfff207ddd86e2018d30a2efb212cc76e1397ab",
+    "tools/mapped_scene/test_build_mapped_scene.py": "3e353685d7936d24d21719ca7dc3d4127c578b2277c44acf7639b4615921c1c6",
+    "simulator/tests/MappedSceneConfigurationTests.cpp": "211bd4c267cdbbe7793077f23ca73bdc7958cda91f1d279b30331a70d0837a5e"
+  },
+  "parameters": {
+    "people": 256,
+    "episodes": 360,
+    "riders": 51,
+    "pedestrians": 205,
+    "seed": 20261024,
+    "arrival_interval_ms": 150,
+    "road_user_fraction": 0.2,
+    "distributed_crossing_fraction": 0.2,
+    "pair_clearance_m": 0.05,
+    "motion_step_ms": 50,
+    "sensor_period_ms": 100
+  },
+  "repair": {
+    "minimum_projected_trip_m": 1.0,
+    "minimum_inward_projection_m": 0.05,
+    "repaired_routes": 29,
+    "invalid_pair_reasons_before_repair": {
+      "source_on_sink_interval": 2,
+      "no_positive_inward_projection": 29,
+      "short_projected_trip": 2
+    },
+    "scope": "Independent seeded repair of invalid urban boundary-to-boundary pairs only; source/sink geometry, people, labels, tokens, speeds, schedules and all valid routes are preserved. Static geometry does not replace the native sensor-observability gate."
+  },
+  "changed_route_count": 29,
+  "matched_invariants": {
+    "all_configuration_except_routes_equal": true,
+    "people_profiles_tokens_speeds_radii_schedules_visits_equal": true,
+    "route_ids_equal": true,
+    "source_portals_and_source_points_equal": true,
+    "valid_route_definitions_equal": true,
+    "all_rider_route_definitions_equal": true,
+    "only_invalid_boundary_pairs_changed": true,
+    "policy_tree_equal": true,
+    "semantic_taxonomy_equal": true,
+    "navigation_geometry_equal": true,
+    "public_building_access_equal": true,
+    "gate_and_240s_example_mapped_scene_equal": true
+  },
+  "static_geometry_audit": {
+    "status": "pass",
+    "route_count": 360
+  },
+  "original_frozen_reference": {
+    "gt_episodes": 360,
+    "sensor_reference_distinct_tracks": 357,
+    "missing_episodes": 3,
+    "observability_detail": "Two sub-micrometer trips finished after 50ms from a source already on its sink; one 1200ms corner-skimming trip remained on excluded max-x despite 12 aligned100ms samples. These are source-quality defects, not aggregator suppression."
+  },
+  "actual_old_three_episode_negative_control": {
+    "schema": "ump.observed-drain-negative-control.v1",
+    "scope": "Three actual missed episodes extracted from the frozen mapped recording configuration; full routes/portals/spaces retained, other people removed. Test-only observability guard; original recording/results unchanged.",
+    "config_sha256": "e38a3d3572524fe9abc430f4e2d5c2d7fa1e7510e107e10f1ccf7e5b0fd2de53",
+    "cases": {
+      "legacy": {
+        "exit_code": 0,
+        "stdout": "Mapped finite drain: scheduled=3 starts=3 ends=3 active=0 pending=0 stalled=0 overlaps=0 max_stop_ms=50 merge_wait_steps=0 navigation_steering=0 navigation_replans=0 navigation_replan_failures=0 navigation_search_max=0 passage_wait_steps=0 passage_batches=0 passage_cleared_tracks=0 max_passage_wait_ms=0 last_end_ms=25350 horizon_ms=60000",
+        "stderr": "",
+        "wall_seconds": 0.04210391599999999
+      },
+      "guarded": {
+        "exit_code": 1,
+        "stdout": "Mapped finite drain: scheduled=3 starts=3 ends=3 active=0 pending=0 stalled=0 overlaps=0 max_stop_ms=50 merge_wait_steps=0 navigation_steering=0 navigation_replans=0 navigation_replan_failures=0 navigation_search_max=0 passage_wait_steps=0 passage_batches=0 passage_cleared_tracks=0 max_passage_wait_ms=0 observed=0 observed_period_ms=100 last_end_ms=25350 horizon_ms=60000",
+        "stderr": "Finite source drained but some scheduled tracks were never observed inside half-open sensor coverage",
+        "wall_seconds": 0.03955700000000001
+      }
+    },
+    "created_at_utc": "2026-10-24T16:46:53.046089+00:00",
+    "test_helper": {
+      "binary_sha256": "15ff0013b67c3c2f454de2d454073cf5c7447dc4a50ae760602e9e1418c09f71",
+      "source_sha256": {
+        "simulator/tests/MappedSceneConfigurationTests.cpp": "211bd4c267cdbbe7793077f23ca73bdc7958cda91f1d279b30331a70d0837a5e"
+      },
+      "optional_cli": "--drain-config <config> --end-ms 60000 --require-observed-period-ms 100",
+      "sampling_scope": "Positive 100-ms timestamps only, numerical 50-ms progression; track center in half-open domain coverage. No t=0 observation."
+    },
+    "configuration_ctest": {
+      "name": "mapped_scene_configuration",
+      "status": "pass",
+      "exit_code": 0,
+      "log_sha256": "b01ab3b3623ff07d3ce855da3195784dc6afda39092e3f4458795b7b70088f9b",
+      "log": "Test project /Users/maxdemu/Developer/UMP-Simulator/simulator/build\n    Start 77: mapped_scene_configuration\n1/1 Test #77: mapped_scene_configuration .......   Passed    0.01 sec\n\n100% tests passed out of 1\n\nLabel Time Summary:\nmapped_scene    =   0.01 sec*proc (1 test)\nunit            =   0.01 sec*proc (1 test)\n\nTotal Test time (real) =   0.01 sec\n"
+    },
+    "evidence_content": "Aggregate counts, diagnostics, pass/fail, source/binary/config digests and test log only. No track/person IDs, route guides or sampled coordinates are included."
+  },
+  "native_drain": {
+    "status": "pass",
+    "ctest": "mapped_urban_traffic_drain_tools",
+    "wall_seconds": 80.0147,
+    "native_cli_stdout": "Mapped finite drain: scheduled=360 starts=360 ends=360 active=0 pending=0 stalled=0 overlaps=0 max_stop_ms=8550 merge_wait_steps=0 navigation_steering=95085 navigation_replans=649 navigation_replan_failures=351 navigation_search_max=15082 passage_wait_steps=0 passage_batches=0 passage_cleared_tracks=0 max_passage_wait_ms=0 observed=360 observed_period_ms=100 last_end_ms=201200 horizon_ms=900000",
+    "aggregate_counters": {
+      "scheduled": 360,
+      "starts": 360,
+      "ends": 360,
+      "active": 0,
+      "pending": 0,
+      "stalled": 0,
+      "overlaps": 0,
+      "max_stop_ms": 8550,
+      "merge_wait_steps": 0,
+      "navigation_steering": 95085,
+      "navigation_replans": 649,
+      "navigation_replan_failures": 351,
+      "navigation_search_max": 15082,
+      "passage_wait_steps": 0,
+      "passage_batches": 0,
+      "passage_cleared_tracks": 0,
+      "max_passage_wait_ms": 0,
+      "observed": 360,
+      "observed_period_ms": 100,
+      "last_end_ms": 201200,
+      "horizon_ms": 900000
+    },
+    "configured_capture_horizon_ms": 240000,
+    "complete_before_240s": true,
+    "gate_and_240s_example_use_identical_mapped_scene": true,
+    "scope": "Finite acceptance bound900s; actual exact-cohort completion201.2s. This is not a universal deadline or an isolated timing benchmark. No sampled movement or MongoDB capture was created by this test."
+  },
+  "limitations": [
+    "The current published replay/comparison uses the frozen pre-correction source; its evidence is not replaced by this new fixture.",
+    "The geometric guard prevents the identified same-edge/corner-sink degeneracy; mandatory crossing intent and empirical realism remain separate questions.",
+    "The native gate verifies the exact256cohort, configured100ms sampling and finite horizon; it does not establish all seeds, all densities or hard real-time operation.",
+    "No identities, trajectories or guide coordinates are stored in this aggregate evidence."
+  ],
+  "status": "pass",
+  "regression_results": {
+    "storefront_router": {
+      "status": "pass",
+      "cases": 21,
+      "failed": 0,
+      "ctest_wall_seconds": 70.02,
+      "legacy_optional_off_mapped_scene_sha256": "cada80b07538aa5c8add0eb6b233e7653d5e15c2409405b0a579a4c7e04b00a6"
+    },
+    "native_configuration": {
+      "status": "pass",
+      "ctest_groups": 1,
+      "ctest_wall_seconds": 0.01
+    },
+    "builder": {
+      "status": "pass",
+      "discovered_cases": 30,
+      "passed": 26,
+      "skipped": 4,
+      "skip_scope": "Native finite-drain cases are intentionally disabled in the fast suite; this artifact records the dedicated urban drain separately. Other existing finite-drain evidence remains in the earlier full test reports.",
+      "ctest_wall_seconds": 52.3861
+    },
+    "exporter": {
+      "status": "pass",
+      "passed": 50,
+      "failed": 0,
+      "wall_seconds": 1.968
+    }
+  },
+  "regression_log_sha256": {
+    "initial_corrected_drain_ctest": "975dd1c0c7498123a1e52d5f5adfbb239e190fc5aa183a176f4e9e7fa864421c",
+    "final_router_and_native_configuration_ctest": "4efd8802a2af236582cd21bae500374d12548a2d86b79e616cf4f8c89cf76a4a",
+    "final_builder_and_drain_ctest": "9d85e057a73048715e82fa65f99baf3280158531db5cf98ed760069315b0f03c",
+    "final_builder_and_drain_junit": "2ad22ef51579b9e8028b347501875031b9dbbc9c61ed3902666cfdda04f0b9bf",
+    "final_builder_and_drain_detailed_log": "b093c5c7ba08afece13f7dbe305cc433e96b73ed5734e1e2c0d83b6d7111e60f",
+    "exporter50": "37f58368c7a1f44482c413e4b0f71162b704f68b7bdf0666fecf23a535e15326"
+  }
+}

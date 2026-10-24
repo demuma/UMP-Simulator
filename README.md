@@ -3,6 +3,40 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
+**Latest verified checkpoint — 2026-10-24: mixed urban traffic and two Policy Trees.**
+The opt-in `--urban-traffic` source adds closer pedestrian groups, bounded
+same-direction door pipelines, preferred/distributed crossings and cyclists/E-scooter
+riders on direction-specific carriageway spaces. The frozen 256-person recording
+completes 360 GT episodes, peak 224 active; paced 500-total flow also drains.
+The higher-pressure 500-person case fails its drainage budget and remains open.
+The frozen study has three disclosed boundary-source observability defects; its
+actual sensor input is unchanged. The corrected generator separately completes all
+360 episodes by 201.2 s and observes every track at 100 ms, with zero final overlaps.
+Source optimization preserves motion digests, reducing mean cost 12.3% in one
+paired run; individual 50-ms deadlines remain unmet.
+
+Ten predeclared and four post-hoc independently audited same-source executions
+compare adaptive local windows with fixed grids/windows under the original and
+a support-relaxed tree. Including the added 4-s fixed windows, adaptive retains
+61.8% / 78.7% of input, versus best tested fixed 58.7% / 70.5%. Fixed 10 m / 1 s
+answers more of the declared aligned recipient queries exactly. Lower support changes the protection contract; these results
+are not an attack-based privacy gain. Read the
+[implementation and test report](docs/URBAN_TRAFFIC_TEST_REPORT_2026-10-24.md),
+[policy results](docs/URBAN_POLICY_RESULTS_2026-10-24.md) and
+[urban source controls](docs/MAPPED_URBAN_TRAFFIC.md).
+Local capture and JSON file budgets now default to 2 GiB with chunked export;
+full-object validation and browser memory remain separate limits. Raw movement and
+replays remain local and ignored. The verified current comparison can be opened
+without Simulator/MongoDB:
+
+```sh
+python tools/replay_viewer/serve.py \
+  --bundle results/urban-traffic-2026-10-24-256-policy-comparison --port 8790
+```
+
+The checkpoint notes below preserve earlier implementation history; the latest
+report above supersedes their pending mixed-mode and source-capacity claims.
+
 **Status: 2026-10-24. Current work: sequential algorithm/policy-compliance verification.
 The first A07 slice now optionally preserves valid whole descendants after a failed
 common-window spatial merge. Its [contract](docs/SELECTIVE_DESCENDANT_RESCUE.md) and

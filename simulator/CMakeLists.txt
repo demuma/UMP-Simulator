@@ -424,7 +424,7 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS AND UMP_MAPPED_SCENE_PYTHON)
     if(NOT EXISTS "${UMP_MAPPED_SCENE_PYTHON}")
         message(FATAL_ERROR "UMP_MAPPED_SCENE_PYTHON does not exist")
     endif()
-    foreach(mapped_test audit_building_access build_mapped_scene storefront_router export_replay analyze_tracks run_comparison)
+    foreach(mapped_test audit_building_access build_mapped_scene storefront_router export_replay analyze_tracks run_comparison plot_policy_comparison)
         if(mapped_test STREQUAL "build_mapped_scene")
             # Keep geometry/config checks fast. Native finite-drain cases have
             # separate budgets below, independent of inherited shell settings.
@@ -442,6 +442,8 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS AND UMP_MAPPED_SCENE_PYTHON)
     # The seeded multi-geometry suite takes about 53 s in isolation; allow
     # bounded headroom for parallel CI without including native drainage here.
     set_tests_properties(mapped_build_mapped_scene_tools PROPERTIES TIMEOUT 120)
+    # Includes the opt-in mixed traffic mode-space and legacy topology regressions.
+    set_tests_properties(mapped_storefront_router_tools PROPERTIES TIMEOUT 120)
     add_test(NAME mapped_dense_corridor_drain_tools COMMAND "${UMP_MAPPED_SCENE_PYTHON}"
         "${CMAKE_CURRENT_SOURCE_DIR}/../tools/mapped_scene/test_build_mapped_scene.py"
         MappedSceneGeneratorTests.test_dense_corridor_native_config_drains_without_dropped_tracks)
@@ -451,10 +453,14 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS AND UMP_MAPPED_SCENE_PYTHON)
     add_test(NAME mapped_storefront_drain_tools COMMAND "${UMP_MAPPED_SCENE_PYTHON}"
         "${CMAKE_CURRENT_SOURCE_DIR}/../tools/mapped_scene/test_build_mapped_scene.py"
         MappedSceneGeneratorTests.test_storefront_native_sources_drain_without_lost_tracks_or_overlap)
-    set_tests_properties(mapped_dense_corridor_drain_tools mapped_building_drain_tools mapped_storefront_drain_tools PROPERTIES
+    add_test(NAME mapped_urban_traffic_drain_tools COMMAND "${UMP_MAPPED_SCENE_PYTHON}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../tools/mapped_scene/test_build_mapped_scene.py"
+        MappedSceneGeneratorTests.test_urban_traffic_native_source_drains_without_lost_tracks_or_overlap)
+    set_tests_properties(mapped_dense_corridor_drain_tools mapped_building_drain_tools mapped_storefront_drain_tools mapped_urban_traffic_drain_tools PROPERTIES
         LABELS "integration;mapped_scene;drain" RUN_SERIAL TRUE
         ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;UMP_MAPPED_CORE_TEST_BINARY=$<TARGET_FILE:MappedSceneConfigurationTests>")
     set_tests_properties(mapped_dense_corridor_drain_tools PROPERTIES TIMEOUT 150)
     set_tests_properties(mapped_building_drain_tools PROPERTIES TIMEOUT 300)
     set_tests_properties(mapped_storefront_drain_tools PROPERTIES TIMEOUT 420)
+    set_tests_properties(mapped_urban_traffic_drain_tools PROPERTIES TIMEOUT 300)
 endif()

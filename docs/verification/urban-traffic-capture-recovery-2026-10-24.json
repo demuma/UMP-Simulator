@@ -1,0 +1,55 @@
+{
+  "schema": "ump.local-capture-recovery.v1",
+  "status": "verified",
+  "export_wall_seconds": 41.776152458,
+  "native_scene_configuration_unchanged": true,
+  "original_native_execution_evidence_unchanged": true,
+  "capture_budget": {
+    "schema": "ump.private-capture-budget.v1",
+    "max_capture_mib": 512,
+    "max_capture_bytes": 536870912,
+    "native_source_json_bytes": 273924309,
+    "public_artifact_max_bytes": 268435456,
+    "source_configuration_sha256": "73cc250fde5316289c04cc2cc5fdd2bb871eb96fedcc3a6cc2adea5e95b2cd8b",
+    "scope": "Explicit bounded local private capture budget. Public replay artifact limits and source/policy verification are unchanged. Generated movement stays local and is excluded from Git."
+  },
+  "published_cell_windows": 3199,
+  "unique_published_cell_ids": 84,
+  "original_native_execution_sha256": "992615e53d55f576304b692a6fc065983b68c1a89c74adca038fa1e1b0d29f28",
+  "source_configuration_sha256": "73cc250fde5316289c04cc2cc5fdd2bb871eb96fedcc3a6cc2adea5e95b2cd8b",
+  "scope": "Read-only export of the existing completed owned native run. No simulation repeated, source data modified, database deleted or generated motion committed.",
+  "all_recorded_artifact_hashes_independently_rechecked": true,
+  "replay_viewer_bundle_validation_passed": true,
+  "lifecycle_quality": {
+    "status": "all_scheduled_episodes_completed",
+    "gt_coverage_status": "verified_against_recorded_visible_intervals",
+    "event_rows": 720,
+    "expected_gt_rows": 375758,
+    "source_steps_checked": 4800,
+    "scheduled_people": 256,
+    "scheduled_episodes": 360,
+    "realized_starts": 360,
+    "realized_ends": 360,
+    "pending_episodes_at_horizon": 0,
+    "active_episodes_at_horizon": 0,
+    "interval_terminal_positions_checked": 256
+  },
+  "reported_motion_diagnostics": {
+    "blocked_motion_steps": 25952,
+    "admission_wait_steps": 27984,
+    "merge_admission_wait_steps": 0,
+    "max_consecutive_stop_ms": 14950,
+    "active_stalled_tracks": 0,
+    "body_overlap_violations": 0,
+    "navigation_steering_steps": 96983,
+    "navigation_replans": 1152,
+    "navigation_replan_failures": 536,
+    "navigation_candidate_checks": 10726240,
+    "navigation_max_search_nodes": 15103
+  },
+  "capture_budget_regression_tests": {
+    "passed": 46,
+    "failed": 0,
+    "scope": "Exporter suite including invalid budget choices, matched JavaScript/Python guards, unchanged public artifacts and private capture-budget provenance."
+  }
+}

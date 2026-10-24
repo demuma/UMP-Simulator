@@ -199,9 +199,13 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
             || !std::isfinite(navigation.centerClearanceM) || navigation.centerClearanceM<=0
             || !std::isfinite(cellsX*cellsY) || cellsX*cellsY>1000000
             || navigation.maxReplanNodes==0 || navigation.maxReplanNodes>250000
+            || navigation.doorMaxBatchSize==0 || navigation.doorMaxBatchSize>64
             || navigation.replanAfterMs<=0 || navigation.replanIntervalMs<=0)
             throw std::invalid_argument("Local navigation requires bounded center-safe geometry and positive bounded search settings");
-        for (auto& polygon:navigation.allowedCenterPolygons) {
+        const auto validatePolygons=[&](auto& polygons) {
+        if (polygons.empty() || polygons.size()>1024)
+            throw std::invalid_argument("Navigation space requires bounded nonempty geometry");
+        for (auto& polygon:polygons) {
             validateNavigationRing(polygon.outer,config.width,config.height);
             for (auto& hole:polygon.holes) {
                 validateNavigationRing(hole,config.width,config.height);
@@ -222,6 +226,17 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
                         if (segmentDistance(a[x],a[(x+1)%a.size()],b[y],b[(y+1)%b.size()])<1e-9)
                             throw std::invalid_argument("Navigation holes must not intersect");
                 }
+        }
+        };
+        validatePolygons(navigation.allowedCenterPolygons);
+        if (navigation.spaces.size()>16)
+            throw std::invalid_argument("At most 16 additional navigation spaces are supported");
+        for (std::size_t index=0;index<navigation.spaces.size();++index) {
+            auto& space=navigation.spaces[index];identifier(space.id,"navigation space ID");
+            if (!navigationSpaceIndices.emplace(space.id,index).second
+                || !std::isfinite(space.centerClearanceM) || space.centerClearanceM<=0)
+                throw std::invalid_argument("Navigation space requires unique ID and positive finite clearance");
+            validatePolygons(space.allowedCenterPolygons);
         }
     }
     std::set<std::string> identifiers;
@@ -251,10 +266,37 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
         portalPoints.emplace(portal.id,portal.point);
         explicitPortalGateRadii.emplace(portal.id,portal.widthM/2);
     }
+    // Cache immutable facade exceptions once. The same exact ring arithmetic
+    // and predicates are retained; padded boxes only skip distant rectangles.
+    if (config.motionMode==MappedMotionMode::LocalNavigation) for (const auto& portal:config.portals) {
+        const double length=std::hypot(portal.facadeEnd.x-portal.facadeStart.x,
+            portal.facadeEnd.y-portal.facadeStart.y);
+        const Point tangent{(portal.facadeEnd.x-portal.facadeStart.x)/length,
+            (portal.facadeEnd.y-portal.facadeStart.y)/length};
+        const Point normal{-tangent.y,tangent.x};
+        const double halfWidth=std::max(portal.widthM/2,config.navigation.centerClearanceM+.15);
+        const double depth=config.navigation.centerClearanceM-1e-7;
+        std::vector<Point> forbidden;
+        for (const auto offsets:{Point{-halfWidth,-depth},Point{halfWidth,-depth},
+                Point{halfWidth,depth},Point{-halfWidth,depth}})
+            forbidden.push_back({portal.point.x+tangent.x*offsets.x+normal.x*offsets.y,
+                portal.point.y+tangent.y*offsets.x+normal.y*offsets.y});
+        FacadeExclusion cached{portal.id,std::move(forbidden),
+            {std::numeric_limits<double>::infinity(),std::numeric_limits<double>::infinity()},
+            {-std::numeric_limits<double>::infinity(),-std::numeric_limits<double>::infinity()}};
+        for (const auto point:cached.ring) {
+            cached.minimum.x=std::min(cached.minimum.x,point.x);cached.minimum.y=std::min(cached.minimum.y,point.y);
+            cached.maximum.x=std::max(cached.maximum.x,point.x);cached.maximum.y=std::max(cached.maximum.y,point.y);
+        }
+        facadeExclusions.push_back(std::move(cached));
+    }
     routeData.reserve(config.routes.size());
     for (std::size_t i = 0; i < config.routes.size(); ++i) {
         const auto& route = config.routes[i];
         auto cumulative = cumulativeLength(route);
+        if (!route.navigationSpace.empty() && (config.motionMode!=MappedMotionMode::LocalNavigation
+                || !navigationSpaceIndices.count(route.navigationSpace)))
+            throw std::invalid_argument("Route references an unknown navigation space or non-navigation mode");
         if (!identifiers.insert(route.id).second)
             throw std::invalid_argument("Mapped scene identifiers must be globally unique");
         for (auto p : route.points)
@@ -263,6 +305,19 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
         if ((route.startPortal.empty() && !boundary(route.points.front(), config.width, config.height))
             || (route.endPortal.empty() && !boundary(route.points.back(), config.width, config.height)))
             throw std::invalid_argument("An endpoint without a portal must lie on the scene boundary");
+        if (!route.endBoundary.empty()) {
+            if (config.motionMode!=MappedMotionMode::LocalNavigation || route.endBoundary.size()!=2
+                || declaredPortals.count(route.endPortal))
+                throw std::invalid_argument("Boundary sinks require local navigation and two domain-edge endpoints");
+            const auto a=route.endBoundary[0],b=route.endBoundary[1];
+            const bool sameEdge=(a.x==0 && b.x==0) || (a.x==config.width && b.x==config.width)
+                || (a.y==0 && b.y==0) || (a.y==config.height && b.y==config.height);
+            if (!finite(a) || !finite(b) || !sameEdge || a.x<0 || a.x>config.width
+                || b.x<0 || b.x>config.width || a.y<0 || a.y>config.height || b.y<0 || b.y>config.height
+                || samePoint(a,b) || pointSegmentDistance(route.points.back(),a,b)>1e-7
+                || !navigationSegmentAllowed(a,b,&route))
+                throw std::invalid_argument("Boundary sink must be a nondegenerate permitted interval containing the route end");
+        }
         if (!route.startPortal.empty()) identifier(route.startPortal, "start portal");
         if (!route.endPortal.empty()) identifier(route.endPortal, "end portal");
         if (config.motionMode==MappedMotionMode::LocalNavigation)
@@ -292,6 +347,8 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
     // this compilation and every run-time guard below are empty (legacy path).
     if (!config.navigation.narrowPassages.empty() && config.motionMode!=MappedMotionMode::LocalNavigation)
         throw std::invalid_argument("Narrow passages require local navigation");
+    if (!config.navigation.spaces.empty() && !config.navigation.narrowPassages.empty())
+        throw std::invalid_argument("Additional movement spaces cannot share the single-space narrow passage coordinator");
     double largestPassageBody=0;
     for (const auto& person:config.people) largestPassageBody=std::max(largestPassageBody,person.radiusM);
     if (config.navigation.narrowPassages.size()>64)
@@ -447,9 +504,6 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
         if (!std::isfinite(person.speedMps) || person.speedMps <= 0 || person.episodes.empty()
             || !std::isfinite(person.radiusM) || person.radiusM <= 0)
             throw std::invalid_argument("Mapped person requires positive finite speed and visible episodes");
-        if (config.motionMode==MappedMotionMode::LocalNavigation
-            && person.radiusM+config.clearanceM>config.navigation.centerClearanceM+1e-10)
-            throw std::invalid_argument("Local-navigation center geometry clearance is insufficient for a configured body");
         if (config.motionMode == MappedMotionMode::Integration)
           std::sort(person.episodes.begin(), person.episodes.end(), [](const auto& a, const auto& b) {
             return a.startMs < b.startMs;
@@ -467,6 +521,13 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
                 throw std::invalid_argument("Mapped episode cannot start before the simulation origin");
             const auto r = routeFound->second;
             const auto& referencedRoute=config.routes[r];
+            if (config.motionMode==MappedMotionMode::LocalNavigation) {
+                const double clearance=referencedRoute.navigationSpace.empty()
+                    ? config.navigation.centerClearanceM
+                    : config.navigation.spaces[navigationSpaceIndices.at(referencedRoute.navigationSpace)].centerClearanceM;
+                if (person.radiusM+config.clearanceM>clearance+1e-10)
+                    throw std::invalid_argument("Route movement-space clearance is insufficient for a configured body");
+            }
             for (const auto& portalId:{referencedRoute.startPortal,referencedRoute.endPortal}) {
                 const auto portal=declaredPortals.find(portalId);
                 if (portal==declaredPortals.end()) continue;
@@ -633,7 +694,7 @@ void MappedScene::admitPending(AggregationTime nowMs) {
                     <config.navigation.narrowPassages[i].protectionRadiusM) available=false;
         if (config.motionMode==MappedMotionMode::LocalNavigation) {
             const auto door=navigationDoors.find(config.routes[data.route].startPortal);
-            if (door!=navigationDoors.end() && door->second.owner!=id) {
+            if (door!=navigationDoors.end() && !doorEntryAllowed(id,door->first)) {
                 ++diagnostics.admissionWaitSteps;continue;
             }
         }
@@ -857,26 +918,21 @@ void MappedScene::advanceCorridorStep(AggregationTime nextMs) {
 }
 
 bool MappedScene::navigationSegmentAllowed(Point from,Point to,const MappedRoute* route) const {
-    if (!navigationSegment(from,to,config.navigation.allowedCenterPolygons)) return false;
+    const auto& polygons=route && !route->navigationSpace.empty()
+        ? config.navigation.spaces[navigationSpaceIndices.at(route->navigationSpace)].allowedCenterPolygons
+        : config.navigation.allowedCenterPolygons;
+    if (!navigationSegment(from,to,polygons)) return false;
     if (!route) return true;
     // The shared polygon union contains short facade throats for every door.
     // Only a track explicitly entering/leaving that door may use its exception
     // to the otherwise body-eroded facade clearance. Incidental passers cannot
     // cut through another shop's strip while steering or replanning.
-    for (const auto& portal:config.portals) {
-        if (route->startPortal==portal.id || route->endPortal==portal.id) continue;
-        const double length=std::hypot(portal.facadeEnd.x-portal.facadeStart.x,
-            portal.facadeEnd.y-portal.facadeStart.y);
-        const Point tangent{(portal.facadeEnd.x-portal.facadeStart.x)/length,
-            (portal.facadeEnd.y-portal.facadeStart.y)/length};
-        const Point normal{-tangent.y,tangent.x};
-        const double halfWidth=std::max(portal.widthM/2,config.navigation.centerClearanceM+.15);
-        const double depth=config.navigation.centerClearanceM-1e-7;
-        std::vector<Point> forbidden;
-        for (const auto offsets:{Point{-halfWidth,-depth},Point{halfWidth,-depth},
-                Point{halfWidth,depth},Point{-halfWidth,depth}})
-            forbidden.push_back({portal.point.x+tangent.x*offsets.x+normal.x*offsets.y,
-                portal.point.y+tangent.y*offsets.x+normal.y*offsets.y});
+    for (const auto& exclusion:facadeExclusions) {
+        if (route->startPortal==exclusion.portalId || route->endPortal==exclusion.portalId) continue;
+        constexpr double padding=1e-7;
+        if (std::max(from.x,to.x)<exclusion.minimum.x-padding || std::min(from.x,to.x)>exclusion.maximum.x+padding
+            || std::max(from.y,to.y)<exclusion.minimum.y-padding || std::min(from.y,to.y)>exclusion.maximum.y+padding) continue;
+        const auto& forbidden=exclusion.ring;
         if (ringLocation(from,forbidden)>0 || ringLocation(to,forbidden)>0) return false;
         std::vector<double> cuts{0,1};segmentCuts(from,to,forbidden,cuts);std::sort(cuts.begin(),cuts.end());
         for (std::size_t i=1;i<cuts.size();++i) {
@@ -904,16 +960,34 @@ bool MappedScene::replanNavigation(const std::string& id,Point goal) {
     // Bounded static-grid replanning treats other CURRENT bodies as obstacles.
     // This is a temporary geometric detour, not a prediction or a global crowd
     // liveness guarantee. Exact per-step reservations remain authoritative.
-    const auto clear=[&](Point from,Point to) {
-        if (!navigationSegmentAllowed(from,to,&config.routes[tracks.at(id).route])) return false;
+    const auto& route=config.routes[tracks.at(id).route];
+    const std::string ownStart=navigationDoors.count(route.startPortal)?route.startPortal:"";
+    const std::string ownEnd=navigationDoors.count(route.endPortal)?route.endPortal:"";
+    struct Obstacle {Point position;double radius;};
+    std::vector<Obstacle> obstacles;
+    for (const auto& [otherId,other]:runtime)
+        if (otherId!=id && other.state==RuntimeTrack::State::Active)
+            obstacles.push_back({other.position,person.radiusM+config.people[tracks.at(otherId).person].radiusM+config.clearanceM});
+    const auto clear=[&](Point from,Point to,std::size_t fromNode=std::numeric_limits<std::size_t>::max(),
+            std::size_t toNode=std::numeric_limits<std::size_t>::max()) {
+        if (fromNode<count && toNode<count) {
+            const NavigationEdgeKey key{route.navigationSpace,ownStart,ownEnd,fromNode,toNode};
+            auto cached=navigationEdgeCache.find(key);
+            if (cached==navigationEdgeCache.end()) {
+                const bool allowed=navigationSegmentAllowed(from,to,&route);
+                if (navigationEdgeCache.size()>=65536) navigationEdgeCache.clear();
+                cached=navigationEdgeCache.emplace(key,allowed).first;
+            }
+            if (!cached->second) return false;
+        } else if (!navigationSegmentAllowed(from,to,&route)) return false;
         if (!passageSegmentAllowed(id,from,to)) return false;
-        for (const auto& [otherId,other]:runtime) {
-            if (otherId==id || other.state!=RuntimeTrack::State::Active) continue;
-            const auto radius=person.radiusM+config.people[tracks.at(otherId).person].radiusM+config.clearanceM;
-            // A currently legal close formation must still be able to
-            // attach to the search graph. Adding an unconditional extra buffer
-            // here previously made every start edge impossible near queues.
-            if (pointSegmentDistance(other.position,from,to)<radius-1e-8) return false;
+        for (const auto& obstacle:obstacles) {
+            const auto position=obstacle.position;const double radius=obstacle.radius;
+            constexpr double padding=1e-7;
+            if (position.x<std::min(from.x,to.x)-radius-padding || position.x>std::max(from.x,to.x)+radius+padding
+                || position.y<std::min(from.y,to.y)-radius-padding || position.y>std::max(from.y,to.y)+radius+padding) continue;
+            // Preserve the original exact predicate for every nearby body.
+            if (pointSegmentDistance(position,from,to)<radius-1e-8) return false;
         }
         return true;
     };
@@ -949,7 +1023,7 @@ bool MappedScene::replanNavigation(const std::string& id,Point goal) {
             if (closed[next]) continue;
             const auto q=point(next);
             const auto nextCost=travelled+std::hypot(p.x-q.x,p.y-q.y);
-            if (nextCost+1e-10>=cost[next] || !clear(p,q)) continue;
+            if (nextCost+1e-10>=cost[next] || !clear(p,q,node,next)) continue;
             cost[next]=nextCost;parent[next]=static_cast<std::int64_t>(node);
             queue.emplace(nextCost+std::hypot(q.x-goal.x,q.y-goal.y),nextCost,next);
         }
@@ -976,7 +1050,116 @@ bool MappedScene::replanNavigation(const std::string& id,Point goal) {
     return !state.detour.empty();
 }
 
+bool MappedScene::doorEntryAllowed(const std::string& id,const std::string& portalId) const {
+    const auto& door=navigationDoors.at(portalId);
+    if (config.navigation.doorMaxBatchSize==1) return door.owner==id;
+    if (!door.granted.count(id)) return false;
+    // Compatible arrivals may approach the mouth together. Making each wait
+    // at a distant holding point until its predecessor is halfway through
+    // serialized the complete throat despite multiple grants. Exact swept
+    // bodies resolve the within-batch arrival order and keep physical spacing.
+    if (!door.outbound) return true;
+    const auto portal=portalPoints.at(portalId);
+    const double radius=config.people[tracks.at(id).person].radiusM;
+    const auto requested=std::tie(door.requests.at(id),id);
+    for (const auto& other:door.granted) {
+        if (other==id || std::tie(door.requests.at(other),other)>=requested) continue;
+        const auto& body=runtime.at(other);
+        if (body.state==RuntimeTrack::State::Finished) continue;
+        if (body.state!=RuntimeTrack::State::Active) return false;
+        const double separation=radius+config.people[tracks.at(other).person].radiusM+config.clearanceM+.05;
+        if (std::hypot(body.position.x-portal.x,body.position.y-portal.y)<separation) return false;
+    }
+    return true;
+}
+
+void MappedScene::updateNavigationDoorPipelines(AggregationTime nowMs) {
+    double largestRadius=0;
+    for (const auto& person:config.people) largestRadius=std::max(largestRadius,person.radiusM);
+    for (auto& [portalId,door]:navigationDoors) {
+        const auto portal=portalPoints.at(portalId);
+        for (auto it=door.granted.begin();it!=door.granted.end();) {
+            const auto& id=*it;const auto& owner=runtime.at(id);
+            const auto& person=config.people[tracks.at(id).person];
+            const bool cleared=owner.state==RuntimeTrack::State::Finished
+                || (door.outbound && owner.state==RuntimeTrack::State::Active
+                    && pointSegmentDistance(owner.position,portal,door.approach)>person.radiusM+largestRadius+config.clearanceM+.15
+                    && std::hypot(owner.position.x-portal.x,owner.position.y-portal.y)>2.0);
+            if (cleared) {
+                door.requests.erase(id);door.waitingPoints.erase(id);it=door.granted.erase(it);
+            } else ++it;
+        }
+        for (const auto& [id,state]:runtime) {
+            const auto& data=tracks.at(id);const auto& person=config.people[data.person];
+            const auto& route=config.routes[data.route];const auto& episode=person.episodes[data.episode];
+            if (state.state==RuntimeTrack::State::Active && route.endPortal==portalId
+                && std::hypot(state.position.x-portal.x,state.position.y-portal.y)<4.5)
+                door.requests.emplace(id,nowMs);
+            if (state.state!=RuntimeTrack::State::Pending || route.startPortal!=portalId) continue;
+            AggregationTime ready=episode.startMs;
+            if (episode.afterPreviousMs) {
+                const auto& previous=runtime.at(person.episodes[data.episode-1].trackId);
+                if (previous.state!=RuntimeTrack::State::Finished) continue;
+                if (previous.arrivedAtMs>std::numeric_limits<AggregationTime>::max()-*episode.afterPreviousMs)
+                    throw std::overflow_error("Realized mapped return exceeds time range");
+                ready=std::max(ready,previous.arrivedAtMs+*episode.afterPreviousMs);
+            }
+            if (ready<=nowMs) door.requests.emplace(id,ready);
+        }
+        for (auto it=door.requests.begin();it!=door.requests.end();) {
+            if (runtime.at(it->first).state==RuntimeTrack::State::Finished) {
+                door.waitingPoints.erase(it->first);it=door.requests.erase(it);
+            } else ++it;
+        }
+        if (door.granted.empty() && !door.requests.empty()) {
+            std::vector<std::pair<AggregationTime,std::string>> queue;
+            for (const auto& [id,requested]:door.requests) queue.emplace_back(requested,id);
+            std::sort(queue.begin(),queue.end());
+            door.outbound=config.routes[tracks.at(queue.front().second).route].startPortal==portalId;
+            // Freeze a finite FIFO-compatible snapshot. A late arrival cannot
+            // prolong the current direction while opposite requests wait.
+            for (const auto& [requested,id]:queue) {
+                const bool outbound=config.routes[tracks.at(id).route].startPortal==portalId;
+                if (outbound==door.outbound && door.granted.size()<config.navigation.doorMaxBatchSize)
+                    door.granted.insert(id);
+            }
+        }
+        const double nx=(door.approach.x-portal.x)/1.5,ny=(door.approach.y-portal.y)/1.5;
+        for (const auto& [id,requested]:door.requests) {
+            if (doorEntryAllowed(id,portalId)) {door.waitingPoints.erase(id);continue;}
+            if (runtime.at(id).state!=RuntimeTrack::State::Active || door.waitingPoints.count(id)) continue;
+            const auto& state=runtime.at(id);const auto& person=config.people[tracks.at(id).person];
+            const double required=person.radiusM+largestRadius+config.clearanceM+.3;
+            double best=std::numeric_limits<double>::infinity();Point chosen=state.position;
+            bool found=false;
+            // A deterministic set of public-space waiting positions around the
+            // approach mouth, rather than an exclusive 3m entrance disk. These
+            // are temporary goals, not teleports or pre-scripted entry routes.
+            for (double distance:{2.5,3.25,4.0,5.0,6.0,7.0})
+                for (double angle:{.7853981634,-.7853981634,1.0471975512,-1.0471975512,
+                        .5235987756,-.5235987756,0.0,1.5707963268,-1.5707963268}) {
+                    const double cosine=std::cos(angle),sine=std::sin(angle);
+                    const Point point{portal.x+distance*(nx*cosine-ny*sine),
+                        portal.y+distance*(ny*cosine+nx*sine)};
+                    if (!navigationSegmentAllowed(point,point,&config.routes[tracks.at(id).route])
+                        || pointSegmentDistance(point,portal,door.approach)<required) continue;
+                    bool clear=true;
+                    for (const auto& [otherId,other]:door.waitingPoints) {
+                        const double radius=person.radiusM+config.people[tracks.at(otherId).person].radiusM+config.clearanceM+.15;
+                        if (std::hypot(point.x-other.x,point.y-other.y)<radius) {clear=false;break;}
+                    }
+                    if (!clear) continue;
+                    const double score=std::hypot(state.position.x-point.x,state.position.y-point.y)
+                        +(navigationSegmentAllowed(state.position,point,&config.routes[tracks.at(id).route])?0:10);
+                    if (score<best) {best=score;chosen=point;found=true;}
+                }
+            if (found) door.waitingPoints.emplace(id,chosen);
+        }
+    }
+}
+
 void MappedScene::updateNavigationDoors(AggregationTime nowMs) {
+    if (config.navigation.doorMaxBatchSize>1) {updateNavigationDoorPipelines(nowMs);return;}
     double largestRadius=0;
     for (const auto& person:config.people) largestRadius=std::max(largestRadius,person.radiusM);
     for (auto& [portalId,door]:navigationDoors) {
@@ -1191,6 +1374,8 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
     // never consulted by the operational motion decisions.
     if (!active.empty()) std::rotate(active.begin(),active.begin()+
         static_cast<std::size_t>((currentMs/config.motionStepMs)%active.size()),active.end());
+    double largestRadius=0;
+    for (const auto& body:config.people) largestRadius=std::max(largestRadius,body.radiusM);
     for (const auto& id:active) {
         auto& state=runtime.at(id);const auto& data=tracks.at(id);
         const auto& person=config.people[data.person];const auto& route=config.routes[data.route];
@@ -1211,8 +1396,22 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
         if (passageTraversal && state.navigationWaypoint<=passageTraversal->exitWaypoint)
             lastVisible=state.navigationWaypoint<passageTraversal->entryWaypoint
                 ? passageTraversal->entryWaypoint : state.navigationWaypoint;
-        if (navigationDoors.count(route.endPortal) && state.navigationWaypoint+1<route.points.size())
-            --lastVisible;
+        if (navigationDoors.count(route.endPortal) && state.navigationWaypoint+1<route.points.size()) {
+            bool crossedMouth=false;
+            if (config.navigation.doorMaxBatchSize>1 && doorEntryAllowed(id,route.endPortal)) {
+                const auto mouth=route.points[route.points.size()-2],portal=route.points.back();
+                const double dx=portal.x-mouth.x,dy=portal.y-mouth.y;
+                // Local avoidance may carry a granted arrival past its mouth
+                // before it reaches that exact guide point. Sending it back
+                // then creates outward flow against its own incoming batch.
+                // Advance the guide only inside its own throat, with exact
+                // route-space visibility. Positions and swept checks remain.
+                crossedMouth=(state.position.x-mouth.x)*dx+(state.position.y-mouth.y)*dy>=-1e-8
+                    && pointSegmentDistance(state.position,mouth,portal)<=person.radiusM+config.clearanceM
+                    && navigationSegmentAllowed(state.position,portal,&route);
+            }
+            if (!crossedMouth) --lastVisible;
+        }
         const bool leavingThroat=navigationDoors.count(route.startPortal)
             && state.navigationWaypoint==1;
         if (!leavingThroat) for (std::size_t next=state.navigationWaypoint+1;next<=lastVisible;++next)
@@ -1233,9 +1432,21 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
         if (passageTraversal) followingPassage=passageEntryAllowed(id)
             && state.navigationWaypoint>passageTraversal->entryWaypoint
             && state.navigationWaypoint<=passageTraversal->exitWaypoint;
+        if (!route.endBoundary.empty() && state.navigationWaypoint+1==route.points.size()) {
+            const auto a=route.endBoundary[0],b=route.endBoundary[1];
+            const double dx=b.x-a.x,dy=b.y-a.y;
+            const double along=std::clamp(((state.position.x-a.x)*dx+(state.position.y-a.y)*dy)/(dx*dx+dy*dy),0.0,1.0);
+            const Point projected{a.x+along*dx,a.y+along*dy};
+            if (navigationSegmentAllowed(state.position,projected,&route)) {
+                state.boundaryGoal.reset();goal=projected;
+            } else {
+                if (!state.boundaryGoal) state.boundaryGoal=projected;
+                goal=*state.boundaryGoal;
+            }
+        }
         bool waitingForDoor=false;
         const auto door=navigationDoors.find(route.endPortal);
-        if (door!=navigationDoors.end() && door->second.owner!=id) {
+        if (door!=navigationDoors.end() && !doorEntryAllowed(id,door->first)) {
             const auto wait=door->second.waitingPoints.find(id);
             if (wait!=door->second.waitingPoints.end()) {goal=wait->second;waitingForDoor=true;}
         }
@@ -1268,15 +1479,28 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
         const double maximum=person.speedMps*dt;
         Point chosen=state.position;
         double best=std::numeric_limits<double>::infinity();
+        // Resolve identities/radii once per body, retaining the old map order.
+        // Reservation vector objects stay stable while their endpoints update.
+        struct Neighbor {const std::vector<Point>* path;double radius;};
+        std::vector<Neighbor> neighbors;
+        struct Nearby {Point position,velocity;double margin;};
+        std::vector<Nearby> nearby;
+        for (const auto& [otherId,otherPath]:reservations) if (otherId!=id) {
+            const double radius=person.radiusM+config.people[tracks.at(otherId).person].radiusM+config.clearanceM;
+            neighbors.push_back({&otherPath,radius});
+            const auto otherPosition=oldPositions.at(otherId);
+            const double rx=state.position.x-otherPosition.x,ry=state.position.y-otherPosition.y;
+            if (rx*rx+ry*ry<=49) nearby.push_back({otherPosition,oldVelocities.at(otherId),radius+.25});
+        }
         const auto allowed=[&](Point to) {
             ++diagnostics.navigationCandidateChecks;
             if (!navigationSegmentAllowed(state.position,to,&route)) return false;
             for (const auto& [portalId,door]:navigationDoors) {
-                if (door.owner==id || door.owner.empty()
+                if ((config.navigation.doorMaxBatchSize==1
+                    ? door.owner==id || door.owner.empty()
+                    : doorEntryAllowed(id,portalId) || door.granted.empty())
                     || (route.startPortal!=portalId && route.endPortal!=portalId)) continue;
                 const auto portal=portalPoints.at(portalId);
-                double largestRadius=0;
-                for(const auto& p:config.people) largestRadius=std::max(largestRadius,p.radiusM);
                 const double required=person.radiusM+largestRadius+config.clearanceM+.05;
                 const double before=pointSegmentDistance(state.position,portal,door.approach);
                 const double after=pointSegmentDistance(to,portal,door.approach);
@@ -1284,14 +1508,19 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
                     if (after<before+1e-7) return false;
                 } else if (segmentDistance(state.position,to,portal,door.approach)<required-1e-9) return false;
             }
-            const std::vector<Point> path{state.position,to};
             if (!passageSegmentAllowed(id,state.position,to)) return false;
-            for (const auto& [otherId,otherPath]:reservations) {
-                if (otherId==id) continue;
-                const double radius=person.radiusM+config.people[tracks.at(otherId).person].radiusM+config.clearanceM;
-                // Conservative swept disks: also reserves old positions of
-                // not-yet-planned bodies. Safe, but can delay tight crossings.
-                if (pathDistance(path,otherPath)<radius-1e-9) return false;
+            for (const auto& neighbor:neighbors) {
+                const auto& otherPath=*neighbor.path;
+                const double radius=neighbor.radius;
+                // A conservative padded swept-AABB rejection precedes the
+                // unchanged exact segment-distance test. Far bodies cannot
+                // intersect; close bodies still use the authoritative check.
+                constexpr double padding=1e-7;
+                if (std::max(state.position.x,to.x)+radius+padding<std::min(otherPath[0].x,otherPath[1].x)
+                    || std::min(state.position.x,to.x)-radius-padding>std::max(otherPath[0].x,otherPath[1].x)
+                    || std::max(state.position.y,to.y)+radius+padding<std::min(otherPath[0].y,otherPath[1].y)
+                    || std::min(state.position.y,to.y)-radius-padding>std::max(otherPath[0].y,otherPath[1].y)) continue;
+                if (segmentDistance(state.position,to,otherPath[0],otherPath[1])<radius-1e-9) return false;
             }
             return true;
         };
@@ -1304,20 +1533,23 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
                 +.25*(1-speed/person.speedMps);
             const auto previous=oldVelocities.at(id);
             score+=.06*std::hypot(velocity.x-previous.x,velocity.y-previous.y)/person.speedMps;
-            for (const auto& [otherId,otherPosition]:oldPositions) {
-                if (otherId==id) continue;
-                const auto otherVelocity=oldVelocities.at(otherId);
+            for (const auto& neighbor:nearby) {
+                const auto otherPosition=neighbor.position,otherVelocity=neighbor.velocity;
                 const double rx=state.position.x-otherPosition.x,ry=state.position.y-otherPosition.y;
-                if (rx*rx+ry*ry>49) continue;
                 const double vx=velocity.x-otherVelocity.x,vy=velocity.y-otherVelocity.y;
                 const double v2=vx*vx+vy*vy;
                 const double closestAt=v2>1e-12?std::clamp(-(rx*vx+ry*vy)/v2,0.0,2.0):0;
                 const double predicted=std::hypot(rx+vx*closestAt,ry+vy*closestAt);
-                const double margin=person.radiusM+config.people[tracks.at(otherId).person].radiusM+config.clearanceM+.25;
+                const double margin=neighbor.margin;
                 if (predicted<margin) score+=4*(1-predicted/margin)*(1-closestAt/2.5);
             }
             if (score<best-1e-10) {best=score;chosen=to;}
         };
+        const bool followingDoor=config.navigation.doorMaxBatchSize>1
+            && ((navigationDoors.count(route.startPortal) && state.navigationWaypoint==1
+                    && doorEntryAllowed(id,route.startPortal))
+                || (navigationDoors.count(route.endPortal) && state.navigationWaypoint+1==route.points.size()
+                    && doorEntryAllowed(id,route.endPortal)));
         // Positive angles are right-hand deviations in our x-east/y-south map.
         // This shared geometric convention makes opposing agents choose
         // compatible passing sides without sharing hidden identities.
@@ -1327,7 +1559,7 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
         for (double factor:{1.0,.5}) for (double angle:angles) {
             // The explicit nonpassing resource uses its audited guide as a
             // single-file lane. Free-space steering resumes after its exit.
-            if (followingPassage && angle!=0) continue;
+            if ((followingPassage || followingDoor) && angle!=0) continue;
             const double travel=std::min(maximum*factor,distance);
             const Point to=angle==0 && distance<=maximum*factor ? goal : Point{
                 state.position.x+std::cos(base+angle)*travel,state.position.y+std::sin(base+angle)*travel};
@@ -1351,11 +1583,15 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
         }
         diagnostics.maxConsecutiveStopMs=std::max(diagnostics.maxConsecutiveStopMs,state.stoppedForMs);
         reservations.at(id)={state.position,chosen};state.position=chosen;
-        if (std::hypot(chosen.x-route.points.back().x,chosen.y-route.points.back().y)<1e-7
+        const bool reachedBoundary=!route.endBoundary.empty()
+            && pointSegmentDistance(chosen,route.endBoundary[0],route.endBoundary[1])<1e-7;
+        if ((reachedBoundary || (route.endBoundary.empty()
+                && std::hypot(chosen.x-route.points.back().x,chosen.y-route.points.back().y)<1e-7))
             && state.navigationWaypoint+1==route.points.size()) {
             state.state=RuntimeTrack::State::Finished;state.arrivedAtMs=nextMs;
             ++diagnostics.realizedEnds;
-            lifecycle.push_back({MappedEventKind::EpisodeEnd,person.personId,id,route.id,route.endPortal,nextMs});
+            lifecycle.push_back({MappedEventKind::EpisodeEnd,person.personId,id,route.id,route.endPortal,nextMs,
+                route.endBoundary.empty()?std::nullopt:std::optional<Point>{chosen}});
         }
     }
     for (std::size_t i=0;i<active.size();++i) for (std::size_t j=i+1;j<active.size();++j) {

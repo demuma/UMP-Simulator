@@ -1,0 +1,341 @@
+{
+  "schema": "ump.mapped-comparison-protocol.v1",
+  "matrix": [
+    {
+      "id": "original_fixed_5m_4000ms",
+      "mode": "fixed",
+      "depth": 4,
+      "window": 4000,
+      "policy_profile": "original",
+      "method_id": "fixed_5m_4000ms"
+    },
+    {
+      "id": "original_fixed_10m_4000ms",
+      "mode": "fixed",
+      "depth": 3,
+      "window": 4000,
+      "policy_profile": "original",
+      "method_id": "fixed_10m_4000ms"
+    },
+    {
+      "id": "support60_fixed_5m_4000ms",
+      "mode": "fixed",
+      "depth": 4,
+      "window": 4000,
+      "policy_profile": "support60",
+      "method_id": "fixed_5m_4000ms"
+    },
+    {
+      "id": "support60_fixed_10m_4000ms",
+      "mode": "fixed",
+      "depth": 3,
+      "window": 4000,
+      "policy_profile": "support60",
+      "method_id": "fixed_10m_4000ms"
+    }
+  ],
+  "queries": {
+    "target_cells": [
+      {
+        "cell_id": 192,
+        "depth": 3
+      },
+      {
+        "cell_id": 193,
+        "depth": 3
+      },
+      {
+        "cell_id": 194,
+        "depth": 3
+      },
+      {
+        "cell_id": 195,
+        "depth": 3
+      },
+      {
+        "cell_id": 196,
+        "depth": 3
+      },
+      {
+        "cell_id": 197,
+        "depth": 3
+      },
+      {
+        "cell_id": 198,
+        "depth": 3
+      },
+      {
+        "cell_id": 199,
+        "depth": 3
+      },
+      {
+        "cell_id": 200,
+        "depth": 3
+      },
+      {
+        "cell_id": 201,
+        "depth": 3
+      },
+      {
+        "cell_id": 202,
+        "depth": 3
+      },
+      {
+        "cell_id": 203,
+        "depth": 3
+      },
+      {
+        "cell_id": 204,
+        "depth": 3
+      },
+      {
+        "cell_id": 205,
+        "depth": 3
+      },
+      {
+        "cell_id": 206,
+        "depth": 3
+      },
+      {
+        "cell_id": 207,
+        "depth": 3
+      },
+      {
+        "cell_id": 208,
+        "depth": 3
+      },
+      {
+        "cell_id": 209,
+        "depth": 3
+      },
+      {
+        "cell_id": 210,
+        "depth": 3
+      },
+      {
+        "cell_id": 211,
+        "depth": 3
+      },
+      {
+        "cell_id": 212,
+        "depth": 3
+      },
+      {
+        "cell_id": 213,
+        "depth": 3
+      },
+      {
+        "cell_id": 214,
+        "depth": 3
+      },
+      {
+        "cell_id": 215,
+        "depth": 3
+      },
+      {
+        "cell_id": 216,
+        "depth": 3
+      },
+      {
+        "cell_id": 217,
+        "depth": 3
+      },
+      {
+        "cell_id": 218,
+        "depth": 3
+      },
+      {
+        "cell_id": 219,
+        "depth": 3
+      },
+      {
+        "cell_id": 220,
+        "depth": 3
+      },
+      {
+        "cell_id": 221,
+        "depth": 3
+      },
+      {
+        "cell_id": 222,
+        "depth": 3
+      },
+      {
+        "cell_id": 223,
+        "depth": 3
+      },
+      {
+        "cell_id": 224,
+        "depth": 3
+      },
+      {
+        "cell_id": 225,
+        "depth": 3
+      },
+      {
+        "cell_id": 226,
+        "depth": 3
+      },
+      {
+        "cell_id": 227,
+        "depth": 3
+      },
+      {
+        "cell_id": 228,
+        "depth": 3
+      },
+      {
+        "cell_id": 229,
+        "depth": 3
+      },
+      {
+        "cell_id": 230,
+        "depth": 3
+      },
+      {
+        "cell_id": 231,
+        "depth": 3
+      },
+      {
+        "cell_id": 232,
+        "depth": 3
+      },
+      {
+        "cell_id": 233,
+        "depth": 3
+      },
+      {
+        "cell_id": 234,
+        "depth": 3
+      },
+      {
+        "cell_id": 235,
+        "depth": 3
+      },
+      {
+        "cell_id": 236,
+        "depth": 3
+      },
+      {
+        "cell_id": 237,
+        "depth": 3
+      },
+      {
+        "cell_id": 238,
+        "depth": 3
+      },
+      {
+        "cell_id": 239,
+        "depth": 3
+      },
+      {
+        "cell_id": 240,
+        "depth": 3
+      },
+      {
+        "cell_id": 241,
+        "depth": 3
+      },
+      {
+        "cell_id": 242,
+        "depth": 3
+      },
+      {
+        "cell_id": 243,
+        "depth": 3
+      },
+      {
+        "cell_id": 244,
+        "depth": 3
+      },
+      {
+        "cell_id": 245,
+        "depth": 3
+      },
+      {
+        "cell_id": 246,
+        "depth": 3
+      },
+      {
+        "cell_id": 247,
+        "depth": 3
+      },
+      {
+        "cell_id": 248,
+        "depth": 3
+      },
+      {
+        "cell_id": 249,
+        "depth": 3
+      },
+      {
+        "cell_id": 250,
+        "depth": 3
+      },
+      {
+        "cell_id": 251,
+        "depth": 3
+      },
+      {
+        "cell_id": 252,
+        "depth": 3
+      },
+      {
+        "cell_id": 253,
+        "depth": 3
+      },
+      {
+        "cell_id": 254,
+        "depth": 3
+      },
+      {
+        "cell_id": 255,
+        "depth": 3
+      }
+    ],
+    "categories": [
+      "cyclist",
+      "e_scooter_rider",
+      "pedestrian",
+      "road_user"
+    ],
+    "window_ms": 1000,
+    "lags_ms": [
+      0,
+      1000
+    ]
+  },
+  "binary_sha256": "857f82a4bfd8b0f7e3167ad8d5e0a4edb1cf2bc0e903d796d9a70239b698c6f5",
+  "observations_sha256": "f43a28abaa253816e34732f29f07f63b953ecc40f57aae884c349329c6b9a1a1",
+  "progress_step_ms": 50,
+  "query_count": 122880,
+  "query_budget": 200000,
+  "native_process_wall_budget_s": 900,
+  "policy_scope": "Support-only sensitivity: support60 lowers each root/region type/instance support floor to ceil(0.6*n). All other hard constraints, taxonomy and release triggers match. Compare methods within a policy; policy changes alter the protection contract.",
+  "comparison_kind": "post_hoc_fixed_max_window_sensitivity",
+  "analysis_status": "post_hoc_sensitivity_after_ten_case_results",
+  "portfolio_scope": "Post-hoc fixed maximum-window sensitivity: 5/10 m crossed with 4000 ms, selected after the original ten-case results; the original study remains unchanged.",
+  "policy_changes": [
+    {
+      "scope": "root",
+      "metric": "distinct_contributors",
+      "before": 5,
+      "after": 3
+    },
+    {
+      "scope": "root",
+      "metric": "min_category_distinct_contributors",
+      "before": 5,
+      "after": 3
+    },
+    {
+      "scope": "region:entrance-vicinity:type_requirements",
+      "metric": "distinct_contributors",
+      "before": 10,
+      "after": 6
+    }
+  ],
+  "query_category_scope": "Total and immediate taxonomy families; fine-label preservation is reported separately.",
+  "recipient_scope": "Conservative exact answers plus separately evaluated uniform spatial/temporal occupancy estimates. Missing support never becomes zero.",
+  "replication": "One deterministic source; no population-level statistical generalization or privacy-improvement claim."
+}

@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 import copy
+import contextlib
+import io
+import sys
 from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
@@ -32,6 +35,15 @@ def stamp(milliseconds):
 def native_id(start,end):
     parts=''.join(str(len(text))+':'+text for text in (RUN,SENSOR,APPLICATION))
     return f'ump-release-v2/{parts}/{start}/{end}/192/3'
+
+
+def streamed_response(payload, returncode=0, stderr=''):
+    """Mock the descriptor-based subprocess boundary, not a giant stdout string."""
+    def invoke(*args, **kwargs):
+        data=payload.encode('utf-8') if isinstance(payload,str) else payload
+        kwargs['stdout'].write(data)
+        return subprocess.CompletedProcess(args[0],returncode,None,stderr)
+    return invoke
 
 
 def native_fixture():
@@ -106,6 +118,22 @@ class NativeRecordingTests(unittest.TestCase):
     def replace_public(self):
         """Keep native journal payload identical when testing source-independent defects."""
         self.raw['journals'][0]['release']=copy.deepcopy(self.raw['releases'][0])
+
+    def test_interval_exit_positions_are_recorded_and_final_step_bounded(self):
+        self.cfg['mapped_scene']={'routes':[{'id':'fixture-route','points':[[0,1],[2,1]],'end_boundary':[[0,1],[2,1]]}],
+            'people':[{'person_id':f'private-person-{i+1:03d}','speed_mps':1,
+                'episodes':[{'track_id':f'track-{i+1:03d}','route_id':'fixture-route'}]} for i in range(5)]}
+        ends=[r for r in self.raw['agents'] if r.get('event')=='episode_end']
+        for i,event in enumerate(ends):event['position']={'x':1+i*.02,'y':1}
+        self.assertEqual(self.build()[2]['lifecycle_quality']['interval_terminal_positions_checked'],5)
+        for mutation in ('missing','off_interval','too_far'):
+            with self.subTest(mutation=mutation):
+                old=copy.deepcopy(ends[0])
+                if mutation=='missing':ends[0].pop('position');expected='explicit finite terminal position'
+                if mutation=='off_interval':ends[0]['position']['y']=1.1;expected='declared exit interval'
+                if mutation=='too_far':ends[0]['position']['x']=1.5;expected='terminal displacement'
+                with self.assertRaisesRegex(ValueError,expected):self.build()
+                ends[0].clear();ends[0].update(old)
 
     def test_complete_native_recording_includes_verified_measured_empty_opportunities(self):
         replay,result,proof=self.build()
@@ -450,19 +478,147 @@ class NativeRecordingTests(unittest.TestCase):
         self.raw['agents']=[row for row in self.raw['agents'] if row.get('data_type')!='mapped source summary']
         with self.assertRaisesRegex(ValueError,'completed source summary'):self.build()
 
+    def test_capture_budget_choices_are_bounded_and_rejected_before_database_work(self):
+        for value in (256,512,1024,2048):self.assertEqual(export.capture_limit_bytes(value),value*1024*1024)
+        for value in (None,True,256.,'512',0,257,4096):
+            with self.subTest(value=value),mock.patch.object(export.subprocess,'run',side_effect=AssertionError('Unexpected database read')):
+                with self.assertRaisesRegex(ValueError,'one of 256, 512, 1024 or 2048'):
+                    export.load_native(self.cfg,max_capture_mib=value)
+        with tempfile.TemporaryDirectory() as directory:
+            output=Path(directory)/'replay'
+            with mock.patch.object(export,'load_native',side_effect=AssertionError('Unexpected database read')):
+                with self.assertRaisesRegex(ValueError,'one of 256, 512, 1024 or 2048'):
+                    export.export_scene(Path(directory),output,max_capture_mib=4096)
+            self.assertFalse(output.exists())
+        with mock.patch.object(sys,'argv',['export','--scene','/not-read','--output','/not-created','--max-capture-mib','4096']), \
+             mock.patch.object(export,'load_native',side_effect=AssertionError('Unexpected database read')), \
+             contextlib.redirect_stderr(io.StringIO()),self.assertRaises(SystemExit) as raised:
+            export.main()
+        self.assertEqual(raised.exception.code,2)
+
+    def test_capture_budget_applies_same_limit_in_mongosh_and_python_without_large_allocations(self):
+        for mib in (256,512,1024,2048):
+            payload={'text':'{"safe":1}'}
+            streams=[]
+            def invoke(args,**kwargs):
+                streams.append(kwargs['stdout'])
+                kwargs['stdout'].write(payload['text'].encode('utf-8'))
+                return subprocess.CompletedProcess(args,0,None,'')
+            with self.subTest(mib=mib),mock.patch.object(export.shutil,'which',return_value='/mock/mongosh'), \
+                 mock.patch.object(export,'capture_limit_bytes',return_value=16), \
+                 mock.patch.object(export.subprocess,'run',side_effect=invoke) as run:
+                self.assertEqual(export.load_native(self.cfg,max_capture_mib=mib),{'safe':1})
+                script=run.call_args.args[0][-1]
+                self.assertIn('const maxCaptureBytes=16;',script)
+                self.assertIn("Buffer.byteLength(chunk,'utf8')",script)
+                self.assertNotIn('capture_output',run.call_args.kwargs)
+                self.assertIsNotNone(run.call_args.kwargs['stdout'])
+                payload['text']=json.dumps({'too_large':'x'*32})
+                with self.assertRaisesRegex(ValueError,f'Capture exceeds {mib} MiB'):
+                    export.load_native(self.cfg,max_capture_mib=mib)
+            self.assertTrue(all(stream.closed for stream in streams))
+        with tempfile.TemporaryDirectory() as directory,mock.patch.object(export,'MAX_BYTES',8):
+            with self.assertRaisesRegex(ValueError,'2048 MiB'):
+                export.write_json(Path(directory)/'public.json',{'value':'larger'})
+            export.write_json(Path(directory)/'private.json',{'value':'larger'},max_bytes=32)
+            with self.assertRaisesRegex(ValueError,'bounded capture budget'):
+                export.write_json(Path(directory)/'rejected-private.json',{'value':'larger'},max_bytes=8)
+
+    def test_streamed_capture_rejects_utf8_overflow_truncation_and_command_failure_and_closes_files(self):
+        payload=json.dumps({'value':'ééé'},ensure_ascii=False)
+        self.assertGreater(len(payload.encode('utf-8')),len(payload))
+        cases=[(payload,0,'',len(payload),'Capture exceeds'),
+               ('{"unfinished":[',0,'',1024,'malformed or truncated JSON'),
+               (b'{"invalid":"\xff"}',0,'',1024,'malformed or truncated JSON'),
+               ('{"unfinished":[',1,'connection lost',1024,'Native read failed')]
+        for text,code,error,limit,expected in cases:
+            with self.subTest(expected=expected),mock.patch.object(export.shutil,'which',return_value='/mock/mongosh'), \
+                 mock.patch.object(export,'capture_limit_bytes',return_value=limit), \
+                 mock.patch.object(export.subprocess,'run',side_effect=streamed_response(text,code,error)) as run:
+                with self.assertRaisesRegex(ValueError,expected):export.load_native(self.cfg)
+                self.assertTrue(run.call_args.kwargs['stdout'].closed)
+
+    def test_actual_javascript_record_stream_keeps_unicode_and_enforces_total_byte_budget(self):
+        # Execute the production serialization script against an independent
+        # tiny cursor double. This exercises real JSON punctuation, UTF-8 byte
+        # counting and asynchronous cursor iteration without MongoDB writes.
+        sample={'agents':[{'value':'Grüße 🌍','nested':[1,2]}],'sensor':[],'releases':[],'journals':[]}
+        for limit,success,declared_count in [(1024,True,None),(2147483648,True,1000001),(32,False,None)]:
+            with mock.patch.object(export.shutil,'which',return_value='/mock/mongosh'), \
+                 mock.patch.object(export,'capture_limit_bytes',return_value=limit), \
+                 mock.patch.object(export.subprocess,'run',side_effect=streamed_response('{}')) as run:
+                export.load_native(self.cfg)
+            script=run.call_args.args[0][-1]
+            wrapper="""const source=SAMPLE;
+const keys=['agents','sensor','releases','journals'];let next=0;
+global.db={getSiblingDB(){return {getCollection(){const key=keys[next++],rows=source[key];return {async countDocuments(){return key==='agents'&&DECLARED_COUNT!==null?DECLARED_COUNT:rows.length;},find(){return {async forEach(visit){for(const row of rows)visit(row);}};}};}};}};
+global.print=text=>process.stdout.write(text+'\\n');
+(async()=>{await eval(SCRIPT);})().catch(error=>{console.error(error.message);process.exitCode=1;});
+""".replace('SAMPLE',json.dumps(sample)).replace('SCRIPT',json.dumps(script)).replace('DECLARED_COUNT',json.dumps(declared_count))
+            result=subprocess.run(['node','-e',wrapper],capture_output=True,text=True,timeout=10)
+            if success:
+                self.assertEqual(result.returncode,0,result.stderr)
+                self.assertEqual(json.loads(result.stdout),sample)
+                self.assertLessEqual(len(result.stdout.encode('utf-8')),limit)
+            else:
+                self.assertNotEqual(result.returncode,0)
+                self.assertIn('Capture exceeds 32 bytes',result.stderr)
+                self.assertLessEqual(len(result.stdout.encode('utf-8')),limit)
+
+    def test_streamed_json_write_rejects_sparse_oversized_chunk_and_removes_only_its_partial_file(self):
+        class EncodedTooLarge:
+            def __len__(self):return 2048*1024*1024+1
+        class SparseChunk:
+            def encode(self,encoding):return EncodedTooLarge()
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'too-large.json'
+            with mock.patch.object(export.json.JSONEncoder,'iterencode',return_value=iter([SparseChunk()])):
+                with self.assertRaisesRegex(ValueError,'2048 MiB'):export.write_json(path,{})
+            self.assertFalse(path.exists())
+            invalid=Path(directory)/'partial.json'
+            with self.assertRaises(ValueError):export.write_json(invalid,{'good':1,'bad':float('nan')})
+            self.assertFalse(invalid.exists())
+            existing=Path(directory)/'existing.json';existing.write_bytes(b'preserve')
+            with self.assertRaises(FileExistsError):export.write_json(existing,{'replace':True})
+            self.assertEqual(existing.read_bytes(),b'preserve')
+
     def test_loaded_rows_use_read_only_bounded_uuid_owned_namespaces(self):
-        completed=subprocess.CompletedProcess([],0,json.dumps(self.raw),'')
-        with mock.patch.object(export.shutil,'which',return_value='/mock/mongosh'),mock.patch.object(export.subprocess,'run',return_value=completed) as run:
+        with mock.patch.object(export.shutil,'which',return_value='/mock/mongosh'),mock.patch.object(export.subprocess,'run',side_effect=streamed_response(json.dumps(self.raw))) as run:
             self.assertEqual(export.load_native(self.cfg),self.raw)
         args=run.call_args.args[0]
         self.assertEqual(args[0],'/mock/mongosh')
         self.assertIn('mongodb://localhost:27017/',args[1])
         script=args[-1]
         self.assertIn('countDocuments({})',script)
-        self.assertIn('find({}).toArray()',script)
+        self.assertIn('find({}).forEach(document',script)
+        self.assertNotIn('.toArray()',script)
+        self.assertNotIn('JSON.stringify(value)',script)
         for mutation in ('dropDatabase','deleteMany','insertOne','updateOne','remove('):self.assertNotIn(mutation,script)
-        self.assertEqual(run.call_args.kwargs['timeout'],120)
+        self.assertEqual(run.call_args.kwargs['timeout'],360)
         self.assertNotIn('shell',run.call_args.kwargs)
+
+    def test_mongosh_argument_contains_only_collection_metadata_for_large_scenes(self):
+        cfg=copy.deepcopy(self.cfg)
+        cfg['mapped_scene']={'people':[{'person_id':'unused-private-person','episodes':[]}]*16384,
+                             'routes':[{'id':'unused-route','points':[[0,0],[80,80]]}]*16384,
+                             'motion':{'navigation':{'allowed_center_polygons':
+                                 [{'outer':[[0,0],[80,0],[80,80],[0,80]]}]*16384}}}
+        self.assertGreater(len(json.dumps(cfg)),1024*1024)
+        scripts=[]
+        for source in (self.cfg,cfg):
+            with mock.patch.object(export.shutil,'which',return_value='/mock/mongosh'), \
+                 mock.patch.object(export.subprocess,'run',side_effect=streamed_response('{}')) as run:
+                self.assertEqual(export.load_native(source),{})
+            scripts.append(run.call_args.args[0][-1])
+        self.assertEqual(scripts[0],scripts[1])
+        self.assertLess(len(scripts[1].encode('utf-8')),16384)
+        self.assertNotIn('unused-private-person',scripts[1])
+        self.assertNotIn('unused-route',scripts[1])
+        prefix=scripts[1].split(';',1)[0]
+        self.assertTrue(prefix.startswith('const collections='))
+        self.assertEqual(json.loads(prefix.removeprefix('const collections=')),
+            [['agents',BASE,'Agents'],['sensor',BASE,'AGB_Sensor_Data_V3'],
+             ['releases',BASE+'_Releases','Published'],['journals',BASE+'_Private','Journal']])
 
     def test_namespace_rejection_occurs_before_starting_mongosh(self):
         for mutation in ('raw','sensor','public','private'):
@@ -503,6 +659,19 @@ class NativeRecordingTests(unittest.TestCase):
             with mock.patch.object(export,'load_native',return_value=self.raw),mock.patch.object(export,'map_metadata',return_value=mapping):
                 proof=export.export_scene(scene,output)
             self.assertEqual(proof['status'],'verified')
+            budget=proof['capture_budget']
+            self.assertEqual(budget['max_capture_mib'],2048)
+            self.assertEqual(budget['max_capture_bytes'],2048*1024*1024)
+            self.assertEqual(budget['public_artifact_max_bytes'],2048*1024*1024)
+            self.assertEqual(budget['native_source_json_bytes'],(output/'private/native_source.json').stat().st_size)
+            self.assertEqual(budget['source_configuration_sha256'],export.digest(scene/'config.yaml'))
+            expanded=Path(directory)/'replay-512'
+            with mock.patch.object(export,'load_native',return_value=self.raw) as load, mock.patch.object(export,'map_metadata',return_value=mapping):
+                expanded_proof=export.export_scene(scene,expanded,max_capture_mib=512)
+            load.assert_called_once_with(self.cfg,max_capture_mib=512)
+            self.assertEqual(expanded_proof['capture_budget']['max_capture_bytes'],512*1024*1024)
+            for name in ('observations.json','native_result.json','bundle.json','private/config.yaml','private/native_source.json'):
+                self.assertEqual((output/name).read_bytes(),(expanded/name).read_bytes())
             browser=json.dumps(json.loads((output/'observations.json').read_text()))
             self.assertNotIn('private-person-',browser)
             self.assertIn('private-person-',(output/'private/native_source.json').read_text())
@@ -635,6 +804,44 @@ class NativeRecordingTests(unittest.TestCase):
             manifest['configuration_sha256']='a'*64;(scene/'scene_manifest.json').write_text(json.dumps(manifest))
             with self.assertRaisesRegex(ValueError,'digest'):export.validate_scene_building_access(scene,cfg,path)
 
+    def test_public_mode_specific_geometry_digest_and_road_boundaries_are_verified(self):
+        polygons=[{'outer':[[0,0],[80,0],[80,80],[0,80],[0,0]],'holes':[]}]
+        road=[{'outer':[[0,30],[80,30],[80,40],[0,40],[0,30]],'holes':[]}]
+        def geometry_digest(rows):
+            return export.hashlib.sha256(json.dumps(rows,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+        access={'schema':'ump.building-access.v2','bounds':dict(x=0,y=0,width=80,height=80),
+            'buildings':[],'portals':[],'store_fronts':[],'facade_separators':[],
+            'boundary_intervals':[{'id':'road-west','mode':'road','spawn_supported':True,'points':[[0,31],[0,39]]}],
+            'navigation':{'body_clearance_m':.5,'allowed_center_polygons_sha256':geometry_digest(polygons),
+                'spaces':[{'id':'carriageway','body_clearance_m':1.05,'allowed_center_polygons_sha256':geometry_digest(road)}]}}
+        cfg={'simulation':dict(width=80,height=80),'mapped_scene':{'portals':[],
+            'routes':[{'id':'r','points':[[0,33],[0,37]],'start_portal':'road-west','end_portal':'road-west','navigation_space':'carriageway','end_boundary':[[0,31],[0,39]]}],
+            'motion':{'mode':'local_navigation','navigation':{'allowed_center_polygons':polygons,'center_clearance_m':.5,
+                'spaces':[{'id':'carriageway','allowed_center_polygons':road,'center_clearance_m':1.05}]}}}}
+        with tempfile.TemporaryDirectory() as directory:
+            scene=Path(directory);path=scene/'building_access.json';path.write_text(json.dumps(access))
+            self.assertTrue(export.validate_scene_building_access(scene,cfg,path)['native_navigation_geometry_and_boundaries_verified'])
+            directional=copy.deepcopy(cfg);directional_access=copy.deepcopy(access)
+            directional['mapped_scene']['motion']['navigation']['spaces'][0]['id']='carriageway-east'
+            directional['mapped_scene']['routes'][0]['navigation_space']='carriageway-east'
+            directional_access['navigation']['spaces'][0].update(id='carriageway-east',mode='road')
+            path.write_text(json.dumps(directional_access))
+            self.assertTrue(export.validate_scene_building_access(scene,directional,path)['native_navigation_geometry_and_boundaries_verified'])
+            for mutation in ('geometry','clearance','missing_space','wrong_route_space','walking_boundary','exit_interval','mode'):
+                with self.subTest(mutation=mutation):
+                    changed=copy.deepcopy(cfg);context=copy.deepcopy(access)
+                    nav=changed['mapped_scene']['motion']['navigation']
+                    if mutation=='geometry':nav['spaces'][0]['allowed_center_polygons'][0]['outer'][0][1]=29
+                    if mutation=='clearance':nav['spaces'][0]['center_clearance_m']=.55
+                    if mutation=='missing_space':nav['spaces']=[]
+                    if mutation=='wrong_route_space':changed['mapped_scene']['routes'][0].pop('navigation_space')
+                    if mutation=='walking_boundary':context['boundary_intervals'][0]['mode']='walking'
+                    if mutation=='exit_interval':changed['mapped_scene']['routes'][0]['end_boundary'][0][1]=32
+                    if mutation=='mode':context['navigation']['spaces'][0]['mode']='walking'
+                    path.write_text(json.dumps(context))
+                    with self.assertRaisesRegex(ValueError,'native|Native'):
+                        export.validate_scene_building_access(scene,changed,path)
+
     def test_map_metadata_only_references_optional_local_public_building_artifact(self):
         with tempfile.TemporaryDirectory() as directory:
             scene=Path(directory)/'scene';scene.mkdir();repo=Path(directory)/'repo';repo.mkdir()
@@ -658,7 +865,7 @@ class NativeRecordingTests(unittest.TestCase):
             with self.assertRaises(FileExistsError):export.write_json(path,{'replace':'forbidden'})
             with self.assertRaises(ValueError):export.write_json(Path(directory)/'nonfinite.json',{'value':float('nan')})
             with mock.patch.object(export,'MAX_BYTES',8):
-                with self.assertRaisesRegex(ValueError,'256 MiB'):export.write_json(Path(directory)/'too-large.json',{'larger':'than bound'})
+                with self.assertRaisesRegex(ValueError,'2048 MiB'):export.write_json(Path(directory)/'too-large.json',{'larger':'than bound'})
 
 
 class RetainedBackgroundRefreshTests(unittest.TestCase):

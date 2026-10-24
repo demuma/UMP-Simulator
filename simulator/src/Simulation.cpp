@@ -431,6 +431,11 @@ void Simulation::postMappedEventsThrough(ump::AggregationTime nowMs) {
                  << "observation_track_id" << event.trackId
                  << "route_id" << event.routeId << "portal_id" << event.portalId
                  << "event" << (event.kind == ump::MappedEventKind::EpisodeStart ? "visible_start" : "visible_end");
+        if (event.position) {
+            document << "position" << bsoncxx::builder::stream::open_document
+                     << "x" << event.position->x << "y" << event.position->y
+                     << bsoncxx::builder::stream::close_document;
+        }
         documents.push_back(document << bsoncxx::builder::stream::finalize);
     }
     if (!documents.empty()) collection.insert_many(documents); // Private research GT only.

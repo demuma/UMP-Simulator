@@ -291,5 +291,140 @@ class ExperimentalNarrowPassageConfigTests(unittest.TestCase):
                 self.assertEqual(mongo_call.call_count, 1)
 
 
+class UrbanBoundarySourcePairTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        spec=importlib.util.spec_from_file_location("urban_boundary_test",HERE/"urban_traffic_scene.py")
+        cls.urban=importlib.util.module_from_spec(spec);spec.loader.exec_module(cls.urban)
+
+    def test_nearest_sink_projection_rejects_same_edge_and_adjacent_corner_skims(self):
+        measure=self.urban.boundary_pair_measures
+        self.assertFalse(measure([80,75],"east",[[80,70],[80,80]])["eligible"])
+        # Different interval labels cannot make a same-edge tangent observable.
+        self.assertFalse(measure([80,75],"east",[[80,0],[80,65]])["eligible"])
+        corner=measure([80,78.4],"east",[[60,80],[80,80]])
+        self.assertGreater(corner["distance_m"],1)
+        self.assertEqual(corner["inward_progress_m"],0)
+        self.assertFalse(corner["eligible"])
+        self.assertTrue(measure([80,78.4],"east",[[60,80],[79,80]])["eligible"])
+        self.assertFalse(measure([80,79.9],"east",[[79.9,80],[80,80]])["eligible"])
+        for start,side,sink in [([80,50],"east",[[0,0],[0,80]]),([0,50],"west",[[80,0],[80,80]]),
+                                ([50,0],"north",[[0,80],[80,80]]),([50,80],"south",[[0,0],[80,0]])]:
+            self.assertTrue(measure(start,side,sink)["eligible"])
+
+    def test_repair_is_deterministic_preserves_valid_routes_and_does_not_relabel_sources(self):
+        class Router:
+            def route(self,a,b):return [copy.deepcopy(a),copy.deepcopy(b)]
+        boundaries=[{"id":name,"mode":"walking","side":name,"points":points,"spawn_supported":True}
+            for name,points in [("east",[[80,0],[80,80]]),("west",[[0,0],[0,80]]),
+                                ("north",[[0,0],[80,0]]),("south",[[0,80],[80,80]])]]
+        original=[{"id":"same-edge","points":[[80,50],[40,30],[80,60]],"start_portal":"east","end_portal":"east"},
+                  {"id":"corner","points":[[80,78.4],[79.5,80]],"start_portal":"east","end_portal":"south"},
+                  {"id":"valid","points":[[80,50],[0,50]],"start_portal":"east","end_portal":"west"}]
+        first,second=copy.deepcopy(original),copy.deepcopy(original)
+        report=self.urban.repair_boundary_pairs(first,boundaries,Router(),20261024)
+        self.assertEqual(report["repaired_routes"],2)
+        self.assertEqual(first[-1],original[-1])
+        self.assertEqual([r["id"] for r in first],[r["id"] for r in original])
+        self.assertEqual([r["start_portal"] for r in first],[r["start_portal"] for r in original])
+        self.assertEqual(report,self.urban.repair_boundary_pairs(second,boundaries,Router(),20261024))
+        self.assertEqual(first,second)
+        lookup={r["id"]:r for r in boundaries}
+        for route in first:
+            self.assertTrue(self.urban.boundary_pair_measures(route["points"][0],lookup[route["start_portal"]]["side"],
+                lookup[route["end_portal"]]["points"])["eligible"])
+
+    def test_no_valid_inward_sink_fails_instead_of_emitting_a_degenerate_source(self):
+        boundaries=[{"id":"east","mode":"walking","side":"east","points":[[80,0],[80,80]],"spawn_supported":True}]
+        routes=[{"id":"bad","points":[[80,50],[80,60]],"start_portal":"east","end_portal":"east"}]
+        with self.assertRaisesRegex(ValueError,"No connected inward sink"):
+            self.urban.repair_boundary_pairs(routes,boundaries,None,1)
+
+
+class UrbanTrafficTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.cfg=builder.make_config(REPO,DATABASE,120,False,20261024,"storefronts",128,150,urban_traffic=True)
+        cls.scene,cls.context,cls.construction,cls.audit=builder.storefront_scene(str(REPO),20261024,128,120,150,None,False,True)
+        _,cls.local,cls.layers,_,_=builder.load_source(REPO)
+
+    def test_mode_specific_road_routes_keep_envelopes_and_taxonomy(self):
+        navigation=self.scene["motion"]["navigation"]
+        self.assertNotIn("narrow_passages",navigation)
+        self.assertEqual(navigation["door_max_batch_size"],6)
+        self.assertEqual(self.scene["motion"]["clearance_m"],.05)
+        self.assertEqual(navigation["center_clearance_m"],.5)
+        self.assertEqual(len(navigation["spaces"]),2)
+        self.assertTrue(all(s["center_clearance_m"]==1.05 for s in navigation["spaces"]))
+        east,west=[storefront.geometry_from_rows(s["allowed_center_polygons"]) for s in navigation["spaces"]]
+        self.assertGreater(east.distance(west),2.1)
+        routes={r["id"]:r for r in self.scene["routes"]}
+        rider_types={"Adult Cyclist","Senior Cyclist","Adult E-Scooter Driver"}
+        riders=[p for p in self.scene["people"] if p["type"] in rider_types]
+        self.assertEqual(len(riders),26)
+        self.assertEqual({p["type"] for p in riders},rider_types)
+        directions=set()
+        for person in riders:
+            self.assertGreaterEqual(person["speed_mps"],3)
+            self.assertLessEqual(person["speed_mps"],4)
+            self.assertEqual(person["radius_m"],.65 if "Scooter" in person["type"] else 1)
+            self.assertEqual(len(person["episodes"]),1)
+            route=routes[person["episodes"][0]["route_id"]]
+            self.assertIn(route["navigation_space"],("carriageway-east","carriageway-west"))
+            self.assertIn("end_boundary",route)
+            self.assertLess(LineString(route["end_boundary"]).distance(Point(route["points"][-1])),1e-7)
+            directions.add(route["points"][0][0] < route["points"][-1][0])
+            self.assertLess(LineString(route["points"]).buffer(1.05,resolution=32).intersection(box(0,0,80,80)).difference(self.layers["road"]).area,1e-6)
+        self.assertEqual(directions,{False,True})
+        taxonomy=self.cfg["sensors"][0]["aggregation"]["semantic_taxonomy"]["nodes"]
+        self.assertEqual({r["id"]:r["loss"] for r in taxonomy if r["id"] in ("pedestrian","cyclist","e_scooter_rider")},
+                         {"pedestrian":.5,"cyclist":.5,"e_scooter_rider":.5})
+        self.assertEqual(builder.audit_config(self.cfg)["scheduled_people"],128)
+
+    def test_seeded_connectors_are_explicit_wide_and_not_whole_road_permissions(self):
+        self.assertEqual(len(self.construction["crossings"]),5)
+        self.assertTrue(all(r["width_m"]==4 for r in self.construction["crossings"]))
+        self.assertGreater(self.construction["demand"]["targeted_distributed_crossing_trips"],0)
+        allowed=storefront.geometry_from_rows(self.scene["motion"]["navigation"]["allowed_center_polygons"])
+        self.assertGreater(self.layers["road"].difference(allowed).area,100)
+        self.assertEqual(self.audit["status"],"pass")
+        self.assertEqual(max(r["body_building_intersection_outside_portal_m2"] for r in self.audit["routes"].values()),0)
+        second=builder.storefront_scene(str(REPO),20261024,128,120,150,None,False,True)[0]
+        self.assertEqual(storefront.canonical_hash(self.scene),storefront.canonical_hash(second))
+        self.assertTrue(all(r["provenance"].startswith("synthetic_") for r in self.construction["crossings"]))
+
+    def test_options_reject_unsupported_combinations_before_database_actions(self):
+        for mode in ("integration","corridor","buildings"):
+            with self.assertRaisesRegex(ValueError,"requires storefronts"):
+                builder.make_config(REPO,DATABASE,120,False,20261024,mode,128,150,urban_traffic=True)
+        with self.assertRaisesRegex(ValueError,"separate scenario"):
+            builder.make_config(REPO,DATABASE,120,False,20261024,"storefronts",128,150,
+                                urban_traffic=True,experimental_narrow_passages=True)
+        for arguments,expected in [(["--motion-mode","corridor","--urban-traffic"],"requires --motion-mode storefronts"),
+                                   (["--urban-traffic","--experimental-narrow-passages"],"mutually exclusive")]:
+            for module,prefix in [(builder,["--output","/not-created","--database",DATABASE]),(runner,[])]:
+                with mock.patch.object(sys,"argv",["scene",*prefix,*arguments]), \
+                     mock.patch.object(runner,"mongo",side_effect=AssertionError("Unexpected database operation")), \
+                     contextlib.redirect_stderr(io.StringIO()),self.assertRaises(SystemExit) as raised:
+                    module.main()
+                self.assertEqual(raised.exception.code,2)
+
+    def test_runner_forwards_urban_controls(self):
+        class Invocation(Exception):
+            pass
+        arguments=["run_scene","--urban-traffic","--population","256","--arrival-interval-ms","100",
+                   "--road-user-fraction",".25","--distributed-crossing-fraction",".3","--pedestrian-clearance-m",".04","--no-record"]
+        with mock.patch.object(sys,"argv",arguments),mock.patch.object(pathlib.Path,"is_file",return_value=True), \
+             mock.patch.object(runner.shutil,"which",return_value="mock-mongosh"), \
+             mock.patch.object(runner.importlib.util,"find_spec",return_value=object()), \
+             mock.patch.object(runner,"mongo",return_value=[]), \
+             mock.patch.object(runner.subprocess,"run",side_effect=Invocation) as invoke,self.assertRaises(Invocation):
+            runner.main()
+        command=invoke.call_args.args[0]
+        for flag,value in [("--road-user-fraction","0.25"),("--distributed-crossing-fraction","0.3"),("--pedestrian-clearance-m","0.04")]:
+            self.assertEqual(command[command.index(flag)+1],value)
+        self.assertIn("--urban-traffic",command)
+
+
 if __name__ == "__main__":
     unittest.main()

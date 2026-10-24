@@ -47,7 +47,7 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
                 throw std::invalid_argument("Navigation geometry requires local_navigation motion");
             const auto navigation=motion["navigation"];
             keys(navigation,{"allowed_center_polygons","grid_resolution_m","center_clearance_m","max_replan_nodes",
-                "replan_after_ms","replan_interval_ms","narrow_passages"},"mapped_scene.motion.navigation");
+                "replan_after_ms","replan_interval_ms","narrow_passages","door_max_batch_size","spaces"},"mapped_scene.motion.navigation");
             const auto polygons=navigation["allowed_center_polygons"];
             if (!polygons || !polygons.IsSequence())
                 throw std::invalid_argument("Navigation allowed_center_polygons must be a sequence");
@@ -67,9 +67,31 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
                 }
                 result.navigation.allowedCenterPolygons.push_back(std::move(value));
             }
+            if (const auto spaces=navigation["spaces"]) {
+                if (!spaces.IsSequence()) throw std::invalid_argument("Navigation spaces must be a sequence");
+                for (const auto& space:spaces) {
+                    keys(space,{"id","allowed_center_polygons","center_clearance_m"},"navigation space");
+                    ump::MappedNavigationSpace value;
+                    value.id=text(space["id"],"navigation space ID");
+                    value.centerClearanceM=space["center_clearance_m"].as<double>();
+                    if (!space["allowed_center_polygons"].IsSequence())
+                        throw std::invalid_argument("Navigation space polygons must be a sequence");
+                    for (const auto& polygon:space["allowed_center_polygons"]) {
+                        keys(polygon,{"outer","holes"},"navigation space polygon");
+                        ump::MappedNavigationPolygon shape;shape.outer=ring(polygon["outer"]);
+                        if (polygon["holes"]) {
+                            if (!polygon["holes"].IsSequence()) throw std::invalid_argument("Navigation space holes must be a sequence");
+                            for (const auto& hole:polygon["holes"]) shape.holes.push_back(ring(hole));
+                        }
+                        value.allowedCenterPolygons.push_back(std::move(shape));
+                    }
+                    result.navigation.spaces.push_back(std::move(value));
+                }
+            }
             result.navigation.gridResolutionM=navigation["grid_resolution_m"] ? navigation["grid_resolution_m"].as<double>() : .5;
             result.navigation.centerClearanceM=navigation["center_clearance_m"] ? navigation["center_clearance_m"].as<double>() : .55;
             result.navigation.maxReplanNodes=navigation["max_replan_nodes"] ? navigation["max_replan_nodes"].as<std::size_t>() : 20000;
+            result.navigation.doorMaxBatchSize=navigation["door_max_batch_size"] ? navigation["door_max_batch_size"].as<std::size_t>() : 1;
             result.navigation.replanAfterMs=navigation["replan_after_ms"] ? navigation["replan_after_ms"].as<ump::AggregationTime>() : 1500;
             result.navigation.replanIntervalMs=navigation["replan_interval_ms"] ? navigation["replan_interval_ms"].as<ump::AggregationTime>() : 1000;
             // Passage geometry is an explicit source-model assumption. Missing
@@ -108,9 +130,15 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
         }
     }
     for (const auto& r : node["routes"]) {
-        keys(r, {"id", "points", "start_portal", "end_portal"}, "mapped route");
+        keys(r, {"id", "points", "start_portal", "end_portal", "navigation_space", "end_boundary"}, "mapped route");
         ump::MappedRoute route;
         route.id = text(r["id"], "route id");
+        if (r["navigation_space"]) route.navigationSpace=text(r["navigation_space"],"route navigation space");
+        if (r["end_boundary"]) {
+            if (!r["end_boundary"].IsSequence() || r["end_boundary"].size()!=2)
+                throw std::invalid_argument("Route end_boundary requires exactly two boundary points");
+            for (const auto& value:r["end_boundary"]) route.endBoundary.push_back(point(value,"route end boundary"));
+        }
         route.startPortal = r["start_portal"].as<std::string>("");
         route.endPortal = r["end_portal"].as<std::string>("");
         if (!r["points"].IsSequence()) throw std::invalid_argument("Mapped route points must be a sequence");

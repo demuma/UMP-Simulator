@@ -1,0 +1,52 @@
+{
+  "schema": "ump.urban-replay-browser-acceptance.v1",
+  "status": "passed",
+  "url": "http://127.0.0.1:8790/",
+  "browser": "Chrome",
+  "bundle_manifest_sha256": "b180e2b7da281c688e1034755fb99ba9ed3faec4fc95c5080b0585dff92d19c3",
+  "observations_sha256": "f43a28abaa253816e34732f29f07f63b953ecc40f57aae884c349329c6b9a1a1",
+  "observed_checks": [
+    "48 s sample contains 205 tracks at 205 distinct coordinates and all eight declared types.",
+    "Original and support60 adaptive methods selected initially with correct PolicyTree IDs/version/priority.",
+    "Play advances motion sample, type counts and actual release events; pause works.",
+    "Fixed10m1s original method can be selected, then restored to adaptive.",
+    "Cell inspector reports root/region effective bounds and released semantic groups.",
+    "Optional private source table distinguishes original types from released Pedestrian family.",
+    "At240s reference shows zero current positions; historical release mosaic is explicitly labeled and persists."
+  ],
+  "selected_examples": {
+    "original": {
+      "cell_id": 224,
+      "depth": 3,
+      "side_m": 10,
+      "interval_ms": [
+        8300,
+        8700
+      ],
+      "observations": 17,
+      "distinct_tracks": 5,
+      "released_group": "pedestrian",
+      "semantic_loss": 0.5
+    },
+    "relaxed": {
+      "cell_id": 936,
+      "depth": 4,
+      "side_m": 5,
+      "interval_ms": [
+        36500,
+        37500
+      ],
+      "observations": 15,
+      "distinct_tracks": 3,
+      "region": "west-footway-control",
+      "semantic_loss": 0.5
+    }
+  },
+  "local_screenshot": {
+    "relative_path": "results/urban-traffic-2026-10-24-256-policy-comparison/urban-replay-48s.png",
+    "sha256": "7ff5780e68ace276d7828af0f4dd33c37d33d806e5b52a071be3cc127cf4bfe6",
+    "retention": "Ignored local artifact, excluded from Git."
+  },
+  "console_note": "Storage-access errors appeared with extension content-script origin/context; viewer source does not invoke storage APIs. No functional replay error observed.",
+  "scope": "Visual/interaction acceptance of this frozen recording; not continuous long-session testing or a2GiBplayback benchmark."
+}

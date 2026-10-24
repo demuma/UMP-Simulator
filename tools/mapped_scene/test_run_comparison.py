@@ -6,6 +6,7 @@ import contextlib
 import copy
 import io
 import json
+import os
 from pathlib import Path
 import struct
 import subprocess
@@ -106,13 +107,13 @@ class ComparisonTests(unittest.TestCase):
     def write_proof(self):
         self.write_json(self.recording/'capture-proof.json',self.proof)
 
-    def run_mocked(self,output,*,empty=False,after_run=None):
+    def run_mocked(self,output,*,empty=False,after_run=None,policy_comparison=False,max_window_sensitivity=False,native_wall_budget_s=240):
         calls=[];queries=[];policies=[]
         audit={'status':'verified','scalar':{'valid':True},'semantic_published_cells':2,'semantic_published_bins':2,
                'regional_recomputations':[{}],'retained_by_source_group':{'private-oracle-not-browser-data':95}}
         def binary_run(command,**kwargs):
             protocol=comparison.read(output/'protocol.json')
-            self.assertEqual(protocol['matrix'],comparison.variants())
+            self.assertEqual(protocol['matrix'],comparison.max_window_variants() if max_window_sensitivity else comparison.policy_variants() if policy_comparison else comparison.variants())
             self.assertFalse((output/'summary.json').exists(),'Summary may only claim verified after every case passes')
             self.assertEqual(protocol['observations_sha256'],comparison.sha(self.recording/'observations.json'))
             if not calls:
@@ -126,7 +127,8 @@ class ComparisonTests(unittest.TestCase):
             self.write_json(Path(command[command.index('--output')+1]),result)
             calls.append(command)
             if after_run:after_run(len(calls))
-            self.assertEqual(kwargs['timeout'],240)
+            self.assertEqual(kwargs['timeout'],native_wall_budget_s)
+            self.assertEqual(protocol['native_process_wall_budget_s'],native_wall_budget_s)
             self.assertNotIn('shell',kwargs)
             return subprocess.CompletedProcess(command,0,'bounded replay finished\n','')
         def evaluate(data,config,releases,**kwargs):
@@ -137,7 +139,8 @@ class ComparisonTests(unittest.TestCase):
              mock.patch.object(comparison.recipient_support,'evaluate',side_effect=evaluate),\
              mock.patch.object(comparison.recipient_support,'compact',return_value={'exact':{'count':1},'uniform_estimate':{'count':1}}),\
              contextlib.redirect_stdout(io.StringIO()):
-            summary=comparison.compare(self.recording,output,self.binary)
+            summary=comparison.compare(self.recording,output,self.binary,policy_comparison=policy_comparison,
+                                       max_window_sensitivity=max_window_sensitivity,native_wall_budget_s=native_wall_budget_s)
         return summary,calls,queries,policies
 
     def test_matrix_predeclares_fixed_and_adaptive_methods_without_outcome_selection(self):
@@ -172,8 +175,8 @@ class ComparisonTests(unittest.TestCase):
     def test_summary_uses_observation_weights_and_reports_suppression_against_full_input(self):
         data={'batches':[{'observations':[{}]*120}]}
         def cell(identity,n,width,category):
-            return {'cell_id':identity,'width':width,'observation_contributions':n,
-                    'semantic':{'categories':[{'category_id':category,'observation_contributions':n}]}}
+            return {'cell_id':identity,'width':width,'observation_contributions':n,'distinct_road_users':5,
+                    'semantic':{'categories':[{'category_id':category,'observation_contributions':n,'distinct_contributors':5}]}}
         result={'releases':[dict(start_ms=0,end_ms=1000,sealed_at_ms=1100,cells=[cell(192,90,10,'pedestrian')]),
                             dict(start_ms=1000,end_ms=1400,sealed_at_ms=1500,cells=[cell(768,10,5,'adult')])]}
         stats=comparison.summarize(data,self.base,result)
@@ -203,6 +206,27 @@ class ComparisonTests(unittest.TestCase):
         self.assertEqual(nonempty['unpublished_observation_contributions'],2)
         self.assertIsNone(nonempty['exact_subtype_fraction_of_retained'])
         self.assertIsNone(nonempty['observation_weighted_semantic_loss'])
+
+    def test_operational_support_distinguishes_cell_union_bins_median_and_weights(self):
+        data={'batches':[{'observations':[{}]*120}]}
+        def category(name,n,support):
+            return dict(category_id=name,observation_contributions=n,distinct_contributors=support)
+        def cell(identity,n,distinct,categories):
+            return dict(cell_id=identity,width=5,observation_contributions=n,distinct_road_users=distinct,
+                        semantic=dict(categories=categories))
+        result={'releases':[dict(start_ms=0,end_ms=1000,sealed_at_ms=1000,cells=[
+            cell(768,90,10,[category('adult',45,5),category('child',45,5)]),
+            cell(769,10,4,[category('adult',10,4)])])]}
+        stats=comparison.summarize(data,self.base,result)
+        self.assertEqual(stats['published_cell_distinct_road_users'],dict(min=4,p50=4,observation_weighted_mean=9.4))
+        self.assertEqual(stats['published_category_distinct_contributors'],
+                         dict(min=4,p50=5,category_observation_weighted_mean=4.9))
+        self.assertAlmostEqual(stats['retained_fraction'],100/120)
+        empty=comparison.summarize(data,self.base,{'releases':[]})
+        self.assertEqual(empty['retained_fraction'],0)
+        self.assertTrue(all(v is None for v in empty['published_cell_distinct_road_users'].values()))
+        self.assertTrue(all(v is None for v in empty['published_category_distinct_contributors'].values()))
+        self.assertIn('Not measured privacy gain',stats['support_statistics_scope'])
 
     def test_repeated_spatial_cell_counts_as_multiple_windows_but_one_spatial_id(self):
         result=copy.deepcopy(self.result)
@@ -241,8 +265,136 @@ class ComparisonTests(unittest.TestCase):
         self.assertIn('not the native sink stream',viewer['input_provenance'])
         self.assertEqual((output/'observations.json').read_bytes(),(self.recording/'observations.json').read_bytes())
         self.assertNotIn('private-oracle-not-browser-data',json.dumps(summary))
+        report=(output/'report.md').read_text()
+        self.assertNotIn('private-oracle-not-browser-data',report)
+        self.assertNotIn('episode-0',report)
+        self.assertIn('vacuous compliance',report)
+        self.assertIn('mean',report.lower())
         self.assertIn('private-oracle-not-browser-data',(output/'adaptive_immediate-private-audit.json').read_text())
         self.assertEqual({str(path.relative_to(self.recording)):path.read_bytes() for path in self.recording.rglob('*') if path.is_file()},before)
+
+    def test_support_relaxation_changes_only_two_support_floors_at_every_scope(self):
+        base=copy.deepcopy(self.base)
+        base['policy_tree']['root']['distinct_contributors']['max']=20
+        region=base['policy_regions'][0]
+        region['type_requirements']['distinct_contributors']={'min':10}
+        region['requirements']['min_category_distinct_contributors']={'min':7}
+        before=copy.deepcopy(base)
+        relaxed,changes=comparison.relaxed_support(base)
+        self.assertEqual(base,before)
+        self.assertEqual(relaxed['policy_tree']['id'],base['policy_tree']['id']+'-support60')
+        self.assertEqual(relaxed['policy_tree']['root']['distinct_contributors'],{'min':3,'max':20})
+        self.assertEqual(relaxed['policy_tree']['root']['min_category_distinct_contributors'],{'min':3})
+        self.assertEqual(relaxed['policy_regions'][0]['type_requirements']['distinct_contributors'],{'min':6})
+        self.assertEqual(relaxed['policy_regions'][0]['requirements']['min_category_distinct_contributors'],{'min':5})
+        self.assertEqual(len(changes),4)
+        # Restore each declared change and the ID: every other byte of config is equal.
+        restored=copy.deepcopy(relaxed);restored['policy_tree']['id']=base['policy_tree']['id']
+        for change in changes:
+            target=restored['policy_tree']['root'] if change['scope']=='root' else next(
+                row for row in restored['policy_regions'] if row['id']==region['id'])[change['scope'].split(':')[-1]]
+            target[change['metric']]['min']=change['before']
+        self.assertEqual(restored,base)
+        for floor in (True,-1,2.5,float('nan')):
+            invalid=copy.deepcopy(base);invalid['policy_tree']['root']['distinct_contributors']['min']=floor
+            with self.assertRaisesRegex(ValueError,'nonnegative integer'):comparison.relaxed_support(invalid)
+
+    def test_support_policy_matrix_preserves_captured_mixed_taxonomy_and_updates_viewer_bounds(self):
+        # A captured cyclist family is consumed without a hardcoded pedestrian-only catalog.
+        self.cfg['sensors'][0]['aggregation']['semantic_taxonomy']['nodes'] += [
+            {'id':'cyclist','parent':'road_user','loss':.5},
+            {'id':'adult_cyclist','parent':'cyclist','loss':0,'input_types':['Adult Cyclist']}]
+        (self.recording/'private/config.yaml').write_text(comparison.yaml.safe_dump(self.cfg))
+        self.proof['files_sha256']['private/config.yaml']=comparison.sha(self.recording/'private/config.yaml');self.write_proof()
+        output=self.root/'support-policies'
+        summary,calls,queries,policies=self.run_mocked(output,policy_comparison=True)
+        self.assertEqual(len(calls),10)
+        self.assertEqual(summary['protocol']['comparison_kind'],'support_policy_sensitivity')
+        self.assertEqual({row['policy_profile'] for row in summary['protocol']['matrix']},{'original','support60'})
+        self.assertEqual({tuple(query['categories']) for query in queries},{('cyclist','pedestrian','road_user')})
+        self.assertEqual({policy['semantic_taxonomy']['nodes'][-1]['id'] for policy in policies},{'adult_cyclist'})
+        viewer=comparison.read(output/'bundle.json')
+        self.assertEqual([variant['id'] for variant in viewer['variants'][:2]],
+                         ['original_adaptive_immediate','support60_adaptive_immediate'])
+        self.assertNotEqual(viewer['variants'][0]['policy_tree_id'],viewer['variants'][1]['policy_tree_id'])
+        self.assertEqual([row['id'] for row in summary['protocol']['matrix']],
+                         [row['id'] for row in comparison.policy_variants()])
+        self.assertEqual([Path(command[command.index('--output')+1]).stem for command in calls],
+                         [row['id'] for row in comparison.policy_variants()])
+        for variant in viewer['variants']:
+            relaxed=variant['id'].startswith('support60_')
+            self.assertEqual(variant['policy_tree_id'],'fixture-policy'+('-support60' if relaxed else ''))
+            self.assertEqual(variant['policy_tree_version'],'1')
+            bounds={r['metric']:r for r in variant['policy_root_requirements']}
+            self.assertEqual(bounds['distinct_contributors']['min'],3 if relaxed else 5)
+            self.assertEqual(variant['policy_regions'][0]['requirements'],[
+                {'metric':'semantic_max_loss','max':.5},{'metric':'window_duration_ms','max':1000}])
+        self.assertTrue(all(case['independent_audit']['published_policy_violations']==0 for case in summary['cases'].values()))
+        empty=self.run_mocked(self.root/'support-empty',empty=True,policy_comparison=True)[0]
+        self.assertEqual(summary['protocol'],empty['protocol'])
+
+    def test_source_type_region_accounting_and_actual_observation_delays(self):
+        data,result=source_fixture();config=copy.deepcopy(self.base)
+        config['policy_regions']=[dict(id='observed-patch',type='local',x=0,y=0,width=2,height=2),
+                                  dict(id='overlap-patch',type='local',x=0,y=0,width=2,height=2)]
+        result['releases']=result['releases'][:1]
+        result['releases'][0]['sealed_at_ms']=1100
+        stats=comparison.source_accounting(data,config,result)
+        self.assertEqual(stats['by_source_type']['Adult Pedestrian'],dict(input_observation_contributions=95,
+            retained_observation_contributions=45,unpublished_observation_contributions=50,retained_fraction=45/95))
+        for name in ('observed-patch','overlap-patch'):
+            self.assertEqual(stats['by_source_point_region'][name]['retained_observation_contributions'],45)
+        self.assertIsNone(stats['by_source_point_region']['outside_policy_regions']['retained_fraction'])
+        self.assertEqual(stats['observation_to_release_delay_ms'],dict(mean=600,p50=600,p95=1000,p99=1000,maximum=1000))
+        # Counting the same ancestor twice is rejected, as is a bad declared sum.
+        duplicate=copy.deepcopy(result);duplicate['releases']*=2
+        with self.assertRaisesRegex(ValueError,'overlap'):comparison.source_accounting(data,config,duplicate)
+        duplicate=copy.deepcopy(result);duplicate['releases'][0]['cells'][0]['observation_contributions']+=1
+        with self.assertRaisesRegex(ValueError,'contribution total'):comparison.source_accounting(data,config,duplicate)
+        stats=comparison.source_accounting(data,config,{'releases':[]})
+        self.assertEqual(stats['by_source_type']['Adult Pedestrian']['retained_fraction'],0)
+        self.assertTrue(all(value is None for value in stats['observation_to_release_delay_ms'].values()))
+
+    def test_source_accounting_rejects_overlapping_ancestor_descendant_ownership(self):
+        data,result=source_fixture()
+        child=copy.deepcopy(result['releases'][0]['cells'][0]);child['cell_id']=768;child['depth']=4
+        result['releases'][0]['cells'].append(child)
+        with self.assertRaisesRegex(ValueError,'overlapping published ancestors'):
+            comparison.source_accounting(data,self.base,result)
+
+    @unittest.skipUnless(os.environ.get('UMP_REPLAY_BINARY'),'Set UMP_REPLAY_BINARY for actual C++ comparison integration')
+    def test_actual_native_support_comparison_releases_three_users_only_under_relaxed_policy(self):
+        cfg=copy.deepcopy(self.cfg);aggregation=cfg['sensors'][0]['aggregation']
+        aggregation['history'].update(max_bins=64,max_observations=10000,max_identity_bytes=1000000,max_buckets=512)
+        aggregation['spatial_selection']={'min_depth':3,'max_evaluations':8192,'preserve_valid_descendants':False}
+        aggregation['temporal_adaptation']={'coordination':'cell_local','extension_step_ms':100,
+                                           'max_window_ms':4000,'max_evaluations':64,'max_active_cells':4096}
+        data=copy.deepcopy(self.data)
+        for batch in data['batches']:batch['observations']=batch['observations'][:3]
+        self.write_json(self.recording/'observations.json',data)
+        (self.recording/'private/config.yaml').write_text(comparison.yaml.safe_dump(cfg))
+        for name in ('observations.json','private/config.yaml'):
+            self.proof['files_sha256'][name]=comparison.sha(self.recording/name)
+        # The viewer manifest digest must follow the changed observation fixture.
+        self.manifest['sha256']['observations.json']=comparison.sha(self.recording/'observations.json')
+        self.write_json(self.recording/'bundle.json',self.manifest)
+        self.proof['files_sha256']['bundle.json']=comparison.sha(self.recording/'bundle.json');self.write_proof()
+        with contextlib.redirect_stdout(io.StringIO()):
+            summary=comparison.compare(self.recording,self.root/'native-support-policies',
+                os.environ['UMP_REPLAY_BINARY'],policy_comparison=True)
+        for name,case in summary['cases'].items():
+            self.assertEqual(case['independent_audit']['status'],'verified')
+            self.assertEqual(case['independent_audit']['published_policy_violations'],0)
+            if name.startswith('original_'):self.assertEqual(case['stats']['retained_fraction'],0)
+            else:self.assertGreater(case['stats']['retained_fraction'],0)
+        self.assertEqual(summary['cases']['support60_adaptive_immediate']['stats']['source_accounting']
+                         ['by_source_type']['Adult Pedestrian']['input_observation_contributions'],57)
+        self.assertEqual(summary['source']['peak_observed_simultaneous_tracks'],3)
+        report=(self.root/'native-support-policies/report.md').read_text()
+        self.assertIn('support60_adaptive_immediate | 0 | interior |',report)
+        self.assertIn('Estimated occupancy MAE',report)
+        self.assertIn('original_adaptive_immediate | 0.00%',report)
+        self.assertNotIn('episode-0',report)
 
     def add_building_access(self):
         access={'schema':'ump.building-access.v1','bounds':dict(x=0,y=0,width=80,height=80),
@@ -307,6 +459,47 @@ class ComparisonTests(unittest.TestCase):
             with self.assertRaises((ValueError,OSError,KeyError)):comparison.compare(self.recording,self.root/'rejected',self.binary)
             run.assert_not_called()
         self.assertFalse((self.root/'rejected').exists())
+
+    def test_posthoc_maximum_window_study_is_separate_and_retains_both_policy_contracts(self):
+        output=self.root/'posthoc-max-window'
+        summary,calls,queries,policies=self.run_mocked(output,max_window_sensitivity=True)
+        self.assertEqual(len(calls),4)
+        self.assertEqual(summary['protocol']['comparison_kind'],'post_hoc_fixed_max_window_sensitivity')
+        self.assertEqual(summary['protocol']['analysis_status'],'post_hoc_sensitivity_after_ten_case_results')
+        self.assertEqual({command[command.index('--fixed-window-ms')+1] for command in calls},{'4000'})
+        self.assertEqual({command[command.index('--fixed-depth')+1] for command in calls},{'3','4'})
+        self.assertEqual({policy['policy_tree']['root']['distinct_contributors']['min'] for policy in policies},{3,5})
+        self.assertTrue(all(policy['policy_regions']==self.base['policy_regions'] for policy in policies))
+        self.assertTrue(all(query['categories']==['pedestrian','road_user'] for query in queries))
+        self.assertEqual(summary['protocol']['policy_changes'],comparison.relaxed_support(self.base)[1])
+        self.assertIn('Post-hoc',summary['protocol']['portfolio_scope'])
+        self.assertIn('post-hoc',comparison.read(output/'bundle.json')['title'])
+        self.assertEqual(len(comparison.policy_variants()),10)
+        self.assertIn('Post-hoc fixed maximum-window', (output/'report.md').read_text())
+        with mock.patch.object(comparison.subprocess,'run') as run:
+            with self.assertRaisesRegex(ValueError,'either'):
+                comparison.compare(self.recording,self.root/'mixed-study',self.binary,
+                                   policy_comparison=True,max_window_sensitivity=True)
+            run.assert_not_called()
+        self.assertFalse((self.root/'mixed-study').exists())
+
+    def test_native_wall_budget_is_predeclared_and_does_not_change_experiment_matrix(self):
+        default,_,_,_=self.run_mocked(self.root/'default-budget',policy_comparison=True)
+        longer,_,_,_=self.run_mocked(self.root/'longer-budget',policy_comparison=True,native_wall_budget_s=900)
+        self.assertEqual(default['protocol']['native_process_wall_budget_s'],240)
+        self.assertEqual(longer['protocol']['native_process_wall_budget_s'],900)
+        unchanged=copy.deepcopy(longer['protocol']);unchanged['native_process_wall_budget_s']=240
+        self.assertEqual(default['protocol'],unchanged)
+        self.assertEqual(default['cases'].keys(),longer['cases'].keys())
+
+    def test_invalid_native_wall_budget_rejected_before_output_or_process(self):
+        for budget in (0,-1,3601,True,240.5,'900'):
+            output=self.root/('invalid-budget-'+str(budget))
+            with self.subTest(budget=budget),mock.patch.object(comparison.subprocess,'run') as run:
+                with self.assertRaisesRegex(ValueError,'1 to 3600'):
+                    comparison.compare(self.recording,output,self.binary,native_wall_budget_s=budget)
+                run.assert_not_called()
+                self.assertFalse(output.exists())
 
     def test_query_budget_is_predeclared_and_checked_before_binary_execution(self):
         # Same verified input, smaller test-only resource cap; no adaptive

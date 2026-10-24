@@ -500,6 +500,39 @@ class MappedSceneGeneratorTests(unittest.TestCase):
                     self.assertIn(f"scheduled={expected} starts={expected} ends={expected} active=0 pending=0",result.stdout)
                     self.assertIn("stalled=0 overlaps=0",result.stdout)
 
+    @unittest.skipUnless(os.environ.get("UMP_MAPPED_CORE_TEST_BINARY"),
+                         "Set UMP_MAPPED_CORE_TEST_BINARY for the dense mixed-traffic finite-source gate")
+    def test_urban_traffic_native_source_drains_without_lost_tracks_or_overlap(self):
+        # This exact 256-person source exposed northern-boundary projection
+        # loops after the smaller 128-person source had drained successfully.
+        # Keep the sustained request pressure and both rider directions. A
+        # finite 900-s horizon is a completeness bound, not a latency promise.
+        # Only temporary source configuration is written; no MongoDB or sampled
+        # movement output is required by this independent native gate.
+        source=builder.make_config(REPO,DATABASE,120,False,20261024,"storefronts",256,150,
+            urban_traffic=True,road_user_fraction=.2,distributed_crossing_fraction=.2,
+            pedestrian_clearance_m=.05)
+        scene=source["mapped_scene"]
+        expected=sum(len(person["episodes"]) for person in scene["people"])
+        self.assertEqual(expected,360)
+        self.assertEqual(len(scene["people"]),256)
+        self.assertEqual(sum(person["type"] in ("Adult Cyclist","Senior Cyclist","Adult E-Scooter Driver")
+                             for person in scene["people"]),51)
+        self.assertEqual({space["id"] for space in scene["motion"]["navigation"]["spaces"]},
+                         {"carriageway-east","carriageway-west"})
+        with tempfile.TemporaryDirectory(prefix="ump-urban-traffic-drain-test-") as temp:
+            config=pathlib.Path(temp)/"config.yaml"
+            config.write_text(yaml.safe_dump(source,sort_keys=False),encoding="utf-8")
+            result=subprocess.run([os.environ["UMP_MAPPED_CORE_TEST_BINARY"],"--drain-config",str(config),
+                "--end-ms","900000","--require-observed-period-ms","100"],capture_output=True,text=True,timeout=240)
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            self.assertIn(f"scheduled={expected} starts={expected} ends={expected} active=0 pending=0",result.stdout)
+            self.assertIn("stalled=0 overlaps=0",result.stdout)
+            self.assertIn(f"observed={expected}",result.stdout)
+            # Aggregate-only CLI diagnostics make finite completion and stop
+            # times reviewable without retaining identities or sampled motion.
+            print(result.stdout.strip(),flush=True)
+
     def test_historical_population_and_corridor_flow_guards(self):
         for kwargs in [{"population":128},{"arrival_interval_ms":1000}]:
             with self.assertRaises(ValueError):

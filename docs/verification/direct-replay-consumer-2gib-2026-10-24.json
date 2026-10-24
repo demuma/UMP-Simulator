@@ -1,0 +1,72 @@
+{
+  "schema": "ump.direct-replay-consumer-budget-followup.v1",
+  "status": "pass",
+  "change": "Raise only direct AggregationReplay and mapped analyze_tracks input/result guard constants and matching messages from 256 MiB to 2048 MiB. Aggregation and policy decision rules are unchanged.",
+  "prior_document_budget_bytes": 268435456,
+  "document_budget_bytes": 2147483648,
+  "cpp_budget_literal": "2048ULL * 1024ULL * 1024ULL",
+  "consumers": [
+    "simulator/tools/AggregationReplay.cpp",
+    "tools/mapped_scene/analyze_tracks.py"
+  ],
+  "motivating_existing_private_source_bytes": 273924309,
+  "motivating_capture_evidence": "urban-traffic-capture-recovery-2026-10-24.json",
+  "archival_packaging": {
+    "path": "tools/evaluation/replay_data.py",
+    "per_file_budget_bytes": 268435456,
+    "modified": false
+  },
+  "build": {
+    "target": "AggregationReplay",
+    "simulator_rebuilt": false,
+    "simulator_binary_sha256": "445ffa8e11959fa5a33231c8143b1b98531e4203a112b211ae6a35e8df00d151",
+    "aggregation_replay_binary_sha256": "71261dcc29641701dff5685129961689d6bebc1c3b7ffc86b29c2cd0f63dea28",
+    "replay_regression_executable_rebuilt": false
+  },
+  "source_file_sha256": {
+    "simulator/tools/AggregationReplay.cpp": "8a52ff1ad9a04df4591e765fbebdcc1863e43b0e29ebfef4f8c4c0cd0a46495a",
+    "tools/mapped_scene/analyze_tracks.py": "8e973a4e88809be188e1d3b369e8cded8f3dc69722818cae3d051a10b82a1c94"
+  },
+  "checks": {
+    "ctest_groups": [
+      {
+        "name": "replay_regression",
+        "status": "pass",
+        "wall_seconds": 0.1984
+      },
+      {
+        "name": "mapped_analyze_tracks_tools",
+        "status": "pass",
+        "wall_seconds": 0.484409
+      }
+    ],
+    "track_analysis_unit_checks": 12,
+    "ctest_log_sha256": "9c283a8e8e61bb9967c01c3d1e0ee6af3e5632f9ec81a2e33015efdaffcf8a0e",
+    "ctest_xml_sha256": "1b91d5b131065e97c1bd43d9e5db83a69881c549df35eabb3ba70b0d6a9e61c7",
+    "scope": "Requested focused CTest groups passed. The existing replay core-regression executable was not rebuilt, following the AggregationReplay-only build instruction; the analyzer fixture exercises the freshly rebuilt AggregationReplay binary."
+  },
+  "historical_comparisons": [
+    {
+      "case_count": 10,
+      "historical_binary_sha256": "857f82a4bfd8b0f7e3167ad8d5e0a4edb1cf2bc0e903d796d9a70239b698c6f5",
+      "checked_input_policy_result_files": 21,
+      "largest_file_bytes": 247339286,
+      "all_files_fit_prior_256_mib_guard": true,
+      "scope": "File-size inspection only; historical source, policy, outputs, reports and binary digests are unchanged. No comparison case was re-executed."
+    },
+    {
+      "case_count": 4,
+      "historical_binary_sha256": "857f82a4bfd8b0f7e3167ad8d5e0a4edb1cf2bc0e903d796d9a70239b698c6f5",
+      "checked_input_policy_result_files": 9,
+      "largest_file_bytes": 25757699,
+      "all_files_fit_prior_256_mib_guard": true,
+      "scope": "File-size inspection only; historical source, policy, outputs, reports and binary digests are unchanged. No comparison case was re-executed."
+    }
+  ],
+  "limitations": [
+    "No 2 GiB allocation, fixture or browser playback test was performed.",
+    "These guards allow larger serialized documents; both consumers still load complete parsed input, and their existing result construction and hashing can require additional memory.",
+    "The native output guard keeps its existing retained-record accounting; this change does not redesign serialization or establish an RSS bound.",
+    "The new AggregationReplay digest differs from the historical fourteen-case digest because its guard constant and diagnostic strings changed. Historical comparison results retain their original digest; numerical outcomes were not regenerated."
+  ]
+}

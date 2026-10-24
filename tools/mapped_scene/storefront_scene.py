@@ -150,13 +150,14 @@ def projected_shops(repo, local, layers, access, source_hash, overrides=None):
     return context, internals, all_buildings
 
 
-def build_geometry(repo, local, layers, access, source_hash, overrides=None):
+def build_geometry(repo, local, layers, access, source_hash, overrides=None,
+                   walking_geometry=None, body_clearance_m=CLEARANCE):
     context, internals, buildings = projected_shops(repo,local,layers,access,source_hash,overrides)
     domain = box(0,0,SIDE,SIDE)
     # Outside-domain padding makes partial circular bodies at open map edges
     # valid. Actual buildings beyond the clipping edge remain obstacles.
-    padded = layers["walking"].union(domain.buffer(1).difference(domain)).difference(buildings)
-    safe = padded.buffer(-(CLEARANCE + .002), resolution=16).intersection(domain)
+    padded = (layers["walking"] if walking_geometry is None else walking_geometry).union(domain.buffer(1).difference(domain)).difference(buildings)
+    safe = padded.buffer(-(body_clearance_m + .002), resolution=16).intersection(domain)
     strips = []
     for portal,internal in zip(context["portals"],internals):
         center=portal["point"]; normal=internal["normal"]; tangent=internal["tangent"]
@@ -188,7 +189,7 @@ def build_geometry(repo, local, layers, access, source_hash, overrides=None):
     if len([r for r in intervals if r["spawn_supported"]]) < 2:
         raise ValueError("Insufficient positive-length body-safe walking boundaries")
     context["boundary_intervals"] = intervals
-    context["navigation"] = {"body_clearance_m":CLEARANCE,"allowed_center_polygons_sha256":canonical_hash(rows),
+    context["navigation"] = {"body_clearance_m":body_clearance_m,"allowed_center_polygons_sha256":canonical_hash(rows),
         "scope":"Pre-eroded derived walking geometry with clipped-edge circular-body access and narrow declared facade transitions. Road/cycle boundaries are context only; active sources are pedestrians."}
     return context, internals, safe, rows
 

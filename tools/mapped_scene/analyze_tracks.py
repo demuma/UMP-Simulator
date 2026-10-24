@@ -22,7 +22,7 @@ import subprocess
 
 import yaml
 
-MAX_BYTES = 256 * 1024 * 1024
+MAX_BYTES = 2048 * 1024 * 1024
 EPS = 1e-7
 
 
@@ -45,13 +45,13 @@ def digest_file(path):
 
 def read_json(path):
     path = Path(path)
-    insist(path.is_file() and path.stat().st_size <= MAX_BYTES, 'Input must be a regular file of at most 256 MiB')
+    insist(path.is_file() and path.stat().st_size <= MAX_BYTES, 'Input must be a regular file of at most 2048 MiB')
     return json.loads(path.read_text())
 
 
 def write_json(path, value):
     data = (canonical(value) + '\n').encode()
-    insist(len(data) <= MAX_BYTES, 'Analysis artifact exceeds 256 MiB')
+    insist(len(data) <= MAX_BYTES, 'Analysis artifact exceeds 2048 MiB')
     with Path(path).open('xb') as stream:
         stream.write(data)
 

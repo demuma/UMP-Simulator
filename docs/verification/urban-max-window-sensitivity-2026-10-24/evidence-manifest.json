@@ -1,0 +1,10 @@
+{
+  "schema": "ump.compact-max-window-evidence.v1",
+  "classification": "post_hoc_fixed_max_window_sensitivity",
+  "scope": "Four exploratory fixed4s cases on the frozen source after the original ten-case results. Original study artifacts are unchanged. Aggregate evidence only.",
+  "files_sha256": {
+    "docs/verification/urban-max-window-sensitivity-2026-10-24/summary.json": "b0b76eb88df7851f25161d17443f9bc3fe8d16baf05675a8cb31ffb029c4e0af",
+    "docs/verification/urban-max-window-sensitivity-2026-10-24/report.md": "e65043c49cd42e155e5dda2daf34d4b412f6b9d267b9510012fe2787f74df8f0",
+    "docs/verification/urban-max-window-sensitivity-2026-10-24/protocol.json": "45b729b8932ae70afa3006b640c61ca1f8748adb01824c61f7264e5218221e96"
+  }
+}

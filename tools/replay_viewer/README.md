@@ -196,12 +196,18 @@ portal representation from v1. It adds a closed, bounded geometry-only schema:
   buildings.
 - `boundary_intervals` identifies functional-zone intersections with each map
   edge. Solid green walking intervals with paired arrows permit both source
-  and sink endpoints. Cycling/road intervals provide context only; this source
-  has no cycling or motor-traffic model. Unsupported walking intervals are
-  listed as context only.
-- `navigation` contains only body clearance, a digest of native center-safe
-  polygons, and a bounded scope statement. It contains no person schedules,
-  stable private identities or full native configuration.
+  and sink endpoints. Opt-in mixed traffic additionally permits explicitly
+  declared body-safe road intervals for bicycle and E-scooter sources/sinks.
+  Their dotted markers use the same eligibility arrows. Other cycling/road
+  intervals and unsupported walking intervals remain context only.
+- `navigation` contains body clearance, a digest of native center-safe polygons,
+  and a bounded scope statement. Optional named-space summaries contain only
+  their ID, declared physical mode, clearance and canonical geometry digest. Optional synthetic crossing
+  connectors contain bounded geometry and explicit assumption provenance. Export
+  checks space digests against the native configuration; the viewer validates
+  the closed metadata schema and complete building-access artifact hash. No
+  person schedules, stable private identities or full native configuration are
+  exposed through this map artifact.
 
 The **Highlight modeled shop fronts** and **Highlight source / sink intervals** controls
 work in the reference and both policy-result panels, including cell focus. The frozen background keeps its existing map context when a highlight

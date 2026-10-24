@@ -276,11 +276,21 @@ def storefront_module():
 
 @functools.lru_cache(maxsize=8)
 def storefront_scene(repo, seed, population, duration_s, interval_ms=None, overrides_json=None,
-                     experimental_narrow_passages=False):
+                     experimental_narrow_passages=False, urban_traffic=False, road_user_fraction=.2,
+                     distributed_crossing_fraction=.2, pedestrian_clearance_m=.05):
     repo = pathlib.Path(repo)
     _, local, layers, _, provenance = load_source(repo)
     people, interval = corridor_people(seed, population, duration_s, interval_ms)
     overrides = json.loads(overrides_json) if overrides_json is not None else None
+    if urban_traffic:
+        if experimental_narrow_passages:
+            raise ValueError("Urban traffic and experimental narrow passages are separate scenario assumptions")
+        spec = importlib.util.spec_from_file_location("ump_urban_traffic_scene", pathlib.Path(__file__).with_name("urban_traffic_scene.py"))
+        urban = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(urban)
+        return urban.make_scene(storefront_module(), repo, local, layers, access_module(),
+            provenance["source_geometry_sha256"], seed, people, interval, overrides,
+            road_user_fraction, distributed_crossing_fraction, pedestrian_clearance_m)
     return storefront_module().make_scene(repo, local, layers, access_module(),
         provenance["source_geometry_sha256"], seed, people, interval, overrides, experimental_narrow_passages)
 
@@ -356,7 +366,12 @@ def regions():
 
 
 def make_config(repo, database, duration, render, seed, motion_mode="integration", population=64,
-                arrival_interval_ms=None, shop_overrides=None, experimental_narrow_passages=False):
+                arrival_interval_ms=None, shop_overrides=None, experimental_narrow_passages=False,
+                urban_traffic=False, road_user_fraction=.2, distributed_crossing_fraction=.2, pedestrian_clearance_m=.05):
+    if urban_traffic and motion_mode != "storefronts":
+        raise ValueError("Urban traffic requires storefronts mode")
+    if urban_traffic and experimental_narrow_passages:
+        raise ValueError("Urban traffic and experimental narrow passages are separate scenario assumptions")
     if experimental_narrow_passages and motion_mode != "storefronts":
         raise ValueError("Experimental narrow passages require storefronts mode")
     cfg = yaml.safe_load((repo / "simulator/examples/temporal-aggregation/config.yaml").read_text())
@@ -399,7 +414,9 @@ def make_config(repo, database, duration, render, seed, motion_mode="integration
         cfg["simulation"]["datetime"] = "2026-10-24T00:00:00Z"
         cfg["mapped_scene"], _, _, _ = copy.deepcopy(storefront_scene(str(repo), seed, population, duration, arrival_interval_ms,
             json.dumps(shop_overrides, sort_keys=True) if shop_overrides is not None else None,
-            experimental_narrow_passages))
+            experimental_narrow_passages, urban_traffic, road_user_fraction, distributed_crossing_fraction, pedestrian_clearance_m))
+        if urban_traffic:
+            add_urban_profiles_and_taxonomy(cfg, repo)
         cfg["agents"]["num_agents"] = population
         for row in cfg["agents"]["road_user_taxonomy"]:
             row["probability"] = sum(p["type"] == row["type"] for p in cfg["mapped_scene"]["people"]) / population
@@ -420,6 +437,26 @@ def make_config(repo, database, duration, render, seed, motion_mode="integration
     elif motion_mode != "integration" or population != 64 or arrival_interval_ms is not None:
         raise ValueError("Historical integration mode preserves exactly 64 people and its original 200-ms schedule")
     return cfg
+
+
+def add_urban_profiles_and_taxonomy(cfg, repo):
+    """Keep existing rider envelopes; use explicit conservative scenario speeds."""
+    original=yaml.safe_load((pathlib.Path(repo) / "simulator/config.yaml").read_text())
+    labels=["Adult Cyclist", "Senior Cyclist", "Adult E-Scooter Driver"]
+    rows={row["type"]:row for row in original["agents"]["road_user_taxonomy"]}
+    for label in labels:
+        profile=copy.deepcopy(rows[label])
+        profile.update(probability=0, priority=3)
+        profile["velocity"].update(min=3.,max=4.,mu=3.5,sigma=.2,noise_factor=0)
+        cfg["agents"]["road_user_taxonomy"].append(profile)
+    agg=cfg["sensors"][0]["aggregation"]
+    taxonomy=agg["semantic_taxonomy"]
+    taxonomy.update(id="ump-mapped-mixed-road-user-release",version="1")
+    taxonomy["nodes"] += [{"id":"cyclist","parent":"road_user","loss":.5},
+        {"id":"e_scooter_rider","parent":"road_user","loss":.5},
+        {"id":"adult_cyclist","parent":"cyclist","loss":0,"input_types":[labels[0]]},
+        {"id":"senior_cyclist","parent":"cyclist","loss":0,"input_types":[labels[1]]},
+        {"id":"adult_e_scooter_rider","parent":"e_scooter_rider","loss":0,"input_types":[labels[2]]}]
 
 
 def audit_config(cfg):
@@ -457,7 +494,7 @@ def audit_config(cfg):
         assert all(abs(value / STEP - round(value / STEP)) < 1e-9 for value in region["area"].values())
     assert len(people) == cfg["agents"]["num_agents"]
     if not corridor: assert len(people)==64
-    assert set(counts) == set(PROFILES)
+    assert set(counts) == {p["type"] for p in cfg["agents"]["road_user_taxonomy"] if p["probability"] > 0}
     assert minimum_gap > cfg["sensors"][0]["aggregation"]["history"]["retention_ms"]
     result = {"status": "pass", "scheduled_people": len(people), "visible_episodes": len(track_ids),
             "scheduled_visitors": visits, "population_by_observed_profile": dict(sorted(counts.items())),
@@ -484,6 +521,10 @@ def audit_config(cfg):
         result.update(motion_scope="Individual seeded boundary-to-boundary and storefront paths on body-safe derived walking geometry; native local steering, bounded replanning and realized lifecycle events.",
             portal_scope="Four distinct synthetic POI-projected shop entrances on original building facades, with modeled storefront divisions. No invented physical building separations or surveyed-door claim.",
             route_variation_scope="Individual continuous boundary endpoints and seeded bounded geometric detours, with exact shop endpoints. No fixed through lanes.")
+    if cfg["mapped_scene"].get("motion",{}).get("navigation",{}).get("spaces"):
+        result.update(profile_assumptions="Five pedestrian categories at explicit 1.1–1.5 m/s plus Adult/Senior Cyclists and Adult E-Scooter Driver at explicit 3–4 m/s. Existing rider circular envelopes are retained; shared hard clearance is an explicit scenario choice.",
+            motion_scope="Seeded pedestrian requests on original walking surfaces plus explicitly declared crossing/curb connectors, and two synthetic rider directions in a separate body-safe carriageway space. Not empirical demand or legal access guidance.",
+            route_variation_scope="Continuous pedestrian boundary origins and seeded detours; rider lane offsets are seeded within two modeled carriageway directions. No calibrated lane behavior or formal yielding guarantee.")
     return result
 
 
@@ -558,11 +599,19 @@ def main():
     parser.add_argument("--population",type=int,default=64,help="Stateful corridor/building/storefront population; historical mode stays at 64")
     parser.add_argument("--arrival-interval-ms",type=int,help="Stateful source interval, multiple of 50 ms; default spreads requests across horizon")
     parser.add_argument("--shop-overrides", type=pathlib.Path, help="Optional source-hash-bound synthetic shop entrance overrides")
+    parser.add_argument("--urban-traffic", action="store_true", help="Opt-in mixed riders and explicit synthetic pedestrian crossing corridors")
+    parser.add_argument("--road-user-fraction", type=float, default=.2, help="Rider fraction of the total cohort, urban traffic only (default .2)")
+    parser.add_argument("--distributed-crossing-fraction", type=float, default=.2, help="Targeted distributed crossings among through pedestrian requests (default .2)")
+    parser.add_argument("--pedestrian-clearance-m", type=float, default=.05, help="Shared hard body clearance for urban traffic (default .05 m); legacy scenes remain unchanged")
     parser.add_argument("--experimental-narrow-passages", action="store_true",
         help="EXPERIMENTAL storefront routing and passage coordination; larger-cohort acceptance remains open")
     args = parser.parse_args()
     if args.experimental_narrow_passages and args.motion_mode != "storefronts":
         parser.error("--experimental-narrow-passages requires --motion-mode storefronts")
+    if args.urban_traffic and args.motion_mode != "storefronts":
+        parser.error("--urban-traffic requires --motion-mode storefronts")
+    if args.urban_traffic and args.experimental_narrow_passages:
+        parser.error("--urban-traffic and --experimental-narrow-passages are mutually exclusive")
     repo = args.repo.resolve()
     if not re.fullmatch(r"UMP_Mapped_[0-9a-f]{32}", args.database):
         parser.error("Use an owned UMP_Mapped_<32 lower-case UUID hex> namespace")
@@ -572,12 +621,13 @@ def main():
         parser.error("output directory already exists; choose a fresh output")
     _, local, layers, assumptions, provenance = load_source(repo)
     cfg = make_config(repo, args.database, args.duration_s, args.render, args.seed,args.motion_mode,args.population,args.arrival_interval_ms,
-        json.loads(args.shop_overrides.read_text()) if args.shop_overrides else None, args.experimental_narrow_passages)
+        json.loads(args.shop_overrides.read_text()) if args.shop_overrides else None, args.experimental_narrow_passages,
+        args.urban_traffic,args.road_user_fraction,args.distributed_crossing_fraction,args.pedestrian_clearance_m)
     context, construction = None, None
     if args.motion_mode == "storefronts":
         _, context, construction, geometry = copy.deepcopy(storefront_scene(str(repo), args.seed, args.population, args.duration_s, args.arrival_interval_ms,
             json.dumps(json.loads(args.shop_overrides.read_text()), sort_keys=True) if args.shop_overrides else None,
-            args.experimental_narrow_passages))
+            args.experimental_narrow_passages,args.urban_traffic,args.road_user_fraction,args.distributed_crossing_fraction,args.pedestrian_clearance_m))
     elif args.motion_mode == "buildings":
         context, _, construction = copy.deepcopy(building_geometry(str(repo)))
         geometry = access_module().audit_access(local, layers, cfg["mapped_scene"]["routes"], context["portals"])
@@ -606,6 +656,8 @@ def main():
         report["building_access_sha256"] = sha((args.output / "building_access.json").read_bytes())
         if args.motion_mode == "storefronts":
             report["storefront_generator_sha256"] = sha(pathlib.Path(__file__).with_name("storefront_scene.py").read_bytes())
+            if args.urban_traffic:
+                report["urban_traffic_generator_sha256"] = sha(pathlib.Path(__file__).with_name("urban_traffic_scene.py").read_bytes())
     (args.output / "scene_manifest.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
     print(json.dumps({"status": "pass", "output": str(args.output), "config_sha256": report["configuration_sha256"],
                       "people": scene["scheduled_people"], "episodes": scene["visible_episodes"], "visitors": scene["scheduled_visitors"]}))

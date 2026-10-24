@@ -32,7 +32,7 @@
 // aggregation/policy/publication cores as the simulator; it never opens MongoDB.
 namespace umpReplay {
 using namespace ump;
-constexpr std::uintmax_t maxDocumentBytes = 256ULL * 1024 * 1024;
+constexpr std::uintmax_t maxDocumentBytes = 2048ULL * 1024ULL * 1024ULL;
 constexpr AggregationTime maxReplayTicks = 10000000;
 
 void keys(const YAML::Node& node, std::initializer_list<const char*> allowed, const char* context) {
@@ -53,7 +53,7 @@ std::string nonempty(const YAML::Node& node, const char* key) {
 }
 YAML::Node load(const std::filesystem::path& file) {
     if (!std::filesystem::is_regular_file(file) || std::filesystem::file_size(file) > maxDocumentBytes)
-        throw std::invalid_argument("Replay input/config must be regular files of at most 256 MiB");
+        throw std::invalid_argument("Replay input/config must be regular files of at most 2048 MiB");
     return YAML::LoadFile(file.string());
 }
 std::string quoted(const std::string& value) {
@@ -438,7 +438,7 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
     std::size_t serializedBytes = 0;
     const auto retain = [&](std::vector<std::string>& destination, std::string value) {
         if (value.size() > maxDocumentBytes - serializedBytes)
-            throw std::length_error("Replay result exceeds the 256 MiB output budget");
+            throw std::length_error("Replay result exceeds the 2048 MiB output budget");
         serializedBytes += value.size(); destination.push_back(std::move(value));
     };
     std::uint64_t inputContributions = 0, accountedContributions = 0;

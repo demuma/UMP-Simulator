@@ -1,0 +1,143 @@
+{
+  "schema": "ump.urban-boundary-goal-verification.v1",
+  "scope": "Native source-model liveness diagnostics on the same fixed directional-lane configuration. This is not an aggregation-policy effectiveness comparison or a serial timing benchmark. Raw identities and sampled motion remain local and are excluded.",
+  "cohort_people": 256,
+  "expected_episodes": 360,
+  "capture_step_ms": 50,
+  "seed": 20261024,
+  "arrival_interval_ms": 150,
+  "configuration_sha256": "c58bb7832e22c9ca1e939866bfdcdf587274713a0a28eac8c11cb4e89b98b80d",
+  "mechanism": {
+    "visible_projection": "Use the nearest current interval point whenever the exact route-space segment is permitted; clear the occluded-goal cache.",
+    "occluded_projection": "Latch the first occluded projection and reuse it while the current nearest projection remains occluded. This prevents each lateral avoidance movement from resetting the target, detour and progress detector.",
+    "initial_target": "The verified implementation initially latches the occluded projection; it does not substitute the nominal route endpoint.",
+    "active_detour": "Visible projection may resume even while a detour exists. This is the behavior exercised by the accepted private diagnostic.",
+    "arrival": "Every actual center point on the permitted sink interval remains eligible for exit; no teleport, body-radius reduction or collision-check relaxation is introduced."
+  },
+  "cause": "Recomputing an occluded nearest sink target after every lateral movement repeatedly reset the route detour and no-progress detector. Conversely, globally freezing even visible targets recreated convergence at a common clipped interval endpoint.",
+  "comparisons": {
+    "dynamic_projection": {
+      "checkpoints": [
+        {
+          "simulated_ms": 300000,
+          "ends": 354,
+          "active": 6,
+          "pending": 0,
+          "stalled": 0
+        },
+        {
+          "simulated_ms": 400000,
+          "ends": 357,
+          "active": 3,
+          "pending": 0,
+          "stalled": 0
+        },
+        {
+          "simulated_ms": 900000,
+          "ends": 357,
+          "active": 3,
+          "pending": 0,
+          "stalled": 0
+        }
+      ],
+      "native_source_sha256": "4c7616f8af70d76faada8431647a70b862039f8f5c77ee3085dbe12c6c897baf",
+      "native_header_sha256": "758c6c2891a198e7774b2c015b2e2f201bf31fa373ffc712908ec807ca6ba9cd",
+      "harness_sha256": "e0afde5677efcaedb806939f459764fa2af733a102bc06b4173908cd77092ff2",
+      "binary_sha256": "d8c98675235d4ac7d01decedc7798e471accb2171d832b9ac0e32d2dcfe39685",
+      "private_debug_log_sha256": "40c600ed7e0ef1264f60e8d5f957ea95cc5c19df08133ba2cce06e1373547fe3",
+      "private_evidence_directory": "/private/tmp/ump-urban-256-lanes-debug-20261024",
+      "status": "rejected_non_draining",
+      "process_exit_code": 0,
+      "scheduled_horizon_ms": 900000
+    },
+    "rejected_global_latch": {
+      "checkpoints": [
+        {
+          "simulated_ms": 300000,
+          "ends": 313,
+          "active": 46,
+          "pending": 1,
+          "stalled": 45
+        },
+        {
+          "simulated_ms": 400000,
+          "ends": 313,
+          "active": 46,
+          "pending": 1,
+          "stalled": 45
+        }
+      ],
+      "native_source_sha256": "f57eae592d7ca7aab9d96516ca55f4d32ed1de830198809eb1ddd8acf26da0cb",
+      "native_header_sha256": "bd6d43d899e86f732d17bc810534b6d7b83738e9d39df280a19c75be37d00215",
+      "harness_sha256": "e0afde5677efcaedb806939f459764fa2af733a102bc06b4173908cd77092ff2",
+      "binary_sha256": "f8933ac883ffa2732b20f2614268541f0112e40380f5253ddf101cda1ff5c08d",
+      "private_debug_log_sha256": "66623ef44d8eff264f7efbef0ff6d6ce691acf56682964ad4f2abdaac5bd9ad0",
+      "private_evidence_directory": "/private/tmp/ump-urban-256-lanes-latched-20261024",
+      "status": "rejected_regression",
+      "process_exit_code": 130,
+      "termination": "Stopped after the 300-second snapshot demonstrated persistent convergence queues; not a complete 900-second run."
+    },
+    "occluded_projection_only": {
+      "checkpoints": [
+        {
+          "simulated_ms": 300000,
+          "ends": 360,
+          "active": 0,
+          "pending": 0,
+          "stalled": 0
+        },
+        {
+          "simulated_ms": 400000,
+          "ends": 360,
+          "active": 0,
+          "pending": 0,
+          "stalled": 0
+        }
+      ],
+      "native_source_sha256": "86538e7659ccb1ac96b373ce83ce97a6838b7ceb9a7607b14e7dbc83f57e038f",
+      "native_header_sha256": "bd6d43d899e86f732d17bc810534b6d7b83738e9d39df280a19c75be37d00215",
+      "harness_sha256": "09c8a30266b7888de00a00b259a0eaf4ec699d3a05776ec1886cd8d7dcddfc92",
+      "binary_sha256": "c5f55883a822d214ddf155f7053ed08aed2d3011a0af2eb668413cd9dfa18a94",
+      "private_debug_log_sha256": "4e551c03316ff1273b8bac29163a756391df51feed546046b0d11d8d9ffc0ab6",
+      "private_evidence_directory": "/private/tmp/ump-urban-256-occluded-goal-20261024",
+      "status": "complete",
+      "process_exit_code": 0,
+      "scheduled_horizon_ms": 400000,
+      "earliest_complete_aggregate_checkpoint_ms": 210000,
+      "aggregate_checkpoint_source": "Private harness stderr captured in the tool execution output.",
+      "aggregate_checkpoints": [
+        {
+          "simulated_ms": 180000,
+          "ends": 349,
+          "active": 11,
+          "pending": 0,
+          "stalled": 0
+        },
+        {
+          "simulated_ms": 210000,
+          "ends": 360,
+          "active": 0,
+          "pending": 0,
+          "stalled": 0
+        }
+      ],
+      "physical_overlap_exception": false
+    }
+  },
+  "regressions": {
+    "focused_native_suite": "MappedSceneTests passed after the final refinement.",
+    "concave_obstacle": "The nearest boundary projection is initially occluded. The source successfully replans around a concave wall, preserves movement constraints and speed bounds, and drains. Restoring the former projection policy fails the successful-detour regression.",
+    "visible_outflow": "Two independent visible flows with a shared nominal route endpoint exit at separate interval positions (6 m and 8 m), with zero physical overlap violations."
+  },
+  "final_production_source_sha256": {
+    "simulator/src/MappedScene.cpp": "86538e7659ccb1ac96b373ce83ce97a6838b7ceb9a7607b14e7dbc83f57e038f",
+    "simulator/include/MappedScene.hpp": "bb371ab63eee758afec6e0825bb3f5d11f80597ba27be84a1a1cdba7d74396f1",
+    "simulator/src/MappedSceneConfiguration.cpp": "6f09b8c15da8d50682366be16a99b708040e565bf301c2dac66a573b284093eb",
+    "simulator/tests/MappedSceneTests.cpp": "2cccaa00902d4befdff4013d0fd8f2afc06fee5281c331e551c83c6ce24f28f9"
+  },
+  "limitations": [
+    "The accepted diagnostic records completion by a 210-second aggregate checkpoint rather than the exact final episode time.",
+    "The diagnostic uses one seed and one 256-person configuration. The registered native source gate and the separate 500-person run provide additional validation.",
+    "Private debug logs contain operational track tokens and positions and are not included in this artifact. Only their hashes and aggregate counts are retained."
+  ]
+}

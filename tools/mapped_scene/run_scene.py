@@ -37,12 +37,18 @@ def main():
     parser.add_argument('--seed', type=int, default=20261023)
     parser.add_argument('--motion-mode', choices=['integration','corridor','buildings','storefronts'], default='storefronts')
     parser.add_argument('--population', type=int, default=64)
+    parser.add_argument('--urban-traffic', action='store_true', help='Opt-in mixed road riders and explicit synthetic crossing corridors')
+    parser.add_argument('--road-user-fraction', type=float, default=.2)
+    parser.add_argument('--distributed-crossing-fraction', type=float, default=.2)
+    parser.add_argument('--pedestrian-clearance-m', type=float, default=.05)
     parser.add_argument('--shop-overrides', type=pathlib.Path, help='Source-bound synthetic shop entrance overrides (storefronts mode only)')
     parser.add_argument('--arrival-interval-ms',type=int)
     parser.add_argument('--experimental-narrow-passages',action='store_true',
         help='EXPERIMENTAL storefront routing and passage coordination; larger-cohort acceptance remains open')
     parser.add_argument('--output', type=pathlib.Path, help='Fresh scene folder; replay becomes its sibling')
     parser.add_argument('--no-record',action='store_true',help='Skip the persistent local recording')
+    parser.add_argument('--max-capture-mib',type=int,choices=(256,512,1024,2048),default=2048,
+        help='Bounded local source capture file budget (default 2048 MiB); JSON artifacts support up to 2 GiB')
     parser.add_argument('--cleanup', action='store_true', help='Remove only owned DBs after a verified recording/run')
     args = parser.parse_args()
     if args.open and not args.replay: parser.error('--open requires --replay')
@@ -52,6 +58,10 @@ def main():
     if args.experimental_narrow_passages and args.motion_mode != 'storefronts':
         parser.error('--experimental-narrow-passages requires --motion-mode storefronts')
     if not 1<=args.port<=65535: parser.error('Port must be 1..65535')
+    if args.urban_traffic and args.motion_mode != 'storefronts':
+        parser.error('--urban-traffic requires --motion-mode storefronts')
+    if args.urban_traffic and args.experimental_narrow_passages:
+        parser.error('--urban-traffic and --experimental-narrow-passages are mutually exclusive')
     repo = pathlib.Path(__file__).resolve().parents[2]
     binary = repo/'simulator/build/Simulator'
     shell = shutil.which('mongosh')
@@ -80,6 +90,10 @@ def main():
     if args.shop_overrides is not None: command += ['--shop-overrides', str(args.shop_overrides.resolve())]
     if args.render: command.append('--render')
     if args.experimental_narrow_passages: command.append('--experimental-narrow-passages')
+    if args.urban_traffic:
+        command += ['--urban-traffic','--road-user-fraction',str(args.road_user_fraction),
+                    '--distributed-crossing-fraction',str(args.distributed_crossing_fraction),
+                    '--pedestrian-clearance-m',str(args.pedestrian_clearance_m)]
     subprocess.run(command,check=True)
     print('Scene: '+str(output),flush=True)
     print('Owned MongoDB databases: '+', '.join(names),flush=True)
@@ -91,7 +105,9 @@ def main():
     elapsed=time.perf_counter()-started
     execution={'schema':'ump.mapped-execution.v1','state':'complete' if result.returncode==0 else 'failed',
                'binary_sha256':binary_sha,'config_sha256':config_sha,'exit_code':result.returncode,
-               'binary_wall_seconds':elapsed,'scope':'Includes native startup, source, aggregation and DB I/O; not a per-step deadline.'}
+               'binary_wall_seconds':elapsed,
+               'capture_budget':{'max_capture_mib':args.max_capture_mib,'max_capture_bytes':args.max_capture_mib*1024*1024,
+                   'scope':'Local private source export only; generated movement stays outside Git.'},'scope':'Includes native startup, source, aggregation and DB I/O; not a per-step deadline.'}
     if hashlib.sha256(binary.read_bytes()).hexdigest()!=binary_sha:
         execution['state']='binary_changed'
     (output/'execution.json').write_text(json.dumps(execution,indent=2)+'\n')
@@ -101,7 +117,7 @@ def main():
         return result.returncode
     if not args.no_record:
         subprocess.run([sys.executable,str(pathlib.Path(__file__).with_name('export_replay.py')),
-                        '--scene',str(output),'--output',str(recording)],check=True)
+                        '--scene',str(output),'--output',str(recording),'--max-capture-mib',str(args.max_capture_mib)],check=True)
         print('Persistent local replay: '+str(recording),flush=True)
     if args.cleanup:
         result = mongo(shell,'const names='+json.dumps(names)+'; for(const n of names) db.getSiblingDB(n).dropDatabase(); '

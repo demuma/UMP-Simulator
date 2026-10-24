@@ -1,5 +1,55 @@
 # TO-DO — UMP-Simulator
 
+## Current urban traffic work — 2026-10-24
+
+Work sequentially against [the acceptance contract](docs/URBAN_TRAFFIC_EXTENSION_2026-10-24.md).
+
+- [x] M10: opt-in closer pedestrian groups, bounded same-direction building-entry
+  pipelines, preferred plus distributed crossing demand, and explicit cyclist/
+  E-scooter carriageway permissions. Historical source defaults remain unchanged.
+- [x] M11: accepted 256-person source reaches 224 simultaneous visible tracks,
+  drains all 360 episodes and passes native plus independent recorded audits.
+  Paced 500-total flow drains all 703 episodes; the higher-pressure 500-person
+  case does not pass its wall-budget gate. Do not generalize this acceptance to
+  all 500-person densities or claim universal deadlock freedom.
+- [x] M11.1: fix urban boundary-pair projection defects and add mandatory sensor
+  observability to the 256-person gate. Old source: 360 GT episodes / 357 measured
+  tracks; corrected source: all 360 tracks observed at 100 ms and completed by
+  201.20 s, zero final stalls/overlaps. Preserve the old fourteen-case study as
+  its original control; rerun it on corrected motion before transferring results.
+- [x] M12: exact source broad phases/cache, serial accepted-source comparison,
+  matching complete motion digests/counters. Mean 17.46 → 15.32 ms; p95
+  81.64 → 46.06 ms. Aggregation/IO excluded; 183 steps still exceed 50 ms.
+- [x] M13: ten predeclared actual same-source C++ executions plus four explicitly
+  post-hoc 4-s fixed-window checks, original/support60 local trees, fixed 5/10-m
+  grids, independent policy/support/count/query audits,
+  compact results/plot and browser acceptance. Adaptive wins retention; fixed
+  10 m / 1 s wins aligned exact recipient coverage. Weaker support is not a
+  measured privacy gain. Read the [results](docs/URBAN_POLICY_RESULTS_2026-10-24.md)
+  and [test report](docs/URBAN_TRAFFIC_TEST_REPORT_2026-10-24.md).
+- [x] M13.1: raise local capture/general JSON allowance to 2 GiB; stream Mongo
+  records and JSON encoding with UTF-8 byte limits, bounded timeout and cleanup.
+  Remove full-scene command-line serialization. Preserve verified old proofs.
+  This is a file-size budget, not bounded-RAM or 2-GiB browser acceptance.
+- [ ] M13.2: capture the corrected source and repeat the same frozen comparison
+  protocol before using its old numerical gains as evidence about corrected
+  motion. Keep both source versions and their denominators explicit.
+- [ ] M14: diagnose query-compatible temporal publication before changing the
+  controller. Preserve the current frozen observations, query bank and baseline;
+  test one explicit alignment/coordination change at a time. Retained input is
+  not automatically answerable aligned query support.
+- [ ] M15: profile adaptive decision/history/retirement and in-memory serialization
+  separately on the new source. Current offline adaptive core totals 124.20 /
+  111.00 s versus fixed 0.76–1.85 s. Measure per-step tails and full-pipeline
+  receipt before claiming online deadlines; source-only improvement is separate.
+- [ ] M16: resolve higher-pressure flow waits with a declared fairness/liveness
+  contract; test matched seeds, cadence and mode mix independently. Keep the
+  failed 500-person burst result visible. Preserve body sizes, geometry and
+  complete lifecycle gates rather than hiding congestion with longer horizons.
+- [ ] M17: broaden seeds and controlled demand regimes, then add the residential
+  and traffic scenarios. Attack-based privacy remains a separate evaluation
+  after the operational support/policy and recipient-utility questions.
+
 **Status: 2026-10-24. Current priority: sequential algorithm and policy-compliance work.
 A07 common-window valid-descendant rescue and A08 semantic common/local coordination
 are implemented and verified within their reports. Review the full aggregator
@@ -19,8 +69,9 @@ remaining controller/source and paced external receipt timing stay open. The ful
 geometry-only background, one toggle-controlled name layer, readable entrance
 symbols and external attribution. Old presentation artifacts/proofs are archived;
 source observations/results remain unchanged. The Barkhof visibility repair is
-implemented as an explicit experimental opt-in: static routes and sparse native
-execution pass, but dense native coordination remains unresolved. Read the
+implemented as an explicit experimental opt-in: static routes and native
+execution pass for the two tested 128-person pressure levels; the larger-cohort
+and mixed-mode gates remain open. Read the
 [background report](docs/REPLAY_BACKGROUND_CLEANUP_TEST_REPORT_2026-10-24.md),
 [topology test report](docs/BARKHOF_TOPOLOGY_TEST_REPORT_2026-10-24.md) and
 [presentation comparison protocol](docs/PRESENTATION_COMPARISON_PROTOCOL_2026-10-24.md).
@@ -30,6 +81,8 @@ execution pass, but dense native coordination remains unresolved. Read the
   config/source/observations/results/access bytes. Verify both overlay toggles.
 - [ ] Freeze one source/policy/query contract for the presentation comparison,
   then compare the declared fixed portfolio with one local adaptive controller.
+  The first mixed-mode two-tree retention/query slice is complete under M13;
+  the full action-ablation/priority and three-scenario study remains open.
   Add verified temporal/spatial/semantic action restrictions sequentially, followed
   by priority sensitivity. A hard loss cap of 0.5 allows family output; forced
   family projection is a separate action, and Semantic First preserves detail.
@@ -102,7 +155,9 @@ one tree/result selected in both views. Read the
   `11062053180`) exist but are not active destinations. Preserve provenance and
   activation status; resolve floor/access and cafe association. Main cafe door
   needs an explicit audited walking connector (current geometry gap 5.702 m).
-- [ ] **M06 doorway capacity:** configurable single-file/bidirectional entrances,
+- [x] **M06a door pipeline:** bounded same-direction batches implemented and
+  verified under M10; opposing flow waits for complete throat clearance.
+- [ ] **M06b remaining doorway capacity:** configurable bidirectional lanes,
   separate normal lane targets and compatible reservations. Preserve logical shop
   identity across different ingress/egress points. Unknown widths remain explicit;
   widening a marker or sharing one FIFO point is insufficient.
@@ -111,14 +166,18 @@ one tree/result selected in both views. Read the
   simplification, native shortcuts/steering and replanning. Avoid disconnecting
   narrow valid passages; taper only owning door approaches. Verify actual corner
   clearance, full lifecycle, wall/body safety and runtime, not just nicer guidance.
-- [ ] **M07 controlled mixed modes:** cyclist/scooter age variants, semantic branches,
-  per-mode allowed routes/source intervals and reviewed dimensions/kinematics.
-  Current pedestrian-safe 0.55-m geometry does not fit existing 1.0–1.25-m cyclist
-  envelopes. Parameterize mapped source profiles/weights instead of silently
-  overriding the general config; map every input label to a release terminal.
-  Declare Pedestrian/Cyclist/E-Scooter family costs explicitly (e.g. 0.5) and
-  retain finer subtype levels. Keep mix/demand/policies separate factors.
-- [ ] **M08 road and crossing behavior:** explicit direction/lane demand, crossing
+- [x] **M07a controlled mixed-mode slice:** Adult/Senior Cyclist and Adult
+  E-Scooter Driver use independently enforced directional carriageway spaces;
+  eight terminal labels release through three truthful family branches. See M10–13.
+- [ ] **M07b additional mode profiles:** further cyclist/scooter age variants,
+  with reviewed dimensions/kinematics and explicit source weights. Preserve the
+  new per-mode route permissions and the declared 0.5 family costs; further
+  variants need truthful taxonomy terminals. Keep mix/demand/policies separate
+  factors and validate larger envelopes against their selected center space.
+- [x] **M08a crossing/direction geometry:** preferred plus four distributed
+  synthetic crossing corridors and direction-specific rider spaces pass recorded
+  mode/sweep/lifecycle audits. These are scenario assumptions, not traffic law.
+- [ ] **M08b road conflict behavior:** crossing
   connectors with yielding/gaps or declared signals, waiting and swept inter-mode
   conflict tests. Retain Barkhof as a preferred connection while permitting seeded,
   distributed pedestrian crossings on explicitly declared crossable surfaces;

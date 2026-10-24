@@ -40,13 +40,25 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
     routes = {r['id']: r for r in scene['routes']}
     lines = {key: LineString(route['points']) for key, route in routes.items()}
     allowed = None
+    allowed_by_space = {}
+    space_modes={'':'walking','carriageway':'road'}
+    for space in (public_context or {}).get('navigation',{}).get('spaces',[]):
+        mode=space.get('mode','road' if space.get('id')=='carriageway' else None)
+        require(mode in ('walking','cycling','road'), 'Public navigation space has no supported physical mode')
+        space_modes[space['id']]=mode
     if local_navigation:
         navigation = scene['motion']['navigation']
         allowed = unary_union([Polygon(p['outer'], p.get('holes', []))
                                for p in navigation['allowed_center_polygons']])
         require(not allowed.is_empty and allowed.is_valid, 'Invalid allowed center geometry')
+        allowed_by_space[''] = allowed.buffer(tolerance)
+        for space in navigation.get('spaces', []):
+            require(space['id'] not in allowed_by_space, 'Duplicate navigation space')
+            geometry=unary_union([Polygon(p['outer'], p.get('holes', [])) for p in space['allowed_center_polygons']])
+            require(not geometry.is_empty and geometry.is_valid, 'Invalid named allowed center geometry')
+            allowed_by_space[space['id']]=geometry.buffer(tolerance)
     episodes = {}
-    radii, speeds, track_portals = {}, {}, {}
+    radii, speeds, track_portals, track_spaces = {}, {}, {}, {}
     planned = Counter()
     for person in scene['people']:
         previous = None
@@ -55,6 +67,9 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
             require(track not in episodes, 'Duplicate configured episode')
             route = routes[episode['route_id']]
             episodes[track] = episode
+            track_spaces[track] = route.get('navigation_space', '')
+            if local_navigation:
+                require(track_spaces[track] in allowed_by_space, 'Route references undeclared navigation space')
             radii[track] = person['radius_m']
             speeds[track] = person['speed_mps']
             track_portals[track] = tuple(sorted({route.get(field) for field in ['start_portal', 'end_portal']
@@ -114,14 +129,25 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
             portal_throats[key] = Polygon([[center[i] + normal[i] * depth + tangent[i] * width
                                            for i in [0, 1]]
                 for depth, width in [(-.56, -half), (1.7, -half), (1.7, half), (-.56, half)]])
+        crossing_surfaces=[]
+        for connector in (public_context or {}).get('navigation', {}).get('synthetic_crossing_connectors', []):
+            require(connector.get('provenance') in ('synthetic_crossing_and_curb_gap_connector','synthetic_widening_of_preferred_barkhof_crossing'),
+                    'Unknown synthetic crossing provenance')
+            crossing_surfaces.append(LineString(connector['centerline']).buffer(connector['width_m']/2,cap_style=2)
+                .intersection(physical_domain).difference(map_layers['buildings']))
+        walking_surface=map_layers['walking'].union(unary_union(crossing_surfaces))
         physical_masks = {}
-        for portal_ids in set(track_portals.values()):
+        for space, portal_ids in {(track_spaces[track], ids) for track,ids in track_portals.items()}:
+            mode=space_modes.get(space)
+            require(mode in ('walking','cycling','road'), 'Independent physical audit requires a declared navigation space mode')
+            require(mode=='walking' or not portal_ids, 'Rider route cannot use pedestrian facade portals')
             # A body may cross the facade only at its own declared entrance.
             # A global union would incorrectly exempt unrelated shop doors.
             transitions = unary_union([portal_throats[key] for key in portal_ids])
-            walk = map_layers['walking'].union(transitions)
+            base=walking_surface if mode=='walking' else map_layers[mode]
+            walk = base.union(transitions)
             walls = map_layers['buildings'].difference(transitions)
-            physical_masks[portal_ids] = (walk, walls, prep(walk), prep(walls))
+            physical_masks[(space,portal_ids)] = (walk, walls, prep(walk), prep(walls))
     for row in raw['agents']:
         if row.get('data_type') == 'mapped lifecycle event':
             event_rows.append(row)
@@ -134,10 +160,10 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
         error = lines[episodes[track]['route_id']].distance(Point(point))
         max_route_error = max(max_route_error, error)
         if local_navigation:
-            require(allowed_tolerant.covers(Point(point)), 'Observed position leaves navigation geometry')
+            require(allowed_by_space[track_spaces[track]].covers(Point(point)), 'Observed position leaves navigation geometry')
             points_off_guide += error > .02
             if physical_domain is not None:
-                physical_walk, physical_walls, prepared_walk, prepared_walls = physical_masks[track_portals[track]]
+                physical_walk, physical_walls, prepared_walk, prepared_walls = physical_masks[(track_spaces[track],track_portals[track])]
                 body = Point(point).buffer(radii[track] + scene['motion'].get('clearance_m', .1)).intersection(physical_domain)
                 require(prepared_walk.covers(body) or body.difference(physical_walk).area <= 1e-4,
                         'Observed body leaves derived walking geometry')
@@ -162,7 +188,19 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
             at = epoch_ms(event['timestamp']) - origin
             require(tracks[track] and tracks[track][-1][0] == at - step_ms,
                     'End event does not follow the final outdoor step')
-            terminal_positions[(track, at)] = route['points'][-1]
+            endpoint=route['points'][-1]
+            if 'end_boundary' in route:
+                position=event.get('position')
+                require(isinstance(position,dict) and set(position)=={'x','y'}
+                        and all(isinstance(position[axis],(int,float)) and not isinstance(position[axis],bool)
+                                and math.isfinite(position[axis]) for axis in ('x','y')),
+                        'Interval exit requires an explicit finite terminal position')
+                endpoint=[position['x'],position['y']]
+                require(LineString(route['end_boundary']).distance(Point(endpoint))<=tolerance,
+                        'Terminal position leaves declared exit interval')
+                require(allowed_by_space[track_spaces[track]].covers(Point(endpoint)),
+                        'Terminal position leaves selected navigation geometry')
+            terminal_positions[(track, at)] = endpoint
         for track, rows in tracks.items():
             extended = rows + [(at, point) for (ended, at), point in terminal_positions.items() if ended == track]
             for (before_ms, before), (after_ms, after) in zip(extended, extended[1:]):
@@ -172,7 +210,7 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
                 # nonrectangular polygons its covers result can be false even
                 # for an interior stationary point. Waiting is a valid sweep.
                 segment = Point(before) if displacement == 0 else LineString([before, after])
-                require(allowed_tolerant.covers(segment), 'Observed sweep leaves navigation geometry')
+                require(allowed_by_space[track_spaces[track]].covers(segment), 'Observed sweep leaves navigation geometry')
                 require(displacement <= speeds[track] * step_ms / 1000 + tolerance,
                         'Observed displacement exceeds preferred speed bound')
                 actual_segments_checked += 1
@@ -188,7 +226,7 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
                             'Reported velocity differs from actual displacement')
                     velocity_checks += 1
                 if physical_domain is not None:
-                    physical_walk, physical_walls, prepared_walk, prepared_walls = physical_masks[track_portals[track]]
+                    physical_walk, physical_walls, prepared_walk, prepared_walls = physical_masks[(track_spaces[track],track_portals[track])]
                     sweep = segment.buffer(radii[track] + scene['motion'].get('clearance_m', .1)).intersection(physical_domain)
                     require(prepared_walk.covers(sweep) or sweep.difference(physical_walk).area <= 1e-4,
                             'Observed swept body leaves derived walking geometry')
@@ -283,9 +321,9 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
             minimum_gap = min(minimum_gap, gap)
     boundary_endpoint_checks = 0
     if local_navigation and public_context is not None:
-        intervals = [LineString(row['points']) for row in public_context['boundary_intervals']
-                     if row['mode'] == 'walking' and row['spawn_supported']]
-        require(intervals, 'No eligible pedestrian boundary interval')
+        intervals_by_mode={mode:[LineString(row['points']) for row in public_context['boundary_intervals']
+                                if row['mode']==mode and row['spawn_supported']] for mode in ('walking','road')}
+        require(intervals_by_mode['walking'], 'No eligible pedestrian boundary interval')
         for event in event_rows:
             route = routes[episodes[event['observation_track_id']]['route_id']]
             entering = event['event'] == 'visible_start'
@@ -293,8 +331,14 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
             if portal in portals:
                 continue
             endpoint = route['points'][0 if entering else -1]
-            require(min(line.distance(Point(endpoint)) for line in intervals) <= tolerance,
-                    'Boundary source/target is outside eligible walking intervals')
+            if not entering and 'end_boundary' in route:
+                at=epoch_ms(event['timestamp'])-origin
+                endpoint=terminal_positions[(event['observation_track_id'],at)]
+            mode=space_modes.get(route.get('navigation_space',''))
+            require(mode in intervals_by_mode, 'Boundary source/target navigation mode is unsupported')
+            intervals=intervals_by_mode[mode]
+            require(intervals and min(line.distance(Point(endpoint)) for line in intervals) <= tolerance,
+                    'Boundary source/target is outside eligible walking intervals or mode-compatible road intervals')
             if entering:
                 actual = tracks[event['observation_track_id']][0][1]
                 require(math.dist(actual, endpoint) <= tolerance, 'Admission differs from sampled boundary origin')

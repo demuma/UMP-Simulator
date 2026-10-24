@@ -106,6 +106,39 @@ class ViewerTests(unittest.TestCase):
             value['boundary_intervals'][0].update(mode=mode,spawn_supported=False)
             (self.root/'building_access.json').write_text(json.dumps(value));serve.validate_bundle(self.root)
 
+    def add_mixed_traffic_access(self):
+        value=self.add_storefront_access()
+        value['boundary_intervals'].append({'id':'road-west','mode':'road','side':'west',
+            'points':[[0,30],[0,36]],'length_m':6,'spawn_supported':True,
+            'provenance':'synthetic_rider_source_on_body_safe_frozen_carriageway'})
+        value['navigation'].update(spaces=[{'id':'carriageway-east','mode':'road','body_clearance_m':1.05,
+            'allowed_center_polygons_sha256':'b'*64}],synthetic_crossing_connectors=[{
+                'id':'crossing-1','centerline':[[30,25],[30,45]],'width_m':4,
+                'provenance':'synthetic_crossing_and_curb_gap_connector'}])
+        (self.root/'building_access.json').write_text(json.dumps(value));return value
+
+    def test_mixed_traffic_navigation_spaces_and_declared_road_sources_validate(self):
+        self.add_mixed_traffic_access();self.write();serve.validate_bundle(self.root)
+
+    def test_mixed_traffic_nested_fields_and_geometry_are_strictly_bounded(self):
+        for mutation in ('missing_space','space_private','space_digest','space_clearance','duplicate_space',
+                         'crossing_private','crossing_provenance','crossing_width','crossing_outside','duplicate_crossing','road_provenance','unknown_mode'):
+            with self.subTest(mutation=mutation):
+                value=self.add_mixed_traffic_access();nav=value['navigation']
+                if mutation=='missing_space':nav['spaces']=[]
+                if mutation=='space_private':nav['spaces'][0]['person_id']='private'
+                if mutation=='space_digest':nav['spaces'][0]['allowed_center_polygons_sha256']='invalid'
+                if mutation=='space_clearance':nav['spaces'][0]['body_clearance_m']=0
+                if mutation=='unknown_mode':nav['spaces'][0]['mode']='unknown'
+                if mutation=='duplicate_space':nav['spaces'].append(copy.deepcopy(nav['spaces'][0]))
+                if mutation=='crossing_private':nav['synthetic_crossing_connectors'][0]['track_id']='private'
+                if mutation=='crossing_provenance':nav['synthetic_crossing_connectors'][0]['provenance']='surveyed'
+                if mutation=='crossing_width':nav['synthetic_crossing_connectors'][0]['width_m']=21
+                if mutation=='crossing_outside':nav['synthetic_crossing_connectors'][0]['centerline'][0]=[-1,30]
+                if mutation=='duplicate_crossing':nav['synthetic_crossing_connectors'].append(copy.deepcopy(nav['synthetic_crossing_connectors'][0]))
+                if mutation=='road_provenance':value['boundary_intervals'][-1]['provenance']='derived_frozen_functional_zone_boundary'
+                (self.root/'building_access.json').write_text(json.dumps(value));self.rejected()
+
     def test_storefront_v2_manual_override_preserves_exact_checked_door_without_orthogonal_claim(self):
         value=self.add_storefront_access();front=value['store_fronts'][0]
         front['projection_method']='manual_original_facade_override'

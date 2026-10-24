@@ -1,0 +1,12 @@
+{
+  "schema": "ump.compact-urban-policy-evidence.v1",
+  "scope": "Aggregate results, protocol, generated report and one scientific PNG only. No source observations, sampled motion, private track IDs, schedules or full release/event streams.",
+  "files_sha256": {
+    "docs/verification/urban-policy-comparison-2026-10-24/summary.json": "edd27d47f9a7a136d55c1eba6d141aa6bb6b1e5896dacc29451e2bb8ba90837a",
+    "docs/verification/urban-policy-comparison-2026-10-24/protocol.json": "24f9293ef2b845d2b7e7123eed30e0777244682dee59151483aaa179b11e67c0",
+    "docs/verification/urban-policy-comparison-2026-10-24/report.md": "9af194e4759c06430df2334b38f823ad5869f996ed471d79ae8b4d0647db9d69",
+    "docs/verification/urban-policy-comparison-2026-10-24/figure-provenance.json": "569ecf7f84aad95619f782faa524fd486d9c3a110a99bb41c8a92414b1b8d887",
+    "docs/verification/urban-policy-comparison-2026-10-24/native-offline-agreement.json": "27cebcb000d32773fd3739d0cb11a3b74997bea8c62771ffad54bc883d5c42cb",
+    "docs/figures/urban-policy-comparison-2026-10-24.png": "d6d38e91bd0c5b8b17cd059d537a582634eddb7f2c579d67ae7fed1224d18a62"
+  }
+}

@@ -1,0 +1,423 @@
+{
+  "schema": "ump.recorded-flow-aggregate-check.v1",
+  "data_role": "private_research_source_inspection_aggregate",
+  "status": "pass",
+  "source_sha256": {
+    "observations.json": "f43a28abaa253816e34732f29f07f63b953ecc40f57aae884c349329c6b9a1a1",
+    "building_access.json": "f416b9ee8530756b42a2e7f9dd2b8615e2d2955308eaba3ccc62e7abfcad5863",
+    "capture-proof.json": "916d27efb90f93f18d059706e8b9f84c82269b3e02e8ecab2bc4171e2a5fc45f",
+    "frozen_map_compressed_source": "508ca79545419b1f1028b79a1f8a12684b8a6ed53e95b2d94fb36094298388f3",
+    "frozen_map_geometry": "afa2690e408f467af5ff679770bf872816cc568714d9171cf4efb493809e40ed",
+    "frozen_map_builder": "fcb86b023818d60c0082d62ad9510fdb0367228981dc9a80089081f1094c39d3"
+  },
+  "clock": {
+    "observation_period_ms": 100,
+    "native_gt_step_ms": 50,
+    "horizon_ms": 240000,
+    "observed_samples": 2399,
+    "empty_observed_samples": 362,
+    "first_observed_at_ms": 100,
+    "last_observed_at_ms": 239900,
+    "scope": "Recorded GT positions sampled at the 100-ms AGBS cadence, independently matched to actual raw AGBS counts. This is the private motion reference, not recipient release trajectories. Sampling can miss larger 50-ms or between-sample concurrency."
+  },
+  "source_counts": {
+    "scheduled_synthetic_people": 256,
+    "scheduled_visible_episodes": 360,
+    "distinct_observed_tracks": 357,
+    "sampled_observation_contributions": 187745,
+    "peak_observed_road_users": {
+      "maximum": 224,
+      "first_at_ms": 38300,
+      "samples_at_maximum": 2,
+      "samples_at_least_two": 1998,
+      "samples_at_least_three": 1888
+    },
+    "peak_observed_pedestrians": {
+      "maximum": 189,
+      "first_at_ms": 38200,
+      "samples_at_maximum": 5,
+      "samples_at_least_two": 1998,
+      "samples_at_least_three": 1888
+    },
+    "peak_observed_riders": {
+      "maximum": 39,
+      "first_at_ms": 35700,
+      "samples_at_maximum": 3,
+      "samples_at_least_two": 877,
+      "samples_at_least_three": 856
+    },
+    "scope": "A visible episode has a new observed track; distinct tracks are not distinct persistent people. Peaks are sampled concurrency, not total cohort size.",
+    "not_represented_at_reference_sampling": 3,
+    "observed_synthetic_people_via_private_configuration_oracle": 253
+  },
+  "observed_types": [
+    {
+      "type": "Adult Cyclist",
+      "distinct_observed_tracks": 17,
+      "sampled_observation_contributions": 6177,
+      "sampled_peak": 13,
+      "first_peak_at_ms": 33000
+    },
+    {
+      "type": "Adult E-Scooter Driver",
+      "distinct_observed_tracks": 17,
+      "sampled_observation_contributions": 6056,
+      "sampled_peak": 13,
+      "first_peak_at_ms": 34400
+    },
+    {
+      "type": "Adult Pedestrian",
+      "distinct_observed_tracks": 68,
+      "sampled_observation_contributions": 38168,
+      "sampled_peak": 42,
+      "first_peak_at_ms": 43000
+    },
+    {
+      "type": "Child Pedestrian",
+      "distinct_observed_tracks": 63,
+      "sampled_observation_contributions": 35088,
+      "sampled_peak": 38,
+      "first_peak_at_ms": 34900
+    },
+    {
+      "type": "Pedestrian With Mobility Aid",
+      "distinct_observed_tracks": 64,
+      "sampled_observation_contributions": 34606,
+      "sampled_peak": 40,
+      "first_peak_at_ms": 37200
+    },
+    {
+      "type": "Pedestrian With Stroller",
+      "distinct_observed_tracks": 62,
+      "sampled_observation_contributions": 35929,
+      "sampled_peak": 40,
+      "first_peak_at_ms": 38200
+    },
+    {
+      "type": "Senior Cyclist",
+      "distinct_observed_tracks": 17,
+      "sampled_observation_contributions": 6048,
+      "sampled_peak": 13,
+      "first_peak_at_ms": 31700
+    },
+    {
+      "type": "Senior Pedestrian",
+      "distinct_observed_tracks": 49,
+      "sampled_observation_contributions": 25673,
+      "sampled_peak": 32,
+      "first_peak_at_ms": 35300
+    }
+  ],
+  "crossing_occupancy": {
+    "union_connector_rectangles": {
+      "maximum": 38,
+      "first_at_ms": 61700,
+      "samples_at_maximum": 4,
+      "samples_at_least_two": 1520,
+      "samples_at_least_three": 1400
+    },
+    "union_connector_and_frozen_road_surface": {
+      "maximum": 21,
+      "first_at_ms": 46300,
+      "samples_at_maximum": 5,
+      "samples_at_least_two": 1302,
+      "samples_at_least_three": 1132
+    },
+    "per_connector": [
+      {
+        "label": "Distributed connector 1",
+        "declared_width_m": 4.0,
+        "sampled_connector_center_occupancy": {
+          "maximum": 6,
+          "first_at_ms": 41400,
+          "samples_at_maximum": 39,
+          "samples_at_least_two": 983,
+          "samples_at_least_three": 662
+        },
+        "sampled_road_surface_center_occupancy": {
+          "maximum": 5,
+          "first_at_ms": 46200,
+          "samples_at_maximum": 15,
+          "samples_at_least_two": 475,
+          "samples_at_least_three": 170
+        },
+        "distinct_observed_pedestrian_tracks_in_connector": 49
+      },
+      {
+        "label": "Distributed connector 2",
+        "declared_width_m": 4.0,
+        "sampled_connector_center_occupancy": {
+          "maximum": 7,
+          "first_at_ms": 60900,
+          "samples_at_maximum": 12,
+          "samples_at_least_two": 455,
+          "samples_at_least_three": 262
+        },
+        "sampled_road_surface_center_occupancy": {
+          "maximum": 5,
+          "first_at_ms": 60800,
+          "samples_at_maximum": 7,
+          "samples_at_least_two": 241,
+          "samples_at_least_three": 105
+        },
+        "distinct_observed_pedestrian_tracks_in_connector": 33
+      },
+      {
+        "label": "Distributed connector 3",
+        "declared_width_m": 4.0,
+        "sampled_connector_center_occupancy": {
+          "maximum": 14,
+          "first_at_ms": 65000,
+          "samples_at_maximum": 6,
+          "samples_at_least_two": 661,
+          "samples_at_least_three": 526
+        },
+        "sampled_road_surface_center_occupancy": {
+          "maximum": 7,
+          "first_at_ms": 59500,
+          "samples_at_maximum": 17,
+          "samples_at_least_two": 430,
+          "samples_at_least_three": 239
+        },
+        "distinct_observed_pedestrian_tracks_in_connector": 49
+      },
+      {
+        "label": "Distributed connector 4",
+        "declared_width_m": 4.0,
+        "sampled_connector_center_occupancy": {
+          "maximum": 10,
+          "first_at_ms": 44700,
+          "samples_at_maximum": 10,
+          "samples_at_least_two": 942,
+          "samples_at_least_three": 625
+        },
+        "sampled_road_surface_center_occupancy": {
+          "maximum": 5,
+          "first_at_ms": 41300,
+          "samples_at_maximum": 62,
+          "samples_at_least_two": 489,
+          "samples_at_least_three": 269
+        },
+        "distinct_observed_pedestrian_tracks_in_connector": 63
+      },
+      {
+        "label": "Preferred Barkhof connector",
+        "declared_width_m": 4.0,
+        "sampled_connector_center_occupancy": {
+          "maximum": 13,
+          "first_at_ms": 37600,
+          "samples_at_maximum": 11,
+          "samples_at_least_two": 812,
+          "samples_at_least_three": 601
+        },
+        "sampled_road_surface_center_occupancy": {
+          "maximum": 8,
+          "first_at_ms": 40200,
+          "samples_at_maximum": 15,
+          "samples_at_least_two": 551,
+          "samples_at_least_three": 413
+        },
+        "distinct_observed_pedestrian_tracks_in_connector": 58
+      }
+    ],
+    "scope": "Center-based occupancy in explicit synthetic connector rectangles, separately intersected with the unchanged frozen modeled road polygon. Connector rectangles include approach sections. Union counts deduplicate overlaps. Presence proves sampled simultaneous road occupancy; it does not count completed crossings, infer legal rights, traffic priority or collision safety."
+  },
+  "doorway_occupancy": {
+    "union_declared_throat_center_occupancy": {
+      "maximum": 11,
+      "first_at_ms": 107200,
+      "samples_at_maximum": 3,
+      "samples_at_least_two": 1128,
+      "samples_at_least_three": 1006
+    },
+    "per_shop": [
+      {
+        "shop": "Apollo",
+        "declared_transition_center_mask": {
+          "maximum": 4,
+          "first_at_ms": 107200,
+          "samples_at_maximum": 5,
+          "samples_at_least_two": 270,
+          "samples_at_least_three": 91
+        },
+        "exterior_15cm_facade_band_center_mask": {
+          "maximum": 1,
+          "first_at_ms": 17000,
+          "samples_at_maximum": 71,
+          "samples_at_least_two": 0,
+          "samples_at_least_three": 0
+        },
+        "exterior_3m_vicinity_center_mask": {
+          "maximum": 6,
+          "first_at_ms": 84600,
+          "samples_at_maximum": 25,
+          "samples_at_least_two": 598,
+          "samples_at_least_three": 323
+        }
+      },
+      {
+        "shop": "Ditsch",
+        "declared_transition_center_mask": {
+          "maximum": 4,
+          "first_at_ms": 83400,
+          "samples_at_maximum": 10,
+          "samples_at_least_two": 332,
+          "samples_at_least_three": 122
+        },
+        "exterior_15cm_facade_band_center_mask": {
+          "maximum": 1,
+          "first_at_ms": 29400,
+          "samples_at_maximum": 83,
+          "samples_at_least_two": 0,
+          "samples_at_least_three": 0
+        },
+        "exterior_3m_vicinity_center_mask": {
+          "maximum": 6,
+          "first_at_ms": 97500,
+          "samples_at_maximum": 25,
+          "samples_at_least_two": 824,
+          "samples_at_least_three": 489
+        }
+      },
+      {
+        "shop": "Adidas Originals",
+        "declared_transition_center_mask": {
+          "maximum": 4,
+          "first_at_ms": 128500,
+          "samples_at_maximum": 3,
+          "samples_at_least_two": 536,
+          "samples_at_least_three": 84
+        },
+        "exterior_15cm_facade_band_center_mask": {
+          "maximum": 1,
+          "first_at_ms": 37500,
+          "samples_at_maximum": 81,
+          "samples_at_least_two": 0,
+          "samples_at_least_three": 0
+        },
+        "exterior_3m_vicinity_center_mask": {
+          "maximum": 9,
+          "first_at_ms": 84700,
+          "samples_at_maximum": 10,
+          "samples_at_least_two": 997,
+          "samples_at_least_three": 831
+        }
+      },
+      {
+        "shop": "H&M HOME",
+        "declared_transition_center_mask": {
+          "maximum": 4,
+          "first_at_ms": 81100,
+          "samples_at_maximum": 7,
+          "samples_at_least_two": 761,
+          "samples_at_least_three": 187
+        },
+        "exterior_15cm_facade_band_center_mask": {
+          "maximum": 1,
+          "first_at_ms": 32000,
+          "samples_at_maximum": 75,
+          "samples_at_least_two": 0,
+          "samples_at_least_three": 0
+        },
+        "exterior_3m_vicinity_center_mask": {
+          "maximum": 10,
+          "first_at_ms": 42200,
+          "samples_at_maximum": 10,
+          "samples_at_least_two": 1234,
+          "samples_at_least_three": 1057
+        }
+      }
+    ],
+    "mask_definitions": {
+      "declared_transition": "Facade tangent +/- half the declared width; outward normal depth -0.56..1.70 m, matching the finite declared facade exception.",
+      "exterior_facade_band": "Facade tangent +/- half declared width; exterior normal depth 0..0.15 m.",
+      "exterior_vicinity": "Center within 3 m of the declared entrance on its exterior half-plane."
+    },
+    "scope": "Centers inside explicitly defined geometry, not whole-body intersection counts or door ownership/grants. Throat occupancy, the near-facade band and approach vicinity are separate. These observations alone do not prove simultaneous entry/exit, direction of travel or admission at the exact facade line."
+  },
+  "calculation": {
+    "method": "Dot products for oriented rectangles and boundary-inclusive polygon ray tests; no per-observation Shapely geometry creation. No private native_source.json read.",
+    "wall_seconds": 1.3130171659999998
+  },
+  "limitations": [
+    "No road-user IDs, coordinates or individual trajectories are saved in this artifact.",
+    "All map/crossing/access assumptions are those of this frozen synthetic scenario.",
+    "This source-flow check is separate from policy satisfaction, publication utility, empirical privacy and runtime benchmarking.",
+    "Three GT episodes are absent from the 100-ms motion reference: two zero-motion same-interval boundary trips and one 1.2-s excluded-boundary skim. This is an explicit source-quality defect for the next gate, preceding aggregation."
+  ],
+  "missing_reference_episodes": {
+    "count": 3,
+    "details_without_identifiers": [
+      {
+        "type": "Adult Pedestrian",
+        "duration_ms": 50,
+        "source_sample_phase_ms": 50,
+        "recorded_gt_frames": 1,
+        "gt_frames_inside_half_open_detection": 0,
+        "gt_frames_on_sensor_clock": 0,
+        "gt_frames_on_sensor_clock_and_inside_detection": 0,
+        "all_gt_centers_on_excluded_east_detection_boundary": true,
+        "source_map_edge": "east",
+        "sink_map_edge": "east",
+        "source_and_sink_same_declared_interval": true,
+        "source_distance_to_permitted_sink_interval_m": 0.0,
+        "configured_guide_length_m": 132.40088016182452,
+        "configured_endpoint_separation_m": 7.476462292142607,
+        "realized_gt_travel_length_including_terminal_step_m": 5.754617546926966e-07,
+        "realized_endpoint_displacement_m": 5.754617546926966e-07,
+        "classification": "degenerate_same_interval_zero_motion_within_one_micrometer",
+        "interpretation": "This 50-ms episode starts on its permitted sink interval and moves less than one micrometer before finishing. It has no 100-ms sample and remains on the excluded x=max_x sensor boundary."
+      },
+      {
+        "type": "Senior Pedestrian",
+        "duration_ms": 50,
+        "source_sample_phase_ms": 50,
+        "recorded_gt_frames": 1,
+        "gt_frames_inside_half_open_detection": 0,
+        "gt_frames_on_sensor_clock": 0,
+        "gt_frames_on_sensor_clock_and_inside_detection": 0,
+        "all_gt_centers_on_excluded_east_detection_boundary": true,
+        "source_map_edge": "east",
+        "sink_map_edge": "east",
+        "source_and_sink_same_declared_interval": true,
+        "source_distance_to_permitted_sink_interval_m": 0.0,
+        "configured_guide_length_m": 97.08275016268864,
+        "configured_endpoint_separation_m": 1.0336696509995704,
+        "realized_gt_travel_length_including_terminal_step_m": 2.912193046711309e-07,
+        "realized_endpoint_displacement_m": 2.912193046711309e-07,
+        "classification": "degenerate_same_interval_zero_motion_within_one_micrometer",
+        "interpretation": "This 50-ms episode starts on its permitted sink interval and moves less than one micrometer before finishing. It has no 100-ms sample and remains on the excluded x=max_x sensor boundary."
+      },
+      {
+        "type": "Child Pedestrian",
+        "duration_ms": 1200,
+        "source_sample_phase_ms": 50,
+        "recorded_gt_frames": 24,
+        "gt_frames_inside_half_open_detection": 0,
+        "gt_frames_on_sensor_clock": 12,
+        "gt_frames_on_sensor_clock_and_inside_detection": 0,
+        "all_gt_centers_on_excluded_east_detection_boundary": true,
+        "source_map_edge": "east",
+        "sink_map_edge": "south",
+        "source_and_sink_same_declared_interval": false,
+        "source_distance_to_permitted_sink_interval_m": 1.5749496406279206,
+        "configured_guide_length_m": 1.9859519656871378,
+        "configured_endpoint_separation_m": 1.9859519656871378,
+        "realized_gt_travel_length_including_terminal_step_m": 1.574951171875,
+        "realized_endpoint_displacement_m": 1.574951171875,
+        "classification": "boundary_skimming_episode_outside_half_open_sensor_detection",
+        "interpretation": "This 1200-ms episode has 12 source frames on the 100-ms clock, but all remain on x=max_x, excluded by the half-open detection area. Its absence is spatial boundary skimming, not only temporal undersampling."
+      }
+    ],
+    "registered_gt_episodes": 360,
+    "reference_observed_tracks": 357,
+    "method": "Small configuration plus bounded lifecycle/selected-GT-document extraction using read-only C-level mmap byte searches. Only 26 GT rows for the three missing episodes are decoded; the full private GT object is never loaded.",
+    "selected_gt_rows_decoded": 26,
+    "selected_gt_and_lifecycle_rows_decoded": 32,
+    "source_quality_issue": true,
+    "frozen_source_modified": false,
+    "next_gate": "For future source configurations, reject origins already on their permitted sink interval and validate that a declared visible trip actually enters the half-open sensor interior. Finite lifecycle completion alone does not establish a meaningful observable trip. Review mandatory crossing intent versus guide shortcuts separately; preserve this recorded run as evidence.",
+    "scope": "These omissions precede aggregation. They are not aggregator suppression or a publication-policy violation. The two 50-ms episodes have both a temporal-sampling and excluded-boundary cause; the 1200-ms case is excluded-boundary coverage.",
+    "wall_seconds": 1.937235333
+  }
+}

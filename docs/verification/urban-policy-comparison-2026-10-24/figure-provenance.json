@@ -1,0 +1,83 @@
+{
+  "schema": "ump.support-policy-figure.v1",
+  "summary_sha256": "edd27d47f9a7a136d55c1eba6d141aa6bb6b1e5896dacc29451e2bb8ba90837a",
+  "methods": [
+    "adaptive_immediate",
+    "fixed_5m_400ms",
+    "fixed_5m_1000ms",
+    "fixed_10m_400ms",
+    "fixed_10m_1000ms"
+  ],
+  "profiles": [
+    "original",
+    "support60"
+  ],
+  "metrics": {
+    "retention": {
+      "original": [
+        61.76835601480731,
+        24.36602838957096,
+        29.103305014780688,
+        50.88764015020374,
+        52.68103012064236
+      ],
+      "support60": [
+        78.69503848304882,
+        50.342752137207384,
+        55.39641535060854,
+        65.6363684785214,
+        66.8454552717782
+      ]
+    },
+    "semantic_loss": {
+      "original": [
+        64.2264609759673,
+        56.07922004109649,
+        57.446925329428986,
+        65.07499555155486,
+        65.24376680888925
+      ],
+      "support60": [
+        58.77553368619116,
+        57.24216005755639,
+        57.94584823660629,
+        59.74973423463633,
+        59.246687224599405
+      ]
+    },
+    "side": {
+      "original": [
+        9.384135141893815,
+        5.0,
+        5.0,
+        10.0,
+        10.0
+      ],
+      "support60": [
+        8.676876192925697,
+        5.0,
+        5.0,
+        10.0,
+        10.0
+      ]
+    },
+    "delay_p95": {
+      "original": [
+        1.4000000000000001,
+        0.4,
+        1.0,
+        0.4,
+        1.0
+      ],
+      "support60": [
+        0.8,
+        0.4,
+        1.0,
+        0.4,
+        1.0
+      ]
+    }
+  },
+  "missing_value_rule": "No bar, explicitly marked n/a; never substituted with zero.",
+  "scope": "Aggregate-only policy sensitivity. Between-policy differences change the protection contract; no privacy-gain claim."
+}

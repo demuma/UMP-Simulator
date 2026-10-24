@@ -1,0 +1,62 @@
+{
+  "schema": "ump.capture-streaming-verification.v1",
+  "status": "pass",
+  "default_capture_mib": 2048,
+  "accepted_capture_mib": [
+    256,
+    512,
+    1024,
+    2048
+  ],
+  "json_artifact_limit_bytes": 2147483648,
+  "transport": "Explicitly awaited per-record Mongo cursor, about 1 MiB UTF-8 chunks, subprocess stdout temporary file, Python file-size guard, json.load validator input.",
+  "per_collection_record_bound": "Selected byte budget in bytes; no fixed one-million-record ceiling. Byte limit is authoritative.",
+  "read_timeout_seconds": 360,
+  "regression_tests": {
+    "passed": 49,
+    "failed": 0,
+    "wall_seconds": 1.943330625,
+    "log_sha256": "766a2c456d30694717e6023db579482539ce28693d2e2db16bc56493147b0b94",
+    "coverage": [
+      "Invalid and out-of-range budgets rejected before reads/writes",
+      "Actual JavaScript UTF-8 framing and total-byte cap against an asynchronous cursor double",
+      "Mock collection count above one million accepted under 2 GiB budget",
+      "Truncated JSON, invalid UTF-8 and subprocess errors rejected with temporary descriptor cleanup",
+      "Sparse mocked oversized 2 GiB encoder chunk rejected before write; incomplete owned files removed",
+      "Existing files preserved; compact JSON byte output and source verification retained"
+    ]
+  },
+  "small_live_mongodb_smoke": {
+    "status": "pass",
+    "actual_fresh_owned_mongodb_records": 2,
+    "unicode_date_objectid_projection_preserved": true,
+    "default_capture_limit_bytes": 2147483648,
+    "stream_chunk_target_bytes": 1048576,
+    "bounded_read_timeout_seconds": 360,
+    "owned_smoke_databases_remaining": 0,
+    "wall_seconds": 1.2173282920000001
+  },
+  "source_file_sha256": {
+    "tools/mapped_scene/export_replay.py": "1660f0fb788c03a1cd24180a41926a45cb4ba5824356d1e95ff0ab052c1b7f5f",
+    "tools/mapped_scene/run_scene.py": "f0afe1bfe6c5db680bde0021afb880050129dcb3686832435eb391cc266fecd7",
+    "tools/mapped_scene/test_export_replay.py": "a1990807b1a2c2e53e37ef24550f0f442d41ea3c522de0bdac9d0b370db410a5"
+  },
+  "scope": "No actual 2 GiB movement file generated. The existing verified native replay and its historical 512-MiB proof were neither re-exported nor modified. Smoke used only fresh owned UUID databases and removed them. Generated motion remains outside Git.",
+  "limitations": [
+    "The byte cap limits serialized file size, not Python or browser memory.",
+    "Python validators still construct the complete parsed JSON object. No 2 GiB playback or constant-memory validation guarantee is claimed."
+  ],
+  "final_review_followup": {
+    "status": "pass",
+    "change": "Serialize only four database/collection pairs in mongosh --eval; unrelated route/person/geometry size cannot exhaust OS argument budget.",
+    "exporter_unit_checks": 50,
+    "ctest_group": "mapped_export_replay_tools",
+    "ctest_wall_seconds": 2.0,
+    "log_sha256": "8698a2f6f03d2524e002de53e1dd59fd77ecd9ef91ce23d52d2b464886ae3320",
+    "regression": "A scene containing more than 1 MiB of unrelated private movement configuration produces the same bounded Mongo script as a small scene.",
+    "source_file_sha256": {
+      "tools/mapped_scene/export_replay.py": "97418473fd14a6694d5ab8aea015713f92dfe787639a9d5f9dc4c9c9134fbbf1",
+      "tools/mapped_scene/test_export_replay.py": "7f82f9834939092cb98caf570a6052db78a664ff96d16d7869ee1c50cba6a4b2"
+    }
+  }
+}

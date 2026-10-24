@@ -1,0 +1,115 @@
+{
+  "schema": "ump.matched-urban-source-evidence.v1",
+  "created_at_utc": "2026-10-24T15:38:13.467250+00:00",
+  "scope": "Configuration-level matched controls and static geometry evidence. No sampled movement, identities or trajectory coordinates. Native finite-drain and run-time timing outcomes must be read from their separate reports.",
+  "generator_sha256": {
+    "urban_traffic_scene.py": "33d87c32a362af2cb4b3c9f1de06b2f6be20550dbea646726ce1610caa619130",
+    "storefront_scene.py": "6af056a4a712ec0f222020049036bddd8098046bea8faac266ff33474aa123d7",
+    "build_mapped_scene.py": "9386b31f0c2b4b77b6dc4e125f1e569f097ddb95073e590da9c4e09c6d4f5f18"
+  },
+  "comparisons": [
+    {
+      "people": 128,
+      "seed": 20261024,
+      "arrival_interval_ms": 150,
+      "configuration_sha256": {
+        "shared": "b18765ca4f060a610c4974df6722f5d06f5602c701c98fd258d9ded859c9f1a0",
+        "directional": "1dd23d37a428330b56c99a4768e19bf36dde9fe6a5aee66c0ada750f93796faa"
+      },
+      "matched_invariants": {
+        "people_equal": true,
+        "labels_equal": true,
+        "speeds_equal": true,
+        "radii_equal": true,
+        "schedules_equal": true,
+        "pedestrian_routes_equal": true,
+        "rider_guides_equal": true,
+        "policy_tree_equal": true,
+        "semantic_taxonomy_equal": true
+      },
+      "minimum_opposing_center_space_distance_m": 2.104,
+      "intentional_change": "Two independently eroded rider direction spaces and their source/sink intervals replace the shared carriageway space. Rider guides, pedestrian movement inputs and aggregation policy are unchanged. Fresh owned DB namespaces differ.",
+      "required_center_separation_for_two_largest_cyclists_m": 2.05
+    },
+    {
+      "people": 256,
+      "seed": 20261024,
+      "arrival_interval_ms": 150,
+      "configuration_sha256": {
+        "shared": "21d9675be68da52d14a1ddb4a73f5dad75e5c65354530f408bed48e3aeedb3c2",
+        "directional": "c58bb7832e22c9ca1e939866bfdcdf587274713a0a28eac8c11cb4e89b98b80d"
+      },
+      "matched_invariants": {
+        "people_equal": true,
+        "labels_equal": true,
+        "speeds_equal": true,
+        "radii_equal": true,
+        "schedules_equal": true,
+        "pedestrian_routes_equal": true,
+        "rider_guides_equal": true,
+        "policy_tree_equal": true,
+        "semantic_taxonomy_equal": true
+      },
+      "minimum_opposing_center_space_distance_m": 2.104,
+      "intentional_change": "Two independently eroded rider direction spaces and their source/sink intervals replace the shared carriageway space. Rider guides, pedestrian movement inputs and aggregation policy are unchanged. Fresh owned DB namespaces differ.",
+      "required_center_separation_for_two_largest_cyclists_m": 2.05
+    }
+  ],
+  "regression_results": {
+    "independent_motion_audit": {
+      "passed": 15,
+      "failed": 0,
+      "status": "pass",
+      "exit_code": 0,
+      "wall_seconds": 0.11155858299999011,
+      "log_sha256": "6a028026f6f3524360c5e047a043c23aa5df4aea4f80f46f26325d9d44b067d8"
+    },
+    "mapped_replay_export": {
+      "passed": 44,
+      "failed": 0,
+      "status": "pass",
+      "exit_code": 0,
+      "wall_seconds": 1.6617344170000052,
+      "log_sha256": "ebfb5c9610980604ff733a837d9e67243f03efad1fe873eb5f1485348ca657ad"
+    },
+    "viewer_schema": {
+      "passed": 65,
+      "failed": 0,
+      "status": "pass",
+      "exit_code": 0,
+      "wall_seconds": 1.798944082999995,
+      "log_sha256": "531e4443016b6e3cc25078c507c44617684b9a80814022c4b1c5bffcbfd46507"
+    },
+    "viewer_model": {
+      "passed": 74,
+      "failed": 0
+    },
+    "expanded_storefront_generator_suite": {
+      "status": "pass",
+      "test_cases": 18,
+      "exit_code": 0,
+      "wall_seconds": 73.483365792,
+      "log_sha256": "a5701bc9946978ddb3e0b67fa98c9b21db5c166a94c7b4a05b5ad5a6dd322062",
+      "passed": 18,
+      "failed": 0
+    },
+    "dense_native_urban_acceptance": {
+      "status": "registered_pending_final_binary",
+      "ctest_name": "mapped_urban_traffic_drain_tools",
+      "people": 256,
+      "visible_episodes": 360,
+      "seed": 20261024,
+      "arrival_interval_ms": 150,
+      "road_user_fraction": 0.2,
+      "horizon_ms": 900000,
+      "ctest_wall_budget_s": 300,
+      "internal_subprocess_wall_budget_s": 240,
+      "reason": "The 256-person source exposed northern-boundary projection loops missed by the passing 128-person source. Registration is not a passing native result."
+    }
+  },
+  "limitations": [
+    "The earlier 256-person shared-space high-pressure source did not drain by 900 simulated seconds. It remains a failed control, not discarded evidence.",
+    "Direction-specific spaces do not establish general deadlock freedom, ORCA behavior, empirical realism, traffic legality, privacy protection or a hard real-time guarantee."
+  ],
+  "regression_scope": "Final frozen Python source: all 18 generator, 15 independent motion audit, 44 export and 65 viewer tests pass. Earlier full CTest was 87/88 while direction-space edits were in flight; its stale single-name assertion failure is covered by the final passing 18-case generator rerun. This artifact does not claim a new full CTest run."
+}

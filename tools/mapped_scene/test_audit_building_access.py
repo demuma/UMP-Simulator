@@ -176,6 +176,49 @@ class NavigationAuditTests(unittest.TestCase):
             audit(cfg, raw)
 
 
+    def test_route_specific_space_checks_positions_sweeps_and_mode_boundaries(self):
+        cfg,raw,context,layers=navigation_fixture()
+        navigation=cfg['mapped_scene']['motion']['navigation']
+        navigation['spaces']=[{'id':'carriageway-east','allowed_center_polygons':[{'outer':[[0,2],[10,2],[10,3],[0,3]]}]}]
+        cfg['mapped_scene']['routes'].append({'id':'rider-route','navigation_space':'carriageway-east',
+            'points':[[0,2.5],[10,2.5]],'start_portal':'road-west','end_portal':'road-east'})
+        cfg['mapped_scene']['people'].append({'radius_m':.25,'speed_mps':10,
+            'episodes':[{'track_id':'rider','route_id':'rider-route','start_ms':0}]})
+        origin=datetime(2026,10,24,tzinfo=timezone.utc)
+        for ms in range(0,1000,50):
+            raw['agents'].append({'data_type':'agent data','agent_id':'rider',
+                'timestamp':(origin+timedelta(milliseconds=ms)).isoformat(),
+                'position':{'x':ms/100,'y':2.5},'velocity':{'x':10 if ms else 0,'y':0}})
+        for kind,ms,portal in [('visible_start',0,'road-west'),('visible_end',1000,'road-east')]:
+            raw['agents'].append({'data_type':'mapped lifecycle event','event':kind,
+                'observation_track_id':'rider','timestamp':(origin+timedelta(milliseconds=ms)).isoformat(),'portal_id':portal})
+        context['navigation']={'spaces':[{'id':'carriageway-east','mode':'road'}]}
+        context['boundary_intervals'] += [{'points':[[x,2],[x,3]],'mode':'road','spawn_supported':True} for x in (0,10)]
+        layers['road']=box(0,2,10,3)
+        layers['buildings']=box(0,1.3,10,1.9)
+        result=audit(cfg,raw,public_context=context,map_layers=layers)
+        self.assertEqual(result['boundary_endpoint_checks'],4)
+        cfg['mapped_scene']['routes'][-1]['end_boundary']=[[10,2],[10,3]]
+        cfg['mapped_scene']['people'][-1]['speed_mps']=11
+        end=next(row for row in raw['agents'] if row.get('observation_track_id')=='rider' and row['event']=='visible_end')
+        end['position']={'x':10,'y':2.55}
+        self.assertEqual(audit(cfg,raw,public_context=context,map_layers=layers)['boundary_endpoint_checks'],4)
+        end.pop('position')
+        with self.assertRaisesRegex(ValueError,'explicit finite terminal position'):
+            audit(cfg,raw)
+        end['position']={'x':9.9,'y':2.55}
+        with self.assertRaisesRegex(ValueError,'declared exit interval'):
+            audit(cfg,raw)
+        end['position']={'x':10,'y':2.55}
+        cfg['mapped_scene']['routes'][-1].pop('navigation_space')
+        with self.assertRaisesRegex(ValueError,'position leaves navigation'):
+            audit(cfg,raw)
+        cfg['mapped_scene']['routes'][-1]['navigation_space']='carriageway-east'
+        next(r for r in raw['agents'] if r.get('agent_id')=='rider')['position']['y']=1.8
+        with self.assertRaisesRegex(ValueError,'position leaves navigation'):
+            audit(cfg,raw)
+
+
 class BuildingAccessAuditTests(unittest.TestCase):
     def test_two_doors_exact_arrival_return_and_body_clearance(self):
         cfg, raw = fixture()

@@ -1,5 +1,7 @@
 #include "MappedSceneConfiguration.hpp"
+#include <algorithm>
 #include <iostream>
+#include <optional>
 #include <set>
 #include <stdexcept>
 
@@ -31,7 +33,84 @@ people:
 )");
 }
 
-int drainConfiguration(const std::string& path, ump::AggregationTime endMs) {
+ump::AggregationTime observedPeriod(const std::string& text) {
+    require(!text.empty() && text.find_first_not_of("0123456789")==std::string::npos,
+        "Observation period must be a positive decimal integer");
+    const auto value=std::stoll(text);
+    require(value>0,"Observation period must be a positive decimal integer");
+    return value;
+}
+
+std::set<std::string> advanceAndObserve(ump::MappedScene& scene,ump::AggregationTime endMs,
+    ump::AggregationTime periodMs) {
+    const auto& cfg=scene.configuration();
+    require(cfg.motionMode!=ump::MappedMotionMode::Integration,
+        "Observation drain requires stateful mapped motion");
+    require(periodMs>0 && periodMs%cfg.motionStepMs==0,
+        "Observation period must be positive and aligned with the motion step");
+    require(endMs>0 && endMs%cfg.motionStepMs==0,
+        "Observation drain horizon must be positive and aligned with the motion step");
+    std::set<std::string> observed;
+    // Follow the numerical source cadence (50 ms in the mapped fixture), then
+    // observe only at positive sensor timestamps. t=0 is not a sensor sample.
+    for (ump::AggregationTime now=0;now<endMs;) {
+        now+=cfg.motionStepMs;
+        scene.advanceTo(now);
+        if (now%periodMs) continue;
+        for (const auto& track:scene.frameAt(now)) {
+            const auto point=track.position;
+            // Match grid sensor ownership exactly: upper edges are excluded.
+            // A lifecycle-complete track tangent to x=width is not observed.
+            if (point.x>=0 && point.x<cfg.width && point.y>=0 && point.y<cfg.height)
+                observed.insert(track.trackId);
+        }
+    }
+    return observed;
+}
+
+ump::MappedSceneConfig observedFixture(std::vector<ump::Point> points) {
+    ump::MappedSceneConfig cfg;
+    cfg.width=10;cfg.height=10;cfg.motionMode=ump::MappedMotionMode::CorridorFollowing;
+    cfg.motionStepMs=50;
+    ump::MappedRoute route;route.id="observation-route";route.points=std::move(points);
+    cfg.routes.push_back(route);
+    ump::MappedPerson person;person.personId="private-observation-person";
+    person.type="Pedestrian With Stroller";person.speedMps=2;
+    person.episodes.push_back({"observation-track",route.id,0});
+    cfg.people.push_back(person);
+    return cfg;
+}
+
+void observationGuardTests() {
+    ump::MappedScene transverse(observedFixture({{0,5},{10,5}}));
+    require(advanceAndObserve(transverse,6000,100).size()==1
+        && transverse.motionDiagnostics().realizedEnds==1,
+        "An interior transverse route was not observed before safe drainage");
+    ump::MappedScene lowerEdge(observedFixture({{0,1},{0,3}}));
+    require(advanceAndObserve(lowerEdge,2000,100).size()==1,
+        "The included lower-x coverage boundary was rejected");
+    ump::MappedScene tangent(observedFixture({{10,1},{10,3}}));
+    const auto missing=advanceAndObserve(tangent,2000,100);
+    require(missing.empty() && tangent.motionDiagnostics().realizedEnds==1,
+        "A max-x tangent route incorrectly counted as observed inside half-open coverage");
+    rejects([&]{require(missing.size()==1,"Lifecycle completion cannot replace sensor observation");});
+    auto shortConfig=observedFixture({{0,5},{.1,5}});
+    shortConfig.routes[0].endPortal="short-fixture-door"; // Legacy implicit portal at the internal endpoint.
+    ump::MappedScene shortEpisode(shortConfig);
+    require(advanceAndObserve(shortEpisode,200,100).empty()
+        && shortEpisode.motionDiagnostics().realizedEnds==1,
+        "An unsampled 50-ms episode was incorrectly rescued by a t=0 sample");
+    for (const auto* text:{"","0","-100","100x","100.0","+100"," 100"})
+        rejects([&]{observedPeriod(text);});
+    require(observedPeriod("100")==100,"A valid observation period changed");
+    for (const auto period:{0,75,-100}) {
+        ump::MappedScene invalid(observedFixture({{0,5},{10,5}}));
+        rejects([&]{advanceAndObserve(invalid,6000,period);});
+    }
+}
+
+int drainConfiguration(const std::string& path, ump::AggregationTime endMs,
+    std::optional<ump::AggregationTime> requiredObservedPeriod=std::nullopt) {
     const auto cfg=YAML::LoadFile(path);
     std::unordered_set<std::string> profiles;
     for (const auto& row:cfg["agents"]["road_user_taxonomy"])
@@ -45,7 +124,9 @@ int drainConfiguration(const std::string& path, ump::AggregationTime endMs) {
         "Drain horizon must be positive and aligned with the motion step");
     std::size_t expected=0;
     for (const auto& person:scene.configuration().people) expected+=person.episodes.size();
-    scene.advanceTo(endMs);
+    std::set<std::string> observed;
+    if(requiredObservedPeriod) observed=advanceAndObserve(scene,endMs,*requiredObservedPeriod);
+    else scene.advanceTo(endMs);
     const auto d=scene.motionDiagnostics();
     ump::AggregationTime lastEnd=0;
     std::set<std::string> starts,ends;
@@ -61,13 +142,16 @@ int drainConfiguration(const std::string& path, ump::AggregationTime endMs) {
         <<" navigation_steering="<<d.navigationSteeringSteps<<" navigation_replans="<<d.navigationReplans
         <<" navigation_replan_failures="<<d.navigationReplanFailures<<" navigation_search_max="<<d.navigationMaxSearchNodes
         <<" passage_wait_steps="<<d.passageWaitSteps<<" passage_batches="<<d.passageBatches
-        <<" passage_cleared_tracks="<<d.passageClearedTracks<<" max_passage_wait_ms="<<d.maxPassageWaitMs
-        <<" last_end_ms="<<lastEnd<<" horizon_ms="<<endMs<<'\n';
+        <<" passage_cleared_tracks="<<d.passageClearedTracks<<" max_passage_wait_ms="<<d.maxPassageWaitMs;
+    if(requiredObservedPeriod) std::cout<<" observed="<<observed.size()<<" observed_period_ms="<<*requiredObservedPeriod;
+    std::cout<<" last_end_ms="<<lastEnd<<" horizon_ms="<<endMs<<'\n';
     require(d.realizedStarts==expected && d.realizedEnds==expected && starts==ends
         && starts.size()==expected && scene.events().size()==2*expected,
         "Scheduled finite source did not produce exactly one realized start/end per track");
     require(d.activeTracks==0 && d.pendingTracks==0 && d.activeStalledTracks==0
         && d.overlapViolations==0,"Finite source did not drain safely within the declared horizon");
+    if(requiredObservedPeriod) require(observed.size()==expected && observed==starts,
+        "Finite source drained but some scheduled tracks were never observed inside half-open sensor coverage");
     return 0;
 }
 
@@ -75,10 +159,14 @@ int drainConfiguration(const std::string& path, ump::AggregationTime endMs) {
 int main(int argc,char** argv) {
     try {
         if(argc>1) {
-            require(argc==5 && std::string(argv[1])=="--drain-config" && std::string(argv[3])=="--end-ms",
-                "Usage: MappedSceneConfigurationTests --drain-config <config.yaml> --end-ms <horizon>");
-            return drainConfiguration(argv[2],std::stoll(argv[4]));
+            require((argc==5 || argc==7) && std::string(argv[1])=="--drain-config"
+                && std::string(argv[3])=="--end-ms"
+                && (argc==5 || std::string(argv[5])=="--require-observed-period-ms"),
+                "Usage: MappedSceneConfigurationTests --drain-config <config.yaml> --end-ms <horizon> [--require-observed-period-ms <period>]");
+            return drainConfiguration(argv[2],std::stoll(argv[4]),
+                argc==7 ? std::optional<ump::AggregationTime>{observedPeriod(argv[6])} : std::nullopt);
         }
+        observationGuardTests();
         const std::unordered_set<std::string> profiles{"Pedestrian With Stroller"};
         const auto read = [&](const YAML::Node& n) { return readMappedSceneConfiguration(n, 10, 10, profiles); };
         const ump::MappedScene scene(read(fixture()));
@@ -149,6 +237,35 @@ int main(int argc,char** argv) {
             && navigationConfig.navigation.maxReplanNodes==500
             && navigationConfig.navigation.narrowPassages.empty(),
             "Local navigation YAML lost its explicit geometry and bounded settings");
+        auto spaced=YAML::Clone(navigating);
+        spaced["motion"]["navigation"]["spaces"]=YAML::Load(R"([{id: road, center_clearance_m: .6,
+            allowed_center_polygons: [{outer: [[0,0],[10,0],[10,10],[0,10]], holes: []}]}])");
+        spaced["routes"][0]["navigation_space"]="road";
+        const auto spacedConfig=read(spaced);
+        require(spacedConfig.routes[0].navigationSpace=="road" && spacedConfig.navigation.spaces.size()==1,
+            "Movement-space YAML lost route-specific permissions");
+        rejects([&]{auto n=YAML::Clone(spaced);n["routes"][0]["navigation_space"]="missing";read(n);});
+        rejects([&]{auto n=YAML::Clone(spaced);n["motion"]["navigation"]["spaces"][0]["typo"]=true;read(n);});
+        rejects([&]{auto n=YAML::Clone(spaced);n["motion"]["navigation"]["spaces"]=YAML::Load("{}");read(n);});
+        rejects([&]{auto n=YAML::Clone(spaced);n["motion"]["navigation"]["spaces"][0]["center_clearance_m"]=.49;read(n);});
+        rejects([&]{auto n=YAML::Clone(spaced);n["motion"]["navigation"]["spaces"][0]["allowed_center_polygons"]=YAML::Load("[]");read(n);});
+        rejects([&]{auto n=YAML::Clone(spaced);n["motion"]["navigation"]["spaces"][0]["allowed_center_polygons"][0]["holes"]=YAML::Load("{}");read(n);});
+        require(navigationConfig.navigation.doorMaxBatchSize==1,"Legacy door batch default changed");
+        auto pipelined=YAML::Clone(navigating);pipelined["motion"]["navigation"]["door_max_batch_size"]=6;
+        require(read(pipelined).navigation.doorMaxBatchSize==6,"Door batch option was not preserved");
+        for (const auto invalid:{0,65,-1})
+            rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["door_max_batch_size"]=invalid;read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["door_max_batch_size"]=1.5;read(n);});
+        auto boundarySink=YAML::Clone(navigating);
+        // This fixture returns to x=0,y=5 on its second episode.
+        const auto sinkPoint=boundarySink["routes"][1]["points"];
+        const auto last=sinkPoint[sinkPoint.size()-1];
+        if(last[0].as<double>()==0) {
+            boundarySink["routes"][1]["end_boundary"]=YAML::Load("[[0,1],[0,9]]");
+            require(read(boundarySink).routes[1].endBoundary.size()==2,"Boundary sink YAML was lost");
+            rejects([&]{auto n=YAML::Clone(boundarySink);n["routes"][1]["end_boundary"]=YAML::Load("[[0,1]]");read(n);});
+            rejects([&]{auto n=YAML::Clone(boundarySink);n["routes"][1]["end_boundary"]=YAML::Load("[[0,1],[1,9]]");read(n);});
+        }
         ump::MappedScene navigatingScene(navigationConfig);
         validateMappedCaptureStep(navigatingScene,50);
         rejects([&]{validateMappedCaptureStep(navigatingScene,100);});

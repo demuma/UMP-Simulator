@@ -5,6 +5,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <tuple>
 #include <vector>
 
 namespace ump {
@@ -19,6 +20,8 @@ struct MappedRoute {
     std::string id;
     std::vector<Point> points;
     std::string startPortal, endPortal;
+    std::string navigationSpace; // Empty selects the legacy/default movement space.
+    std::vector<Point> endBoundary; // Optional two-point sink interval on one domain edge.
 };
 
 // A deliberate source-model access point on a building facade. OSM provenance
@@ -60,11 +63,20 @@ struct MappedNavigationPassage {
     double protectionRadiusM = 1.15;
     std::size_t maxBatchSize = 6;
 };
+// A separate body-eroded movement permission, e.g. a carriageway for riders.
+struct MappedNavigationSpace {
+    std::string id;
+    std::vector<MappedNavigationPolygon> allowedCenterPolygons;
+    double centerClearanceM = .55;
+};
 struct MappedNavigationConfig {
+    std::vector<MappedNavigationSpace> spaces;
     std::vector<MappedNavigationPolygon> allowedCenterPolygons;
     std::vector<MappedNavigationPassage> narrowPassages;
     double gridResolutionM = .5, centerClearanceM = .55;
     std::size_t maxReplanNodes = 20000;
+    // Optional finite same-direction door pipeline. One preserves legacy flow.
+    std::size_t doorMaxBatchSize = 1;
     AggregationTime replanAfterMs = 1500, replanIntervalMs = 1000;
 };
 
@@ -112,6 +124,7 @@ struct MappedSceneEvent {
     MappedEventKind kind;
     std::string personId, trackId, routeId, portalId;
     AggregationTime atMs;
+    std::optional<Point> position = std::nullopt; // Realized interval exit, private GT only.
 };
 
 double mappedRouteLength(const MappedRoute& route);
@@ -158,11 +171,14 @@ private:
         AggregationTime lastReplanMs = -1, navigationNoProgressMs = 0;
         double navigationBestGoalDistance = 1e300;
         Point navigationTarget{1e300,1e300};
+        std::optional<Point> boundaryGoal; // Stabilize an occluded sink target until visible outflow resumes.
     };
     void admitPending(AggregationTime nowMs);
     void advanceCorridorStep(AggregationTime nextMs);
     void advanceNavigationStep(AggregationTime nextMs);
     void updateNavigationDoors(AggregationTime nowMs);
+    void updateNavigationDoorPipelines(AggregationTime nowMs);
+    bool doorEntryAllowed(const std::string& trackId, const std::string& portalId) const;
     void updateNavigationPassages(AggregationTime nowMs);
     struct PassageTraversal {
         std::size_t passage, entryWaypoint, exitWaypoint;
@@ -175,6 +191,17 @@ private:
     bool replanNavigation(const std::string& trackId, Point goal);
     MappedVisibleTrack visibleState(const std::string& trackId, double travelled, Point velocity) const;
     MappedSceneConfig config;
+    std::map<std::string,std::size_t> navigationSpaceIndices;
+    struct FacadeExclusion {
+        std::string portalId;
+        std::vector<Point> ring;
+        Point minimum, maximum;
+    };
+    std::vector<FacadeExclusion> facadeExclusions;
+    // Ordered grid edges retain direction-specific floating-point predicates.
+    // Only immutable geometry is cached; bodies and resource ownership are not.
+    using NavigationEdgeKey = std::tuple<std::string,std::string,std::string,std::size_t,std::size_t>;
+    std::map<NavigationEdgeKey,bool> navigationEdgeCache; // At most 65,536 entries.
     std::vector<RouteData> routeData;
     std::map<std::string, std::size_t> routeIndices;
     std::map<std::string, EpisodeData> tracks;
@@ -187,6 +214,8 @@ private:
         std::string owner;
         std::map<std::string,AggregationTime> requests;
         std::map<std::string,Point> waitingPoints;
+        std::set<std::string> granted;
+        bool outbound = false;
     };
     std::map<std::string,NavigationDoor> navigationDoors;
     struct NavigationPassage {

@@ -21,9 +21,13 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import yaml
 
-MAX_BYTES = 256 * 1024 * 1024
+MAX_BYTES = 2048 * 1024 * 1024
+CAPTURE_LIMITS_MIB = (256, 512, 1024, 2048)
+NATIVE_READ_TIMEOUT_SECONDS = 360
+STREAM_CHUNK_BYTES = 1024 * 1024
 GEOMETRY_KEYS = ('cell_id','depth','x','y','width','height')
 
 
@@ -36,11 +40,32 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def write_json(path, value):
-    data = (json.dumps(value, allow_nan=False, separators=(',',':'), ensure_ascii=False)+'\n').encode()
-    insist(len(data) <= MAX_BYTES, 'Replay artifact exceeds 256 MiB')
-    with path.open('xb') as stream:
-        stream.write(data)
+def capture_limit_bytes(max_capture_mib):
+    insist(type(max_capture_mib) is int and max_capture_mib in CAPTURE_LIMITS_MIB,
+           'Capture budget must be one of 256, 512, 1024 or 2048 MiB')
+    return max_capture_mib * 1024 * 1024
+
+
+def write_json(path, value, *, max_bytes=None):
+    limit=MAX_BYTES if max_bytes is None else max_bytes
+    message=('Replay artifact exceeds 2048 MiB' if max_bytes is None
+             else 'Private capture artifact exceeds its bounded capture budget')
+    encoder=json.JSONEncoder(allow_nan=False,separators=(',',':'),ensure_ascii=False)
+    # Opening exclusively precedes the cleanup block: an existing file must
+    # never be replaced or removed. Only our own incomplete new file is deleted.
+    stream=path.open('xb')
+    try:
+        with stream:
+            total=0
+            for chunk in encoder.iterencode(value):
+                data=chunk.encode('utf-8')
+                insist(len(data)<=limit-total,message)
+                stream.write(data);total+=len(data)
+            insist(total<limit,message)
+            stream.write(b'\n')
+    except BaseException:
+        path.unlink()
+        raise
 
 
 def epoch_ms(text):
@@ -104,6 +129,9 @@ def audit_lifecycle(cfg, raw, frames, person_by_track, origin, step, end, summar
     scheduled_people=count(summary.get('scheduled_people'), 'scheduled_people')
     insist(scheduled > 0 and scheduled_people > 0, 'Empty mapped source schedule')
     planned={}
+    planned_speeds={}
+    configured_routes={route["id"]:route for route in cfg.get("mapped_scene",{}).get("routes",[])}
+    checked_interval_ends=0
     people=cfg.get('mapped_scene',{}).get('people')
     if people is not None:
         insist(isinstance(people,list) and len(people)==scheduled_people,
@@ -119,6 +147,7 @@ def audit_lifecycle(cfg, raw, frames, person_by_track, origin, step, end, summar
                 insist(isinstance(track,str) and track and track not in planned,
                        'Duplicate/invalid configured episode track')
                 planned[track]=(private_id,episode['route_id'])
+                planned_speeds[track]=person.get('speed_mps')
         insist(len(planned)==scheduled, 'Configured episodes differ from source summary')
 
     episodes={}
@@ -151,6 +180,29 @@ def audit_lifecycle(cfg, raw, frames, person_by_track, origin, step, end, summar
                'Lifecycle episode changes private person/route')
         insist(kind not in episode, 'Duplicate lifecycle start/end event')
         episode[kind]=at
+        configured=configured_routes.get(route,{})
+        if kind=='end' and 'end_boundary' in configured:
+            position=row.get('position')
+            insist(isinstance(position,dict) and set(position)=={'x','y'}
+                   and all(type(position[axis]) in (int,float) and math.isfinite(position[axis]) for axis in ('x','y')),
+                   'Interval exit requires an explicit finite terminal position')
+            interval=configured['end_boundary']
+            insist(isinstance(interval,list) and len(interval)==2
+                   and all(isinstance(point,list) and len(point)==2 and all(type(v) in (int,float) and math.isfinite(v) for v in point) for point in interval),
+                   'Invalid configured exit interval')
+            a,b=interval;dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy)
+            insist(length>0,'Degenerate configured exit interval')
+            px,py=position['x']-a[0],position['y']-a[1]
+            fraction=(px*dx+py*dy)/(length*length)
+            insist(-1e-7<=fraction<=1+1e-7 and abs(px*dy-py*dx)/length<=1e-5,
+                   'Terminal position leaves declared exit interval')
+            previous=frames.get(at-step,{}).get(track)
+            speed=planned_speeds.get(track)
+            insist(previous is not None and type(speed) in (int,float) and math.isfinite(speed) and speed>0,
+                   'Interval exit requires its previous GT state and configured speed')
+            insist(math.hypot(position['x']-previous['x'],position['y']-previous['y'])<=speed*step/1000+1e-4,
+                   'Interval exit terminal displacement exceeds preferred speed')
+            checked_interval_ends+=1
 
     insist(episodes, 'Mapped lifecycle events required for GT coverage audit')
     insist(len(episodes)<=scheduled, 'More realized episodes than scheduled tracks')
@@ -216,7 +268,8 @@ def audit_lifecycle(cfg, raw, frames, person_by_track, origin, step, end, summar
             'event_rows':starts+ends,'expected_gt_rows':expected_rows,
             'source_steps_checked':end//step,'scheduled_people':scheduled_people,
             'scheduled_episodes':scheduled,'realized_starts':starts,'realized_ends':ends,
-            'pending_episodes_at_horizon':pending,'active_episodes_at_horizon':active},
+            'pending_episodes_at_horizon':pending,'active_episodes_at_horizon':active,
+            'interval_terminal_positions_checked':checked_interval_ends},
         'motion_quality':{
             'status':motion_status,
             'source_model':summary.get('motion_model','not_recorded'),
@@ -405,25 +458,49 @@ def build_recording(cfg, raw):
     return replay,result,proof
 
 
-def load_native(cfg):
+def load_native(cfg, *, max_capture_mib=2048):
+    capture_bytes=capture_limit_bytes(max_capture_mib)
     base=cfg['database']['db_name']
     insist(re.fullmatch(r'UMP_Mapped_[0-9a-f]{32}',base),'Only UUID-owned mapped namespaces are accepted')
     sensor=next(s for s in cfg['sensors'] if s['type']=='adaptive-grid-based'); publication=sensor['aggregation']['publication']
     insist(sensor['database']['db_name']==base and publication['database']==base+'_Releases'
            and publication['journal_database']==base+'_Private','Scene databases do not share an owned namespace')
     shell=shutil.which('mongosh'); insist(shell,'mongosh is required')
-    # JavaScript is a structured subprocess argument, never interpolated into a shell.
-    script='const cfg='+json.dumps(cfg)+';\n'+r'''
-const sensor=cfg.sensors.find(s=>s.type==='adaptive-grid-based'),p=sensor.aggregation.publication;
+    # Serialize one cursor record at a time. Neither Node nor Python subprocess
+    # capture constructs one giant JSON string for the complete source export.
+    # JavaScript stays a structured subprocess argument, never a shell command.
+    # Only database/collection metadata belongs in the command argument. Scene
+    # routes, geometry and people can exceed the OS argv limit independently
+    # of the streamed capture budget and are not needed by this read operation.
+    collections=[['agents',base,cfg['database'].get('collection_name') or 'Agents'],
+                 ['sensor',sensor['database']['db_name'],sensor['database']['collection_name']],
+                 ['releases',publication['database'],publication['collection']],
+                 ['journals',publication['journal_database'],publication['journal_collection']]]
+    script='const collections='+json.dumps(collections)+'; const maxCaptureBytes='+str(capture_bytes)+'; const chunkTargetBytes='+str(STREAM_CHUNK_BYTES)+';\n'+r'''
 function plain(v){if(v instanceof Date)return v.toISOString();if(v&&typeof v==='object'&&['Long','Int32','Double','Decimal128'].includes(v._bsontype))return Number(v.toString());if(v&&v._bsontype==='ObjectId')return v.toString();if(Array.isArray(v))return v.map(plain);if(v&&typeof v==='object')return Object.fromEntries(Object.entries(v).map(([k,x])=>[k,plain(x)]));return v;}
-function rows(database,collection){const count=db.getSiblingDB(database).getCollection(collection).countDocuments({});if(count>1000000)throw Error('Collection exceeds bounded capture');return db.getSiblingDB(database).getCollection(collection).find({}).toArray();}
-const value=plain({agents:rows(cfg.database.db_name,cfg.database.collection_name||'Agents'),sensor:rows(sensor.database.db_name,sensor.database.collection_name),releases:rows(p.database,p.collection),journals:rows(p.journal_database,p.journal_collection)});
-const text=JSON.stringify(value);if(Buffer.byteLength(text)>268435456)throw Error('Capture exceeds 256 MiB');print(text);
+let emittedBytes=0,pendingBytes=0,pending=[];
+// Every emitted record occupies at least one byte; this finite bound cannot
+// reject a capture that fits the authoritative byte budget.
+const maxCaptureRows=maxCaptureBytes;
+function flush(){if(pendingBytes){process.stdout.write(pending.join(''));pending=[];pendingBytes=0;}}
+function emit(text){const chunk=text+'\n',bytes=Buffer.byteLength(chunk,'utf8');if(bytes>maxCaptureBytes-emittedBytes)throw Error('Capture exceeds '+maxCaptureBytes+' bytes');emittedBytes+=bytes;if(bytes>chunkTargetBytes){flush();process.stdout.write(chunk);}else{if(bytes>chunkTargetBytes-pendingBytes)flush();pending.push(chunk);pendingBytes+=bytes;}}
+async function rows(database,collection){const source=db.getSiblingDB(database).getCollection(collection);const count=await source.countDocuments({});if(count>maxCaptureRows)throw Error('Collection exceeds byte-derived record bound');let seen=0;await source.find({}).forEach(document=>{if(++seen>maxCaptureRows)throw Error('Collection exceeds byte-derived record bound');if(seen>1)emit(',');emit(JSON.stringify(plain(document)));});}
+(async()=>{emit('{');for(let index=0;index<collections.length;++index){const [name,database,collection]=collections[index];if(index)emit(',');emit(JSON.stringify(name)+':[');await rows(database,collection);emit(']');}emit('}');flush();})();
 '''
-    completed=subprocess.run([shell,'mongodb://localhost:27017/?serverSelectionTimeoutMS=5000','--quiet','--eval',script],capture_output=True,text=True,timeout=120)
-    insist(completed.returncode==0,'Native read failed: '+completed.stderr.strip()[:2000])
-    insist(len(completed.stdout.encode())<=MAX_BYTES,'Capture exceeds 256 MiB')
-    return json.loads(completed.stdout)
+    # The temporary file is removed on every success, command failure, size
+    # failure and JSON parse error. json.load still constructs the complete
+    # validator input in memory: the capture byte budget is not an RSS bound.
+    with tempfile.TemporaryFile(mode='w+b') as stream:
+        completed=subprocess.run([shell,'mongodb://localhost:27017/?serverSelectionTimeoutMS=5000','--quiet','--eval',script],
+            stdout=stream,stderr=subprocess.PIPE,text=True,timeout=NATIVE_READ_TIMEOUT_SECONDS)
+        insist(completed.returncode==0,'Native read failed: '+completed.stderr.strip()[:2000])
+        stream.seek(0,2)
+        insist(stream.tell()<=capture_bytes,f'Capture exceeds {max_capture_mib} MiB')
+        stream.seek(0)
+        try:
+            return json.load(stream)
+        except (json.JSONDecodeError,UnicodeDecodeError) as error:
+            raise ValueError('Native capture contains malformed or truncated JSON') from error
 
 
 def map_metadata(scene, cfg, repo):
@@ -490,6 +567,21 @@ def validate_scene_building_access(scene, cfg, access_path):
                'Public navigation geometry differs from native scene configuration')
         insist(access['navigation']['body_clearance_m']==navigation.get('center_clearance_m'),
                'Public navigation clearance differs from native scene configuration')
+        spaces=navigation.get('spaces',[])
+        public_spaces=access['navigation'].get('spaces',[])
+        insist(isinstance(spaces,list) and isinstance(public_spaces,list), 'Invalid public navigation spaces')
+        by_space={space.get('id'):space for space in spaces}
+        public_by_space={space.get('id'):space for space in public_spaces}
+        insist(len(by_space)==len(spaces) and len(public_by_space)==len(public_spaces)
+               and set(by_space)==set(public_by_space), 'Public navigation spaces differ from native scene configuration')
+        space_modes={}
+        for key,space in by_space.items():
+            space_modes[key]=public_by_space[key].get('mode','road' if key=='carriageway' else None)
+            insist(space_modes[key] in ('walking','cycling','road'), 'Public navigation space requires a declared supported mode')
+            space_digest=hashlib.sha256(json.dumps(space.get('allowed_center_polygons'),sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+            insist(public_by_space[key].get('allowed_center_polygons_sha256')==space_digest
+                   and public_by_space[key].get('body_clearance_m')==space.get('center_clearance_m'),
+                   'Public navigation space geometry or clearance differs from native scene configuration')
         # Public geometry identifies source/sink eligibility. No planned person
         # schedules or identity mapping are copied into this public artifact.
         boundary_lookup={interval['id']:interval for interval in access['boundary_intervals']}
@@ -497,6 +589,8 @@ def validate_scene_building_access(scene, cfg, access_path):
         routes=cfg.get('mapped_scene',{}).get('routes')
         insist(isinstance(routes,list) and routes, 'Public navigation requires native source routes')
         for route in routes:
+            space=route.get('navigation_space','')
+            insist(not space or space in by_space, 'Native route uses undeclared or unsupported public navigation space')
             points=route.get('points')
             insist(isinstance(points,list) and len(points)>=2, 'Invalid native source route geometry')
             for field,endpoint in (('start_portal',points[0]),('end_portal',points[-1])):
@@ -505,8 +599,11 @@ def validate_scene_building_access(scene, cfg, access_path):
                 if 'point' in target:
                     insist(endpoint==target['point'], 'Native route endpoint differs from exact public entrance')
                 else:
-                    insist(target['mode']=='walking' and target['spawn_supported'],
+                    insist(target['mode']==space_modes.get(space,'walking') and target['spawn_supported'],
                            'Native route endpoint uses ineligible public boundary interval')
+                    if field=='end_portal' and 'end_boundary' in route:
+                        insist(route['end_boundary'] in (target['points'],target['points'][::-1]),
+                               'Native route exit interval differs from declared public boundary interval')
                     a,b=target['points'];dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy)
                     px,py=endpoint[0]-a[0],endpoint[1]-a[1]
                     fraction=(px*dx+py*dy)/(length*length)
@@ -534,11 +631,12 @@ def validate_scene_building_access(scene, cfg, access_path):
                 'native_navigation_geometry_and_boundaries_verified':True} if v2 else {})}
 
 
-def export_scene(scene, output):
+def export_scene(scene, output, *, max_capture_mib=2048):
+    capture_bytes=capture_limit_bytes(max_capture_mib)
     scene=Path(scene).resolve(); output=Path(output).resolve(); repo=Path(__file__).resolve().parents[2]
     insist(not output.exists(),'Choose a new recording directory')
     cfg=yaml.safe_load((scene/'config.yaml').read_text())
-    raw=load_native(cfg); observations,result,proof=build_recording(cfg,raw)
+    raw=load_native(cfg,max_capture_mib=max_capture_mib); observations,result,proof=build_recording(cfg,raw)
     map_info=map_metadata(scene,cfg,repo)
     if 'building_access' in map_info:
         spec=importlib.util.spec_from_file_location('ump_access_validation',repo/'tools/replay_viewer/serve.py')
@@ -548,7 +646,14 @@ def export_scene(scene, output):
     sensor=next(s for s in cfg['sensors'] if s['type']=='adaptive-grid-based'); agg=sensor['aggregation']
     output.mkdir(parents=True,mode=0o700); (output/'private').mkdir(mode=0o700)
     write_json(output/'observations.json',observations); write_json(output/'native_result.json',result)
-    write_json(output/'private/native_source.json',raw)
+    write_json(output/'private/native_source.json',raw,max_bytes=capture_bytes)
+    proof['capture_budget']={'schema':'ump.private-capture-budget.v1','max_capture_mib':max_capture_mib,
+        'max_capture_bytes':capture_bytes,'native_source_json_bytes':(output/'private/native_source.json').stat().st_size,
+        'public_artifact_max_bytes':MAX_BYTES,'transport':'per_record_json_stream_to_temporary_file',
+        'mongo_read_timeout_s':NATIVE_READ_TIMEOUT_SECONDS,'stream_chunk_target_bytes':STREAM_CHUNK_BYTES,
+        'per_collection_record_limit':capture_bytes,
+        'source_configuration_sha256':digest(scene/'config.yaml'),
+        'scope':'Explicit bounded local JSON capture and artifact file limits. Source/policy and specific map/image verification remain enforced. These file-size limits do not bound Python validator memory. Generated movement stays local and is excluded from Git.'}
     shutil.copyfile(scene/'config.yaml',output/'private/config.yaml')
     shutil.copyfile(scene/'map_background.png',output/'map_background.png')
     public_files=['observations.json','native_result.json','map_background.png']
@@ -589,8 +694,10 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--scene',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--max-capture-mib',type=int,choices=CAPTURE_LIMITS_MIB,default=2048,
+        help='Bounded local source capture file budget (default 2048 MiB); JSON artifacts support up to 2 GiB')
     args=parser.parse_args()
-    proof=export_scene(args.scene,args.output)
+    proof=export_scene(args.scene,args.output,max_capture_mib=args.max_capture_mib)
     print(json.dumps({'status':'verified','output':str(args.output.resolve()),
                       'published_cell_windows':proof['published_cell_windows'],
                       'unique_published_cell_ids':proof['unique_published_cell_ids']}))

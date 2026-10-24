@@ -1,0 +1,36 @@
+{
+  "schema": "ump.observed-drain-negative-control.v1",
+  "scope": "Three actual missed episodes extracted from the frozen mapped recording configuration; full routes/portals/spaces retained, other people removed. Test-only observability guard; original recording/results unchanged.",
+  "config_sha256": "e38a3d3572524fe9abc430f4e2d5c2d7fa1e7510e107e10f1ccf7e5b0fd2de53",
+  "cases": {
+    "legacy": {
+      "exit_code": 0,
+      "stdout": "Mapped finite drain: scheduled=3 starts=3 ends=3 active=0 pending=0 stalled=0 overlaps=0 max_stop_ms=50 merge_wait_steps=0 navigation_steering=0 navigation_replans=0 navigation_replan_failures=0 navigation_search_max=0 passage_wait_steps=0 passage_batches=0 passage_cleared_tracks=0 max_passage_wait_ms=0 last_end_ms=25350 horizon_ms=60000",
+      "stderr": "",
+      "wall_seconds": 0.04210391599999999
+    },
+    "guarded": {
+      "exit_code": 1,
+      "stdout": "Mapped finite drain: scheduled=3 starts=3 ends=3 active=0 pending=0 stalled=0 overlaps=0 max_stop_ms=50 merge_wait_steps=0 navigation_steering=0 navigation_replans=0 navigation_replan_failures=0 navigation_search_max=0 passage_wait_steps=0 passage_batches=0 passage_cleared_tracks=0 max_passage_wait_ms=0 observed=0 observed_period_ms=100 last_end_ms=25350 horizon_ms=60000",
+      "stderr": "Finite source drained but some scheduled tracks were never observed inside half-open sensor coverage",
+      "wall_seconds": 0.03955700000000001
+    }
+  },
+  "created_at_utc": "2026-10-24T16:46:53.046089+00:00",
+  "test_helper": {
+    "binary_sha256": "15ff0013b67c3c2f454de2d454073cf5c7447dc4a50ae760602e9e1418c09f71",
+    "source_sha256": {
+      "simulator/tests/MappedSceneConfigurationTests.cpp": "211bd4c267cdbbe7793077f23ca73bdc7958cda91f1d279b30331a70d0837a5e"
+    },
+    "optional_cli": "--drain-config <config> --end-ms 60000 --require-observed-period-ms 100",
+    "sampling_scope": "Positive 100-ms timestamps only, numerical 50-ms progression; track center in half-open domain coverage. No t=0 observation."
+  },
+  "configuration_ctest": {
+    "name": "mapped_scene_configuration",
+    "status": "pass",
+    "exit_code": 0,
+    "log_sha256": "b01ab3b3623ff07d3ce855da3195784dc6afda39092e3f4458795b7b70088f9b",
+    "log": "Test project /Users/maxdemu/Developer/UMP-Simulator/simulator/build\n    Start 77: mapped_scene_configuration\n1/1 Test #77: mapped_scene_configuration .......   Passed    0.01 sec\n\n100% tests passed out of 1\n\nLabel Time Summary:\nmapped_scene    =   0.01 sec*proc (1 test)\nunit            =   0.01 sec*proc (1 test)\n\nTotal Test time (real) =   0.01 sec\n"
+  },
+  "evidence_content": "Aggregate counts, diagnostics, pass/fail, source/binary/config digests and test log only. No track/person IDs, route guides or sampled coordinates are included."
+}

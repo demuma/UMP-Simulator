@@ -1,0 +1,518 @@
+{
+  "schema": "ump.urban-traffic-test-results.v1",
+  "full_suite": {
+    "groups": 89,
+    "failed": 0,
+    "wall_seconds": 253.53,
+    "junit_sha256": "8d8249ef41b5bd240a7f1408c719c6eb5ae7c4b6d29ad81add07fdb59d27159a",
+    "tests": [
+      {
+        "name": "timestamp_utilities",
+        "seconds": 0.0441132,
+        "status": "passed"
+      },
+      {
+        "name": "sensor_regression",
+        "seconds": 0.618284,
+        "status": "passed"
+      },
+      {
+        "name": "frame_regression",
+        "seconds": 0.124183,
+        "status": "passed"
+      },
+      {
+        "name": "aggregation_regression",
+        "seconds": 0.00251521,
+        "status": "passed"
+      },
+      {
+        "name": "metric_regression",
+        "seconds": 0.00208729,
+        "status": "passed"
+      },
+      {
+        "name": "playback_regression",
+        "seconds": 3.02915,
+        "status": "passed"
+      },
+      {
+        "name": "policy_regression",
+        "seconds": 0.00695542,
+        "status": "passed"
+      },
+      {
+        "name": "policy_configuration",
+        "seconds": 0.0489209,
+        "status": "passed"
+      },
+      {
+        "name": "aggregation_diagnostics",
+        "seconds": 0.0533318,
+        "status": "passed"
+      },
+      {
+        "name": "history_regression",
+        "seconds": 0.003263,
+        "status": "passed"
+      },
+      {
+        "name": "occupied_history",
+        "seconds": 0.00444883,
+        "status": "passed"
+      },
+      {
+        "name": "history_query_range",
+        "seconds": 0.0283585,
+        "status": "passed"
+      },
+      {
+        "name": "spatial_regression",
+        "seconds": 0.00248267,
+        "status": "passed"
+      },
+      {
+        "name": "selective_suppression_regression",
+        "seconds": 0.00319046,
+        "status": "passed"
+      },
+      {
+        "name": "publication_regression",
+        "seconds": 0.00267708,
+        "status": "passed"
+      },
+      {
+        "name": "adaptive_aggregation_regression",
+        "seconds": 0.00364508,
+        "status": "passed"
+      },
+      {
+        "name": "publication_store_regression",
+        "seconds": 0.0858292,
+        "status": "passed"
+      },
+      {
+        "name": "publication_pipeline_regression",
+        "seconds": 0.106297,
+        "status": "passed"
+      },
+      {
+        "name": "aggregation_presentation",
+        "seconds": 0.00181708,
+        "status": "passed"
+      },
+      {
+        "name": "paced_replay",
+        "seconds": 0.00783633,
+        "status": "passed"
+      },
+      {
+        "name": "replay_regression",
+        "seconds": 0.193141,
+        "status": "passed"
+      },
+      {
+        "name": "live_measurement_helpers",
+        "seconds": 0.0505262,
+        "status": "passed"
+      },
+      {
+        "name": "paced_replay_summary",
+        "seconds": 0.113787,
+        "status": "passed"
+      },
+      {
+        "name": "occupancy_evaluation",
+        "seconds": 0.036107,
+        "status": "passed"
+      },
+      {
+        "name": "privacy_evaluation",
+        "seconds": 0.0322361,
+        "status": "passed"
+      },
+      {
+        "name": "comparison_evaluation",
+        "seconds": 0.821156,
+        "status": "passed"
+      },
+      {
+        "name": "capture_evaluation",
+        "seconds": 0.0828817,
+        "status": "passed"
+      },
+      {
+        "name": "oracle_evaluation",
+        "seconds": 0.510305,
+        "status": "passed"
+      },
+      {
+        "name": "privacy_dataset_evaluation",
+        "seconds": 1.854,
+        "status": "passed"
+      },
+      {
+        "name": "empirical_privacy_evaluation",
+        "seconds": 0.0430465,
+        "status": "passed"
+      },
+      {
+        "name": "privacy_study_evaluation",
+        "seconds": 11.4572,
+        "status": "passed"
+      },
+      {
+        "name": "coordination_evaluation",
+        "seconds": 0.925523,
+        "status": "passed"
+      },
+      {
+        "name": "coordination_metrics_evaluation",
+        "seconds": 0.0294974,
+        "status": "passed"
+      },
+      {
+        "name": "coordination_scenarios_evaluation",
+        "seconds": 0.474338,
+        "status": "passed"
+      },
+      {
+        "name": "coordination_study_evaluation",
+        "seconds": 3.20763,
+        "status": "passed"
+      },
+      {
+        "name": "plot_coordination_study_evaluation",
+        "seconds": 0.0433308,
+        "status": "passed"
+      },
+      {
+        "name": "compare_coordination_studies_evaluation",
+        "seconds": 0.363075,
+        "status": "passed"
+      },
+      {
+        "name": "plot_privacy_coordination_evaluation",
+        "seconds": 0.0341439,
+        "status": "passed"
+      },
+      {
+        "name": "robustness_attacks_evaluation",
+        "seconds": 0.0501068,
+        "status": "passed"
+      },
+      {
+        "name": "run_privacy_robustness_evaluation",
+        "seconds": 4.19276,
+        "status": "passed"
+      },
+      {
+        "name": "plot_privacy_robustness_evaluation",
+        "seconds": 0.0336404,
+        "status": "passed"
+      },
+      {
+        "name": "privacy_repair_evaluation",
+        "seconds": 5.66372,
+        "status": "passed"
+      },
+      {
+        "name": "causal_privacy_evaluation",
+        "seconds": 0.164913,
+        "status": "passed"
+      },
+      {
+        "name": "online_occupancy_evaluation",
+        "seconds": 0.0522709,
+        "status": "passed"
+      },
+      {
+        "name": "run_privacy_prefix_study_evaluation",
+        "seconds": 9.59423,
+        "status": "passed"
+      },
+      {
+        "name": "selective_suppression_evaluation",
+        "seconds": 6.41593,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_adaptation_evaluation",
+        "seconds": 2.79943,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_tradeoffs_evaluation",
+        "seconds": 0.0503165,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_queries_evaluation",
+        "seconds": 0.0567876,
+        "status": "passed"
+      },
+      {
+        "name": "scoped_semantic_queries_evaluation",
+        "seconds": 0.0731082,
+        "status": "passed"
+      },
+      {
+        "name": "run_scoped_semantic_utility_evaluation",
+        "seconds": 1.84665,
+        "status": "passed"
+      },
+      {
+        "name": "recipient_support_evaluation",
+        "seconds": 0.0933965,
+        "status": "passed"
+      },
+      {
+        "name": "run_recipient_contract_study_evaluation",
+        "seconds": 1.03893,
+        "status": "passed"
+      },
+      {
+        "name": "run_semantic_priority_study_evaluation",
+        "seconds": 1.09849,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_first_evaluation",
+        "seconds": 1.87808,
+        "status": "passed"
+      },
+      {
+        "name": "moving_comparison_evaluation",
+        "seconds": 1.33744,
+        "status": "passed"
+      },
+      {
+        "name": "moving_scoped_audit_evaluation",
+        "seconds": 0.0391628,
+        "status": "passed"
+      },
+      {
+        "name": "run_moving_scoped_comparison_evaluation",
+        "seconds": 0.295104,
+        "status": "passed"
+      },
+      {
+        "name": "cell_size_caps_evaluation",
+        "seconds": 3.16206,
+        "status": "passed"
+      },
+      {
+        "name": "four_second_window_evaluation",
+        "seconds": 0.856005,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_release_evaluation",
+        "seconds": 1.29184,
+        "status": "passed"
+      },
+      {
+        "name": "local_policy_replay_evaluation",
+        "seconds": 0.36024,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_local_policy_evaluation",
+        "seconds": 1.0156,
+        "status": "passed"
+      },
+      {
+        "name": "replay_data_evaluation",
+        "seconds": 0.075056,
+        "status": "passed"
+      },
+      {
+        "name": "replay_viewer_evaluation",
+        "seconds": 1.74605,
+        "status": "passed"
+      },
+      {
+        "name": "replay_viewer_model",
+        "seconds": 0.15664,
+        "status": "passed"
+      },
+      {
+        "name": "cell_local_coordination",
+        "seconds": 0.0320917,
+        "status": "passed"
+      },
+      {
+        "name": "cell_local_coordination_stress",
+        "seconds": 0.738502,
+        "status": "passed"
+      },
+      {
+        "name": "scoped_publication",
+        "seconds": 0.00485029,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_taxonomy",
+        "seconds": 0.00315646,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_history",
+        "seconds": 0.0024415,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_pipeline",
+        "seconds": 0.00313108,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_first_core",
+        "seconds": 0.00690408,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_cell_local",
+        "seconds": 0.0156399,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_publication_store",
+        "seconds": 0.102162,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_scene",
+        "seconds": 0.651805,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_scene_configuration",
+        "seconds": 0.0114457,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_motion_probe_contract",
+        "seconds": 0.0735073,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_pedestrian_semantics",
+        "seconds": 0.00186521,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_audit_building_access_tools",
+        "seconds": 0.142703,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_build_mapped_scene_tools",
+        "seconds": 54.4755,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_storefront_router_tools",
+        "seconds": 74.3134,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_export_replay_tools",
+        "seconds": 1.72813,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_analyze_tracks_tools",
+        "seconds": 0.225457,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_run_comparison_tools",
+        "seconds": 0.794579,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_dense_corridor_drain_tools",
+        "seconds": 8.09382,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_building_drain_tools",
+        "seconds": 17.4704,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_storefront_drain_tools",
+        "seconds": 42.2574,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_urban_traffic_drain_tools",
+        "seconds": 84.0795,
+        "status": "passed"
+      }
+    ]
+  },
+  "added_plotting_group": {
+    "name": "mapped_plot_policy_comparison_tools",
+    "status": "passed",
+    "unit_checks": 3,
+    "log_sha256": "c82fa63c6ae0c54dff44690712508898d4403477711f5426ea34273117e09c8e"
+  },
+  "scope": "Full frozen 89-group run, followed by the newly registered aggregate-only plotting group. The combined 90 registered groups are green; no claim of a single 90-group invocation. Native mixed-mode 256-person complete drainage is included. Large 500-person pressure results and recorded capture/independent audits are separate evidence.",
+  "final_affected_tools": {
+    "groups": [
+      "mapped_export_replay_tools",
+      "mapped_run_comparison_tools",
+      "mapped_plot_policy_comparison_tools"
+    ],
+    "status": "passed",
+    "wall_seconds": 3.43,
+    "unit_checks": {
+      "export": 49,
+      "comparison": 26,
+      "plot": 3
+    },
+    "log_sha256": "daacc9c1270c25784b4a956c369e40f8a339cd51bc7cfca79470777ff43d5fa2",
+    "scope": "Final rerun after 2 GiB streaming export and comparison metadata changes; native source and full-suite binary unchanged."
+  },
+  "final_export_review": {
+    "status": "passed",
+    "unit_checks": 50,
+    "ctest_wall_seconds": 2.0,
+    "log_sha256": "8698a2f6f03d2524e002de53e1dd59fd77ecd9ef91ce23d52d2b464886ae3320",
+    "scope": "Final metadata-only argv fix after the preceding 49-check streaming implementation."
+  },
+  "later_followups": {
+    "comparison_and_plot": {
+      "passed_groups": 2,
+      "wall_seconds": 1.32,
+      "unit_checks": {
+        "comparison": 27,
+        "plot": 3
+      },
+      "scope": "Added separately classified fixed4s sensitivity mode/protocol and kept original10cases frozen."
+    },
+    "direct_replay_consumers": {
+      "passed_groups": 2,
+      "evidence": "direct-replay-consumer-2gib-2026-10-24.json"
+    },
+    "observability_negative_control": {
+      "status": "passed",
+      "evidence": "urban-observability-negative-control-2026-10-24.json",
+      "scope": "Legacydrain accepts3source-defect episodes, optional100ms half-open observationguard rejects them; helperpositive/negative/invalidperiodtests passed."
+    }
+  },
+  "corrected_source_followup": {
+    "status": "passed",
+    "evidence": "urban-boundary-source-correction-2026-10-24.json",
+    "router_unit_checks": 21,
+    "builder_executed_checks": 26,
+    "builder_intentional_native_skips": 4,
+    "dense_native_gate_wall_seconds": 80.01,
+    "completed_and_observed_episodes": 360,
+    "last_end_ms": 201200,
+    "max_stop_ms": 8550,
+    "scope": "Final corrected generator and stronger optional100ms half-open observability test; frozen comparison and source-profile values remain historical."
+  }
+}

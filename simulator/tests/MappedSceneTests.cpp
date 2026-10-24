@@ -454,6 +454,112 @@ MappedSceneConfig localScene(double width=20,double height=12) {
     return config;
 }
 
+// Separate permissions must survive guide shortcuts, steering and replanning.
+void localBoundaryIntervalsAvoidPointSinkConvergence() {
+    auto input=localScene(20,12);
+    input.routes={{"exit-upper",{{0,2},{18,2},{20,5}},"","","",{{20,1},{20,10}}},
+        {"exit-lower",{{0,8},{18,8},{20,5}},"","","",{{20,1},{20,10}}}};
+    input.people={{"upper","Adult Cyclist",3.5,{{"upper-visible","exit-upper",0}},.45},
+        {"lower","Adult Cyclist",3.5,{{"lower-visible","exit-lower",0}},.45}};
+    MappedScene scene(input);
+    for(int time=0;time<=10000;time+=50) scene.advanceTo(time);
+    require(scene.motionDiagnostics().realizedEnds==2 && scene.motionDiagnostics().overlapViolations==0,
+        "Interval sinks did not drain separated bodies");
+    std::map<std::string,Point> exits;
+    for(const auto& event:scene.events()) if(event.kind==MappedEventKind::EpisodeEnd) {
+        require(event.position.has_value(),"Interval exit omitted actual terminal position");
+        require(std::abs(event.position->x-20)<1e-7 && event.position->y>=1 && event.position->y<=10,
+            "Interval exit left its permitted domain-edge segment");
+        exits[event.trackId]=*event.position;
+    }
+    require(std::abs(exits.at("upper-visible").y-exits.at("lower-visible").y)>4,
+        "Boundary intervals collapsed back to an artificial common point sink");
+    const auto bad=[&](auto change) {auto invalid=input;change(invalid);bool rejected=false;
+        try {MappedScene checked(invalid);} catch(const std::invalid_argument&) {rejected=true;}
+        require(rejected,"Invalid boundary sink accepted");};
+    bad([](auto& c){c.routes[0].endBoundary={{20,1}};});
+    bad([](auto& c){c.routes[0].endBoundary={{20,1},{20,1}};});
+    bad([](auto& c){c.routes[0].endBoundary={{20,1},{19,10}};});
+    bad([](auto& c){c.routes[0].endBoundary={{20,1},{20,3}};});
+    bad([](auto& c){c.routes[0].endBoundary={{20,-1},{20,10}};});
+    bad([](auto& c){c.motionMode=MappedMotionMode::CorridorFollowing;});
+}
+
+void localMovementSpacesStaySeparate() {
+    auto input=localScene(20,12);
+    input.navigation.allowedCenterPolygons={{{{0,0},{20,0},{20,4},{0,4}}, {}}};
+    input.navigation.spaces={{"road",{{{{0,7},{20,7},{20,12},{0,12}}, {}}},1.1}};
+    input.routes={{"walk",{{0,2},{20,2}},"",""},
+        {"ride",{{20,9},{0,9}},"","","road"}};
+    input.people={{"walking-person","Adult Pedestrian",1.3,{{"walk-track","walk",0}}},
+        {"riding-person","Adult Cyclist",3.5,{{"ride-track","ride",0}},1.0}};
+    MappedScene scene(input);
+    for (int time=0;time<=20000;time+=50) {
+        scene.advanceTo(time);
+        for (const auto& track:scene.frameAt(time)) {
+            if (track.trackId=="walk-track") require(track.position.y<=4,"Pedestrian left walking permission");
+            else require(track.position.y>=7,"Rider left carriageway permission");
+        }
+    }
+    require(scene.motionDiagnostics().realizedEnds==2 && scene.motionDiagnostics().overlapViolations==0,
+        "Separated walking/riding routes did not drain safely");
+    const auto rejects=[&](auto change) {auto bad=input;change(bad);bool rejected=false;
+        try {MappedScene invalid(bad);} catch(const std::invalid_argument&) {rejected=true;}
+        require(rejected,"Invalid movement-space configuration accepted");};
+    rejects([](auto& c){c.routes[1].navigationSpace="missing";});
+    rejects([](auto& c){c.routes[1].navigationSpace.clear();});
+    rejects([](auto& c){c.navigation.spaces[0].centerClearanceM=1.0;});
+    rejects([](auto& c){c.navigation.spaces.push_back(c.navigation.spaces[0]);});
+    rejects([](auto& c){c.navigation.spaces[0].allowedCenterPolygons.clear();});
+    rejects([](auto& c){c.navigation.spaces[0].centerClearanceM=std::numeric_limits<double>::quiet_NaN();});
+    rejects([](auto& c){c.navigation.spaces[0].allowedCenterPolygons[0].outer[0].x=-1;});
+    rejects([](auto& c){c.motionMode=MappedMotionMode::CorridorFollowing;});
+}
+
+void localBoundarySinkRetainsGoalAroundConcaveObstacle() {
+    auto input=localScene(20,14);
+    input.navigation.allowedCenterPolygons[0].outer={{0,0},{14,0},{14,4},{16,4},{16,0},{20,0},{20,14},{0,14}};
+    // The original diagonal guide is visible, while the nearest boundary point
+    // is hidden behind the obstacle and requires a real navigation detour.
+    input.routes={{"concave-sink",{{0,.5},{20,13}},"","","",{{20,0},{20,14}}}};
+    input.people={{"concave-private","Adult Pedestrian",1.3,{{"concave-visible","concave-sink",0}}}};
+    MappedScene scene(input);
+    for (int time=0;time<=60000;time+=50) {
+        scene.advanceTo(time);
+        for (const auto& track:scene.frameAt(time)) {
+            require(!(track.position.x>14 && track.position.x<16 && track.position.y>=0 && track.position.y<4),
+                "Boundary detour entered the static obstacle");
+            require(std::hypot(track.velocity.x,track.velocity.y)<=1.3+1e-8,
+                "Boundary detour exceeded configured preferred speed");
+        }
+    }
+    const auto diagnostics=scene.motionDiagnostics();
+    require(diagnostics.realizedEnds==1 && diagnostics.activeTracks==0 && diagnostics.overlapViolations==0,
+        "Stable boundary sink target failed to drain around a concave obstacle");
+    require(diagnostics.navigationReplans>diagnostics.navigationReplanFailures,
+        "Concave boundary regression did not exercise a successful A* detour");
+    require(scene.events().back().position && near(scene.events().back().position->x,20),
+        "Boundary detour did not record its actual permitted interval exit");
+}
+
+void localVisibleBoundaryOutflowsKeepSeparateExitPoints() {
+    auto input=localScene(20,14);
+    input.routes={{"outflow-a",{{0,6},{20,5}},"","","",{{20,0},{20,14}}},
+        {"outflow-b",{{0,8},{20,5}},"","","",{{20,0},{20,14}}}};
+    input.people={{"outflow-private-a","Adult Pedestrian",1.3,{{"outflow-visible-a","outflow-a",0}}},
+        {"outflow-private-b","Adult Pedestrian",1.3,{{"outflow-visible-b","outflow-b",0}}}};
+    MappedScene scene(input);scene.advanceTo(30000);
+    std::vector<double> exitY;
+    for (const auto& event:scene.events()) if (event.kind==MappedEventKind::EpisodeEnd) {
+        require(event.position && near(event.position->x,20),"Visible boundary outflow omitted its actual exit");
+        exitY.push_back(event.position->y);
+    }
+    std::sort(exitY.begin(),exitY.end());
+    require(exitY.size()==2 && near(exitY[0],6) && near(exitY[1],8)
+        && scene.motionDiagnostics().overlapViolations==0,
+        "Visible interval outflows collapsed onto the shared nominal route endpoint");
+}
+
 void localOpposingTrafficSteersAndDrains() {
     auto input=localScene();
     input.routes={{"east-nav",{{0,6},{20,6}},"",""},{"west-nav",{{20,6},{0,6}},"",""}};
@@ -571,6 +677,72 @@ void localBoundedReplanningAndValidation() {
     rejects([&]{MappedScene wrongReturn(visit);});
 }
 
+
+void localDoorArrivalDoesNotBacktrackToPassedMouth() {
+    auto input=localScene(20,14);input.clearanceM=.05;input.navigation.doorMaxBatchSize=6;
+    input.routes={{"side-arrival",{{0,11.99},{10,10.5},{10,12}},"","side-door"}};
+    input.portals={{"side-door","side-building",{10,12},{8,12},{12,12},1.2,"synthetic"}};
+    input.people={{"side-private","Adult Pedestrian",1.3,{{"side-visible","side-arrival",0}},.25}};
+    MappedScene scene(input);bool progressedInsideThroat=false;
+    for (int time=0;time<=20000;time+=50) {
+        scene.advanceTo(time);
+        for (const auto& track:scene.frameAt(time)) {
+            // A lateral approach may already be beyond the mouth plane. Once
+            // inside its body-width throat, the next step must target entry,
+            // rather than insist on returning to the obsolete mouth waypoint.
+            if (progressedInsideThroat) require(track.nextWaypointIndex==2,
+                "Granted arrival returned to a passed mouth guide instead of entering");
+            if (track.position.x>9.75 && track.position.y>10.5) progressedInsideThroat=true;
+        }
+    }
+    require(progressedInsideThroat && scene.motionDiagnostics().realizedEnds==1,
+        "Lateral arrival never advanced directly through its already-entered throat");
+}
+
+void localDoorPipelinesShareThroatAndDrainOpposingDemand() {
+    const auto make=[](bool arrivals,bool exits) {
+        auto input=localScene(20,14);
+        input.clearanceM=.05;input.navigation.doorMaxBatchSize=6;
+        input.routes={{"pipeline-in",{{0,10.5},{10,10.5},{10,12}},"","pipeline-door"},
+            {"pipeline-out",{{10,12},{10,10.5},{20,7}},"pipeline-door",""}};
+        input.portals={{"pipeline-door","pipeline-building",{10,12},{8,12},{12,12},1.2,"synthetic"}};
+        if (arrivals) for (int i=0;i<6;++i)
+            input.people.push_back({"pipeline-private-in-"+std::to_string(i),"Adult Pedestrian",1.3,
+                {{"pipeline-visible-in-"+std::to_string(i),"pipeline-in",0}},.2});
+        if (exits) for (int i=0;i<6;++i)
+            input.people.push_back({"pipeline-private-out-"+std::to_string(i),"Adult Pedestrian",1.3,
+                {{"pipeline-visible-out-"+std::to_string(i),"pipeline-out",arrivals?6500:0}},.2});
+        return input;
+    };
+    for (const auto demand:{std::pair<bool,bool>{true,false},{false,true},{true,true}}) {
+        const auto input=make(demand.first,demand.second);MappedScene scene(input);
+        std::size_t peakThroat=0;
+        for (int time=0;time<=90000;time+=50) {
+            scene.advanceTo(time);const auto frame=scene.frameAt(time);
+            std::size_t throat=0;
+            for (const auto& track:frame) {
+                if (std::abs(track.position.x-10)<=.3 && track.position.y>10.5 && track.position.y<=12) ++throat;
+                require(std::hypot(track.velocity.x,track.velocity.y)<=1.3+1e-8,
+                    "Door pipeline exceeded the configured preferred speed");
+            }
+            peakThroat=std::max(peakThroat,throat);
+        }
+        const auto diagnostics=scene.motionDiagnostics();
+        require(peakThroat>=2,"Same-direction door pipeline serialized the complete throat");
+        require(diagnostics.realizedEnds==input.people.size() && diagnostics.activeTracks==0
+            && diagnostics.pendingTracks==0 && diagnostics.overlapViolations==0,
+            "Finite incoming/outgoing door pipeline failed to drain safely");
+        MappedScene coarse(input);coarse.advanceTo(90000);
+        require(coarse.events().size()==scene.events().size(),"Door pipeline caller cadence changed lifecycle count");
+        for (std::size_t i=0;i<scene.events().size();++i)
+            require(coarse.events()[i].trackId==scene.events()[i].trackId
+                && coarse.events()[i].atMs==scene.events()[i].atMs,
+                "Door pipeline is not deterministic across caller cadence");
+    }
+    auto invalid=make(true,false);invalid.navigation.doorMaxBatchSize=0;
+    rejects([&]{MappedScene scene(invalid);});
+    invalid.navigation.doorMaxBatchSize=65;rejects([&]{MappedScene scene(invalid);});
+}
 
 void localVisibleGuidesDoNotCauseBacktrackingAfterDoorWaits() {
     auto simple=localScene(20,14);
@@ -952,6 +1124,8 @@ void localNarrowPassageOptionalOffAndValidation() {
 
 int main() {
     try {
+        localBoundaryIntervalsAvoidPointSinkConvergence();
+        localMovementSpacesStaySeparate();
         cornersAndLargeSteps();
         halfOpenAndRoundedArrival();
         hiddenGapAndReentry();
@@ -968,10 +1142,14 @@ int main() {
         splitDoorThroatPreventsOpposingContactDeadlock();
         invalidExplicitDoors();
         opposedSingleLaneStopsSafelyWithoutClaimingCompletion();
+        localBoundarySinkRetainsGoalAroundConcaveObstacle();
+        localVisibleBoundaryOutflowsKeepSeparateExitPoints();
         localOpposingTrafficSteersAndDrains();
         localCrossingFlowsAndStaticHole();
         localFiniteDenseSourceAndDoorVisits();
         localBoundedReplanningAndValidation();
+        localDoorArrivalDoesNotBacktrackToPassedMouth();
+        localDoorPipelinesShareThroatAndDrainOpposingDemand();
         localVisibleGuidesDoNotCauseBacktrackingAfterDoorWaits();
         localNarrowPassageOpposingFlowsAndDeterminism();
         localNarrowPassageFiniteBatchesDoNotStarveOpposition();

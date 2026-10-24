@@ -323,6 +323,12 @@ python3 -B tools/replay_viewer/serve.py \
   --bundle results/YOUR_RUN/comparison-new --port 8781
 ```
 
+The direct identity analyzer and `AggregationReplay` allow input and result documents
+up to 2048 MiB (2 GiB), matching the mapped recorder allowance. Both still load
+complete parsed documents; this is a file budget, not a constant-memory or browser
+playback guarantee. The separate archival/Git-package helper
+`tools/evaluation/replay_data.py` keeps its 256 MiB budget.
+
 Identity analysis compares original episodes, 500/1000-ms fragments and an explicit
 private GT-oracle reference. Positions, labels, sample opportunities and physical
 movement stay fixed. It reports track/person support, inflation, threshold false
