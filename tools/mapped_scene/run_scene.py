@@ -38,6 +38,8 @@ def main():
     parser.add_argument('--motion-mode', choices=['integration','corridor','buildings','storefronts'], default='storefronts')
     parser.add_argument('--population', type=int, default=64)
     parser.add_argument('--urban-traffic', action='store_true', help='Opt-in mixed road riders and explicit synthetic crossing corridors')
+    parser.add_argument('--subway-access', action='store_true', help='Opt-in A1/A2 surface sources/sinks; requires urban traffic')
+    parser.add_argument('--rider-priority', action='store_true', help='Opt-in bounded pedestrian yielding; requires urban traffic')
     parser.add_argument('--road-user-fraction', type=float, default=.2)
     parser.add_argument('--distributed-crossing-fraction', type=float, default=.2)
     parser.add_argument('--pedestrian-clearance-m', type=float, default=.05)
@@ -58,6 +60,8 @@ def main():
     if args.experimental_narrow_passages and args.motion_mode != 'storefronts':
         parser.error('--experimental-narrow-passages requires --motion-mode storefronts')
     if not 1<=args.port<=65535: parser.error('Port must be 1..65535')
+    if (args.subway_access or args.rider_priority) and not args.urban_traffic:
+        parser.error('--subway-access and --rider-priority require --urban-traffic')
     if args.urban_traffic and args.motion_mode != 'storefronts':
         parser.error('--urban-traffic requires --motion-mode storefronts')
     if args.urban_traffic and args.experimental_narrow_passages:
@@ -90,6 +94,8 @@ def main():
     if args.shop_overrides is not None: command += ['--shop-overrides', str(args.shop_overrides.resolve())]
     if args.render: command.append('--render')
     if args.experimental_narrow_passages: command.append('--experimental-narrow-passages')
+    if args.subway_access: command.append('--subway-access')
+    if args.rider_priority: command.append('--rider-priority')
     if args.urban_traffic:
         command += ['--urban-traffic','--road-user-fraction',str(args.road_user_fraction),
                     '--distributed-crossing-fraction',str(args.distributed_crossing_fraction),

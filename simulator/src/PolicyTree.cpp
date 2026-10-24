@@ -60,6 +60,15 @@ PolicyTree::PolicyTree(PolicyTreeConfig setup, std::vector<PolicyRegion> selecte
     leafSide = g.width / units;
     if (!(leafSide > 0) || g.x + leafSide == g.x || g.y + leafSide == g.y)
         throw std::invalid_argument("Policy leaf geometry is not numerically representable");
+    const auto mentionsSuppression = [](const auto& requirements) {
+        return std::any_of(requirements.begin(), requirements.end(), [](const auto& requirement) {
+            return requirement.id == MetricId::SemanticSuppressionFraction;
+        });
+    };
+    if (!mentionsSuppression(config.rootRequirements)
+        && std::any_of(selected.begin(), selected.end(), [&](const auto& region) {
+            return mentionsSuppression(region.typeRequirements) || mentionsSuppression(region.instanceRequirements);
+        })) config.rootRequirements.push_back({MetricId::SemanticSuppressionFraction, {}, 0});
     validateMetricRequirements(config.rootRequirements);
     rootPolicy = intersect({}, {{}, config.rootRequirements, {"root:" + config.id}, true});
     std::sort(selected.begin(), selected.end(), [](const auto& a, const auto& b) { return a.id < b.id; });

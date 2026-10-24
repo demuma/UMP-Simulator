@@ -34,7 +34,8 @@ void appendOptional(bsoncxx::builder::basic::document& document, const char* key
 bsoncxx::document::value metricDocument(const std::vector<ump::MetricValue>& values) {
     bsoncxx::builder::basic::document metrics;
     for (const auto& metric : values) {
-        if (metric.unavailableReason == "semantic_not_enabled") continue;
+        if (metric.unavailableReason == "semantic_not_enabled"
+            || metric.unavailableReason == "semantic_suppression_not_configured") continue;
         const auto& definition = ump::metricDefinition(metric.id);
         bsoncxx::builder::basic::document value;
         value.append(kvp("unit", std::string(definition.unit)));
@@ -73,6 +74,25 @@ bsoncxx::document::value semanticDocument(const ump::SemanticRepresentation& sem
         kvp("categories", categories));
 }
 
+bsoncxx::document::value suppressionDocument(const ump::SemanticSuppressionAudit& value) {
+    bsoncxx::builder::basic::document types;
+    for (const auto& item : value.suppressedTypeObservations)
+        types.append(kvp(item.first, static_cast<std::int64_t>(item.second)));
+    bsoncxx::builder::basic::array leaves;
+    for (const auto& leaf : value.suppressedLeaves) leaves.append(leaf);
+    return make_document(kvp("schema", "ump.semantic-suppression.v1"),
+        kvp("input_observation_contributions", static_cast<std::int64_t>(value.inputObservations)),
+        kvp("input_distinct_contributors", static_cast<std::int64_t>(value.inputDistinct)),
+        kvp("retained_observation_contributions", static_cast<std::int64_t>(value.retainedObservations)),
+        kvp("retained_distinct_contributors", static_cast<std::int64_t>(value.retainedDistinct)),
+        kvp("suppressed_observation_contributions", static_cast<std::int64_t>(value.suppressedObservations)),
+        kvp("suppressed_distinct_contributors", static_cast<std::int64_t>(value.suppressedDistinct)),
+        kvp("suppressed_fraction", value.fraction), kvp("full_input_semantic_loss", value.fullInputSemanticLoss),
+        kvp("unsuppressed_semantic_loss", value.unsuppressedSemanticLoss),
+        kvp("suppressed_type_observation_contributions", types), kvp("suppressed_terminal_categories", leaves),
+        kvp("evaluated_candidates", static_cast<std::int64_t>(value.evaluatedCandidates)));
+}
+
 bsoncxx::document::value cellDocument(const ump::AggregatedCell& cell,
     const ump::CellMetricAssessment& evaluated, const ump::SpatialCellDecision* decision = nullptr) {
     bsoncxx::builder::basic::document appliedPolicy;
@@ -91,6 +111,9 @@ bsoncxx::document::value cellDocument(const ump::AggregatedCell& cell,
         kvp("threshold_status", std::string(ump::assessmentStatusName(evaluated.status))),
         kvp("checks", checkArray(evaluated.checks)));
     if (evaluated.semantic) row.append(kvp("semantic", semanticDocument(*evaluated.semantic)));
+    if (evaluated.retainedCounts) row.append(kvp("retained_counts", countDocument(*evaluated.retainedCounts)));
+    if (evaluated.semanticSuppression)
+        row.append(kvp("semantic_suppression", suppressionDocument(*evaluated.semanticSuppression)));
     if (decision) {
         bsoncxx::builder::basic::array triggers;
         for (const auto id : decision->triggerCells) triggers.append(id);

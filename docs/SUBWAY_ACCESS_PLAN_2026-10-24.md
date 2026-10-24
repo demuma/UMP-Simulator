@@ -1,6 +1,6 @@
 # Mönckebergstraße subway access: source review and implementation plan
 
-Date: 2026-10-24. Status: **planned, not implemented**. This review changes no simulation source, policies, movement recording, benchmark result, map snapshot or native portal implementation. The companion [verification artifact](verification/subway-access-feasibility-2026-10-24.json) records the exact public source objects, hashes and geometric checks.
+Date: 2026-10-24. Historical feasibility status: **planned, not implemented at the time of this review**. The subsequent opt-in implementation and tests are documented in [Typed subway access and crossing priority](SUBWAY_AND_CROSSING_PRIORITY_2026-10-24.md). This review changes no simulation source, policies, movement recording, benchmark result, map snapshot or native portal implementation. The companion [verification artifact](verification/subway-access-feasibility-2026-10-24.json) records the exact public source objects, hashes and geometric checks.
 
 ## Why the replay map differs from the web map
 

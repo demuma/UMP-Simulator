@@ -1,0 +1,771 @@
+{
+  "schema": "ump.urban-minimal-paced-study.v1",
+  "date": "2026-10-24",
+  "result": "minimal_diagnostics_preserves_complete_decisions_but_fails_1x_bounded_queue",
+  "protocol": {
+    "schema": "ump.urban-minimal-paced-protocol.v1",
+    "created_utc": "2026-10-24T17:59:25.125638+00:00",
+    "git_revision": "a996165ac9fa178e00f067880488df608d3c2c08",
+    "platform": "macOS-15.7.7-arm64-arm-64bit",
+    "artifacts_before": {
+      "binary": {
+        "sha256": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9",
+        "bytes": 866336,
+        "path": "simulator/build/AggregationReplay"
+      },
+      "source": {
+        "sha256": "f43a28abaa253816e34732f29f07f63b953ecc40f57aae884c349329c6b9a1a1",
+        "bytes": 25757699,
+        "path": "results/urban-traffic-2026-10-24-256/replay/observations.json"
+      },
+      "policy": {
+        "sha256": "cb7e7a7b3869f0c2ca0191e759924efb30d85ea580abfd78c3dafe4d24efc73f",
+        "bytes": 4781,
+        "path": "results/urban-traffic-2026-10-24-256-policy-comparison/original_adaptive_immediate-policy.json"
+      },
+      "reference": {
+        "sha256": "86512fbfc524c6db70ace703ea20f00e538dc99ed56a76cbb3a233a8776e3c0b",
+        "bytes": 247339286,
+        "path": "results/urban-traffic-2026-10-24-256-policy-comparison/original_adaptive_immediate.json"
+      }
+    },
+    "source_files_before": {
+      "simulator/tools/AggregationReplay.cpp": {
+        "sha256": "a0ff2b31b9bed65d614d6869e58f484984eb8557740a4adcfcfa4742ccab600f",
+        "bytes": 52680,
+        "path": "simulator/tools/AggregationReplay.cpp"
+      },
+      "simulator/tools/PacedReplay.hpp": {
+        "sha256": "5a3905915ec669a0cba42700a8aa637c431035485c5c0d583d7da1047b922f0f",
+        "bytes": 8322,
+        "path": "simulator/tools/PacedReplay.hpp"
+      },
+      "simulator/tools/ReplayDecisionDigest.hpp": {
+        "sha256": "1f7b209c6f6df50f862c54963d9026551a9e277aee591011fec489dfb0b5f8fa",
+        "bytes": 12875,
+        "path": "simulator/tools/ReplayDecisionDigest.hpp"
+      },
+      "simulator/src/CandidateMetrics.cpp": {
+        "sha256": "06e5b3d05fa6e55cb1bf52aea732584e6cf733c4bda4b3bf4445aff0164d74b3",
+        "bytes": 24253,
+        "path": "simulator/src/CandidateMetrics.cpp"
+      },
+      "simulator/src/SemanticTaxonomy.cpp": {
+        "sha256": "9ece8a96765f3d7e7b3e053e0c024537fb077e842a90a7a98d732d475604caaf",
+        "bytes": 16910,
+        "path": "simulator/src/SemanticTaxonomy.cpp"
+      },
+      "simulator/include/CandidateMetrics.hpp": {
+        "sha256": "302ddaeca90e5caf206af8e32593b20959c21bdd828550bca9ea872037a3bfdd",
+        "bytes": 4438,
+        "path": "simulator/include/CandidateMetrics.hpp"
+      },
+      "simulator/src/CellLocalAggregation.cpp": {
+        "sha256": "a70753bc33b44dbb3b3edebc009afcd53d2a87823342621798446256f014bfb3",
+        "bytes": 59460,
+        "path": "simulator/src/CellLocalAggregation.cpp"
+      },
+      "simulator/src/SpatialSelection.cpp": {
+        "sha256": "3fe08bb88815b76c9336f53b38fb772ba66c7031208bd5cbf0aec493bf5ddf95",
+        "bytes": 12244,
+        "path": "simulator/src/SpatialSelection.cpp"
+      },
+      "simulator/src/AdaptiveAggregation.cpp": {
+        "sha256": "21e2267357064e046a50595e53abff3b56e2cff64d985438e4ea08e70f061d94",
+        "bytes": 17609,
+        "path": "simulator/src/AdaptiveAggregation.cpp"
+      },
+      "simulator/src/PublicationCoordinator.cpp": {
+        "sha256": "18ecc71abf26bc9076e6b1cdef3e2091ab73c3e2d3035c6e3b29ed06ae6b1601",
+        "bytes": 10086,
+        "path": "simulator/src/PublicationCoordinator.cpp"
+      },
+      "tools/profiling/summarize_paced_replay.py": {
+        "sha256": "f51b8a517bbb8ac0653acf0391d277014d00ddfaa401c22c4b6900e80d7cffc4",
+        "bytes": 23719,
+        "path": "tools/profiling/summarize_paced_replay.py"
+      }
+    },
+    "frozen_binary": {
+      "sha256": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9",
+      "bytes": 866336,
+      "path": "results/urban-paced-2026-10-24/minimal-study/AggregationReplay"
+    },
+    "isolation": "No simulation/capture/export/build/renderer/other intentionally scheduled heavy job overlaps these serial native measurements. Comparison/summarization runs only between/after native processes.",
+    "cases": [
+      {
+        "id": "full_unpaced",
+        "diagnostics": "full",
+        "paced": false
+      },
+      {
+        "id": "minimal_unpaced",
+        "diagnostics": "minimal",
+        "paced": false
+      },
+      {
+        "id": "minimal_paced_1x",
+        "diagnostics": "minimal",
+        "paced": true
+      }
+    ],
+    "queue_capacity": 8,
+    "rate": 1,
+    "progress_step_ms": 50,
+    "sensor_sampling_ms": 100,
+    "deadline_contract": {
+      "cadence_response_ms": 50,
+      "secondary_sensor_period_response_ms": 100,
+      "fixed_schedule": true
+    },
+    "single_run_limitation": true,
+    "overload_policy": "keep failure; no larger queue, slower source or shifted deadlines",
+    "equality_gate": "full/minimal complete typed SHA-256 retirements/releases plus exact public/common fields; full raw payload must equal historical control outside runtime"
+  },
+  "execution": {
+    "schema": "ump.urban-minimal-paced-execution.v1",
+    "cases": [
+      {
+        "id": "full_unpaced",
+        "command": [
+          "results/urban-paced-2026-10-24/minimal-study/AggregationReplay",
+          "--input",
+          "results/urban-traffic-2026-10-24-256/replay/observations.json",
+          "--config",
+          "results/urban-traffic-2026-10-24-256-policy-comparison/original_adaptive_immediate-policy.json",
+          "--mode",
+          "semantic_first",
+          "--progress-step-ms",
+          "50",
+          "--decision-digest",
+          "sha256",
+          "--diagnostics",
+          "full",
+          "--output",
+          "results/urban-paced-2026-10-24/minimal-study/full_unpaced.json"
+        ],
+        "return_code": 0,
+        "wall_seconds": 128.770740917,
+        "output_exists": true,
+        "binary_unchanged": true,
+        "stderr": "",
+        "output": {
+          "sha256": "938ac3888ec56a7398823cc95b21adb79b537d8de6cd1e72ca8fbb4c9b61f727",
+          "bytes": 247340808,
+          "path": "results/urban-paced-2026-10-24/minimal-study/full_unpaced.json"
+        }
+      },
+      {
+        "id": "minimal_unpaced",
+        "command": [
+          "results/urban-paced-2026-10-24/minimal-study/AggregationReplay",
+          "--input",
+          "results/urban-traffic-2026-10-24-256/replay/observations.json",
+          "--config",
+          "results/urban-traffic-2026-10-24-256-policy-comparison/original_adaptive_immediate-policy.json",
+          "--mode",
+          "semantic_first",
+          "--progress-step-ms",
+          "50",
+          "--decision-digest",
+          "sha256",
+          "--diagnostics",
+          "minimal",
+          "--output",
+          "results/urban-paced-2026-10-24/minimal-study/minimal_unpaced.json"
+        ],
+        "return_code": 0,
+        "wall_seconds": 125.80238595900002,
+        "output_exists": true,
+        "binary_unchanged": true,
+        "stderr": "",
+        "output": {
+          "sha256": "a4a372234c1b477d56678fde1c17d0f49ce1ceafe2a65842e2d3af31860621cc",
+          "bytes": 2922035,
+          "path": "results/urban-paced-2026-10-24/minimal-study/minimal_unpaced.json"
+        }
+      },
+      {
+        "id": "minimal_paced_1x",
+        "command": [
+          "results/urban-paced-2026-10-24/minimal-study/AggregationReplay",
+          "--input",
+          "results/urban-traffic-2026-10-24-256/replay/observations.json",
+          "--config",
+          "results/urban-traffic-2026-10-24-256-policy-comparison/original_adaptive_immediate-policy.json",
+          "--mode",
+          "semantic_first",
+          "--progress-step-ms",
+          "50",
+          "--decision-digest",
+          "sha256",
+          "--diagnostics",
+          "minimal",
+          "--output",
+          "results/urban-paced-2026-10-24/minimal-study/minimal_paced_1x.json",
+          "--pace-rate",
+          "1",
+          "--queue-capacity",
+          "8",
+          "--failure-output",
+          "results/urban-paced-2026-10-24/minimal-study/minimal_paced_1x-failure.json"
+        ],
+        "return_code": 1,
+        "wall_seconds": 29.61924191600002,
+        "output_exists": false,
+        "binary_unchanged": true,
+        "stderr": "AggregationReplay: Paced replay overloaded/cancelled: logical_time_ms=26850, queue_capacity=8, peak_queue_depth=8, scheduled_arrival_ms=26850.000000, enqueue_attempt_ms=26855.009792; no successful replay result was written\n"
+      }
+    ],
+    "artifacts_after": {
+      "binary": {
+        "sha256": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9",
+        "bytes": 866336,
+        "path": "simulator/build/AggregationReplay"
+      },
+      "source": {
+        "sha256": "f43a28abaa253816e34732f29f07f63b953ecc40f57aae884c349329c6b9a1a1",
+        "bytes": 25757699,
+        "path": "results/urban-traffic-2026-10-24-256/replay/observations.json"
+      },
+      "policy": {
+        "sha256": "cb7e7a7b3869f0c2ca0191e759924efb30d85ea580abfd78c3dafe4d24efc73f",
+        "bytes": 4781,
+        "path": "results/urban-traffic-2026-10-24-256-policy-comparison/original_adaptive_immediate-policy.json"
+      },
+      "reference": {
+        "sha256": "86512fbfc524c6db70ace703ea20f00e538dc99ed56a76cbb3a233a8776e3c0b",
+        "bytes": 247339286,
+        "path": "results/urban-traffic-2026-10-24-256-policy-comparison/original_adaptive_immediate.json"
+      }
+    },
+    "source_files_after": {
+      "simulator/tools/AggregationReplay.cpp": {
+        "sha256": "a0ff2b31b9bed65d614d6869e58f484984eb8557740a4adcfcfa4742ccab600f",
+        "bytes": 52680,
+        "path": "simulator/tools/AggregationReplay.cpp"
+      },
+      "simulator/tools/PacedReplay.hpp": {
+        "sha256": "5a3905915ec669a0cba42700a8aa637c431035485c5c0d583d7da1047b922f0f",
+        "bytes": 8322,
+        "path": "simulator/tools/PacedReplay.hpp"
+      },
+      "simulator/tools/ReplayDecisionDigest.hpp": {
+        "sha256": "1f7b209c6f6df50f862c54963d9026551a9e277aee591011fec489dfb0b5f8fa",
+        "bytes": 12875,
+        "path": "simulator/tools/ReplayDecisionDigest.hpp"
+      },
+      "simulator/src/CandidateMetrics.cpp": {
+        "sha256": "06e5b3d05fa6e55cb1bf52aea732584e6cf733c4bda4b3bf4445aff0164d74b3",
+        "bytes": 24253,
+        "path": "simulator/src/CandidateMetrics.cpp"
+      },
+      "simulator/src/SemanticTaxonomy.cpp": {
+        "sha256": "9ece8a96765f3d7e7b3e053e0c024537fb077e842a90a7a98d732d475604caaf",
+        "bytes": 16910,
+        "path": "simulator/src/SemanticTaxonomy.cpp"
+      },
+      "simulator/include/CandidateMetrics.hpp": {
+        "sha256": "302ddaeca90e5caf206af8e32593b20959c21bdd828550bca9ea872037a3bfdd",
+        "bytes": 4438,
+        "path": "simulator/include/CandidateMetrics.hpp"
+      },
+      "simulator/src/CellLocalAggregation.cpp": {
+        "sha256": "a70753bc33b44dbb3b3edebc009afcd53d2a87823342621798446256f014bfb3",
+        "bytes": 59460,
+        "path": "simulator/src/CellLocalAggregation.cpp"
+      },
+      "simulator/src/SpatialSelection.cpp": {
+        "sha256": "3fe08bb88815b76c9336f53b38fb772ba66c7031208bd5cbf0aec493bf5ddf95",
+        "bytes": 12244,
+        "path": "simulator/src/SpatialSelection.cpp"
+      },
+      "simulator/src/AdaptiveAggregation.cpp": {
+        "sha256": "21e2267357064e046a50595e53abff3b56e2cff64d985438e4ea08e70f061d94",
+        "bytes": 17609,
+        "path": "simulator/src/AdaptiveAggregation.cpp"
+      },
+      "simulator/src/PublicationCoordinator.cpp": {
+        "sha256": "18ecc71abf26bc9076e6b1cdef3e2091ab73c3e2d3035c6e3b29ed06ae6b1601",
+        "bytes": 10086,
+        "path": "simulator/src/PublicationCoordinator.cpp"
+      },
+      "tools/profiling/summarize_paced_replay.py": {
+        "sha256": "f51b8a517bbb8ac0653acf0391d277014d00ddfaa401c22c4b6900e80d7cffc4",
+        "bytes": 23719,
+        "path": "tools/profiling/summarize_paced_replay.py"
+      }
+    },
+    "frozen_binary_unchanged": true,
+    "completed_utc": "2026-10-24T18:04:15.566246+00:00",
+    "all_artifacts_unchanged": true
+  },
+  "complete_unpaced_equivalence": {
+    "historical_complete_payload_equal_excluding_runtime": true,
+    "minimal_public_and_complete_decisions_equal": true,
+    "paired_equality": {
+      "paced": "minimal",
+      "reference": "full",
+      "equality_method": "exact public/common fields and matching complete typed SHA-256 retirement/release audits",
+      "materialized_private_windows_compared": false
+    },
+    "decision_audit": {
+      "schema": "ump.replay-decision-audit.v1",
+      "algorithm": "SHA-256",
+      "encoding": "canonical typed complete logical selections/releases; exact IEEE-754 bits, length-prefixed ordered collections, optional presence",
+      "excluded": "only suppression evaluationNanoseconds, a runtime timing field",
+      "retirement_count": 69392,
+      "release_count": 3199,
+      "selected_cell_count": 3199,
+      "suppressed_cell_count": 10194,
+      "retirement_sha256": "b589729bb9f2a9c7d406230b8cf9d20a26b36aedd11452022a6e8b41cd4bdc20",
+      "release_sha256": "7f0922b70ddc6e5e3cd7408abba26fe86eb41ca29af4f16ca41c10a1fd84f144"
+    }
+  },
+  "unpaced_profile": {
+    "derived": {
+      "full_core_ms": 125101.974167,
+      "minimal_core_ms": 122783.728333,
+      "core_difference_ms": 2318.2458339999866,
+      "core_relative_reduction": 0.018530849328607157,
+      "full_artifact_bytes": 247340808,
+      "minimal_artifact_bytes": 2922035,
+      "artifact_relative_reduction": 0.9881861993432155,
+      "full_private_json_ms": 3567.2098670000382,
+      "full_private_json_fraction_of_consume": 0.028514488991071608,
+      "minimal_nonterminal_ms": 121210.8106760001,
+      "minimal_nonterminal_fraction_of_consume": 0.9871913896813291,
+      "minimal_terminal_ms": 1572.6859619999695,
+      "minimal_digest_ms": 1222.996152000108
+    },
+    "full_runtime": {
+      "processing_ms": 125101.974167,
+      "clock": "steady_clock",
+      "scope": "core replay and in-memory result serialization; excludes input validation and file I/O",
+      "diagnostics": "full",
+      "decision_audit": {
+        "schema": "ump.replay-decision-audit.v1",
+        "algorithm": "SHA-256",
+        "encoding": "canonical typed complete logical selections/releases; exact IEEE-754 bits, length-prefixed ordered collections, optional presence",
+        "excluded": "only suppression evaluationNanoseconds, a runtime timing field",
+        "retirement_count": 69392,
+        "release_count": 3199,
+        "selected_cell_count": 3199,
+        "suppressed_cell_count": 10194,
+        "retirement_sha256": "b589729bb9f2a9c7d406230b8cf9d20a26b36aedd11452022a6e8b41cd4bdc20",
+        "release_sha256": "7f0922b70ddc6e5e3cd7408abba26fe86eb41ca29af4f16ca41c10a1fd84f144"
+      },
+      "phases": {
+        "schema": "ump.replay-phases.v1",
+        "scope": "inclusive wall-clock spans; consume includes terminal; delivery includes public serialization/digest/ack telemetry; do not sum overlapping phases",
+        "consume_inclusive": {
+          "calls": 4801,
+          "milliseconds": 125101.65860299986
+        },
+        "terminal_inclusive": {
+          "calls": 69392,
+          "milliseconds": 5132.883322999889
+        },
+        "publication_seal": {
+          "calls": 69392,
+          "milliseconds": 156.69587100000913
+        },
+        "publication_deliver_inclusive": {
+          "calls": 69392,
+          "milliseconds": 198.05841899997702
+        },
+        "public_release_json": {
+          "calls": 3199,
+          "milliseconds": 63.97945899999996
+        },
+        "private_window_json": {
+          "calls": 69392,
+          "milliseconds": 3567.2098670000382
+        },
+        "decision_digest": {
+          "calls": 72591,
+          "milliseconds": 1211.6215170000753
+        },
+        "telemetry_json": {
+          "calls": 0,
+          "milliseconds": 0
+        }
+      },
+      "audit_scope": "complete typed logical retirement/release hashing runs inside service; minimal omits only private window JSON; all guards and exact public release JSON remain"
+    },
+    "minimal_runtime": {
+      "processing_ms": 122783.728333,
+      "clock": "steady_clock",
+      "scope": "core replay and in-memory result serialization; excludes input validation and file I/O",
+      "diagnostics": "minimal",
+      "decision_audit": {
+        "schema": "ump.replay-decision-audit.v1",
+        "algorithm": "SHA-256",
+        "encoding": "canonical typed complete logical selections/releases; exact IEEE-754 bits, length-prefixed ordered collections, optional presence",
+        "excluded": "only suppression evaluationNanoseconds, a runtime timing field",
+        "retirement_count": 69392,
+        "release_count": 3199,
+        "selected_cell_count": 3199,
+        "suppressed_cell_count": 10194,
+        "retirement_sha256": "b589729bb9f2a9c7d406230b8cf9d20a26b36aedd11452022a6e8b41cd4bdc20",
+        "release_sha256": "7f0922b70ddc6e5e3cd7408abba26fe86eb41ca29af4f16ca41c10a1fd84f144"
+      },
+      "phases": {
+        "schema": "ump.replay-phases.v1",
+        "scope": "inclusive wall-clock spans; consume includes terminal; delivery includes public serialization/digest/ack telemetry; do not sum overlapping phases",
+        "consume_inclusive": {
+          "calls": 4801,
+          "milliseconds": 122783.49663800007
+        },
+        "terminal_inclusive": {
+          "calls": 69392,
+          "milliseconds": 1572.6859619999695
+        },
+        "publication_seal": {
+          "calls": 69392,
+          "milliseconds": 153.7025470000102
+        },
+        "publication_deliver_inclusive": {
+          "calls": 69392,
+          "milliseconds": 198.1226379999771
+        },
+        "public_release_json": {
+          "calls": 3199,
+          "milliseconds": 64.45979399999995
+        },
+        "private_window_json": {
+          "calls": 0,
+          "milliseconds": 0
+        },
+        "decision_digest": {
+          "calls": 72591,
+          "milliseconds": 1222.996152000108
+        },
+        "telemetry_json": {
+          "calls": 0,
+          "milliseconds": 0
+        }
+      },
+      "audit_scope": "complete typed logical retirement/release hashing runs inside service; minimal omits only private window JSON; all guards and exact public release JSON remain"
+    }
+  },
+  "paced_incomplete_result": {
+    "artifacts": {
+      "binary": {
+        "bytes": 866336,
+        "sha256": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9"
+      },
+      "failure_telemetry": {
+        "bytes": 137833,
+        "sha256": "006b14ffa04a3124d2c1d37fa98a5c69d6cd4cb0da4026152b3b21f0e2ca8ee6"
+      },
+      "protocol": {
+        "bytes": 4734,
+        "sha256": "23b457f68f486e745975bfaf67b8b9916777de7e54d10facef88314da0204f68"
+      },
+      "source": {
+        "bytes": 25757699,
+        "sha256": "f43a28abaa253816e34732f29f07f63b953ecc40f57aae884c349329c6b9a1a1"
+      },
+      "summarizer": {
+        "bytes": 23719,
+        "sha256": "f51b8a517bbb8ac0653acf0391d277014d00ddfaa401c22c4b6900e80d7cffc4"
+      }
+    },
+    "completed_no_sample_steps": {
+      "actual_enqueue_to_completion": {
+        "count": 264,
+        "max_ms": 411.3590000000004,
+        "mean_ms": 39.65142374999998,
+        "p50_ms": 8.889250000000175,
+        "p95_ms": 207.9897090000013,
+        "p99_ms": 346.31183299999975
+      },
+      "enqueue_lock_delay": {
+        "count": 264,
+        "max_ms": 0.0014169999994919635,
+        "mean_ms": 0.00017437878787233163,
+        "p50_ms": 0.0001249999986612238,
+        "p95_ms": 0.00041599999985919567,
+        "p99_ms": 0.0010830000001078588
+      },
+      "queue_wait": {
+        "count": 264,
+        "max_ms": 382.8110830000005,
+        "mean_ms": 29.929424723484896,
+        "p50_ms": 0.025375000000167347,
+        "p95_ms": 189.02870899999834,
+        "p99_ms": 319.83466599999883
+      },
+      "scheduled_arrival_to_completion": {
+        "count": 264,
+        "max_ms": 416.36516699999993,
+        "mean_ms": 43.90080225757572,
+        "p50_ms": 13.622084000000541,
+        "p95_ms": 212.99645900000178,
+        "p99_ms": 349.5241669999996
+      },
+      "service": {
+        "count": 264,
+        "max_ms": 28.54791699999987,
+        "mean_ms": 9.72199902651508,
+        "p50_ms": 8.86974999999984,
+        "p95_ms": 22.445416999998997,
+        "p99_ms": 26.477167000000918
+      },
+      "source_scheduling_lateness": {
+        "count": 264,
+        "max_ms": 5.046374999999898,
+        "mean_ms": 4.24920412878787,
+        "p50_ms": 5.007542000000285,
+        "p95_ms": 5.027458999999908,
+        "p99_ms": 5.036792000000105
+      }
+    },
+    "completed_prefix": {
+      "actual_enqueue_to_completion": {
+        "count": 528,
+        "max_ms": 500.41512499999953,
+        "mean_ms": 53.762097147727246,
+        "p50_ms": 24.824832999998762,
+        "p95_ms": 232.17666700000336,
+        "p99_ms": 368.04291699999885
+      },
+      "enqueue_lock_delay": {
+        "count": 528,
+        "max_ms": 0.01462500000025102,
+        "mean_ms": 0.00018968939391516778,
+        "p50_ms": 8.400000115216244e-05,
+        "p95_ms": 0.0004169999992882367,
+        "p99_ms": 0.0010830000001078588
+      },
+      "queue_wait": {
+        "count": 528,
+        "max_ms": 382.8110830000005,
+        "mean_ms": 26.08801247348484,
+        "p50_ms": 0.016875000001164153,
+        "p95_ms": 179.09329199999775,
+        "p99_ms": 301.12337500000285
+      },
+      "scheduled_arrival_to_completion": {
+        "count": 528,
+        "max_ms": 505.42312500000116,
+        "mean_ms": 58.09911626515149,
+        "p50_ms": 29.561750000000757,
+        "p95_ms": 234.7913750000007,
+        "p99_ms": 373.04695899999933
+      },
+      "service": {
+        "count": 528,
+        "max_ms": 139.05774999999994,
+        "mean_ms": 27.67408467424241,
+        "p50_ms": 17.51666699999987,
+        "p95_ms": 85.08766699999978,
+        "p99_ms": 102.82145799999853
+      },
+      "source_scheduling_lateness": {
+        "count": 528,
+        "max_ms": 5.408709000000044,
+        "mean_ms": 4.336829428030325,
+        "p50_ms": 5.00958399999945,
+        "p95_ms": 5.029916999999841,
+        "p99_ms": 5.040083999999979
+      }
+    },
+    "completed_prefix_cadence_response_misses": 170,
+    "completed_sample_steps": {
+      "actual_enqueue_to_completion": {
+        "count": 264,
+        "max_ms": 500.41512499999953,
+        "mean_ms": 67.87277054545453,
+        "p50_ms": 43.84833399999843,
+        "p95_ms": 243.38958400000047,
+        "p99_ms": 400.0441249999967
+      },
+      "enqueue_lock_delay": {
+        "count": 264,
+        "max_ms": 0.01462500000025102,
+        "mean_ms": 0.00020499999995800394,
+        "p50_ms": 8.300000081362668e-05,
+        "p95_ms": 0.0004170000011072261,
+        "p99_ms": 0.001083000002836343
+      },
+      "queue_wait": {
+        "count": 264,
+        "max_ms": 361.3573749999996,
+        "mean_ms": 22.246600223484787,
+        "p50_ms": 0.014624999999796273,
+        "p95_ms": 157.98483299999862,
+        "p99_ms": 294.518541999998
+      },
+      "scheduled_arrival_to_completion": {
+        "count": 264,
+        "max_ms": 505.42312500000116,
+        "mean_ms": 72.29743027272725,
+        "p50_ms": 48.76212499999929,
+        "p95_ms": 248.39820899999904,
+        "p99_ms": 405.0497499999983
+      },
+      "service": {
+        "count": 264,
+        "max_ms": 139.05774999999994,
+        "mean_ms": 45.62617032196973,
+        "p50_ms": 43.8370419999992,
+        "p95_ms": 94.18466700000135,
+        "p99_ms": 105.69712500000242
+      },
+      "source_scheduling_lateness": {
+        "count": 264,
+        "max_ms": 5.408709000000044,
+        "mean_ms": 4.424454727272779,
+        "p50_ms": 5.012417000001733,
+        "p95_ms": 5.032459000000017,
+        "p99_ms": 5.047042000000147
+      }
+    },
+    "completed_sensor_period_response_misses": 42,
+    "diagnostics": "minimal",
+    "events": {
+      "completed": 528,
+      "enqueued": 536,
+      "pending_or_uncompleted": 8,
+      "rejected_logical_time_ms": 26850,
+      "rejected_source_scheduling_lateness_ms": 5.009792000000743,
+      "scheduled": 4800
+    },
+    "limitations": [
+      "Only completed prefix events are timed; rejected/pending/future work has no completion latency.",
+      "Miss counts apply only to completed prefix events; this is not a whole-run pass or complete miss count.",
+      "No complete logical-output equivalence can be claimed for a cancelled run.",
+      "Phase spans overlap as explicitly declared; hashing/telemetry overhead is included when enabled.",
+      "The producer schedule is fixed; final failure-sidecar serialization occurs after cancellation."
+    ],
+    "logical_output_equal_excluding_runtime": null,
+    "mode": "semantic_first",
+    "offered_load": {
+      "peak_queue_depth": 8,
+      "queue_capacity": 8,
+      "rate": 1,
+      "wall_progress_interval_ms": 50.0,
+      "wall_sampling_interval_ms": 100.0
+    },
+    "partial_decision_audit": {
+      "algorithm": "SHA-256",
+      "encoding": "canonical typed complete logical selections/releases; exact IEEE-754 bits, length-prefixed ordered collections, optional presence",
+      "excluded": "only suppression evaluationNanoseconds, a runtime timing field",
+      "release_count": 426,
+      "release_sha256": "36fcd1db1ccf3eec640c13e5494af73de3635ffb8eccc563589ef53d2315041d",
+      "retirement_count": 7092,
+      "retirement_sha256": "6e039b3a764f4ba25e6a396aab35712da7d9d620676cea683ac4676fb148296e",
+      "schema": "ump.replay-decision-audit.v1",
+      "selected_cell_count": 426,
+      "suppressed_cell_count": 1478
+    },
+    "phases": {
+      "consume_inclusive": {
+        "calls": 529,
+        "milliseconds": 14611.197081999986
+      },
+      "decision_digest": {
+        "calls": 7518,
+        "milliseconds": 159.64710999999974
+      },
+      "private_window_json": {
+        "calls": 0,
+        "milliseconds": 0
+      },
+      "public_release_json": {
+        "calls": 426,
+        "milliseconds": 9.462155000000001
+      },
+      "publication_deliver_inclusive": {
+        "calls": 7092,
+        "milliseconds": 29.335267000000684
+      },
+      "publication_seal": {
+        "calls": 7092,
+        "milliseconds": 20.893574999999732
+      },
+      "schema": "ump.replay-phases.v1",
+      "scope": "inclusive wall-clock spans; consume includes terminal; delivery includes public serialization/digest/ack telemetry; do not sum overlapping phases",
+      "telemetry_json": {
+        "calls": 453,
+        "milliseconds": 2.3397459999999994
+      },
+      "terminal_inclusive": {
+        "calls": 7092,
+        "milliseconds": 209.4453019999995
+      }
+    },
+    "result": "bounded_queue_overflow",
+    "schema": "ump.paced-replay-failure-summary.v1",
+    "source": {
+      "end_ms": 240000,
+      "progress_step_ms": 50,
+      "sampling_period_ms": 100
+    },
+    "successful_replay_result": false
+  },
+  "paced_incomplete_memory": {
+    "sample_count": 27,
+    "last_sample_logical_time_ms": 26000,
+    "scope": "incomplete prefix samples; process RSS includes input parsing/preload and diagnostic allocator retention; only process high-water counter is a peak, other maxima are sampled",
+    "counters": {
+      "process_resident_bytes": {
+        "initial": 110493696,
+        "last": 142016512,
+        "sampled_max": 142016512
+      },
+      "process_peak_resident_bytes": {
+        "initial": 1244938240,
+        "last": 1244938240,
+        "sampled_max": 1244938240
+      },
+      "history_bins": {
+        "initial": 0,
+        "last": 61,
+        "sampled_max": 61
+      },
+      "history_observations": {
+        "initial": 0,
+        "last": 9093,
+        "sampled_max": 9093
+      },
+      "history_identity_bytes": {
+        "initial": 0,
+        "last": 503974,
+        "sampled_max": 503974
+      },
+      "history_buckets": {
+        "initial": 0,
+        "last": 0,
+        "sampled_max": 0
+      },
+      "retained_result_bytes": {
+        "initial": 0,
+        "last": 486298,
+        "sampled_max": 486298
+      }
+    }
+  },
+  "validation": {
+    "ctest_groups_passed": [
+      "paced_replay",
+      "replay_regression",
+      "paced_replay_summary",
+      "selective_suppression_regression"
+    ],
+    "python_summary_tests": 11,
+    "sha256_known_vectors": 4,
+    "logical_field_mutations": "more than 100, plus public release mutations",
+    "legacy_default_full_payload_unchanged_outside_runtime": true
+  },
+  "limitations": [
+    "One serial pair and one cancelled paced trial; no statistical performance claim or complete realtime pass.",
+    "Phase spans are inclusive and overlap; nonterminal is consume minus synchronous terminal span, not a breakdown between history/coordination/selection.",
+    "Full/minimal replay uses identical source/policy/decisions; later scenario or algorithm modifications need distinct matched controls.",
+    "Perception, detection-to-cell mapping and external sink receipt remain outside the paced boundary.",
+    "Paced prefix completion tails/misses exclude queued, rejected and future work.",
+    "The local binary snapshot is preserved; later rebuilds do not alter measured artifacts."
+  ]
+}

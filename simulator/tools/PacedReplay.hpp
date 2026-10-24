@@ -87,6 +87,31 @@ struct PacingReport {
     std::vector<PacedEventTiming> events;
     std::size_t peakQueueDepth = 0;
 };
+
+// A failed run never masquerades as a successful replay. Only completed
+// consumer events are retained, bounded by validatePacing's event budget.
+struct PacedRejectedEvent {
+    PacedEvent event;
+    double scheduledArrivalMs = 0, enqueueAttemptMs = 0;
+    std::size_t queueDepthAtRejection = 0;
+};
+class PacedQueueOverflow : public std::runtime_error {
+public:
+    PacedQueueOverflow(std::string message, PacedRejectedEvent event)
+        : std::runtime_error(std::move(message)), rejected(std::move(event)) {}
+    PacedRejectedEvent rejected;
+};
+class PacedReplayError : public std::runtime_error {
+public:
+    PacedReplayError(std::string message, PacingReport completed, PacedRejectedEvent rejected,
+        std::size_t scheduledEvents, std::size_t enqueuedEvents, double wallElapsedMs)
+        : std::runtime_error(std::move(message)), completed(std::move(completed)), rejected(std::move(rejected)),
+          scheduledEvents(scheduledEvents), enqueuedEvents(enqueuedEvents), wallElapsedMs(wallElapsedMs) {}
+    PacingReport completed;
+    PacedRejectedEvent rejected;
+    std::size_t scheduledEvents, enqueuedEvents;
+    double wallElapsedMs;
+};
 // Bounds apply to diagnostic event storage as well as the pending FIFO. The
 // replay's preloaded input and retained result are separate, explicitly named
 // memory consumers; this helper does not turn them into a streaming adapter.
@@ -114,6 +139,8 @@ PacingReport runPaced(const std::vector<PacedEvent>& events, double rate, std::s
     PacingReport report;
     report.events.reserve(events.size());
     PacedQueue queue(capacity, epoch);
+    // Only the producer writes; the consumer reads after join, never racing it.
+    std::size_t enqueuedEvents = 0;
     std::thread producer([&] {
         try {
             for (const auto& event : events) {
@@ -123,13 +150,15 @@ PacingReport runPaced(const std::vector<PacedEvent>& events, double rate, std::s
                 if (!queue.waitUntil(deadline)) return;
                 const double attempted = replayOffsetMs(epoch);
                 if (!queue.tryPush(event, scheduled, attempted)) {
-                    throw std::runtime_error("Paced replay overloaded/cancelled: logical_time_ms="
+                    throw PacedQueueOverflow("Paced replay overloaded/cancelled: logical_time_ms="
                         + std::to_string(event.logicalTimeMs) + ", queue_capacity=" + std::to_string(capacity)
                         + ", peak_queue_depth=" + std::to_string(queue.peakDepth())
                         + ", scheduled_arrival_ms=" + std::to_string(scheduled)
                         + ", enqueue_attempt_ms=" + std::to_string(attempted)
-                        + "; no successful replay result was written");
+                        + "; no successful replay result was written",
+                        {event, scheduled, attempted, queue.peakDepth()});
                 }
+                ++enqueuedEvents;
             }
             queue.close();
         } catch (...) { queue.cancel(std::current_exception()); }
@@ -142,7 +171,16 @@ PacingReport runPaced(const std::vector<PacedEvent>& events, double rate, std::s
             report.events.push_back(*timing);
         }
     } catch (...) {
-        queue.cancel(); producer.join(); throw;
+        const auto failure = std::current_exception();
+        queue.cancel(); producer.join();
+        report.peakQueueDepth = queue.peakDepth();
+        // Preserve consumer exceptions verbatim. A producer overflow carries
+        // completed telemetry only after its thread has safely joined.
+        try { std::rethrow_exception(failure); }
+        catch (const PacedQueueOverflow& overflow) {
+            throw PacedReplayError(overflow.what(), std::move(report), overflow.rejected,
+                events.size(), enqueuedEvents, replayOffsetMs(epoch));
+        }
     }
     producer.join();
     report.peakQueueDepth = queue.peakDepth();

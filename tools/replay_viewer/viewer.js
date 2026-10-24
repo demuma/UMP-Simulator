@@ -108,6 +108,7 @@ function drawBuildingAccess(layout){
      if(synthetic){ctx.moveTo(point.x,point.y-6);ctx.lineTo(point.x+6,point.y);ctx.lineTo(point.x,point.y+6);ctx.lineTo(point.x-6,point.y);ctx.closePath();}
      else ctx.rect(point.x-5.5,point.y-5.5,11,11);
      ctx.fillStyle=synthetic?'#fff4e9':'#e6f6ff';ctx.fill();ctx.lineWidth=2;ctx.stroke();
+     if(portal.kind==='surface_access'){ctx.font='700 12px -apple-system,sans-serif';ctx.textAlign='left';ctx.lineWidth=3;ctx.strokeStyle='white';ctx.strokeText(portal.surface_access.reference,point.x+9,point.y-8);ctx.fillStyle='#12658a';ctx.fillText(portal.surface_access.reference,point.x+9,point.y-8);}
    }
  }
  ctx.restore();
@@ -228,6 +229,7 @@ function details(side) {
  const finalized=privateMode?row.evaluated_at_ms:row.sealed_at_ms;
  detail.append(element('p',`${privateMode?'Evaluated':'Published'} at ${seconds(finalized)} · ${seconds(time-row.end_ms)} since this interval ended · ${seconds(finalized-row.start_ms)} interval-start age at ${privateMode?'evaluation':'release'}. Historical values, not a synchronized current measurement.`,'scope'));
  if(entry.partial)detail.append(element('p',`Partially covered by newer ${privateMode?'decisions':'publications'}: ${number(entry.fragments.length)} visible fragment(s) remain. All counts and groups below belong to the entire original ${number(cell.width)} × ${number(cell.height)} m cell and its original interval. Counts for the visible fragments alone are unknown.`,'notice'));
+ if(v.contribution_selection==='policy_filtered')detail.append(element('p','This Policy Tree permits contribution filtering. Released totals count retained contributions and are not exact full-input traffic totals. Private source groups include the original observations.','notice'));
  detail.append(element('p',`${number(cell.observation_contributions)} observations · ${number(cell.distinct_road_users)} ${identityLabel()} · mean occupancy ${number(cell.mean_sample_occupancy)}`));
  if(privateMode)detail.append(element('p',`${cell.selected?'Selected':'Suppressed'} · ${readable(cell.reason||'')} · ${readable(row.completion_reason||'')}`,'scope'));
  if($('policyRegions').checked)appendPolicy(detail,v,cell);
@@ -244,6 +246,13 @@ function details(side) {
      box.append(element('p','Counts cover the entire displayed interval, not the current position sample. An observed ID can contribute to multiple types if its recorded classification changes; per-type distinct counts must not be summed.','scope'));
    }else box.append(element('p','No finalized cell interval is available for private inspection.'));
    detail.append(box);
+ }
+ if(privateMode&&cell.semantic_suppression){const a=cell.semantic_suppression;detail.append(element('h4','Contribution suppression · private audit'),groupTable(['Measure','Value'],[
+   ['Original observation contributions',number(a.input_observation_contributions)],['Retained observation contributions',number(a.retained_observation_contributions)],
+   ['Selectively suppressed contributions',number(a.suppressed_observation_contributions)],['Suppressed fraction of this input',number(a.suppressed_fraction)],
+   ['Full-input semantic distortion',number(a.full_input_semantic_loss)],['Unfiltered semantic mean',number(a.unsuppressed_semantic_loss)],['Evaluated candidates',number(a.evaluated_candidates)]]));
+   detail.append(element('p','Private masks and removed-type counts do not belong to the recipient release. Retiring this cell still accounts for its entire original interval.','scope'));
+   if(a.suppressed_type_observation_contributions)detail.append(groupTable(['Suppressed recorded type','Observations'],Object.entries(a.suppressed_type_observation_contributions).map(([type,count])=>[type,number(count)])));
  }
  if(privateMode&&cell.checks?.length){const table=element('table'),head=element('tr');for(const name of ['Policy metric','Observed','Required'])head.append(element('th',name));table.append(head);for(const check of cell.checks){const tr=element('tr',null,check.status==='pass'?'':'fail'),bounds=(check.min!=null?'≥ '+number(check.min):'')+(check.min!=null&&check.max!=null?' · ':'')+(check.max!=null?'≤ '+number(check.max):'');tr.append(element('td',readable(check.metric)),element('td',number(check.observed)),element('td',bounds+' · '+check.status));table.append(tr);}detail.append(table);}
  else detail.append(element('p',privateMode?'Observed metric checks were not recorded for this cell. The declared bounds above do not constitute a reconstructed pass/fail evaluation.':'Observed metric checks and failed candidates are private diagnostics. Enable the diagnostic overlay to inspect them when recorded.','scope'));
@@ -294,11 +303,13 @@ function legends(){
    const osm=buildingAccess.portals.filter(portal=>portal.provenance==='osm').length;
    $('buildingAccessSummary').textContent=`${number(buildingAccess.portals.length)} routable entrance points (${number(osm)} OSM, ${number(buildingAccess.portals.length-osm)} synthetic). Entrance strokes show physical width; symbols mark exact targets, without an admission-radius circle. Building outlines are map context, not policy-region boundaries.`;
    const rows=[];
+   for(const portal of buildingAccess.portals.filter(p=>p.kind==='surface_access'))rows.push([portal.surface_access.name+' · '+portal.surface_access.reference,portal.id,'OSM subway surface access · stairs',portal.point.map(number).join(' / '),number(portal.width_m)]);
    for(const building of buildingAccess.buildings){
      const portals=buildingAccess.portals.filter(portal=>portal.building_id===building.id);
      if(!portals.length)rows.push([building.name,'No routable entrance in this scene','—','—','—']);
      for(const portal of portals)rows.push([building.name,portal.id,portal.provenance==='osm'?'OSM entrance':v2?'Synthetic POI facade projection':'Synthetic facade midpoint',portal.point.map(number).join(' / '),number(portal.width_m)]);
    }
+   if(buildingAccess.transit_access)$('buildingAccessSummary').textContent+=' A1/A2 are independent subway surface sources/sinks. Roofs remain visible overhead context; stairs exclude mobility-aid and stroller profiles. Subway movement and passenger demand are synthetic.';
    $('buildingAccessInventory').replaceChildren(element('p','Building outlines come from the cached map. Synthetic entrance points are scenario assumptions; a building outline alone does not establish a shop, access right or usable entrance.','scope'),groupTable(['Building','Entrance','Provenance','Target x / y (m)','Width (m)'],rows));
 
    if(v2){

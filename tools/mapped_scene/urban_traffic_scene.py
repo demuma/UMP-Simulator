@@ -7,6 +7,8 @@ access, calibrated arrivals, or cyclist/pedestrian priority rules.
 from __future__ import annotations
 
 import copy
+import importlib.util
+import pathlib
 import math
 import random
 import uuid
@@ -155,8 +157,14 @@ def repair_boundary_pairs(routes, boundary_rows, router, seed):
 
 
 def make_scene(storefront, repo, local, layers, access, source_hash, seed, people, interval,
-               overrides, road_user_fraction=.2, crossing_fraction=.2, clearance=.05):
+               overrides, road_user_fraction=.2, crossing_fraction=.2, clearance=.05, subway_access=False, rider_priority=False):
     validate_options(len(people), road_user_fraction, crossing_fraction, clearance)
+    original_local=local
+    transit=None;transit_data=None
+    if subway_access:
+        spec=importlib.util.spec_from_file_location("ump_transit_access",pathlib.Path(__file__).with_name("transit_access.py"))
+        transit=importlib.util.module_from_spec(spec);spec.loader.exec_module(transit)
+        local,layers,transit_data=transit.ground_environment(repo,local,layers,source_hash)
     people = copy.deepcopy(people)
     rider_indices = rider_people(people, seed, road_user_fraction)
     roadline, connectors, crossing_rows = crossing_connectors(local, layers)
@@ -165,6 +173,20 @@ def make_scene(storefront, repo, local, layers, access, source_hash, seed, peopl
     context, internals, safe, rows = storefront.build_geometry(
         repo, local, layers, access, source_hash, overrides,
         walking_geometry=walking, body_clearance_m=body_clearance)
+    facade_portals=copy.deepcopy(context["portals"])
+    surface_portals=[];transit_selection={}
+    if subway_access:
+        context["buildings"]=access.building_context(original_local)["buildings"]
+        for building in context["buildings"]:
+            if building["osm_type"]=="way" and building["osm_id"] in transit.OVERHEAD_WAY_IDS:
+                building.update(overhead=True,ground_obstacle=False)
+        surface_portals=transit.add_surface_portals(context,safe,original_local,transit_data)
+        transit_rng=random.Random(seed ^ 0x510E527FADE682D1)
+        candidates=[index for index,person in enumerate(people) if person["type"] in transit.ELIGIBLE_PROFILES]
+        transit_rng.shuffle(candidates)
+        count=min(len(candidates),max(4,round(len(people)*.15)))
+        if count<4: raise ValueError("Subway access needs at least four eligible stair-using pedestrian trips")
+        transit_selection={index:number for number,index in enumerate(sorted(candidates[:count]))}
     router = storefront.SafeRouter(safe, experimental_narrow_passages=True)
     domain = box(0, 0, 80, 80)
     # Riders keep their existing circular envelopes. The largest rider plus
@@ -235,10 +257,21 @@ def make_scene(storefront, repo, local, layers, access, source_hash, seed, peopl
             first["route_id"]=add(coordinates, f"boundary-road-{start_side}-{space}", f"boundary-road-{end_side}-{space}", space)
             person["episodes"]=[first]
             continue
+        if index in transit_selection:
+            number=transit_selection[index]
+            portal=surface_portals[(number//2)%len(surface_portals)]
+            approach=portal["approach"]
+            boundary=rng.choice(eligible(approach))
+            if number%2==0:
+                first["route_id"]=add(router.varied_route(endpoint(boundary),approach,rng)+[portal["point"]],boundary["id"],portal["id"])
+            else:
+                first["route_id"]=add([portal["point"]]+router.varied_route(approach,endpoint(boundary),rng),portal["id"],boundary["id"])
+            person["episodes"]=[first]
+            continue
         visit=index%2==0
         if visit:
-            portal=context["portals"][(index//2)%len(context["portals"])]
-            approach=internals[(index//2)%len(context["portals"])]["approach"]
+            portal=facade_portals[(index//2)%len(facade_portals)]
+            approach=internals[(index//2)%len(facade_portals)]["approach"]
             options=eligible(approach)
             origin,destination=rng.choice(options),rng.choice(options)
             first["route_id"]=add(router.varied_route(endpoint(origin),approach,rng)+[portal["point"]], origin["id"],portal["id"])
@@ -295,7 +328,22 @@ def make_scene(storefront, repo, local, layers, access, source_hash, seed, peopl
                   "navigation":{"center_clearance_m":body_clearance,"allowed_center_polygons":rows,
                       "grid_resolution_m":.5,"max_replan_nodes":20000,"replan_after_ms":1500,"replan_interval_ms":1000,
                       "door_max_batch_size":6,"spaces":[{"id":key,"center_clearance_m":road_clearance,"allowed_center_polygons":rows} for key,rows in road_rows.items()]}},
-        "portals":context["portals"],"routes":routes,"people":people}
+        "portals":facade_portals+surface_portals,"routes":routes,"people":people}
+    if rider_priority:
+        resources=[]
+        for crossing in crossing_rows:
+            conflict=LineString(crossing["centerline"]).buffer(crossing["width_m"]/2,cap_style=2).intersection(layers["road"])
+            for number,polygon in enumerate(storefront.parts(conflict)):
+                resources.append({"id":crossing["id"]+f"-priority-{number+1}",
+                    "conflict_ring":[list(point) for point in polygon.exterior.coords],
+                    "priority_spaces":list(road_spaces),"rider_lookahead_ms":4000,
+                    "pedestrian_max_wait_ms":8000,"pedestrian_admission_ms":2000,
+                    "rider_service_ms":1500,"max_batch_size":6})
+        if not resources or len(resources)>16:
+            raise ValueError("Crossing priority requires 1..16 bounded conflict resources")
+        scene["motion"]["navigation"]["crossings"]=resources
+        context["navigation"]["crossing_priority"]={"resources":copy.deepcopy(resources),
+            "scope":"Synthetic rider-priority entry rule. Already crossing bodies clear; request aging closes new riders, then a finite pedestrian batch. Physical clearance still applies; no unconditional liveness or traffic-law claim."}
     construction={"scope":"Opt-in mixed traffic with explicit synthetic crossing connectors and two modeled rider directions; no surveyed crossing, signal, legal permission, calibrated demand or empirical behavior claim.",
         "urban_traffic":True,"boundary_source_guard":pair_repair,"navigation_lattice_m":.5,"body_plus_clearance_radius_m":body_clearance,
         "erosion_numerical_margin_m":.002,"max_route_vertices":64,
@@ -307,6 +355,15 @@ def make_scene(storefront, repo, local, layers, access, source_hash, seed, peopl
         "rider_speed_mps":{"min":3.,"max":4.,"scope":"Conservative synthetic scenario parameter, not calibrated mode behavior"},
         "crossings":crossing_rows,
         "motion_limitations":"Conservative circular-body steering. No traffic signals, formal yield rules, explicit road priority, ORCA or hard real-time guarantee."}
+    if rider_priority:
+        construction["motion_limitations"]="Conservative circular-body steering. No traffic signals, ORCA, calibrated behavior or hard real-time guarantee. Optional crossing priority is an explicit bounded-admission source rule."
+    if subway_access:
+        construction["subway_access"]={"surface_portals":[p["id"] for p in surface_portals],
+            "selected_people":len(transit_selection),"fraction_of_people":.15,
+            "eligible_profiles":sorted(transit.ELIGIBLE_PROFILES),"overhead_roof_way_ids":sorted(transit.OVERHEAD_WAY_IDS),
+            "scope":"Independent seeded single-episode station entry/exit trips; staircase widths and demand are synthetic. No underground routes or cross-visit identity linkage."}
+    if rider_priority:
+        construction["rider_priority"]=copy.deepcopy(context["navigation"]["crossing_priority"])
     audit=audit_scene(storefront,local,layers,scene,context,walking,body_clearance,road_clearance)
     return scene,context,construction,audit
 
@@ -344,7 +401,8 @@ def audit_scene(storefront,local,layers,scene,context,walking,ped_clearance,road
                 # The native portal segment is a single exact throat; this
                 # exemption is only the already declared local facade approach.
                 other=route["points"][1] if key==route["start_portal"] else route["points"][-2]
-                exemptions.append(LineString([point,other]).buffer(.56,cap_style=1))
+                if portal.get("kind")!="surface_access":
+                    exemptions.append(LineString([point,other]).buffer(.56,cap_style=1))
             elif abs(point[0])>1e-7 and abs(point[0]-80)>1e-7 and abs(point[1])>1e-7 and abs(point[1]-80)>1e-7:
                 raise ValueError("Urban nonportal endpoint is not on the map boundary")
         exemption=unary_union(exemptions)

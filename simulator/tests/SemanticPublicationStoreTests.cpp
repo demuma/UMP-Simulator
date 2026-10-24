@@ -372,6 +372,59 @@ void realSemanticFirstPipeline(std::shared_ptr<mongocxx::client> client,
             std::string("Semantic First exposed private preference/source evidence: ")+forbidden);
 }
 
+
+void realSelectiveSuppressionPipeline(std::shared_ptr<mongocxx::client> client,
+    const ump::PublicationStoreOptions& options) {
+    using namespace ump;
+    const auto taxonomy = std::make_shared<const SemanticTaxonomy>("filtered-road-users", "1",
+        std::vector<SemanticNode>{{"road_user", "", 1, {}}, {"pedestrian", "road_user", 0, {"Pedestrian"}},
+            {"cyclist", "road_user", 0, {"Cyclist"}}});
+    AggregationConfig config{"semantic-filtered-acceptance", "agbs", "application", {0,0,80,80,2},100,400};
+    config.history=HistoryLimits{2000,32,10000,1000000,128}; config.semanticTaxonomy=taxonomy;
+    std::vector<AggregationCandidate> windows;
+    AggregationManager manager(config,[&](const auto& c){windows.push_back(c);});
+    std::vector<CellObservation> people;
+    const auto cell=historyCell(config.coverage,48,2);
+    for (int i=0;i<20;++i) people.push_back({"p"+std::to_string(i),"Pedestrian",cell});
+    people.push_back({"rare-cyclist","Cyclist",cell});
+    for (int time:{100,200,300}) manager.ingest({config.runId,config.sensorId,
+        static_cast<std::uint64_t>(time/100),time,ObservationStatus::Measured,people});
+    manager.advance(400);
+    MetricEvaluator evaluator(MetricPolicy{"filtered-policy","1",{
+        {MetricId::DistinctContributors,5,{}},{MetricId::MinCategoryDistinctContributors,5,{}},
+        {MetricId::SemanticMaxLoss,{},1},{MetricId::SemanticSuppressionFraction,{},.1}}},taxonomy);
+    auto selection=SpatialSelector(config,{2,128,true}).select(windows.at(0),*manager.history(),evaluator);
+    require(selection.candidate.counts.observationContributions==63,
+        "Selective publication changed original private conservation support");
+    PublicationCoordinator coordinator(config,evaluator);
+    const auto sealed=coordinator.seal(selection,400);
+    require(sealed->cells.size()==1 && sealed->cells[0].aggregate.counts.observationContributions==60
+        && sealed->cells[0].aggregate.counts.distinctContributors==20
+        && sealed->cells[0].semantic->bins.size()==1 && sealed->cells[0].semantic->bins[0].categoryId=="pedestrian",
+        "Selective publication retained a revealing original total");
+    PublicationStore store(client,options);
+    store.prepare(*sealed);
+    const auto prepared=store.recoverStream(config.runId,config.sensorId,config.applicationId);
+    require(prepared.size()==1 && !prepared[0].committed
+        && prepared[0].release.cells[0].aggregate.counts.observationContributions==60
+        && prepared[0].release.cells[0].semantic->bins[0].observationContributions==60,
+        "Existing immutable journal schema did not round-trip the filtered intent");
+    require(!coordinator.deliver(400,[&](const auto& release){
+        require(store.publish(release)==SinkResult::Acknowledged,"Filtered recipient write failed");
+        return SinkResult::Retry; // Simulate lost ACK after the immutable recipient insert.
+    }),"Lost ACK prematurely retired a filtered window");
+    require(coordinator.state().retiredThroughMs==0 && coordinator.state().reservedEndMs==400,
+        "Filtered retry lost its original full interval reservation");
+    require(coordinator.deliver(450,[&](const auto& release){
+        require(store.reconcile(release)==SinkResult::Acknowledged,"Filtered reconciliation changed payload");
+        store.commit(release); return SinkResult::Acknowledged;
+    }) && coordinator.state().retiredThroughMs==400,"Filtered ACK did not retire original owned interval");
+    const auto committed=store.recoverStream(config.runId,config.sensorId,config.applicationId);
+    require(committed.size()==1 && committed[0].committed
+        && committed[0].release.cells[0].aggregate.counts.typeObservationContributions.empty()
+        && !committed[0].release.cells[0].aggregate.counts.semanticEvidence,
+        "Filtered recovery disclosed private suppression evidence");
+}
 } // namespace
 
 int main() {
@@ -538,6 +591,7 @@ int main() {
         require(pending.size() == 1, "Restored private intent did not recover exactly once");
         checkSemantic(pending.front());
         require(recipient.count_documents({}) == 2, "Read-only semantic recovery disclosed pending data");
+        realSelectiveSuppressionPipeline(client, options);
         realSemanticPipeline(client, options);
         realSemanticFirstPipeline(client, options);
         realSemanticPipeline(client, options, true);

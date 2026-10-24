@@ -8,7 +8,7 @@
 namespace ump {
 namespace {
 struct SemanticCutQuality {
-    std::uint64_t retained = 0;
+    std::uint64_t retained = 0, accounted = 0;
     std::optional<double> maxLoss;
     // At equal retained support, this sum orders the observation-weighted
     // mean cell side without an extra floating-point division.
@@ -28,11 +28,13 @@ SemanticCutQuality semanticCutQuality(const SpatialSelection& selection,
         const auto& assessment = selection.assessment.cells[i];
         if (selection.decisions[i].cellId != cell.cell.id || assessment.cellId != cell.cell.id
             || assessment.status != AssessmentStatus::Pass || !assessment.semantic
-            || cell.counts.observationContributions > originalContributions - quality.retained)
+            || cell.counts.observationContributions > originalContributions - quality.accounted)
             throw std::logic_error("Semantic preference selected invalid or duplicated observed support");
-        quality.retained += cell.counts.observationContributions;
+        const auto& retained = assessment.retainedCounts ? *assessment.retainedCounts : cell.counts;
+        quality.accounted += cell.counts.observationContributions;
+        quality.retained += retained.observationContributions;
         quality.maxLoss = std::max(quality.maxLoss.value_or(0), assessment.semantic->maxLoss);
-        quality.weightedSide += static_cast<long double>(cell.counts.observationContributions) * cell.cell.width;
+        quality.weightedSide += static_cast<long double>(retained.observationContributions) * cell.cell.width;
         quality.selectedCellIds.push_back(cell.cell.id);
     }
     return quality;
@@ -41,7 +43,7 @@ SemanticCutQuality semanticCutQuality(const SpatialSelection& selection,
 bool completeSemanticCut(const SpatialSelection& selection, const SemanticCutQuality& quality,
     const AggregationCandidate& finest) {
     return finest.coverage == WindowCoverage::Complete && selection.suppressedCells == 0
-        && quality.retained == finest.counts.observationContributions
+        && quality.accounted == finest.counts.observationContributions
         && (selection.assessment.status == AssessmentStatus::Pass
             || selection.assessment.status == AssessmentStatus::NoCandidates);
 }

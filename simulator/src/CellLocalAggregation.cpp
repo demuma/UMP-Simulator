@@ -698,6 +698,9 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
             bool futurePossible = candidate.coverage == WindowCoverage::Complete
                 && assessed.cells.at(0).policyFeasible
                 && assessed.cells.at(0).status != AssessmentStatus::NotConfigured;
+            const bool suppressionAllowed = std::any_of(assessed.cells.at(0).checks.begin(), assessed.cells.at(0).checks.end(),
+                [](const auto& check) { return check.requirement.id == MetricId::SemanticSuppressionFraction
+                    && check.requirement.max && *check.requirement.max > 0; });
             for (const auto& check : assessed.cells.at(0).checks) {
                 const auto& requirement = check.requirement;
                 if (check.status == AssessmentStatus::Unavailable) futurePossible = false;
@@ -708,9 +711,9 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
                         break;
                     case MetricId::DistinctContributors:
                     case MetricId::ObservationContributions:
-                        // These totals cannot shrink when extending this same
-                        // interval; a violated upper bound cannot be repaired.
-                        if (requirement.max && check.observed && *check.observed > *requirement.max)
+                        // Full-input totals are monotone, but selective filtering
+                        // may choose a different retained union with later evidence.
+                        if (!suppressionAllowed && requirement.max && check.observed && *check.observed > *requirement.max)
                             futurePossible = false;
                         break;
                     case MetricId::WindowDurationMs:
@@ -736,6 +739,7 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
                     case MetricId::MinCategoryDistinctContributors:
                     case MetricId::SemanticMaxLoss:
                     case MetricId::SemanticMeanLoss:
+                    case MetricId::SemanticSuppressionFraction:
                         if (!semanticEnabled) futurePossible = false;
                         break; // Possible with new evidence, never assumed to pass.
                     case MetricId::OccupancyMae:

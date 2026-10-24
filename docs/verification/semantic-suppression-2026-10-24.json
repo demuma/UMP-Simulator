@@ -1,0 +1,1091 @@
+{
+  "cases": {
+    "fixed_10m_1000ms_off": {
+      "conditional_semantic_loss": 0.720629830292407,
+      "contribution_selection": "all_contributions",
+      "exact_subtype_fraction_of_input": 0.0,
+      "full_input_distortion_scope": "Unit penalty for any omitted contribution plus taxonomy cost for retained contributions; experimental utility score, not a privacy guarantee.",
+      "full_input_semantic_distortion": 0.8452256149372648,
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "raw_ownership_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 90619,
+      "mean_cell_side_m": 10.0,
+      "mean_window_duration_ms": 1000.0,
+      "native_process_wall_seconds": 1.9612850420000427,
+      "original_gt_exact_queries": "not_evaluated; filtered counts are retained-population counts, never original-source exact answers",
+      "published_cell_windows": 624,
+      "result_sha256": "0d44de419e0883c00297fd2ca0669f17a9cd82f1a2b0c9cbd02a498c6c8bea88",
+      "retained_fraction": 0.5540118518191549,
+      "retained_observations": 50204,
+      "runtime": {
+        "clock": "steady_clock",
+        "processing_ms": 374.099291,
+        "scope": "core replay and in-memory result serialization; excludes input validation and file I/O"
+      },
+      "selectively_suppressed_fraction_of_input": 0.0,
+      "selectively_suppressed_observations": 0,
+      "source_accounting": {
+        "by_region": {
+          "central-through-footway": {
+            "input_observations": 10794,
+            "retained_fraction": 0.8719659069853622,
+            "retained_observations": 9412,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 1382
+          },
+          "east-footway-control": {
+            "input_observations": 5730,
+            "retained_fraction": 0.0,
+            "retained_observations": 0,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 5730
+          },
+          "entrance-vicinity": {
+            "input_observations": 1204,
+            "retained_fraction": 0.3803986710963455,
+            "retained_observations": 458,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 746
+          },
+          "west-footway-control": {
+            "input_observations": 3785,
+            "retained_fraction": 0.0,
+            "retained_observations": 0,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 3785
+          }
+        },
+        "by_source_type": {
+          "Adult Cyclist": {
+            "input_observations": 4773,
+            "retained_fraction": 0.715901948460088,
+            "retained_observations": 3417,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 1356
+          },
+          "Adult E-Scooter Driver": {
+            "input_observations": 4616,
+            "retained_fraction": 0.7590987868284229,
+            "retained_observations": 3504,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 1112
+          },
+          "Adult Pedestrian": {
+            "input_observations": 17000,
+            "retained_fraction": 0.4854705882352941,
+            "retained_observations": 8253,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 8747
+          },
+          "Child Pedestrian": {
+            "input_observations": 15253,
+            "retained_fraction": 0.5219956729823642,
+            "retained_observations": 7962,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 7291
+          },
+          "Pedestrian With Mobility Aid": {
+            "input_observations": 15176,
+            "retained_fraction": 0.5469820769636268,
+            "retained_observations": 8301,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 6875
+          },
+          "Pedestrian With Stroller": {
+            "input_observations": 16503,
+            "retained_fraction": 0.5598376052838878,
+            "retained_observations": 9239,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 7264
+          },
+          "Senior Cyclist": {
+            "input_observations": 4634,
+            "retained_fraction": 0.7207596029348295,
+            "retained_observations": 3340,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 1294
+          },
+          "Senior Pedestrian": {
+            "input_observations": 12664,
+            "retained_fraction": 0.48862918509159825,
+            "retained_observations": 6188,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 6476
+          }
+        },
+        "input_observations": 90619,
+        "observation_to_release_delay_ms": {
+          "maximum": 1000,
+          "mean": 548.4762170344992,
+          "p50": 500,
+          "p95": 1000,
+          "p99": 1000
+        },
+        "region_scope": "Nonexclusive original observation positions, half-open region footprints; overlap may count one contribution in multiple regions.",
+        "retained_fraction": 0.5540118518191549,
+        "retained_observations": 50204,
+        "selectively_suppressed_fraction": 0.0,
+        "selectively_suppressed_observations": 0,
+        "whole_footprint_suppressed_observations": 40415
+      },
+      "suppression_candidates_in_published_cells": 0,
+      "whole_footprint_suppressed_observations": 40415
+    },
+    "fixed_10m_1000ms_on": {
+      "conditional_semantic_loss": 0.7096074582924435,
+      "contribution_selection": "policy_filtered",
+      "exact_subtype_fraction_of_input": 0.0030788245290722695,
+      "full_input_distortion_scope": "Unit penalty for any omitted contribution plus taxonomy cost for retained contributions; experimental utility score, not a privacy guarantee.",
+      "full_input_semantic_distortion": 0.83672850064556,
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "raw_ownership_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 90619,
+      "mean_cell_side_m": 10.0,
+      "mean_window_duration_ms": 1000.0,
+      "native_process_wall_seconds": 1.9602567920000524,
+      "original_gt_exact_queries": "not_evaluated; filtered counts are retained-population counts, never original-source exact answers",
+      "published_cell_windows": 630,
+      "result_sha256": "9230d1919424fd9d9895b9432b6339797843ae3d04abab39801da350cf1d1c21",
+      "retained_fraction": 0.5622441209900794,
+      "retained_observations": 50950,
+      "runtime": {
+        "clock": "steady_clock",
+        "processing_ms": 485.30425,
+        "scope": "core replay and in-memory result serialization; excludes input validation and file I/O"
+      },
+      "selectively_suppressed_fraction_of_input": 0.0007172888687802778,
+      "selectively_suppressed_observations": 65,
+      "source_accounting": {
+        "by_region": {
+          "central-through-footway": {
+            "input_observations": 10794,
+            "retained_fraction": 0.9451547155827311,
+            "retained_observations": 10202,
+            "selectively_suppressed_fraction": 0.0019455252918287938,
+            "selectively_suppressed_observations": 21,
+            "whole_footprint_suppressed_observations": 571
+          },
+          "east-footway-control": {
+            "input_observations": 5730,
+            "retained_fraction": 0.0,
+            "retained_observations": 0,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 5730
+          },
+          "entrance-vicinity": {
+            "input_observations": 1204,
+            "retained_fraction": 0.3803986710963455,
+            "retained_observations": 458,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 746
+          },
+          "west-footway-control": {
+            "input_observations": 3785,
+            "retained_fraction": 0.0,
+            "retained_observations": 0,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 3785
+          }
+        },
+        "by_source_type": {
+          "Adult Cyclist": {
+            "input_observations": 4773,
+            "retained_fraction": 0.7138068300858998,
+            "retained_observations": 3407,
+            "selectively_suppressed_fraction": 0.0027236538864445843,
+            "selectively_suppressed_observations": 13,
+            "whole_footprint_suppressed_observations": 1353
+          },
+          "Adult E-Scooter Driver": {
+            "input_observations": 4616,
+            "retained_fraction": 0.7538994800693241,
+            "retained_observations": 3480,
+            "selectively_suppressed_fraction": 0.005415944540727903,
+            "selectively_suppressed_observations": 25,
+            "whole_footprint_suppressed_observations": 1111
+          },
+          "Adult Pedestrian": {
+            "input_observations": 17000,
+            "retained_fraction": 0.49311764705882355,
+            "retained_observations": 8383,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 8617
+          },
+          "Child Pedestrian": {
+            "input_observations": 15253,
+            "retained_fraction": 0.5341899954107389,
+            "retained_observations": 8148,
+            "selectively_suppressed_fraction": 0.0008522913525208156,
+            "selectively_suppressed_observations": 13,
+            "whole_footprint_suppressed_observations": 7092
+          },
+          "Pedestrian With Mobility Aid": {
+            "input_observations": 15176,
+            "retained_fraction": 0.5587770163415919,
+            "retained_observations": 8480,
+            "selectively_suppressed_fraction": 0.0002635740643120717,
+            "selectively_suppressed_observations": 4,
+            "whole_footprint_suppressed_observations": 6692
+          },
+          "Pedestrian With Stroller": {
+            "input_observations": 16503,
+            "retained_fraction": 0.5696540023026117,
+            "retained_observations": 9401,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 7102
+          },
+          "Senior Cyclist": {
+            "input_observations": 4634,
+            "retained_fraction": 0.7194648252050064,
+            "retained_observations": 3334,
+            "selectively_suppressed_fraction": 0.0021579628830384117,
+            "selectively_suppressed_observations": 10,
+            "whole_footprint_suppressed_observations": 1290
+          },
+          "Senior Pedestrian": {
+            "input_observations": 12664,
+            "retained_fraction": 0.49881554011370816,
+            "retained_observations": 6317,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 6347
+          }
+        },
+        "input_observations": 90619,
+        "observation_to_release_delay_ms": {
+          "maximum": 1000,
+          "mean": 548.5868498527968,
+          "p50": 500,
+          "p95": 1000,
+          "p99": 1000
+        },
+        "region_scope": "Nonexclusive original observation positions, half-open region footprints; overlap may count one contribution in multiple regions.",
+        "retained_fraction": 0.5622441209900794,
+        "retained_observations": 50950,
+        "selectively_suppressed_fraction": 0.0007172888687802778,
+        "selectively_suppressed_observations": 65,
+        "whole_footprint_suppressed_observations": 39604
+      },
+      "suppression_candidates_in_published_cells": 13,
+      "whole_footprint_suppressed_observations": 39604
+    },
+    "semantic_first_off": {
+      "conditional_semantic_loss": 0.7017886806382871,
+      "contribution_selection": "all_contributions",
+      "exact_subtype_fraction_of_input": 0.0006290071618534744,
+      "full_input_distortion_scope": "Unit penalty for any omitted contribution plus taxonomy cost for retained contributions; experimental utility score, not a privacy guarantee.",
+      "full_input_semantic_distortion": 0.8038766704554232,
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "raw_ownership_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 90619,
+      "mean_cell_side_m": 9.347534271859322,
+      "mean_window_duration_ms": 697.7247176871319,
+      "native_process_wall_seconds": 65.792218542,
+      "original_gt_exact_queries": "not_evaluated; filtered counts are retained-population counts, never original-source exact answers",
+      "published_cell_windows": 1720,
+      "result_sha256": "ade014860a988ad90daf41583a3d43875d0a86a738d5f3e266327f18bafb0478",
+      "retained_fraction": 0.657665610964588,
+      "retained_observations": 59597,
+      "runtime": {
+        "clock": "steady_clock",
+        "processing_ms": 63844.07575,
+        "scope": "core replay and in-memory result serialization; excludes input validation and file I/O"
+      },
+      "selectively_suppressed_fraction_of_input": 0.0,
+      "selectively_suppressed_observations": 0,
+      "source_accounting": {
+        "by_region": {
+          "central-through-footway": {
+            "input_observations": 10794,
+            "retained_fraction": 0.9130998702983139,
+            "retained_observations": 9856,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 938
+          },
+          "east-footway-control": {
+            "input_observations": 5730,
+            "retained_fraction": 0.19040139616055846,
+            "retained_observations": 1091,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 4639
+          },
+          "entrance-vicinity": {
+            "input_observations": 1204,
+            "retained_fraction": 0.3853820598006645,
+            "retained_observations": 464,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 740
+          },
+          "west-footway-control": {
+            "input_observations": 3785,
+            "retained_fraction": 0.06895640686922061,
+            "retained_observations": 261,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 3524
+          }
+        },
+        "by_source_type": {
+          "Adult Cyclist": {
+            "input_observations": 4773,
+            "retained_fraction": 0.8053635030379216,
+            "retained_observations": 3844,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 929
+          },
+          "Adult E-Scooter Driver": {
+            "input_observations": 4616,
+            "retained_fraction": 0.848786828422877,
+            "retained_observations": 3918,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 698
+          },
+          "Adult Pedestrian": {
+            "input_observations": 17000,
+            "retained_fraction": 0.5567647058823529,
+            "retained_observations": 9465,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 7535
+          },
+          "Child Pedestrian": {
+            "input_observations": 15253,
+            "retained_fraction": 0.6429554841670491,
+            "retained_observations": 9807,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 5446
+          },
+          "Pedestrian With Mobility Aid": {
+            "input_observations": 15176,
+            "retained_fraction": 0.6592646283605693,
+            "retained_observations": 10005,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 5171
+          },
+          "Pedestrian With Stroller": {
+            "input_observations": 16503,
+            "retained_fraction": 0.6773919893352723,
+            "retained_observations": 11179,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 5324
+          },
+          "Senior Cyclist": {
+            "input_observations": 4634,
+            "retained_fraction": 0.8167889512300388,
+            "retained_observations": 3785,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 849
+          },
+          "Senior Pedestrian": {
+            "input_observations": 12664,
+            "retained_fraction": 0.5996525584333544,
+            "retained_observations": 7594,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 5070
+          }
+        },
+        "input_observations": 90619,
+        "observation_to_release_delay_ms": {
+          "maximum": 4000,
+          "mean": 396.60385589878683,
+          "p50": 300,
+          "p95": 1400,
+          "p99": 2900
+        },
+        "region_scope": "Nonexclusive original observation positions, half-open region footprints; overlap may count one contribution in multiple regions.",
+        "retained_fraction": 0.657665610964588,
+        "retained_observations": 59597,
+        "selectively_suppressed_fraction": 0.0,
+        "selectively_suppressed_observations": 0,
+        "whole_footprint_suppressed_observations": 31022
+      },
+      "suppression_candidates_in_published_cells": 0,
+      "whole_footprint_suppressed_observations": 31022
+    },
+    "semantic_first_on": {
+      "conditional_semantic_loss": 0.6956872329459491,
+      "contribution_selection": "policy_filtered",
+      "exact_subtype_fraction_of_input": 0.0016442467915117138,
+      "full_input_distortion_scope": "Unit penalty for any omitted contribution plus taxonomy cost for retained contributions; experimental utility score, not a privacy guarantee.",
+      "full_input_semantic_distortion": 0.7980169721581567,
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "raw_ownership_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 90619,
+      "mean_cell_side_m": 9.466806324504963,
+      "mean_window_duration_ms": 688.8988644487672,
+      "native_process_wall_seconds": 69.057777084,
+      "original_gt_exact_queries": "not_evaluated; filtered counts are retained-population counts, never original-source exact answers",
+      "published_cell_windows": 1715,
+      "result_sha256": "55c2cdf9d162cea6457bfe599ad491c85156a9c4baf30702a094b5cab5f87eaf",
+      "retained_fraction": 0.6637349783158057,
+      "retained_observations": 60147,
+      "runtime": {
+        "clock": "steady_clock",
+        "processing_ms": 67062.026166,
+        "scope": "core replay and in-memory result serialization; excludes input validation and file I/O"
+      },
+      "selectively_suppressed_fraction_of_input": 0.0005517606682925215,
+      "selectively_suppressed_observations": 50,
+      "source_accounting": {
+        "by_region": {
+          "central-through-footway": {
+            "input_observations": 10794,
+            "retained_fraction": 0.9636835278858625,
+            "retained_observations": 10402,
+            "selectively_suppressed_fraction": 0.0012970168612191958,
+            "selectively_suppressed_observations": 14,
+            "whole_footprint_suppressed_observations": 378
+          },
+          "east-footway-control": {
+            "input_observations": 5730,
+            "retained_fraction": 0.19703315881326353,
+            "retained_observations": 1129,
+            "selectively_suppressed_fraction": 0.00034904013961605586,
+            "selectively_suppressed_observations": 2,
+            "whole_footprint_suppressed_observations": 4599
+          },
+          "entrance-vicinity": {
+            "input_observations": 1204,
+            "retained_fraction": 0.3853820598006645,
+            "retained_observations": 464,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 740
+          },
+          "west-footway-control": {
+            "input_observations": 3785,
+            "retained_fraction": 0.06895640686922061,
+            "retained_observations": 261,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 3524
+          }
+        },
+        "by_source_type": {
+          "Adult Cyclist": {
+            "input_observations": 4773,
+            "retained_fraction": 0.8041064320134088,
+            "retained_observations": 3838,
+            "selectively_suppressed_fraction": 0.0018856065367693275,
+            "selectively_suppressed_observations": 9,
+            "whole_footprint_suppressed_observations": 926
+          },
+          "Adult E-Scooter Driver": {
+            "input_observations": 4616,
+            "retained_fraction": 0.8435875216637782,
+            "retained_observations": 3894,
+            "selectively_suppressed_fraction": 0.005632582322357019,
+            "selectively_suppressed_observations": 26,
+            "whole_footprint_suppressed_observations": 696
+          },
+          "Adult Pedestrian": {
+            "input_observations": 17000,
+            "retained_fraction": 0.5665294117647058,
+            "retained_observations": 9631,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 7369
+          },
+          "Child Pedestrian": {
+            "input_observations": 15253,
+            "retained_fraction": 0.6480036714089031,
+            "retained_observations": 9884,
+            "selectively_suppressed_fraction": 0.00026224349308332786,
+            "selectively_suppressed_observations": 4,
+            "whole_footprint_suppressed_observations": 5365
+          },
+          "Pedestrian With Mobility Aid": {
+            "input_observations": 15176,
+            "retained_fraction": 0.6647337901950449,
+            "retained_observations": 10088,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 5088
+          },
+          "Pedestrian With Stroller": {
+            "input_observations": 16503,
+            "retained_fraction": 0.684784584620978,
+            "retained_observations": 11301,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 5202
+          },
+          "Senior Cyclist": {
+            "input_observations": 4634,
+            "retained_fraction": 0.8159257660768234,
+            "retained_observations": 3781,
+            "selectively_suppressed_fraction": 0.002373759171342253,
+            "selectively_suppressed_observations": 11,
+            "whole_footprint_suppressed_observations": 842
+          },
+          "Senior Pedestrian": {
+            "input_observations": 12664,
+            "retained_fraction": 0.6103916614024005,
+            "retained_observations": 7730,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 4934
+          }
+        },
+        "input_observations": 90619,
+        "observation_to_release_delay_ms": {
+          "maximum": 4000,
+          "mean": 392.13260844264886,
+          "p50": 300,
+          "p95": 1400,
+          "p99": 2800
+        },
+        "region_scope": "Nonexclusive original observation positions, half-open region footprints; overlap may count one contribution in multiple regions.",
+        "retained_fraction": 0.6637349783158057,
+        "retained_observations": 60147,
+        "selectively_suppressed_fraction": 0.0005517606682925215,
+        "selectively_suppressed_observations": 50,
+        "whole_footprint_suppressed_observations": 30422
+      },
+      "suppression_candidates_in_published_cells": 20,
+      "whole_footprint_suppressed_observations": 30422
+    },
+    "spatial_first_off": {
+      "conditional_semantic_loss": 0.6638517240687621,
+      "contribution_selection": "all_contributions",
+      "exact_subtype_fraction_of_input": 0.00025380990741455986,
+      "full_input_distortion_scope": "Unit penalty for any omitted contribution plus taxonomy cost for retained contributions; experimental utility score, not a privacy guarantee.",
+      "full_input_semantic_distortion": 0.8150718944150785,
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "raw_ownership_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 90619,
+      "mean_cell_side_m": 8.291226205042825,
+      "mean_window_duration_ms": 3825.428760556035,
+      "native_process_wall_seconds": 59.70500025000001,
+      "original_gt_exact_queries": "not_evaluated; filtered counts are retained-population counts, never original-source exact answers",
+      "published_cell_windows": 378,
+      "result_sha256": "cf643b3d6349649c7997e1f898860f36c2b413baf82bc0323411029c935f911a",
+      "retained_fraction": 0.5501384919277414,
+      "retained_observations": 49853,
+      "runtime": {
+        "clock": "steady_clock",
+        "processing_ms": 57827.407625,
+        "scope": "core replay and in-memory result serialization; excludes input validation and file I/O"
+      },
+      "selectively_suppressed_fraction_of_input": 0.0,
+      "selectively_suppressed_observations": 0,
+      "source_accounting": {
+        "by_region": {
+          "central-through-footway": {
+            "input_observations": 10794,
+            "retained_fraction": 0.6537891421159904,
+            "retained_observations": 7057,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 3737
+          },
+          "east-footway-control": {
+            "input_observations": 5730,
+            "retained_fraction": 0.20575916230366492,
+            "retained_observations": 1179,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 4551
+          },
+          "entrance-vicinity": {
+            "input_observations": 1204,
+            "retained_fraction": 0.510797342192691,
+            "retained_observations": 615,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 589
+          },
+          "west-footway-control": {
+            "input_observations": 3785,
+            "retained_fraction": 0.09960369881109643,
+            "retained_observations": 377,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 3408
+          }
+        },
+        "by_source_type": {
+          "Adult Cyclist": {
+            "input_observations": 4773,
+            "retained_fraction": 0.5924994762204064,
+            "retained_observations": 2828,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 1945
+          },
+          "Adult E-Scooter Driver": {
+            "input_observations": 4616,
+            "retained_fraction": 0.612001733102253,
+            "retained_observations": 2825,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 1791
+          },
+          "Adult Pedestrian": {
+            "input_observations": 17000,
+            "retained_fraction": 0.4505882352941176,
+            "retained_observations": 7660,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 9340
+          },
+          "Child Pedestrian": {
+            "input_observations": 15253,
+            "retained_fraction": 0.5803448501934045,
+            "retained_observations": 8852,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 6401
+          },
+          "Pedestrian With Mobility Aid": {
+            "input_observations": 15176,
+            "retained_fraction": 0.5798629414865577,
+            "retained_observations": 8800,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 6376
+          },
+          "Pedestrian With Stroller": {
+            "input_observations": 16503,
+            "retained_fraction": 0.5812882506210992,
+            "retained_observations": 9593,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 6910
+          },
+          "Senior Cyclist": {
+            "input_observations": 4634,
+            "retained_fraction": 0.5953819594302978,
+            "retained_observations": 2759,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 1875
+          },
+          "Senior Pedestrian": {
+            "input_observations": 12664,
+            "retained_fraction": 0.5161086544535691,
+            "retained_observations": 6536,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 6128
+          }
+        },
+        "input_observations": 90619,
+        "observation_to_release_delay_ms": {
+          "maximum": 4000,
+          "mean": 1933.891641425792,
+          "p50": 1900,
+          "p95": 3800,
+          "p99": 4000
+        },
+        "region_scope": "Nonexclusive original observation positions, half-open region footprints; overlap may count one contribution in multiple regions.",
+        "retained_fraction": 0.5501384919277414,
+        "retained_observations": 49853,
+        "selectively_suppressed_fraction": 0.0,
+        "selectively_suppressed_observations": 0,
+        "whole_footprint_suppressed_observations": 40766
+      },
+      "suppression_candidates_in_published_cells": 0,
+      "whole_footprint_suppressed_observations": 40766
+    },
+    "spatial_first_on": {
+      "conditional_semantic_loss": 0.6523656856107372,
+      "contribution_selection": "policy_filtered",
+      "exact_subtype_fraction_of_input": 0.00025380990741455986,
+      "full_input_distortion_scope": "Unit penalty for any omitted contribution plus taxonomy cost for retained contributions; experimental utility score, not a privacy guarantee.",
+      "full_input_semantic_distortion": 0.8073527626656661,
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "raw_ownership_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 90619,
+      "mean_cell_side_m": 8.329383886255924,
+      "mean_window_duration_ms": 3818.393803018838,
+      "native_process_wall_seconds": 61.656967166999976,
+      "original_gt_exact_queries": "not_evaluated; filtered counts are retained-population counts, never original-source exact answers",
+      "published_cell_windows": 381,
+      "result_sha256": "aa82fb4133913c03c76b453d5cb509f465f2d730a1609b26674238bb64c23933",
+      "retained_fraction": 0.5541663448062768,
+      "retained_observations": 50218,
+      "runtime": {
+        "clock": "steady_clock",
+        "processing_ms": 59781.194458,
+        "scope": "core replay and in-memory result serialization; excludes input validation and file I/O"
+      },
+      "selectively_suppressed_fraction_of_input": 0.0005848663083900727,
+      "selectively_suppressed_observations": 53,
+      "source_accounting": {
+        "by_region": {
+          "central-through-footway": {
+            "input_observations": 10794,
+            "retained_fraction": 0.6786177506021864,
+            "retained_observations": 7325,
+            "selectively_suppressed_fraction": 0.00037057624606262737,
+            "selectively_suppressed_observations": 4,
+            "whole_footprint_suppressed_observations": 3465
+          },
+          "east-footway-control": {
+            "input_observations": 5730,
+            "retained_fraction": 0.23001745200698082,
+            "retained_observations": 1318,
+            "selectively_suppressed_fraction": 0.0012216404886561956,
+            "selectively_suppressed_observations": 7,
+            "whole_footprint_suppressed_observations": 4405
+          },
+          "entrance-vicinity": {
+            "input_observations": 1204,
+            "retained_fraction": 0.510797342192691,
+            "retained_observations": 615,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 589
+          },
+          "west-footway-control": {
+            "input_observations": 3785,
+            "retained_fraction": 0.09960369881109643,
+            "retained_observations": 377,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 3408
+          }
+        },
+        "by_source_type": {
+          "Adult Cyclist": {
+            "input_observations": 4773,
+            "retained_fraction": 0.5887282631468678,
+            "retained_observations": 2810,
+            "selectively_suppressed_fraction": 0.003980724910957469,
+            "selectively_suppressed_observations": 19,
+            "whole_footprint_suppressed_observations": 1944
+          },
+          "Adult E-Scooter Driver": {
+            "input_observations": 4616,
+            "retained_fraction": 0.6094020797227037,
+            "retained_observations": 2813,
+            "selectively_suppressed_fraction": 0.0030329289428076256,
+            "selectively_suppressed_observations": 14,
+            "whole_footprint_suppressed_observations": 1789
+          },
+          "Adult Pedestrian": {
+            "input_observations": 17000,
+            "retained_fraction": 0.4593529411764706,
+            "retained_observations": 7809,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 9191
+          },
+          "Child Pedestrian": {
+            "input_observations": 15253,
+            "retained_fraction": 0.5835573329836753,
+            "retained_observations": 8901,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 6352
+          },
+          "Pedestrian With Mobility Aid": {
+            "input_observations": 15176,
+            "retained_fraction": 0.5819715340010543,
+            "retained_observations": 8832,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 6344
+          },
+          "Pedestrian With Stroller": {
+            "input_observations": 16503,
+            "retained_fraction": 0.5869841846936921,
+            "retained_observations": 9687,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 6816
+          },
+          "Senior Cyclist": {
+            "input_observations": 4634,
+            "retained_fraction": 0.5927924039706517,
+            "retained_observations": 2747,
+            "selectively_suppressed_fraction": 0.0043159257660768235,
+            "selectively_suppressed_observations": 20,
+            "whole_footprint_suppressed_observations": 1867
+          },
+          "Senior Pedestrian": {
+            "input_observations": 12664,
+            "retained_fraction": 0.522662665824384,
+            "retained_observations": 6619,
+            "selectively_suppressed_fraction": 0.0,
+            "selectively_suppressed_observations": 0,
+            "whole_footprint_suppressed_observations": 6045
+          }
+        },
+        "input_observations": 90619,
+        "observation_to_release_delay_ms": {
+          "maximum": 4000,
+          "mean": 1929.0692580349676,
+          "p50": 1900,
+          "p95": 3800,
+          "p99": 4000
+        },
+        "region_scope": "Nonexclusive original observation positions, half-open region footprints; overlap may count one contribution in multiple regions.",
+        "retained_fraction": 0.5541663448062768,
+        "retained_observations": 50218,
+        "selectively_suppressed_fraction": 0.0005848663083900727,
+        "selectively_suppressed_observations": 53,
+        "whole_footprint_suppressed_observations": 40348
+      },
+      "suppression_candidates_in_published_cells": 9,
+      "whole_footprint_suppressed_observations": 40348
+    }
+  },
+  "evidence_scope": "One post-hoc six-case60s prefix study, all independently verified; compact totals/types/regions only. No raw observations, individual track IDs, masks or per-cell rows.",
+  "figure_generator": "tools/evaluation/plot_semantic_suppression.py",
+  "figures": {
+    "docs/figures/semantic-suppression-2026-10-24.png": {
+      "bytes": 152860,
+      "sha256": "ff1ca4f64c647cd2cf96329901fe78f0cdeb0dd492d484a9b28f48afee9dd13b"
+    },
+    "docs/figures/semantic-suppression-2026-10-24.svg": {
+      "bytes": 27842,
+      "sha256": "9b49022ea527f41c4eafca803aa93233e911625b3554e99c675221375956185d"
+    }
+  },
+  "local_study": "results/semantic-suppression-2026-10-24-60s-v2",
+  "map_artifact_verification": {
+    "building_access.json": {
+      "sha256": "f416b9ee8530756b42a2e7f9dd2b8615e2d2955308eaba3ccc62e7abfcad5863",
+      "unchanged_from_frozen_source": true
+    },
+    "map_background.png": {
+      "sha256": "270e5457022a95ca3dc8223c21208becd6fb062e9601403b09b563771375d7d0",
+      "unchanged_from_frozen_source": true
+    }
+  },
+  "protocol": {
+    "analysis_status": "post_hoc_sensitivity",
+    "binary_sha256": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9",
+    "commands": [
+      [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/semantic_first_off-policy.json",
+        "--mode",
+        "semantic_first",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/semantic_first_off.json",
+        "--progress-step-ms",
+        "50"
+      ],
+      [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/semantic_first_on-policy.json",
+        "--mode",
+        "semantic_first",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/semantic_first_on.json",
+        "--progress-step-ms",
+        "50"
+      ],
+      [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/spatial_first_off-policy.json",
+        "--mode",
+        "spatial_first",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/spatial_first_off.json",
+        "--progress-step-ms",
+        "50"
+      ],
+      [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/spatial_first_on-policy.json",
+        "--mode",
+        "spatial_first",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/spatial_first_on.json",
+        "--progress-step-ms",
+        "50"
+      ],
+      [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/fixed_10m_1000ms_off-policy.json",
+        "--mode",
+        "fixed",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/fixed_10m_1000ms_off.json",
+        "--progress-step-ms",
+        "50",
+        "--fixed-depth",
+        "3",
+        "--fixed-window-ms",
+        "1000"
+      ],
+      [
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/provenance/AggregationReplay",
+        "--input",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/observations.json",
+        "--config",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/fixed_10m_1000ms_on-policy.json",
+        "--mode",
+        "fixed",
+        "--output",
+        "/Users/maxdemu/Developer/UMP-Simulator/results/semantic-suppression-2026-10-24-60s-v2/fixed_10m_1000ms_on.json",
+        "--progress-step-ms",
+        "50",
+        "--fixed-depth",
+        "3",
+        "--fixed-window-ms",
+        "1000"
+      ]
+    ],
+    "comparison_scope": "Equal source and hard regional requirements; strategy and explicit suppression permission differ. Fixed baseline receives the same on/off action permission.",
+    "derived_horizon_ms": 60000,
+    "derived_input_sha256": "3f069cc969b49406138fc2322edcd80798fc440f7c79257f45ec8df8fe246cc9",
+    "full_source_sha256": "f43a28abaa253816e34732f29f07f63b953ecc40f57aae884c349329c6b9a1a1",
+    "matrix": [
+      {
+        "contribution_selection": "all_contributions",
+        "id": "semantic_first_off",
+        "mode": "semantic_first",
+        "suppression_cap": 0
+      },
+      {
+        "contribution_selection": "policy_filtered",
+        "id": "semantic_first_on",
+        "mode": "semantic_first",
+        "suppression_cap": 0.1
+      },
+      {
+        "contribution_selection": "all_contributions",
+        "id": "spatial_first_off",
+        "mode": "spatial_first",
+        "suppression_cap": 0
+      },
+      {
+        "contribution_selection": "policy_filtered",
+        "id": "spatial_first_on",
+        "mode": "spatial_first",
+        "suppression_cap": 0.1
+      },
+      {
+        "contribution_selection": "all_contributions",
+        "id": "fixed_10m_1000ms_off",
+        "mode": "fixed",
+        "suppression_cap": 0
+      },
+      {
+        "contribution_selection": "policy_filtered",
+        "id": "fixed_10m_1000ms_on",
+        "mode": "fixed",
+        "suppression_cap": 0.1
+      }
+    ],
+    "native_process_wall_budget_s": 900,
+    "original_config_sha256": "cb7e7a7b3869f0c2ca0191e759924efb30d85ea580abfd78c3dafe4d24efc73f",
+    "pre_execution_artifacts_sha256": {
+      "fixed_10m_1000ms_off-policy.json": "bcd79dde252b329dbc6a6749d2ce505fdde5355e56965531a6303533e63f1da3",
+      "fixed_10m_1000ms_on-policy.json": "75943c753ad0a44f8e3fa46ff2300abb3e1093d7f65c89495e8ebc587645b5d1",
+      "observations.json": "3f069cc969b49406138fc2322edcd80798fc440f7c79257f45ec8df8fe246cc9",
+      "provenance/AggregationReplay": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9",
+      "semantic_first_off-policy.json": "183a12a913f5f9315e8b238bff21482a2f7cc8b16968083cab556062bc6a0ec7",
+      "semantic_first_on-policy.json": "de8630fec3993bd9cb97fbb024b31bcca36c3368c492113efae87695dd0f6bc6",
+      "spatial_first_off-policy.json": "22a01a0b6da8edd439ba758934083c812ca5b46a1bf35dc759b2250b2a4001b0",
+      "spatial_first_on-policy.json": "846d125a55d5a416f9d3f7acebe98fc88c29bafa0cda273031dc8d9ccb15fb32"
+    },
+    "privacy_scope": "Operational policy/support compliance only; no attack evaluation or formal anonymity claim.",
+    "progress_step_ms": 50,
+    "recipient_query_scope": "No original-GT exact query evaluation for filtered products; report retained detail, source-denominated omissions and full-input semantic distortion.",
+    "schema": "ump.selective-semantic-study-protocol.v1",
+    "source_derivation": "Exact [0,end_ms) prefix of the original frozen observations; timestamps/identities/types/positions unchanged. No new motion."
+  },
+  "schema": "ump.selective-semantic-study.v1",
+  "source_files_sha256_recorded_after_execution": {
+    "simulator/include/CandidateMetrics.hpp": "302ddaeca90e5caf206af8e32593b20959c21bdd828550bca9ea872037a3bfdd",
+    "simulator/include/SemanticTaxonomy.hpp": "c45167d203e8134a19770338c94faab76d6adf32eaae90481e49286f088b5ec1",
+    "simulator/src/AdaptiveAggregation.cpp": "21e2267357064e046a50595e53abff3b56e2cff64d985438e4ea08e70f061d94",
+    "simulator/src/AggregationDiagnostics.cpp": "180b2ef9be43704e657865eb985b3a31748af2e3e1bd49007217403077cdb1ec",
+    "simulator/src/CandidateMetrics.cpp": "06e5b3d05fa6e55cb1bf52aea732584e6cf733c4bda4b3bf4445aff0164d74b3",
+    "simulator/src/CellLocalAggregation.cpp": "a70753bc33b44dbb3b3edebc009afcd53d2a87823342621798446256f014bfb3",
+    "simulator/src/PolicyTree.cpp": "e49575e803aa0be7d1e928504d1b50baf5195992cf1b37e728de9a46b2a63ee1",
+    "simulator/src/PublicationCoordinator.cpp": "18ecc71abf26bc9076e6b1cdef3e2091ab73c3e2d3035c6e3b29ed06ae6b1601",
+    "simulator/src/SemanticTaxonomy.cpp": "9ece8a96765f3d7e7b3e053e0c024537fb077e842a90a7a98d732d475604caaf",
+    "simulator/tests/SemanticPublicationStoreTests.cpp": "8fd7345582ee19c992dfe57dc878e52a3550a89d06c53a45ae185d85551063a9",
+    "simulator/tests/SemanticSuppressionTests.cpp": "fb7a256a53f84cdf717fd7ae1614c55986dcda76538f6892571fe3c7f7e1c228",
+    "tools/evaluation/run_local_policy_replay.py": "fc59031070c96c7142831844b700a3cc7d948120760de2fcb4e7908fa8e18430",
+    "tools/evaluation/run_semantic_priority_study.py": "ab8b3cddccc7210b0fb99ace1e7d399bee4c23f2a125939adadfe04c83dcde23",
+    "tools/evaluation/run_suppression_study.py": "1e0b9e823707bcf3a6e3b5cf19c68f8b929284d3103b4c84bc16bdde948e478a",
+    "tools/evaluation/semantic_suppression_audit.py": "3b936cb056d89444677d8ec2195c0e43b8dc29e7e635607017912b761d5e92f8",
+    "tools/evaluation/test_run_suppression_study.py": "86f1b86610338acad1f72cabc22c2d56e4b85ad0c3a66a62ebaec94d729c4364",
+    "tools/evaluation/test_semantic_suppression_audit.py": "9996b070b66104990d59bfd99c391ee9e969d42f64c3dcab7d471eadb88619c0"
+  },
+  "status": "verified",
+  "verification": {
+    "counterexample": "40 exact pedestrians +2 adult +2 child cyclists, support4: reject omitting4/44 because true cyclist family costs2/44.",
+    "independent_python_tests": 6,
+    "mongo_roundtrip": "passed",
+    "native_groups_passed": 11,
+    "new_native_acceptance_groups": 8,
+    "paired_timing": "Exclusive clean serial native window; first potentially contaminated attempt aborted before case1completion and excluded. Single pair/method, no repeated statistical timing claim.",
+    "study_protocol_tests": 3
+  },
+  "viewer_bundle": "bundle.json",
+  "viewer_validation": {
+    "actual_six_variant_bundle_check": "passed",
+    "scope": "Original private ownership counts remain unchanged; recipient cells must match approved retained counts and semantics. Structural rejection checks original/retained conservation, occupancy denominator, semantic bin sums, masks, policy cap and full-input benefit. Independent source audit remains separate.",
+    "status": "verified",
+    "unit_tests_passed": 68
+  }
+}

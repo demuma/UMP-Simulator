@@ -8,6 +8,7 @@ import argparse
 import hashlib
 import json
 import math
+import re
 from pathlib import Path
 
 
@@ -48,10 +49,54 @@ def event_metrics(events):
             for name, (later, earlier) in deltas.items()}
 
 
-def summarize(paced, reference):
-    # Shallow projections avoid cloning either large windows/releases structure.
-    if {k: v for k, v in paced.items() if k != 'runtime'} != {k: v for k, v in reference.items() if k != 'runtime'}:
+def validate_decision_audit(value):
+    audit = value.get('runtime', {}).get('decision_audit')
+    if not isinstance(audit, dict) or audit.get('schema') != 'ump.replay-decision-audit.v1' or audit.get('algorithm') != 'SHA-256':
+        raise ValueError('Minimal equivalence requires both complete SHA-256 decision audits')
+    for name in ('retirement_sha256', 'release_sha256'):
+        if not isinstance(audit.get(name), str) or not re.fullmatch(r'[0-9a-f]{64}', audit[name]):
+            raise ValueError('Malformed complete decision SHA-256')
+    for name in ('retirement_count', 'release_count', 'selected_cell_count', 'suppressed_cell_count'):
+        integer(audit.get(name), 'audit ' + name)
+    if audit['release_count'] != len(value['releases']):
+        raise ValueError('Decision audit release count differs from complete public output')
+    mode = value.get('runtime', {}).get('diagnostics', 'full')
+    if mode not in ('full', 'minimal'):
+        raise ValueError('Unknown diagnostic mode')
+    if mode == 'minimal' and value['windows']:
+        raise ValueError('Minimal diagnostic output unexpectedly retains private windows')
+    if mode == 'full' and audit['retirement_count'] != len(value['windows']):
+        raise ValueError('Decision audit retirement count differs from full windows')
+    return audit
+
+
+def logical_equivalence(paced, reference):
+    # Historical full outputs keep complete byte-value equality outside runtime.
+    # Minimal outputs instead require exact public/common fields plus BOTH native
+    # complete typed SHA-256 audits; an unaudited old control is insufficient.
+    modes = [v.get('runtime', {}).get('diagnostics', 'full') for v in (paced, reference)]
+    if any(mode not in ('full', 'minimal') for mode in modes):
+        raise ValueError('Unknown diagnostic mode')
+    if 'minimal' in modes:
+        audits = [validate_decision_audit(value) for value in (paced, reference)]
+        if audits[0] != audits[1]:
+            raise ValueError('Complete logical decision audits differ')
+        excluded = ('runtime', 'windows')
+        method = 'exact public/common fields and matching complete typed SHA-256 retirement/release audits'
+    else:
+        excluded = ('runtime',)
+        method = 'complete output equality excluding runtime'
+        if all(value.get('runtime', {}).get('decision_audit') for value in (paced, reference)):
+            if validate_decision_audit(paced) != validate_decision_audit(reference):
+                raise ValueError('Complete logical decision audits differ')
+    if {k: v for k, v in paced.items() if k not in excluded} != {k: v for k, v in reference.items() if k not in excluded}:
         raise ValueError('Logical replay output differs outside the complete runtime field')
+    return {'paced': modes[0], 'reference': modes[1], 'equality_method': method,
+            'materialized_private_windows_compared': 'minimal' not in modes}
+
+
+def summarize(paced, reference):
+    diagnostics = logical_equivalence(paced, reference)
     if paced.get('schema') != 'ump.replay-result.v1':
         raise ValueError('Unexpected replay result schema')
     data = paced['runtime']['pacing']
@@ -154,6 +199,7 @@ def summarize(paced, reference):
     horizon = events[-1]['service_finish_ms']
     return {
         'schema': SCHEMA, 'logical_output_equal_excluding_runtime': True,
+        'diagnostics': diagnostics,
         'source': {'logical_duration_ms': end, 'sampling_period_ms': period,
                    'progress_step_ms': step, 'explicit_native_progress': explicit_progress,
                    'input_observation_contributions': paced['input_observation_contributions'],
@@ -167,6 +213,13 @@ def summarize(paced, reference):
         'cadence': event_metrics(cadence), 'finish': event_metrics(finish),
         'sample_steps': event_metrics(sample_steps), 'no_sample_steps': event_metrics(no_sample_steps),
         'cadence_service_over_offered_interval': sum(event['service_finish_ms'] - event['service_start_ms'] > step / rate for event in cadence),
+        'response_deadlines': {
+            'cadence_deadline_ms': step / rate, 'completed_cadence_events': len(cadence),
+            'cadence_miss_count': sum(event['service_finish_ms'] - event['scheduled_arrival_ms'] > step / rate for event in cadence),
+            'sensor_period_deadline_ms': period / rate, 'completed_sensor_events': len(sample_steps),
+            'sensor_period_miss_count': sum(event['service_finish_ms'] - event['scheduled_arrival_ms'] > period / rate for event in sample_steps),
+            'finish_response_over_cadence_deadline': finish[0]['service_finish_ms'] - finish[0]['scheduled_arrival_ms'] > step / rate,
+            'scope': 'fixed scheduled arrival to completion; cadence excludes separately reported EOF'},
         'consumer_service_total_ms': service_total, 'wall_horizon_through_finish_ms': horizon,
         'consumer_busy_fraction': service_total / horizon if horizon else None,
         'unpaced_control_processing_ms': finite(reference['runtime']['processing_ms'], 'control processing time'),
@@ -185,6 +238,73 @@ def summarize(paced, reference):
             'Sampled maxima are not continuous peaks, except the process high-water RSS counter itself.',
             'Logical equivalence and measured latency do not establish a hard realtime guarantee.',
         ],
+    }
+
+
+def summarize_failure(failure):
+    if failure.get('schema') != 'ump.paced-replay-failure.v1' or failure.get('successful_replay_result') is not False:
+        raise ValueError('Expected an explicit incomplete paced failure, never a successful result')
+    rate = finite(failure['rate'], 'failure rate')
+    if rate <= 0 or rate > 1000:
+        raise ValueError('Failure rate must lie in (0,1000]')
+    step = integer(failure['progress_step_ms'], 'failure progress', 1)
+    period = integer(failure['sampling_period_ms'], 'failure sampling', 1)
+    end = integer(failure['source_end_ms'], 'failure horizon', 1)
+    if step > period or period % step:
+        raise ValueError('Failure progress must divide sampling cadence')
+    capacity = integer(failure['queue_capacity'], 'failure capacity', 1)
+    peak = integer(failure['peak_queue_depth'], 'failure peak', 1)
+    scheduled = integer(failure['scheduled_event_count'], 'failure scheduled', 1)
+    enqueued = integer(failure['enqueued_event_count'], 'failure enqueued')
+    completed = integer(failure['completed_event_count'], 'failure completed')
+    if capacity > 100000 or peak != capacity or scheduled > 100000 or scheduled != (end - 1) // step + 1:
+        raise ValueError('Inconsistent bounded failure schedule/peak')
+    events = failure['completed_events']
+    if completed != len(events) or not completed <= enqueued < scheduled or enqueued - completed > capacity:
+        raise ValueError('Inconsistent partial event counts')
+    elapsed = finite(failure['wall_elapsed_ms'], 'failure elapsed')
+    previous_finish = 0
+    for index, event in enumerate(events):
+        logical = (index + 1) * step
+        values = [finite(event[name], name) for name in ('scheduled_arrival_ms', 'enqueue_attempt_ms', 'enqueued_ms', 'service_start_ms', 'service_finish_ms')]
+        if event['logical_time_ms'] != logical or event['kind'] != 'cadence' or not math.isclose(values[0], logical / rate, abs_tol=1e-6):
+            raise ValueError('Partial events are not a complete causal prefix')
+        if values[1] + 1e-6 < values[0] or any(a > b for a, b in zip(values[1:], values[2:])) or values[3] < previous_finish or values[4] > elapsed:
+            raise ValueError('Noncausal completed-prefix timestamps')
+        if not 1 <= integer(event['queue_depth_after_enqueue'], 'failure event queue', 1) <= capacity:
+            raise ValueError('Completed failure prefix exceeds queue capacity')
+        previous_finish = values[4]
+    rejected = failure['rejected_event']
+    logical = integer(rejected['logical_time_ms'], 'rejected logical time', 1)
+    planned = finite(rejected['scheduled_arrival_ms'], 'rejected scheduled')
+    attempted = finite(rejected['enqueue_attempt_ms'], 'rejected attempted')
+    if logical != (enqueued + 1) * step or logical >= end or rejected['kind'] != 'cadence' or not math.isclose(planned, logical / rate, abs_tol=1e-6):
+        # Endpoint rejection is also valid when it is the schedule's final item.
+        if logical != end or enqueued != scheduled - 1 or rejected['kind'] != 'finish' or not math.isclose(planned, end / rate, abs_tol=1e-6):
+            raise ValueError('Rejected event does not follow the offered schedule')
+    if attempted + 1e-6 < planned or attempted > elapsed or rejected['queue_depth_at_rejection'] != capacity:
+        raise ValueError('Noncausal rejected event or missing queue saturation')
+    sample_events = [event for event in events if event['logical_time_ms'] % period == 0]
+    no_sample_events = [event for event in events if event['logical_time_ms'] % period != 0]
+    return {
+        'schema': 'ump.paced-replay-failure-summary.v1', 'successful_replay_result': False,
+        'logical_output_equal_excluding_runtime': None,
+        'result': 'bounded_queue_overflow', 'mode': failure['mode'], 'diagnostics': failure['diagnostics'],
+        'offered_load': {'rate': rate, 'wall_progress_interval_ms': step / rate, 'wall_sampling_interval_ms': period / rate,
+                         'queue_capacity': capacity, 'peak_queue_depth': peak},
+        'source': {'end_ms': end, 'sampling_period_ms': period, 'progress_step_ms': step},
+        'events': {'scheduled': scheduled, 'enqueued': enqueued, 'completed': completed, 'pending_or_uncompleted': enqueued - completed,
+                   'rejected_logical_time_ms': logical, 'rejected_source_scheduling_lateness_ms': attempted - planned},
+        'completed_prefix': event_metrics(events), 'completed_sample_steps': event_metrics(sample_events),
+        'completed_no_sample_steps': event_metrics(no_sample_events),
+        'completed_prefix_cadence_response_misses': sum(event['service_finish_ms'] - event['scheduled_arrival_ms'] > step / rate for event in events),
+        'completed_sensor_period_response_misses': sum(event['service_finish_ms'] - event['scheduled_arrival_ms'] > period / rate for event in sample_events),
+        'phases': failure.get('phases'), 'partial_decision_audit': failure.get('decision_audit'),
+        'limitations': ['Only completed prefix events are timed; rejected/pending/future work has no completion latency.',
+                        'Miss counts apply only to completed prefix events; this is not a whole-run pass or complete miss count.',
+                        'No complete logical-output equivalence can be claimed for a cancelled run.',
+                        'Phase spans overlap as explicitly declared; hashing/telemetry overhead is included when enabled.',
+                        'The producer schedule is fixed; final failure-sidecar serialization occurs after cancellation.'],
     }
 
 
@@ -212,8 +332,10 @@ def load(path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--paced', required=True, type=Path)
-    parser.add_argument('--reference', required=True, type=Path)
+    sources = parser.add_mutually_exclusive_group(required=True)
+    sources.add_argument('--paced', type=Path)
+    sources.add_argument('--failure', type=Path, help='Explicit incomplete failure sidecar, never a replay result')
+    parser.add_argument('--reference', type=Path)
     parser.add_argument('--output', required=True, type=Path, help='New compact JSON report; never overwritten')
     parser.add_argument('--binary', type=Path)
     parser.add_argument('--source', type=Path)
@@ -221,12 +343,20 @@ def main():
     args = parser.parse_args()
     if args.output.exists():
         raise ValueError('Output already exists')
-    paths = {'paced_output': args.paced, 'unpaced_output': args.reference, 'summarizer': Path(__file__)}
+    if args.paced and not args.reference:
+        parser.error('--paced requires --reference')
+    if args.failure and args.reference:
+        parser.error('--failure does not accept a successful-output reference')
+    paths = {'summarizer': Path(__file__)}
+    if args.failure:
+        paths['failure_telemetry'] = args.failure
+    else:
+        paths.update(paced_output=args.paced, unpaced_output=args.reference)
     for name in ('binary', 'source', 'protocol'):
         if getattr(args, name):
             paths[name] = getattr(args, name)
     before = {name: fingerprint(path) for name, path in paths.items()}
-    report = summarize(load(args.paced), load(args.reference))
+    report = summarize_failure(load(args.failure)) if args.failure else summarize(load(args.paced), load(args.reference))
     after = {name: fingerprint(path) for name, path in paths.items()}
     if before != after:
         raise ValueError('A source artifact changed during summarization')
@@ -234,7 +364,7 @@ def main():
     text = json.dumps(report, indent=2, sort_keys=True, allow_nan=False) + '\n'
     with args.output.open('x') as stream:
         stream.write(text)
-    print('Validated logical equivalence and wrote compact paced summary: ' + str(args.output))
+    print(('Validated incomplete failure telemetry' if args.failure else 'Validated logical equivalence') + ' and wrote compact paced summary: ' + str(args.output))
 
 
 if __name__ == '__main__':

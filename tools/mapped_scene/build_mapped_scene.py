@@ -277,7 +277,7 @@ def storefront_module():
 @functools.lru_cache(maxsize=8)
 def storefront_scene(repo, seed, population, duration_s, interval_ms=None, overrides_json=None,
                      experimental_narrow_passages=False, urban_traffic=False, road_user_fraction=.2,
-                     distributed_crossing_fraction=.2, pedestrian_clearance_m=.05):
+                     distributed_crossing_fraction=.2, pedestrian_clearance_m=.05, subway_access=False, rider_priority=False):
     repo = pathlib.Path(repo)
     _, local, layers, _, provenance = load_source(repo)
     people, interval = corridor_people(seed, population, duration_s, interval_ms)
@@ -290,7 +290,7 @@ def storefront_scene(repo, seed, population, duration_s, interval_ms=None, overr
         spec.loader.exec_module(urban)
         return urban.make_scene(storefront_module(), repo, local, layers, access_module(),
             provenance["source_geometry_sha256"], seed, people, interval, overrides,
-            road_user_fraction, distributed_crossing_fraction, pedestrian_clearance_m)
+            road_user_fraction, distributed_crossing_fraction, pedestrian_clearance_m, subway_access, rider_priority)
     return storefront_module().make_scene(repo, local, layers, access_module(),
         provenance["source_geometry_sha256"], seed, people, interval, overrides, experimental_narrow_passages)
 
@@ -367,7 +367,9 @@ def regions():
 
 def make_config(repo, database, duration, render, seed, motion_mode="integration", population=64,
                 arrival_interval_ms=None, shop_overrides=None, experimental_narrow_passages=False,
-                urban_traffic=False, road_user_fraction=.2, distributed_crossing_fraction=.2, pedestrian_clearance_m=.05):
+                urban_traffic=False, road_user_fraction=.2, distributed_crossing_fraction=.2, pedestrian_clearance_m=.05, subway_access=False, rider_priority=False):
+    if (subway_access or rider_priority) and not urban_traffic:
+        raise ValueError("Subway access and rider priority require urban traffic")
     if urban_traffic and motion_mode != "storefronts":
         raise ValueError("Urban traffic requires storefronts mode")
     if urban_traffic and experimental_narrow_passages:
@@ -414,7 +416,7 @@ def make_config(repo, database, duration, render, seed, motion_mode="integration
         cfg["simulation"]["datetime"] = "2026-10-24T00:00:00Z"
         cfg["mapped_scene"], _, _, _ = copy.deepcopy(storefront_scene(str(repo), seed, population, duration, arrival_interval_ms,
             json.dumps(shop_overrides, sort_keys=True) if shop_overrides is not None else None,
-            experimental_narrow_passages, urban_traffic, road_user_fraction, distributed_crossing_fraction, pedestrian_clearance_m))
+            experimental_narrow_passages, urban_traffic, road_user_fraction, distributed_crossing_fraction, pedestrian_clearance_m, subway_access, rider_priority))
         if urban_traffic:
             add_urban_profiles_and_taxonomy(cfg, repo)
         cfg["agents"]["num_agents"] = population
@@ -514,7 +516,7 @@ def audit_config(cfg):
             route_variation_scope="Each visible episode has a seeded smooth lateral path variant within a directional corridor; facade and boundary endpoints are pinned. No per-frame jitter or overtaking guarantee.",
             support_scope="Distinct observed tracks; declared relative hidden gaps exceed retained history. No GT association reaches aggregation.")
     if cfg["mapped_scene"].get("portals"):
-        result.update(building_destinations=len({p["building_id"] for p in cfg["mapped_scene"]["portals"]}),
+        result.update(building_destinations=len({p["building_id"] for p in cfg["mapped_scene"]["portals"] if p.get("kind")!="surface_access"}),
             portal_scope="Synthetic, reachable original-facade midpoints. Exact endpoint admission, not arbitrary wall contact. Exterior geometry does not establish real doors, shops or access permission.",
             route_variation_scope="Individual smooth through corridors; checked fixed access branches at two distinct buildings, with exact facade endpoints. No per-frame access jitter or general route-planner claim.")
     if motion_mode == "local_navigation":
@@ -525,6 +527,12 @@ def audit_config(cfg):
         result.update(profile_assumptions="Five pedestrian categories at explicit 1.1–1.5 m/s plus Adult/Senior Cyclists and Adult E-Scooter Driver at explicit 3–4 m/s. Existing rider circular envelopes are retained; shared hard clearance is an explicit scenario choice.",
             motion_scope="Seeded pedestrian requests on original walking surfaces plus explicitly declared crossing/curb connectors, and two synthetic rider directions in a separate body-safe carriageway space. Not empirical demand or legal access guidance.",
             route_variation_scope="Continuous pedestrian boundary origins and seeded detours; rider lane offsets are seeded within two modeled carriageway directions. No calibrated lane behavior or formal yielding guarantee.")
+    surfaces=[p for p in cfg["mapped_scene"].get("portals",[]) if p.get("kind")=="surface_access"]
+    if surfaces:
+        result.update(surface_access_portals=len(surfaces),
+            portal_scope="Exact source-bound A1/A2 surface targets plus synthetic shop facade entrances; station trips are independent episodes with stairs-compatible profiles. No underground movement or hidden re-identification.")
+    if cfg["mapped_scene"].get("motion",{}).get("navigation",{}).get("crossings"):
+        result["crossing_priority_scope"]="Synthetic rider-priority entry, aged pedestrian requests and finite batches; already crossing bodies clear. Physical separation remains authoritative; no universal liveness or legal priority claim."
     return result
 
 
@@ -576,8 +584,12 @@ def draw_background(layers, output, building_access=None):
         # Keep original footprint boundaries distinct, including clipped/shared
         # edges. These are geometry, not assumed shopfront/entrance annotations.
         for building in building_access["buildings"]:
+            overhead=building.get("overhead") is True and building.get("ground_obstacle") is False
             for ring in building["polygons"] + building.get("holes", []):
-                ax.plot([p[0] for p in ring], [p[1] for p in ring], color="#59636F", linewidth=1.1)
+                if overhead:
+                    # Roof context remains visible; it is not a ground wall.
+                    ax.fill([p[0] for p in ring], [p[1] for p in ring], facecolor="#DCEAE5", hatch="///", edgecolor="#768F8B", linewidth=.8)
+                ax.plot([p[0] for p in ring], [p[1] for p in ring], color="#768F8B" if overhead else "#59636F", linewidth=1.1, linestyle="--" if overhead else "-")
     ax.set_xlim(0, SIDE); ax.set_ylim(SIDE, 0); ax.set_aspect("equal"); ax.set_axis_off()
     rendering = background_rendering()
     fig.savefig(output, dpi=100, facecolor="#F4F5F7", pad_inches=0,
@@ -600,6 +612,8 @@ def main():
     parser.add_argument("--arrival-interval-ms",type=int,help="Stateful source interval, multiple of 50 ms; default spreads requests across horizon")
     parser.add_argument("--shop-overrides", type=pathlib.Path, help="Optional source-hash-bound synthetic shop entrance overrides")
     parser.add_argument("--urban-traffic", action="store_true", help="Opt-in mixed riders and explicit synthetic pedestrian crossing corridors")
+    parser.add_argument("--subway-access", action="store_true", help="Opt-in source-bound A1/A2 surface access and overhead roof classification; requires urban traffic")
+    parser.add_argument("--rider-priority", action="store_true", help="Opt-in bounded pedestrian yielding at declared crossings; requires urban traffic")
     parser.add_argument("--road-user-fraction", type=float, default=.2, help="Rider fraction of the total cohort, urban traffic only (default .2)")
     parser.add_argument("--distributed-crossing-fraction", type=float, default=.2, help="Targeted distributed crossings among through pedestrian requests (default .2)")
     parser.add_argument("--pedestrian-clearance-m", type=float, default=.05, help="Shared hard body clearance for urban traffic (default .05 m); legacy scenes remain unchanged")
@@ -612,6 +626,8 @@ def main():
         parser.error("--urban-traffic requires --motion-mode storefronts")
     if args.urban_traffic and args.experimental_narrow_passages:
         parser.error("--urban-traffic and --experimental-narrow-passages are mutually exclusive")
+    if (args.subway_access or args.rider_priority) and not args.urban_traffic:
+        parser.error("--subway-access and --rider-priority require --urban-traffic")
     repo = args.repo.resolve()
     if not re.fullmatch(r"UMP_Mapped_[0-9a-f]{32}", args.database):
         parser.error("Use an owned UMP_Mapped_<32 lower-case UUID hex> namespace")
@@ -622,12 +638,12 @@ def main():
     _, local, layers, assumptions, provenance = load_source(repo)
     cfg = make_config(repo, args.database, args.duration_s, args.render, args.seed,args.motion_mode,args.population,args.arrival_interval_ms,
         json.loads(args.shop_overrides.read_text()) if args.shop_overrides else None, args.experimental_narrow_passages,
-        args.urban_traffic,args.road_user_fraction,args.distributed_crossing_fraction,args.pedestrian_clearance_m)
+        args.urban_traffic,args.road_user_fraction,args.distributed_crossing_fraction,args.pedestrian_clearance_m,args.subway_access,args.rider_priority)
     context, construction = None, None
     if args.motion_mode == "storefronts":
         _, context, construction, geometry = copy.deepcopy(storefront_scene(str(repo), args.seed, args.population, args.duration_s, args.arrival_interval_ms,
             json.dumps(json.loads(args.shop_overrides.read_text()), sort_keys=True) if args.shop_overrides else None,
-            args.experimental_narrow_passages,args.urban_traffic,args.road_user_fraction,args.distributed_crossing_fraction,args.pedestrian_clearance_m))
+            args.experimental_narrow_passages,args.urban_traffic,args.road_user_fraction,args.distributed_crossing_fraction,args.pedestrian_clearance_m,args.subway_access,args.rider_priority))
     elif args.motion_mode == "buildings":
         context, _, construction = copy.deepcopy(building_geometry(str(repo)))
         geometry = access_module().audit_access(local, layers, cfg["mapped_scene"]["routes"], context["portals"])

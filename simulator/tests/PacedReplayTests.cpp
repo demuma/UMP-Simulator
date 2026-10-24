@@ -95,6 +95,29 @@ void callbackExceptionCancelsFutureProducer() {
     // wait; it is deliberately not a millisecond performance requirement.
     require(ReplayClock::now() - started < 1s, "Consumer failure waited for future source deadline");
 }
+void overloadRetainsBoundedCompletedTelemetry() {
+    const std::vector<PacedEvent> events{{1,false},{2,false},{3,false},{4,true}};
+    bool overloaded=false;
+    try {
+        runPaced(events,1000,1,ReplayClock::now(),[](const auto&){std::this_thread::sleep_for(10ms);});
+    } catch(const PacedReplayError& failure) {
+        overloaded=true;
+        require(failure.completed.peakQueueDepth==1&&failure.rejected.queueDepthAtRejection==1,
+            "Partial overload telemetry lost bounded queue peak");
+        require(failure.scheduledEvents==events.size()&&failure.enqueuedEvents<events.size()
+            &&failure.completed.events.size()<=failure.enqueuedEvents,"Failed event accounting is inconsistent");
+        require(failure.rejected.enqueueAttemptMs>=failure.rejected.scheduledArrivalMs
+            &&failure.wallElapsedMs>=failure.rejected.enqueueAttemptMs,"Failure clock metadata is noncausal");
+        require(std::string(failure.what()).find("no successful replay result was written")!=std::string::npos,
+            "Structured failure changed legacy overload explanation");
+        double previous=0;
+        for(const auto& row:failure.completed.events){
+            require(row.serviceFinishMs>=row.serviceStartMs&&row.serviceStartMs>=previous,"Failed report includes incomplete or overlapping service");
+            previous=row.serviceFinishMs;
+        }
+    }
+    require(overloaded,"Bounded intentional overload did not fail");
+}
 void inputBounds() {
     const std::vector<PacedEvent> valid{{100, false}, {250, true}};
     validatePacing(valid, 1, 2);
@@ -117,7 +140,7 @@ void inputBounds() {
 int main() {
     try {
         boundedFifoAndCompletion(); cancellationWakesBothWaiters(); runnerOrderAndClockDomains();
-        callbackExceptionCancelsFutureProducer(); inputBounds();
+        callbackExceptionCancelsFutureProducer(); overloadRetainsBoundedCompletedTelemetry(); inputBounds();
         std::cout << "PASS: bounded FIFO, completion, failure propagation, interruptible cancellation, paced event order, monotonic timing and input bounds.\n";
         return 0;
     } catch (const std::exception& error) { std::cerr << "FAIL: " << error.what() << '\n'; return 1; }

@@ -1,0 +1,182 @@
+{
+  "schema": "ump.transit-priority-accepted-source.v1",
+  "date": "2026-10-24",
+  "status": "ACCEPTED_FOR_TESTED_FINITE_SOURCE",
+  "local_replay": "results/urban-transit-priority-2026-10-24-v3/replay",
+  "cohort": {
+    "people": 128,
+    "episodes": 171,
+    "first_arrival_interval_ms": 150,
+    "seed": 20261024,
+    "source_horizon_ms": 300000,
+    "last_end_ms": 190400,
+    "peak_observed_tracks": 121,
+    "mapped_scene_identical_to_retained_negative_capture": true
+  },
+  "lifecycle_quality": {
+    "status": "all_scheduled_episodes_completed",
+    "gt_coverage_status": "verified_against_recorded_visible_intervals",
+    "event_rows": 342,
+    "expected_gt_rows": 159292,
+    "source_steps_checked": 6000,
+    "scheduled_people": 128,
+    "scheduled_episodes": 171,
+    "realized_starts": 171,
+    "realized_ends": 171,
+    "pending_episodes_at_horizon": 0,
+    "active_episodes_at_horizon": 0,
+    "interval_terminal_positions_checked": 118
+  },
+  "motion_quality": {
+    "status": "scheduled_episodes_completed",
+    "source_model": "bounded_local_navigation",
+    "reported_diagnostics": {
+      "blocked_motion_steps": 9872,
+      "admission_wait_steps": 2412,
+      "merge_admission_wait_steps": 0,
+      "max_consecutive_stop_ms": 10800,
+      "active_stalled_tracks": 0,
+      "body_overlap_violations": 0,
+      "navigation_steering_steps": 24437,
+      "navigation_replans": 177,
+      "navigation_replan_failures": 135,
+      "navigation_candidate_checks": 4548904,
+      "navigation_max_search_nodes": 15513,
+      "crossing_pedestrian_wait_steps": 6623,
+      "crossing_rider_wait_steps": 1308,
+      "crossing_batches": 36,
+      "crossing_fairness_closures": 13,
+      "max_crossing_pedestrian_wait_ms": 17400
+    },
+    "scope": "Recorded source counters and event/GT consistency only. Completion does not establish realistic motion, general queue liveness, collision safety beyond recorded checks or privacy."
+  },
+  "sensor_observability": {
+    "schema": "ump.source-sensor-episode-observability.v1",
+    "status": "pass",
+    "scheduled_tracks": 171,
+    "sensor_observed_tracks": 171,
+    "missing_track_count": 0,
+    "unexpected_track_count": 0,
+    "sensor_period_ms": 100,
+    "batches": 2999,
+    "observations": 79617,
+    "peak_observed_tracks": 121,
+    "people_by_type": {
+      "Pedestrian With Stroller": 14,
+      "Child Pedestrian": 23,
+      "Pedestrian With Mobility Aid": 21,
+      "Adult Pedestrian": 22,
+      "Senior Pedestrian": 22,
+      "Adult Cyclist": 9,
+      "Senior Cyclist": 9,
+      "Adult E-Scooter Driver": 8
+    },
+    "scope": "Exact set equality between every configured episode token and the exported sensor observation stream; no private identities retained."
+  },
+  "independent_physical_audit": {
+    "status": "pass",
+    "independent_gt_body_pair_checks": 6111306,
+    "independent_gt_swept_body_pair_checks": 6111306,
+    "minimum_swept_body_clearance_margin_m": 4.777157714673519e-05,
+    "minimum_body_clearance_margin_m": 0.00010112591967435802,
+    "maximum_observed_route_distance_m": 33.93370191332117,
+    "navigation_motion_segments_checked": 159292,
+    "navigation_terminal_segments_checked": 171,
+    "navigation_static_body_checks": 159292,
+    "navigation_positions_over_2cm_from_original_guide": 140388,
+    "navigation_velocity_checks": 159121,
+    "maximum_navigation_velocity_error_mps": 0.00019171351950868286,
+    "boundary_endpoint_checks": 237,
+    "minimum_realized_hidden_gap_ms": 8000,
+    "targets_with_completed_entries": 6,
+    "buildings_with_completed_entries": 1,
+    "buildings_with_realized_exits": 1,
+    "all_planned_entries_completed": true,
+    "surface_access_entries": 10,
+    "surface_access_exits": 9,
+    "portals": {
+      "shop-10771056021": {
+        "planned_entries": 9,
+        "completed_entries": 9,
+        "realized_exits": 9,
+        "max_start_distance_m": 3.817158982832773e-06,
+        "max_last_frame_distance_m": 0.061621540951863986
+      },
+      "shop-2887815990": {
+        "planned_entries": 12,
+        "completed_entries": 12,
+        "realized_exits": 12,
+        "max_start_distance_m": 1.8197092843154685e-06,
+        "max_last_frame_distance_m": 0.05076009698969256
+      },
+      "shop-990030917": {
+        "planned_entries": 14,
+        "completed_entries": 14,
+        "realized_exits": 14,
+        "max_start_distance_m": 1.200626617447282e-06,
+        "max_last_frame_distance_m": 0.05813263058441904
+      },
+      "shop-442443889": {
+        "planned_entries": 8,
+        "completed_entries": 8,
+        "realized_exits": 8,
+        "max_start_distance_m": 1.0933143516997816e-06,
+        "max_last_frame_distance_m": 0.058165392346874546
+      },
+      "subway-A1": {
+        "planned_entries": 5,
+        "completed_entries": 5,
+        "realized_exits": 5,
+        "max_start_distance_m": 3.378295217527632e-06,
+        "max_last_frame_distance_m": 0.05972731488576177
+      },
+      "subway-A2": {
+        "planned_entries": 5,
+        "completed_entries": 5,
+        "realized_exits": 4,
+        "max_start_distance_m": 2.191003656424174e-06,
+        "max_last_frame_distance_m": 0.040758695049491506
+      }
+    },
+    "scope": "All stored native source frames, route or navigation-geometry containment, pairwise circular body+clearance separation, exact portal lifecycle and realized indoor timing; local navigation additionally checks actual sweeps, speed/velocity and compatible boundary endpoints when source geometry is supplied. No private identities in this report.",
+    "config_sha256": "2d2390ce7f778c97e7bebd2a063f79df2e596b6f269c8b97ebcf0b8a1365bb92",
+    "native_source_sha256": "4b73e01109941bd19a907c8e951b39bc7aaa4d1318a3936cf8884b982569f6f6"
+  },
+  "publication_summary": {
+    "input_observation_contributions": 79617,
+    "published_cell_windows": 1176,
+    "unique_published_cell_ids": 42,
+    "track_person_inflated_published_cells": 0
+  },
+  "native_execution": {
+    "schema": "ump.mapped-execution.v1",
+    "state": "complete",
+    "binary_sha256": "4d69a20892fc7806e902793de27e133af0cd28893e8d2219da6f8275fb5e5204",
+    "config_sha256": "2d2390ce7f778c97e7bebd2a063f79df2e596b6f269c8b97ebcf0b8a1365bb92",
+    "exit_code": 0,
+    "binary_wall_seconds": 96.049230042,
+    "capture_budget": {
+      "max_capture_mib": 2048,
+      "max_capture_bytes": 2147483648,
+      "scope": "Local private source export only; generated movement stays outside Git."
+    },
+    "scope": "Includes native startup, source, aggregation and DB I/O; not a per-step deadline."
+  },
+  "files_sha256": {
+    "observations.json": "0f6b788a43a54c0c645efd4b88496d70988dc5875e389f9b07e25e4f7d01ce4f",
+    "native_result.json": "36576cfd99f008c42274219757685647703c6eeeda259221d9e271c826d11385",
+    "map_background.png": "9c7f84be4af893f63d27fa6de235b846259cf14deffc0e4e9b114343274e972b",
+    "building_access.json": "e090901baff9bcc27f082c8488bb5e21c63e9263318bae913ccba62624ce68ec",
+    "private/native_source.json": "4b73e01109941bd19a907c8e951b39bc7aaa4d1318a3936cf8884b982569f6f6",
+    "private/config.yaml": "2d2390ce7f778c97e7bebd2a063f79df2e596b6f269c8b97ebcf0b8a1365bb92",
+    "bundle.json": "a05d0ddc18b33b1b7c0857dca3d2ad36ae99485c9cd4e447d49764e3b317206c",
+    "private/execution.json": "21c519c45be736ecaac735d2bc865036423d7acb6434163bc799130178ce1828"
+  },
+  "cleanup": "run_scene removed only its three fresh UUID databases after verified export. All motion remains local ignored; compact results only in Git.",
+  "limitations": [
+    "No unconditional liveness or calibrated traffic-law/behavior claim.",
+    "No universal throughput improvement; priority changes behavior and adds costs.",
+    "Source runtime includes movement/aggregation/DB and concurrent correctness tests, not isolated aggregation deadlines.",
+    "Operational support counts observed episode tracks, not a person-level privacy guarantee."
+  ]
+}

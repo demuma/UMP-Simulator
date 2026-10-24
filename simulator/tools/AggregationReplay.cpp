@@ -6,6 +6,7 @@
 #include "PolicyTree.hpp"
 #include "PublicationCoordinator.hpp"
 #include "PacedReplay.hpp"
+#include "ReplayDecisionDigest.hpp"
 #include <yaml-cpp/yaml.h>
 #include <algorithm>
 #include <cerrno>
@@ -215,6 +216,9 @@ struct Options {
     std::optional<double> paceRate;
     std::optional<AggregationTime> progressStepMs;
     std::size_t queueCapacity = 64;
+    std::string diagnostics = "full";
+    bool decisionDigest = false;
+    std::optional<std::filesystem::path> failureOutput;
 };
 // Optional native-style progress is a separate clock from sensor sampling.
 // Leave the historical replay path unchanged unless the option is explicit.
@@ -325,6 +329,28 @@ std::string serializeSemantic(const SemanticRepresentation& value) {
         {"categories", array(bins)}});
 }
 
+// Private evaluation channel only. Recipient serializeRelease deliberately has
+// neither the source total nor the omitted category counts or their mask.
+std::string serializeSuppression(const SemanticSuppressionAudit& value) {
+    Fields types;
+    for (const auto& item : value.suppressedTypeObservations) types.emplace_back(item.first, number(item.second));
+    std::vector<std::string> leaves;
+    for (const auto& leaf : value.suppressedLeaves) leaves.push_back(quoted(leaf));
+    return object({{"schema", quoted("ump.semantic-suppression.v1")},
+        {"input_observation_contributions", number(value.inputObservations)},
+        {"input_distinct_contributors", number(value.inputDistinct)},
+        {"retained_observation_contributions", number(value.retainedObservations)},
+        {"retained_distinct_contributors", number(value.retainedDistinct)},
+        {"suppressed_observation_contributions", number(value.suppressedObservations)},
+        {"suppressed_distinct_contributors", number(value.suppressedDistinct)},
+        {"suppressed_fraction", number(value.fraction)},
+        {"full_input_semantic_loss", number(value.fullInputSemanticLoss)},
+        {"unsuppressed_semantic_loss", number(value.unsuppressedSemanticLoss)},
+        {"suppressed_type_observation_contributions", object(types)},
+        {"suppressed_terminal_categories", array(leaves)},
+        {"evaluated_candidates", number(value.evaluatedCandidates)}});
+}
+
 std::string serializeWindow(const SpatialSelection& selection) {
     const auto& c = selection.candidate;
     std::vector<std::string> cells, decisions;
@@ -337,7 +363,8 @@ std::string serializeWindow(const SpatialSelection& selection) {
         Fields metrics;
         std::vector<std::string> checks;
         for (const auto& metric : selection.assessment.cells[i].metrics) {
-            if (metric.unavailableReason == "semantic_not_enabled") continue;
+            if (metric.unavailableReason == "semantic_not_enabled"
+                || metric.unavailableReason == "semantic_suppression_not_configured") continue;
             metrics.emplace_back(metricDefinition(metric.id).name, optionalNumber(metric.value));
         }
         if (selection.assessment.cells[i].semantic)
@@ -347,6 +374,12 @@ std::string serializeWindow(const SpatialSelection& selection) {
                 {"min", optionalNumber(check.requirement.min)}, {"max", optionalNumber(check.requirement.max)},
                 {"observed", optionalNumber(check.observed)}, {"status", quoted(assessmentStatusName(check.status))},
                 {"reason", quoted(check.reason)}}));
+        if (selection.assessment.cells[i].retainedCounts) {
+            Fields retained; counts(retained, *selection.assessment.cells[i].retainedCounts);
+            fields.emplace_back("retained_counts", object(retained));
+        }
+        if (selection.assessment.cells[i].semanticSuppression)
+            fields.emplace_back("semantic_suppression", serializeSuppression(*selection.assessment.cells[i].semanticSuppression));
         fields.emplace_back("metrics", object(metrics));
         fields.emplace_back("checks", array(checks));
         cells.push_back(object(fields));
@@ -422,10 +455,59 @@ std::optional<std::uint64_t> peakResidentBytes() {
 }
 std::string optionalBytes(std::optional<std::uint64_t> bytes) { return bytes ? number(*bytes) : "null"; }
 
+// Phase measurements are opt-in with decision auditing/minimal diagnostics.
+// Inclusive phases overlap: consume contains terminal; deliver contains its sink.
+struct ReplayPhase { double milliseconds = 0; std::uint64_t calls = 0; };
+struct ReplayPhases {
+    ReplayPhase consume, terminal, seal, deliver, publicJson, privateJson, digest, telemetry;
+};
+template<class Operation> void measureReplayPhase(bool enabled, ReplayPhase& phase, Operation operation) {
+    if (!enabled) { operation(); return; }
+    const auto began = ReplayClock::now();
+    operation();
+    phase.milliseconds += std::chrono::duration<double, std::milli>(ReplayClock::now() - began).count();
+    ++phase.calls;
+}
+std::string serializeReplayPhases(const ReplayPhases& phases) {
+    const auto phase = [](const ReplayPhase& item) { return object({
+        {"calls", number(item.calls)}, {"milliseconds", number(item.milliseconds)}}); };
+    return object({{"schema", quoted("ump.replay-phases.v1")},
+        {"scope", quoted("inclusive wall-clock spans; consume includes terminal; delivery includes public serialization/digest/ack telemetry; do not sum overlapping phases")},
+        {"consume_inclusive", phase(phases.consume)}, {"terminal_inclusive", phase(phases.terminal)},
+        {"publication_seal", phase(phases.seal)}, {"publication_deliver_inclusive", phase(phases.deliver)},
+        {"public_release_json", phase(phases.publicJson)}, {"private_window_json", phase(phases.privateJson)},
+        {"decision_digest", phase(phases.digest)}, {"telemetry_json", phase(phases.telemetry)}});
+}
+std::string serializeDecisionAudit(const ReplayDecisionDigest& audit) {
+    return object({{"schema", quoted("ump.replay-decision-audit.v1")}, {"algorithm", quoted("SHA-256")},
+        {"encoding", quoted("canonical typed complete logical selections/releases; exact IEEE-754 bits, length-prefixed ordered collections, optional presence")},
+        {"excluded", quoted("only suppression evaluationNanoseconds, a runtime timing field")},
+        {"retirement_count", number(audit.retirementCount)}, {"release_count", number(audit.releaseCount)},
+        {"selected_cell_count", number(audit.selectedCells)}, {"suppressed_cell_count", number(audit.suppressedCells)},
+        {"retirement_sha256", quoted(audit.retirementSha256())}, {"release_sha256", quoted(audit.releaseSha256())}});
+}
+std::string serializePacedEvent(const PacedEventTiming& event) {
+    return object({{"logical_time_ms", number(event.event.logicalTimeMs)},
+        {"kind", quoted(event.event.finishing ? "finish" : "cadence")},
+        {"scheduled_arrival_ms", number(event.scheduledArrivalMs)},
+        {"enqueue_attempt_ms", number(event.enqueueAttemptMs)}, {"enqueued_ms", number(event.enqueuedMs)},
+        {"service_start_ms", number(event.serviceStartMs)}, {"service_finish_ms", number(event.serviceFinishMs)},
+        {"queue_depth_after_enqueue", number(event.queueDepthAfterEnqueue)}});
+}
+void writeNew(const std::filesystem::path& destination, const std::string& text);
+
 std::string run(const Input& input, const Settings& settings, const Options& options) {
+    if (options.diagnostics != "full" && options.diagnostics != "minimal")
+        throw std::invalid_argument("Diagnostics must be full or minimal");
+    if (options.failureOutput && !options.paceRate)
+        throw std::invalid_argument("--failure-output requires --pace-rate");
     const auto progressStepMs = progressStepFor(input, options);
     const auto started = std::chrono::steady_clock::now();
     const auto& config = settings.aggregation;
+    const bool audited = options.decisionDigest || options.diagnostics == "minimal";
+    std::optional<ReplayDecisionDigest> decisionAudit;
+    if (audited) decisionAudit.emplace();
+    ReplayPhases phases;
     const bool localMode = settings.temporal && settings.temporal->coordination == CoordinationMode::CellLocal;
     PublicationLimits publicationLimits;
     if (localMode) publicationLimits.maxCoordinationNodes = settings.temporal->maxActiveCells * 2;
@@ -444,19 +526,30 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
     std::uint64_t inputContributions = 0, accountedContributions = 0;
     for (const auto& batch : input.batches) inputContributions += batch.observations.size();
     const auto terminal = [&](const SpatialSelection& selection) {
-        publication.seal(selection, selection.candidate.closedAtMs);
-        if (!publication.deliver(selection.candidate.closedAtMs, [&](const auto& release) {
-            retain(releases, serializeRelease(release));
-            if (options.paceRate) retain(releaseTimings, object({
-                {"release_id", quoted(release.releaseId)},
-                {"input_event_ms", number(currentEventMs)},
-                {"logical_window_end_ms", number(release.endMs)},
-                {"logical_sealed_at_ms", number(release.sealedAtMs)},
-                {"in_memory_ack_ms", number(replayOffsetMs(pacingEpoch))}}));
-            return SinkResult::Acknowledged;
-        })) throw std::runtime_error("Offline release was not acknowledged");
-        accountedContributions += selection.candidate.counts.observationContributions;
-        retain(windows, serializeWindow(selection));
+        measureReplayPhase(audited, phases.terminal, [&] {
+            if (decisionAudit) measureReplayPhase(true, phases.digest, [&] { decisionAudit->selection(selection); });
+            measureReplayPhase(audited, phases.seal, [&] { publication.seal(selection, selection.candidate.closedAtMs); });
+            bool delivered = false;
+            measureReplayPhase(audited, phases.deliver, [&] {
+                delivered = publication.deliver(selection.candidate.closedAtMs, [&](const auto& release) {
+                    if (decisionAudit) measureReplayPhase(true, phases.digest, [&] { decisionAudit->release(release); });
+                    measureReplayPhase(audited, phases.publicJson, [&] { retain(releases, serializeRelease(release)); });
+                    if (options.paceRate) measureReplayPhase(audited, phases.telemetry, [&] {
+                        retain(releaseTimings, object({
+                            {"release_id", quoted(release.releaseId)}, {"input_event_ms", number(currentEventMs)},
+                            {"logical_window_end_ms", number(release.endMs)}, {"logical_sealed_at_ms", number(release.sealedAtMs)},
+                            {"in_memory_ack_ms", number(replayOffsetMs(pacingEpoch))}}));
+                    });
+                    return SinkResult::Acknowledged;
+                });
+            });
+            if (!delivered) throw std::runtime_error("Offline release was not acknowledged");
+            accountedContributions += selection.candidate.counts.observationContributions;
+            // Minimal mode removes only private research windows. Mandatory
+            // publication checks, exact public serialization and retirement stay.
+            if (options.diagnostics == "full") measureReplayPhase(audited, phases.privateJson,
+                [&] { retain(windows, serializeWindow(selection)); });
+        });
     };
     SpatialSelector spatial(config, settings.spatial);
     AggregationManager* managerPtr = nullptr;
@@ -488,18 +581,20 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
     }
     std::size_t batchIndex = 0;
     const auto consume = [&](AggregationTime time, bool finishing) {
-        currentEventMs = time;
-        if (finishing) manager.finish(time);
-        else {
-            // The native sensor first advances its manager on every simulator
-            // tick, then ingests an actual due measurement. ingest() appends
-            // history and notifies progress again at the same sample time.
-            // Merely inserting extra no-sample ticks would miss this ordering.
-            if (options.progressStepMs) manager.advance(time);
-            if (batchIndex < input.batches.size() && input.batches[batchIndex].observedAtMs == time)
-                manager.ingest(input.batches[batchIndex++]);
-            else if (!options.progressStepMs) manager.advance(time);
-        }
+        measureReplayPhase(audited, phases.consume, [&] {
+            currentEventMs = time;
+            if (finishing) manager.finish(time);
+            else {
+                // The native sensor first advances its manager on every simulator
+                // tick, then ingests an actual due measurement. ingest() appends
+                // history and notifies progress again at the same sample time.
+                // Merely inserting extra no-sample ticks would miss this ordering.
+                if (options.progressStepMs) manager.advance(time);
+                if (batchIndex < input.batches.size() && input.batches[batchIndex].observedAtMs == time)
+                    manager.ingest(input.batches[batchIndex++]);
+                else if (!options.progressStepMs) manager.advance(time);
+            }
+        });
     };
     if (options.paceRate) {
         // Build a small immutable arrival schedule, not copies of observations.
@@ -518,27 +613,63 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
         events.push_back({input.endMs, true});
         validatePacing(events, *options.paceRate, options.queueCapacity);
         const auto sampleMemory = [&](AggregationTime logicalTime) {
-            const auto state = manager.history()->debugState();
-            retain(memorySamples, object({{"logical_time_ms", number(logicalTime)},
-                {"wall_ms", number(replayOffsetMs(pacingEpoch))},
-                {"process_resident_bytes", optionalBytes(residentBytes())},
-                {"process_peak_resident_bytes", optionalBytes(peakResidentBytes())},
-                {"history_bins", number(state.bins)}, {"history_observations", number(state.observations)},
-                {"history_identity_bytes", number(state.identityBytes)}, {"history_buckets", number(state.buckets)},
-                {"retained_result_bytes", number(serializedBytes)}}));
+            measureReplayPhase(audited, phases.telemetry, [&] {
+                const auto state = manager.history()->debugState();
+                retain(memorySamples, object({{"logical_time_ms", number(logicalTime)},
+                    {"wall_ms", number(replayOffsetMs(pacingEpoch))},
+                    {"process_resident_bytes", optionalBytes(residentBytes())},
+                    {"process_peak_resident_bytes", optionalBytes(peakResidentBytes())},
+                    {"history_bins", number(state.bins)}, {"history_observations", number(state.observations)},
+                    {"history_identity_bytes", number(state.identityBytes)}, {"history_buckets", number(state.buckets)},
+                    {"retained_result_bytes", number(serializedBytes)}}));
+            });
         };
         // Parsing, validation and core construction precede the arrival origin.
         pacingEpoch = ReplayClock::now();
         if (options.progressStepMs) consume(0, false);
         sampleMemory(0);
         AggregationTime nextMemorySample = 1000;
-        pacing = runPaced(events, *options.paceRate, options.queueCapacity, pacingEpoch, [&](const auto& event) {
-            consume(event.logicalTimeMs, event.finishing);
-            if (event.logicalTimeMs >= nextMemorySample || event.finishing) {
-                sampleMemory(event.logicalTimeMs);
-                nextMemorySample = event.logicalTimeMs + 1000;
+        try {
+            pacing = runPaced(events, *options.paceRate, options.queueCapacity, pacingEpoch, [&](const auto& event) {
+                consume(event.logicalTimeMs, event.finishing);
+                if (event.logicalTimeMs >= nextMemorySample || event.finishing) {
+                    sampleMemory(event.logicalTimeMs);
+                    nextMemorySample = event.logicalTimeMs + 1000;
+                }
+            });
+        } catch (const PacedReplayError& failure) {
+            if (options.failureOutput) {
+                // This sidecar is explicitly incomplete telemetry. It cannot be
+                // read as a successful replay or a completed privacy release.
+                std::vector<std::string> completed;
+                for (const auto& event : failure.completed.events) completed.push_back(serializePacedEvent(event));
+                Fields detail{{"schema", quoted("ump.paced-replay-failure.v1")},
+                    {"classification", quoted("private_research_failure_telemetry")},
+                    {"successful_replay_result", "false"}, {"reason", quoted(failure.what())},
+                    {"mode", quoted(options.mode)}, {"diagnostics", quoted(options.diagnostics)},
+                    {"source_end_ms", number(input.endMs)}, {"sampling_period_ms", number(input.periodMs)},
+                    {"progress_step_ms", number(progressStepMs)}, {"rate", number(*options.paceRate)},
+                    {"queue_capacity", number(options.queueCapacity)}, {"peak_queue_depth", number(failure.completed.peakQueueDepth)},
+                    {"scheduled_event_count", number(failure.scheduledEvents)}, {"enqueued_event_count", number(failure.enqueuedEvents)},
+                    {"completed_event_count", number(failure.completed.events.size())},
+                    {"wall_elapsed_ms", number(failure.wallElapsedMs)},
+                    {"rejected_event", object({{"logical_time_ms", number(failure.rejected.event.logicalTimeMs)},
+                        {"kind", quoted(failure.rejected.event.finishing ? "finish" : "cadence")},
+                        {"scheduled_arrival_ms", number(failure.rejected.scheduledArrivalMs)},
+                        {"enqueue_attempt_ms", number(failure.rejected.enqueueAttemptMs)},
+                        {"queue_depth_at_rejection", number(failure.rejected.queueDepthAtRejection)}})},
+                    {"completed_events", array(completed)}, {"memory_samples", array(memorySamples)},
+                    {"total_input_observation_contributions", number(inputContributions)},
+                    {"partial_accounted_observation_contributions", number(accountedContributions)},
+                    {"scope", quoted("completed consumer events only; fixed offered schedule; no successful output; file serialization occurs after cancellation")}};
+                if (decisionAudit) {
+                    detail.emplace_back("decision_audit", serializeDecisionAudit(*decisionAudit));
+                    detail.emplace_back("phases", serializeReplayPhases(phases));
+                }
+                writeNew(*options.failureOutput, object(detail) + '\n');
             }
-        });
+            throw;
+        }
     } else {
         // Default: historical sensor-cadence clock. Explicit: native-style
         // initialization and progress, including ticks without measurements.
@@ -574,15 +705,15 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
         {"scope", quoted(options.paceRate
             ? "core replay, pacing waits, telemetry and in-memory serialization; excludes input validation and file I/O"
             : "core replay and in-memory result serialization; excludes input validation and file I/O")}};
+    if (audited) {
+        runtime.emplace_back("diagnostics", quoted(options.diagnostics));
+        runtime.emplace_back("decision_audit", serializeDecisionAudit(*decisionAudit));
+        runtime.emplace_back("phases", serializeReplayPhases(phases));
+        runtime.emplace_back("audit_scope", quoted("complete typed logical retirement/release hashing runs inside service; minimal omits only private window JSON; all guards and exact public release JSON remain"));
+    }
     if (pacing) {
         std::vector<std::string> timings;
-        for (const auto& event : pacing->events) retain(timings, object({
-            {"logical_time_ms", number(event.event.logicalTimeMs)},
-            {"kind", quoted(event.event.finishing ? "finish" : "cadence")},
-            {"scheduled_arrival_ms", number(event.scheduledArrivalMs)},
-            {"enqueue_attempt_ms", number(event.enqueueAttemptMs)}, {"enqueued_ms", number(event.enqueuedMs)},
-            {"service_start_ms", number(event.serviceStartMs)}, {"service_finish_ms", number(event.serviceFinishMs)},
-            {"queue_depth_after_enqueue", number(event.queueDepthAfterEnqueue)}}));
+        for (const auto& event : pacing->events) retain(timings, serializePacedEvent(event));
         runtime.emplace_back("pacing", object({{"schema", quoted("ump.paced-replay.v1")},
             {"rate", number(*options.paceRate)}, {"queue_capacity", number(options.queueCapacity)},
             {"peak_queue_depth", number(pacing->peakQueueDepth)}, {"overload_behavior", quoted("fail_without_successful_output")},
@@ -653,6 +784,15 @@ Options arguments(int argc, char** argv) {
         else if (key == "--config") result.config = value;
         else if (key == "--output") result.output = value;
         else if (key == "--mode") result.mode = value;
+        else if (key == "--diagnostics") {
+            if (value != "full" && value != "minimal") throw std::invalid_argument("Diagnostics must be full or minimal");
+            result.diagnostics = value;
+        }
+        else if (key == "--decision-digest") {
+            if (value != "sha256") throw std::invalid_argument("Decision digest must be sha256");
+            result.decisionDigest = true;
+        }
+        else if (key == "--failure-output") result.failureOutput = value;
         else if (key == "--fixed-window-ms") result.fixedWindowMs = integer();
         else if (key == "--progress-step-ms") {
             const auto step = integer();
@@ -681,6 +821,12 @@ Options arguments(int argc, char** argv) {
     if (seen.count("--queue-capacity") && !result.paceRate)
         throw std::invalid_argument("--queue-capacity requires --pace-rate");
     if (std::filesystem::exists(result.output)) throw std::invalid_argument("Output already exists");
+    if (result.failureOutput) {
+        if (!result.paceRate) throw std::invalid_argument("--failure-output requires --pace-rate");
+        if (result.failureOutput->empty() || std::filesystem::exists(*result.failureOutput)
+            || std::filesystem::absolute(*result.failureOutput).lexically_normal() == std::filesystem::absolute(result.output).lexically_normal())
+            throw std::invalid_argument("Failure output must name a distinct new file");
+    }
     return result;
 }
 } // namespace umpReplay

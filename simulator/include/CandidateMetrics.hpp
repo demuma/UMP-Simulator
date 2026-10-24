@@ -11,7 +11,7 @@ namespace ump {
 enum class MetricId {
     ObservationContributions, DistinctContributors, MeanSampleOccupancy,
     CellSideM, CellAreaM2, WindowDurationMs, AgeAtEvaluationMs, PostWindowDelayMs,
-    MeasuredSampleFraction, OccupancyMae, MinCategoryDistinctContributors, SemanticMaxLoss, SemanticMeanLoss, Count
+    MeasuredSampleFraction, OccupancyMae, MinCategoryDistinctContributors, SemanticMaxLoss, SemanticMeanLoss, SemanticSuppressionFraction, Count
 };
 
 struct MetricDefinition {
@@ -66,6 +66,19 @@ struct MetricCheck {
     std::string reason;
 };
 
+// Private research accounting only: never add this to a recipient release.
+// Suppression is local to one cell-window, not deletion of a physical person.
+struct SemanticSuppressionAudit {
+    std::uint64_t inputObservations = 0, inputDistinct = 0;
+    std::uint64_t retainedObservations = 0, retainedDistinct = 0;
+    std::uint64_t suppressedObservations = 0, suppressedDistinct = 0;
+    std::map<std::string, std::uint64_t> suppressedTypeObservations;
+    std::vector<std::string> suppressedLeaves;
+    double fraction = 0, fullInputSemanticLoss = 0, unsuppressedSemanticLoss = 0;
+    std::size_t evaluatedCandidates = 0;
+    std::uint64_t evaluationNanoseconds = 0;
+};
+
 struct CellMetricAssessment {
     int cellId;
     AssessmentStatus status;
@@ -75,6 +88,9 @@ struct CellMetricAssessment {
     std::vector<std::string> policySources = {};
     bool policyFeasible = true;
     std::optional<SemanticRepresentation> semantic = std::nullopt;
+    // Original candidate evidence remains intact for retirement and revalidation.
+    std::optional<AggregateCounts> retainedCounts = std::nullopt;
+    std::optional<SemanticSuppressionAudit> semanticSuppression = std::nullopt;
 };
 
 struct WindowMetricAssessment {

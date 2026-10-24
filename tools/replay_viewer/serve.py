@@ -210,7 +210,7 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
     schemas={'ump.building-access.v1':{'schema','bounds','buildings','portals'},
              'ump.building-access.v2':{'schema','bounds','buildings','portals','store_fronts',
                                        'facade_separators','boundary_intervals','navigation'}}
-    if not isinstance(value,dict) or value.get('schema') not in schemas or set(value)!=schemas[value['schema']]:
+    if not isinstance(value,dict) or value.get('schema') not in schemas or set(value)-{'transit_access'}!=schemas[value['schema']] or ('transit_access' in value and value['schema']!='ump.building-access.v2'):
         raise ValueError('Invalid public building access schema')
     bounds = value['bounds']
     if not isinstance(bounds,dict) or set(bounds) != {'x','y','width','height'} or any(type(bounds.get(k)) not in (int,float) or not math.isfinite(bounds[k]) or bounds[k] != coverage[k] for k in bounds):
@@ -241,9 +241,20 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
             if vertices>MAX_BUILDING_VERTICES: raise ValueError('Building geometry exceeds vertex limit')
             for coordinate in ring: point(coordinate)
             if ring[0]!=ring[-1]: raise ValueError('Building polygon rings must be closed')
+    transit=value.get('transit_access')
+    if transit is not None:
+        required={'schema','source_geometry_sha256','metadata_sha256','overhead_roof_way_ids','eligible_profiles','demand_scope'}
+        if not isinstance(transit,dict) or set(transit)!=required or transit['schema']!='ump.subway-surface-access.v1':
+            raise ValueError('Invalid public transit access schema')
+        for name in ('source_geometry_sha256','metadata_sha256'):
+            if not isinstance(transit[name],str) or not re.fullmatch(r'[a-f0-9]{64}',transit[name]):
+                raise ValueError('Invalid transit provenance digest')
+        if transit['overhead_roof_way_ids']!=[425508816,425508817] or transit['eligible_profiles']!=['Adult Pedestrian','Child Pedestrian','Senior Pedestrian']:
+            raise ValueError('Unknown overhead roof or stairs eligibility')
+        text(transit['demand_scope'],'transit demand scope',1024)
     identities=set()
     for building in buildings:
-        if not isinstance(building,dict) or not {'id','name','polygons'}.issubset(building) or set(building)-{'id','name','polygons','holes','osm_type','osm_id','building_type'}:
+        if not isinstance(building,dict) or not {'id','name','polygons'}.issubset(building) or set(building)-{'id','name','polygons','holes','osm_type','osm_id','building_type','overhead','ground_obstacle'}:
             raise ValueError('Building geometry contains unsupported or private fields')
         text(building['id'],'building ID',128);text(building['name'],'building name')
         if building['id'] in identities: raise ValueError('Duplicate building ID')
@@ -255,13 +266,47 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
         if 'osm_id' in building and not (type(building['osm_id']) is int and building['osm_id']>0 or isinstance(building['osm_id'],str) and re.fullmatch(r'[0-9]{1,20}',building['osm_id'])):
             raise ValueError('Invalid OSM building ID')
         if 'building_type' in building: text(building['building_type'],'building type',128)
-    portal_ids=set()
+        if 'overhead' in building or 'ground_obstacle' in building:
+            if (transit is None or building.get('overhead') is not True or building.get('ground_obstacle') is not False
+                    or building.get('osm_type')!='way' or int(building.get('osm_id',0)) not in transit['overhead_roof_way_ids']):
+                raise ValueError('Only provenance-bound subway roofs may be overhead context')
+    portal_ids=set();facade_ids=set();surface_refs=set()
     for portal in portals:
+        if isinstance(portal,dict) and portal.get('kind')=='surface_access':
+            required={'id','kind','point','admission_segment','approach','width_m','provenance','surface_access'}
+            if set(portal)!=required or transit is None or portal['provenance']!='osm':
+                raise ValueError('Surface access contains unsupported or private fields')
+            text(portal['id'],'portal ID',128)
+            if portal['id'] in portal_ids: raise ValueError('Duplicate portal ID')
+            portal_ids.add(portal['id']);point(portal['point']);point(portal['approach'])
+            line=portal['admission_segment']
+            if not isinstance(line,list) or len(line)!=2: raise ValueError('Surface admission requires two endpoints')
+            for endpoint in line: point(endpoint)
+            length=math.dist(*line);numeric(portal['width_m'],'surface access width',.1)
+            if length<=0 or abs(portal['width_m']-length)>1e-5 or length>20:
+                raise ValueError('Surface admission width disagrees with its segment')
+            if math.dist(portal['point'],[(line[0][i]+line[1][i])/2 for i in (0,1)])>1e-5:
+                raise ValueError('Surface admission must be centered on its exact target')
+            distance=math.dist(portal['point'],portal['approach'])
+            dot=sum((line[1][i]-line[0][i])*(portal['approach'][i]-portal['point'][i]) for i in (0,1))
+            if not .1<=distance<=10 or abs(dot)/length>1e-5:
+                raise ValueError('Surface approach must be a finite perpendicular segment')
+            meta=portal['surface_access']
+            fields={'reference','name','osm_node_id','stop_area_id','wheelchair','steps_way_id','ramp','step_count','scope'}
+            if not isinstance(meta,dict) or set(meta)!=fields or meta['reference'] not in ('A1','A2') or meta['reference'] in surface_refs:
+                raise ValueError('Invalid or duplicate public surface access identity')
+            surface_refs.add(meta['reference']);text(meta['name'],'surface access name')
+            if (meta['osm_node_id']!={'A1':280355670,'A2':348025368}[meta['reference']]
+                    or meta['stop_area_id']!=300934 or meta['wheelchair']!='no' or meta['ramp']!='no'
+                    or meta['scope']!='surface_only' or type(meta['steps_way_id']) is not int or meta['steps_way_id']<=0
+                    or type(meta['step_count']) is not int or not 1<=meta['step_count']<=256):
+                raise ValueError('Invalid surface source or stairs accessibility metadata')
+            continue
         if not isinstance(portal,dict) or set(portal)!={'id','building_id','point','facade','width_m','provenance'}:
             raise ValueError('Portal geometry contains unsupported or private fields')
         text(portal['id'],'portal ID',128)
         if portal['id'] in portal_ids: raise ValueError('Duplicate portal ID')
-        portal_ids.add(portal['id'])
+        portal_ids.add(portal['id']);facade_ids.add(portal['id'])
         text(portal['building_id'],'portal building ID',128)
         if portal['building_id'] not in identities: raise ValueError('Portal references unknown building')
         if portal['provenance'] not in ('osm','synthetic'): raise ValueError('Unknown entrance provenance')
@@ -279,6 +324,8 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
         numeric(portal['width_m'],'entrance width',.1)
         if portal['width_m']>20 or portal['width_m']>length+1e-5:
             raise ValueError('Entrance width exceeds facade or 20 m')
+    if transit is not None and surface_refs!={'A1','A2'}:
+        raise ValueError('Transit metadata requires both explicit surface portals')
     if value['schema']=='ump.building-access.v2':
         def segment(item,name,clipped=True):
             if not isinstance(item,list) or len(item)!=2: raise ValueError(name+' requires two endpoints')
@@ -320,12 +367,12 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
             if not isinstance(frontage,list) or not 2<=len(frontage)<=256: raise ValueError('Storefront frontage requires a bounded polyline')
             for coordinate in frontage: point(coordinate,False)
             pieces=list(zip(frontage,frontage[1:]))
-            facades=[item['facade'] for item in portals if item['building_id']==front['building_id']]
+            facades=[item['facade'] for item in portals if item.get('building_id')==front['building_id']]
             if any(math.dist(*piece)<=1e-7 or not any(all(on_segment(endpoint,facade) for endpoint in piece) for facade in facades) for piece in pieces) or not any(on_segment(portal['point'],piece) for piece in pieces):
                 raise ValueError('Storefront entrance/frontage disagree with facade')
             if min(math.dist(portal['point'],endpoint) for endpoint in portal['facade'])<portal['width_m']/2-1e-5:
                 raise ValueError('Storefront entrance width extends beyond facade')
-        if front_portals!=portal_ids: raise ValueError('Every storefront entrance needs exactly one destination')
+        if front_portals!=facade_ids: raise ValueError('Every storefront entrance needs exactly one destination')
         separator_ids=set()
         for separator in bounded_rows('facade_separators',1024):
             if not isinstance(separator,dict) or set(separator)!={'id','building_id','points','provenance'}: raise ValueError('Facade separator contains unsupported or private fields')
@@ -359,7 +406,7 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
         navigation=value['navigation']
         required={'body_clearance_m','allowed_center_polygons_sha256','scope'}
         if (not isinstance(navigation,dict) or not required.issubset(navigation)
-                or set(navigation)-required-{'spaces','synthetic_crossing_connectors'}):
+                or set(navigation)-required-{'spaces','synthetic_crossing_connectors','crossing_priority'}):
             raise ValueError('Navigation summary contains unsupported or private fields')
         numeric(navigation['body_clearance_m'],'navigation body clearance',.01)
         if navigation['body_clearance_m']>10 or not isinstance(navigation['allowed_center_polygons_sha256'],str) or not re.fullmatch(r'[a-f0-9]{64}',navigation['allowed_center_polygons_sha256']): raise ValueError('Invalid navigation geometry digest/clearance')
@@ -396,6 +443,25 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
             segment(connector['centerline'],'Crossing connector')
             numeric(connector['width_m'],'crossing width',.1)
             if connector['width_m']>20: raise ValueError('Crossing connector width exceeds 20 m')
+        priority=navigation.get('crossing_priority')
+        if priority is not None:
+            if not isinstance(priority,dict) or set(priority)!={'resources','scope'}:
+                raise ValueError('Invalid public crossing priority metadata')
+            text(priority['scope'],'crossing priority scope',2048)
+            resources=priority['resources'];resource_ids=set()
+            if not isinstance(resources,list) or not 1<=len(resources)<=64: raise ValueError('Invalid bounded crossing resources')
+            for resource in resources:
+                fields={'id','conflict_ring','priority_spaces','rider_lookahead_ms','pedestrian_max_wait_ms','pedestrian_admission_ms','rider_service_ms','max_batch_size'}
+                if not isinstance(resource,dict) or set(resource)!=fields: raise ValueError('Crossing resource contains unsupported or private fields')
+                text(resource['id'],'crossing resource ID',128)
+                if resource['id'] in resource_ids: raise ValueError('Duplicate crossing resource ID')
+                resource_ids.add(resource['id']);rings([resource['conflict_ring']])
+                if not isinstance(resource['priority_spaces'],list) or not resource['priority_spaces'] or len(set(resource['priority_spaces']))!=len(resource['priority_spaces']) or any(key not in space_ids for key in resource['priority_spaces']):
+                    raise ValueError('Crossing priority requires declared unique rider spaces')
+                for name in ('rider_lookahead_ms','pedestrian_max_wait_ms','pedestrian_admission_ms','rider_service_ms'):
+                    if type(resource[name]) is not int or not 1<=resource[name]<=60000: raise ValueError('Invalid crossing timing bound')
+                if type(resource['max_batch_size']) is not int or not 1<=resource['max_batch_size']<=64:
+                    raise ValueError('Invalid crossing batch capacity')
     return path
 
 
@@ -443,6 +509,97 @@ def disjoint_space_time(records: list[tuple], description: str) -> None:
         insort(active, token)
 
 
+def approved_selected_cell(diagnostic: dict) -> dict:
+    """Validate private filtering accounting; return approved recipient counts.
+
+    Original counts stay in the ownership record. This structural viewer check
+    complements, and does not replace, the independent original-source audit.
+    """
+    retained = diagnostic.get('retained_counts')
+    audit = diagnostic.get('semantic_suppression')
+    if retained is None and audit is None:
+        return diagnostic
+    if not isinstance(audit, dict) or audit.get('schema') != 'ump.semantic-suppression.v1':
+        raise ValueError('Filtered private counts require a semantic suppression audit')
+    count_names = ('observation_contributions', 'distinct_road_users', 'mean_sample_occupancy')
+    approved = dict(diagnostic)
+    if retained is not None:
+        if not isinstance(retained, dict) or set(retained) != set(count_names):
+            raise ValueError('Filtered retained counts require exact scalar count fields')
+        approved.update(retained)
+    for name in count_names[:2]:
+        if type(diagnostic.get(name)) is not int or type(approved.get(name)) is not int:
+            raise ValueError('Filtered input and retained counts must be integral')
+        if not 0 <= approved[name] <= diagnostic[name]:
+            raise ValueError('Retained counts exceed original owned counts')
+    if approved.get('mean_sample_occupancy') is not None:
+        numeric(approved['mean_sample_occupancy'], 'retained mean sample occupancy')
+    input_obs, kept_obs = diagnostic['observation_contributions'], approved['observation_contributions']
+    input_distinct, kept_distinct = diagnostic['distinct_road_users'], approved['distinct_road_users']
+    removed = input_obs - kept_obs
+    if input_distinct>input_obs or kept_distinct>kept_obs or input_distinct-kept_distinct>removed:
+        raise ValueError('Filtered distinct-track support contradicts observation counts')
+    raw_mean=diagnostic.get('mean_sample_occupancy')
+    kept_mean=approved.get('mean_sample_occupancy')
+    if raw_mean is not None:
+        numeric(raw_mean,'original mean sample occupancy')
+        expected_mean=raw_mean*kept_obs/input_obs if input_obs else 0
+        if kept_mean is None or not math.isclose(kept_mean,expected_mean,abs_tol=1e-12,rel_tol=1e-12):
+            raise ValueError('Filtered mean occupancy changed its measured-sample denominator')
+    elif kept_mean is not None:
+        raise ValueError('Filtered mean occupancy invented measured samples')
+    expected = {'input_observation_contributions': input_obs, 'input_distinct_contributors': input_distinct,
+        'retained_observation_contributions': kept_obs, 'retained_distinct_contributors': kept_distinct,
+        'suppressed_observation_contributions': removed, 'suppressed_distinct_contributors': input_distinct-kept_distinct}
+    if any(type(audit.get(name)) is not int or audit[name] != value for name,value in expected.items()):
+        raise ValueError('Filtered private audit changed original/retained conservation counts')
+    if bool(removed) != (retained is not None) or (removed and (not kept_obs or not kept_distinct)):
+        raise ValueError('Filtered retained counts need a nonempty strict contribution subset')
+    fraction = removed / input_obs if input_obs else 0
+    numeric(audit.get('suppressed_fraction'), 'suppressed fraction')
+    if not math.isclose(audit['suppressed_fraction'],fraction,abs_tol=1e-12,rel_tol=1e-12):
+        raise ValueError('Filtered suppression fraction contradicts original owned counts')
+    by_type = audit.get('suppressed_type_observation_contributions')
+    leaves = audit.get('suppressed_terminal_categories')
+    if (not isinstance(by_type,dict) or len(by_type)>4096
+            or any(not isinstance(k,str) or not k or type(v) is not int or v<=0 for k,v in by_type.items())
+            or sum(by_type.values())!=removed or not isinstance(leaves,list) or len(leaves)>256
+            or any(not isinstance(v,str) or not v for v in leaves)
+            or leaves!=sorted(set(leaves)) or bool(leaves)!=bool(removed)):
+        raise ValueError('Filtered private suppression mask/counts are inconsistent')
+    candidates = audit.get('evaluated_candidates')
+    if type(candidates) is not int or not 0<=candidates<=256:
+        raise ValueError('Filtered candidate diagnostics exceed the taxonomy bound')
+    for name in ('full_input_semantic_loss','unsuppressed_semantic_loss'):
+        numeric(audit.get(name),name)
+        if audit[name]>1: raise ValueError('Invalid full-input semantic distortion')
+    semantic = diagnostic.get('semantic')
+    if not isinstance(semantic,dict): raise ValueError('Filtered counts need an approved semantic representation')
+    numeric(semantic.get('semantic_mean_loss'),'retained semantic loss')
+    bins=semantic.get('categories')
+    if (not isinstance(bins,list) or len(bins)>256
+            or any(not isinstance(b,dict) or type(b.get('observation_contributions')) is not int
+                   or type(b.get('distinct_contributors')) is not int
+                   or not 0<b['distinct_contributors']<=b['observation_contributions'] for b in bins)
+            or sum(b['observation_contributions'] for b in bins)!=kept_obs
+            or sum(b['distinct_contributors'] for b in bins)!=kept_distinct):
+        raise ValueError('Filtered semantic bins disagree with approved retained totals')
+    full_loss = (removed + kept_obs*semantic['semantic_mean_loss']) / input_obs if input_obs else 0
+    if (not math.isclose(audit['full_input_semantic_loss'],full_loss,abs_tol=1e-12,rel_tol=1e-12)
+            or (removed and not full_loss<audit['unsuppressed_semantic_loss']-1e-12)):
+        raise ValueError('Filtered release has inconsistent or nonimproving full-input distortion')
+    checks = [check for check in diagnostic.get('checks',[]) if check.get('metric')=='semantic_suppression_fraction']
+    if len(checks)!=1:
+        raise ValueError('Filtered private audit requires its policy cap check')
+    check=checks[0]
+    numeric(check.get('max'),'suppression cap')
+    numeric(check.get('observed'),'suppression metric')
+    if (not fraction<=check['max']<=1 or check.get('min') is not None or check.get('status')!='pass'
+            or not math.isclose(check['observed'],fraction,abs_tol=1e-12,rel_tol=1e-12)):
+        raise ValueError('Filtered private counts violate their recorded policy cap')
+    return approved
+
+
 def validate_result_events(result: dict, coverage: dict, horizon, variant: str) -> None:
     parameters = result.get('parameters', {})
     if not isinstance(parameters, dict) or parameters.get('coordination', 'common_window') not in ('common_window', 'cell_local'):
@@ -486,6 +643,9 @@ def validate_result_events(result: dict, coverage: dict, horizon, variant: str) 
                     raise ValueError('Result cell lies outside its coordination scope')
                 cut.append((lo, hi))
                 checked_cells[identity] = cell
+                if collection == 'windows': approved_selected_cell(cell)
+                elif 'retained_counts' in cell or 'semantic_suppression' in cell:
+                    raise ValueError('Recipient cells may not disclose private filtering masks or original totals')
                 if collection == 'releases':
                     public_support.append((start, end, lo, hi))
             cut.sort()
@@ -506,7 +666,7 @@ def validate_result_events(result: dict, coverage: dict, horizon, variant: str) 
                     raise ValueError('Duplicate local public scope/interval')
                 public_keys.add(key)
                 for identity, cell in checked_cells.items():
-                    diagnostic = expected[1][identity]
+                    diagnostic = approved_selected_cell(expected[1][identity])
                     for name in ('observation_contributions', 'distinct_road_users', 'mean_sample_occupancy', 'semantic'):
                         if (name in cell) != (name in diagnostic) or cell.get(name) != diagnostic.get(name):
                             raise ValueError('Local release changed approved selected cell counts or semantics')
@@ -572,6 +732,8 @@ def validate_bundle(root: Path) -> tuple[dict, dict[str, Path]]:
         if not isinstance(variant, dict) or not re.fullmatch(r'[A-Za-z0-9_-]+', variant.get('id', '')) or variant['id'] in ids or not isinstance(variant.get('label'), str):
             raise ValueError('Variants require unique simple IDs and text labels')
         ids.add(variant['id'])
+        if 'contribution_selection' in variant and variant['contribution_selection'] not in ('all_contributions','policy_filtered'):
+            raise ValueError('Unknown contribution selection contract')
         validate_policy_regions(variant, coverage)
         path = local_file(root, variant.get('result'))
         paths[variant['result']] = path

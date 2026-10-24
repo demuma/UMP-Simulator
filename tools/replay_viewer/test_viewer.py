@@ -49,6 +49,38 @@ class ViewerTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             serve.validate_bundle(self.root)
 
+    def add_transit_access(self):
+        value=self.add_storefront_access()
+        value['transit_access']={'schema':'ump.subway-surface-access.v1',
+            'source_geometry_sha256':'a'*64,'metadata_sha256':'b'*64,
+            'overhead_roof_way_ids':[425508816,425508817],
+            'eligible_profiles':['Adult Pedestrian','Child Pedestrian','Senior Pedestrian'],
+            'demand_scope':'Synthetic independent station journeys.'}
+        for ref,node,x in [('A1',280355670,40),('A2',348025368,50)]:
+            value['portals'].append({'id':'subway-'+ref,'kind':'surface_access','point':[x,40],
+                'admission_segment':[[x-.6,40],[x+.6,40]],'approach':[x,41.5],
+                'width_m':1.2,'provenance':'osm','surface_access':{
+                    'reference':ref,'name':'Station '+ref,'osm_node_id':node,'stop_area_id':300934,
+                    'wheelchair':'no','steps_way_id':123,'ramp':'no','step_count':24,'scope':'surface_only'}})
+        return value
+
+    def test_surface_access_is_not_a_facade_and_rejects_private_or_inconsistent_metadata(self):
+        value=self.add_transit_access()
+        (self.root/'building_access.json').write_text(json.dumps(value));self.write()
+        serve.validate_bundle(self.root)
+        for failure in ('private','missing_second','off_center','parallel','wrong_node','stairs','roof','crossing'):
+            with self.subTest(failure=failure):
+                value=self.add_transit_access();portal=value['portals'][1]
+                if failure=='private':portal['surface_access']['private_person_id']='secret'
+                if failure=='missing_second':value['portals'].pop()
+                if failure=='off_center':portal['point'][0]+=.1
+                if failure=='parallel':portal['approach']=[41.5,40]
+                if failure=='wrong_node':portal['surface_access']['osm_node_id']=1
+                if failure=='stairs':value['transit_access']['eligible_profiles'].append('Pedestrian With Mobility Aid')
+                if failure=='roof':value['buildings'][0].update(overhead=True,ground_obstacle=False)
+                if failure=='crossing':value['navigation']['crossing_priority']={'resources':[],'scope':'Synthetic'}
+                (self.root/'building_access.json').write_text(json.dumps(value));self.rejected()
+
     def test_matching_bundle_validates(self):
         _,files=serve.validate_bundle(self.root)
         self.assertEqual(set(files),{'bundle.json','observations.json','result.json'})
@@ -511,6 +543,54 @@ class ViewerTests(unittest.TestCase):
                 if mutation=='semantic': self.result['releases'][0]['cells'][0]['semantic']={'schema':'changed'}
                 if mutation=='missing_public': self.result['releases']=[]
                 if mutation=='empty_public': self.result['releases'][0]['cells']=[]
+                self.rejected()
+
+    def add_local_filtered_release(self):
+        self.local_events([(12,0,400,400,[48])])
+        self.manifest['variants'][0]['contribution_selection']='policy_filtered'
+        diagnostic=self.result['windows'][0]['cells'][0]
+        public=self.result['releases'][0]['cells'][0]
+        semantic={'schema':'ump.semantic-release.v1','taxonomy_id':'test','taxonomy_version':'1',
+            'min_category_distinct_contributors':20,'semantic_max_loss':0,'semantic_mean_loss':0,
+            'categories':[{'category_id':'pedestrian','observation_contributions':60,'distinct_contributors':20}]}
+        diagnostic.update(observation_contributions=63,distinct_road_users=21,mean_sample_occupancy=21,
+            semantic=copy.deepcopy(semantic),retained_counts={'observation_contributions':60,'distinct_road_users':20,'mean_sample_occupancy':20},
+            checks=[{'metric':'semantic_suppression_fraction','min':None,'max':.1,'observed':1/21,'status':'pass'}],
+            semantic_suppression={'schema':'ump.semantic-suppression.v1','input_observation_contributions':63,
+                'input_distinct_contributors':21,'retained_observation_contributions':60,'retained_distinct_contributors':20,
+                'suppressed_observation_contributions':3,'suppressed_distinct_contributors':1,'suppressed_fraction':1/21,
+                'suppressed_type_observation_contributions':{'Cyclist':3},'suppressed_terminal_categories':['cyclist'],
+                'full_input_semantic_loss':1/21,'unsuppressed_semantic_loss':1,'evaluated_candidates':1})
+        public.update(observation_contributions=60,distinct_road_users=20,mean_sample_occupancy=20,semantic=semantic)
+        return diagnostic,public
+
+    def test_local_filtered_release_matches_retained_counts_preserving_original_ownership(self):
+        diagnostic,public=self.add_local_filtered_release()
+        self.write();serve.validate_bundle(self.root)
+        self.assertEqual(diagnostic['observation_contributions'],63)
+        self.assertEqual(public['observation_contributions'],60)
+        self.assertEqual(self.result['windows'][0]['coordination_cell']['cell_id'],12)
+
+    def test_local_filtered_counts_masks_fractions_and_recipient_semantics_are_strict(self):
+        for mutation in ('raw','retained','fraction','cap','mask','public_count','public_semantic','private_leak','missing_audit','benefit','occupancy','semantic_sum'):
+            with self.subTest(mutation=mutation):
+                diagnostic,public=self.add_local_filtered_release()
+                if mutation=='raw':diagnostic['observation_contributions']=64
+                if mutation=='retained':diagnostic['retained_counts']['distinct_road_users']=19
+                if mutation=='fraction':diagnostic['semantic_suppression']['suppressed_fraction']=0
+                if mutation=='cap':diagnostic['checks'][0]['max']=0
+                if mutation=='mask':diagnostic['semantic_suppression']['suppressed_type_observation_contributions']={}
+                if mutation=='public_count':public['observation_contributions']=63
+                if mutation=='public_semantic':public['semantic']['categories'][0]['distinct_contributors']=21
+                if mutation=='private_leak':public['semantic_suppression']=copy.deepcopy(diagnostic['semantic_suppression'])
+                if mutation=='missing_audit':diagnostic.pop('semantic_suppression')
+                if mutation=='benefit':diagnostic['semantic_suppression']['unsuppressed_semantic_loss']=0
+                if mutation=='occupancy':
+                    diagnostic['retained_counts']['mean_sample_occupancy']=19
+                    public['mean_sample_occupancy']=19
+                if mutation=='semantic_sum':
+                    diagnostic['semantic']['categories'][0]['observation_contributions']=59
+                    public['semantic']['categories'][0]['observation_contributions']=59
                 self.rejected()
 
     def test_local_event_time_order_is_strict_except_equal_timestamps(self):

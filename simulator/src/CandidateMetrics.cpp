@@ -2,6 +2,8 @@
 #include "PolicyTree.hpp"
 #include <algorithm>
 #include <cmath>
+#include <chrono>
+#include <set>
 #include <limits>
 #include <stdexcept>
 #include <unordered_set>
@@ -22,7 +24,8 @@ const std::array<MetricDefinition, static_cast<std::size_t>(MetricId::Count)>& m
         {MetricId::OccupancyMae, "occupancy_mae", "agents", false},
         {MetricId::MinCategoryDistinctContributors, "min_category_distinct_contributors", "road_users", true},
         {MetricId::SemanticMaxLoss, "semantic_max_loss", "fraction", false},
-        {MetricId::SemanticMeanLoss, "semantic_mean_loss", "fraction", false}
+        {MetricId::SemanticMeanLoss, "semantic_mean_loss", "fraction", false},
+        {MetricId::SemanticSuppressionFraction, "semantic_suppression_fraction", "fraction", false}
     }};
     return definitions;
 }
@@ -58,6 +61,9 @@ MetricEvaluator::MetricEvaluator(std::optional<MetricPolicy> configured,
     if (policy->id.empty() || policy->version.empty())
         throw std::invalid_argument("Metric policy requires ID and version");
     validateMetricRequirements(policy->requirements);
+    if (!taxonomy && std::any_of(policy->requirements.begin(), policy->requirements.end(), [](const auto& requirement) {
+            return requirement.id == MetricId::SemanticSuppressionFraction && requirement.max && *requirement.max > 0;
+        })) throw std::invalid_argument("Semantic contribution suppression requires a semantic taxonomy");
     if (taxonomy) validateSemanticMetricRequirements(policy->requirements);
 }
 
@@ -81,13 +87,15 @@ void validateMetricRequirements(const std::vector<MetricRequirement>& requiremen
             if (!std::isfinite(*bound) || *bound < 0 || (definition.integral && std::floor(*bound) != *bound)
                 || (definition.integral && *bound > 9007199254740991.0)
                 || ((requirement.id == MetricId::MeasuredSampleFraction
-                    || requirement.id == MetricId::SemanticMaxLoss || requirement.id == MetricId::SemanticMeanLoss) && *bound > 1))
+                    || requirement.id == MetricId::SemanticMaxLoss || requirement.id == MetricId::SemanticMeanLoss
+                    || requirement.id == MetricId::SemanticSuppressionFraction) && *bound > 1))
                 throw std::invalid_argument("Invalid bound for metric: " + std::string(definition.name));
         }
         if (requirement.id == MetricId::MinCategoryDistinctContributors
             && (!requirement.min || *requirement.min < 1 || requirement.max))
             throw std::invalid_argument("min_category_distinct_contributors requires a positive minimum only");
-        if ((requirement.id == MetricId::SemanticMaxLoss || requirement.id == MetricId::SemanticMeanLoss)
+        if ((requirement.id == MetricId::SemanticMaxLoss || requirement.id == MetricId::SemanticMeanLoss
+                || requirement.id == MetricId::SemanticSuppressionFraction)
             && (requirement.min || !requirement.max))
             throw std::invalid_argument("Semantic loss requires an upper bound only");
         if (requirement.min && requirement.max && *requirement.min > *requirement.max)
@@ -180,6 +188,7 @@ std::vector<MetricValue> measure(const AggregationCandidate& candidate, const Ag
     absent(MetricId::MinCategoryDistinctContributors, "semantic_not_enabled");
     absent(MetricId::SemanticMaxLoss, "semantic_not_enabled");
     absent(MetricId::SemanticMeanLoss, "semantic_not_enabled");
+    values.push_back({MetricId::SemanticSuppressionFraction, 0, "semantic_suppression_not_configured"});
     return values;
 }
 }
@@ -198,83 +207,161 @@ WindowMetricAssessment MetricEvaluator::evaluate(const AggregationCandidate& can
     bool anyFailed = false, anyUnavailable = false;
     for (const auto& cell : candidate.cells) {
         CellMetricAssessment result{cell.cell.id, AssessmentStatus::NotConfigured, measure(candidate, cell, now), {}};
-        bool failed = false, unavailable = false;
-        if (configured) {
-            const std::vector<MetricRequirement>* requirements = nullptr;
-            if (tree) {
-                const auto& effective = tree->resolve(cell.cell);
-                requirements = &effective.requirements;
-                result.effectivePolicyId = effective.id;
-                result.policySources = effective.sources;
-                result.policyFeasible = effective.feasible;
-            } else {
-                requirements = &policy->requirements;
-                result.effectivePolicyId = policy->id;
-                result.policySources = {"uniform:" + policy->id};
+        if (!configured) { output.cells.push_back(std::move(result)); continue; }
+        const std::vector<MetricRequirement>* requirements = nullptr;
+        if (tree) {
+            const auto& effective = tree->resolve(cell.cell);
+            requirements = &effective.requirements;
+            result.effectivePolicyId = effective.id;
+            result.policySources = effective.sources;
+            result.policyFeasible = effective.feasible;
+        } else {
+            requirements = &policy->requirements;
+            result.effectivePolicyId = policy->id;
+            result.policySources = {"uniform:" + policy->id};
+        }
+        double suppressionCap = 0;
+        bool suppressionConfigured = false;
+        std::uint64_t support = 1;
+        for (const auto& required : *requirements) {
+            if (required.id == MetricId::MinCategoryDistinctContributors && required.min)
+                support = static_cast<std::uint64_t>(*required.min);
+            if (required.id == MetricId::SemanticSuppressionFraction && required.max) {
+                suppressionCap = *required.max; suppressionConfigured = true;
             }
-            if (taxonomy) {
-                validateSemanticMetricRequirements(*requirements);
-                for (const auto id : {MetricId::MinCategoryDistinctContributors,
-                        MetricId::SemanticMaxLoss, MetricId::SemanticMeanLoss})
-                    result.metrics.at(static_cast<std::size_t>(id)).unavailableReason = "semantic_evidence_unavailable";
-                if (cell.counts.semanticEvidence) {
-                    // Check the raw-class contribution accounting before choosing a
-                    // truthful representation. This cannot reconstruct identities,
-                    // but it rejects inconsistent type/evidence snapshots.
-                    std::map<std::string, std::uint64_t> leafObservations;
-                    std::uint64_t total = 0;
-                    for (const auto& entry : cell.counts.typeObservationContributions) {
-                        if (entry.second > cell.counts.observationContributions - total)
-                            throw std::invalid_argument("Semantic raw type counts exceed candidate support");
-                        total += entry.second;
-                        leafObservations[taxonomy->leafForType(entry.first)] += entry.second;
-                    }
-                    if (total != cell.counts.observationContributions)
-                        throw std::invalid_argument("Semantic raw type counts omit candidate observations");
-                    for (const auto& node : taxonomy->nodes()) if (!node.inputTypes.empty()) {
-                        const auto at = cell.counts.semanticEvidence->nodes.find(node.id);
-                        if (at == cell.counts.semanticEvidence->nodes.end()
-                            || at->second.observationContributions != leafObservations[node.id])
-                            throw std::invalid_argument("Semantic evidence contradicts raw type observations");
-                    }
-                    std::uint64_t support = 1;
-                    for (const auto& required : *requirements)
-                        if (required.id == MetricId::MinCategoryDistinctContributors && required.min)
-                            support = static_cast<std::uint64_t>(*required.min);
-                    result.semantic = taxonomy->select(*cell.counts.semanticEvidence,
-                        cell.counts.observationContributions, cell.counts.distinctContributors, support);
-                    const auto set = [&](MetricId id, double value) {
-                        auto& measured = result.metrics.at(static_cast<std::size_t>(id));
-                        measured.value = value; measured.unavailableReason.clear();
-                    };
-                    set(MetricId::MinCategoryDistinctContributors, result.semantic->minimumDistinctContributors);
-                    set(MetricId::SemanticMaxLoss, result.semantic->maxLoss);
-                    set(MetricId::SemanticMeanLoss, result.semantic->meanLoss);
-                }
-            }
+        }
+        if (suppressionConfigured)
+            result.metrics.at(static_cast<std::size_t>(MetricId::SemanticSuppressionFraction)).unavailableReason.clear();
+        if (suppressionCap > 0 && !taxonomy)
+            throw std::invalid_argument("Semantic contribution suppression requires a semantic taxonomy");
+        const auto setSemanticMetrics = [](CellMetricAssessment& target, const SemanticRepresentation& representation) {
+            const auto set = [&](MetricId id, double value) {
+                auto& measured = target.metrics.at(static_cast<std::size_t>(id));
+                measured.value = value; measured.unavailableReason.clear();
+            };
+            target.semantic = representation;
+            set(MetricId::MinCategoryDistinctContributors, representation.minimumDistinctContributors);
+            set(MetricId::SemanticMaxLoss, representation.maxLoss);
+            set(MetricId::SemanticMeanLoss, representation.meanLoss);
+        };
+        // All hard requirements are reassessed on the retained union, including
+        // total distinct support and occupancy. Suppression never repairs k by
+        // counting removed identities or repeated observations.
+        const auto assess = [&](CellMetricAssessment& target) {
+            target.checks.clear();
+            bool failed = false, unavailable = false;
             for (const auto& required : *requirements) {
-                const auto& metric = result.metrics.at(static_cast<std::size_t>(required.id));
+                const auto& metric = target.metrics.at(static_cast<std::size_t>(required.id));
                 MetricCheck check{required, metric.value, AssessmentStatus::Pass, "within_bounds"};
                 if (required.min && required.max && *required.min > *required.max) {
-                    failed = true;
-                    check.status = AssessmentStatus::Fail;
-                    check.reason = "contradictory_policy_bounds";
+                    failed = true; check.status = AssessmentStatus::Fail; check.reason = "contradictory_policy_bounds";
                 } else if (!metric.value) {
-                    unavailable = true;
-                    check.status = AssessmentStatus::Unavailable;
-                    check.reason = metric.unavailableReason;
+                    unavailable = true; check.status = AssessmentStatus::Unavailable; check.reason = metric.unavailableReason;
                 } else if (required.min && *metric.value < *required.min) {
                     failed = true; check.status = AssessmentStatus::Fail; check.reason = "below_minimum";
                 } else if (required.max && *metric.value > *required.max) {
                     failed = true; check.status = AssessmentStatus::Fail; check.reason = "above_maximum";
                 }
-                result.checks.push_back(std::move(check));
+                target.checks.push_back(std::move(check));
             }
-            result.status = !complete ? AssessmentStatus::Unavailable : failed ? AssessmentStatus::Fail
+            target.status = !complete ? AssessmentStatus::Unavailable : failed ? AssessmentStatus::Fail
                 : unavailable ? AssessmentStatus::Unavailable : AssessmentStatus::Pass;
+        };
+        if (taxonomy) {
+            validateSemanticMetricRequirements(*requirements);
+            for (const auto id : {MetricId::MinCategoryDistinctContributors,
+                    MetricId::SemanticMaxLoss, MetricId::SemanticMeanLoss})
+                result.metrics.at(static_cast<std::size_t>(id)).unavailableReason = "semantic_evidence_unavailable";
+            if (cell.counts.semanticEvidence) {
+                std::map<std::string, std::uint64_t> leafObservations;
+                std::uint64_t total = 0;
+                for (const auto& entry : cell.counts.typeObservationContributions) {
+                    if (entry.second > cell.counts.observationContributions - total)
+                        throw std::invalid_argument("Semantic raw type counts exceed candidate support");
+                    total += entry.second;
+                    leafObservations[taxonomy->leafForType(entry.first)] += entry.second;
+                }
+                if (total != cell.counts.observationContributions)
+                    throw std::invalid_argument("Semantic raw type counts omit candidate observations");
+                for (const auto& node : taxonomy->nodes()) if (!node.inputTypes.empty()) {
+                    const auto at = cell.counts.semanticEvidence->nodes.find(node.id);
+                    if (at == cell.counts.semanticEvidence->nodes.end()
+                        || at->second.observationContributions != leafObservations[node.id])
+                        throw std::invalid_argument("Semantic evidence contradicts raw type observations");
+                }
+                setSemanticMetrics(result, taxonomy->select(*cell.counts.semanticEvidence,
+                    cell.counts.observationContributions, cell.counts.distinctContributors, support));
+            }
         }
-        anyFailed |= failed;
-        anyUnavailable |= unavailable;
+        assess(result);
+        if (suppressionCap > 0 && complete && cell.counts.semanticEvidence && result.semantic) {
+            const auto started = std::chrono::steady_clock::now();
+            SemanticSuppressionAudit audit;
+            audit.inputObservations = audit.retainedObservations = cell.counts.observationContributions;
+            audit.inputDistinct = audit.retainedDistinct = cell.counts.distinctContributors;
+            audit.fullInputSemanticLoss = audit.unsuppressedSemanticLoss = result.semantic->meanLoss;
+            for (auto& proposal : taxonomy->suppressionCandidates(*cell.counts.semanticEvidence,
+                    cell.counts.observationContributions, cell.counts.distinctContributors, support)) {
+                const auto totals = proposal.retainedEvidence.nodes.at(taxonomy->root());
+                const auto removed = cell.counts.observationContributions - totals.observationContributions;
+                const double fraction = static_cast<double>(removed) / cell.counts.observationContributions;
+                if (!removed || fraction > suppressionCap) continue;
+                ++audit.evaluatedCandidates;
+                auto alternative = result;
+                alternative.retainedCounts = cell.counts;
+                auto& retained = *alternative.retainedCounts;
+                retained.observationContributions = totals.observationContributions;
+                retained.distinctContributors = totals.distinctContributors;
+                retained.meanSampleOccupancy = candidate.measuredSamples
+                    ? std::optional<double>{static_cast<double>(totals.observationContributions) / candidate.measuredSamples}
+                    : std::nullopt;
+                retained.semanticEvidence = std::move(proposal.retainedEvidence);
+                const std::set<std::string> removedLeaves(proposal.suppressedLeaves.begin(), proposal.suppressedLeaves.end());
+                for (auto at = retained.typeObservationContributions.begin(); at != retained.typeObservationContributions.end();) {
+                    if (removedLeaves.count(taxonomy->leafForType(at->first))) at = retained.typeObservationContributions.erase(at);
+                    else ++at;
+                }
+                alternative.metrics = measure(candidate, {cell.cell, retained}, now);
+                auto& fractionMetric = alternative.metrics.at(static_cast<std::size_t>(MetricId::SemanticSuppressionFraction));
+                fractionMetric.value = fraction; fractionMetric.unavailableReason.clear();
+                setSemanticMetrics(alternative, proposal.retainedRepresentation);
+                assess(alternative);
+                if (alternative.status != AssessmentStatus::Pass) continue;
+                const auto& old = *result.semantic;
+                const auto& proposed = *alternative.semantic;
+                // Removing an observation costs one full unit. This conservative
+                // full-input objective prevents a prettier conditional semantic
+                // average obtained by discarding more information than it saves.
+                const double fullLoss = static_cast<double>((static_cast<long double>(removed)
+                    + static_cast<long double>(retained.observationContributions) * proposed.meanLoss)
+                    / cell.counts.observationContributions);
+                constexpr double tolerance = 1e-12;
+                if (!(fullLoss < audit.unsuppressedSemanticLoss - tolerance)) continue;
+                const bool better = fullLoss < audit.fullInputSemanticLoss - tolerance
+                    || (std::abs(fullLoss - audit.fullInputSemanticLoss) <= tolerance
+                        && (proposed.maxLoss < old.maxLoss
+                            || (proposed.maxLoss == old.maxLoss && proposed.meanLoss < old.meanLoss)
+                            || (result.retainedCounts && proposed.maxLoss == old.maxLoss && proposed.meanLoss == old.meanLoss
+                                && retained.observationContributions > result.retainedCounts->observationContributions)));
+                if (!better) continue;
+                result = std::move(alternative);
+                audit.retainedObservations = totals.observationContributions;
+                audit.retainedDistinct = totals.distinctContributors;
+                audit.suppressedObservations = removed;
+                audit.suppressedDistinct = audit.inputDistinct - totals.distinctContributors;
+                audit.suppressedLeaves = std::move(proposal.suppressedLeaves);
+                audit.fraction = fraction;
+                audit.fullInputSemanticLoss = fullLoss;
+                audit.suppressedTypeObservations.clear();
+                for (const auto& entry : cell.counts.typeObservationContributions)
+                    if (removedLeaves.count(taxonomy->leafForType(entry.first))) audit.suppressedTypeObservations.insert(entry);
+            }
+            audit.evaluationNanoseconds = static_cast<std::uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                std::chrono::steady_clock::now() - started).count());
+            result.semanticSuppression = std::move(audit);
+        }
+        anyFailed |= result.status == AssessmentStatus::Fail;
+        anyUnavailable |= result.status == AssessmentStatus::Unavailable;
         output.cells.push_back(std::move(result));
     }
     if (configured) output.status = !complete ? AssessmentStatus::Unavailable

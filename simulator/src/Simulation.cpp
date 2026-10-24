@@ -949,7 +949,12 @@ void Simulation::run() {
                     << "navigation_replans" << static_cast<std::int64_t>(motion.navigationReplans)
                     << "navigation_replan_failures" << static_cast<std::int64_t>(motion.navigationReplanFailures)
                     << "navigation_candidate_checks" << static_cast<std::int64_t>(motion.navigationCandidateChecks)
-                    << "navigation_max_search_nodes" << static_cast<std::int64_t>(motion.navigationMaxSearchNodes);
+                    << "navigation_max_search_nodes" << static_cast<std::int64_t>(motion.navigationMaxSearchNodes)
+                    << "crossing_pedestrian_wait_steps" << static_cast<std::int64_t>(motion.crossingPedestrianWaitSteps)
+                    << "crossing_rider_wait_steps" << static_cast<std::int64_t>(motion.crossingRiderWaitSteps)
+                    << "crossing_batches" << static_cast<std::int64_t>(motion.crossingBatches)
+                    << "crossing_fairness_closures" << static_cast<std::int64_t>(motion.crossingFairnessClosures)
+                    << "max_crossing_pedestrian_wait_ms" << static_cast<std::int64_t>(motion.maxCrossingPedestrianWaitMs);
             }
         }
         collection.insert_one(summary << bsoncxx::builder::stream::finalize);

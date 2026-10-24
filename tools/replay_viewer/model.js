@@ -109,7 +109,7 @@
      The returned coordinates remain physical metres; marker visibility does
      not enlarge a source admission area or move any observed road user. */
   function portalSegment(portal) {
-    const [a,b]=portal.facade,dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
+    const [a,b]=portal.kind==='surface_access'?portal.admission_segment:portal.facade,dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
     if(!Number.isFinite(length)||length<=0)throw new RangeError('Portal facade must have positive length');
     const half=portal.width_m/2;
     return [[portal.point[0]-dx/length*half,portal.point[1]-dy/length*half],

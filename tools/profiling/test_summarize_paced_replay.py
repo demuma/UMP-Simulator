@@ -38,6 +38,28 @@ def pair():
     return paced, reference
 
 
+def add_audit(value, mode='full'):
+    value['runtime']['diagnostics'] = mode
+    value['runtime']['decision_audit'] = dict(schema='ump.replay-decision-audit.v1', algorithm='SHA-256',
+        retirement_count=1, release_count=1, selected_cell_count=1, suppressed_cell_count=0,
+        retirement_sha256='a' * 64, release_sha256='b' * 64)
+    if mode == 'minimal':
+        value['windows'] = []
+
+
+def failed_prefix():
+    paced, _ = pair()
+    events = copy.deepcopy(paced['runtime']['pacing']['events'][:2])
+    events[1]['service_finish_ms'] = 410.2
+    return dict(schema='ump.paced-replay-failure.v1', successful_replay_result=False,
+                mode='semantic_first', diagnostics='minimal', rate=1, progress_step_ms=100,
+                sampling_period_ms=100, source_end_ms=500, queue_capacity=1, peak_queue_depth=1,
+                scheduled_event_count=5, enqueued_event_count=3, completed_event_count=2,
+                wall_elapsed_ms=450, completed_events=events,
+                rejected_event=dict(logical_time_ms=400, kind='cadence', scheduled_arrival_ms=400,
+                                    enqueue_attempt_ms=400.2, queue_depth_at_rejection=1))
+
+
 class SummaryTests(unittest.TestCase):
     def test_separate_cadence_finish_delays_and_memory(self):
         paced, reference = pair()
@@ -125,6 +147,9 @@ class SummaryTests(unittest.TestCase):
         self.assertEqual(result['sample_steps']['service']['count'], 2)
         self.assertEqual(result['no_sample_steps']['service']['count'], 2)
         self.assertEqual(result['cadence_service_over_offered_interval'], 1)
+        self.assertEqual(result['response_deadlines']['cadence_deadline_ms'], 50)
+        self.assertEqual(result['response_deadlines']['cadence_miss_count'], 1)
+        self.assertEqual(result['response_deadlines']['sensor_period_miss_count'], 0)
         self.assertEqual(result['no_sample_steps']['service']['max_ms'], 60)
         self.assertEqual(result['finish']['service']['count'], 1)
         self.assertEqual(result['release']['scheduled_window_end_to_in_memory_ack']['max_ms'], 5)
@@ -155,6 +180,67 @@ class SummaryTests(unittest.TestCase):
         self.assertIsNone(result['memory']['counters']['process_resident_bytes']['sampled_max'])
         self.assertIsNone(summary.distribution([])['max_ms'])
         self.assertEqual(summary.distribution([1, 2, 3, 4])['p95_ms'], 4)
+
+    def test_minimal_requires_matching_complete_native_audits_and_exact_public_output(self):
+        paced, reference = pair()
+        add_audit(paced, 'minimal')
+        add_audit(reference)
+        result = summary.summarize(paced, reference)
+        self.assertEqual(result['diagnostics']['paced'], 'minimal')
+        self.assertIn('complete typed SHA-256', result['diagnostics']['equality_method'])
+        mutations = [lambda p, r: r['runtime'].pop('decision_audit'),
+                     lambda p, r: r['runtime']['decision_audit'].update(retirement_sha256='c' * 64),
+                     lambda p, r: p['runtime']['decision_audit'].update(release_count=0),
+                     lambda p, r: p['runtime']['decision_audit'].update(retirement_sha256='not-a-hash'),
+                     lambda p, r: p['windows'].append({}),
+                     lambda p, r: p['releases'][0].update(end_ms=201)]
+        for mutation in mutations:
+            p, r = copy.deepcopy(paced), copy.deepcopy(reference)
+            mutation(p, r)
+            with self.assertRaises(ValueError):
+                summary.summarize(p, r)
+
+    def test_failure_is_partial_with_explicit_misses_and_no_success_claim(self):
+        failure = failed_prefix()
+        result = summary.summarize_failure(failure)
+        self.assertFalse(result['successful_replay_result'])
+        self.assertIsNone(result['logical_output_equal_excluding_runtime'])
+        self.assertEqual(result['events']['completed'], 2)
+        self.assertEqual(result['events']['pending_or_uncompleted'], 1)
+        self.assertEqual(result['completed_prefix_cadence_response_misses'], 1)
+        self.assertEqual(result['completed_sensor_period_response_misses'], 1)
+        self.assertEqual(result['completed_prefix']['service']['max_ms'], 210)
+        self.assertNotIn('release_id', json.dumps(result))
+        empty = failed_prefix()
+        empty.update(completed_events=[], completed_event_count=0, enqueued_event_count=1)
+        empty['rejected_event'].update(logical_time_ms=200, scheduled_arrival_ms=200, enqueue_attempt_ms=200.2)
+        self.assertIsNone(summary.summarize_failure(empty)['completed_prefix']['service']['max_ms'])
+        mutations = [lambda f: f.update(successful_replay_result=True),
+                     lambda f: f.update(completed_event_count=3),
+                     lambda f: f.update(peak_queue_depth=0),
+                     lambda f: f.update(scheduled_event_count=6),
+                     lambda f: f['completed_events'][0].update(service_start_ms=99),
+                     lambda f: f['completed_events'][1].update(logical_time_ms=300),
+                     lambda f: f['rejected_event'].update(queue_depth_at_rejection=0),
+                     lambda f: f['rejected_event'].update(enqueue_attempt_ms=399)]
+        for mutation in mutations:
+            malformed = failed_prefix()
+            mutation(malformed)
+            with self.assertRaises(ValueError):
+                summary.summarize_failure(malformed)
+
+    def test_failure_cli_requires_no_reference_and_keeps_explicit_schema(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / 'failure.json'
+            source.write_text(json.dumps(failed_prefix()))
+            command = [sys.executable, summary.__file__, '--failure', str(source), '--output', str(root / 'summary.json')]
+            result = subprocess.run(command, capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            output = json.loads((root / 'summary.json').read_text())
+            self.assertEqual(output['schema'], 'ump.paced-replay-failure-summary.v1')
+            self.assertEqual(output['artifacts']['failure_telemetry'], summary.fingerprint(source))
+            self.assertNotEqual(subprocess.run(command + ['--reference', str(source)], capture_output=True).returncode, 0)
 
     def test_cli_hashes_and_no_overwrite(self):
         paced, reference = pair()

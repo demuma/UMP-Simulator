@@ -47,7 +47,7 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
                 throw std::invalid_argument("Navigation geometry requires local_navigation motion");
             const auto navigation=motion["navigation"];
             keys(navigation,{"allowed_center_polygons","grid_resolution_m","center_clearance_m","max_replan_nodes",
-                "replan_after_ms","replan_interval_ms","narrow_passages","door_max_batch_size","spaces"},"mapped_scene.motion.navigation");
+                "replan_after_ms","replan_interval_ms","narrow_passages","door_max_batch_size","spaces","crossings"},"mapped_scene.motion.navigation");
             const auto polygons=navigation["allowed_center_polygons"];
             if (!polygons || !polygons.IsSequence())
                 throw std::invalid_argument("Navigation allowed_center_polygons must be a sequence");
@@ -88,6 +88,24 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
                     result.navigation.spaces.push_back(std::move(value));
                 }
             }
+            if (const auto crossings=navigation["crossings"]) {
+                if (!crossings.IsSequence()) throw std::invalid_argument("Navigation crossings must be a sequence");
+                for (const auto& crossing:crossings) {
+                    keys(crossing,{"id","conflict_ring","priority_spaces","rider_lookahead_ms",
+                        "pedestrian_max_wait_ms","pedestrian_admission_ms","rider_service_ms","max_batch_size"},"navigation crossing");
+                    ump::MappedNavigationCrossing value;
+                    value.id=text(crossing["id"],"crossing ID");
+                    value.conflictRing=ring(crossing["conflict_ring"]);
+                    if (!crossing["priority_spaces"].IsSequence()) throw std::invalid_argument("Crossing priority_spaces must be a sequence");
+                    for (const auto& space:crossing["priority_spaces"]) value.prioritySpaces.push_back(text(space,"crossing priority space"));
+                    if(crossing["rider_lookahead_ms"]) value.riderLookaheadMs=crossing["rider_lookahead_ms"].as<ump::AggregationTime>();
+                    if(crossing["pedestrian_max_wait_ms"]) value.pedestrianMaxWaitMs=crossing["pedestrian_max_wait_ms"].as<ump::AggregationTime>();
+                    if(crossing["pedestrian_admission_ms"]) value.pedestrianAdmissionMs=crossing["pedestrian_admission_ms"].as<ump::AggregationTime>();
+                    if(crossing["rider_service_ms"]) value.riderServiceMs=crossing["rider_service_ms"].as<ump::AggregationTime>();
+                    if(crossing["max_batch_size"]) value.maxBatchSize=crossing["max_batch_size"].as<std::size_t>();
+                    result.navigation.crossings.push_back(std::move(value));
+                }
+            }
             result.navigation.gridResolutionM=navigation["grid_resolution_m"] ? navigation["grid_resolution_m"].as<double>() : .5;
             result.navigation.centerClearanceM=navigation["center_clearance_m"] ? navigation["center_clearance_m"].as<double>() : .55;
             result.navigation.maxReplanNodes=navigation["max_replan_nodes"] ? navigation["max_replan_nodes"].as<std::size_t>() : 20000;
@@ -119,7 +137,23 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
     if (node["portals"]) {
         if (!node["portals"].IsSequence()) throw std::invalid_argument("mapped_scene.portals must be a sequence");
         for (const auto& p : node["portals"]) {
-            keys(p,{"id","building_id","point","facade","width_m","provenance"},"mapped portal");
+            const bool surface=p["kind"] && text(p["kind"],"portal kind")=="surface_access";
+            if(p["kind"] && !surface && text(p["kind"],"portal kind")!="building_facade")
+                throw std::invalid_argument("Unknown mapped portal kind");
+            if(surface) {
+                keys(p,{"id","kind","point","admission_segment","approach","width_m","provenance"},"surface access portal");
+                const auto segment=p["admission_segment"];
+                if(!segment.IsSequence() || segment.size()!=2) throw std::invalid_argument("Surface access requires two admission endpoints");
+                ump::MappedPortal value;
+                value.id=text(p["id"],"portal ID");value.point=point(p["point"],"portal point");
+                value.widthM=p["width_m"].as<double>();value.provenance=text(p["provenance"],"portal provenance");
+                value.kind=ump::MappedPortalKind::SurfaceAccess;
+                value.surfaceApproach=point(p["approach"],"surface approach");
+                for(const auto& endpoint:segment) value.admissionSegment.push_back(point(endpoint,"surface admission endpoint"));
+                result.portals.push_back(std::move(value));
+                continue;
+            }
+            keys(p,{"id","kind","building_id","point","facade","width_m","provenance"},"mapped portal");
             const auto facade=p["facade"];
             if (!facade || !facade.IsSequence() || facade.size()!=2)
                 throw std::invalid_argument("Mapped portal facade requires exactly two endpoints");

@@ -29,7 +29,7 @@ SIDES = (20, 40)
 DURATIONS = (400, 800)
 MODES = ("temporal_first", "spatial_first")
 SCENARIOS = ("dense_exact", "rare_local", "temporal_turnover", "infeasible_support", "regional_detail")
-SEMANTIC_METRICS = {"min_category_distinct_contributors", "semantic_max_loss", "semantic_mean_loss"}
+SEMANTIC_METRICS = {"min_category_distinct_contributors", "semantic_max_loss", "semantic_mean_loss", "semantic_suppression_fraction"}
 CELL_XY = {48: (1, 1), 49: (21, 1), 50: (1, 21), 51: (21, 21)}
 
 

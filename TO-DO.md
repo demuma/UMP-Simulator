@@ -1,5 +1,69 @@
 # TO-DO — UMP-Simulator
 
+## Active extension gate — 2026-10-24
+
+Work on one unchanged observation stream for policy comparisons. Source changes
+form a separate experiment and cannot inherit old utility/runtime conclusions.
+Earlier dated entries remain implementation history; this gate supersedes their
+statements that contribution/type suppression is wholly unimplemented.
+
+- [x] SS01: add default-off `semantic_suppression_fraction.max` with strict regional
+  inheritance; bounded truthful taxonomy candidates; full retained-policy checks;
+  whole-original-interval retirement; no private suppression mask in recipient data.
+- [x] SS02: verify rare-class retention trade-off, observation-fraction caps, repeated
+  identities, total support, overlapping rules, semantic hierarchy, removal penalty,
+  both publication paths and actual MongoDB immutable recovery/acknowledgement.
+- [x] SS03: independently audit retained counts and all loss denominators, compare
+  Semantic First and Spatial First with suppression disabled/enabled on the same
+  frozen input; report conditional semantics, full-input distortion, type/region
+  retention, delay and measured extra work. Do not claim attack resistance.
+  Six verified cases on the same 90,619-observation/60-s recorded prefix:
+  Semantic First retention 65.77→66.37%, full-input distortion 80.39→79.80%,
+  conditional semantic loss 70.18→69.57%; 50 selective omissions. Core time
+  63.84→67.06 s in one pair. E-scooter retention decreases despite the overall gain.
+  [Evidence](docs/verification/semantic-suppression-2026-10-24.json) and
+  [contract/results](docs/SEMANTIC_SUPPRESSION_2026-10-24.md) disclose all six cases.
+- [ ] SS04: extend the native mapped capture exporter with retained-population
+  accounting before using filtering in that export path. Current native core/Mongo
+  publication and independently audited offline filtering studies are supported;
+  the historical full-source capture proof explicitly rejects enabled filtering.
+- [ ] SS05: assess repeated seeds and runtimes, per-type retention safeguards,
+  original-traffic count bias and cross-release differencing. A lower semantic
+  distortion score alone is not evidence of improved attack resistance.
+- [x] MAP10.1: add exact source-bound typed A1/A2 surface portals, conservative roof
+  separation, stairs-compatible independent trips, native/parser checks and closed
+  public replay/export geometry validation.
+- [x] M14: opt-in rider-priority entry and finite pedestrian batches with physical
+  clearance unchanged; expose crossing wait/closure counters; preserve default source.
+- [x] M15: resolve the dense crossing receiving-apron wait cycle; the first 128/150-ms
+  capture is consistent but fails drainage (97/171 at 300 s). Preserve it as a
+  negative case. Accept a fresh combined capture through native drainage, sensor observability,
+  independent recorded body/sweep/lifecycle audit and visible replay inspection.
+  Corrected source: 128 people / 171 visible episodes, last end 190.4 s, peak 121,
+  all 171 sensor-observed, zero final stalls/overlaps. Independent audit passes
+  6,111,306 swept-body pair checks. A1/A2 realized entries/exits; all 43 shop visits
+  and returns complete. The matched priority-off control finishes earlier; this
+  is a behavioral rule with costs, not a throughput-superiority result.
+- [x] RT01.1: execute frozen original dense 1x replay, 50-ms progress, queue eight;
+  record failure at logical 27.35 s without claiming missing tail timings or success.
+- [x] RT01.2: separate optional private JSON from mandatory service, retain a complete
+  logical decision digest, add structured failed-prefix telemetry, and rerun the same
+  schedule without silently enlarging its queue. Record boundary limitations.
+  Measured: minimal still overflows at 26.85 s; 528 completed-prefix events,
+  sensor-service p95 94.185 ms, scheduled-response p95 234.791 ms. Complete
+  full/minimal unpaced output equivalence passes. Private JSON is not the main cost.
+- [ ] RT03: profile the residual manager/history/coordination/selection path (98.7%
+  of minimal consume), especially no-measurement steps and repeated eligibility
+  checks. Evaluate event/deadline-driven skipping only with complete decision-digest
+  equality; changing the progress clock is a separate experimental treatment.
+- [x] GATE: run affected native/Python/JavaScript regressions and update the test report,
+  README and this gate before staging only owned code/docs/compact results. Never
+  stage raw movement/replay files or the concurrent presentation/output work.
+  Full all-target build and 95/95 CTest groups pass (413.89 s, validation workload).
+  The final filtered viewer is additionally verified: 68 Python + 75 JavaScript
+  model checks; actual map and six-case comparison render in Chrome.
+  See [combined test report](docs/EXTENSION_TEST_REPORT_2026-10-24.md).
+
 ## Utility interpretation and deployment boundary — 2026-10-24
 
 Read the [utility/realtime diagnosis](docs/UTILITY_REALTIME_REVIEW_2026-10-24.md).
@@ -14,16 +78,16 @@ policy threshold or frozen experiment output.
   current immediate release can admit spatial/semantic fallback before waiting.
 - [ ] U03: separately test semantic ceilings 1 and 0.5 under identical method
   policies; report suppression, type retention, spatial detail and delay. Keep
-  support floors unchanged within a policy comparison. Selective type suppression
-  remains a later consistency/complementary-suppression design question.
-- [ ] RT01: run the existing independent-clock 1x paced replay on the frozen
+  support floors unchanged within a policy comparison. Selective type suppression is now an opt-in extension; cross-release
+  complementary suppression and differencing remain research questions.
+- [x] RT01: run the existing independent-clock 1x paced replay on the frozen
   dense urban recording with 50-ms progress, 100-ms samples and bounded queue.
-  Compare complete logical output and report service/queue/deadline tails. Current
-  urban experiment is unpaced; logical release delay is separate from CPU time.
+  Compare complete logical output and report service/queue/deadline tails. The first dense test overflows queue eight at 27.35 s; RT01.2 follows.
+  Logical release delay remains separate from CPU time.
 - [ ] RT02: define detector-to-release boundary/deadlines. Include detection-to-cell
   adapter, core updates and required output ACK; keep source motion, neural
   perception, renderer and offline audits outside the isolated core test.
-- [ ] MAP10: distinguish explicit overhead roofs from solid ground obstacles,
+- [x] MAP10: distinguish explicit overhead roofs from solid ground obstacles,
   preserve subway/ref/access/stop-area metadata and add A1/A2 as explicit transit
   surface portals with compatible source/sink routes. Preserve old snapshots;
   follow the [subway access plan](docs/SUBWAY_ACCESS_PLAN_2026-10-24.md).

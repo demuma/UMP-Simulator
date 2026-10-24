@@ -1,0 +1,74 @@
+{
+  "schema": "ump.transit-priority-negative-acceptance.v1",
+  "date": "2026-10-24",
+  "status": "FAILED_FINITE_SOURCE_DRAINAGE",
+  "model_version": "first_priority_rule_without_off_apron_staging",
+  "source": {
+    "people": 128,
+    "first_arrival_interval_ms": 150,
+    "seed": 20261024,
+    "duration_ms": 300000,
+    "subway_access": true,
+    "rider_priority": true,
+    "config_sha256": "b1603a8677cecfbc9709437fd76815af6aea919cd1b7f7c657dc7221879603bc",
+    "binary_sha256": "80c48eb6c31ae83854791beda5464cfaadb66a1665b41436d097287680c7bacb"
+  },
+  "lifecycle_quality": {
+    "status": "censored_at_source_horizon",
+    "gt_coverage_status": "verified_against_recorded_visible_intervals",
+    "event_rows": 256,
+    "expected_gt_rows": 421952,
+    "source_steps_checked": 6000,
+    "scheduled_people": 128,
+    "scheduled_episodes": 171,
+    "realized_starts": 159,
+    "realized_ends": 97,
+    "pending_episodes_at_horizon": 12,
+    "active_episodes_at_horizon": 62,
+    "interval_terminal_positions_checked": 57
+  },
+  "motion_quality": {
+    "status": "reported_stalls_at_horizon",
+    "source_model": "bounded_local_navigation",
+    "reported_diagnostics": {
+      "blocked_motion_steps": 252494,
+      "admission_wait_steps": 1699,
+      "merge_admission_wait_steps": 0,
+      "max_consecutive_stop_ms": 276450,
+      "active_stalled_tracks": 26,
+      "body_overlap_violations": 0,
+      "navigation_steering_steps": 78623,
+      "navigation_replans": 6807,
+      "navigation_replan_failures": 6228,
+      "navigation_candidate_checks": 12183438,
+      "navigation_max_search_nodes": 15514,
+      "crossing_pedestrian_wait_steps": 169630,
+      "crossing_rider_wait_steps": 11539,
+      "crossing_batches": 8,
+      "crossing_fairness_closures": 5,
+      "max_crossing_pedestrian_wait_ms": 9550
+    },
+    "scope": "Recorded source counters and event/GT consistency only. Completion does not establish realistic motion, general queue liveness, collision safety beyond recorded checks or privacy."
+  },
+  "capture_consistency": "verified, but not all episodes finished; this is not an accepted dense source",
+  "local_recording": "results/urban-transit-priority-2026-10-24-v2/replay",
+  "source_databases": "Three fresh owned UUID namespaces cleaned by run_scene after verified export; original Simulation DB untouched",
+  "diagnosis": "Disjoint crossing resources. Ungranted pedestrians were frozen on receiving aprons; an admitted opposite-side pedestrian could not clear, retaining the resource and blocking new admissions. Off-apron staging is the corrective implementation; its subsequent acceptance must be reported separately.",
+  "recording_sha256": {
+    "observations.json": "2170ea4b336100e3a17fe12b4b0e2ddd5a7f7892e3e24679e778962a29547122",
+    "native_result.json": "820ed0be56b383aa4754490155b1e87cc86450462826e71c574627ddf5c381e1",
+    "map_background.png": "9c7f84be4af893f63d27fa6de235b846259cf14deffc0e4e9b114343274e972b",
+    "building_access.json": "e090901baff9bcc27f082c8488bb5e21c63e9263318bae913ccba62624ce68ec",
+    "private/native_source.json": "0df7c8db7394cde2b2a8bec69866ce68f05a8cdc8724dabd468f6e94d5a51ada",
+    "private/config.yaml": "b1603a8677cecfbc9709437fd76815af6aea919cd1b7f7c657dc7221879603bc",
+    "bundle.json": "7218319f1635db872b2c02ae726de6473b4d86c3538d6f4bf1f5e0781cfdfa2f",
+    "private/execution.json": "6ff35ca5362e784952b64aed307e7bc49b52f6c12900969e018434c390a7eda4"
+  },
+  "claims_excluded": [
+    "dense source completion",
+    "unconditional liveness",
+    "traffic-law realism",
+    "hard real-time aggregation",
+    "privacy guarantee"
+  ]
+}

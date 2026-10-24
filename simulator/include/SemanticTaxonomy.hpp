@@ -23,8 +23,14 @@ struct SemanticRepresentation {
     double minimumDistinctContributors = 0, maxLoss = 0, meanLoss = 0;
 };
 
+struct SemanticSuppressionCandidate {
+    SemanticEvidence retainedEvidence;
+    SemanticRepresentation retainedRepresentation;
+    std::vector<std::string> suppressedLeaves;
+};
+
 // Immutable, bounded classification tree. Every source label maps to exactly
-// one terminal; published categories form a complete partition of observations.
+// one terminal; published categories form a complete partition of retained observations.
 class SemanticTaxonomy {
 public:
     SemanticTaxonomy(std::string id, std::string version, std::vector<SemanticNode> nodes);
@@ -38,8 +44,14 @@ public:
     void validateEvidence(const SemanticEvidence&, std::uint64_t totalObs, std::uint64_t totalDistinct) const;
     SemanticRepresentation select(const SemanticEvidence&, std::uint64_t totalObs,
         std::uint64_t totalDistinct, std::uint64_t minimumSupport) const;
-    // Input is a full-observation representation, never a partially suppressed
-    // semantic table. A generalized ancestor crossing the query is unknown.
+    // Deterministic taxonomy-tier proposals, not arbitrary subsets of people.
+    // Each proposal removes whole terminal domains with insufficient support.
+    // Stable terminal identity membership makes every retained union exact.
+    std::vector<SemanticSuppressionCandidate> suppressionCandidates(const SemanticEvidence&,
+        std::uint64_t totalObs, std::uint64_t totalDistinct, std::uint64_t minimumSupport) const;
+    // Query is exact for the represented retained population. If upstream input
+    // was selectively filtered, an absent category is NOT a zero for original GT.
+    // A generalized ancestor crossing the query is unknown.
     std::optional<SemanticBin> exactQuery(const SemanticRepresentation&, const std::string& category) const;
 private:
     SemanticRepresentation representation(std::vector<SemanticBin> bins) const;

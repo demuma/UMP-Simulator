@@ -142,7 +142,10 @@ int drainConfiguration(const std::string& path, ump::AggregationTime endMs,
         <<" navigation_steering="<<d.navigationSteeringSteps<<" navigation_replans="<<d.navigationReplans
         <<" navigation_replan_failures="<<d.navigationReplanFailures<<" navigation_search_max="<<d.navigationMaxSearchNodes
         <<" passage_wait_steps="<<d.passageWaitSteps<<" passage_batches="<<d.passageBatches
-        <<" passage_cleared_tracks="<<d.passageClearedTracks<<" max_passage_wait_ms="<<d.maxPassageWaitMs;
+        <<" passage_cleared_tracks="<<d.passageClearedTracks<<" max_passage_wait_ms="<<d.maxPassageWaitMs
+        <<" crossing_pedestrian_wait_steps="<<d.crossingPedestrianWaitSteps<<" crossing_rider_wait_steps="<<d.crossingRiderWaitSteps
+        <<" crossing_batches="<<d.crossingBatches<<" crossing_fairness_closures="<<d.crossingFairnessClosures
+        <<" max_crossing_pedestrian_wait_ms="<<d.maxCrossingPedestrianWaitMs;
     if(requiredObservedPeriod) std::cout<<" observed="<<observed.size()<<" observed_period_ms="<<*requiredObservedPeriod;
     std::cout<<" last_end_ms="<<lastEnd<<" horizon_ms="<<endMs<<'\n';
     require(d.realizedStarts==expected && d.realizedEnds==expected && starts==ends
@@ -237,10 +240,32 @@ int main(int argc,char** argv) {
             && navigationConfig.navigation.maxReplanNodes==500
             && navigationConfig.navigation.narrowPassages.empty(),
             "Local navigation YAML lost its explicit geometry and bounded settings");
+        auto surface=YAML::Clone(navigating);
+        surface["routes"][0]["points"]=YAML::Load("[[0,5],[.5,5],[2,5]]");
+        surface["routes"][1]["points"]=YAML::Load("[[2,5],[.5,5],[0,5]]");
+        surface["portals"]=YAML::Load(R"([{id: door, kind: surface_access, point: [2,5],
+            admission_segment: [[2,4.4],[2,5.6]], approach: [.5,5], width_m: 1.2, provenance: osm}])");
+        const auto surfaceConfig=read(surface);
+        require(surfaceConfig.portals[0].kind==ump::MappedPortalKind::SurfaceAccess
+            && surfaceConfig.portals[0].buildingId.empty() && surfaceConfig.portals[0].surfaceApproach->x==.5,
+            "Typed surface access YAML fabricated a building or lost approach geometry");
+        for(const auto* key:{"building_id","facade","typo"})
+            rejects([&]{auto n=YAML::Clone(surface);n["portals"][0][key]="forbidden";read(n);});
+        rejects([&]{auto n=YAML::Clone(surface);n["portals"][0]["kind"]="unknown";read(n);});
+        rejects([&]{auto n=YAML::Clone(surface);n["portals"][0].remove("approach");read(n);});
+        rejects([&]{auto n=YAML::Clone(surface);n["portals"][0]["admission_segment"]=YAML::Load("[[2,4.4]]");read(n);});
         auto spaced=YAML::Clone(navigating);
         spaced["motion"]["navigation"]["spaces"]=YAML::Load(R"([{id: road, center_clearance_m: .6,
             allowed_center_polygons: [{outer: [[0,0],[10,0],[10,10],[0,10]], holes: []}]}])");
         spaced["routes"][0]["navigation_space"]="road";
+        auto crossing=YAML::Clone(spaced);
+        crossing["motion"]["navigation"]["crossings"]=YAML::Load(R"([{id: crossing, conflict_ring: [[4,4],[6,4],[6,6],[4,6]], priority_spaces: [road],
+            rider_lookahead_ms: 4000, pedestrian_max_wait_ms: 8000, pedestrian_admission_ms: 2000, rider_service_ms: 1500, max_batch_size: 6}])");
+        require(read(crossing).navigation.crossings[0].prioritySpaces[0]=="road","Crossing priority YAML was lost");
+        rejects([&]{auto n=YAML::Clone(crossing);n["motion"]["navigation"]["crossings"][0]["typo"]=true;read(n);});
+        rejects([&]{auto n=YAML::Clone(crossing);n["motion"]["navigation"]["crossings"][0]["max_batch_size"]=1.5;read(n);});
+        rejects([&]{auto n=YAML::Clone(crossing);n["motion"]["navigation"]["crossings"][0]["priority_spaces"]=YAML::Load("[missing]");read(n);});
+        rejects([&]{auto n=YAML::Clone(crossing);n["motion"]["navigation"]["crossings"][0]["pedestrian_max_wait_ms"]=0;read(n);});
         const auto spacedConfig=read(spaced);
         require(spacedConfig.routes[0].navigationSpace=="road" && spacedConfig.navigation.spaces.size()==1,
             "Movement-space YAML lost route-specific permissions");

@@ -181,6 +181,59 @@ SemanticRepresentation SemanticTaxonomy::select(const SemanticEvidence& evidence
     return representation(std::move(cut.bins));
 }
 
+std::vector<SemanticSuppressionCandidate> SemanticTaxonomy::suppressionCandidates(
+    const SemanticEvidence& evidence, std::uint64_t totalObs, std::uint64_t totalDistinct,
+    std::uint64_t minimumSupport) const {
+    validateEvidence(evidence,totalObs,totalDistinct);
+    if (!minimumSupport || minimumSupport>exactMaximum)
+        throw std::invalid_argument("Semantic suppression support must be positive and exact");
+    const auto ordinary=select(evidence,totalObs,totalDistinct,minimumSupport);
+    if (!totalObs || ordinary.maxLoss==0) return {};
+    std::set<double> tiers{0};
+    for (const auto& item : catalog) if (item.loss<ordinary.maxLoss) tiers.insert(item.loss);
+    std::vector<SemanticSuppressionCandidate> output;
+    std::set<std::vector<std::string>> seen;
+    for (double tier : tiers) {
+        struct Cut { bool complete; std::vector<SemanticBin> bins; std::vector<std::string> removed; };
+        std::function<Cut(const std::string&)> visit=[&](const std::string& id)->Cut {
+            const auto& value=evidence.nodes.at(id);
+            if (!value.observationContributions) return {true,{},{}};
+            Cut result{true,{},{}};
+            for (const auto& child : children.at(id)) {
+                auto cut=visit(child);
+                result.complete &= cut.complete;
+                result.bins.insert(result.bins.end(),cut.bins.begin(),cut.bins.end());
+                result.removed.insert(result.removed.end(),cut.removed.begin(),cut.removed.end());
+            }
+            if (!children.at(id).empty() && result.complete) return result;
+            if (value.distinctContributors>=minimumSupport && node(id).loss<=tier)
+                return {true,{{id,value.observationContributions,value.distinctContributors}},{}};
+            if (children.at(id).empty()) return {false,{}, {id}};
+            return result;
+        };
+        auto cut=visit(rootId);
+        std::sort(cut.removed.begin(),cut.removed.end());
+        if (cut.removed.empty() || cut.bins.empty() || !seen.insert(cut.removed).second) continue;
+        auto retained=evidence;
+        for (const auto& leaf : cut.removed) {
+            const auto removed=evidence.nodes.at(leaf);
+            const SemanticNode* at=&node(leaf);
+            for (;;) {
+                auto& counts=retained.nodes.at(at->id);
+                counts.observationContributions-=removed.observationContributions;
+                counts.distinctContributors-=removed.distinctContributors;
+                if (at->parent.empty()) break;
+                at=&node(at->parent);
+            }
+        }
+        const auto totals=retained.nodes.at(rootId);
+        validateEvidence(retained,totals.observationContributions,totals.distinctContributors);
+        auto selected=representation(std::move(cut.bins));
+        output.push_back({std::move(retained),std::move(selected),std::move(cut.removed)});
+    }
+    return output;
+}
+
 std::optional<SemanticBin> SemanticTaxonomy::exactQuery(const SemanticRepresentation& input,
     const std::string& category) const {
     node(category);

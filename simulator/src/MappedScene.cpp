@@ -244,6 +244,31 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
     std::map<std::string,double> portalBodyClearance;
     for (const auto& portal:config.portals) {
         identifier(portal.id,"portal identifier");
+        if (portal.kind==MappedPortalKind::SurfaceAccess) {
+            if(config.motionMode!=MappedMotionMode::LocalNavigation || !portal.buildingId.empty()
+                || !portal.surfaceApproach || portal.admissionSegment.size()!=2
+                || !finite(portal.point) || !finite(*portal.surfaceApproach)
+                || !std::isfinite(portal.widthM) || portal.widthM<=0
+                || !identifiers.insert(portal.id).second)
+                throw std::invalid_argument("Surface access requires local navigation, no building, and a finite checked admission geometry");
+            const auto a=portal.admissionSegment[0],b=portal.admissionSegment[1];
+            const auto approach=*portal.surfaceApproach;
+            const double length=std::hypot(b.x-a.x,b.y-a.y);
+            if(!finite(a) || !finite(b) || !std::isfinite(length) || length+1e-9<portal.widthM
+                || pointSegmentDistance(portal.point,a,b)>1e-7
+                || std::hypot(portal.point.x-a.x,portal.point.y-a.y)+1e-7<portal.widthM/2
+                || std::hypot(portal.point.x-b.x,portal.point.y-b.y)+1e-7<portal.widthM/2
+                || std::abs((approach.x-portal.point.x)*(b.x-a.x)+(approach.y-portal.point.y)*(b.y-a.y))>1e-7*length
+                || std::abs(std::hypot(approach.x-portal.point.x,approach.y-portal.point.y)-1.5)>1e-7
+                || !navigationSegmentAllowed(a,b) || !navigationSegmentAllowed(portal.point,approach)
+                || (portal.provenance!="osm" && portal.provenance!="synthetic"))
+                throw std::invalid_argument("Surface access needs a permitted centered cross-section and perpendicular 1.5m approach");
+            declaredPortals.emplace(portal.id,&portal);portalPoints.emplace(portal.id,portal.point);
+            explicitPortalGateRadii.emplace(portal.id,portal.widthM/2);
+            continue;
+        }
+        if(portal.surfaceApproach || !portal.admissionSegment.empty())
+            throw std::invalid_argument("Building facade cannot contain surface access geometry");
         identifier(portal.buildingId,"portal building identifier");
         const double facadeLength=std::hypot(portal.facadeEnd.x-portal.facadeStart.x,
             portal.facadeEnd.y-portal.facadeStart.y);
@@ -269,6 +294,7 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
     // Cache immutable facade exceptions once. The same exact ring arithmetic
     // and predicates are retained; padded boxes only skip distant rectangles.
     if (config.motionMode==MappedMotionMode::LocalNavigation) for (const auto& portal:config.portals) {
+        if(portal.kind==MappedPortalKind::SurfaceAccess) continue;
         const double length=std::hypot(portal.facadeEnd.x-portal.facadeStart.x,
             portal.facadeEnd.y-portal.facadeStart.y);
         const Point tangent{(portal.facadeEnd.x-portal.facadeStart.x)/length,
@@ -289,6 +315,25 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
             cached.maximum.x=std::max(cached.maximum.x,point.x);cached.maximum.y=std::max(cached.maximum.y,point.y);
         }
         facadeExclusions.push_back(std::move(cached));
+    }
+    if(config.navigation.crossings.size()>16 || (!config.navigation.crossings.empty()
+            && (config.motionMode!=MappedMotionMode::LocalNavigation || !config.navigation.narrowPassages.empty())))
+        throw std::invalid_argument("At most 16 local crossings are supported, separately from narrow passages");
+    for(auto& crossing:config.navigation.crossings) {
+        identifier(crossing.id,"crossing ID");
+        if(!identifiers.insert(crossing.id).second || crossing.prioritySpaces.empty()
+            || crossing.prioritySpaces.size()>16 || crossing.maxBatchSize==0 || crossing.maxBatchSize>64
+            || crossing.riderLookaheadMs<50 || crossing.riderLookaheadMs>30000
+            || crossing.pedestrianMaxWaitMs<50 || crossing.pedestrianMaxWaitMs>120000
+            || crossing.pedestrianAdmissionMs<50 || crossing.pedestrianAdmissionMs>30000
+            || crossing.riderServiceMs<50 || crossing.riderServiceMs>30000)
+            throw std::invalid_argument("Crossing requires unique ID, bounded positive timing and finite batch");
+        validateNavigationRing(crossing.conflictRing,config.width,config.height);
+        std::set<std::string> priorities;
+        for(const auto& space:crossing.prioritySpaces)
+            if(!navigationSpaceIndices.count(space) || !priorities.insert(space).second)
+                throw std::invalid_argument("Crossing references unknown or duplicate priority space");
+        navigationCrossings.emplace_back();
     }
     routeData.reserve(config.routes.size());
     for (std::size_t i = 0; i < config.routes.size(); ++i) {
@@ -466,12 +511,14 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
 
     if (config.motionMode==MappedMotionMode::LocalNavigation) {
         for (const auto& [id,portal]:declaredPortals) {
-            Point normal{portal->facadeEnd.y-portal->facadeStart.y,
-                portal->facadeStart.x-portal->facadeEnd.x};
+            const auto section=portal->kind==MappedPortalKind::SurfaceAccess
+                ? portal->admissionSegment : std::vector<Point>{portal->facadeStart,portal->facadeEnd};
+            Point normal{section[1].y-section[0].y,section[0].x-section[1].x};
             const double length=std::hypot(normal.x,normal.y);
             normal.x/=length;normal.y/=length;
             Point positive{portal->point.x+normal.x*1.5,portal->point.y+normal.y*1.5};
             Point negative{portal->point.x-normal.x*1.5,portal->point.y-normal.y*1.5};
+            if(portal->kind==MappedPortalKind::SurfaceAccess) positive=*portal->surfaceApproach;
             if (!navigationSegmentAllowed(portal->point,positive)) {
                 if (!navigationSegmentAllowed(portal->point,negative))
                     throw std::invalid_argument("Local-navigation door needs a clear 1.5m perpendicular public approach");
@@ -485,8 +532,7 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
                 if(!approach) continue;
                 const double dx=approach->x-portal->point.x,dy=approach->y-portal->point.y;
                 const double distance=std::hypot(dx,dy);
-                const double tangent=dx*(portal->facadeEnd.x-portal->facadeStart.x)
-                    +dy*(portal->facadeEnd.y-portal->facadeStart.y);
+                const double tangent=dx*(section[1].x-section[0].x)+dy*(section[1].y-section[0].y);
                 if(distance<config.navigation.centerClearanceM-1e-9
                     || std::abs(tangent)>1e-7*length
                     || dx*(positive.x-portal->point.x)+dy*(positive.y-portal->point.y)<=0)
@@ -527,6 +573,16 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
                     : config.navigation.spaces[navigationSpaceIndices.at(referencedRoute.navigationSpace)].centerClearanceM;
                 if (person.radiusM+config.clearanceM>clearance+1e-10)
                     throw std::invalid_argument("Route movement-space clearance is insufficient for a configured body");
+            }
+            for(const auto& crossing:config.navigation.crossings) {
+                {
+                    const auto start=referencedRoute.points.front();
+                    double distance=ringLocation(start,crossing.conflictRing)>=0?0:std::numeric_limits<double>::infinity();
+                    for(std::size_t edge=0;edge<crossing.conflictRing.size();++edge)
+                        distance=std::min(distance,pointSegmentDistance(start,crossing.conflictRing[edge],crossing.conflictRing[(edge+1)%crossing.conflictRing.size()]));
+                    if(distance<person.radiusM+config.clearanceM+1e-7)
+                        throw std::invalid_argument("A source cannot spawn inside a controlled carriageway crossing");
+                }
             }
             for (const auto& portalId:{referencedRoute.startPortal,referencedRoute.endPortal}) {
                 const auto portal=declaredPortals.find(portalId);
@@ -580,6 +636,22 @@ MappedScene::MappedScene(MappedSceneConfig configured) : config(std::move(config
             } else runtime.emplace(episode.trackId,RuntimeTrack{});
         }
     }
+    // A body must not occupy two independently scheduled crossings at once.
+    // This bounded model rejects touching/overlapping or body-close resources
+    // rather than silently introducing multi-resource lock dependencies.
+    double largestBody=0;
+    for(const auto& person:config.people) largestBody=std::max(largestBody,person.radiusM);
+    for(std::size_t i=0;i<config.navigation.crossings.size();++i)
+        for(std::size_t j=0;j<i;++j) {
+            const auto& a=config.navigation.crossings[i].conflictRing;
+            const auto& b=config.navigation.crossings[j].conflictRing;
+            if(ringLocation(a.front(),b)>=0 || ringLocation(b.front(),a)>=0)
+                throw std::invalid_argument("Independent crossing resources cannot overlap or nest");
+            for(std::size_t x=0;x<a.size();++x) for(std::size_t y=0;y<b.size();++y)
+                if(segmentDistance(a[x],a[(x+1)%a.size()],b[y],b[(y+1)%b.size()])
+                        <=2*(largestBody+config.clearanceM+1e-7))
+                    throw std::invalid_argument("Independent crossing resources need disjoint body-plus-clearance inflated conflict areas");
+        }
     // Opposing arrivals/departures meet at one exact doorway center. Their
     // split approach rays need enough lateral separation before we release the
     // local throat. Diameter alone is insufficient for a shallow split: both
@@ -1357,9 +1429,247 @@ void MappedScene::updateNavigationPassages(AggregationTime nowMs) {
     }
 }
 
+void MappedScene::updateNavigationCrossings(AggregationTime nowMs) {
+    const auto distanceToRing=[](Point from,Point to,const std::vector<Point>& ring) {
+        if(ringLocation(from,ring)>=0 || ringLocation(to,ring)>=0) return 0.0;
+        double distance=std::numeric_limits<double>::infinity();
+        for(std::size_t edge=0;edge<ring.size();++edge)
+            distance=std::min(distance,segmentDistance(from,to,ring[edge],ring[(edge+1)%ring.size()]));
+        return distance;
+    };
+    for(std::size_t index=0;index<navigationCrossings.size();++index) {
+        auto& resource=navigationCrossings[index];const auto& crossing=config.navigation.crossings[index];
+        const auto priority=[&](const std::string& id) {
+            const auto& route=config.routes[tracks.at(id).route];
+            return std::find(crossing.prioritySpaces.begin(),crossing.prioritySpaces.end(),route.navigationSpace)!=crossing.prioritySpaces.end();
+        };
+        const auto inside=[&](const std::string& id) {
+            const auto& state=runtime.at(id);const auto& person=config.people[tracks.at(id).person];
+            return state.state==RuntimeTrack::State::Active
+                && distanceToRing(state.position,state.position,crossing.conflictRing)<=person.radiusM+config.clearanceM+1e-7;
+        };
+        const bool hadBatch=!resource.granted.empty();
+        for(auto it=resource.granted.begin();it!=resource.granted.end();) {
+            const auto& id=*it;const auto& state=runtime.at(id);
+            if(inside(id)) resource.entered.insert(id);
+            const bool cleared=resource.entered.count(id) && !inside(id);
+            const bool admissionExpired=!resource.entered.count(id)
+                && nowMs-resource.batchStartedMs>=crossing.pedestrianAdmissionMs;
+            if(state.state!=RuntimeTrack::State::Active || cleared || admissionExpired) {
+                if(cleared || state.state!=RuntimeTrack::State::Active) resource.requests.erase(id);
+                resource.entered.erase(id);resource.waitingPoints.erase(id);resource.stagingAttempts.erase(id);it=resource.granted.erase(it);
+            } else ++it;
+        }
+        if(hadBatch && resource.granted.empty()) {
+            resource.closingForFairness=false;
+            resource.riderServiceUntilMs=nowMs+crossing.riderServiceMs;
+        }
+        for(auto it=resource.requests.begin();it!=resource.requests.end();) {
+            const auto& state=runtime.at(it->first);
+            const auto& data=tracks.at(it->first);const auto& route=config.routes[data.route];
+            const double margin=config.people[data.person].radiusM+config.clearanceM+1e-7;
+            const bool stillIntendsEntry=state.navigationWaypoint<route.points.size()
+                && distanceToRing(state.position,route.points[state.navigationWaypoint],crossing.conflictRing)<=margin;
+            if(state.state!=RuntimeTrack::State::Active
+                || (!resource.granted.count(it->first) && (!stillIntendsEntry
+                    || distanceToRing(state.position,state.position,crossing.conflictRing)>8.0))) {
+                resource.waitingPoints.erase(it->first);resource.stagingAttempts.erase(it->first);it=resource.requests.erase(it);
+            } else ++it;
+        }
+        // An already crossing pedestrian is never asked to stop in the road.
+        // No legitimate source may spawn there (constructor validation).
+        for(const auto& [id,state]:runtime) if(state.state==RuntimeTrack::State::Active && !priority(id) && inside(id)) {
+            resource.granted.insert(id);resource.entered.insert(id);
+        }
+        const auto entryDistanceFrom=[&](const std::string& id,Point from) {
+            const auto& route=config.routes[tracks.at(id).route];const auto& state=runtime.at(id);
+            double travelled=0;
+            for(std::size_t waypoint=state.navigationWaypoint;waypoint<route.points.size();++waypoint) {
+                const auto to=route.points[waypoint];const double length=std::hypot(to.x-from.x,to.y-from.y);
+                if(length<1e-9) continue;
+                std::vector<double> cuts{0,1};segmentCuts(from,to,crossing.conflictRing,cuts);std::sort(cuts.begin(),cuts.end());
+                for(std::size_t part=1;part<cuts.size();++part) {
+                    const double middle=(cuts[part-1]+cuts[part])/2;
+                    if(ringLocation({from.x+(to.x-from.x)*middle,from.y+(to.y-from.y)*middle},crossing.conflictRing)>=0)
+                        return travelled+cuts[part-1]*length;
+                }
+                travelled+=length;from=to;
+            }
+            return 0.0; // Tangential body-only entry has no center-ring crossing.
+        };
+        for(auto it=resource.waitingPoints.begin();it!=resource.waitingPoints.end();) {
+            const auto& id=it->first;const auto& person=config.people[tracks.at(id).person];
+            const double limit=person.speedMps*crossing.pedestrianAdmissionMs/1000.0+person.radiusM+config.clearanceM;
+            if(entryDistanceFrom(id,it->second)>limit) {
+                resource.stagingAttempts.erase(id);it=resource.waitingPoints.erase(it);
+            } else ++it;
+        }
+        // A waiting pedestrian must not become a stationary wall across the
+        // receiving apron of an admitted opposite-side pedestrian. Assign a
+        // fixed, directly reachable off-apron staging target. These are goals,
+        // never teleports or new geometric permissions. Missing physical room
+        // remains an explicit capacity limitation, not a clearance exemption.
+        double largestPedestrian=0;
+        for(const auto& [otherId,other]:runtime) if(!priority(otherId))
+            largestPedestrian=std::max(largestPedestrian,config.people[tracks.at(otherId).person].radiusM);
+        for(const auto& [id,at]:resource.requests) {
+            if(resource.granted.count(id) || resource.waitingPoints.count(id)
+                || (resource.stagingAttempts.count(id) && nowMs-resource.stagingAttempts.at(id)<1000)) continue;
+            resource.stagingAttempts[id]=nowMs;
+            const auto& state=runtime.at(id);const auto& data=tracks.at(id);
+            const auto& person=config.people[data.person];const auto& route=config.routes[data.route];
+            const double apron=person.radiusM+largestPedestrian+config.clearanceM+1.15;
+            double best=std::numeric_limits<double>::infinity();std::optional<Point> chosen;
+            // Half-metre candidates are bounded by a 6m neighborhood. Exact
+            // segment and body-clearance checks still decide all permissions.
+            for(int dy=-12;dy<=12;++dy) for(int dx=-12;dx<=12;++dx) {
+                if(dx*dx+dy*dy>144) continue;
+                const Point candidate{state.position.x+dx*.5,state.position.y+dy*.5};
+                if(distanceToRing(candidate,candidate,crossing.conflictRing)<apron
+                    || distanceToRing(candidate,candidate,crossing.conflictRing)>3.0
+                    || distanceToRing(state.position,candidate,crossing.conflictRing)<=person.radiusM+config.clearanceM+1e-7
+                    || !navigationSegmentAllowed(state.position,candidate,&route)
+                    || entryDistanceFrom(id,candidate)>person.speedMps*crossing.pedestrianAdmissionMs/1000.0+person.radiusM+config.clearanceM) continue;
+                bool clear=true;
+                for(std::size_t other=0;other<config.navigation.crossings.size();++other)
+                    if(other!=index && distanceToRing(state.position,candidate,config.navigation.crossings[other].conflictRing)
+                        <=person.radiusM+config.clearanceM+1e-7) {clear=false;break;}
+                if(!clear) continue;
+                for(const auto& [otherId,other]:runtime) if(otherId!=id && other.state==RuntimeTrack::State::Active) {
+                    const double required=person.radiusM+config.people[tracks.at(otherId).person].radiusM+config.clearanceM+.15;
+                    if(std::hypot(candidate.x-other.position.x,candidate.y-other.position.y)<required) {clear=false;break;}
+                }
+                if(!clear) continue;
+                for(const auto& otherResource:navigationCrossings) for(const auto& [otherId,point]:otherResource.waitingPoints) {
+                    if(otherId==id) continue;
+                    const double required=person.radiusM+config.people[tracks.at(otherId).person].radiusM+config.clearanceM+.15;
+                    if(std::hypot(candidate.x-point.x,candidate.y-point.y)<required) {clear=false;break;}
+                }
+                if(!clear) continue;
+                const double score=std::hypot(candidate.x-state.position.x,candidate.y-state.position.y);
+                if(score<best-1e-9) {best=score;chosen=candidate;}
+            }
+            if(chosen) resource.waitingPoints.emplace(id,*chosen);
+        }
+        if(resource.requests.empty() && resource.granted.empty()) {resource.closingForFairness=false;continue;}
+        if(!resource.granted.empty() || nowMs<resource.riderServiceUntilMs) continue;
+        auto oldest=std::min_element(resource.requests.begin(),resource.requests.end(),[](const auto& a,const auto& b) {
+            return std::make_pair(a.second,a.first)<std::make_pair(b.second,b.first);
+        });
+        if(!resource.closingForFairness && nowMs-oldest->second>=crossing.pedestrianMaxWaitMs) {
+            resource.closingForFairness=true;++diagnostics.crossingFairnessClosures;
+        }
+        bool unsafe=false;
+        for(const auto& [id,state]:runtime) if(state.state==RuntimeTrack::State::Active && priority(id)) {
+            if(inside(id)) {unsafe=true;break;}
+            if(resource.closingForFairness) continue; // New rider entry is now closed.
+            const auto& data=tracks.at(id);const auto& route=config.routes[data.route];
+            const auto& person=config.people[data.person];
+            double remaining=person.speedMps*crossing.riderLookaheadMs/1000.0;
+            Point position=state.position;
+            for(std::size_t waypoint=state.navigationWaypoint;waypoint<route.points.size() && remaining>0;++waypoint) {
+                const auto goal=route.points[waypoint];const double length=std::hypot(goal.x-position.x,goal.y-position.y);
+                if(length<1e-9) continue;
+                const double travel=std::min(remaining,length);
+                const Point next{position.x+(goal.x-position.x)/length*travel,position.y+(goal.y-position.y)/length*travel};
+                if(distanceToRing(position,next,crossing.conflictRing)<=person.radiusM+config.clearanceM+1e-7) {unsafe=true;break;}
+                remaining-=travel;position=next;
+            }
+            if(unsafe) break;
+        }
+        if(unsafe) continue;
+        // Readiness is local to the receiving apron of each candidate. A lone
+        // pedestrian on a narrow entry sidewalk may cross an empty road even
+        // when no backwards parking target exists. Conversely, an opposite
+        // waiter occupying this candidate's exit apron must actually move away
+        // or be served first; selecting a ready subset never ignores its body.
+        const auto receiving=[&](const std::string& id) {
+            const auto& state=runtime.at(id);const auto& route=config.routes[tracks.at(id).route];
+            const auto& person=config.people[tracks.at(id).person];
+            const double apron=1.0; // Outgoing center path; pair radii are checked separately.
+            bool entered=false;double travelled=0,entryDistance=0;Point from=state.position;
+            for(std::size_t waypoint=state.navigationWaypoint;waypoint<route.points.size();++waypoint) {
+                const auto to=route.points[waypoint];const double length=std::hypot(to.x-from.x,to.y-from.y);
+                if(length<1e-9) continue;
+                std::vector<double> cuts{0,1};segmentCuts(from,to,crossing.conflictRing,cuts);
+                std::sort(cuts.begin(),cuts.end());
+                for(std::size_t part=1;part<cuts.size();++part) {
+                    const double start=cuts[part-1],finish=cuts[part];
+                    if(finish-start<1e-10) continue;
+                    const double middle=(start+finish)/2;
+                    const bool inside=ringLocation({from.x+(to.x-from.x)*middle,from.y+(to.y-from.y)*middle},crossing.conflictRing)>=0;
+                    if(inside && !entered) {entered=true;entryDistance=travelled+start*length;}
+                    if(!inside && entered) {
+                        const Point exit{from.x+(to.x-from.x)*start,from.y+(to.y-from.y)*start};
+                        const double travel=std::min(apron,(1-start)*length);
+                        return std::make_tuple(entryDistance,exit,Point{exit.x+(to.x-from.x)/length*travel,exit.y+(to.y-from.y)/length*travel});
+                    }
+                }
+                travelled+=length;from=to;
+            }
+            // A tangential body-only crossing or a deliberate terminal portal
+            // still needs a clear immediate outgoing segment. Final swept-body
+            // collision checks remain authoritative for every actual move.
+            const auto goal=route.points[state.navigationWaypoint];
+            const double length=std::hypot(goal.x-state.position.x,goal.y-state.position.y);
+            const double travel=std::min(apron,length);
+            return std::make_tuple(0.0,state.position,length>1e-9?Point{state.position.x+(goal.x-state.position.x)/length*travel,
+                state.position.y+(goal.y-state.position.y)/length*travel}:state.position);
+        };
+        std::vector<std::pair<AggregationTime,std::string>> requests;
+        for(const auto& [id,at]:resource.requests) requests.emplace_back(at,id);
+        std::sort(requests.begin(),requests.end());
+        resource.batchStartedMs=nowMs;
+        for(const auto& [at,id]:requests) {
+            if(resource.granted.size()>=crossing.maxBatchSize) break;
+            const auto& state=runtime.at(id);const auto& person=config.people[tracks.at(id).person];
+            const auto [entryDistance,exit,receivingEnd]=receiving(id);
+            if(entryDistance>person.speedMps*crossing.pedestrianAdmissionMs/1000.0+person.radiusM+config.clearanceM) continue;
+            bool clear=true;
+            for(const auto& [otherId,other]:runtime) {
+                if(otherId==id || other.state!=RuntimeTrack::State::Active || resource.granted.count(otherId)) continue;
+                const double required=person.radiusM+config.people[tracks.at(otherId).person].radiusM+config.clearanceM+.1;
+                if(pointSegmentDistance(other.position,exit,receivingEnd)<required) {clear=false;break;}
+            }
+            if(!clear) continue;
+            resource.granted.insert(id);resource.waitingPoints.erase(id);
+            diagnostics.maxCrossingPedestrianWaitMs=std::max(diagnostics.maxCrossingPedestrianWaitMs,nowMs-at);
+        }
+        if(!resource.granted.empty()) ++diagnostics.crossingBatches;
+    }
+}
+
+bool MappedScene::crossingSegmentAllowed(const std::string& id,Point from,Point to,bool request) {
+    if(navigationCrossings.empty()) return true;
+    const auto& data=tracks.at(id);const auto& route=config.routes[data.route];
+    const double margin=config.people[data.person].radiusM+config.clearanceM+1e-7;
+    for(std::size_t index=0;index<navigationCrossings.size();++index) {
+        auto& resource=navigationCrossings[index];const auto& crossing=config.navigation.crossings[index];
+        const auto distance=[&](Point a,Point b) {
+            if(ringLocation(a,crossing.conflictRing)>=0 || ringLocation(b,crossing.conflictRing)>=0) return 0.0;
+            double result=std::numeric_limits<double>::infinity();
+            for(std::size_t edge=0;edge<crossing.conflictRing.size();++edge)
+                result=std::min(result,segmentDistance(a,b,crossing.conflictRing[edge],crossing.conflictRing[(edge+1)%crossing.conflictRing.size()]));
+            return result;
+        };
+        // A body already in the conflict area may always clear it. The existing
+        // static and swept-body predicates remain authoritative afterwards.
+        if(distance(from,from)<=margin || distance(from,to)>margin) continue;
+        const bool rider=std::find(crossing.prioritySpaces.begin(),crossing.prioritySpaces.end(),route.navigationSpace)!=crossing.prioritySpaces.end();
+        if(rider) {
+            if(resource.closingForFairness || !resource.granted.empty()) return false;
+        } else if(!resource.granted.count(id)) {
+            if(request) resource.requests.try_emplace(id,currentMs);
+            return false;
+        }
+    }
+    return true;
+}
+
 void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
     updateNavigationDoors(currentMs);
     updateNavigationPassages(currentMs);
+    updateNavigationCrossings(currentMs);
     const auto elapsed=nextMs-currentMs;
     const double dt=static_cast<double>(elapsed)/1000;
     std::vector<std::string> active;
@@ -1456,6 +1766,26 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
             goal=wait==resource.waitingPoints.end()?state.position:wait->second;
             ++diagnostics.passageWaitSteps;
         }
+        const double intendedDistance=std::hypot(goal.x-state.position.x,goal.y-state.position.y);
+        const double intendedTravel=std::min(person.speedMps*dt,intendedDistance);
+        const Point intended=intendedDistance>1e-9?Point{state.position.x+(goal.x-state.position.x)/intendedDistance*intendedTravel,
+            state.position.y+(goal.y-state.position.y)/intendedDistance*intendedTravel}:state.position;
+        bool waitingForCrossing=!crossingSegmentAllowed(id,state.position,intended);
+        bool crossingStaging=false;
+        for(const auto& resource:navigationCrossings) {
+            const auto waiting=resource.waitingPoints.find(id);
+            if(waiting!=resource.waitingPoints.end() && !resource.granted.count(id)) {
+                goal=waiting->second;waitingForCrossing=true;crossingStaging=true;break;
+            }
+        }
+        if(waitingForCrossing) {
+            if(!crossingStaging) goal=state.position;
+            bool rider=false;
+            for(const auto& crossing:config.navigation.crossings)
+                rider=rider || std::find(crossing.prioritySpaces.begin(),crossing.prioritySpaces.end(),route.navigationSpace)!=crossing.prioritySpaces.end();
+            if(rider) ++diagnostics.crossingRiderWaitSteps;
+            else ++diagnostics.crossingPedestrianWaitSteps;
+        }
         if (std::hypot(goal.x-state.navigationTarget.x,goal.y-state.navigationTarget.y)>1e-7) {
             state.navigationTarget=goal;state.navigationBestGoalDistance=1e300;
             state.navigationNoProgressMs=0;state.detour.clear();state.detourWaypoint=0;
@@ -1508,7 +1838,7 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
                     if (after<before+1e-7) return false;
                 } else if (segmentDistance(state.position,to,portal,door.approach)<required-1e-9) return false;
             }
-            if (!passageSegmentAllowed(id,state.position,to)) return false;
+            if (!passageSegmentAllowed(id,state.position,to) || !crossingSegmentAllowed(id,state.position,to,false)) return false;
             for (const auto& neighbor:neighbors) {
                 const auto& otherPath=*neighbor.path;
                 const double radius=neighbor.radius;
@@ -1570,9 +1900,9 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
         if (moved<1e-7) {chosen=state.position;++diagnostics.blockedMotionSteps;}
         else if (pointSegmentDistance(chosen,state.position,goal)>1e-6) ++diagnostics.navigationSteeringSteps;
         state.velocity={(chosen.x-state.position.x)/dt,(chosen.y-state.position.y)/dt};
-        state.stoppedForMs=moved<1e-7 && !((waitingForDoor && remainingGoalDistance<.1) || (waitingForPassage && remainingGoalDistance<.15))
+        state.stoppedForMs=moved<1e-7 && !(waitingForCrossing || (waitingForDoor && remainingGoalDistance<.1) || (waitingForPassage && remainingGoalDistance<.15))
             ? state.stoppedForMs+elapsed : 0;
-        if ((waitingForDoor && remainingGoalDistance<.1) || (waitingForPassage && remainingGoalDistance<.15)) state.navigationNoProgressMs=0;
+        if (waitingForCrossing || (waitingForDoor && remainingGoalDistance<.1) || (waitingForPassage && remainingGoalDistance<.15)) state.navigationNoProgressMs=0;
         if (passageTraversal) {
             auto& resource=navigationPassages[passageTraversal->passage];
             auto grant=resource.granted.find(id);

@@ -285,7 +285,7 @@ if(UMP_BUILD_REPLAY)
     set_tests_properties(paced_replay_summary PROPERTIES LABELS "unit;replay;timing"
         ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1" TIMEOUT 15)
     foreach(evaluation occupancy privacy comparison capture oracle privacy_dataset empirical_privacy privacy_study coordination coordination_metrics coordination_scenarios coordination_study plot_coordination_study
-        compare_coordination_studies plot_privacy_coordination robustness_attacks run_privacy_robustness plot_privacy_robustness privacy_repair causal_privacy online_occupancy run_privacy_prefix_study selective_suppression semantic_adaptation semantic_tradeoffs semantic_queries scoped_semantic_queries run_scoped_semantic_utility recipient_support run_recipient_contract_study run_semantic_priority_study semantic_first moving_comparison moving_scoped_audit run_moving_scoped_comparison cell_size_caps four_second_window semantic_release local_policy_replay semantic_local_policy replay_data)
+        compare_coordination_studies plot_privacy_coordination robustness_attacks run_privacy_robustness plot_privacy_robustness privacy_repair causal_privacy online_occupancy run_privacy_prefix_study selective_suppression semantic_adaptation semantic_tradeoffs semantic_queries scoped_semantic_queries run_scoped_semantic_utility recipient_support run_recipient_contract_study run_semantic_priority_study semantic_first moving_comparison moving_scoped_audit run_moving_scoped_comparison cell_size_caps four_second_window semantic_release local_policy_replay semantic_local_policy semantic_suppression_audit run_suppression_study replay_data)
         add_test(NAME ${evaluation}_evaluation COMMAND ${Python3_EXECUTABLE} -m unittest discover
             -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/evaluation -p test_${evaluation}.py)
         set_tests_properties(${evaluation}_evaluation PROPERTIES LABELS "unit;evaluation"
@@ -342,6 +342,12 @@ if(UMP_BUILD_METRIC_TESTS AND UMP_BUILD_SPATIAL_TESTS)
         src/PolicyTree.cpp src/SpatialSelection.cpp src/AdaptiveAggregation.cpp
         src/PublicationCoordinator.cpp)
     add_test(NAME semantic_pipeline COMMAND SemanticPipelineTests)
+    add_executable(SemanticSuppressionTests tests/SemanticSuppressionTests.cpp
+        src/AggregationManager.cpp src/AggregationHistory.cpp src/CandidateMetrics.cpp
+        src/PolicyTree.cpp src/SpatialSelection.cpp src/AdaptiveAggregation.cpp
+        src/CellLocalAggregation.cpp src/PublicationCoordinator.cpp)
+    add_test(NAME semantic_suppression COMMAND SemanticSuppressionTests)
+    set_tests_properties(semantic_suppression PROPERTIES LABELS "unit;aggregation;semantic;suppression" TIMEOUT 30)
     add_executable(SemanticFirstTests tests/SemanticFirstTests.cpp
         src/AdaptiveAggregation.cpp src/SpatialSelection.cpp src/AggregationHistory.cpp
         src/CandidateMetrics.cpp src/PolicyTree.cpp src/PublicationCoordinator.cpp)
@@ -374,7 +380,7 @@ foreach(core_target Simulator SensorRegressionTests AggregationRegressionTests M
     PublicationStoreRegressionTests PublicationPipelineRegressionTests AggregationPresentationTests
     AggregationReplay ReplayRegressionTests CoordinationRegressionTests CoordinationStressTests
     ScopedPublicationRegressionTests SemanticTaxonomyTests SemanticHistoryTests SemanticPipelineTests
-    SemanticPublicationStoreTests SemanticFirstTests SemanticCellLocalTests)
+    SemanticPublicationStoreTests SemanticFirstTests SemanticCellLocalTests SemanticSuppressionTests)
     if(TARGET ${core_target})
         target_compile_features(${core_target} PRIVATE cxx_std_17)
         target_link_libraries(${core_target} PRIVATE ump_semantic)
@@ -424,7 +430,7 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS AND UMP_MAPPED_SCENE_PYTHON)
     if(NOT EXISTS "${UMP_MAPPED_SCENE_PYTHON}")
         message(FATAL_ERROR "UMP_MAPPED_SCENE_PYTHON does not exist")
     endif()
-    foreach(mapped_test audit_building_access build_mapped_scene storefront_router export_replay analyze_tracks run_comparison plot_policy_comparison)
+    foreach(mapped_test audit_building_access build_mapped_scene storefront_router transit_access export_replay analyze_tracks run_comparison plot_policy_comparison)
         if(mapped_test STREQUAL "build_mapped_scene")
             # Keep geometry/config checks fast. Native finite-drain cases have
             # separate budgets below, independent of inherited shell settings.
@@ -444,6 +450,12 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS AND UMP_MAPPED_SCENE_PYTHON)
     set_tests_properties(mapped_build_mapped_scene_tools PROPERTIES TIMEOUT 120)
     # Includes the opt-in mixed traffic mode-space and legacy topology regressions.
     set_tests_properties(mapped_storefront_router_tools PROPERTIES TIMEOUT 120)
+    add_test(NAME mapped_transit_access_drain_tools COMMAND "${UMP_MAPPED_SCENE_PYTHON}"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../tools/mapped_scene/test_transit_access.py"
+        TransitAccessTests.test_native_combined_source_drains_and_all_tracks_are_observed)
+    set_tests_properties(mapped_transit_access_drain_tools PROPERTIES
+        LABELS "integration;mapped_scene;tools" TIMEOUT 150 RUN_SERIAL TRUE
+        ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;UMP_TRANSIT_DRAIN_TEST_BINARY=$<TARGET_FILE:MappedSceneConfigurationTests>")
     add_test(NAME mapped_dense_corridor_drain_tools COMMAND "${UMP_MAPPED_SCENE_PYTHON}"
         "${CMAKE_CURRENT_SOURCE_DIR}/../tools/mapped_scene/test_build_mapped_scene.py"
         MappedSceneGeneratorTests.test_dense_corridor_native_config_drains_without_dropped_tracks)

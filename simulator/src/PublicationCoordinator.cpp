@@ -127,6 +127,7 @@ std::shared_ptr<const ReleaseSnapshot> PublicationCoordinator::seal(
             throw std::invalid_argument("Selected cell does not meet current publication requirements");
         indices.push_back(i);
         auto publicCell = candidate.cells[i];
+        if (check.retainedCounts) publicCell.counts = *check.retainedCounts;
         // Type-level support has no separate disclosure policy in this first output model.
         publicCell.counts.typeObservationContributions.clear();
         publicCell.counts.semanticEvidence.reset();

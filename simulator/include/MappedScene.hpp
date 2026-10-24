@@ -27,11 +27,16 @@ struct MappedRoute {
 // A deliberate source-model access point on a building facade. OSM provenance
 // denotes a mapped entrance; synthetic portals are simulation assumptions. This
 // geometry does not grant entry on incidental contact with any building wall.
+enum class MappedPortalKind { BuildingFacade, SurfaceAccess };
 struct MappedPortal {
     std::string id, buildingId;
-    Point point, facadeStart, facadeEnd;
-    double widthM;
+    Point point{}, facadeStart{}, facadeEnd{};
+    double widthM = 0;
     std::string provenance; // Exactly "osm" or "synthetic".
+    MappedPortalKind kind = MappedPortalKind::BuildingFacade;
+    // Surface access is a checked 2D visibility boundary, not a fabricated wall.
+    std::optional<Point> surfaceApproach;
+    std::vector<Point> admissionSegment;
 };
 
 struct MappedEpisode {
@@ -69,10 +74,22 @@ struct MappedNavigationSpace {
     std::vector<MappedNavigationPolygon> allowedCenterPolygons;
     double centerClearanceM = .55;
 };
+// Explicit experimental crossing priority; this is a source-model rule, not
+// traffic law. New pedestrian admission yields to approaching priority traffic.
+// Request aging closes NEW rider admission, then grants a finite pedestrian batch.
+struct MappedNavigationCrossing {
+    std::string id;
+    std::vector<Point> conflictRing;
+    std::vector<std::string> prioritySpaces;
+    AggregationTime riderLookaheadMs = 4000, pedestrianMaxWaitMs = 8000;
+    AggregationTime pedestrianAdmissionMs = 2000, riderServiceMs = 1500;
+    std::size_t maxBatchSize = 6;
+};
 struct MappedNavigationConfig {
     std::vector<MappedNavigationSpace> spaces;
     std::vector<MappedNavigationPolygon> allowedCenterPolygons;
     std::vector<MappedNavigationPassage> narrowPassages;
+    std::vector<MappedNavigationCrossing> crossings;
     double gridResolutionM = .5, centerClearanceM = .55;
     std::size_t maxReplanNodes = 20000;
     // Optional finite same-direction door pipeline. One preserves legacy flow.
@@ -103,6 +120,9 @@ struct MappedMotionDiagnostics {
     std::uint64_t navigationReplanFailures = 0, navigationCandidateChecks = 0;
     std::size_t navigationMaxSearchNodes = 0;
     std::uint64_t passageWaitSteps = 0, passageBatches = 0, passageClearedTracks = 0;
+    std::uint64_t crossingPedestrianWaitSteps = 0, crossingRiderWaitSteps = 0;
+    std::uint64_t crossingBatches = 0, crossingFairnessClosures = 0;
+    AggregationTime maxCrossingPedestrianWaitMs = 0;
     AggregationTime maxPassageWaitMs = 0;
     AggregationTime maxConsecutiveStopMs = 0;
     std::size_t activeStalledTracks = 0, pendingTracks = 0, activeTracks = 0;
@@ -180,6 +200,17 @@ private:
     void updateNavigationDoorPipelines(AggregationTime nowMs);
     bool doorEntryAllowed(const std::string& trackId, const std::string& portalId) const;
     void updateNavigationPassages(AggregationTime nowMs);
+    void updateNavigationCrossings(AggregationTime nowMs);
+    bool crossingSegmentAllowed(const std::string& trackId, Point from, Point to, bool request = true);
+    struct NavigationCrossing {
+        std::map<std::string,AggregationTime> requests;
+        std::set<std::string> granted, entered;
+        std::map<std::string,Point> waitingPoints;
+        std::map<std::string,AggregationTime> stagingAttempts;
+        bool closingForFairness = false;
+        AggregationTime batchStartedMs = -1, riderServiceUntilMs = -1;
+    };
+    std::vector<NavigationCrossing> navigationCrossings;
     struct PassageTraversal {
         std::size_t passage, entryWaypoint, exitWaypoint;
         bool forward;

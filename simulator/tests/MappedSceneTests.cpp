@@ -455,6 +455,162 @@ MappedSceneConfig localScene(double width=20,double height=12) {
 }
 
 // Separate permissions must survive guide shortcuts, steering and replanning.
+void localSurfaceAccessIsTypedAndOnlyTerminatesOwningTrips() {
+    auto input=localScene(20,14);input.clearanceM=.05;input.navigation.doorMaxBatchSize=6;
+    MappedPortal surface;surface.id="station-A";surface.point={10,10};surface.widthM=1.2;
+    surface.provenance="osm";surface.kind=MappedPortalKind::SurfaceAccess;
+    surface.surfaceApproach=Point{10,8.5};surface.admissionSegment={{9.4,10},{10.6,10}};
+    input.portals.push_back(surface);
+    input.routes={{"surface-in",{{0,8.5},{10,8.5},{10,10}},"","station-A"},
+        {"surface-out",{{10,10},{10,8.5},{20,7}},"station-A",""},
+        {"surface-passer",{{0,10.7},{20,10.7}},"",""}};
+    input.people={{"private-in","Adult Pedestrian",1.3,{{"surface-visible-in","surface-in",0}},.25},
+        {"private-out","Adult Pedestrian",1.3,{{"surface-visible-out","surface-out",3000}},.25},
+        {"private-passer","Adult Pedestrian",1.3,{{"surface-visible-passer","surface-passer",0}},.25}};
+    MappedScene scene(input);bool passerNearSurface=false;
+    for(int now=0;now<=60000;now+=50) {
+        scene.advanceTo(now);
+        for(const auto& track:scene.frameAt(now)) {
+            require(std::hypot(track.velocity.x,track.velocity.y)<=1.3+1e-8,"Surface access exceeded preferred speed");
+            if(track.trackId=="surface-visible-passer" && std::hypot(track.position.x-10,track.position.y-10)<1)
+                passerNearSurface=true;
+        }
+    }
+    const auto d=scene.motionDiagnostics();
+    require(passerNearSurface && d.realizedStarts==3 && d.realizedEnds==3 && d.activeTracks==0
+        && d.pendingTracks==0 && d.overlapViolations==0,"Typed surface access failed finite source drainage");
+    for(const auto& event:scene.events()) if(event.kind==MappedEventKind::EpisodeEnd && event.trackId=="surface-visible-passer")
+        require(event.portalId.empty(),"Incidental passage through surface access caused hidden disappearance");
+    const auto bad=[&](auto mutate) {auto c=input;mutate(c);rejects([&]{MappedScene scene(c);});};
+    bad([](auto& c){c.portals[0].buildingId="fake-building";});
+    bad([](auto& c){c.portals[0].surfaceApproach.reset();});
+    bad([](auto& c){c.portals[0].admissionSegment.resize(1);});
+    bad([](auto& c){c.portals[0].admissionSegment[1]={9.4,10};});
+    bad([](auto& c){c.portals[0].surfaceApproach=Point{11,8.5};});
+    bad([](auto& c){c.portals[0].widthM=1.3;});
+    bad([](auto& c){c.navigation.allowedCenterPolygons[0].holes.push_back({{9.9,9.9},{10.1,9.9},{10.1,10.1},{9.9,10.1}});});
+    bad([](auto& c){c.motionMode=MappedMotionMode::CorridorFollowing;});
+}
+
+MappedSceneConfig crossingPriorityFixture() {
+    auto c=localScene(30,20);c.clearanceM=.05;
+    c.navigation.spaces.push_back({"rider",{{{{0,7},{30,7},{30,13},{0,13}}, {}}},.55});
+    MappedNavigationCrossing crossing;crossing.id="explicit-crossing";
+    crossing.conflictRing={{12,7},{18,7},{18,13},{12,13}};crossing.prioritySpaces={"rider"};
+    c.navigation.crossings.push_back(crossing);
+    c.routes={{"ped-cross",{{15,0},{15,20}},"",""},
+        {"rider-through",{{0,10},{30,10}},"","","rider",{{30,7},{30,13}}}};
+    c.people={{"private-ped","Adult Pedestrian",1.3,{{"ped-visible","ped-cross",0}},.25},
+        {"private-rider","Adult Cyclist",3,{{"rider-visible","rider-through",0}},.45}};
+    return c;
+}
+void localCrossingPriorityYieldsBeforeEntryAndKeepsPhysicalChecks() {
+    auto input=crossingPriorityFixture();MappedScene scene(input);
+    std::map<std::string,Point> previous;bool pedestrianWaited=false;
+    for(int now=0;now<=40000;now+=50) {
+        scene.advanceTo(now);const auto frame=scene.frameAt(now);
+        for(const auto& track:frame) {
+            const double maxSpeed=track.trackId=="ped-visible"?1.3:3;
+            require(std::hypot(track.velocity.x,track.velocity.y)<=maxSpeed+1e-8,"Priority exceeded preferred speed");
+            if(previous.count(track.trackId)) require(std::hypot(track.position.x-previous[track.trackId].x,
+                track.position.y-previous[track.trackId].y)<=maxSpeed*.05+1e-8,"Priority teleported a road user");
+            previous[track.trackId]=track.position;
+            if(track.trackId=="ped-visible" && now>4000 && std::hypot(track.velocity.x,track.velocity.y)<1e-8) {
+                pedestrianWaited=true;require(track.position.y<=6.7+1e-7,"Pedestrian waited inside the carriageway");
+            }
+        }
+        if(frame.size()==2) require(std::hypot(frame[0].position.x-frame[1].position.x,
+            frame[0].position.y-frame[1].position.y)>=.75-1e-7,"Priority bypassed circular-body clearance");
+    }
+    const auto d=scene.motionDiagnostics();
+    require(pedestrianWaited && d.crossingPedestrianWaitSteps>0 && d.realizedEnds==2 && d.overlapViolations==0
+        && scene.episodeEndMs("rider-visible")==10000,"Pedestrian priority wait blocked uncongested rider throughput");
+    MappedScene coarse(input);coarse.advanceTo(40000);
+    require(coarse.events().size()==scene.events().size(),"Crossing caller cadence changed lifecycle");
+    for(std::size_t i=0;i<scene.events().size();++i)
+        require(coarse.events()[i].trackId==scene.events()[i].trackId && coarse.events()[i].atMs==scene.events()[i].atMs,
+            "Crossing priority is not deterministic across call cadence");
+    // Once a pedestrian is already crossing, a newly arriving rider must wait.
+    auto pedestrianOnly=input;pedestrianOnly.people.resize(1);MappedScene reference(pedestrianOnly);
+    AggregationTime riderArrival=-1;
+    for(AggregationTime now=0;now<=20000 && riderArrival<0;now+=50) {
+        reference.advanceTo(now);
+        for(const auto& track:reference.frameAt(now)) if(track.position.y>=7.2) riderArrival=now;
+    }
+    require(riderArrival>=0,"Pedestrian reference never entered the crossing");
+    input.people[1].episodes[0].startMs=riderArrival;MappedScene alreadyCrossing(input);
+    alreadyCrossing.advanceTo(40000);
+    const auto crossing=alreadyCrossing.motionDiagnostics();
+    require(crossing.realizedEnds==2 && crossing.crossingRiderWaitSteps>0 && crossing.overlapViolations==0,
+        "A newly arriving rider prevented an admitted pedestrian from clearing");
+}
+void localCrossingEmptyRoadDoesNotRequireImpossibleEntryStaging() {
+    auto input=crossingPriorityFixture();input.height=14;
+    input.navigation.allowedCenterPolygons=localScene(30,14).navigation.allowedCenterPolygons;
+    input.navigation.crossings[0].conflictRing={{0,1},{30,1},{30,7},{0,7}};
+    input.routes[0].points={{15,0},{15,14}};
+    input.people.resize(1);
+    MappedScene scene(input);scene.advanceTo(14000);
+    const auto d=scene.motionDiagnostics();
+    require(d.realizedEnds==1 && d.activeTracks==0 && d.pendingTracks==0 && d.overlapViolations==0,
+        "Empty-road singleton deadlocked because its narrow entry sidewalk had no off-apron staging room");
+}
+
+void localCrossingOppositeReceivingApronsRemainClear() {
+    auto input=crossingPriorityFixture();input.navigation.crossings[0].maxBatchSize=1;
+    input.routes.push_back({"opposite-ped-cross",{{15,20},{15,0}},"",""});
+    input.people.push_back({"opposite-private","Adult Pedestrian",1.3,
+        {{"opposite-visible","opposite-ped-cross",800}},.25});
+    input.people.push_back({"later-rider-private","Adult Cyclist",3,
+        {{"later-rider-visible","rider-through",6000}},.45});
+    MappedScene scene(input);bool observedClearReceivingApron=false;
+    const auto distance=[](Point p) {
+        const double dx=std::max({12-p.x,0.0,p.x-18});
+        const double dy=std::max({7-p.y,0.0,p.y-13});return std::hypot(dx,dy);
+    };
+    for(int now=0;now<=60000;now+=50) {
+        scene.advanceTo(now);const auto frame=scene.frameAt(now);
+        for(const auto& crosser:frame) if((crosser.trackId=="ped-visible" || crosser.trackId=="opposite-visible")
+                && distance(crosser.position)<.3) {
+            for(const auto& other:frame) if(other.trackId!=crosser.trackId
+                    && (other.trackId=="ped-visible" || other.trackId=="opposite-visible")) {
+                require(distance(other.position)>=1.55-1e-7,
+                    "An ungranted opposite pedestrian occupied the receiving apron");
+                observedClearReceivingApron=true;
+            }
+        }
+    }
+    const auto d=scene.motionDiagnostics();
+    require(observedClearReceivingApron && d.realizedEnds==4 && d.activeTracks==0
+        && d.pendingTracks==0 && d.overlapViolations==0,"Opposite-apron staging did not drain pedestrians and riders");
+}
+
+void localCrossingPriorityFiniteFairnessAndValidation() {
+    auto input=crossingPriorityFixture();input.navigation.crossings[0].pedestrianMaxWaitMs=1000;
+    for(int index=1;index<12;++index) input.people.push_back({"private-rider-"+std::to_string(index),"Adult Cyclist",3,
+        {{"rider-visible-"+std::to_string(index),"rider-through",index*900}},.45});
+    MappedScene scene(input);scene.advanceTo(60000);const auto d=scene.motionDiagnostics();
+    require(d.realizedEnds==input.people.size() && d.activeTracks==0 && d.pendingTracks==0
+        && d.overlapViolations==0 && d.crossingFairnessClosures==1 && d.crossingRiderWaitSteps>0
+        && d.maxCrossingPedestrianWaitMs<=5000,"Finite rider stream starved pedestrians or failed to drain");
+    const auto bad=[&](auto mutate) {auto c=input;mutate(c);rejects([&]{MappedScene scene(c);});};
+    bad([](auto& c){c.navigation.crossings[0].prioritySpaces={"missing"};});
+    bad([](auto& c){c.navigation.crossings[0].prioritySpaces={"rider","rider"};});
+    bad([](auto& c){c.navigation.crossings[0].pedestrianMaxWaitMs=0;});
+    bad([](auto& c){c.navigation.crossings[0].maxBatchSize=0;});
+    bad([](auto& c){c.navigation.crossings[0].conflictRing={{1,1},{2,2}};});
+    bad([](auto& c){c.navigation.crossings.push_back(c.navigation.crossings[0]);});
+    bad([](auto& c){auto near=c.navigation.crossings[0];near.id="too-close";for(auto& p:near.conflictRing)p.x+=6.5;c.navigation.crossings.push_back(near);});
+    bad([](auto& c){for(auto& p:c.people)p.radiusM=.25;auto near=c.navigation.crossings[0];near.id="inflation-gap";for(auto& p:near.conflictRing)p.x+=6.575;c.navigation.crossings.push_back(near);});
+    bad([](auto& c){c.routes[0].points.front()={15,10};});
+    bad([](auto& c){c.navigation.crossings[0].conflictRing={{0,7},{18,7},{18,13},{0,13}};});
+    auto plain=localScene();plain.routes={{"legacy-off",{{0,5},{20,5}},"",""}};
+    plain.people={{"legacy-private","Adult Pedestrian",1.3,{{"legacy-visible","legacy-off",0}},.25}};
+    MappedScene off(plain),empty(plain);
+    for(int now=0;now<=20000;now+=50) {off.advanceTo(now);empty.advanceTo(now);sameFrame(off.frameAt(now),empty.frameAt(now));}
+    require(off.motionDiagnostics().crossingBatches==0,"Disabled priority changed legacy diagnostics");
+}
+
 void localBoundaryIntervalsAvoidPointSinkConvergence() {
     auto input=localScene(20,12);
     input.routes={{"exit-upper",{{0,2},{18,2},{20,5}},"","","",{{20,1},{20,10}}},
@@ -1124,6 +1280,11 @@ void localNarrowPassageOptionalOffAndValidation() {
 
 int main() {
     try {
+        localSurfaceAccessIsTypedAndOnlyTerminatesOwningTrips();
+        localCrossingPriorityYieldsBeforeEntryAndKeepsPhysicalChecks();
+        localCrossingPriorityFiniteFairnessAndValidation();
+        localCrossingOppositeReceivingApronsRemainClear();
+        localCrossingEmptyRoadDoesNotRequireImpossibleEntryStaging();
         localBoundaryIntervalsAvoidPointSinkConvergence();
         localMovementSpacesStaySeparate();
         cornersAndLargeSteps();

@@ -99,6 +99,11 @@ void report(const char* state, bool final, Time atMs, std::size_t expected,
         << ",\"passage_wait_steps\":" << d.passageWaitSteps << ",\"passage_batches\":" << d.passageBatches
         << ",\"passage_cleared_tracks\":" << d.passageClearedTracks
         << ",\"max_passage_wait_ms\":" << d.maxPassageWaitMs << ",\"max_stop_ms\":" << d.maxConsecutiveStopMs
+        << ",\"crossing_pedestrian_wait_steps\":" << d.crossingPedestrianWaitSteps
+        << ",\"crossing_rider_wait_steps\":" << d.crossingRiderWaitSteps
+        << ",\"crossing_batches\":" << d.crossingBatches
+        << ",\"crossing_fairness_closures\":" << d.crossingFairnessClosures
+        << ",\"max_crossing_pedestrian_wait_ms\":" << d.maxCrossingPedestrianWaitMs
         << ",\"peak_active\":" << peakActive << ",\"last_end_ms\":" << lastEndMs
         << ",\"steps\":" << timing.samples.size() << ",\"steps_over_50_ms\":" << timing.over50Ms
         << ",\"step_wall_ms_mean\":" << (timing.samples.empty() ? 0 : timing.sumMs / timing.samples.size())

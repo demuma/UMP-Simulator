@@ -135,6 +135,11 @@ class NativeRecordingTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,expected):self.build()
                 ends[0].clear();ends[0].update(old)
 
+    def test_filtered_product_cannot_receive_a_complete_source_footprint_capture_proof(self):
+        self.cfg['sensors'][0]['aggregation']['policy_tree']['root']['semantic_suppression_fraction']={'max':.1}
+        with self.assertRaisesRegex(ValueError,'retained-population accounting'):
+            self.build()
+
     def test_complete_native_recording_includes_verified_measured_empty_opportunities(self):
         replay,result,proof=self.build()
         self.assertEqual([b['observed_at_ms'] for b in replay['batches']],list(range(100,1000,100)))

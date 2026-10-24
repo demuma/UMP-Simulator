@@ -1,0 +1,140 @@
+{
+  "schema": "ump.urban-paced-failure-summary.v1",
+  "date": "2026-10-24",
+  "experiment": "first frozen urban controller realtime replay",
+  "result": "failed_bounded_queue_overflow",
+  "git_revision_at_start": "a996165ac9fa178e00f067880488df608d3c2c08",
+  "platform": "macOS-15.7.7-arm64-arm-64bit",
+  "command": [
+    "simulator/build/AggregationReplay",
+    "--input",
+    "results/urban-traffic-2026-10-24-256/replay/observations.json",
+    "--config",
+    "results/urban-traffic-2026-10-24-256-policy-comparison/original_adaptive_immediate-policy.json",
+    "--mode",
+    "semantic_first",
+    "--progress-step-ms",
+    "50",
+    "--pace-rate",
+    "1",
+    "--queue-capacity",
+    "8",
+    "--output",
+    "results/urban-paced-2026-10-24/original_adaptive_paced_1x.json"
+  ],
+  "source": {
+    "logical_duration_ms": 240000,
+    "sampling_period_ms": 100,
+    "progress_step_ms": 50,
+    "measurement_batches": 2399,
+    "input_observation_contributions": 187745
+  },
+  "contract": {
+    "positive_progress_event_ms": 50,
+    "sensor_period_ms": 100,
+    "cadence_response_deadline_ms": 50,
+    "sensor_response_secondary_deadline_ms": 100,
+    "fixed_schedule": true,
+    "queue_capacity": 8,
+    "overflow_behavior": "fail_without_successful_output"
+  },
+  "isolation": "No simulator, database, renderer, movement generation, builds, or other intentionally scheduled heavy tests during the measurement.",
+  "execution": {
+    "started_utc": "2026-10-24T17:36:25.729148+00:00",
+    "completed_utc": "2026-10-24T17:36:56.233177+00:00",
+    "process_wall_seconds": 30.33424175,
+    "native_return_code": 1,
+    "successful_output_written": false,
+    "complete_logical_equivalence": null,
+    "queue_capacity_was_increased": false,
+    "repetitions": 1
+  },
+  "failure": {
+    "logical_time_ms": 27350,
+    "queue_capacity": 8,
+    "peak_queue_depth": 8,
+    "scheduled_arrival_ms": 27350.0,
+    "enqueue_attempt_ms": 27353.274541,
+    "source_scheduling_lateness_at_rejected_event_ms": 3.2745409999988624,
+    "stderr": "AggregationReplay: Paced replay overloaded/cancelled: logical_time_ms=27350, queue_capacity=8, peak_queue_depth=8, scheduled_arrival_ms=27350.000000, enqueue_attempt_ms=27353.274541; no successful replay result was written",
+    "telemetry_source": "maintained native overload diagnostic on stderr, parsed without rerunning"
+  },
+  "unavailable": {
+    "per_event_partial_telemetry": "Native runner discards its incomplete in-memory report when failure unwinds; no successful output or partial event file is written.",
+    "cadence_service_quantiles_ms": null,
+    "cadence_response_quantiles_ms": null,
+    "deadline_miss_count": null,
+    "completed_event_count": null,
+    "peak_resident_memory_bytes": null
+  },
+  "scope": {
+    "included": [
+      "independent steady-clock fixed arrival schedule at wall-clock 1x",
+      "bounded FIFO with eight pending events",
+      "native-style 50-ms advance-before-ingest progress",
+      "100-ms pre-binned measured observations",
+      "history/buckets/policy/semantic/spatial/temporal/coordinator operations",
+      "per-step private diagnostic and release in-memory serialization",
+      "telemetry and in-memory sink acknowledgement"
+    ],
+    "excluded": [
+      "movement generation",
+      "perception/tracking/classification inference",
+      "raw detection-to-cell mapping",
+      "input file parsing, validation and core construction before the pacing epoch",
+      "rendering",
+      "MongoDB or network delivery acknowledgement",
+      "final result-file serialization/publication after replay"
+    ],
+    "process_wall_scope": "Includes process startup, input setup, partial pacing/service and error cancellation; it is not service-only time."
+  },
+  "artifacts_before": {
+    "binary": {
+      "path": "simulator/build/AggregationReplay",
+      "sha256": "71261dcc29641701dff5685129961689d6bebc1c3b7ffc86b29c2cd0f63dea28",
+      "bytes": 775760
+    },
+    "source": {
+      "path": "results/urban-traffic-2026-10-24-256/replay/observations.json",
+      "sha256": "f43a28abaa253816e34732f29f07f63b953ecc40f57aae884c349329c6b9a1a1",
+      "bytes": 25757699
+    },
+    "policy": {
+      "path": "results/urban-traffic-2026-10-24-256-policy-comparison/original_adaptive_immediate-policy.json",
+      "sha256": "cb7e7a7b3869f0c2ca0191e759924efb30d85ea580abfd78c3dafe4d24efc73f",
+      "bytes": 4781
+    },
+    "reference": {
+      "path": "results/urban-traffic-2026-10-24-256-policy-comparison/original_adaptive_immediate.json",
+      "sha256": "86512fbfc524c6db70ace703ea20f00e538dc99ed56a76cbb3a233a8776e3c0b",
+      "bytes": 247339286
+    },
+    "paced_source": {
+      "path": "simulator/tools/PacedReplay.hpp",
+      "sha256": "ef337c6f8d5b5fb4c4963956378b39d55fc34a32a50e095759df8db5984abc35",
+      "bytes": 6420
+    },
+    "adapter_source": {
+      "path": "simulator/tools/AggregationReplay.cpp",
+      "sha256": "8a52ff1ad9a04df4591e765fbebdcc1863e43b0e29ebfef4f8c4c0cd0a46495a",
+      "bytes": 42129
+    }
+  },
+  "artifacts_unchanged_through_measurement": true,
+  "validation_after_measurement": {
+    "ctest_groups": {
+      "paced_replay": "passed",
+      "paced_replay_summary": "passed"
+    },
+    "summarizer_unit_tests": 8,
+    "summarizer_unit_tests_passed": 8
+  },
+  "limitations": [
+    "One empirical run on one frozen synthetic source, not a hardware worst-case bound.",
+    "Overload diagnoses the measured controller plus diagnostics path; component attribution needs a profile.",
+    "No complete successful result exists, so the maintained equality summarizer cannot be run.",
+    "The original source is intentionally frozen and retains the disclosed map/source/sink defects; corrected geometry/movement require a distinct recording.",
+    "The result is not changed by enlarging the queue or shifting the offered schedule.",
+    "No membership/linkage attack or empirical privacy gain is measured."
+  ]
+}

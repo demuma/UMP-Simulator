@@ -3,6 +3,56 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
+**Current extension — 2026-10-24: bounded semantic contribution suppression,
+subway surface access and rider priority.** Suppression is policy controlled and
+off by default. It filters rare taxonomy contributions only when the retained
+product meets every regional bound and improves a full-input semantic distortion
+score that penalizes removed observations. It never changes a cyclist into a
+pedestrian. See the [contract and tests](docs/SEMANTIC_SUPPRESSION_2026-10-24.md).
+Counts in such a product describe retained contributions; they are not exact
+full-input traffic totals. Public records omit the private suppression mask.
+The six-case same-source study verifies all declared policy checks. Semantic First
+retention improves 65.77→66.37%, conditional semantic loss 70.18→69.57% and the
+full-input distortion score 80.39→79.80%. Core time rises 5.04% in this single pair;
+minority-type retention can decline. See [aggregate evidence](docs/verification/semantic-suppression-2026-10-24.json).
+These are modest utility/policy results, not an empirical privacy gain. The
+suppression-study replay supports filtered products; the historical native mapped
+capture exporter rejects them until its separate retained-source adapter is added.
+
+`--urban-traffic --subway-access --rider-priority` adds the source-bound A1/A2
+surface targets, separates two verified overhead roofs from ground obstacles,
+and makes pedestrians yield before entering controlled rider conflict areas.
+Already crossing bodies may finish; aged pedestrian requests close new rider
+admission before a finite pedestrian batch. This is an opt-in synthetic traffic
+rule with physical checks, not a universal no-congestion or liveness guarantee.
+Historical motion recordings and policies are preserved.
+The corrected 128-person/150-ms source completes all 171 visible episodes by
+190.4 s, observes every token and passes more than six million swept-body pair
+checks. A1/A2 have realized entries and exits; all 43 shop visits/returns complete.
+The initial receiving-apron deadlock is preserved as a negative case. The matched
+priority-off control finishes sooner (180.85 s): this rule adds behavior and costs,
+not a universal throughput improvement. See the [source acceptance report](docs/SUBWAY_AND_PRIORITY_TEST_REPORT_2026-10-24.md).
+
+All 95 registered CTest groups pass; the final filtered-viewer checks pass separately.
+Read the [combined implementation/test report](docs/EXTENSION_TEST_REPORT_2026-10-24.md).
+Local verified views (no live Simulator/MongoDB required):
+
+```sh
+python tools/replay_viewer/serve.py --bundle results/urban-transit-priority-2026-10-24-v3/replay --port 8791
+python tools/replay_viewer/serve.py --bundle results/semantic-suppression-2026-10-24-60s-v2 --port 8792
+```
+
+
+The isolated dense [paced replay](docs/URBAN_PACED_TEST_REPORT_2026-10-24.md)
+still overflows its eight-event queue with minimal diagnostics (logical 26.85 s;
+original full mode: 27.35 s). Exact full/minimal public output and complete logical
+SHA-256 audits agree. Removing private window JSON reduces artifact size from
+247.34 MB to 2.92 MB but core time only 1.85%. About 98.7% of minimal consume time
+lies outside terminal callbacks, in the manager/history/coordination/selection path.
+No policy, reservation, retirement or acknowledgement checks were removed. These
+measurements exclude neural perception, transport receipt and the motion simulator;
+they establish neither hard real-time operation nor a complete successful paced run.
+
 **Latest verified checkpoint — 2026-10-24: mixed urban traffic and two Policy Trees.**
 The opt-in `--urban-traffic` source adds closer pedestrian groups, bounded
 same-direction door pipelines, preferred/distributed crossings and cyclists/E-scooter
@@ -38,9 +88,8 @@ The [utility/realtime review](docs/UTILITY_REALTIME_REVIEW_2026-10-24.md)
 explains conditional detail metrics, logical release delay, current early-release
 behavior and the independent-clock paced-test boundary. The
 [subway access plan](docs/SUBWAY_ACCESS_PLAN_2026-10-24.md) identifies A1/A2 in the
-frozen OSM source and the roof-versus-ground-obstacle issue. These follow-ups are
-documented; controller changes, the current dense paced run and transit portals
-are not implemented/executed by that review.
+frozen OSM source and the roof-versus-ground-obstacle issue. That review is the historical pre-implementation checkpoint; the extension above
+records subsequent implementation and measured tests.
 
 The checkpoint notes below preserve earlier implementation history; the latest
 report above supersedes their pending mixed-mode and source-capacity claims.

@@ -326,6 +326,191 @@ void pacedProgressClockEquivalence() {
         "Pacing changed explicit-clock core output beyond runtime");
 }
 
+void sha256AndCanonicalEncoding() {
+    umpReplay::ReplaySha256 empty;
+    require(empty.hex() == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "SHA-256 empty vector failed");
+    umpReplay::ReplaySha256 abc; abc.update(std::string("abc"));
+    require(abc.hex() == "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", "SHA-256 abc vector failed");
+    umpReplay::ReplaySha256 longValue;
+    longValue.update(std::string("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"));
+    require(longValue.hex() == "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1", "SHA-256 multiblock vector failed");
+    umpReplay::ReplaySha256 million;
+    for (int i = 0; i < 1000; ++i) million.update(std::string(1000,'a'));
+    require(million.hex() == "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0", "SHA-256 streaming million-a vector failed");
+    require(abc.hex() == abc.hex(), "Finalizing audit hash mutated its state");
+    umpReplay::ReplayCanonicalHash a("test"), b("test"), c("test"), d("test");
+    a.text("ab"); a.text("c"); b.text("a"); b.text("bc");
+    require(a.hex() != b.hex(), "Canonical string boundaries were ambiguous");
+    c.unsignedValue(1); d.signedValue(1);
+    require(c.hex() != d.hex(), "Canonical scalar types were ambiguous");
+}
+
+ump::SpatialSelection digestFixture() {
+    using namespace ump;
+    AggregateCounts counts{3,2,{{"pedestrian",3}},1.5,SemanticEvidence{"types","1",{{"pedestrian",{3,2}}}}};
+    AggregationCandidate candidate{"run","sensor","app",{0,0,80,80,3},0,400,450,false,3,3,0,0,
+        WindowCoverage::Complete,counts,{{{192,3,0,0,10,10},counts}}};
+    SemanticSuppressionAudit suppression;
+    suppression.inputObservations=3;suppression.inputDistinct=2;suppression.retainedObservations=2;
+    suppression.retainedDistinct=1;suppression.suppressedObservations=1;suppression.suppressedDistinct=1;
+    suppression.suppressedTypeObservations={{"cyclist",1}};suppression.suppressedLeaves={"cyclist"};
+    suppression.fraction=1./3;suppression.fullInputSemanticLoss=.5;suppression.unsuppressedSemanticLoss=1;
+    suppression.evaluatedCandidates=2;suppression.evaluationNanoseconds=123;
+    CellMetricAssessment cell{192,AssessmentStatus::Pass,
+        {{MetricId::DistinctContributors,2,""}},
+        {{{MetricId::DistinctContributors,2,{}},2,AssessmentStatus::Pass,"met"}},
+        "effective",{"root"},true,SemanticRepresentation{"types","1",{{"pedestrian",2,1}},1,.5,.5},counts,suppression};
+    WindowMetricAssessment assessment{450,"policy","1",AssessmentStatus::Pass,"complete",AssessmentStatus::Pass,{cell},"tree"};
+    SpatialSelection result{candidate,assessment,candidate,assessment,
+        {{192,true,"approved",{193},"merged"}},{{candidate.cells[0],cell}},2};
+    result.selectedCells=1;result.suppressedCells=0;result.coarsenedCells=1;result.refinedCells=0;
+    result.temporalDecisions={{TemporalAction::Finalize,0,400,450,AssessmentStatus::Pass}};
+    result.coordinationCell=CellGeometry{48,2,0,0,20,20};
+    result.semanticPriority=SemanticPrioritySelection{.5,.5,2,false,"spatial_first","policy_satisfied",true};
+    return result;
+}
+void completeDecisionDigestCoverage() {
+    using ump::MetricId;
+    auto base=digestFixture();
+    const auto digest=[](const auto& value){umpReplay::ReplayDecisionDigest h;h.selection(value);return h.retirementSha256();};
+    const auto original=digest(base);
+    const std::vector<std::function<void(ump::SpatialSelection&)>> mutations{
+        [](auto& s){s.candidate.runId += "x";},[](auto& s){s.candidate.sensorId += "x";},[](auto& s){s.candidate.applicationId += "x";},
+        [](auto& s){s.candidate.grid.x=1;},[](auto& s){s.candidate.grid.y=1;},[](auto& s){s.candidate.grid.width=81;},
+        [](auto& s){s.candidate.grid.height=81;},[](auto& s){s.candidate.grid.leafDepth=4;},
+        [](auto& s){s.candidate.startMs=1;},[](auto& s){s.candidate.endMs=401;},[](auto& s){s.candidate.closedAtMs=451;},
+        [](auto& s){s.candidate.truncated=true;},[](auto& s){s.candidate.expectedSamples=4;},[](auto& s){s.candidate.measuredSamples=4;},
+        [](auto& s){s.candidate.unavailableSamples=1;},[](auto& s){s.candidate.missingSamples=1;},
+        [](auto& s){s.candidate.coverage=ump::WindowCoverage::Incomplete;},
+        [](auto& s){s.candidate.counts.observationContributions=4;},[](auto& s){s.candidate.counts.distinctContributors=3;},
+        [](auto& s){s.candidate.counts.typeObservationContributions["pedestrian"]=4;},
+        [](auto& s){s.candidate.counts.meanSampleOccupancy.reset();},
+        [](auto& s){s.candidate.counts.semanticEvidence->taxonomyId += "x";},
+        [](auto& s){s.candidate.counts.semanticEvidence->taxonomyVersion += "x";},
+        [](auto& s){s.candidate.counts.semanticEvidence->nodes["pedestrian"].distinctContributors=3;},
+        [](auto& s){s.candidate.counts.semanticEvidence->nodes["pedestrian"].observationContributions=4;},
+        [](auto& s){s.candidate.cells[0].cell.id=193;},[](auto& s){s.candidate.cells[0].cell.depth=2;},
+        [](auto& s){s.candidate.cells[0].cell.x=1;},[](auto& s){s.candidate.cells[0].cell.y=1;},
+        [](auto& s){s.candidate.cells[0].cell.width=std::nextafter(10.,11.);},[](auto& s){s.candidate.cells[0].cell.height=11;},
+        [](auto& s){s.candidate.cells[0].counts.distinctContributors=3;},[](auto& s){s.candidate.cells.clear();},
+        [](auto& s){s.finest.startMs=1;},[](auto& s){s.finestAssessment.coverageReason += "x";},
+        [](auto& s){s.assessment.evaluatedAtMs=451;},[](auto& s){s.assessment.policyId.reset();},
+        [](auto& s){s.assessment.policyVersion="2";},[](auto& s){s.assessment.coverageStatus=ump::AssessmentStatus::Fail;},
+        [](auto& s){s.assessment.coverageReason += "x";},[](auto& s){s.assessment.status=ump::AssessmentStatus::Fail;},
+        [](auto& s){s.assessment.policyMode += "x";},[](auto& s){s.assessment.cells[0].cellId=193;},
+        [](auto& s){s.assessment.cells[0].status=ump::AssessmentStatus::Fail;},
+        [](auto& s){s.assessment.cells[0].metrics[0].id=MetricId::CellSideM;},
+        [](auto& s){s.assessment.cells[0].metrics[0].value.reset();},
+        [](auto& s){s.assessment.cells[0].metrics[0].unavailableReason="missing";},
+        [](auto& s){s.assessment.cells[0].checks[0].requirement.id=MetricId::CellSideM;},
+        [](auto& s){s.assessment.cells[0].checks[0].requirement.min=3;},
+        [](auto& s){s.assessment.cells[0].checks[0].requirement.max=3;},
+        [](auto& s){s.assessment.cells[0].checks[0].observed=3;},
+        [](auto& s){s.assessment.cells[0].checks[0].status=ump::AssessmentStatus::Fail;},
+        [](auto& s){s.assessment.cells[0].checks[0].reason += "x";},
+        [](auto& s){s.assessment.cells[0].effectivePolicyId="other";},
+        [](auto& s){s.assessment.cells[0].policySources.push_back("local");},
+        [](auto& s){s.assessment.cells[0].policyFeasible=false;},
+        [](auto& s){s.assessment.cells[0].semantic->taxonomyId += "x";},
+        [](auto& s){s.assessment.cells[0].semantic->taxonomyVersion += "x";},
+        [](auto& s){s.assessment.cells[0].semantic->bins[0].categoryId += "x";},
+        [](auto& s){s.assessment.cells[0].semantic->bins[0].observationContributions=4;},
+        [](auto& s){s.assessment.cells[0].semantic->bins[0].distinctContributors=3;},
+        [](auto& s){s.assessment.cells[0].semantic->minimumDistinctContributors=2;},
+        [](auto& s){s.assessment.cells[0].semantic->maxLoss=1;},[](auto& s){s.assessment.cells[0].semantic->meanLoss=1;},
+        [](auto& s){s.assessment.cells[0].retainedCounts->distinctContributors=3;},
+        [](auto& s){s.assessment.cells[0].retainedCounts.reset();},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->inputObservations=4;},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->inputDistinct=3;},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->retainedObservations=3;},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->retainedDistinct=2;},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->suppressedObservations=2;},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->suppressedDistinct=2;},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->suppressedTypeObservations["cyclist"]=2;},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->suppressedLeaves.push_back("other");},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->fraction=.4;},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->fullInputSemanticLoss=.6;},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->unsuppressedSemanticLoss=.9;},
+        [](auto& s){s.assessment.cells[0].semanticSuppression->evaluatedCandidates=3;},
+        [](auto& s){s.assessment.cells[0].semanticSuppression.reset();},
+        [](auto& s){s.decisions[0].cellId=193;},[](auto& s){s.decisions[0].selected=false;},
+        [](auto& s){s.decisions[0].reason += "x";},[](auto& s){s.decisions[0].triggerCells.push_back(194);},
+        [](auto& s){s.decisions[0].transition += "x";},[](auto& s){s.attempts[0].cell.counts.distinctContributors=3;},
+        [](auto& s){s.attempts[0].assessment.policyFeasible=false;},[](auto& s){s.minDepth=1;},
+        [](auto& s){s.selectedCells=2;},[](auto& s){s.suppressedCells=1;},[](auto& s){s.coarsenedCells=2;},[](auto& s){s.refinedCells=1;},
+        [](auto& s){s.strategy += "x";},[](auto& s){s.temporalExtensions=1;},[](auto& s){s.completionReason += "x";},
+        [](auto& s){s.temporalDecisions[0].action=ump::TemporalAction::ExtendWindow;},
+        [](auto& s){s.temporalDecisions[0].startMs=1;},[](auto& s){s.temporalDecisions[0].endMs=401;},
+        [](auto& s){s.temporalDecisions[0].evaluatedAtMs=451;},[](auto& s){s.temporalDecisions[0].status=ump::AssessmentStatus::Fail;},
+        [](auto& s){s.publicationState += "x";},[](auto& s){s.releaseId += "x";},
+        [](auto& s){s.coordinationCell.reset();},[](auto& s){s.semanticPriority->lossCeiling=.6;},
+        [](auto& s){s.semanticPriority->actualMaxLoss.reset();},[](auto& s){s.semanticPriority->attemptedCeilings=3;},
+        [](auto& s){s.semanticPriority->terminalFallback=true;},[](auto& s){s.semanticPriority->secondaryStrategy += "x";},
+        [](auto& s){s.semanticPriority->releaseTrigger += "x";},[](auto& s){s.semanticPriority->policySatisfiedRelease=false;}
+    };
+    for (std::size_t i=0;i<mutations.size();++i) {
+        auto changed=base;mutations[i](changed);
+        if(digest(changed)==original) throw std::runtime_error("Logical audit omitted mutation " + std::to_string(i));
+    }
+    auto runtimeOnly=base;runtimeOnly.assessment.cells[0].semanticSuppression->evaluationNanoseconds=999;
+    require(digest(runtimeOnly)==original,"Runtime suppression duration contaminated decision equality");
+    umpReplay::ReplayDecisionDigest ordered, reversed;
+    ordered.selection(base);ordered.selection(runtimeOnly);
+    reversed.selection(base);auto changed=base;changed.suppressedCells=1;reversed.selection(changed);
+    require(ordered.retirementSha256()!=reversed.retirementSha256(),"Later retirement was omitted from complete audit");
+    ump::ReleaseSnapshot release{"id","run","sensor","app","private_final_snapshot","policy","1",0,400,450,
+        {{base.candidate.cells[0],"effective",base.assessment.cells[0].semantic}},base.coordinationCell};
+    const auto releaseDigest=[](const auto& v){umpReplay::ReplayDecisionDigest h;h.release(v);return h.releaseSha256();};
+    const auto releaseOriginal=releaseDigest(release);
+    const std::vector<std::function<void(ump::ReleaseSnapshot&)>> releaseMutations{
+        [](auto& r){r.releaseId+="x";},[](auto& r){r.runId+="x";},[](auto& r){r.sensorId+="x";},[](auto& r){r.applicationId+="x";},
+        [](auto& r){r.model+="x";},[](auto& r){r.policyId+="x";},[](auto& r){r.policyVersion+="x";},
+        [](auto& r){r.startMs=1;},[](auto& r){r.endMs=401;},[](auto& r){r.sealedAtMs=451;},
+        [](auto& r){r.cells[0].aggregate.counts.observationContributions=4;},[](auto& r){r.cells[0].effectivePolicyId+="x";},
+        [](auto& r){r.cells[0].semantic.reset();},[](auto& r){r.coordinationCell.reset();},[](auto& r){r.cells.clear();}
+    };
+    for(const auto& mutate:releaseMutations){auto changed=release;mutate(changed);require(releaseDigest(changed)!=releaseOriginal,"Public release field missing from audit");}
+}
+
+void fullMinimalLogicalEquivalence() {
+    auto semantic=configuration();
+    semantic["semantic_taxonomy"]=YAML::Load(R"(
+id: audit-types
+version: '1'
+nodes:
+  - {id: road_user, loss: 1}
+  - {id: pedestrian, parent: road_user, loss: 0, input_types: [pedestrian]}
+)");
+    semantic["policy_tree"]["root"]["min_category_distinct_contributors"]["min"]=2;
+    semantic["policy_tree"]["root"]["semantic_max_loss"]["max"]=1;
+    const auto parsed=umpReplay::parseInput(source());
+    for(const std::string mode:{"fixed","spatial","temporal_first","spatial_first","semantic_first"}) {
+        for(bool local:{false,true}) {
+            if(local&&(mode=="fixed"||mode=="spatial"))continue;
+            auto config=YAML::Clone(mode=="semantic_first"?semantic:configuration());
+            config["policy_tree"]["execution"]["strategy"]=mode=="fixed"||mode=="spatial"?"spatial_first":mode;
+            if(local){config["temporal_adaptation"]["coordination"]="cell_local";config["temporal_adaptation"]["max_active_cells"]=64;config["spatial_selection"]["max_evaluations"]=256;}
+            umpReplay::Options options;options.mode=mode;options.progressStepMs=50;
+            const auto settings=umpReplay::parseSettings(config,parsed,options);
+            auto legacy=YAML::Load(umpReplay::run(parsed,settings,options));
+            require(!legacy["runtime"]["decision_audit"],"Historical full default gained opt-in decision audit");
+            options.decisionDigest=true;
+            auto full=YAML::Load(umpReplay::run(parsed,settings,options));
+            require(YAML::Dump(full["runtime"]["decision_audit"])!="","Full decision audit absent");
+            options.diagnostics="minimal";
+            auto minimal=YAML::Load(umpReplay::run(parsed,settings,options));
+            require(minimal["windows"].size()==0&&full["windows"].size()>0,"Minimal path retained heavy private windows or removed full diagnostics");
+            require(YAML::Dump(full["runtime"]["decision_audit"])==YAML::Dump(minimal["runtime"]["decision_audit"]),"Full/minimal complete logical digests differ");
+            require(full["runtime"]["decision_audit"]["retirement_count"].as<std::size_t>()==full["windows"].size(),"Private empty/suppressed retirements omitted from audit");
+            require(minimal["runtime"]["phases"]["private_window_json"]["calls"].as<int>()==0,"Minimal mode still executes private JSON serializer");
+            full.remove("runtime");legacy.remove("runtime");
+            require(YAML::Dump(full)==YAML::Dump(legacy),"Opt-in audit changed historical full payload");
+            full.remove("windows");minimal.remove("windows");minimal.remove("runtime");
+            require(YAML::Dump(full)==YAML::Dump(minimal),"Minimal path changed public output or input/accounted conservation");
+        }
+    }
+}
+
 void pacingCliValidation() {
     const std::vector<std::string> base{"AggregationReplay", "--input", "/unused/input.json",
         "--config", "/unused/policy.json", "--mode", "fixed", "--output",
@@ -338,7 +523,16 @@ void pacingCliValidation() {
         return umpReplay::arguments(static_cast<int>(argv.size()), argv.data());
     };
     const auto defaults = parse({});
-    require(!defaults.paceRate && !defaults.progressStepMs, "Offline CLI implicitly enabled pacing or native progress");
+    require(!defaults.paceRate && !defaults.progressStepMs && defaults.diagnostics=="full" && !defaults.decisionDigest && !defaults.failureOutput,
+        "Historical CLI implicitly enabled pacing, minimal diagnostics or auditing");
+    require(parse({"--diagnostics","minimal"}).diagnostics=="minimal" && parse({"--decision-digest","sha256"}).decisionDigest,
+        "Opt-in minimal/digest CLI not retained");
+    rejects([&]{parse({"--diagnostics","off"});},"Unknown diagnostics accepted");
+    rejects([&]{parse({"--decision-digest","fnv"});},"Unknown digest accepted");
+    rejects([&]{parse({"--failure-output","/unused/failure.json"});},"Failure output accepted without pacing");
+    const auto sidecar=(std::filesystem::temp_directory_path()/("ump-failure-unused-"+std::to_string(::getpid())+".json")).string();
+    require(parse({"--pace-rate","1","--failure-output",sidecar.c_str()}).failureOutput.has_value(),"Failure sidecar CLI lost");
+    rejects([&]{parse({"--pace-rate","1","--failure-output",base.back().c_str()});},"Failure/result path collision accepted");
     require(parse({"--progress-step-ms", "50"}).progressStepMs == std::optional<ump::AggregationTime>{50},
         "CLI did not retain the explicit progress step");
     for (const char* value : {"0", "-1", "nan", "1.5", "50junk"})
@@ -364,6 +558,7 @@ int main() {
         policiesAndStrategies(); missingEmptyAndTruncation(); strictValidationAndIsolation();
         pacedCoreEquivalence(); pacingCliValidation(); nativeProgressClock();
         progressClockCoverageAndValidation(); pacedProgressClockEquivalence();
+        sha256AndCanonicalEncoding(); completeDecisionDigestCoverage(); fullMinimalLogicalEquivalence();
         std::cout << "PASS: frozen replay, actual core modes, policy-controlled fixed baselines, conservation, determinism, gaps, native progress-clock equivalence, paced equivalence, CLI validation and private/public separation.\n";
         return 0;
     } catch (const std::exception& error) { std::cerr << "FAIL: " << error.what() << '\n'; return 1; }

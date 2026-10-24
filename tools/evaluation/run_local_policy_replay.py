@@ -121,6 +121,9 @@ def effective(config, cell):
 
 
 def audit(data, config, actual):
+    from semantic_suppression_audit import suppression_configured, audit_suppression
+    if suppression_configured(config):
+        return audit_suppression(data, config, actual)
     scalar_config, scalar_result = scalar_projection(config, actual)
     scalar_config['policy_tree']['execution']['strategy'] = 'temporal_first'
     scalar_result['mode'] = 'temporal_first'

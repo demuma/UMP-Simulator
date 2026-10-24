@@ -405,4 +405,9 @@ if(process.argv[2]) {
   }
  });
 }
+test('Surface access admission uses its exact segment without a fabricated facade',()=>{
+ const portal={kind:'surface_access',point:[40,40],width_m:1.2,admission_segment:[[39.4,40],[40.6,40]],approach:[40,41.5]};
+ const segment=M.portalSegment(portal);
+ assert.deepEqual(segment,portal.admission_segment);
+});
 process.stdout.write(passed+' model tests passed\n');

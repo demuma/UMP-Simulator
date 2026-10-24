@@ -242,7 +242,9 @@ def audit_lifecycle(cfg, raw, frames, person_by_track, origin, step, end, summar
     diagnostic_names=('blocked_motion_steps','admission_wait_steps','merge_admission_wait_steps',
                       'max_consecutive_stop_ms','active_stalled_tracks','body_overlap_violations',
                       'navigation_steering_steps','navigation_replans','navigation_replan_failures',
-                      'navigation_candidate_checks','navigation_max_search_nodes')
+                      'navigation_candidate_checks','navigation_max_search_nodes',
+                      'crossing_pedestrian_wait_steps','crossing_rider_wait_steps','crossing_batches',
+                      'crossing_fairness_closures','max_crossing_pedestrian_wait_ms')
     # Historical integration captures did not record these diagnostics. Null is
     # intentional: absence of a counter is not evidence of zero violations.
     diagnostics={name:count(summary[name],name) if name in summary else None
@@ -281,6 +283,13 @@ def audit_lifecycle(cfg, raw, frames, person_by_track, origin, step, end, summar
 def build_recording(cfg, raw):
     """Independent source/raw/journal consistency checks; no source simulation."""
     sensors=[s for s in cfg['sensors'] if s['type']=='adaptive-grid-based']
+    # This historical GT/raw/journal exporter proves complete source-footprint
+    # counts. Filtered products use the independently audited suppression study
+    # path until native capture accounting is extended deliberately.
+    for sensor in sensors:
+        root=sensor.get('aggregation',{}).get('policy_tree',{}).get('root',{})
+        insist(root.get('semantic_suppression_fraction',{}).get('max',0)==0,
+               'Filtered native mapped captures require retained-population accounting; use run_suppression_study.py on the saved observation stream')
     insist(len(sensors)==1,'Recording requires exactly one AGBS sensor')
     sensor=sensors[0]; aggregation=sensor['aggregation']
     period=round(1000/sensor['frame_rate']); step=round(1000*cfg['simulation']['time_step'])
@@ -555,8 +564,37 @@ def validate_scene_building_access(scene, cfg, access_path):
     insist(isinstance(declared,list) and all(isinstance(portal,dict) and isinstance(portal.get('id'),str) for portal in declared),
            'Public building access requires declared native scene portals')
     by_id={portal['id']:portal for portal in declared}
-    insist(len(by_id)==len(declared) and by_id=={portal['id']:portal for portal in access['portals']},
+    public_native={portal['id']:{key:value for key,value in portal.items() if key!='surface_access'}
+                   for portal in access['portals']}
+    insist(len(by_id)==len(declared) and len(public_native)==len(access['portals']) and by_id==public_native,
            'Public building access portals differ from native scene configuration')
+    surface=[portal for portal in access['portals'] if portal.get('kind')=='surface_access']
+    if surface:
+        # Reconstruct public source metadata from the exact frozen geometry;
+        # the native/public portal equality alone cannot authenticate OSM tags.
+        import importlib.util
+        repo=Path(__file__).resolve().parents[2]
+        def load_helper(name):
+            spec=importlib.util.spec_from_file_location('ump_export_'+name,Path(__file__).with_name(name+'.py'))
+            module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
+        builder=load_helper('build_mapped_scene');transit=load_helper('transit_access')
+        _,local,layers,_,provenance=builder.load_source(repo)
+        data=transit.metadata(repo,local,provenance['source_geometry_sha256'])
+        meta={row['reference']:row for row in data['entrances']}
+        insist(access.get('transit_access',{}).get('source_geometry_sha256')==transit.SOURCE_SHA256
+               and access['transit_access'].get('metadata_sha256')==hashlib.sha256(json.dumps(data,sort_keys=True,separators=(',',':'),ensure_ascii=False).encode()).hexdigest(),
+               'Public subway provenance differs from frozen source')
+        insist(len(surface)==2 and {p['surface_access']['reference'] for p in surface}=={'A1','A2'},
+               'Public subway geometry requires both A1 and A2')
+        for portal in surface:
+            tags=portal['surface_access'];source=meta[tags['reference']]
+            expected={'reference':source['reference'],'name':source['name'],'osm_node_id':source['node']['osm_id'],
+                      'stop_area_id':300934,'wheelchair':'no','steps_way_id':source['connected_steps']['osm_id'],
+                      'ramp':'no','step_count':int(source['connected_steps']['tags']['step_count']),'scope':'surface_only'}
+            insist(tags==expected and portal['point']==source['node']['local_point_m'],
+                   'Public subway identity, point or accessibility differs from frozen source')
+    else:
+        insist('transit_access' not in access, 'Transit metadata requires native surface access portals')
     v2=access.get('schema')=='ump.building-access.v2'
     if v2:
         navigation=cfg.get('mapped_scene',{}).get('motion',{}).get('navigation',{})
@@ -567,6 +605,10 @@ def validate_scene_building_access(scene, cfg, access_path):
                'Public navigation geometry differs from native scene configuration')
         insist(access['navigation']['body_clearance_m']==navigation.get('center_clearance_m'),
                'Public navigation clearance differs from native scene configuration')
+        priority=access['navigation'].get('crossing_priority')
+        insist((priority is None and not navigation.get('crossings')) or
+               isinstance(priority,dict) and priority.get('resources')==navigation.get('crossings'),
+               'Public crossing priority differs from native scene configuration')
         spaces=navigation.get('spaces',[])
         public_spaces=access['navigation'].get('spaces',[])
         insist(isinstance(spaces,list) and isinstance(public_spaces,list), 'Invalid public navigation spaces')
@@ -624,6 +666,7 @@ def validate_scene_building_access(scene, cfg, access_path):
                'Generated building scene is missing its public geometry digest')
     return {'status':'verified_native_portal_agreement','building_footprints':len(access['buildings']),
             'routable_portals':len(access['portals']),
+            'surface_access_portals':len(surface),
             'generated_manifest_geometry_digest_verified':'building_access_sha256' in manifest,
             'generated_manifest_config_and_background_verified':generated,
             **({'storefront_destinations':len(access['store_fronts']),
@@ -667,6 +710,10 @@ def export_scene(scene, output, *, max_capture_mib=2048):
             'map':map_info,'variants':[{'id':'native','label':'Actual native aggregation',
                  'result':'native_result.json','policy_tree_id':agg['policy_tree']['id'],'policy_regions':regional_metadata(cfg,agg),
                  'policy_root_requirements':[{'metric':m,**b} for m,b in sorted(agg['policy_tree']['root'].items())]}]}
+    if not proof['all_scheduled_episodes_completed']:
+        quality=proof['lifecycle_quality']
+        bundle['title']+=' · INCOMPLETE SOURCE'
+        bundle['input_provenance']+=' Source acceptance FAILED: only '+str(quality['realized_ends'])+'/'+str(quality['scheduled_episodes'])+' episodes completed; '+str(quality['active_episodes_at_horizon'])+' active and '+str(quality['pending_episodes_at_horizon'])+' pending at the horizon. Verified capture consistency is not a drainage or traffic-capacity result.'
     bundle['sha256']={name:digest(output/name) for name in public_files}
     write_json(output/'bundle.json',bundle)
     execution_path=scene/'execution.json'

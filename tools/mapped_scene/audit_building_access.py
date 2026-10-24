@@ -13,7 +13,7 @@ import math
 from pathlib import Path
 
 import yaml
-from shapely.geometry import LineString, Point, Polygon, box
+from shapely.geometry import GeometryCollection, LineString, Point, Polygon, box
 from shapely.ops import unary_union
 from shapely.prepared import prep
 
@@ -79,11 +79,16 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
             for field, index in [('start_portal', 0), ('end_portal', -1)]:
                 if route.get(field) in portals:
                     portal = portals[route[field]]
+                    if portal.get('kind')=='surface_access':
+                        require(person['type'] in ('Adult Pedestrian','Child Pedestrian','Senior Pedestrian'),
+                                'Stairs access uses an ineligible mobility profile')
                     require(math.dist(route['points'][index], portal['point']) <= tolerance,
                             'Route endpoint differs from its exact door point')
             if previous is not None:
                 before = routes[previous['route_id']]
                 require(before['end_portal'] in portals and route['start_portal'] in portals
+                        and portals[before['end_portal']].get('kind')!='surface_access'
+                        and portals[route['start_portal']].get('kind')!='surface_access'
                         and portals[before['end_portal']]['building_id']
                             == portals[route['start_portal']]['building_id'],
                         'Return episode changes its declared building')
@@ -113,6 +118,13 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
         portal_throats = {}
         for key in set(portal for ids in track_portals.values() for portal in ids):
             portal = portals[key]
+            if portal.get('kind')=='surface_access':
+                # Surface sinks are not wall openings and grant no extra walkable
+                # area or building exception. The full body must fit the source.
+                portal_throats[key]=GeometryCollection()
+                require(allowed_tolerant.covers(LineString([portal['point'],portal['approach']])),
+                        'Surface approach leaves allowed walking geometry')
+                continue
             a, b = portal['facade']
             length = math.dist(a, b)
             require(length > 0, 'Degenerate declared facade')
@@ -299,9 +311,9 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
             counts[portal_id]['completed_entries'] += 1
             counts[portal_id]['max_last_frame_distance_m'] = max(counts[portal_id]['max_last_frame_distance_m'], distance)
     visited_buildings = {portals[key]['building_id'] for key, row in counts.items()
-                         if row['completed_entries'] > 0}
+                         if row['completed_entries'] > 0 and portals[key].get('kind')!='surface_access'}
     exited_buildings = {portals[key]['building_id'] for key, row in counts.items()
-                        if row['realized_exits'] > 0}
+                        if row['realized_exits'] > 0 and portals[key].get('kind')!='surface_access'}
     if local_navigation:
         require(sum(row['completed_entries'] > 0 and row['realized_exits'] > 0 for row in counts.values()) >= 2,
                 'Acceptance requires realized entry and return at two distinct destinations')
@@ -364,6 +376,8 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
             'buildings_with_completed_entries': len(visited_buildings),
             'buildings_with_realized_exits': len(exited_buildings),
             'all_planned_entries_completed': all(row['completed_entries'] == row['planned_entries'] for row in counts.values()),
+            'surface_access_entries':sum(row['completed_entries'] for key,row in counts.items() if portals[key].get('kind')=='surface_access'),
+            'surface_access_exits':sum(row['realized_exits'] for key,row in counts.items() if portals[key].get('kind')=='surface_access'),
             'portals': counts,
             'scope': 'All stored native source frames, route or navigation-geometry containment, pairwise circular body+clearance separation, exact portal lifecycle and realized indoor timing; local navigation additionally checks actual sweeps, speed/velocity and compatible boundary endpoints when source geometry is supplied. No private identities in this report.'}
 
@@ -388,6 +402,13 @@ def main():
         builder = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(builder)
         _, local, layers, _, provenance = builder.load_source(Path(__file__).resolve().parents[2])
+        if any(p.get('kind')=='surface_access' for p in cfg['mapped_scene']['portals']):
+            helper_path=Path(__file__).with_name('transit_access.py')
+            spec=importlib.util.spec_from_file_location('ump_audit_transit',helper_path)
+            transit=importlib.util.module_from_spec(spec);spec.loader.exec_module(transit)
+            local,layers,_=transit.ground_environment(Path(__file__).resolve().parents[2],local,layers,provenance['source_geometry_sha256'])
+            require(context.get('transit_access',{}).get('source_geometry_sha256')==transit.SOURCE_SHA256,
+                    'Surface physical audit requires verified frozen source metadata')
         layers = dict(layers)
         layers['buildings'] = unary_union([geom for props, geom in local if props['kind'] == 'building'])
     result = audit(cfg, json.loads(raw_path.read_text()), public_context=context, map_layers=layers)
