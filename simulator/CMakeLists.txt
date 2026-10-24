@@ -393,6 +393,22 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS)
     target_compile_features(MappedSceneConfigurationTests PRIVATE cxx_std_17)
     target_link_libraries(MappedSceneConfigurationTests PRIVATE yaml-cpp::yaml-cpp)
     add_test(NAME mapped_scene_configuration COMMAND MappedSceneConfigurationTests)
+    # Aggregate-only finite motion probe; never writes track IDs or motion data.
+    add_executable(MappedMotionProbe tests/MappedMotionProbe.cpp
+        src/MappedScene.cpp src/MappedSceneConfiguration.cpp)
+    target_compile_features(MappedMotionProbe PRIVATE cxx_std_17)
+    target_link_libraries(MappedMotionProbe PRIVATE yaml-cpp::yaml-cpp)
+    # Standard-library contract checks stay available without the map-tool venv.
+    if(NOT Python3_EXECUTABLE)
+        find_package(Python3 3.9 COMPONENTS Interpreter QUIET)
+    endif()
+    if(Python3_EXECUTABLE)
+        add_test(NAME mapped_motion_probe_contract COMMAND "${Python3_EXECUTABLE}"
+            "${CMAKE_CURRENT_SOURCE_DIR}/../tools/mapped_scene/test_motion_probe.py")
+        set_tests_properties(mapped_motion_probe_contract PROPERTIES
+            LABELS "unit;mapped_scene;tools" TIMEOUT 15
+            ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;UMP_MAPPED_MOTION_PROBE_BINARY=$<TARGET_FILE:MappedMotionProbe>")
+    endif()
     add_executable(MappedPedestrianSemanticTests tests/MappedPedestrianSemanticTests.cpp)
     target_compile_features(MappedPedestrianSemanticTests PRIVATE cxx_std_17)
     target_link_libraries(MappedPedestrianSemanticTests PRIVATE ump_semantic)

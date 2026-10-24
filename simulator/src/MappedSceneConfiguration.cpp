@@ -47,7 +47,7 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
                 throw std::invalid_argument("Navigation geometry requires local_navigation motion");
             const auto navigation=motion["navigation"];
             keys(navigation,{"allowed_center_polygons","grid_resolution_m","center_clearance_m","max_replan_nodes",
-                "replan_after_ms","replan_interval_ms"},"mapped_scene.motion.navigation");
+                "replan_after_ms","replan_interval_ms","narrow_passages"},"mapped_scene.motion.navigation");
             const auto polygons=navigation["allowed_center_polygons"];
             if (!polygons || !polygons.IsSequence())
                 throw std::invalid_argument("Navigation allowed_center_polygons must be a sequence");
@@ -72,6 +72,23 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
             result.navigation.maxReplanNodes=navigation["max_replan_nodes"] ? navigation["max_replan_nodes"].as<std::size_t>() : 20000;
             result.navigation.replanAfterMs=navigation["replan_after_ms"] ? navigation["replan_after_ms"].as<ump::AggregationTime>() : 1500;
             result.navigation.replanIntervalMs=navigation["replan_interval_ms"] ? navigation["replan_interval_ms"].as<ump::AggregationTime>() : 1000;
+            // Passage geometry is an explicit source-model assumption. Missing
+            // declarations retain the historical uncoordinated navigation mode.
+            if (const auto passages=navigation["narrow_passages"]) {
+                if (!passages.IsSequence()) throw std::invalid_argument("Navigation narrow_passages must be a sequence");
+                for (const auto& passage:passages) {
+                    keys(passage,{"id","centerline","holding_points_a","holding_points_b",
+                        "protection_radius_m","max_batch_size"},"navigation narrow passage");
+                    ump::MappedNavigationPassage value;
+                    value.id=text(passage["id"],"navigation narrow passage id");
+                    value.centerline=ring(passage["centerline"]);
+                    value.holdingPointsA=ring(passage["holding_points_a"]);
+                    value.holdingPointsB=ring(passage["holding_points_b"]);
+                    if (passage["protection_radius_m"]) value.protectionRadiusM=passage["protection_radius_m"].as<double>();
+                    if (passage["max_batch_size"]) value.maxBatchSize=passage["max_batch_size"].as<std::size_t>();
+                    result.navigation.narrowPassages.push_back(std::move(value));
+                }
+            }
         }
         result.motionStepMs=motion["step_ms"] ? motion["step_ms"].as<ump::AggregationTime>() : 50;
         result.clearanceM=motion["clearance_m"] ? motion["clearance_m"].as<double>() : .1;

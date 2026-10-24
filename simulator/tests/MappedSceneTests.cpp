@@ -1,4 +1,5 @@
 #include "MappedScene.hpp"
+#include <algorithm>
 #include <cmath>
 #include <functional>
 #include <iostream>
@@ -611,6 +612,342 @@ void localVisibleGuidesDoNotCauseBacktrackingAfterDoorWaits() {
     rejects([&]{MappedScene wrongFacadeException(invalid);});
 }
 
+
+MappedSceneConfig localNarrowPassageScene() {
+    auto input=localScene(24,14);
+    // These are center-safe chambers connected by a nonpassing neck. Physical
+    // body clearance is still enforced by the native swept-motion checks.
+    input.navigation.allowedCenterPolygons={{{{0,0},{9,0},{9,6.95},{15,6.95},
+        {15,0},{24,0},{24,14},{15,14},{15,7.05},{9,7.05},{9,14},{0,14}}, {}}};
+    input.navigation.narrowPassages={{"test-neck",{{8,7},{12,7},{16,7}},
+        {{5,4},{5,10},{3,4},{3,10},{1.5,4},{1.5,10},{5,1.5},{5,12.5}},
+        {{19,4},{19,10},{21,4},{21,10},{22.5,4},{22.5,10},{19,1.5},{19,12.5}},1.15,2}};
+    input.routes={{"neck-east",{{0,7},{8,7},{12,7},{16,7},{24,7}},"",""},
+        {"neck-west",{{24,7},{16,7},{12,7},{8,7},{0,7}},"",""}};
+    return input;
+}
+
+void requirePassageFrameSafety(const std::vector<MappedVisibleTrack>& frame,
+        const std::map<std::string,double>& radii) {
+    bool eastInNeck=false,westInNeck=false;
+    for (std::size_t i=0;i<frame.size();++i) {
+        const auto& track=frame[i];
+        if (track.position.x>9+1e-7 && track.position.x<15-1e-7) {
+            require(std::abs(track.position.y-7)<=.05+1e-7,
+                "Narrow-passage motion left the center-safe neck");
+            eastInNeck|=track.routeId=="neck-east";
+            westInNeck|=track.routeId=="neck-west";
+        }
+        for (std::size_t j=i+1;j<frame.size();++j)
+            require(std::hypot(track.position.x-frame[j].position.x,
+                    track.position.y-frame[j].position.y)
+                    >=radii.at(track.trackId)+radii.at(frame[j].trackId)+.1-1e-7,
+                "A passage queue or grant violated pairwise body clearance");
+    }
+    require(!(eastInNeck && westInNeck),
+        "Opposing tracks occupied a nonpassing neck at the same time");
+}
+
+void localNarrowPassageOpposingFlowsAndDeterminism() {
+    auto input=localNarrowPassageScene();
+    input.people={{"private-east","Adult Pedestrian",1.2,{{"a-east","neck-east",0}},.25},
+        {"private-west","Pedestrian With Stroller",1,{{"b-west","neck-west",0}},.45}};
+    auto renamed=input;std::reverse(renamed.people.begin(),renamed.people.end());
+    renamed.people[0].personId="different-private-one";
+    renamed.people[1].personId="different-private-two";
+    MappedScene scene(input),coarse(renamed);
+    const std::map<std::string,double> radii{{"a-east",.25},{"b-west",.45}};
+    AggregationTime holdingWithoutReplan=0,longestHoldingWithoutReplan=0;
+    auto previous=scene.motionDiagnostics();
+    for (AggregationTime now=0;now<=120000;now+=50) {
+        scene.advanceTo(now);
+        const auto frame=scene.frameAt(now);
+        requirePassageFrameSafety(frame,radii);
+        const auto diagnostic=scene.motionDiagnostics();
+        bool atHoldingPoint=false;
+        for (const auto& track:frame) {
+            const auto& passage=input.navigation.narrowPassages.front();
+            const auto& points=track.routeId=="neck-east"
+                ? passage.holdingPointsA : passage.holdingPointsB;
+            for (const auto point:points)
+                if (std::hypot(track.position.x-point.x,track.position.y-point.y)<1e-7
+                    && std::hypot(track.velocity.x,track.velocity.y)<1e-7)
+                    atHoldingPoint=true;
+        }
+        // Deliberately holding for a conflicting grant should not repeatedly
+        // search the occupied corridor as though the static route were broken.
+        if (atHoldingPoint && diagnostic.navigationReplans==previous.navigationReplans)
+            holdingWithoutReplan+=50;
+        else holdingWithoutReplan=0;
+        longestHoldingWithoutReplan=std::max(longestHoldingWithoutReplan,holdingWithoutReplan);
+        previous=diagnostic;
+        if (now%250==0) {
+            coarse.advanceTo(now);
+            sameFrame(frame,coarse.frameAt(now));
+        }
+    }
+    const auto d=scene.motionDiagnostics();
+    require(d.realizedStarts==2 && d.realizedEnds==2 && d.activeTracks==0
+        && d.pendingTracks==0 && d.overlapViolations==0 && d.passageWaitSteps>0
+        && d.passageBatches>=2 && d.passageClearedTracks==2,
+        "Explicit narrow-passage opposing flows failed to safely drain");
+    require(d.maxPassageWaitMs>0 && longestHoldingWithoutReplan>=1500,
+        "Intentional passage holding was not observable without a replanning storm");
+    require(scene.events().size()==coarse.events().size(),
+        "Private renaming or caller cadence changed passage lifecycle count");
+    for (std::size_t i=0;i<scene.events().size();++i)
+        require(scene.events()[i].trackId==coarse.events()[i].trackId
+            && scene.events()[i].kind==coarse.events()[i].kind
+            && scene.events()[i].atMs==coarse.events()[i].atMs,
+            "Private identity, person ordering or caller cadence changed passage service");
+}
+
+void localNarrowPassageFiniteBatchesDoNotStarveOpposition() {
+    auto input=localNarrowPassageScene();
+    // Both sides have older demand before the later eastbound source arrives.
+    // A finite batch must not keep admitting that later source ahead of west.
+    input.people={{"first-east-person","Adult Pedestrian",1.2,
+            {{"a-first-east","neck-east",0}},.25},
+        {"first-west-person","Adult Pedestrian",1.2,
+            {{"b-first-west","neck-west",0}},.25}};
+    for (int i=0;i<6;++i) {
+        const auto suffix=std::to_string(i);
+        input.people.push_back({"later-east-person-"+suffix,"Adult Pedestrian",1.2,
+            {{"later-east-"+suffix,"neck-east",8000+i*750}},i%2?.35:.25});
+    }
+    MappedScene scene(input);
+    std::map<std::string,double> radii;
+    for (const auto& person:input.people) radii.emplace(person.episodes.front().trackId,person.radiusM);
+    for (AggregationTime now=0;now<=180000;now+=50) {
+        scene.advanceTo(now);
+        requirePassageFrameSafety(scene.frameAt(now),radii);
+    }
+    const auto d=scene.motionDiagnostics();
+    require(d.realizedStarts==8 && d.realizedEnds==8 && d.pendingTracks==0
+        && d.activeTracks==0 && d.overlapViolations==0 && d.passageClearedTracks==8
+        && d.passageBatches>=3 && d.passageWaitSteps>0,
+        "Finite narrow-passage batches failed to drain queued opposing demand");
+    AggregationTime westEnd=-1;std::vector<AggregationTime> laterEastEnds;
+    for (const auto& event:scene.events()) if (event.kind==MappedEventKind::EpisodeEnd) {
+        if (event.trackId=="b-first-west") westEnd=event.atMs;
+        if (event.trackId.find("later-east-")==0) laterEastEnds.push_back(event.atMs);
+    }
+    require(westEnd>=0 && !laterEastEnds.empty()
+        && westEnd<*std::max_element(laterEastEnds.begin(),laterEastEnds.end()),
+        "Late compatible arrivals indefinitely extended a batch ahead of older opposing demand");
+}
+
+
+void localNarrowPassageSharedDirectionBatchEntersSingleFile() {
+    auto input=localNarrowPassageScene();
+    auto& passage=input.navigation.narrowPassages.front();
+    passage.maxBatchSize=4;
+    // Close lateral staging lets a shared batch enter efficiently while keeping
+    // both the centerline and the westbound clearing path free of waiting bodies.
+    passage.holdingPointsA={{6.5,6},{6.5,8},{6.5,4},{6.5,10}};
+    input.people={{"initial-west-person","Adult Pedestrian",1.2,
+        {{"a-initial-west","neck-west",0}},.25}};
+    for (int i=0;i<4;++i) {
+        const auto suffix=std::to_string(i);
+        input.people.push_back({"shared-east-person-"+suffix,"Adult Pedestrian",1.2,
+            {{"z-shared-east-"+suffix,"neck-east",i*500}},.25});
+    }
+    MappedScene scene(input);
+    std::map<std::string,double> radii;
+    for (const auto& person:input.people) radii.emplace(person.episodes.front().trackId,person.radiusM);
+    std::size_t maxEastInNeck=0;
+    for (AggregationTime now=0;now<=120000;now+=50) {
+        scene.advanceTo(now);
+        const auto frame=scene.frameAt(now);
+        requirePassageFrameSafety(frame,radii);
+        std::size_t eastInNeck=0;
+        for (const auto& track:frame) {
+            if (track.nextWaypointIndex>1 && track.nextWaypointIndex<=3)
+                require(std::abs(track.position.y-7)<1e-8
+                    && track.position.x>=8-1e-8 && track.position.x<=16+1e-8,
+                    "A controlled passage step left its centerline at entry or an internal vertex");
+            if (track.routeId=="neck-east" && track.position.x>9 && track.position.x<15)
+                ++eastInNeck;
+        }
+        maxEastInNeck=std::max(maxEastInNeck,eastInNeck);
+    }
+    const auto d=scene.motionDiagnostics();
+    require(d.realizedStarts==5 && d.realizedEnds==5 && d.activeTracks==0
+        && d.pendingTracks==0 && d.overlapViolations==0 && d.passageClearedTracks==5
+        && d.passageBatches==2,
+        "A finite compatible-direction batch failed to drain after opposing service");
+    require(maxEastInNeck>=2,
+        "Compatible batch entry serialized the whole passage instead of only its mouth");
+}
+
+
+
+
+void localNarrowPassageReadyDemandAvoidsUnstagedHeadOfLineBlocking() {
+    auto input=localNarrowPassageScene();
+    input.people={{"older-slow-person","Adult Pedestrian",.1,
+            {{"older-slow-west","neck-west",0}},.25},
+        {"younger-fast-person","Adult Pedestrian",1.2,
+            {{"younger-fast-east","neck-east",1000}},.25}};
+    MappedScene scene(input);
+    const std::map<std::string,double> radii{{"older-slow-west",.25},{"younger-fast-east",.25}};
+    std::map<std::string,Point> previous;
+    for (AggregationTime now=0;now<=400000;now+=50) {
+        scene.advanceTo(now);
+        const auto frame=scene.frameAt(now);
+        requirePassageFrameSafety(frame,radii);
+        for (const auto& track:frame) {
+            const double speed=track.trackId=="older-slow-west"?.1:1.2;
+            require(std::hypot(track.velocity.x,track.velocity.y)<=speed+1e-8,
+                "Passage readiness accelerated a slow or waiting track");
+            const auto before=previous.find(track.trackId);
+            if (before!=previous.end())
+                require(std::hypot(track.position.x-before->second.x,
+                    track.position.y-before->second.y)<=speed*.05+1e-8,
+                    "Passage readiness teleported a track to its staging position");
+        }
+        previous.clear();
+        for (const auto& track:frame) previous.emplace(track.trackId,track.position);
+        if (now==40000) {
+            bool fastFinished=false,slowFinished=false;
+            for (const auto& event:scene.events()) if (event.kind==MappedEventKind::EpisodeEnd) {
+                fastFinished|=event.trackId=="younger-fast-east";
+                slowFinished|=event.trackId=="older-slow-west";
+            }
+            // The older request is still approaching/using the resource. It
+            // must not reserve an empty passage before it is physically ready
+            // and prevent already staged opposite traffic from being served.
+            require(fastFinished && !slowFinished,
+                "An unstaged older request blocked ready opposing demand for 40 seconds");
+        }
+    }
+    const auto d=scene.motionDiagnostics();
+    require(d.realizedStarts==2 && d.realizedEnds==2 && d.pendingTracks==0
+        && d.activeTracks==0 && d.overlapViolations==0 && d.passageClearedTracks==2
+        && d.passageBatches==2,
+        "Ready-first passage service failed to eventually drain the older slow request");
+}
+
+void localNarrowPassageBentEntryRemainsOnSpineNearPassingTraffic() {
+    auto input=localScene(24,14);
+    // A thin static divider preserves the passer's approach until its turn.
+    // The unrelated route stays outside the passage, while its approaching
+    // velocity can influence the local TTC score at the owner's entry step.
+    input.navigation.allowedCenterPolygons[0].holes={
+        {{6.49,7.01},{6.51,7.01},{6.51,10.1},{6.49,10.1}}};
+    input.navigation.narrowPassages={{"bent-neck",{{8,7},{12,6},{16,7}},
+        {{5,4}},{{19,4}},1.15,1}};
+    input.routes={{"bent-owner",{{0,7},{8,7},{12,6},{16,7},{24,7}},"",""},
+        {"nearby-passer",{{0,7},{6.75,7},{6.75,10},{24,10}},"",""}};
+    input.people={{"bent-private","Adult Pedestrian",1.3,
+            {{"bent-track","bent-owner",0}},.25},
+        {"passer-private","Adult Pedestrian",2,
+            {{"passer-track","nearby-passer",3000}},.25}};
+    input.navigation.replanAfterMs=120000;
+    MappedScene scene(input);std::size_t controlledSteps=0;
+    const auto& points=input.routes[0].points;
+    for (AggregationTime now=0;now<=60000;now+=50) {
+        scene.advanceTo(now);
+        for (const auto& track:scene.frameAt(now)) {
+            if (track.trackId!="bent-track" || track.nextWaypointIndex<=1
+                || track.nextWaypointIndex>3) continue;
+            const auto a=points[track.nextWaypointIndex-1],b=points[track.nextWaypointIndex];
+            const double dx=b.x-a.x,dy=b.y-a.y;
+            const double fraction=std::clamp(((track.position.x-a.x)*dx
+                +(track.position.y-a.y)*dy)/(dx*dx+dy*dy),0.0,1.0);
+            require(std::hypot(track.position.x-(a.x+fraction*dx),
+                    track.position.y-(a.y+fraction*dy))<1e-8,
+                "A bent passage's first controlled entry/vertex step used free-space steering");
+            ++controlledSteps;
+        }
+    }
+    const auto d=scene.motionDiagnostics();
+    require(controlledSteps>0 && d.realizedStarts==2 && d.realizedEnds==2
+        && d.activeTracks==0 && d.pendingTracks==0 && d.overlapViolations==0
+        && d.passageBatches==1 && d.passageClearedTracks==1,
+        "Bent passage control or nearby unrelated traffic failed to drain");
+}
+
+void localNarrowPassageUnrelatedGuideBypassesIdleResource() {
+    auto input=localNarrowPassageScene();
+    input.navigation.allowedCenterPolygons=localScene(24,14).navigation.allowedCenterPolygons;
+    input.routes={{"resource-bypass",{{0,7},{6,4},{18,4},{24,7}},"",""}};
+    input.people={{"bypass-person","Adult Pedestrian",1.3,
+        {{"bypass-track","resource-bypass",0}},.25}};
+    // The supplied guide already bypasses the resource. Delay dynamic repair
+    // beyond this test so a forbidden shortcut cannot be rescued by A*.
+    input.navigation.replanAfterMs=120000;
+    MappedScene scene(input);
+    for (AggregationTime now=0;now<=60000;now+=50) {
+        scene.advanceTo(now);
+        for (const auto& track:scene.frameAt(now)) {
+            const double centerlineX=std::clamp(track.position.x,8.0,16.0);
+            require(std::hypot(track.position.x-centerlineX,track.position.y-7)
+                    >=input.navigation.narrowPassages[0].protectionRadiusM-1e-7,
+                "An unrelated route shortcut crossed an idle protected passage");
+        }
+    }
+    const auto d=scene.motionDiagnostics();
+    require(d.realizedStarts==1 && d.realizedEnds==1 && d.activeTracks==0
+        && d.pendingTracks==0 && d.overlapViolations==0
+        && d.passageBatches==0 && d.passageWaitSteps==0 && d.passageClearedTracks==0
+        && d.navigationReplans==0,
+        "An unrelated valid bypass stalled at a forbidden shortcut or acquired the passage");
+}
+
+void localNarrowPassageOptionalOffAndValidation() {
+    auto plain=localScene(24,14);
+    plain.routes={{"unchanged-local",{{0,7},{8,7},{12,7},{16,7},{24,7}},"",""}};
+    plain.people={{"unchanged-person","Adult Pedestrian",1,{{"unchanged-track","unchanged-local",0}}}};
+    auto explicitlyEmpty=plain;explicitlyEmpty.navigation.narrowPassages.clear();
+    MappedScene original(plain),empty(explicitlyEmpty);
+    for (AggregationTime now=0;now<=25000;now+=250) {
+        original.advanceTo(now);empty.advanceTo(now);
+        sameFrame(original.frameAt(now),empty.frameAt(now));
+    }
+    const auto d=original.motionDiagnostics();
+    require(d.realizedEnds==1 && original.episodeEndMs("unchanged-track")==24000
+        && d.passageWaitSteps==0 && d.passageBatches==0 && d.passageClearedTracks==0,
+        "An absent optional passage altered historical local motion or telemetry");
+    const auto bad=[&](const std::function<void(MappedSceneConfig&)>& mutate) {
+        auto input=localNarrowPassageScene();
+        input.people={{"validation-person","Adult Pedestrian",1,
+            {{"validation-track","neck-east",0}},.25}};
+        mutate(input);rejects([&]{MappedScene checked(input);});
+    };
+    bad([](auto& c){c.navigation.narrowPassages[0].id.clear();});
+    bad([](auto& c){c.navigation.narrowPassages.push_back(c.navigation.narrowPassages[0]);});
+    bad([](auto& c){c.navigation.narrowPassages[0].centerline.clear();});
+    bad([](auto& c){c.navigation.narrowPassages[0].centerline={{8,7}};});
+    bad([](auto& c){c.navigation.narrowPassages[0].centerline[1]=c.navigation.narrowPassages[0].centerline[0];});
+    bad([](auto& c){c.navigation.narrowPassages[0].holdingPointsA.clear();});
+    bad([](auto& c){c.navigation.narrowPassages[0].holdingPointsB.clear();});
+    bad([](auto& c){c.navigation.narrowPassages[0].holdingPointsA[0]={12,7};});
+    bad([](auto& c){c.navigation.narrowPassages[0].holdingPointsA[0]={-1,4};});
+    bad([](auto& c){c.navigation.narrowPassages[0].protectionRadiusM=0;});
+    bad([](auto& c){c.navigation.narrowPassages[0].protectionRadiusM=std::numeric_limits<double>::quiet_NaN();});
+    bad([](auto& c){c.navigation.narrowPassages[0].maxBatchSize=0;});
+    bad([](auto& c){c.motionMode=MappedMotionMode::Integration;});
+    // Every route touching the resource needs a compiled traversal. Silently
+    // accepting an unmanaged crossing would create an impassable static tube.
+    bad([](auto& c){c.routes[0].points={{0,7},{24,7}};});
+    bad([](auto& c){c.routes.push_back({"unmanaged-apron",{{0,7},{8,7},{8,0}},"",""});});
+    bad([](auto& c){
+        c.navigation.narrowPassages[0].holdingPointsA.resize(1);
+        c.people.push_back({"second-validation-person","Adult Pedestrian",1,
+            {{"second-validation-track","neck-east",1000}},.25});
+    });
+    bad([](auto& c){
+        c.portals.push_back({"nearby-door","nearby-building",{8,4},{7,4},{9,4},1,"synthetic"});
+    });
+    bad([](auto& c){c.navigation.narrowPassages[0].holdingPointsA[0]={19,7};});
+    bad([](auto& c){c.navigation.narrowPassages[0].holdingPointsA[0]={6.79,7};});
+    bad([](auto& c){
+        c.navigation.allowedCenterPolygons[0].holes.push_back(
+            {{5.9,4.9},{6.1,4.9},{6.1,5.1},{5.9,5.1}});
+    });
+}
+
 } // namespace
 
 int main() {
@@ -636,6 +973,13 @@ int main() {
         localFiniteDenseSourceAndDoorVisits();
         localBoundedReplanningAndValidation();
         localVisibleGuidesDoNotCauseBacktrackingAfterDoorWaits();
+        localNarrowPassageOpposingFlowsAndDeterminism();
+        localNarrowPassageFiniteBatchesDoNotStarveOpposition();
+        localNarrowPassageSharedDirectionBatchEntersSingleFile();
+        localNarrowPassageReadyDemandAvoidsUnstagedHeadOfLineBlocking();
+        localNarrowPassageBentEntryRemainsOnSpineNearPassingTraffic();
+        localNarrowPassageUnrelatedGuideBypassesIdleResource();
+        localNarrowPassageOptionalOffAndValidation();
         std::cout << "Mapped scene route, lifecycle, identity-boundary and validation tests passed\n";
     } catch (const std::exception& error) {
         std::cerr << "Mapped scene test failed: " << error.what() << '\n';

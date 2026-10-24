@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Bounded narrow-passage routing, frozen-map topology and independent body audit."""
 import contextlib
+import copy
 import importlib.util
 import io
 import json
+import math
 import pathlib
 import subprocess
 import sys
@@ -123,6 +125,22 @@ class FrozenBarkhofRouterTests(unittest.TestCase):
         self.assertEqual(len(vertices), 525)
         self.assertLessEqual(len(cache), len(vertices) * (len(vertices) - 1) // 2)
 
+    def test_finite_cohort_holding_capacity_scales_per_direction_with_explicit_limit(self):
+        router = storefront.SafeRouter(self.safe, experimental_narrow_passages=True)
+        guide = router.route([65, 35], [68, 45])
+        routes = [{"id": f"forward-{index}", "points": copy.deepcopy(guide),
+                   "start_portal": "a", "end_portal": "b"} for index in range(65)]
+        routes += [{"id": f"reverse-{index}", "points": copy.deepcopy(guide[::-1]),
+                    "start_portal": "b", "end_portal": "a"} for index in range(70)]
+        passage, affected = storefront.controlled_barkhof_passage(router, routes, set())
+        self.assertEqual(affected, 135)
+        self.assertEqual(len(passage["holding_points_a"]), 65)
+        self.assertEqual(len(passage["holding_points_b"]), 70)
+        overflow = [{"id": f"overflow-{index}", "points": copy.deepcopy(guide),
+                     "start_portal": "a", "end_portal": "b"} for index in range(257)]
+        with self.assertRaisesRegex(ValueError, "at most 256 passage episodes per direction"):
+            storefront.controlled_barkhof_passage(router, overflow, set())
+
     def test_barkhof_fallback_still_rejects_real_building_interior(self):
         router = storefront.SafeRouter(self.safe, experimental_narrow_passages=True)
         with self.assertRaisesRegex(ValueError, "No connected boundary/door route"):
@@ -153,7 +171,10 @@ class ExperimentalNarrowPassageConfigTests(unittest.TestCase):
 
     def test_opt_in_repairs_new_guidance_only_with_identical_geometry_and_policy(self):
         first, second = self.default["mapped_scene"], self.experimental["mapped_scene"]
-        self.assertEqual(first["motion"], second["motion"])
+        self.assertNotIn("narrow_passages", first["motion"]["navigation"])
+        experimental_motion = copy.deepcopy(second["motion"])
+        experimental_motion["navigation"].pop("narrow_passages")
+        self.assertEqual(first["motion"], experimental_motion)
         self.assertNotEqual(first["routes"], second["routes"])
         crossing = sum(LineString(row["points"]).intersection(self.layers["road"]).length > 1e-7
                        for row in second["routes"])
@@ -164,11 +185,55 @@ class ExperimentalNarrowPassageConfigTests(unittest.TestCase):
         self.assertTrue(construction["navigation_fallback"]["enabled"])
         self.assertEqual(construction["navigation_fallback"]["status"], "experimental_opt_in")
         self.assertEqual(construction["navigation_fallback"]["experimental_native_coordination_gate"],
-                         "unresolved_128_person_drain_timeout_180s")
+                         "verified_128_person_sources_500_total_pending")
         self.assertEqual(audit["status"], "pass")
         self.assertEqual(max(row["body_outside_walkable_area_m2"] for row in audit["routes"].values()), 0)
         self.assertEqual(context["navigation"]["allowed_center_polygons_sha256"],
                          storefront.canonical_hash(second["motion"]["navigation"]["allowed_center_polygons"]))
+
+    def test_explicit_passage_has_safe_staging_and_complete_directed_route_guides(self):
+        scene = self.experimental["mapped_scene"]
+        allowed = storefront.geometry_from_rows(scene["motion"]["navigation"]["allowed_center_polygons"])
+        passages = scene["motion"]["navigation"]["narrow_passages"]
+        self.assertEqual(len(passages), 1)
+        passage = passages[0]
+        self.assertEqual(passage["id"], "barkhof-walking-neck")
+        self.assertEqual(passage["protection_radius_m"], 1.15)
+        self.assertEqual(passage["max_batch_size"], 6)
+        guide = passage["centerline"]
+        self.assertEqual(guide[0], [65, 35])
+        self.assertEqual(guide[-1], [68, 45])
+        self.assertTrue(allowed.buffer(1e-8).covers(LineString(guide)))
+        for field, endpoint in [("holding_points_a", guide[0]), ("holding_points_b", guide[-1])]:
+            points = passage[field]
+            self.assertEqual(len(points), 64)
+            self.assertEqual(len({tuple(point) for point in points}), len(points))
+            for index, point in enumerate(points):
+                self.assertTrue(allowed.covers(Point(point)))
+                self.assertTrue(allowed.covers(LineString([endpoint, point])))
+                self.assertGreater(Point(point).distance(LineString(guide)), 1.3)
+                self.assertGreater(math.dist(endpoint, point), 3.55)
+                self.assertTrue(all(math.dist(point, other) >= 1.1 - 1e-10 for other in points[index + 1:]))
+        controlled_routes = 0
+        for route in scene["routes"]:
+            points = route["points"]
+            matches = sum(points[index:index + len(guide)] in (guide, guide[::-1])
+                          for index in range(len(points) - len(guide) + 1))
+            crossing = LineString(points).intersection(LineString([(64, 39), (70, 39)]))
+            if not crossing.is_empty:
+                self.assertEqual(matches, 1)
+                controlled_routes += 1
+            else:
+                self.assertEqual(matches, 0)
+                self.assertGreater(LineString(points).distance(LineString(guide)), 1.15)
+        self.assertEqual(controlled_routes, 54)
+        _, _, construction, _ = builder.storefront_scene(str(REPO), 20261023, 64, 180, 1000, None, True)
+        metadata = construction["navigation_fallback"]["native_passage_coordination"]
+        self.assertEqual(metadata["affected_routes"], controlled_routes)
+        self.assertEqual(metadata["holding_points_per_side"], {"a": 64, "b": 64})
+        self.assertEqual(metadata["holding_point_limit_per_side"], 256)
+        self.assertEqual(metadata["exit_apron_length_m"], 2.4)
+        self.assertEqual(metadata["holding_endpoint_exclusion_radius_m"], 3.55)
 
     def test_experimental_option_requires_storefronts_before_source_or_database_work(self):
         for mode in ["integration", "corridor", "buildings"]:

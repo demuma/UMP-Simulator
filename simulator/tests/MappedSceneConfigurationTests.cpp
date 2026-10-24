@@ -60,6 +60,8 @@ int drainConfiguration(const std::string& path, ump::AggregationTime endMs) {
         <<" max_stop_ms="<<d.maxConsecutiveStopMs<<" merge_wait_steps="<<d.mergeAdmissionWaitSteps
         <<" navigation_steering="<<d.navigationSteeringSteps<<" navigation_replans="<<d.navigationReplans
         <<" navigation_replan_failures="<<d.navigationReplanFailures<<" navigation_search_max="<<d.navigationMaxSearchNodes
+        <<" passage_wait_steps="<<d.passageWaitSteps<<" passage_batches="<<d.passageBatches
+        <<" passage_cleared_tracks="<<d.passageClearedTracks<<" max_passage_wait_ms="<<d.maxPassageWaitMs
         <<" last_end_ms="<<lastEnd<<" horizon_ms="<<endMs<<'\n';
     require(d.realizedStarts==expected && d.realizedEnds==expected && starts==ends
         && starts.size()==expected && scene.events().size()==2*expected,
@@ -144,7 +146,8 @@ int main(int argc,char** argv) {
         require(navigationConfig.motionMode==ump::MappedMotionMode::LocalNavigation
             && navigationConfig.navigation.centerClearanceM==.55
             && navigationConfig.navigation.allowedCenterPolygons.size()==1
-            && navigationConfig.navigation.maxReplanNodes==500,
+            && navigationConfig.navigation.maxReplanNodes==500
+            && navigationConfig.navigation.narrowPassages.empty(),
             "Local navigation YAML lost its explicit geometry and bounded settings");
         ump::MappedScene navigatingScene(navigationConfig);
         validateMappedCaptureStep(navigatingScene,50);
@@ -168,6 +171,48 @@ int main(int argc,char** argv) {
         rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["center_clearance_m"]=.49;read(n);});
         rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["max_replan_nodes"]=-1;read(n);});
         rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["replan_interval_ms"]=0;read(n);});
+        auto passageNavigation=YAML::Clone(navigating);
+        passageNavigation["motion"]["navigation"]["narrow_passages"]=YAML::Load(R"([{
+            id: shared-passage, centerline: [[4,5],[6,5]],
+            holding_points_a: [[2,3],[2,7]], holding_points_b: [[8,3],[8,7]],
+            protection_radius_m: 1.15, max_batch_size: 6}])");
+        const auto coordinated=read(passageNavigation);
+        require(coordinated.navigation.narrowPassages.size()==1
+            && coordinated.navigation.narrowPassages[0].id=="shared-passage"
+            && coordinated.navigation.narrowPassages[0].centerline.size()==2
+            && coordinated.navigation.narrowPassages[0].centerline[1].x==6
+            && coordinated.navigation.narrowPassages[0].holdingPointsA[0].y==3
+            && coordinated.navigation.narrowPassages[0].holdingPointsB[1].x==8
+            && coordinated.navigation.narrowPassages[0].protectionRadiusM==1.15
+            && coordinated.navigation.narrowPassages[0].maxBatchSize==6,
+            "Optional narrow-passage YAML lost its identity, geometry or finite batch settings");
+        auto defaultPassage=YAML::Clone(passageNavigation);
+        defaultPassage["motion"]["navigation"]["narrow_passages"][0].remove("protection_radius_m");
+        defaultPassage["motion"]["navigation"]["narrow_passages"][0].remove("max_batch_size");
+        const auto defaultCoordinated=read(defaultPassage);
+        require(defaultCoordinated.navigation.narrowPassages[0].protectionRadiusM==1.15
+            && defaultCoordinated.navigation.narrowPassages[0].maxBatchSize==6,
+            "Optional narrow-passage numeric defaults changed");
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"]=YAML::Load("{}");read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["typo"]=1;read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0].remove("id");read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["id"]="";read(n);});
+        for (const auto* name:{"centerline","holding_points_a","holding_points_b"}) {
+            rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0].remove(name);read(n);});
+            rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0][name]=YAML::Load("{}");read(n);});
+            rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0][name][0]=YAML::Load("[1,2,3]");read(n);});
+        }
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["protection_radius_m"]="invalid";read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["max_batch_size"]=1.5;read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["max_batch_size"]=0;read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["max_batch_size"]=65;read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["protection_radius_m"]=0;read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["protection_radius_m"]=".nan";read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["centerline"]=YAML::Load("[[4,5]]");read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["centerline"][1]=YAML::Load("[4,5]");read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["holding_points_a"]=YAML::Load("[]");read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"][0]["holding_points_b"][0]=YAML::Load("[4,5]");read(n);});
+        rejects([&]{auto n=YAML::Clone(passageNavigation);n["motion"]["navigation"]["narrow_passages"].push_back(YAML::Clone(n["motion"]["navigation"]["narrow_passages"][0]));read(n);});
         std::cout << "Mapped scene YAML and retained-history support guards passed\n";
         return 0;
     } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }

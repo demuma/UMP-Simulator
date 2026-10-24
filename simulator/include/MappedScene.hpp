@@ -3,6 +3,7 @@
 #include "AggregationInput.hpp"
 #include <map>
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -50,8 +51,18 @@ struct MappedNavigationPolygon {
     std::vector<Point> outer;
     std::vector<std::vector<Point>> holes;
 };
+// Optional movement resource, independent of aggregation/policy quadtrees.
+// A route traverses it by including the complete centerline in either direction.
+// Holding points keep waiting bodies out of the protected passage and exit apron.
+struct MappedNavigationPassage {
+    std::string id;
+    std::vector<Point> centerline, holdingPointsA, holdingPointsB;
+    double protectionRadiusM = 1.15;
+    std::size_t maxBatchSize = 6;
+};
 struct MappedNavigationConfig {
     std::vector<MappedNavigationPolygon> allowedCenterPolygons;
+    std::vector<MappedNavigationPassage> narrowPassages;
     double gridResolutionM = .5, centerClearanceM = .55;
     std::size_t maxReplanNodes = 20000;
     AggregationTime replanAfterMs = 1500, replanIntervalMs = 1000;
@@ -79,6 +90,8 @@ struct MappedMotionDiagnostics {
     std::uint64_t navigationSteeringSteps = 0, navigationReplans = 0;
     std::uint64_t navigationReplanFailures = 0, navigationCandidateChecks = 0;
     std::size_t navigationMaxSearchNodes = 0;
+    std::uint64_t passageWaitSteps = 0, passageBatches = 0, passageClearedTracks = 0;
+    AggregationTime maxPassageWaitMs = 0;
     AggregationTime maxConsecutiveStopMs = 0;
     std::size_t activeStalledTracks = 0, pendingTracks = 0, activeTracks = 0;
 };
@@ -150,6 +163,14 @@ private:
     void advanceCorridorStep(AggregationTime nextMs);
     void advanceNavigationStep(AggregationTime nextMs);
     void updateNavigationDoors(AggregationTime nowMs);
+    void updateNavigationPassages(AggregationTime nowMs);
+    struct PassageTraversal {
+        std::size_t passage, entryWaypoint, exitWaypoint;
+        bool forward;
+    };
+    const PassageTraversal* pendingPassage(const std::string& trackId) const;
+    bool passageEntryAllowed(const std::string& trackId) const;
+    bool passageSegmentAllowed(const std::string& trackId, Point from, Point to) const;
     bool navigationSegmentAllowed(Point from, Point to, const MappedRoute* route = nullptr) const;
     bool replanNavigation(const std::string& trackId, Point goal);
     MappedVisibleTrack visibleState(const std::string& trackId, double travelled, Point velocity) const;
@@ -168,6 +189,15 @@ private:
         std::map<std::string,Point> waitingPoints;
     };
     std::map<std::string,NavigationDoor> navigationDoors;
+    struct NavigationPassage {
+        struct Request { AggregationTime atMs; bool forward; };
+        std::map<std::string, Request> requests;
+        std::map<std::string, bool> granted; // Value latches actual entry.
+        std::map<std::string, Point> waitingPoints;
+        std::set<std::string> completed, staged;
+    };
+    std::vector<NavigationPassage> navigationPassages;
+    std::map<std::size_t,std::vector<PassageTraversal>> routePassages;
     // Explicit doors reserve only a local body-clearance throat for tracks
     // that actually enter/exit that door. Unrelated passers use the same swept
     // body collision checks without acquiring an artificial entrance resource.

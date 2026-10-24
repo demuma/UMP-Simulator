@@ -40,7 +40,7 @@ def main():
     parser.add_argument('--shop-overrides', type=pathlib.Path, help='Source-bound synthetic shop entrance overrides (storefronts mode only)')
     parser.add_argument('--arrival-interval-ms',type=int)
     parser.add_argument('--experimental-narrow-passages',action='store_true',
-        help='EXPERIMENTAL storefront visibility repair; dense native narrow-passage coordination is unresolved')
+        help='EXPERIMENTAL storefront routing and passage coordination; larger-cohort acceptance remains open')
     parser.add_argument('--output', type=pathlib.Path, help='Fresh scene folder; replay becomes its sibling')
     parser.add_argument('--no-record',action='store_true',help='Skip the persistent local recording')
     parser.add_argument('--cleanup', action='store_true', help='Remove only owned DBs after a verified recording/run')

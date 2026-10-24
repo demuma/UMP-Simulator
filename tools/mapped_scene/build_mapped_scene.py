@@ -559,7 +559,7 @@ def main():
     parser.add_argument("--arrival-interval-ms",type=int,help="Stateful source interval, multiple of 50 ms; default spreads requests across horizon")
     parser.add_argument("--shop-overrides", type=pathlib.Path, help="Optional source-hash-bound synthetic shop entrance overrides")
     parser.add_argument("--experimental-narrow-passages", action="store_true",
-        help="EXPERIMENTAL storefront visibility repair; dense native narrow-passage coordination is unresolved")
+        help="EXPERIMENTAL storefront routing and passage coordination; larger-cohort acceptance remains open")
     args = parser.parse_args()
     if args.experimental_narrow_passages and args.motion_mode != "storefronts":
         parser.error("--experimental-narrow-passages requires --motion-mode storefronts")

@@ -75,13 +75,24 @@ one tree/result selected in both views. Read the
   Both directions pass independent body/wall checks without widening geometry or
   changing d6; old successful/default routes remain unchanged. New experimental
   64-person guidance has 54/96 crossing routes. This is not accepted dense motion.
-- [ ] **M05b next — native narrow-passage coordination:** prevent conflicting
-  entry into the new neck, provide waiting/clear-exit behavior and finite fair
-  direction ownership/batches. The experimental 128-person gate exceeded 180 s;
-  a 90-s diagnostic had 46 stalled tracks and max stop 58.85 s. Keep default
-  crossings disabled until declared 64/128 and 500-total flows pass complete
-  lifecycle, swept safety and bounded stop/runtime gates. Do not mask the issue
-  by extending test budgets or only increasing A* resolution/node limits.
+- [x] **M05b bounded native passage coordinator:** explicit audited guide and
+  body-clear staging, oldest-ready directional batches, ordered entry and actual
+  full-clearance release. Keep each holding slot reserved until actual entry;
+  unready requests cannot hold the resource. Resource-aware shortcuts preserve
+  unrelated bypasses, and the first controlled step stays on its exact guide.
+  Paired 128-person sources at 2 s / 0.5 s initial arrival intervals both drain
+  all 192 episodes inside the original 600 s / 180 s budgets, with peaks of
+  66 / 111 active tracks and no reported overlaps or remaining tracks. The
+  [contract](docs/NARROW_PASSAGE_COORDINATION_2026-10-24.md) and
+  [test report](docs/NARROW_PASSAGE_TEST_REPORT_2026-10-24.md) record limitations.
+- [ ] **M05b.1 larger-cohort and map acceptance:** keep the experimental flag
+  off by default until the separate 64/500-total experimental flows and further
+  seeds/densities pass declared complete-lifecycle, swept-safety and runtime
+  gates. Preserve the original default 64/128 reference. The current dense case
+  has movement waits up to 304.85 s and 25 steps above 50 ms; functional drainage
+  does not imply realistic crowd behavior or a realtime deadline guarantee.
+  Test finite holding capacity explicitly; do not extend budgets, widen walking
+  permissions or only enlarge A* resolution/node limits to conceal failures.
 - [ ] **M05c general map-to-graph correctness:** retain junction/access/direction/
   crossing metadata and provenance; test vector versus movement-graph connectivity.
   Offline visibility repair does not repair the native 0.5-m dynamic replan graph.

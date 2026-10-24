@@ -69,6 +69,13 @@ survey or a legal interpretation of current street access:
   pedestrians can already use this crossing requires this qualification: map
   connectivity exists, but current generated guidance does not use it.
 
+The optional passage coordinator now routes and drains the declared 128-person
+sources through this connection using physical staging, oldest-ready directional
+batches and audited single-file guidance. It remains off by default; this does
+not add distributed carriageway crossing or repair every native replan lattice.
+See the [density report](NARROW_PASSAGE_TEST_REPORT_2026-10-24.md), including long
+movement waits and the pending larger-cohort gate.
+
 Do not fix that artifact by globally increasing PolicyTree depth or blindly using
 a 0.1-m navigation grid. Navigation and privacy discretization are separate; a
 fivefold lattice refinement would multiply the two-dimensional grid size by 25.

@@ -326,6 +326,103 @@ class SafeRouter:
         return direct
 
 
+
+def controlled_barkhof_passage(router, routes, portal_ids):
+    """Declare one explicit, geometry-safe experimental opposing-flow resource.
+
+    This frozen-map modeling choice is separate from privacy policy regions.
+    Every affected route receives the same complete centerline, in its travel
+    direction, so native ownership has an unambiguous entry and full-body exit.
+    The original walking geometry and facade approach transitions stay intact.
+    """
+    endpoint_a, endpoint_b = [65., 35.], [68., 45.]
+    centerline = router.route(endpoint_a, endpoint_b)
+    spine = LineString(centerline)
+
+    def crosses_middle(points):
+        crossings = []
+        for index, (a, b) in enumerate(zip(points, points[1:])):
+            if min(a[1], b[1]) < 39 < max(a[1], b[1]):
+                x = a[0] + (b[0] - a[0]) * (39 - a[1]) / (b[1] - a[1])
+                if 64 < x < 70:
+                    crossings.append((index, b[1] > a[1]))
+        return crossings
+
+    affected = 0
+    direction_counts = {True: 0, False: 0}
+    participating = set()
+    for route in routes:
+        original = route["points"]
+        crossings = crosses_middle(original)
+        if not crossings:
+            continue
+        if len(crossings) != 1:
+            raise ValueError("Barkhof passage requires exactly one directed route traversal")
+        forward = crossings[0][1]
+        entering, leaving = (endpoint_a, endpoint_b) if forward else (endpoint_b, endpoint_a)
+        first = 1 if route["start_portal"] in portal_ids else 0
+        last = len(original) - 2 if route["end_portal"] in portal_ids else len(original) - 1
+        prefix = router.route(original[first], entering)
+        suffix = router.route(leaving, original[last])
+        if crosses_middle(prefix) or crosses_middle(suffix):
+            raise ValueError("Barkhof approach rerouting would introduce a second passage traversal")
+        points = original[:first] + prefix + (centerline if forward else centerline[::-1])[1:] + suffix[1:] + original[last + 1:]
+        route["points"] = [point for index, point in enumerate(points)
+                           if index == 0 or math.dist(point, points[index - 1]) > 1e-10]
+        if len(route["points"]) > 64:
+            raise ValueError("Controlled Barkhof route exceeds the existing 64-vertex source bound")
+        affected += 1
+        direction_counts[forward] += 1
+        participating.add(route["id"])
+
+    # A nonparticipant may skim a broad endpoint without traversing the neck.
+    # Its planned path must bypass the protected resource; otherwise native
+    # entry prevention would stop it permanently despite having no request.
+    bypass_router = None
+    for route in routes:
+        if route["id"] in participating or LineString(route["points"]).distance(spine) >= 1.15:
+            continue
+        if bypass_router is None:
+            # A .01 m margin covers the finite polygonal approximation of the
+            # circular protection tube; native distance checks stay exact.
+            bypass_router = SafeRouter(router.geometry.difference(spine.buffer(1.16, resolution=16)),
+                                       experimental_narrow_passages=True)
+        original = route["points"]
+        first = 1 if route["start_portal"] in portal_ids else 0
+        last = len(original) - 2 if route["end_portal"] in portal_ids else len(original) - 1
+        points = original[:first] + bypass_router.route(original[first], original[last]) + original[last + 1:]
+        if len(points) > 64 or LineString(points).distance(spine) <= 1.15:
+            raise ValueError("Nonparticipating Barkhof route cannot safely bypass the protected passage")
+        route["points"] = points
+
+    def holding_points(endpoint, bounds, count):
+        if count > 256:
+            raise ValueError("Barkhof finite-cohort coordination supports at most 256 passage episodes per direction")
+        candidates = []
+        # A fixed 1.1 m lattice exceeds the largest pair of pedestrian radii
+        # plus the .1 m native clearance; the queue cannot overlap by design.
+        for iy in range(math.floor((bounds[3] - bounds[1]) / 1.1) + 1):
+            for ix in range(math.floor((bounds[2] - bounds[0]) / 1.1) + 1):
+                point = [bounds[0] + ix * 1.1, bounds[1] + iy * 1.1]
+                geometry = Point(point)
+                # Keep the entire 2.4 m outgoing apron clear in every
+                # direction, plus the 1.15 m person/protection clearance.
+                # This fixed geometry rule does not depend on cohort demand.
+                if (router.geometry.covers(geometry) and geometry.distance(spine) > 1.30
+                        and math.dist(endpoint, point) > 3.55
+                        and router.geometry.covers(LineString([endpoint, point]))):
+                    candidates.append(point)
+        candidates.sort(key=lambda point: (math.dist(endpoint, point), point[1], point[0]))
+        if len(candidates) < count:
+            raise ValueError(f"Barkhof passage lacks {count} directly reachable safe staging positions on one side")
+        return candidates[:count]
+
+    return {"id": "barkhof-walking-neck", "centerline": centerline,
+            "holding_points_a": holding_points(endpoint_a, (40., 10., 79., 35.), max(64, direction_counts[True])),
+            "holding_points_b": holding_points(endpoint_b, (40., 45., 79., 65.), max(64, direction_counts[False])),
+            "protection_radius_m": 1.15, "max_batch_size": 6}, affected
+
+
 def make_scene(repo, local, layers, access, source_hash, seed, people, interval, overrides=None,
                experimental_narrow_passages=False):
     context, internals, safe, rows = build_geometry(repo,local,layers,access,source_hash,overrides)
@@ -387,11 +484,14 @@ def make_scene(repo, local, layers, access, source_hash, seed, people, interval,
                   "navigation":{"center_clearance_m":CLEARANCE,"allowed_center_polygons":rows,"grid_resolution_m":.5,"max_replan_nodes":20000,
                                 "replan_after_ms":1500,"replan_interval_ms":1000}},
         "portals":context["portals"],"routes":routes,"people":people}
+    if experimental_narrow_passages:
+        passage, affected_routes = controlled_barkhof_passage(router, routes, set(portal_by_id))
+        scene["motion"]["navigation"]["narrow_passages"] = [passage]
     construction={"scope":"Four modeled POI storefronts share their true original building outline; frontages and entrances are synthetic, not surveyed doors or interior walls. Seeded finite pedestrian cohort with explicit boundary requests, geometric paths and relative hidden dwell.",
         "navigation_lattice_m":.5,
         "navigation_fallback":{"enabled":experimental_narrow_passages,
                                "status":"experimental_opt_in" if experimental_narrow_passages else "disabled_original_lattice_default",
-                               "experimental_native_coordination_gate":"unresolved_128_person_drain_timeout_180s",
+                               "experimental_native_coordination_gate":"verified_128_person_sources_500_total_pending",
                                "method":"bounded_exact_polygon_visibility_after_lattice_failure",
                                "max_vertices_per_component":router.max_visibility_vertices,
                                "edge_oracle":"unchanged_allowed_center_segment_containment"},
@@ -400,6 +500,17 @@ def make_scene(repo, local, layers, access, source_hash, seed, people, interval,
                   "boundary_selection":"uniform connected intervals; uniform interior arclength (.02,.98)","arrival_interval_ms":interval,
                   "scope":"Declared experimental demand, not empirical store visitation or calibrated arrival rates."},
         "overrides_sha256":canonical_hash(overrides) if overrides is not None else None}
+    if experimental_narrow_passages:
+        construction["navigation_fallback"]["native_passage_coordination"] = {
+            "resource_id": passage["id"], "affected_routes": affected_routes,
+            "method": "explicit_common_centerline_finite_direction_batches_with_safe_staging",
+            "protection_radius_m": passage["protection_radius_m"],
+            "max_batch_size": passage["max_batch_size"],
+            "holding_points_per_side": {"a": len(passage["holding_points_a"]), "b": len(passage["holding_points_b"])},
+            "holding_point_limit_per_side": 256, "exit_apron_length_m": 2.4,
+            "holding_endpoint_exclusion_radius_m": 3.55,
+            "nonparticipant_rule": "exact_safe_route_outside_protected_tube_with_polygon_margin",
+            "scope": "Experimental frozen-map movement resource, independent of privacy PolicyTrees."}
     audit=audit_scene(local,layers,scene,context)
     return scene,context,construction,audit
 

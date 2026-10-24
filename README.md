@@ -59,14 +59,28 @@ synthetic results and verification are recorded in the October 19 test report. T
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 
+**October 24 optional passage coordination:** the native map source now has
+explicit holding places, oldest-ready finite direction batches, ordered entry
+and protected exit clearance. Two otherwise identical 128-person sources at
+2 s and 0.5 s arrival intervals complete all 192 visible episodes, with peaks
+of 66 and 111 active tracks and zero reported overlaps or remaining tracks.
+Source-only timing and long movement queues are reported separately from
+application latency. The flag remains experimental and off by default; the
+500-total gate is pending. Read the
+[contract](docs/NARROW_PASSAGE_COORDINATION_2026-10-24.md),
+[density test report](docs/NARROW_PASSAGE_TEST_REPORT_2026-10-24.md) and
+[compact results](docs/NARROW_PASSAGE_RESULTS_2026-10-24.json).
+`MappedMotionProbe` provides aggregate-only finite-drain and per-step diagnostics.
+These movement resources do not modify aggregation buckets or Policy Trees.
+
 **October 24 single map layer and controlled topology:** the retained replay's
 background is now geometry-only, with one supplied-name layer, larger entrance
 symbols and readable external OSM attribution. Previous PNG/manifests/proof are
 archived; observations/results/native source remain unchanged. See the
 [background cleanup report](docs/REPLAY_BACKGROUND_CLEANUP_TEST_REPORT_2026-10-24.md).
 Barkhof's static connectivity repair is available only through an explicit
-experimental flag; dense native passage coordination remains an open gate and
-accepted default movement is preserved. See the
+experimental flag; the optional coordinator above now passes the declared
+128-person cases while accepted default movement is preserved. See the
 [topology test report](docs/BARKHOF_TOPOLOGY_TEST_REPORT_2026-10-24.md). The new
 [presentation comparison protocol](docs/PRESENTATION_COMPARISON_PROTOCOL_2026-10-24.md)
 separates hard semantic ceilings, forced family projection and preservation
