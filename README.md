@@ -3,6 +3,20 @@
 Research workspace for the dissertation on quantifying privacy and utility in urban
 mobility data and adapting spatial and temporal aggregation under regional constraints.
 
+**Controller correction — 2026-10-24:** the Spatial20 investigation found a lost
+handoff boundary when a fresh compressed owner was refined. New children now
+inherit the actual active rendezvous cap. All 16 same-input correction/filtering
+cases pass independent policy and accounting audits. With filtering still off,
+Semantic First retention improves 44.30→63.96% on mixed traffic and
+67.88→77.89% on pedestrians, versus best tested fixed20m references of 50.66%
+and 75.69%. Its full-input utility loss also improves; Spatial First retains
+longer-delay and semantic tradeoffs. Original evidence is preserved. See the
+[diagnosis](docs/SPATIAL20_GAP_DIAGNOSIS_2026-10-24.md),
+[correction and test report](docs/SPATIAL20_HANDOFF_CORRECTION_2026-10-24.md), and
+[all aggregate results](docs/verification/spatial20-correction-2026-10-24/report.md).
+Selective suppression was off in the historical 32-case portfolio; its separate
+ON sensitivity is included in the correction report.
+
 **Evening extension — 2026-10-24: corrected access and a spatial baseline portfolio.**
 The replay uses rounded text halos and equal-size entrance diamonds. A1/A2 labels
 stay close to their surface targets and inside the map. Optional

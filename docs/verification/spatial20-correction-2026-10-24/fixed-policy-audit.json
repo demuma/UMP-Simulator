@@ -1,0 +1,112 @@
+{
+  "scope": "Read-only audit; fresh temporary two-second analytical fixture, frozen verified native binary, no code changes or performance claim.",
+  "binary_sha256": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9",
+  "input_observations": 399,
+  "cases": [
+    {
+      "case": "off",
+      "public_cells": 2,
+      "retained_observations": 399,
+      "selectively_removed_observations": 0,
+      "semantic_mean_losses": [
+        1
+      ],
+      "failed_checks": []
+    },
+    {
+      "case": "on",
+      "public_cells": 2,
+      "retained_observations": 380,
+      "selectively_removed_observations": 19,
+      "semantic_mean_losses": [
+        0
+      ],
+      "failed_checks": []
+    },
+    {
+      "case": "regional_no_filter",
+      "public_cells": 2,
+      "retained_observations": 399,
+      "selectively_removed_observations": 0,
+      "semantic_mean_losses": [
+        1
+      ],
+      "failed_checks": []
+    },
+    {
+      "case": "regional_side",
+      "public_cells": 0,
+      "retained_observations": 0,
+      "selectively_removed_observations": 0,
+      "semantic_mean_losses": [],
+      "failed_checks": [
+        "cell_side_m:fail"
+      ]
+    },
+    {
+      "case": "regional_time",
+      "public_cells": 0,
+      "retained_observations": 0,
+      "selectively_removed_observations": 0,
+      "semantic_mean_losses": [],
+      "failed_checks": [
+        "window_duration_ms:fail"
+      ]
+    },
+    {
+      "case": "regional_age",
+      "public_cells": 0,
+      "retained_observations": 0,
+      "selectively_removed_observations": 0,
+      "semantic_mean_losses": [],
+      "failed_checks": [
+        "age_at_evaluation_ms:fail"
+      ]
+    },
+    {
+      "case": "regional_total_support",
+      "public_cells": 0,
+      "retained_observations": 0,
+      "selectively_removed_observations": 0,
+      "semantic_mean_losses": [],
+      "failed_checks": [
+        "distinct_contributors:fail"
+      ]
+    },
+    {
+      "case": "semantic_zero_off",
+      "public_cells": 0,
+      "retained_observations": 0,
+      "selectively_removed_observations": 0,
+      "semantic_mean_losses": [],
+      "failed_checks": [
+        "semantic_max_loss:fail"
+      ]
+    },
+    {
+      "case": "semantic_zero_on",
+      "public_cells": 2,
+      "retained_observations": 380,
+      "selectively_removed_observations": 19,
+      "semantic_mean_losses": [
+        0
+      ],
+      "failed_checks": []
+    },
+    {
+      "case": "offline_mae",
+      "public_cells": 0,
+      "retained_observations": 0,
+      "selectively_removed_observations": 0,
+      "semantic_mean_losses": [],
+      "failed_checks": [
+        "occupancy_mae:unavailable"
+      ]
+    },
+    {
+      "case": "unknown_metric",
+      "status": "configuration_rejected",
+      "message": "AggregationReplay: Unknown metric: unknown_privacy_metric"
+    }
+  ]
+}

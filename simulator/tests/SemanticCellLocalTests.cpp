@@ -475,6 +475,107 @@ void minimumBeyondConfiguredMaximumCannotExtendTheDeadline() {
     audit(f, 1000);
 }
 
+// A fresh successor can be shorter than the base window because it must
+// reach an existing handoff. Refining it after a new observation must retain
+// that scheduled endpoint even though it has never extended its own window.
+void freshRefinementPreservesTheReservedHandoffBoundary() {
+    for (bool loseAcknowledgement : {false,true}) {
+        auto c = settings(4);
+        Fixture f(c, metrics(c,4,20,.5,{region(c,192,3,{{MetricId::WindowDurationMs,500,{}}})}),
+            timeSettings(), {2,4096});
+        const auto seed = f.people("seed-",4,"Adult Pedestrian",780);
+        for (int t = 100; t <= 600; t += 100) f.sample(t,seed);
+        // Empty 192 has a 500 ms clock; empty 193 has a 400 ms clock.
+        // The explicit domain must rendezvous at 1000 ms without discarding
+        // any already published seed observations from the separate branch.
+        require(f.engine.scheduleMerge(historyCell(c.coverage,48,2)),
+            "Different regional clocks failed to reserve a common future handoff");
+        f.sample(700,seed);
+        auto arriving = f.people("arriving-adult-",2,"Adult Pedestrian",772);
+        add(arriving,f.people("arriving-child-",2,"Child Pedestrian",773));
+        int attempts = 0;
+        f.before = [&](const auto& out) {
+            if (out.coordinationCell->id != 193 || out.candidate.startMs != 400
+                || out.candidate.endMs != 800 || out.candidate.counts.observationContributions) return;
+            ++attempts;
+            if (loseAcknowledgement && attempts == 1)
+                throw std::runtime_error("lost empty-prefix acknowledgement before refinement");
+        };
+        if (loseAcknowledgement) {
+            rejects([&] { f.sample(800,arriving); },
+                "The handoff fixture did not interrupt its intended empty-prefix acknowledgement");
+            f.engine.advance(800,f.history);
+        } else f.sample(800,arriving);
+        require(attempts == (loseAcknowledgement ? 2 : 1),
+            "The empty handoff prefix was not acknowledged exactly once after any retry");
+        f.before = {};
+        const auto fresh = f.engine.windows();
+        const auto compressed = std::find_if(fresh.begin(),fresh.end(),[](const auto& w) { return w.cell.id == 193; });
+        require(compressed != fresh.end() && compressed->startMs == 800
+            && compressed->nextEndMs == 1000 && compressed->extensions == 0,
+            "The fixture did not produce a fresh compressed owner capped by its existing handoff");
+        // The observation at 800 is inside [800,900), so only this next call
+        // refines the fresh owner. A default child window would end at 1200.
+        f.sample(900,arriving);
+        const auto refined = f.engine.windows();
+        int children = 0;
+        for (const auto& owner : refined)
+            if (contains(historyCell(c.coverage,193,3),owner.cell)) {
+                ++children;
+                require(owner.cell.depth == 4 && owner.startMs == 800 && owner.nextEndMs == 1000
+                    && owner.extensions == 0,
+                    "Fresh occupied refinement lost its reserved handoff endpoint and drifted to the base cadence");
+            }
+        require(children == 4, "New observations did not refine the intended compressed owner");
+        f.sample(1000,arriving);
+        const auto aligned = f.engine.windows();
+        double alignedArea = 0;
+        for (const auto& owner : aligned)
+            if (contains(historyCell(c.coverage,48,2),owner.cell)) {
+                require(owner.startMs == 1000,
+                    "A fresh-owner refinement prevented part of the domain from reaching its reserved handoff");
+                alignedArea += owner.cell.width * owner.cell.height;
+            }
+        require(alignedArea == 400, "The aligned handoff domain is not a complete spatial partition");
+        require(find(f,193,400,800) && !find(f,193,400,800)->selectedCells,
+            "Empty-prefix acknowledgement changed into an invented recipient release");
+        // Later empty-prefix retirement and valid finer publications may
+        // legitimately create independent clocks again. The required invariant
+        // is reaching the reserved boundary, followed by exact accounting.
+        for (int t = 1100; t < 1500; t += 100) f.sample(t,arriving);
+        f.finish(1500); audit(f,1500);
+    }
+}
+// Independent regions can make a coarse policy footprint infeasible while
+// both fine policies remain feasible. An unrelated short maximum must not move
+// a child's first evaluation ahead of its known minimum and spend its budget.
+void disjointRegionalMaximumDoesNotSpendTheMinimumOwnersBudget() {
+    auto c = settings(3);
+    auto time = timeSettings(); time.maxEvaluations = 1;
+    Fixture f(c, metrics(c,1,10,1,{
+        region(c,192,3,{{MetricId::WindowDurationMs,1000,1000}}),
+        region(c,193,3,{{MetricId::WindowDurationMs,{},200}})}),time,{3,4096});
+    auto rows = f.people("slow-region-",1,"Adult Pedestrian",192);
+    add(rows,f.people("fresh-region-",1,"Adult Pedestrian",193));
+    for (int t = 100; t < 1000; t += 100) {
+        f.sample(t,rows);
+        if (t < 200) continue;
+        const auto owners = f.engine.windows();
+        const auto slow = std::find_if(owners.begin(),owners.end(),[](const auto& w) { return w.cell.id == 192; });
+        require(slow != owners.end() && slow->startMs == 0 && slow->nextEndMs == 1000
+            && slow->hardDeadlineMs == 1000 && slow->evaluations == 0 && slow->extensions == 0,
+            "An unrelated regional maximum consumed the known-minimum owner's sole evaluation budget");
+        if (t == 200) require(find(f,193,0,200) && find(f,193,0,200)->selectedCells == 1,
+            "Preserving an independent minimum delayed a neighbour's valid short-window release");
+    }
+    f.finish(1000);
+    const auto* released = find(f,192,0,1000);
+    require(released && released->selectedCells == 1 && released->temporalExtensions == 0
+        && released->candidate.counts.observationContributions == 9
+        && released->candidate.counts.distinctContributors == 1,
+        "Disjoint minimum/maximum policies prevented a feasible one-evaluation release");
+    audit(f,1000);
+}
 void budgetsAndTaxonomyIdentityFailBeforeDisclosure() {
     auto c=settings(3);Fixture f(c,metrics(c),timeSettings(),{1,1});
     auto rows=f.people("a",2,"Adult Pedestrian",192);add(rows,f.people("b",2,"Adult Cyclist",192));
@@ -494,7 +595,8 @@ int main() {try {
     mixedDepthAndDifferentRetiredStartsCannotReuseHistory();missingCoverageEofAndHalfOpenInput();
     immutableRetryAndExpiredRetry();conflictingRefinementLeavesFrontierAndOutputUnchanged();
     minimumAtMaximumSkipsImpossibleEarlyChecks();minimumBeyondConfiguredMaximumCannotExtendTheDeadline();
+    freshRefinementPreservesTheReservedHandoffBoundary();disjointRegionalMaximumDoesNotSpendTheMinimumOwnersBudget();
     budgetsAndTaxonomyIdentityFailBeforeDisclosure();
-    std::cout<<"PASS: 17 semantic cell-local gates, independent windows, tiered parents, policy bounds, unions, retirement, retries and budgets.\n";
+    std::cout<<"PASS: 19 semantic cell-local gates, independent windows, handoff refinement, regional minima, policy bounds, unions, retirement, retries and budgets.\n";
     return 0;
 } catch(const std::exception& error) {std::cerr<<"FAIL: "<<error.what()<<'\n';return 1;}}

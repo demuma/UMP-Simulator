@@ -84,10 +84,48 @@ remain visible; do not tune requirements merely to manufacture an adaptive win.
   acceptance passes for both complete bundles at 30 s and private end-of-run
   clearing at 300 s. Cold loads and long private-history seeks remain expensive;
   defer bounded lazy loading/indexed private-event rendering to renderer work.
-- [ ] C24.12 — next research step: explain the Spatial20 fixed-grid advantage
+- [x] C24.12 — completed diagnosis: explain the Spatial20 fixed-grid advantage
   through matched-window and causal decision/coordination traces before changing
   the algorithm. Broaden seeds/densities only after the comparison contract is
   fixed. These results demonstrate policy compliance/utility, not privacy gain.
+
+## Spatial20 diagnosis and correction gate — 2026-10-24, late evening
+
+The historical 32-case portfolio remains unchanged. Its selective contribution
+suppression cap was explicitly zero in every case; whole-cell suppression was
+still active. Fixed and adaptive cases use the same hard numeric regional
+requirements and semantic taxonomy. See the
+[policy audit](docs/SPATIAL20_POLICY_AUDIT_2026-10-24.md).
+
+- [x] D24.1: verify all executed policy hashes, root and regional requirements,
+  fixed-grid semantic handling, and publication-time enforcement. Eleven small
+  independent native fixtures cover regional size/time/age/support, selective
+  suppression, semantic limits and unavailable metrics. No fixed-specific policy
+  bypass was found.
+- [x] D24.2: join actual retained contributions on the frozen observation stream,
+  explain fixed-only and adaptive-only results separately, and identify a small
+  reproducible coordination counterexample before changing the mechanism.
+- [x] D24.3: correct only demonstrated coordination/action-space gaps. Preserve
+  hard policies, valid immediate releases, unpublished ownership, immutable sink
+  retries and complete source accounting. Any recent-suffix rescue must validate
+  the entire retained candidate and explicitly account for discarded prefixes;
+  previously published support cannot be reused. The implemented correction
+  propagates the actual active handoff boundary during fresh-owner refinement.
+  Extra ranking and suffix actions are deferred. The historical core fails the
+  new boundary regression; a broader rejected draft fails the disjoint-regional
+  minimum/evaluation-budget control; the final narrow fix passes all 19 groups.
+- [x] D24.4: regress the counterexamples and adversarial cases, then compare the
+  corrected binary on exactly the frozen original inputs and configurations.
+  Report gains and regressions across retention, full-input loss, regional/type
+  loss, delay, policy checks and runtime. Enabling selective suppression is a
+  separately declared controlled experiment for both fixed and adaptive methods.
+- [x] D24.5: write the correction/test report, retain original evidence, and keep
+  generated motion and full native diagnostic results outside Git. See the
+  [correction/test report](docs/SPATIAL20_HANDOFF_CORRECTION_2026-10-24.md)
+  and [all comparison tables](docs/verification/spatial20-correction-2026-10-24/report.md).
+  New verified replays use ports 8795/8796; 8793/8794 retain historical results.
+  All 100 CTest groups have passing latest results, with the initial three
+  test-setup/provenance failures and their successful reruns documented.
 
 ## Active extension gate — 2026-10-24
 

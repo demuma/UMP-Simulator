@@ -196,10 +196,16 @@ void CellLocalAggregation::refineToDomain(Frontier& cut, const CellGeometry& dom
             next.publicState.extensions = old.publicState.extensions;
             next.publicState.evaluations = old.publicState.evaluations;
             next.decisions = old.decisions;
-            // Keep already scheduled temporal progress, capped by this child's own
-            // absolute deadline. The contribution's original start never changes.
+            // Preserve existing temporal progress, capped by the child's own
+            // deadline. Without progress, regional minima remain independent.
             if (old.publicState.extensions)
                 next.publicState.nextEndMs = std::min(old.publicState.nextEndMs, next.publicState.hardDeadlineMs);
+            // A fresh successor has zero extensions but may already be reserved
+            // for an imminent handoff. Propagate that actual boundary directly:
+            // resetting to start + baseWindow could skip the rendezvous forever.
+            // Do not copy unrelated coarse-region deadlines into a finer child.
+            if (const auto boundary = handoffBoundary(child))
+                next.publicState.nextEndMs = std::min(next.publicState.nextEndMs, *boundary);
             cut.emplace(child.id, std::move(next));
         }
     }

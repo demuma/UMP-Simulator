@@ -1,0 +1,424 @@
+{
+  "final_runner_import_hardening": "The maintained runner now uniquely loads the mapped helper by file path; its 11-test group and both provenance-aware groups were rerun after source freezing. The executed sixteen-case frozen runner copy is unchanged.",
+  "groups": {
+    "adaptive_aggregation_regression": {
+      "seconds": 0.00559758,
+      "status": "passed"
+    },
+    "aggregation_diagnostics": {
+      "seconds": 0.0410269,
+      "status": "passed"
+    },
+    "aggregation_presentation": {
+      "seconds": 0.005022,
+      "status": "passed"
+    },
+    "aggregation_regression": {
+      "seconds": 0.00498579,
+      "status": "passed"
+    },
+    "capture_evaluation": {
+      "seconds": 0.0867152,
+      "status": "passed"
+    },
+    "causal_privacy_evaluation": {
+      "seconds": 0.170123,
+      "status": "passed"
+    },
+    "cell_local_coordination": {
+      "seconds": 0.034895,
+      "status": "passed"
+    },
+    "cell_local_coordination_stress": {
+      "seconds": 0.774219,
+      "status": "passed"
+    },
+    "cell_size_caps_evaluation": {
+      "seconds": 3.18101,
+      "status": "passed"
+    },
+    "compare_coordination_studies_evaluation": {
+      "seconds": 0.350306,
+      "status": "passed"
+    },
+    "comparison_evaluation": {
+      "seconds": 0.817069,
+      "status": "passed"
+    },
+    "coordination_evaluation": {
+      "seconds": 0.924942,
+      "status": "passed"
+    },
+    "coordination_metrics_evaluation": {
+      "seconds": 0.0310885,
+      "status": "passed"
+    },
+    "coordination_scenarios_evaluation": {
+      "seconds": 0.479229,
+      "status": "passed"
+    },
+    "coordination_study_evaluation": {
+      "seconds": 3.34027,
+      "status": "passed"
+    },
+    "diagnose_spatial20_gap_evaluation": {
+      "seconds": 0.0596301,
+      "status": "passed"
+    },
+    "empirical_privacy_evaluation": {
+      "seconds": 0.0441022,
+      "status": "passed"
+    },
+    "four_second_window_evaluation": {
+      "seconds": 0.800569,
+      "status": "passed"
+    },
+    "frame_regression": {
+      "seconds": 0.103327,
+      "status": "passed"
+    },
+    "history_query_range": {
+      "seconds": 0.0304515,
+      "status": "passed"
+    },
+    "history_regression": {
+      "seconds": 0.003972,
+      "status": "passed"
+    },
+    "live_measurement_helpers": {
+      "seconds": 0.0520429,
+      "status": "passed"
+    },
+    "local_policy_replay_evaluation": {
+      "seconds": 0.407582,
+      "status": "passed"
+    },
+    "mapped_analyze_tracks_tools": {
+      "seconds": 0.231536,
+      "status": "passed"
+    },
+    "mapped_audit_building_access_tools": {
+      "seconds": 0.948473,
+      "status": "passed"
+    },
+    "mapped_build_mapped_scene_tools": {
+      "seconds": 70.0232,
+      "status": "passed"
+    },
+    "mapped_building_drain_tools": {
+      "seconds": 17.2675,
+      "status": "passed"
+    },
+    "mapped_dense_corridor_drain_tools": {
+      "seconds": 8.20799,
+      "status": "passed"
+    },
+    "mapped_export_replay_tools": {
+      "seconds": 3.22074,
+      "status": "passed"
+    },
+    "mapped_motion_probe_contract": {
+      "seconds": 0.0854957,
+      "status": "passed"
+    },
+    "mapped_pedestrian_semantics": {
+      "seconds": 0.00227054,
+      "status": "passed"
+    },
+    "mapped_plot_policy_comparison_tools": {
+      "seconds": 0.430195,
+      "status": "passed"
+    },
+    "mapped_plot_spatial_portfolio_tools": {
+      "seconds": 0.636441,
+      "status": "passed"
+    },
+    "mapped_run_comparison_tools": {
+      "seconds": 2.0298,
+      "status": "passed"
+    },
+    "mapped_scene": {
+      "seconds": 0.709981,
+      "status": "passed"
+    },
+    "mapped_scene_configuration": {
+      "seconds": 0.0143315,
+      "status": "passed"
+    },
+    "mapped_storefront_drain_tools": {
+      "seconds": 41.4464,
+      "status": "passed"
+    },
+    "mapped_storefront_router_tools": {
+      "seconds": 103.722,
+      "status": "passed"
+    },
+    "mapped_transit_access_drain_tools": {
+      "seconds": 20.656,
+      "status": "passed"
+    },
+    "mapped_transit_access_tools": {
+      "seconds": 13.8461,
+      "status": "passed"
+    },
+    "mapped_urban_traffic_drain_tools": {
+      "seconds": 79.7176,
+      "status": "passed"
+    },
+    "metric_regression": {
+      "seconds": 0.00390983,
+      "status": "passed"
+    },
+    "moving_comparison_evaluation": {
+      "seconds": 1.296,
+      "status": "passed"
+    },
+    "moving_scoped_audit_evaluation": {
+      "seconds": 0.0385192,
+      "status": "passed"
+    },
+    "occupancy_evaluation": {
+      "seconds": 0.0375205,
+      "status": "passed"
+    },
+    "occupied_history": {
+      "seconds": 0.00745679,
+      "status": "passed"
+    },
+    "online_occupancy_evaluation": {
+      "seconds": 0.053729,
+      "status": "passed"
+    },
+    "oracle_evaluation": {
+      "seconds": 0.530622,
+      "status": "passed"
+    },
+    "paced_replay": {
+      "seconds": 0.0228497,
+      "status": "passed"
+    },
+    "paced_replay_summary": {
+      "seconds": 0.164106,
+      "status": "passed"
+    },
+    "playback_regression": {
+      "seconds": 3.02411,
+      "status": "passed"
+    },
+    "plot_coordination_study_evaluation": {
+      "seconds": 0.044284,
+      "status": "passed"
+    },
+    "plot_privacy_coordination_evaluation": {
+      "seconds": 0.0368171,
+      "status": "passed"
+    },
+    "plot_privacy_robustness_evaluation": {
+      "seconds": 0.0347938,
+      "status": "passed"
+    },
+    "policy_configuration": {
+      "seconds": 0.0437912,
+      "status": "passed"
+    },
+    "policy_regression": {
+      "seconds": 0.131518,
+      "status": "passed"
+    },
+    "privacy_dataset_evaluation": {
+      "seconds": 1.86524,
+      "status": "passed"
+    },
+    "privacy_evaluation": {
+      "seconds": 0.0336392,
+      "status": "passed"
+    },
+    "privacy_repair_evaluation": {
+      "seconds": 5.6326,
+      "status": "passed"
+    },
+    "privacy_study_evaluation": {
+      "seconds": 11.2748,
+      "status": "passed"
+    },
+    "publication_pipeline_regression": {
+      "seconds": 0.128179,
+      "status": "passed"
+    },
+    "publication_regression": {
+      "seconds": 0.00444825,
+      "status": "passed"
+    },
+    "publication_store_regression": {
+      "seconds": 0.132901,
+      "status": "passed"
+    },
+    "recipient_support_evaluation": {
+      "seconds": 0.0950785,
+      "status": "passed"
+    },
+    "replay_data_evaluation": {
+      "seconds": 0.0505886,
+      "status": "passed"
+    },
+    "replay_regression": {
+      "seconds": 0.367204,
+      "status": "passed"
+    },
+    "replay_viewer_compact_projection": {
+      "seconds": 0.20549,
+      "status": "passed"
+    },
+    "replay_viewer_evaluation": {
+      "seconds": 1.80323,
+      "status": "passed"
+    },
+    "replay_viewer_model": {
+      "seconds": 0.118602,
+      "status": "passed"
+    },
+    "report_spatial20_correction_evaluation": {
+      "seconds": 0.0384486,
+      "status": "passed"
+    },
+    "robustness_attacks_evaluation": {
+      "seconds": 0.0495111,
+      "status": "passed"
+    },
+    "run_moving_scoped_comparison_evaluation": {
+      "seconds": 0.316054,
+      "status": "passed"
+    },
+    "run_privacy_prefix_study_evaluation": {
+      "seconds": 9.51637,
+      "status": "passed"
+    },
+    "run_privacy_robustness_evaluation": {
+      "seconds": 4.25079,
+      "status": "passed"
+    },
+    "run_recipient_contract_study_evaluation": {
+      "seconds": 1.09414,
+      "status": "passed"
+    },
+    "run_scoped_semantic_utility_evaluation": {
+      "seconds": 1.82749,
+      "status": "passed"
+    },
+    "run_semantic_priority_study_evaluation": {
+      "seconds": 1.10407,
+      "status": "passed"
+    },
+    "run_spatial20_correction_evaluation": {
+      "seconds": 0.520316,
+      "status": "passed"
+    },
+    "run_suppression_study_evaluation": {
+      "seconds": 0.520903,
+      "status": "passed"
+    },
+    "scoped_publication": {
+      "seconds": 0.00536917,
+      "status": "passed"
+    },
+    "scoped_semantic_queries_evaluation": {
+      "seconds": 0.0738852,
+      "status": "passed"
+    },
+    "selective_suppression_evaluation": {
+      "seconds": 6.09222,
+      "status": "passed"
+    },
+    "selective_suppression_regression": {
+      "seconds": 0.127182,
+      "status": "passed"
+    },
+    "semantic_adaptation_evaluation": {
+      "seconds": 2.9752,
+      "status": "passed"
+    },
+    "semantic_cell_local": {
+      "seconds": 0.020981,
+      "status": "passed"
+    },
+    "semantic_first_core": {
+      "seconds": 0.00738408,
+      "status": "passed"
+    },
+    "semantic_first_evaluation": {
+      "seconds": 1.83342,
+      "status": "passed"
+    },
+    "semantic_history": {
+      "seconds": 0.00372712,
+      "status": "passed"
+    },
+    "semantic_local_policy_evaluation": {
+      "seconds": 0.992565,
+      "status": "passed"
+    },
+    "semantic_pipeline": {
+      "seconds": 0.00338904,
+      "status": "passed"
+    },
+    "semantic_publication_store": {
+      "seconds": 0.14418,
+      "status": "passed"
+    },
+    "semantic_queries_evaluation": {
+      "seconds": 0.0589127,
+      "status": "passed"
+    },
+    "semantic_release_evaluation": {
+      "seconds": 1.31056,
+      "status": "passed"
+    },
+    "semantic_suppression": {
+      "seconds": 0.157214,
+      "status": "passed"
+    },
+    "semantic_suppression_audit_evaluation": {
+      "seconds": 6.02745,
+      "status": "passed"
+    },
+    "semantic_taxonomy": {
+      "seconds": 0.00450258,
+      "status": "passed"
+    },
+    "semantic_tradeoffs_evaluation": {
+      "seconds": 0.054171,
+      "status": "passed"
+    },
+    "sensor_regression": {
+      "seconds": 0.396969,
+      "status": "passed"
+    },
+    "spatial_regression": {
+      "seconds": 0.0029035,
+      "status": "passed"
+    },
+    "timestamp_utilities": {
+      "seconds": 0.0292449,
+      "status": "passed"
+    }
+  },
+  "initial_failed": [
+    "run_privacy_robustness_evaluation",
+    "privacy_repair_evaluation",
+    "run_spatial20_correction_evaluation"
+  ],
+  "initial_failure_explanations": {
+    "privacy_repair_evaluation": "Provenance guard rejected a report-helper source edit during its fixed study; clean rerun after freezing passes.",
+    "run_privacy_robustness_evaluation": "Same concurrent source edit correctly rejected by provenance guard; clean rerun passes.",
+    "run_spatial20_correction_evaluation": "Initial CTest registration used the stdlib interpreter without PyYAML. Registered in the existing mapped-tool environment; all 11 tests pass, including cached-module import isolation."
+  },
+  "latest_failed": 0,
+  "latest_groups": 100,
+  "latest_passed": 100,
+  "optional_test_scope": "CTest success does not imply optional individual tests whose dependencies are absent were executed.",
+  "receipts": {
+    "ump-handoff-ctest-2026-10-24.xml": "652d37f3430b2c72d015e1b17a027a97df56fbd616387b25a8e9d3ffd9dd2a24",
+    "ump-handoff-ctest-rerun-2026-10-24.xml": "2dc2b6ce2ff4038be7f2fab4231e612c4e84dc09e54ac1bd60d554c45c63d07e"
+  },
+  "scope": "Complete 100-group CTest run plus targeted rerun of three affected groups; final result for every group is passed."
+}

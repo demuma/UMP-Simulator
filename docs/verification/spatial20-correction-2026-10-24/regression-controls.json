@@ -1,0 +1,22 @@
+{
+  "test_source_sha256": "a90c940d2c5f7494d06ec388c185187fef547010e08153375af0f3ae07fd6968",
+  "receipts": [
+    {
+      "control": "historical",
+      "returncode": 1,
+      "stderr": "HANDOFF target=12 depth=1 at=100 boundary=400 automatic=0\nHANDOFF target=12 depth=1 at=600 boundary=1000 automatic=1\nHANDOFF target=48 depth=2 at=600 boundary=1000 automatic=0\nFAIL: Fresh occupied refinement lost its reserved handoff endpoint and drifted to the base cadence\n",
+      "stdout": ""
+    },
+    {
+      "control": "rejected_broad_prototype",
+      "returncode": 1,
+      "stderr": "FAIL: An unrelated regional maximum consumed the known-minimum owner's sole evaluation budget\n",
+      "stdout": ""
+    },
+    {
+      "control": "final_active_handoff_fix",
+      "returncode": 0,
+      "stdout": "PASS: 19 semantic cell-local gates, independent windows, handoff refinement, regional minima, policy bounds, unions, retirement, retries and budgets.\n"
+    }
+  ]
+}

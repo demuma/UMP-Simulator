@@ -1,0 +1,4874 @@
+{
+  "baseline_comparisons": [
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 58421.371083,
+        "core_processing_ratio_after_over_before": 145.1559746906345,
+        "full_input_semantic_distortion": -0.03530896102787906,
+        "retained_delay_mean_ms": 7.617599609319541,
+        "retained_delay_p95_ms": 1200,
+        "retained_fraction": 0.0981190496507503,
+        "retained_mean_cell_side_m": -0.31250953703421125,
+        "retained_mean_window_ms": 19.01608325449388,
+        "retained_observations": 8049,
+        "retained_only_semantic_loss": 0.0020970912684904475,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5516,
+            "retained_before": 5205,
+            "retained_fraction_delta": 0.03816419192538967,
+            "retained_observation_delta": 311
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 492,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07675507020280811,
+            "retained_observation_delta": 492
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 63288.844042,
+        "core_processing_ratio_after_over_before": 157.16656765819894,
+        "full_input_semantic_distortion": -0.03530896102787906,
+        "retained_delay_mean_ms": 7.617599609319541,
+        "retained_delay_p95_ms": 1200,
+        "retained_fraction": 0.0981190496507503,
+        "retained_mean_cell_side_m": -0.31250953703421125,
+        "retained_mean_window_ms": 19.01608325449388,
+        "retained_observations": 8049,
+        "retained_only_semantic_loss": 0.0020970912684904475,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5516,
+            "retained_before": 5205,
+            "retained_fraction_delta": 0.03816419192538967,
+            "retained_observation_delta": 311
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 492,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07675507020280811,
+            "retained_observation_delta": 492
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 58324.230832999994,
+        "core_processing_ratio_after_over_before": 117.09001066967353,
+        "full_input_semantic_distortion": -0.14631306913071573,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.399436812014677,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 32767,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5516,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.6768928702908332,
+            "retained_observation_delta": 5516
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 492,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07675507020280811,
+            "retained_observation_delta": 492
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 63191.70379199999,
+        "core_processing_ratio_after_over_before": 126.77835082734504,
+        "full_input_semantic_distortion": -0.14631306913071573,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.399436812014677,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 32767,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5516,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.6768928702908332,
+            "retained_observation_delta": 5516
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 492,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07675507020280811,
+            "retained_observation_delta": 492
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 58513.524249999995,
+        "core_processing_ratio_after_over_before": 187.87739677343973,
+        "full_input_semantic_distortion": -0.14631306913071573,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.399436812014677,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 32767,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5516,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.6768928702908332,
+            "retained_observation_delta": 5516
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 492,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07675507020280811,
+            "retained_observation_delta": 492
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 63380.997208999994,
+        "core_processing_ratio_after_over_before": 203.42287428658116,
+        "full_input_semantic_distortion": -0.14631306913071573,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.399436812014677,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 32767,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5516,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.6768928702908332,
+            "retained_observation_delta": 5516
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 492,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07675507020280811,
+            "retained_observation_delta": 492
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 52544.975666,
+        "core_processing_ratio_after_over_before": 130.65584411681246,
+        "full_input_semantic_distortion": -0.03824680311581918,
+        "retained_delay_mean_ms": 1466.158231185485,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": 0.10137383735813638,
+        "retained_mean_cell_side_m": -0.5117833141611676,
+        "retained_mean_window_ms": 2949.140279711812,
+        "retained_observations": 8316,
+        "retained_only_semantic_loss": -0.002237785662363434,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5724,
+            "retained_before": 5205,
+            "retained_fraction_delta": 0.0636887961713094,
+            "retained_observation_delta": 519
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 502,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07831513260530422,
+            "retained_observation_delta": 502
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 53365.08,
+        "core_processing_ratio_after_over_before": 132.67946898942668,
+        "full_input_semantic_distortion": -0.03824680311581918,
+        "retained_delay_mean_ms": 1466.158231185485,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": 0.10137383735813638,
+        "retained_mean_cell_side_m": -0.5117833141611676,
+        "retained_mean_window_ms": 2949.140279711812,
+        "retained_observations": 8316,
+        "retained_only_semantic_loss": -0.002237785662363434,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5724,
+            "retained_before": 5205,
+            "retained_fraction_delta": 0.0636887961713094,
+            "retained_observation_delta": 519
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 502,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07831513260530422,
+            "retained_observation_delta": 502
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 52447.835415999994,
+        "core_processing_ratio_after_over_before": 105.39348596775211,
+        "full_input_semantic_distortion": -0.14925091121865586,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.4026915997220631,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 33034,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5724,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.702417474536753,
+            "retained_observation_delta": 5724
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 502,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07831513260530422,
+            "retained_observation_delta": 502
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 53267.93975,
+        "core_processing_ratio_after_over_before": 107.02584218616346,
+        "full_input_semantic_distortion": -0.14925091121865586,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.4026915997220631,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 33034,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5724,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.702417474536753,
+            "retained_observation_delta": 5724
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 502,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07831513260530422,
+            "retained_observation_delta": 502
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 52637.128832999995,
+        "core_processing_ratio_after_over_before": 169.10967611370984,
+        "full_input_semantic_distortion": -0.14925091121865586,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.4026915997220631,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 33034,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5724,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.702417474536753,
+            "retained_observation_delta": 5724
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 502,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07831513260530422,
+            "retained_observation_delta": 502
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 53457.233167,
+        "core_processing_ratio_after_over_before": 171.7288819295437,
+        "full_input_semantic_distortion": -0.14925091121865586,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.4026915997220631,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 33034,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5724,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.702417474536753,
+            "retained_observation_delta": 5724
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 502,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.07831513260530422,
+            "retained_observation_delta": 502
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 57653.524375,
+        "core_processing_ratio_after_over_before": 145.64827676239182,
+        "full_input_semantic_distortion": -0.00883181158801949,
+        "retained_delay_mean_ms": -221.2240332227658,
+        "retained_delay_p95_ms": -300,
+        "retained_fraction": 0.08904952884814649,
+        "retained_mean_cell_side_m": 9.07250963126032,
+        "retained_mean_window_ms": -437.2784810126582,
+        "retained_observations": 7305,
+        "retained_only_semantic_loss": 0.05805086075020571,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 0,
+            "retained_before": 5205,
+            "retained_fraction_delta": -0.6387286783654436,
+            "retained_observation_delta": -5205
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 1202,
+            "retained_before": 1542,
+            "retained_fraction_delta": -0.05304212168486738,
+            "retained_observation_delta": -340
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 568,
+            "retained_fraction_delta": -0.14080317302925136,
+            "retained_observation_delta": -568
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 32809.550917,
+        "core_processing_ratio_after_over_before": 83.31665024714289,
+        "full_input_semantic_distortion": -0.09583947923396685,
+        "retained_delay_mean_ms": -229.98366940027142,
+        "retained_delay_p95_ms": -400,
+        "retained_fraction": 0.2856167639852255,
+        "retained_mean_cell_side_m": 7.815877251501,
+        "retained_mean_window_ms": -454.4420089583532,
+        "retained_observations": 23430,
+        "retained_only_semantic_loss": 0.02340547958276229,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5993,
+            "retained_before": 5205,
+            "retained_fraction_delta": 0.09669898147011913,
+            "retained_observation_delta": 788
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 3046,
+            "retained_before": 1542,
+            "retained_fraction_delta": 0.2346333853354134,
+            "retained_observation_delta": 1504
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 33,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.03122043519394513,
+            "retained_observation_delta": 33
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 1691,
+            "retained_before": 568,
+            "retained_fraction_delta": 0.2783837382250868,
+            "retained_observation_delta": 1123
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 57535.396083,
+        "core_processing_ratio_after_over_before": 112.35043494639717,
+        "full_input_semantic_distortion": 0.03580875988931276,
+        "retained_delay_mean_ms": 78.6048677802562,
+        "retained_delay_p95_ms": 300,
+        "retained_fraction": -0.0636085477795521,
+        "retained_mean_cell_side_m": -0.9274903687396794,
+        "retained_mean_window_ms": 162.72151898734182,
+        "retained_observations": -5218,
+        "retained_only_semantic_loss": 0.02926077969738039,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 0,
+            "retained_before": 2805,
+            "retained_fraction_delta": -0.34421401398944657,
+            "retained_observation_delta": -2805
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 1202,
+            "retained_before": 1950,
+            "retained_fraction_delta": -0.11669266770670828,
+            "retained_observation_delta": -748
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 1493,
+            "retained_fraction_delta": -0.3701041150223104,
+            "retained_observation_delta": -1493
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 32691.422625000003,
+        "core_processing_ratio_after_over_before": 64.2689505267143,
+        "full_input_semantic_distortion": -0.051198907756634604,
+        "retained_delay_mean_ms": 69.84523160275057,
+        "retained_delay_p95_ms": 200,
+        "retained_fraction": 0.13295868735752692,
+        "retained_mean_cell_side_m": -2.184122748499,
+        "retained_mean_window_ms": 145.5579910416468,
+        "retained_observations": 10907,
+        "retained_only_semantic_loss": -0.005384601470063033,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5993,
+            "retained_before": 2805,
+            "retained_fraction_delta": 0.3912136458461161,
+            "retained_observation_delta": 3188
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 3046,
+            "retained_before": 1950,
+            "retained_fraction_delta": 0.1709828393135725,
+            "retained_observation_delta": 1096
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 33,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.03122043519394513,
+            "retained_observation_delta": 33
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 1691,
+            "retained_before": 1493,
+            "retained_fraction_delta": 0.049082796232027714,
+            "retained_observation_delta": 198
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 57738.125583,
+        "core_processing_ratio_after_over_before": 184.89336317530513,
+        "full_input_semantic_distortion": 0.03326709982567988,
+        "retained_delay_mean_ms": -221.87855751160032,
+        "retained_delay_p95_ms": -300,
+        "retained_fraction": -0.0626699011373471,
+        "retained_mean_cell_side_m": -0.9274903687396794,
+        "retained_mean_window_ms": -437.2784810126582,
+        "retained_observations": -5141,
+        "retained_only_semantic_loss": 0.024901104174356203,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 0,
+            "retained_before": 2801,
+            "retained_fraction_delta": -0.34372315621548655,
+            "retained_observation_delta": -2801
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 1202,
+            "retained_before": 1680,
+            "retained_fraction_delta": -0.07457098283931357,
+            "retained_observation_delta": -478
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 1423,
+            "retained_fraction_delta": -0.3527516113039167,
+            "retained_observation_delta": -1423
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 32894.152125,
+        "core_processing_ratio_after_over_before": 105.76641217544805,
+        "full_input_semantic_distortion": -0.05374056782026748,
+        "retained_delay_mean_ms": -230.63819368910595,
+        "retained_delay_p95_ms": -400,
+        "retained_fraction": 0.13389733399973192,
+        "retained_mean_cell_side_m": -2.184122748499,
+        "retained_mean_window_ms": -454.4420089583532,
+        "retained_observations": 10984,
+        "retained_only_semantic_loss": -0.00974427699308722,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5993,
+            "retained_before": 2801,
+            "retained_fraction_delta": 0.39170450362007614,
+            "retained_observation_delta": 3192
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 3046,
+            "retained_before": 1680,
+            "retained_fraction_delta": 0.2131045241809672,
+            "retained_observation_delta": 1366
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 33,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.03122043519394513,
+            "retained_observation_delta": 33
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 1691,
+            "retained_before": 1423,
+            "retained_fraction_delta": 0.06643529995042141,
+            "retained_observation_delta": 268
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 59292.368459,
+        "core_processing_ratio_after_over_before": 149.7600110440801,
+        "full_input_semantic_distortion": -0.006856996574549301,
+        "retained_delay_mean_ms": 1426.239389525841,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": 0.08028476344885593,
+        "retained_mean_cell_side_m": 7.614293534712669,
+        "retained_mean_window_ms": 2867.440554728952,
+        "retained_observations": 6586,
+        "retained_only_semantic_loss": 0.05593955879780543,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 33,
+            "retained_before": 5205,
+            "retained_fraction_delta": -0.6346791017302736,
+            "retained_observation_delta": -5172
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 1216,
+            "retained_before": 1542,
+            "retained_fraction_delta": -0.05085803432137284,
+            "retained_observation_delta": -326
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 65,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.06149479659413434,
+            "retained_observation_delta": 65
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 568,
+            "retained_fraction_delta": -0.14080317302925136,
+            "retained_observation_delta": -568
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 38049.838708999996,
+        "core_processing_ratio_after_over_before": 96.46413094444584,
+        "full_input_semantic_distortion": -0.0880194555849475,
+        "retained_delay_mean_ms": 1267.6894500175204,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": 0.25019199590408736,
+        "retained_mean_cell_side_m": 6.793468391210478,
+        "retained_mean_window_ms": 2543.055751730261,
+        "retained_observations": 20524,
+        "retained_only_semantic_loss": 0.014973033743635678,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5477,
+            "retained_before": 5205,
+            "retained_fraction_delta": 0.0333783286292797,
+            "retained_observation_delta": 272
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 2977,
+            "retained_before": 1542,
+            "retained_fraction_delta": 0.22386895475819035,
+            "retained_observation_delta": 1435
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 65,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.06149479659413434,
+            "retained_observation_delta": 65
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 1647,
+            "retained_before": 568,
+            "retained_fraction_delta": 0.26747645017352506,
+            "retained_observation_delta": 1079
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 59174.240166999996,
+        "core_processing_ratio_after_over_before": 115.52215208030684,
+        "full_input_semantic_distortion": 0.037783574902782946,
+        "retained_delay_mean_ms": 1726.0682905288631,
+        "retained_delay_p95_ms": 3400,
+        "retained_fraction": -0.07237331317884266,
+        "retained_mean_cell_side_m": -2.385706465287331,
+        "retained_mean_window_ms": 3467.440554728952,
+        "retained_observations": -5937,
+        "retained_only_semantic_loss": 0.02714947774498011,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 33,
+            "retained_before": 2805,
+            "retained_fraction_delta": -0.3401644373542766,
+            "retained_observation_delta": -2772
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 1216,
+            "retained_before": 1950,
+            "retained_fraction_delta": -0.11450858034321373,
+            "retained_observation_delta": -734
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 65,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.06149479659413434,
+            "retained_observation_delta": 65
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 1493,
+            "retained_fraction_delta": -0.3701041150223104,
+            "retained_observation_delta": -1493
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 37931.710416999995,
+        "core_processing_ratio_after_over_before": 74.41067830836947,
+        "full_input_semantic_distortion": -0.043378884107615256,
+        "retained_delay_mean_ms": 1567.5183510205425,
+        "retained_delay_p95_ms": 3400,
+        "retained_fraction": 0.09753391927638877,
+        "retained_mean_cell_side_m": -3.206531608789522,
+        "retained_mean_window_ms": 3143.055751730261,
+        "retained_observations": 8001,
+        "retained_only_semantic_loss": -0.013817047309189645,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5477,
+            "retained_before": 2805,
+            "retained_fraction_delta": 0.3278929930052767,
+            "retained_observation_delta": 2672
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 2977,
+            "retained_before": 1950,
+            "retained_fraction_delta": 0.16021840873634946,
+            "retained_observation_delta": 1027
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 65,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.06149479659413434,
+            "retained_observation_delta": 65
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 1647,
+            "retained_before": 1493,
+            "retained_fraction_delta": 0.038175508180466,
+            "retained_observation_delta": 154
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 59376.969667,
+        "core_processing_ratio_after_over_before": 190.11300872638006,
+        "full_input_semantic_distortion": 0.03524191483915007,
+        "retained_delay_mean_ms": 1425.5848652370064,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": -0.07143466653663766,
+        "retained_mean_cell_side_m": -2.385706465287331,
+        "retained_mean_window_ms": 2867.440554728952,
+        "retained_observations": -5860,
+        "retained_only_semantic_loss": 0.022789802221955924,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 33,
+            "retained_before": 2801,
+            "retained_fraction_delta": -0.3396735795803166,
+            "retained_observation_delta": -2768
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 1216,
+            "retained_before": 1680,
+            "retained_fraction_delta": -0.07238689547581903,
+            "retained_observation_delta": -464
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 65,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.06149479659413434,
+            "retained_observation_delta": 65
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 1423,
+            "retained_fraction_delta": -0.3527516113039167,
+            "retained_observation_delta": -1423
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 38134.439916999996,
+        "core_processing_ratio_after_over_before": 122.45649583069411,
+        "full_input_semantic_distortion": -0.045920544171248134,
+        "retained_delay_mean_ms": 1267.0349257286857,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": 0.09847256591859377,
+        "retained_mean_cell_side_m": -3.206531608789522,
+        "retained_mean_window_ms": 2543.055751730261,
+        "retained_observations": 8078,
+        "retained_only_semantic_loss": -0.018176722832213832,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5477,
+            "retained_before": 2801,
+            "retained_fraction_delta": 0.3283838507792367,
+            "retained_observation_delta": 2676
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 2977,
+            "retained_before": 1680,
+            "retained_fraction_delta": 0.20234009360374416,
+            "retained_observation_delta": 1297
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 65,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.06149479659413434,
+            "retained_observation_delta": 65
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 1647,
+            "retained_before": 1423,
+            "retained_fraction_delta": 0.0555280118988597,
+            "retained_observation_delta": 224
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 65673.198875,
+        "core_processing_ratio_after_over_before": 158.93204677610188,
+        "full_input_semantic_distortion": -0.04755400077738914,
+        "retained_delay_mean_ms": -31.655854696384722,
+        "retained_delay_p95_ms": 1200,
+        "retained_fraction": 0.09401965683824753,
+        "retained_mean_cell_side_m": -0.551639973672664,
+        "retained_mean_window_ms": -64.14271610355422,
+        "retained_observations": 8466,
+        "retained_only_semantic_loss": -0.0013437911364633792,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 9587,
+            "retained_before": 8899,
+            "retained_fraction_delta": 0.058723113690679396,
+            "retained_observation_delta": 688
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 146,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.02504717790358552,
+            "retained_observation_delta": 146
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 0,
+            "retained_before": 212,
+            "retained_fraction_delta": -0.13014119091467158,
+            "retained_observation_delta": -212
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 63627.088292,
+        "core_processing_ratio_after_over_before": 154.0115245868524,
+        "full_input_semantic_distortion": -0.05083014048531287,
+        "retained_delay_mean_ms": -35.22255711091759,
+        "retained_delay_p95_ms": 1100,
+        "retained_fraction": 0.10057193625409516,
+        "retained_mean_cell_side_m": -0.5605332757597026,
+        "retained_mean_window_ms": -71.10973174286175,
+        "retained_observations": 9056,
+        "retained_only_semantic_loss": -0.0013223943433907093,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 9587,
+            "retained_before": 8899,
+            "retained_fraction_delta": 0.058723113690679396,
+            "retained_observation_delta": 688
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 146,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.02504717790358552,
+            "retained_observation_delta": 146
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 192,
+            "retained_before": 212,
+            "retained_fraction_delta": -0.012277470841006749,
+            "retained_observation_delta": -20
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 65569.209542,
+        "core_processing_ratio_after_over_before": 127.13797352945497,
+        "full_input_semantic_distortion": -0.20302071186628912,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.40495307901604755,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 36464,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 9587,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.8182826903379993,
+            "retained_observation_delta": 9587
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 146,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.02504717790358552,
+            "retained_observation_delta": 146
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 63523.098959,
+        "core_processing_ratio_after_over_before": 123.20179305145986,
+        "full_input_semantic_distortion": -0.20629685157421285,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.4115053584318952,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 37054,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 9587,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.8182826903379993,
+            "retained_observation_delta": 9587
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 146,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.02504717790358552,
+            "retained_observation_delta": 146
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 192,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.11786372007366483,
+            "retained_observation_delta": 192
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 65768.479458,
+        "core_processing_ratio_after_over_before": 206.17294876908934,
+        "full_input_semantic_distortion": -0.20302071186628912,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.40495307901604755,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 36464,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 9587,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.8182826903379993,
+            "retained_observation_delta": 9587
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 146,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.02504717790358552,
+            "retained_observation_delta": 146
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 63722.368875,
+        "core_processing_ratio_after_over_before": 199.78985240923143,
+        "full_input_semantic_distortion": -0.20629685157421285,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.4115053584318952,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 37054,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 9587,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.8182826903379993,
+            "retained_observation_delta": 9587
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 146,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.02504717790358552,
+            "retained_observation_delta": 146
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 192,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.11786372007366483,
+            "retained_observation_delta": 192
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 49220.196917,
+        "core_processing_ratio_after_over_before": 119.3655825357356,
+        "full_input_semantic_distortion": -0.051729690710200504,
+        "retained_delay_mean_ms": 1440.2026878519255,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": 0.1034593814204009,
+        "retained_mean_cell_side_m": -1.3343182183630802,
+        "retained_mean_window_ms": 2892.7131907595003,
+        "retained_observations": 9316,
+        "retained_only_semantic_loss": 0.0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8566,
+            "retained_before": 8899,
+            "retained_fraction_delta": -0.028422669853192195,
+            "retained_observation_delta": -333
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 215,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.036884542803225256,
+            "retained_observation_delta": 215
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 460,
+            "retained_before": 212,
+            "retained_fraction_delta": 0.15224063842848373,
+            "retained_observation_delta": 248
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 50535.629499999995,
+        "core_processing_ratio_after_over_before": 122.5289576078801,
+        "full_input_semantic_distortion": -0.051729690710200504,
+        "retained_delay_mean_ms": 1440.2026878519255,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": 0.1034593814204009,
+        "retained_mean_cell_side_m": -1.3343182183630802,
+        "retained_mean_window_ms": 2892.7131907595003,
+        "retained_observations": 9316,
+        "retained_only_semantic_loss": 0.0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8566,
+            "retained_before": 8899,
+            "retained_fraction_delta": -0.028422669853192195,
+            "retained_observation_delta": -333
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 215,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.036884542803225256,
+            "retained_observation_delta": 215
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 460,
+            "retained_before": 212,
+            "retained_fraction_delta": 0.15224063842848373,
+            "retained_observation_delta": 248
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 49116.207584,
+        "core_processing_ratio_after_over_before": 95.48671007890322,
+        "full_input_semantic_distortion": -0.20719640179910048,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.4143928035982009,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 37314,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8566,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.7311369067941277,
+            "retained_observation_delta": 8566
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 215,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.036884542803225256,
+            "retained_observation_delta": 215
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 460,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.2823818293431553,
+            "retained_observation_delta": 460
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 50431.640167,
+        "core_processing_ratio_after_over_before": 98.0172575949283,
+        "full_input_semantic_distortion": -0.20719640179910048,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.4143928035982009,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 37314,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8566,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.7311369067941277,
+            "retained_observation_delta": 8566
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 215,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.036884542803225256,
+            "retained_observation_delta": 215
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 460,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.2823818293431553,
+            "retained_observation_delta": 460
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 49315.4775,
+        "core_processing_ratio_after_over_before": 154.84576353315575,
+        "full_input_semantic_distortion": -0.20719640179910048,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.4143928035982009,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 37314,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8566,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.7311369067941277,
+            "retained_observation_delta": 8566
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 215,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.036884542803225256,
+            "retained_observation_delta": 215
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 460,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.2823818293431553,
+            "retained_observation_delta": 460
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "original",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 50630.910082999995,
+        "core_processing_ratio_after_over_before": 158.94941902565353,
+        "full_input_semantic_distortion": -0.20719640179910048,
+        "retained_delay_mean_ms": null,
+        "retained_delay_p95_ms": null,
+        "retained_fraction": 0.4143928035982009,
+        "retained_mean_cell_side_m": null,
+        "retained_mean_window_ms": null,
+        "retained_observations": 37314,
+        "retained_only_semantic_loss": null,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8566,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.7311369067941277,
+            "retained_observation_delta": 8566
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 215,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.036884542803225256,
+            "retained_observation_delta": 215
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 460,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.2823818293431553,
+            "retained_observation_delta": 460
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.1188898836168308,
+            "retained_observation_delta": 664
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "original",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 42207.945834,
+        "core_processing_ratio_after_over_before": 104.10970739639288,
+        "full_input_semantic_distortion": -0.1709589649619634,
+        "retained_delay_mean_ms": -242.23632329613855,
+        "retained_delay_p95_ms": -600,
+        "retained_fraction": 0.2622577600088844,
+        "retained_mean_cell_side_m": 9.643400579197959,
+        "retained_mean_window_ms": -481.9336049346357,
+        "retained_observations": 23615,
+        "retained_only_semantic_loss": -0.058680606685318826,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 10109,
+            "retained_before": 8899,
+            "retained_fraction_delta": 0.10327756913622399,
+            "retained_observation_delta": 1210
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 4917,
+            "retained_before": 2907,
+            "retained_fraction_delta": 0.3448275862068966,
+            "retained_observation_delta": 2010
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 0,
+            "retained_before": 212,
+            "retained_fraction_delta": -0.13014119091467158,
+            "retained_observation_delta": -212
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 1618,
+            "retained_before": 2082,
+            "retained_fraction_delta": -0.08307967770814684,
+            "retained_observation_delta": -464
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 30918.652708,
+        "core_processing_ratio_after_over_before": 76.53111554754965,
+        "full_input_semantic_distortion": -0.2210228219223721,
+        "retained_delay_mean_ms": -247.35458219928609,
+        "retained_delay_p95_ms": -600,
+        "retained_fraction": 0.36238547392970183,
+        "retained_mean_cell_side_m": 9.562415341840737,
+        "retained_mean_window_ms": -492.8309688457974,
+        "retained_observations": 32631,
+        "retained_only_semantic_loss": -0.05113709274969702,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 10109,
+            "retained_before": 8899,
+            "retained_fraction_delta": 0.10327756913622399,
+            "retained_observation_delta": 1210
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 5071,
+            "retained_before": 2907,
+            "retained_fraction_delta": 0.3712472122147882,
+            "retained_observation_delta": 2164
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 614,
+            "retained_before": 212,
+            "retained_fraction_delta": 0.2467771639042357,
+            "retained_observation_delta": 402
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 4720,
+            "retained_before": 2082,
+            "retained_fraction_delta": 0.47233661593554166,
+            "retained_observation_delta": 2638
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 42081.323959,
+        "core_processing_ratio_after_over_before": 79.51407086101085,
+        "full_input_semantic_distortion": 0.03147870509189854,
+        "retained_delay_mean_ms": 57.178956877261385,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": -0.06430118274196239,
+        "retained_mean_cell_side_m": -0.3565994208020413,
+        "retained_mean_window_ms": 118.0663950653643,
+        "retained_observations": -5790,
+        "retained_only_semantic_loss": -0.0059821655189585266,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 10109,
+            "retained_before": 9845,
+            "retained_fraction_delta": 0.022533287811539737,
+            "retained_observation_delta": 264
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 4917,
+            "retained_before": 5033,
+            "retained_fraction_delta": -0.01990049751243783,
+            "retained_observation_delta": -116
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 0,
+            "retained_before": 724,
+            "retained_fraction_delta": -0.4444444444444444,
+            "retained_observation_delta": -724
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 1618,
+            "retained_before": 4695,
+            "retained_fraction_delta": -0.5509400179051029,
+            "retained_observation_delta": -3077
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 30792.030833,
+        "core_processing_ratio_after_over_before": 58.45084667801987,
+        "full_input_semantic_distortion": -0.018585151868510175,
+        "retained_delay_mean_ms": 52.06069797411385,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": 0.03582653117885504,
+        "retained_mean_cell_side_m": -0.4375846581592633,
+        "retained_mean_window_ms": 107.16903115420263,
+        "retained_observations": 3226,
+        "retained_only_semantic_loss": 0.0015613484166632774,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 10109,
+            "retained_before": 9845,
+            "retained_fraction_delta": 0.022533287811539737,
+            "retained_observation_delta": 264
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 5071,
+            "retained_before": 5033,
+            "retained_fraction_delta": 0.006519128495453774,
+            "retained_observation_delta": 38
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 614,
+            "retained_before": 724,
+            "retained_fraction_delta": -0.06752608962553713,
+            "retained_observation_delta": -110
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 4720,
+            "retained_before": 4695,
+            "retained_fraction_delta": 0.004476275738585556,
+            "retained_observation_delta": 25
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 42291.680334,
+        "core_processing_ratio_after_over_before": 130.8823200040846,
+        "full_input_semantic_distortion": 0.03976900438669562,
+        "retained_delay_mean_ms": -242.72350654089718,
+        "retained_delay_p95_ms": -600,
+        "retained_fraction": -0.07811649730690218,
+        "retained_mean_cell_side_m": -0.3565994208020413,
+        "retained_mean_window_ms": -481.9336049346357,
+        "retained_observations": -7034,
+        "retained_only_semantic_loss": -0.005117300594611129,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 10109,
+            "retained_before": 9861,
+            "retained_fraction_delta": 0.021167634004779834,
+            "retained_observation_delta": 248
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 4917,
+            "retained_before": 5138,
+            "retained_fraction_delta": -0.03791387888145481,
+            "retained_observation_delta": -221
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 0,
+            "retained_before": 808,
+            "retained_fraction_delta": -0.4960098219766728,
+            "retained_observation_delta": -808
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 1618,
+            "retained_before": 4731,
+            "retained_fraction_delta": -0.5573858549686661,
+            "retained_observation_delta": -3113
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 31002.387208,
+        "core_processing_ratio_after_over_before": 96.21168098404445,
+        "full_input_semantic_distortion": -0.010294852573713098,
+        "retained_delay_mean_ms": -247.8417654440447,
+        "retained_delay_p95_ms": -600,
+        "retained_fraction": 0.022011216613915252,
+        "retained_mean_cell_side_m": -0.4375846581592633,
+        "retained_mean_window_ms": -492.8309688457974,
+        "retained_observations": 1982,
+        "retained_only_semantic_loss": 0.0024262133410106745,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 10109,
+            "retained_before": 9861,
+            "retained_fraction_delta": 0.021167634004779834,
+            "retained_observation_delta": 248
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 5071,
+            "retained_before": 5138,
+            "retained_fraction_delta": -0.011494252873563204,
+            "retained_observation_delta": -67
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 614,
+            "retained_before": 808,
+            "retained_fraction_delta": -0.11909146715776553,
+            "retained_observation_delta": -194
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 4720,
+            "retained_before": 4731,
+            "retained_fraction_delta": -0.001969561324977609,
+            "retained_observation_delta": -11
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 47066.563125,
+        "core_processing_ratio_after_over_before": 115.978813966903,
+        "full_input_semantic_distortion": -0.15436170803487137,
+        "retained_delay_mean_ms": 1231.5599484549334,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": 0.28445777111444276,
+        "retained_mean_cell_side_m": 7.81443090718971,
+        "retained_mean_window_ms": 2463.3416774929497,
+        "retained_observations": 25614,
+        "retained_only_semantic_loss": -0.017308850090307026,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8389,
+            "retained_before": 8899,
+            "retained_fraction_delta": -0.0435302150904745,
+            "retained_observation_delta": -510
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 4650,
+            "retained_before": 2907,
+            "retained_fraction_delta": 0.29902213072568196,
+            "retained_observation_delta": 1743
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 939,
+            "retained_before": 212,
+            "retained_fraction_delta": 0.44628606507059543,
+            "retained_observation_delta": 727
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 1616,
+            "retained_before": 2082,
+            "retained_fraction_delta": -0.08343777976723371,
+            "retained_observation_delta": -466
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 38631.899875,
+        "core_processing_ratio_after_over_before": 95.37379179607665,
+        "full_input_semantic_distortion": -0.18493531012271636,
+        "retained_delay_mean_ms": 1132.9215792174518,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": 0.34560497529013273,
+        "retained_mean_cell_side_m": 7.989788557938912,
+        "retained_mean_window_ms": 2265.6971321986475,
+        "retained_observations": 31120,
+        "retained_only_semantic_loss": -0.015920086267195155,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8389,
+            "retained_before": 8899,
+            "retained_fraction_delta": -0.0435302150904745,
+            "retained_observation_delta": -510
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 5071,
+            "retained_before": 2907,
+            "retained_fraction_delta": 0.3712472122147882,
+            "retained_observation_delta": 2164
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 939,
+            "retained_before": 212,
+            "retained_fraction_delta": 0.44628606507059543,
+            "retained_observation_delta": 727
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 4682,
+            "retained_before": 2082,
+            "retained_fraction_delta": 0.4655326768128917,
+            "retained_observation_delta": 2600
+          }
+        }
+      },
+      "baseline": "fixed_10m_1000ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 46939.94125,
+        "core_processing_ratio_after_over_before": 88.57913313528185,
+        "full_input_semantic_distortion": 0.04807596201899056,
+        "retained_delay_mean_ms": 1530.9752286283335,
+        "retained_delay_p95_ms": 3400,
+        "retained_fraction": -0.04210117163640403,
+        "retained_mean_cell_side_m": -2.18556909281029,
+        "retained_mean_window_ms": 3063.3416774929497,
+        "retained_observations": -3791,
+        "retained_only_semantic_loss": 0.03538959107605327,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8389,
+            "retained_before": 9845,
+            "retained_fraction_delta": -0.12427449641515875,
+            "retained_observation_delta": -1456
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 4650,
+            "retained_before": 5033,
+            "retained_fraction_delta": -0.06570595299365245,
+            "retained_observation_delta": -383
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 939,
+            "retained_before": 724,
+            "retained_fraction_delta": 0.1319828115408226,
+            "retained_observation_delta": 215
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 1616,
+            "retained_before": 4695,
+            "retained_fraction_delta": -0.5512981199641898,
+            "retained_observation_delta": -3079
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 38505.278000000006,
+        "core_processing_ratio_after_over_before": 72.8419916721357,
+        "full_input_semantic_distortion": 0.017502359931145572,
+        "retained_delay_mean_ms": 1432.336859390852,
+        "retained_delay_p95_ms": 3400,
+        "retained_fraction": 0.01904603253928594,
+        "retained_mean_cell_side_m": -2.010211442061088,
+        "retained_mean_window_ms": 2865.6971321986475,
+        "retained_observations": 1715,
+        "retained_only_semantic_loss": 0.036778354899165144,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8389,
+            "retained_before": 9845,
+            "retained_fraction_delta": -0.12427449641515875,
+            "retained_observation_delta": -1456
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 5071,
+            "retained_before": 5033,
+            "retained_fraction_delta": 0.006519128495453774,
+            "retained_observation_delta": 38
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 939,
+            "retained_before": 724,
+            "retained_fraction_delta": 0.1319828115408226,
+            "retained_observation_delta": 215
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 4682,
+            "retained_before": 4695,
+            "retained_fraction_delta": -0.0023276633840644267,
+            "retained_observation_delta": -13
+          }
+        }
+      },
+      "baseline": "fixed_20m_400ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 47150.297625,
+        "core_processing_ratio_after_over_before": 145.8036586878,
+        "full_input_semantic_distortion": 0.056366261313787636,
+        "retained_delay_mean_ms": 1231.072765210175,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": -0.05591648620134382,
+        "retained_mean_cell_side_m": -2.18556909281029,
+        "retained_mean_window_ms": 2463.3416774929497,
+        "retained_observations": -5035,
+        "retained_only_semantic_loss": 0.03625445600040067,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8389,
+            "retained_before": 9861,
+            "retained_fraction_delta": -0.12564015022191866,
+            "retained_observation_delta": -1472
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 4650,
+            "retained_before": 5138,
+            "retained_fraction_delta": -0.08371933436266943,
+            "retained_observation_delta": -488
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 939,
+            "retained_before": 808,
+            "retained_fraction_delta": 0.08041743400859419,
+            "retained_observation_delta": 131
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 1616,
+            "retained_before": 4731,
+            "retained_fraction_delta": -0.5577439570277529,
+            "retained_observation_delta": -3115
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "spatial20",
+      "implementation": "historical",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "adaptive_minus_fixed": {
+        "core_processing_ms": 38715.634375,
+        "core_processing_ratio_after_over_before": 119.89989646526982,
+        "full_input_semantic_distortion": 0.02579265922594265,
+        "retained_delay_mean_ms": 1132.4343959726934,
+        "retained_delay_p95_ms": 2800,
+        "retained_fraction": 0.005230717974346155,
+        "retained_mean_cell_side_m": -2.010211442061088,
+        "retained_mean_window_ms": 2265.6971321986475,
+        "retained_observations": 471,
+        "retained_only_semantic_loss": 0.03764321982351254,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8389,
+            "retained_before": 9861,
+            "retained_fraction_delta": -0.12564015022191866,
+            "retained_observation_delta": -1472
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 5071,
+            "retained_before": 5138,
+            "retained_fraction_delta": -0.011494252873563204,
+            "retained_observation_delta": -67
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 939,
+            "retained_before": 808,
+            "retained_fraction_delta": 0.08041743400859419,
+            "retained_observation_delta": 131
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 4682,
+            "retained_before": 4731,
+            "retained_fraction_delta": -0.008773500447627591,
+            "retained_observation_delta": -49
+          }
+        }
+      },
+      "baseline": "fixed_20m_1000ms",
+      "contract": "spatial20",
+      "implementation": "corrected",
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    }
+  ],
+  "corrected_binary_sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+  "correction_changes": [
+    {
+      "contract": "original",
+      "delta": {
+        "core_processing_ms": 4867.472958999999,
+        "core_processing_ratio_after_over_before": 1.082742670380342,
+        "full_input_semantic_distortion": 0.0,
+        "retained_delay_mean_ms": 0.0,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": 0.0,
+        "retained_mean_cell_side_m": 0.0,
+        "retained_mean_window_ms": 0.0,
+        "retained_observations": 0,
+        "retained_only_semantic_loss": 0.0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5516,
+            "retained_before": 5516,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 492,
+            "retained_before": 492,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "delta": {
+        "core_processing_ms": 820.1043340000033,
+        "core_processing_ratio_after_over_before": 1.015488207866194,
+        "full_input_semantic_distortion": 0.0,
+        "retained_delay_mean_ms": 0.0,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": 0.0,
+        "retained_mean_cell_side_m": 0.0,
+        "retained_mean_window_ms": 0.0,
+        "retained_observations": 0,
+        "retained_only_semantic_loss": 0.0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5724,
+            "retained_before": 5724,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 502,
+            "retained_before": 502,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "delta": {
+        "core_processing_ms": -24843.973458,
+        "core_processing_ratio_after_over_before": 0.5720400687133723,
+        "full_input_semantic_distortion": -0.08700766764594736,
+        "retained_delay_mean_ms": -8.759636177505627,
+        "retained_delay_p95_ms": -100,
+        "retained_fraction": 0.19656723513707902,
+        "retained_mean_cell_side_m": -1.2566323797593206,
+        "retained_mean_window_ms": -17.163527945695023,
+        "retained_observations": 16125,
+        "retained_only_semantic_loss": -0.03464538116744342,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5993,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.7354276598355627,
+            "retained_observation_delta": 5993
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 3046,
+            "retained_before": 1202,
+            "retained_fraction_delta": 0.2876755070202808,
+            "retained_observation_delta": 1844
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 33,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.03122043519394513,
+            "retained_observation_delta": 33
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 1691,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.4191869112543381,
+            "retained_observation_delta": 1691
+          }
+        }
+      },
+      "method": "adaptive_immediate",
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "delta": {
+        "core_processing_ms": -21242.52975,
+        "core_processing_ratio_after_over_before": 0.6441247584847783,
+        "full_input_semantic_distortion": -0.0811624590103982,
+        "retained_delay_mean_ms": -158.54993950832068,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": 0.16990723245523143,
+        "retained_mean_cell_side_m": -0.8208251435021907,
+        "retained_mean_window_ms": -324.38480299869116,
+        "retained_observations": 13938,
+        "retained_only_semantic_loss": -0.040966525054169756,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5477,
+            "retained_before": 33,
+            "retained_fraction_delta": 0.6680574303595533,
+            "retained_observation_delta": 5444
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 2977,
+            "retained_before": 1216,
+            "retained_fraction_delta": 0.27472698907956317,
+            "retained_observation_delta": 1761
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 65,
+            "retained_before": 65,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 1647,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.4082796232027764,
+            "retained_observation_delta": 1647
+          }
+        }
+      },
+      "method": "adaptive_spatial_first",
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "delta": {
+        "core_processing_ms": -2046.1105829999942,
+        "core_processing_ratio_after_over_before": 0.9690400879554433,
+        "full_input_semantic_distortion": -0.003276139707923731,
+        "retained_delay_mean_ms": -3.5667024145328696,
+        "retained_delay_p95_ms": -100,
+        "retained_fraction": 0.006552279415847628,
+        "retained_mean_cell_side_m": -0.008893302087038535,
+        "retained_mean_window_ms": -6.967015639307533,
+        "retained_observations": 590,
+        "retained_only_semantic_loss": 2.139679307266995e-05,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 9587,
+            "retained_before": 9587,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 146,
+            "retained_before": 146,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 192,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.11786372007366483,
+            "retained_observation_delta": 192
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 664,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "original",
+      "delta": {
+        "core_processing_ms": 1315.4325829999943,
+        "core_processing_ratio_after_over_before": 1.026501567746276,
+        "full_input_semantic_distortion": 0.0,
+        "retained_delay_mean_ms": 0.0,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": 0.0,
+        "retained_mean_cell_side_m": 0.0,
+        "retained_mean_window_ms": 0.0,
+        "retained_observations": 0,
+        "retained_only_semantic_loss": 0.0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8566,
+            "retained_before": 8566,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 215,
+            "retained_before": 215,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 460,
+            "retained_before": 460,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 664,
+            "retained_before": 664,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "delta": {
+        "core_processing_ms": -11289.293125999997,
+        "core_processing_ratio_after_over_before": 0.7351006689141962,
+        "full_input_semantic_distortion": -0.050063856960408715,
+        "retained_delay_mean_ms": -5.1182589031475345,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": 0.10012771392081743,
+        "retained_mean_cell_side_m": -0.08098523735722196,
+        "retained_mean_window_ms": -10.897363911161676,
+        "retained_observations": 9016,
+        "retained_only_semantic_loss": 0.007543513935621804,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 10109,
+            "retained_before": 10109,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 5071,
+            "retained_before": 4917,
+            "retained_fraction_delta": 0.026419626007891606,
+            "retained_observation_delta": 154
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 614,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.3769183548189073,
+            "retained_observation_delta": 614
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 4720,
+            "retained_before": 1618,
+            "retained_fraction_delta": 0.5554162936436885,
+            "retained_observation_delta": 3102
+          }
+        }
+      },
+      "method": "adaptive_immediate",
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "delta": {
+        "core_processing_ms": -8434.663249999998,
+        "core_processing_ratio_after_over_before": 0.8223380506658188,
+        "full_input_semantic_distortion": -0.030573602087844987,
+        "retained_delay_mean_ms": -98.63836923748158,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": 0.06114720417568997,
+        "retained_mean_cell_side_m": 0.17535765074920207,
+        "retained_mean_window_ms": -197.64454529430213,
+        "retained_observations": 5506,
+        "retained_only_semantic_loss": 0.0013887638231118715,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8389,
+            "retained_before": 8389,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 5071,
+            "retained_before": 4650,
+            "retained_fraction_delta": 0.07222508148910622,
+            "retained_observation_delta": 421
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 939,
+            "retained_before": 939,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 4682,
+            "retained_before": 1616,
+            "retained_fraction_delta": 0.5489704565801254,
+            "retained_observation_delta": 3066
+          }
+        }
+      },
+      "method": "adaptive_spatial_first",
+      "source": "pedestrians"
+    }
+  ],
+  "correction_protocol_sha256": "6f46187e315cbca62bc467bcf0c9a7d8eda81edbd9650860c067bfb047527998",
+  "correction_summary_sha256": "34f214e19bfb065dd469c253d4dd903e76d59427d0d5b1600a3817427bf65b36",
+  "filtering_sensitivity": [
+    {
+      "contract": "spatial20",
+      "method": "adaptive_immediate",
+      "off": {
+        "config_sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda",
+        "core_processing_ms": 33208.12825,
+        "full_input_semantic_distortion": 0.7668438311411261,
+        "input_observations": 82033,
+        "native_process_wall_seconds": 34.54406012499999,
+        "outside_named_regions": null,
+        "result_sha256": "18db9f973edab2dd9ed0de23aeed8874f421a42d40d306a676e7d035c85f9f56",
+        "retained_delay_mean_ms": 319.8837320118174,
+        "retained_delay_p95_ms": 600,
+        "retained_fraction": 0.639559689393293,
+        "retained_mean_cell_side_m": 17.815877251501,
+        "retained_mean_window_ms": 545.5579910416468,
+        "retained_observations": 52465,
+        "retained_only_semantic_loss": 0.6354426760697608,
+        "selectively_suppressed_observations": 0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_fraction": 0.7354276598355627,
+            "retained_observations": 5993
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_fraction": 0.475195007800312,
+            "retained_observations": 3046
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_fraction": 0.03122043519394513,
+            "retained_observations": 33
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_fraction": 0.4191869112543381,
+            "retained_observations": 1691
+          }
+        },
+        "whole_footprint_suppressed_observations": 29568
+      },
+      "on": {
+        "config_sha256": "3f4a5720563ca334a34a5e929b8d86bcdc7ef349dbb9118bdfa3a75ef447e9e6",
+        "core_processing_ms": 34899.6305,
+        "full_input_semantic_distortion": 0.752794607048383,
+        "input_observations": 82033,
+        "native_process_wall_seconds": 36.27281483300001,
+        "outside_named_regions": null,
+        "result_sha256": "2caafb2a62628f8f0f53e8f0b8b6c5394d6febf79f4a245bff3637221b969277",
+        "retained_delay_mean_ms": 317.7968185515141,
+        "retained_delay_p95_ms": 600,
+        "retained_fraction": 0.6444845367108358,
+        "retained_mean_cell_side_m": 17.952108040628723,
+        "retained_mean_window_ms": 540.6117006185099,
+        "retained_observations": 52869,
+        "retained_only_semantic_loss": 0.6164292874841589,
+        "selectively_suppressed_observations": 191,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_fraction": 0.7354276598355627,
+            "retained_observations": 5993
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_fraction": 0.5244929797191887,
+            "retained_observations": 3362
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_fraction": 0.03122043519394513,
+            "retained_observations": 33
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_fraction": 0.4325731284085275,
+            "retained_observations": 1745
+          }
+        },
+        "whole_footprint_suppressed_observations": 28973
+      },
+      "on_minus_off": {
+        "core_processing_ms": 1691.5022499999977,
+        "core_processing_ratio_after_over_before": 1.0509363923574946,
+        "full_input_semantic_distortion": -0.014049224092743118,
+        "retained_delay_mean_ms": -2.0869134603033217,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": 0.004924847317542835,
+        "retained_mean_cell_side_m": 0.13623078912772257,
+        "retained_mean_window_ms": -4.946290423136929,
+        "retained_observations": 404,
+        "retained_only_semantic_loss": -0.019013388585601865,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5993,
+            "retained_before": 5993,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 3362,
+            "retained_before": 3046,
+            "retained_fraction_delta": 0.04929797191887675,
+            "retained_observation_delta": 316
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 33,
+            "retained_before": 33,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 1745,
+            "retained_before": 1691,
+            "retained_fraction_delta": 0.013386217154189417,
+            "retained_observation_delta": 54
+          }
+        }
+      },
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "method": "adaptive_spatial_first",
+      "off": {
+        "config_sha256": "b96093993b8f82870026a3c772afe6eff34c71ff27f34364740992e1307a2074",
+        "core_processing_ms": 38448.416042,
+        "full_input_semantic_distortion": 0.7746638547901454,
+        "input_observations": 82033,
+        "native_process_wall_seconds": 39.82321033300002,
+        "outside_named_regions": null,
+        "result_sha256": "80754807bde1c4f0f76fb18ffd899130a74e8182832dc66857cdaf16784e2669",
+        "retained_delay_mean_ms": 1817.5568514296092,
+        "retained_delay_p95_ms": 3800,
+        "retained_fraction": 0.6041349213121548,
+        "retained_mean_cell_side_m": 16.793468391210478,
+        "retained_mean_window_ms": 3543.055751730261,
+        "retained_observations": 49559,
+        "retained_only_semantic_loss": 0.6270102302306342,
+        "selectively_suppressed_observations": 0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_fraction": 0.6721070069947233,
+            "retained_observations": 5477
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_fraction": 0.46443057722308895,
+            "retained_observations": 2977
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_fraction": 0.06149479659413434,
+            "retained_observations": 65
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_fraction": 0.4082796232027764,
+            "retained_observations": 1647
+          }
+        },
+        "whole_footprint_suppressed_observations": 32474
+      },
+      "on": {
+        "config_sha256": "2a7f5788e55df8e76d79d62f6300d90bfe688e5b99100b6abbd61425c5ed1a35",
+        "core_processing_ms": 41521.390792,
+        "full_input_semantic_distortion": 0.7497775285555813,
+        "input_observations": 82033,
+        "native_process_wall_seconds": 42.92518749999999,
+        "outside_named_regions": null,
+        "result_sha256": "fc9e035008c5e5d29f259e2c057a20df45be0b3ceb7a990e11431785a40240d8",
+        "retained_delay_mean_ms": 1781.3246106411575,
+        "retained_delay_p95_ms": 3800,
+        "retained_fraction": 0.6167761754415906,
+        "retained_mean_cell_side_m": 17.057425488180883,
+        "retained_mean_window_ms": 3471.3080085382244,
+        "retained_observations": 50596,
+        "retained_only_semantic_loss": 0.594305873982133,
+        "selectively_suppressed_observations": 275,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_fraction": 0.6721070069947233,
+            "retained_observations": 5477
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_fraction": 0.5566302652106084,
+            "retained_observations": 3568
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_fraction": 0.06149479659413434,
+            "retained_observations": 65
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_fraction": 0.4082796232027764,
+            "retained_observations": 1647
+          }
+        },
+        "whole_footprint_suppressed_observations": 31162
+      },
+      "on_minus_off": {
+        "core_processing_ms": 3072.974750000001,
+        "core_processing_ratio_after_over_before": 1.0799246124116835,
+        "full_input_semantic_distortion": -0.024886326234564105,
+        "retained_delay_mean_ms": -36.23224078845169,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": 0.01264125412943573,
+        "retained_mean_cell_side_m": 0.2639570969704046,
+        "retained_mean_window_ms": -71.74774319203652,
+        "retained_observations": 1037,
+        "retained_only_semantic_loss": -0.03270435624850121,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 5477,
+            "retained_before": 5477,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 3568,
+            "retained_before": 2977,
+            "retained_fraction_delta": 0.09219968798751949,
+            "retained_observation_delta": 591
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 65,
+            "retained_before": 65,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 1647,
+            "retained_before": 1647,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "method": "fixed_20m_1000ms",
+      "off": {
+        "config_sha256": "b77d5fb5d002c9854e5498d0f32b4b1b03dd0fbce8eb37b85f6ad7d980656fc7",
+        "core_processing_ms": 309.382834,
+        "full_input_semantic_distortion": 0.8205843989613936,
+        "input_observations": 82033,
+        "native_process_wall_seconds": 1.5341974170000299,
+        "outside_named_regions": null,
+        "result_sha256": "f8f39ece3a1bbc253c5190334715067b778202330363a8788740ddc0cbcd0fa3",
+        "retained_delay_mean_ms": 550.5219257009234,
+        "retained_delay_p95_ms": 1000,
+        "retained_fraction": 0.5056623553935611,
+        "retained_mean_cell_side_m": 20.0,
+        "retained_mean_window_ms": 1000.0,
+        "retained_observations": 41481,
+        "retained_only_semantic_loss": 0.645186953062848,
+        "selectively_suppressed_observations": 0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_fraction": 0.34372315621548655,
+            "retained_observations": 2801
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_fraction": 0.2620904836193448,
+            "retained_observations": 1680
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_fraction": 0.0,
+            "retained_observations": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_fraction": 0.3527516113039167,
+            "retained_observations": 1423
+          }
+        },
+        "whole_footprint_suppressed_observations": 40552
+      },
+      "on": {
+        "config_sha256": "d97c70b8b6021118f806e7e4220e1e8e4b558da25eb2cdbda3748a3603f414bd",
+        "core_processing_ms": 399.55925,
+        "full_input_semantic_distortion": 0.7718844855119281,
+        "input_observations": 82033,
+        "native_process_wall_seconds": 1.6218139160000078,
+        "outside_named_regions": null,
+        "result_sha256": "1f1819aaa7926c6f4902d46cc60854329b28e7aa7d06f6d617cd7f9dcc8e56dd",
+        "retained_delay_mean_ms": 550.0698442262106,
+        "retained_delay_p95_ms": 1000,
+        "retained_fraction": 0.5759633318298734,
+        "retained_mean_cell_side_m": 20.0,
+        "retained_mean_window_ms": 1000.0,
+        "retained_observations": 47248,
+        "retained_only_semantic_loss": 0.6039409075516424,
+        "selectively_suppressed_observations": 555,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_fraction": 0.5484108479568045,
+            "retained_observations": 4469
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_fraction": 0.4691107644305772,
+            "retained_observations": 3007
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_fraction": 0.0,
+            "retained_observations": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_fraction": 0.43232523549826474,
+            "retained_observations": 1744
+          }
+        },
+        "whole_footprint_suppressed_observations": 34230
+      },
+      "on_minus_off": {
+        "core_processing_ms": 90.17641600000002,
+        "core_processing_ratio_after_over_before": 1.2914719437859956,
+        "full_input_semantic_distortion": -0.04869991344946545,
+        "retained_delay_mean_ms": -0.4520814747127133,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": 0.07030097643631228,
+        "retained_mean_cell_side_m": 0.0,
+        "retained_mean_window_ms": 0.0,
+        "retained_observations": 5767,
+        "retained_only_semantic_loss": -0.04124604551120559,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 8149,
+            "retained_after": 4469,
+            "retained_before": 2801,
+            "retained_fraction_delta": 0.20468769174131796,
+            "retained_observation_delta": 1668
+          },
+          "east-footway-control": {
+            "input_observations": 6410,
+            "retained_after": 3007,
+            "retained_before": 1680,
+            "retained_fraction_delta": 0.20702028081123242,
+            "retained_observation_delta": 1327
+          },
+          "entrance-vicinity": {
+            "input_observations": 1057,
+            "retained_after": 0,
+            "retained_before": 0,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 4034,
+            "retained_after": 1744,
+            "retained_before": 1423,
+            "retained_fraction_delta": 0.07957362419434805,
+            "retained_observation_delta": 321
+          }
+        }
+      },
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "method": "adaptive_immediate",
+      "off": {
+        "config_sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda",
+        "core_processing_ms": 31328.002583,
+        "full_input_semantic_distortion": 0.5707257482369926,
+        "input_observations": 90045,
+        "native_process_wall_seconds": 32.82291195800002,
+        "outside_named_regions": null,
+        "result_sha256": "b36053cc46e520a78eb2cba92b33244b882d604b0974a7eef2608603913167d1",
+        "retained_delay_mean_ms": 302.0988094389392,
+        "retained_delay_p95_ms": 400,
+        "retained_fraction": 0.7788883336109723,
+        "retained_mean_cell_side_m": 19.562415341840737,
+        "retained_mean_window_ms": 507.1690311542026,
+        "retained_observations": 70135,
+        "retained_only_semantic_loss": 0.448862907250303,
+        "selectively_suppressed_observations": 0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_fraction": 0.8628371457835439,
+            "retained_observations": 10109
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_fraction": 0.8699605421170012,
+            "retained_observations": 5071
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_fraction": 0.3769183548189073,
+            "retained_observations": 614
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_fraction": 0.8451208594449419,
+            "retained_observations": 4720
+          }
+        },
+        "whole_footprint_suppressed_observations": 19910
+      },
+      "on": {
+        "config_sha256": "3f4a5720563ca334a34a5e929b8d86bcdc7ef349dbb9118bdfa3a75ef447e9e6",
+        "core_processing_ms": 33198.354042,
+        "full_input_semantic_distortion": 0.5697206952079515,
+        "input_observations": 90045,
+        "native_process_wall_seconds": 34.70720191600003,
+        "outside_named_regions": null,
+        "result_sha256": "22ade74b0a46f3303088a520e770d12553f6cbab9634304bcce0b967c091f4f3",
+        "retained_delay_mean_ms": 302.1120935539076,
+        "retained_delay_p95_ms": 400,
+        "retained_fraction": 0.7787217502359931,
+        "retained_mean_cell_side_m": 19.562321734169995,
+        "retained_mean_window_ms": 507.19195664575017,
+        "retained_observations": 70120,
+        "retained_only_semantic_loss": 0.44745436394751853,
+        "selectively_suppressed_observations": 15,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_fraction": 0.8628371457835439,
+            "retained_observations": 10109
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_fraction": 0.8699605421170012,
+            "retained_observations": 5071
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_fraction": 0.3769183548189073,
+            "retained_observations": 614
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_fraction": 0.8451208594449419,
+            "retained_observations": 4720
+          }
+        },
+        "whole_footprint_suppressed_observations": 19910
+      },
+      "on_minus_off": {
+        "core_processing_ms": 1870.3514589999977,
+        "core_processing_ratio_after_over_before": 1.0597022249996537,
+        "full_input_semantic_distortion": -0.0010050530290410808,
+        "retained_delay_mean_ms": 0.013284114968371341,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": -0.00016658337497921227,
+        "retained_mean_cell_side_m": -9.36076707418465e-05,
+        "retained_mean_window_ms": 0.022925491547539423,
+        "retained_observations": -15,
+        "retained_only_semantic_loss": -0.0014085433027844485,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 10109,
+            "retained_before": 10109,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 5071,
+            "retained_before": 5071,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 614,
+            "retained_before": 614,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 4720,
+            "retained_before": 4720,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "method": "adaptive_spatial_first",
+      "off": {
+        "config_sha256": "b96093993b8f82870026a3c772afe6eff34c71ff27f34364740992e1307a2074",
+        "core_processing_ms": 39041.24975,
+        "full_input_semantic_distortion": 0.6068132600366484,
+        "input_observations": 90045,
+        "native_process_wall_seconds": 40.52629141700004,
+        "outside_named_regions": null,
+        "result_sha256": "8dced75d197056cf3c7dd8736182678b4bd9623c31c7746ae4d50dd2777df876",
+        "retained_delay_mean_ms": 1682.3749708556772,
+        "retained_delay_p95_ms": 3800,
+        "retained_fraction": 0.7621078349714032,
+        "retained_mean_cell_side_m": 17.989788557938912,
+        "retained_mean_window_ms": 3265.6971321986475,
+        "retained_observations": 68624,
+        "retained_only_semantic_loss": 0.48407991373280485,
+        "selectively_suppressed_observations": 0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_fraction": 0.7160293615568454,
+            "retained_observations": 8389
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_fraction": 0.8699605421170012,
+            "retained_observations": 5071
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_fraction": 0.576427255985267,
+            "retained_observations": 939
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_fraction": 0.8383169203222919,
+            "retained_observations": 4682
+          }
+        },
+        "whole_footprint_suppressed_observations": 21421
+      },
+      "on": {
+        "config_sha256": "2a7f5788e55df8e76d79d62f6300d90bfe688e5b99100b6abbd61425c5ed1a35",
+        "core_processing_ms": 41938.070709,
+        "full_input_semantic_distortion": 0.6068132600366484,
+        "input_observations": 90045,
+        "native_process_wall_seconds": 43.39726904199995,
+        "outside_named_regions": null,
+        "result_sha256": "2092addcc77a5cb074edd9d0c1728e5b3abb38e80515194273329c52c43957d2",
+        "retained_delay_mean_ms": 1682.3749708556772,
+        "retained_delay_p95_ms": 3800,
+        "retained_fraction": 0.7621078349714032,
+        "retained_mean_cell_side_m": 17.989788557938912,
+        "retained_mean_window_ms": 3265.6971321986475,
+        "retained_observations": 68624,
+        "retained_only_semantic_loss": 0.48407991373280485,
+        "selectively_suppressed_observations": 0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_fraction": 0.7160293615568454,
+            "retained_observations": 8389
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_fraction": 0.8699605421170012,
+            "retained_observations": 5071
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_fraction": 0.576427255985267,
+            "retained_observations": 939
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_fraction": 0.8383169203222919,
+            "retained_observations": 4682
+          }
+        },
+        "whole_footprint_suppressed_observations": 21421
+      },
+      "on_minus_off": {
+        "core_processing_ms": 2896.820958999997,
+        "core_processing_ratio_after_over_before": 1.0741989812710848,
+        "full_input_semantic_distortion": 0.0,
+        "retained_delay_mean_ms": 0.0,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": 0.0,
+        "retained_mean_cell_side_m": 0.0,
+        "retained_mean_window_ms": 0.0,
+        "retained_observations": 0,
+        "retained_only_semantic_loss": 0.0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 8389,
+            "retained_before": 8389,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 5071,
+            "retained_before": 5071,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 939,
+            "retained_before": 939,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 4682,
+            "retained_before": 4682,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "method": "fixed_20m_1000ms",
+      "off": {
+        "config_sha256": "b77d5fb5d002c9854e5498d0f32b4b1b03dd0fbce8eb37b85f6ad7d980656fc7",
+        "core_processing_ms": 330.517792,
+        "full_input_semantic_distortion": 0.5810206008107057,
+        "input_observations": 90045,
+        "native_process_wall_seconds": 1.6538697500000126,
+        "outside_named_regions": null,
+        "result_sha256": "92de65610fff01a99634140040d7a6616e902f5c19069f76272e29d9c272ca61",
+        "retained_delay_mean_ms": 549.9405748829839,
+        "retained_delay_p95_ms": 1000,
+        "retained_fraction": 0.7568771169970571,
+        "retained_mean_cell_side_m": 20.0,
+        "retained_mean_window_ms": 1000.0,
+        "retained_observations": 68153,
+        "retained_only_semantic_loss": 0.4464366939092923,
+        "selectively_suppressed_observations": 0,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_fraction": 0.841669511778764,
+            "retained_observations": 9861
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_fraction": 0.8814547949905644,
+            "retained_observations": 5138
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_fraction": 0.4960098219766728,
+            "retained_observations": 808
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_fraction": 0.8470904207699195,
+            "retained_observations": 4731
+          }
+        },
+        "whole_footprint_suppressed_observations": 21892
+      },
+      "on": {
+        "config_sha256": "d97c70b8b6021118f806e7e4220e1e8e4b558da25eb2cdbda3748a3603f414bd",
+        "core_processing_ms": 416.83575,
+        "full_input_semantic_distortion": 0.5786884335609973,
+        "input_observations": 90045,
+        "native_process_wall_seconds": 1.7866449169999896,
+        "outside_named_regions": null,
+        "result_sha256": "75acdbba1fc83dbcecadb98e72717966cae1f70d83605812500aa4f9e431beda",
+        "retained_delay_mean_ms": 549.9970638322861,
+        "retained_delay_p95_ms": 1000,
+        "retained_fraction": 0.756466211338775,
+        "retained_mean_cell_side_m": 20.0,
+        "retained_mean_window_ms": 1000.0,
+        "retained_observations": 68116,
+        "retained_only_semantic_loss": 0.44305302718891304,
+        "selectively_suppressed_observations": 37,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_fraction": 0.8414988050529191,
+            "retained_observations": 9859
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_fraction": 0.8814547949905644,
+            "retained_observations": 5138
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_fraction": 0.4960098219766728,
+            "retained_observations": 808
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_fraction": 0.8470904207699195,
+            "retained_observations": 4731
+          }
+        },
+        "whole_footprint_suppressed_observations": 21892
+      },
+      "on_minus_off": {
+        "core_processing_ms": 86.31795800000003,
+        "core_processing_ratio_after_over_before": 1.261159792571772,
+        "full_input_semantic_distortion": -0.0023321672497084167,
+        "retained_delay_mean_ms": 0.05648894930220649,
+        "retained_delay_p95_ms": 0,
+        "retained_fraction": -0.00041090565828205694,
+        "retained_mean_cell_side_m": 0.0,
+        "retained_mean_window_ms": 0.0,
+        "retained_observations": -37,
+        "retained_only_semantic_loss": -0.0033836667203792636,
+        "source_point_regions": {
+          "central-through-footway": {
+            "input_observations": 11716,
+            "retained_after": 9859,
+            "retained_before": 9861,
+            "retained_fraction_delta": -0.00017070672584496016,
+            "retained_observation_delta": -2
+          },
+          "east-footway-control": {
+            "input_observations": 5829,
+            "retained_after": 5138,
+            "retained_before": 5138,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "entrance-vicinity": {
+            "input_observations": 1629,
+            "retained_after": 808,
+            "retained_before": 808,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          },
+          "west-footway-control": {
+            "input_observations": 5585,
+            "retained_after": 4731,
+            "retained_before": 4731,
+            "retained_fraction_delta": 0.0,
+            "retained_observation_delta": 0
+          }
+        }
+      },
+      "source": "pedestrians"
+    }
+  ],
+  "primary_tables": [
+    {
+      "contract": "original",
+      "rows": [
+        {
+          "implementation": "historical",
+          "method": "adaptive_immediate",
+          "metrics": {
+            "config_sha256": "bf1f46819b0fdc64e67820bfda8989adab20990bae2b9e60b9bc0a74aecc363c",
+            "core_processing_ms": 58826.636083,
+            "full_input_semantic_distortion": 0.8536869308692843,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 60.534841084,
+            "outside_named_regions": {
+              "input_observations": 62383,
+              "retained_fraction": 0.4289469887629643,
+              "retained_observations": 26759
+            },
+            "result_sha256": "46698d836cd295f0c967887f0d681fe2467d4e6c78c61169374ba26856ace81e",
+            "retained_delay_mean_ms": 557.5609607226783,
+            "retained_delay_p95_ms": 2200,
+            "retained_fraction": 0.399436812014677,
+            "retained_mean_cell_side_m": 9.687490462965789,
+            "retained_mean_window_ms": 1019.0160832544939,
+            "retained_observations": 32767,
+            "retained_only_semantic_loss": 0.6337015900143437,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.6768928702908332,
+                "retained_observations": 5516
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.07675507020280811,
+                "retained_observations": 492
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 49266
+          }
+        },
+        {
+          "implementation": "corrected",
+          "method": "adaptive_immediate",
+          "metrics": {
+            "config_sha256": "bf1f46819b0fdc64e67820bfda8989adab20990bae2b9e60b9bc0a74aecc363c",
+            "core_processing_ms": 63694.109042,
+            "full_input_semantic_distortion": 0.8536869308692843,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 65.719223083,
+            "outside_named_regions": null,
+            "result_sha256": "75b54266090e93da76686e1f5926941320ff5405c2b5e86ecbaf27064e2993bd",
+            "retained_delay_mean_ms": 557.5609607226783,
+            "retained_delay_p95_ms": 2200,
+            "retained_fraction": 0.399436812014677,
+            "retained_mean_cell_side_m": 9.687490462965789,
+            "retained_mean_window_ms": 1019.0160832544939,
+            "retained_observations": 32767,
+            "retained_only_semantic_loss": 0.6337015900143437,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.6768928702908332,
+                "retained_observations": 5516
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.07675507020280811,
+                "retained_observations": 492
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 49266
+          }
+        },
+        {
+          "implementation": "historical",
+          "method": "adaptive_spatial_first",
+          "metrics": {
+            "config_sha256": "2926799f2e6f7e00035c2a161285879defd93e67d977287b42859fec54793f64",
+            "core_processing_ms": 52950.240666,
+            "full_input_semantic_distortion": 0.8507490887813441,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 54.52473633300001,
+            "outside_named_regions": {
+              "input_observations": 62383,
+              "retained_fraction": 0.4297324591635542,
+              "retained_observations": 26808
+            },
+            "result_sha256": "baee38e964c56fad5e67763107010139f66c6ce8884df30af404d1bfdf344a9c",
+            "retained_delay_mean_ms": 2016.1015922988436,
+            "retained_delay_p95_ms": 3800,
+            "retained_fraction": 0.4026915997220631,
+            "retained_mean_cell_side_m": 9.488216685838832,
+            "retained_mean_window_ms": 3949.140279711812,
+            "retained_observations": 33034,
+            "retained_only_semantic_loss": 0.6293667130834898,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.702417474536753,
+                "retained_observations": 5724
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.07831513260530422,
+                "retained_observations": 502
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 48999
+          }
+        },
+        {
+          "implementation": "corrected",
+          "method": "adaptive_spatial_first",
+          "metrics": {
+            "config_sha256": "2926799f2e6f7e00035c2a161285879defd93e67d977287b42859fec54793f64",
+            "core_processing_ms": 53770.345,
+            "full_input_semantic_distortion": 0.8507490887813441,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 55.16058333299999,
+            "outside_named_regions": null,
+            "result_sha256": "a19edf36507038d7452b92a22f5e13195d1582b241e057dcd394c47d4888c2f0",
+            "retained_delay_mean_ms": 2016.1015922988436,
+            "retained_delay_p95_ms": 3800,
+            "retained_fraction": 0.4026915997220631,
+            "retained_mean_cell_side_m": 9.488216685838832,
+            "retained_mean_window_ms": 3949.140279711812,
+            "retained_observations": 33034,
+            "retained_only_semantic_loss": 0.6293667130834898,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.702417474536753,
+                "retained_observations": 5724
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.07831513260530422,
+                "retained_observations": 502
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 48999
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_10m_1000ms",
+          "metrics": {
+            "config_sha256": "a9c125fe4c3a7f7b51e9ffcf5b71e25f81c4bdd30b1fad31ef9b3c3b08941c64",
+            "core_processing_ms": 405.265,
+            "full_input_semantic_distortion": 0.8889958918971633,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 1.692549041999996,
+            "outside_named_regions": {
+              "input_observations": 62383,
+              "retained_fraction": 0.3127935495247103,
+              "retained_observations": 19513
+            },
+            "result_sha256": "3cd9c429f994d679eb4e5af94d20157970cb0647a8e39328ed83f9b8a337babd",
+            "retained_delay_mean_ms": 549.9433611133587,
+            "retained_delay_p95_ms": 1000,
+            "retained_fraction": 0.3013177623639267,
+            "retained_mean_cell_side_m": 10.0,
+            "retained_mean_window_ms": 1000.0,
+            "retained_observations": 24718,
+            "retained_only_semantic_loss": 0.6316044987458532,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.6387286783654436,
+                "retained_observations": 5205
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 57315
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_20m_400ms",
+          "metrics": {
+            "config_sha256": "4e2e8eedc24211726cc4bd8a60eee06e805487135f1ab9f9d1cb6d76abd64e47",
+            "core_processing_ms": 502.40525,
+            "full_input_semantic_distortion": 1.0,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 1.8273289580000096,
+            "outside_named_regions": {
+              "input_observations": 62383,
+              "retained_fraction": 0.0,
+              "retained_observations": 0
+            },
+            "result_sha256": "2fbd773c0b3d1e62db52a12faa1631680b0dd5be309abf4628fa7ec5672fbc20",
+            "retained_delay_mean_ms": null,
+            "retained_delay_p95_ms": null,
+            "retained_fraction": 0.0,
+            "retained_mean_cell_side_m": null,
+            "retained_mean_window_ms": null,
+            "retained_observations": 0,
+            "retained_only_semantic_loss": null,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 82033
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_20m_1000ms",
+          "metrics": {
+            "config_sha256": "7c8810318221f3cb008a1d5fd4d518ec5b7f882b8c945f7487f192646035e7d7",
+            "core_processing_ms": 313.111833,
+            "full_input_semantic_distortion": 1.0,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 1.5775082079999834,
+            "outside_named_regions": {
+              "input_observations": 62383,
+              "retained_fraction": 0.0,
+              "retained_observations": 0
+            },
+            "result_sha256": "49220546cf0871bebb9021f67ea52a01b5bb979559ab465af3108aeead2b55b5",
+            "retained_delay_mean_ms": null,
+            "retained_delay_p95_ms": null,
+            "retained_fraction": 0.0,
+            "retained_mean_cell_side_m": null,
+            "retained_mean_window_ms": null,
+            "retained_observations": 0,
+            "retained_only_semantic_loss": null,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 82033
+          }
+        }
+      ],
+      "source": "mixed"
+    },
+    {
+      "contract": "spatial20",
+      "rows": [
+        {
+          "implementation": "historical",
+          "method": "adaptive_immediate",
+          "metrics": {
+            "config_sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda",
+            "core_processing_ms": 58052.101708,
+            "full_input_semantic_distortion": 0.8538514987870734,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 60.86398762499999,
+            "outside_named_regions": {
+              "input_observations": 62383,
+              "retained_fraction": 0.5632624272638379,
+              "retained_observations": 35138
+            },
+            "result_sha256": "b6bf424608d88a7ac612bdc9c6ebceb5e313ad3057c8358bc7da40bbf26da4f2",
+            "retained_delay_mean_ms": 328.64336818932304,
+            "retained_delay_p95_ms": 700,
+            "retained_fraction": 0.442992454256214,
+            "retained_mean_cell_side_m": 19.07250963126032,
+            "retained_mean_window_ms": 562.7215189873418,
+            "retained_observations": 36340,
+            "retained_only_semantic_loss": 0.6700880572372042,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.1875195007800312,
+                "retained_observations": 1202
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 45693
+          }
+        },
+        {
+          "implementation": "corrected",
+          "method": "adaptive_immediate",
+          "metrics": {
+            "config_sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda",
+            "core_processing_ms": 33208.12825,
+            "full_input_semantic_distortion": 0.7668438311411261,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 34.54406012499999,
+            "outside_named_regions": null,
+            "result_sha256": "18db9f973edab2dd9ed0de23aeed8874f421a42d40d306a676e7d035c85f9f56",
+            "retained_delay_mean_ms": 319.8837320118174,
+            "retained_delay_p95_ms": 600,
+            "retained_fraction": 0.639559689393293,
+            "retained_mean_cell_side_m": 17.815877251501,
+            "retained_mean_window_ms": 545.5579910416468,
+            "retained_observations": 52465,
+            "retained_only_semantic_loss": 0.6354426760697608,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.7354276598355627,
+                "retained_observations": 5993
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.475195007800312,
+                "retained_observations": 3046
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.03122043519394513,
+                "retained_observations": 33
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.4191869112543381,
+                "retained_observations": 1691
+              }
+            },
+            "whole_footprint_suppressed_observations": 29568
+          }
+        },
+        {
+          "implementation": "historical",
+          "method": "adaptive_spatial_first",
+          "metrics": {
+            "config_sha256": "b96093993b8f82870026a3c772afe6eff34c71ff27f34364740992e1307a2074",
+            "core_processing_ms": 59690.945792,
+            "full_input_semantic_distortion": 0.8558263138005436,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 61.77762383300001,
+            "outside_named_regions": {
+              "input_observations": 62383,
+              "retained_fraction": 0.5499414904701602,
+              "retained_observations": 34307
+            },
+            "result_sha256": "cb50ec0c49bf1bc8b807ae8397af178a214433c96c4b04ff8172da8ea90dd552",
+            "retained_delay_mean_ms": 1976.1067909379299,
+            "retained_delay_p95_ms": 3800,
+            "retained_fraction": 0.4342276888569234,
+            "retained_mean_cell_side_m": 17.61429353471267,
+            "retained_mean_window_ms": 3867.440554728952,
+            "retained_observations": 35621,
+            "retained_only_semantic_loss": 0.6679767552848039,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.004049576635169959,
+                "retained_observations": 33
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.18970358814352575,
+                "retained_observations": 1216
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.06149479659413434,
+                "retained_observations": 65
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 46412
+          }
+        },
+        {
+          "implementation": "corrected",
+          "method": "adaptive_spatial_first",
+          "metrics": {
+            "config_sha256": "b96093993b8f82870026a3c772afe6eff34c71ff27f34364740992e1307a2074",
+            "core_processing_ms": 38448.416042,
+            "full_input_semantic_distortion": 0.7746638547901454,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 39.82321033300002,
+            "outside_named_regions": null,
+            "result_sha256": "80754807bde1c4f0f76fb18ffd899130a74e8182832dc66857cdaf16784e2669",
+            "retained_delay_mean_ms": 1817.5568514296092,
+            "retained_delay_p95_ms": 3800,
+            "retained_fraction": 0.6041349213121548,
+            "retained_mean_cell_side_m": 16.793468391210478,
+            "retained_mean_window_ms": 3543.055751730261,
+            "retained_observations": 49559,
+            "retained_only_semantic_loss": 0.6270102302306342,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.6721070069947233,
+                "retained_observations": 5477
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.46443057722308895,
+                "retained_observations": 2977
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.06149479659413434,
+                "retained_observations": 65
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.4082796232027764,
+                "retained_observations": 1647
+              }
+            },
+            "whole_footprint_suppressed_observations": 32474
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_10m_1000ms",
+          "metrics": {
+            "config_sha256": "e45dbf9493c8f2cf5386f21b5fe402bf45535d65a1d203861c7e0aecdafebd78",
+            "core_processing_ms": 398.577333,
+            "full_input_semantic_distortion": 0.8626833103750929,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 1.6498082919999888,
+            "outside_named_regions": {
+              "input_observations": 62383,
+              "retained_fraction": 0.34817177756760653,
+              "retained_observations": 21720
+            },
+            "result_sha256": "43d6c90ca943856ff110996d7bd23187f1705fe42df04ae06a9be67d5a14d089",
+            "retained_delay_mean_ms": 549.8674014120888,
+            "retained_delay_p95_ms": 1000,
+            "retained_fraction": 0.3539429254080675,
+            "retained_mean_cell_side_m": 10.0,
+            "retained_mean_window_ms": 1000.0,
+            "retained_observations": 29035,
+            "retained_only_semantic_loss": 0.6120371964869985,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.6387286783654436,
+                "retained_observations": 5205
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.2405616224648986,
+                "retained_observations": 1542
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.14080317302925136,
+                "retained_observations": 568
+              }
+            },
+            "whole_footprint_suppressed_observations": 52998
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_20m_400ms",
+          "metrics": {
+            "config_sha256": "cb5d998244f2b176a3247d112f44503329976c94ed129d8b737df7d12914f8a1",
+            "core_processing_ms": 516.705625,
+            "full_input_semantic_distortion": 0.8180427388977607,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 1.7657910829999537,
+            "outside_named_regions": {
+              "input_observations": 62383,
+              "retained_fraction": 0.5660195886699902,
+              "retained_observations": 35310
+            },
+            "result_sha256": "e495c251b057ba27e2d9f5398e52664fb9643b24d136965ccfdcfd1c542de6b1",
+            "retained_delay_mean_ms": 250.03850040906684,
+            "retained_delay_p95_ms": 400,
+            "retained_fraction": 0.5066010020357661,
+            "retained_mean_cell_side_m": 20.0,
+            "retained_mean_window_ms": 400.0,
+            "retained_observations": 41558,
+            "retained_only_semantic_loss": 0.6408272775398238,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.34421401398944657,
+                "retained_observations": 2805
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.3042121684867395,
+                "retained_observations": 1950
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.3701041150223104,
+                "retained_observations": 1493
+              }
+            },
+            "whole_footprint_suppressed_observations": 40475
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_20m_1000ms",
+          "metrics": {
+            "config_sha256": "b77d5fb5d002c9854e5498d0f32b4b1b03dd0fbce8eb37b85f6ad7d980656fc7",
+            "core_processing_ms": 313.976125,
+            "full_input_semantic_distortion": 0.8205843989613936,
+            "input_observations": 82033,
+            "native_process_wall_seconds": 1.551673624999978,
+            "outside_named_regions": {
+              "input_observations": 62383,
+              "retained_fraction": 0.5702996008527964,
+              "retained_observations": 35577
+            },
+            "result_sha256": "2b4dfc336ab9141fdfb1efa30ee896ae76c6f12bd25cf043d36b9f4129690053",
+            "retained_delay_mean_ms": 550.5219257009234,
+            "retained_delay_p95_ms": 1000,
+            "retained_fraction": 0.5056623553935611,
+            "retained_mean_cell_side_m": 20.0,
+            "retained_mean_window_ms": 1000.0,
+            "retained_observations": 41481,
+            "retained_only_semantic_loss": 0.645186953062848,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 8149,
+                "retained_fraction": 0.34372315621548655,
+                "retained_observations": 2801
+              },
+              "east-footway-control": {
+                "input_observations": 6410,
+                "retained_fraction": 0.2620904836193448,
+                "retained_observations": 1680
+              },
+              "entrance-vicinity": {
+                "input_observations": 1057,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 4034,
+                "retained_fraction": 0.3527516113039167,
+                "retained_observations": 1423
+              }
+            },
+            "whole_footprint_suppressed_observations": 40552
+          }
+        }
+      ],
+      "source": "mixed"
+    },
+    {
+      "contract": "original",
+      "rows": [
+        {
+          "implementation": "historical",
+          "method": "adaptive_immediate",
+          "metrics": {
+            "config_sha256": "bf1f46819b0fdc64e67820bfda8989adab20990bae2b9e60b9bc0a74aecc363c",
+            "core_processing_ms": 66089.030875,
+            "full_input_semantic_distortion": 0.7969792881337109,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 68.01183629200001,
+            "outside_named_regions": {
+              "input_observations": 65286,
+              "retained_fraction": 0.39927396379009283,
+              "retained_observations": 26067
+            },
+            "result_sha256": "5474de9f27a17a6948dffb9da0561e5d000f26a34cd7ec0fa0cac45582203c0d",
+            "retained_delay_mean_ms": 517.7298157086442,
+            "retained_delay_p95_ms": 2200,
+            "retained_fraction": 0.40495307901604755,
+            "retained_mean_cell_side_m": 9.448360026327336,
+            "retained_mean_window_ms": 935.8572838964458,
+            "retained_observations": 36464,
+            "retained_only_semantic_loss": 0.4986562088635366,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.8182826903379993,
+                "retained_observations": 9587
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.02504717790358552,
+                "retained_observations": 146
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.1188898836168308,
+                "retained_observations": 664
+              }
+            },
+            "whole_footprint_suppressed_observations": 53581
+          }
+        },
+        {
+          "implementation": "corrected",
+          "method": "adaptive_immediate",
+          "metrics": {
+            "config_sha256": "bf1f46819b0fdc64e67820bfda8989adab20990bae2b9e60b9bc0a74aecc363c",
+            "core_processing_ms": 64042.920292,
+            "full_input_semantic_distortion": 0.7937031484257872,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 65.60217241700002,
+            "outside_named_regions": null,
+            "result_sha256": "911e25620f9a27981172b863cad7d130964138ea640e4a63a19921a99f120408",
+            "retained_delay_mean_ms": 514.1631132941113,
+            "retained_delay_p95_ms": 2100,
+            "retained_fraction": 0.4115053584318952,
+            "retained_mean_cell_side_m": 9.439466724240297,
+            "retained_mean_window_ms": 928.8902682571382,
+            "retained_observations": 37054,
+            "retained_only_semantic_loss": 0.4986776056566093,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.8182826903379993,
+                "retained_observations": 9587
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.02504717790358552,
+                "retained_observations": 146
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.11786372007366483,
+                "retained_observations": 192
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.1188898836168308,
+                "retained_observations": 664
+              }
+            },
+            "whole_footprint_suppressed_observations": 52991
+          }
+        },
+        {
+          "implementation": "historical",
+          "method": "adaptive_spatial_first",
+          "metrics": {
+            "config_sha256": "2926799f2e6f7e00035c2a161285879defd93e67d977287b42859fec54793f64",
+            "core_processing_ms": 49636.028917,
+            "full_input_semantic_distortion": 0.7928035982008995,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 51.33332254099999,
+            "outside_named_regions": {
+              "input_observations": 65286,
+              "retained_fraction": 0.4198296725178446,
+              "retained_observations": 27409
+            },
+            "result_sha256": "5fa766f9cd053d4b9e945e7350f02a3e04297c6b544f763547e640e7a509a0f1",
+            "retained_delay_mean_ms": 1989.5883582569545,
+            "retained_delay_p95_ms": 3800,
+            "retained_fraction": 0.4143928035982009,
+            "retained_mean_cell_side_m": 8.66568178163692,
+            "retained_mean_window_ms": 3892.7131907595003,
+            "retained_observations": 37314,
+            "retained_only_semantic_loss": 0.5,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.7311369067941277,
+                "retained_observations": 8566
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.036884542803225256,
+                "retained_observations": 215
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.2823818293431553,
+                "retained_observations": 460
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.1188898836168308,
+                "retained_observations": 664
+              }
+            },
+            "whole_footprint_suppressed_observations": 52731
+          }
+        },
+        {
+          "implementation": "corrected",
+          "method": "adaptive_spatial_first",
+          "metrics": {
+            "config_sha256": "2926799f2e6f7e00035c2a161285879defd93e67d977287b42859fec54793f64",
+            "core_processing_ms": 50951.4615,
+            "full_input_semantic_distortion": 0.7928035982008995,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 52.52237054099999,
+            "outside_named_regions": null,
+            "result_sha256": "a0f81ee4bf1526c7427e81b991bbdd560b0739f2d1bbc7898d77c27ce4eef82d",
+            "retained_delay_mean_ms": 1989.5883582569545,
+            "retained_delay_p95_ms": 3800,
+            "retained_fraction": 0.4143928035982009,
+            "retained_mean_cell_side_m": 8.66568178163692,
+            "retained_mean_window_ms": 3892.7131907595003,
+            "retained_observations": 37314,
+            "retained_only_semantic_loss": 0.5,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.7311369067941277,
+                "retained_observations": 8566
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.036884542803225256,
+                "retained_observations": 215
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.2823818293431553,
+                "retained_observations": 460
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.1188898836168308,
+                "retained_observations": 664
+              }
+            },
+            "whole_footprint_suppressed_observations": 52731
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_10m_1000ms",
+          "metrics": {
+            "config_sha256": "a9c125fe4c3a7f7b51e9ffcf5b71e25f81c4bdd30b1fad31ef9b3c3b08941c64",
+            "core_processing_ms": 415.832,
+            "full_input_semantic_distortion": 0.8445332889111,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 1.757812166000008,
+            "outside_named_regions": {
+              "input_observations": 65286,
+              "retained_fraction": 0.28929632693073554,
+              "retained_observations": 18887
+            },
+            "result_sha256": "7b2288f903238118d3f5aabe37e0486a739938864b60d3fb86ff61d6bcff3a27",
+            "retained_delay_mean_ms": 549.3856704050289,
+            "retained_delay_p95_ms": 1000,
+            "retained_fraction": 0.3109334221778,
+            "retained_mean_cell_side_m": 10.0,
+            "retained_mean_window_ms": 1000.0,
+            "retained_observations": 27998,
+            "retained_only_semantic_loss": 0.5,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.7595595766473199,
+                "retained_observations": 8899
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.13014119091467158,
+                "retained_observations": 212
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 62047
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_20m_400ms",
+          "metrics": {
+            "config_sha256": "4e2e8eedc24211726cc4bd8a60eee06e805487135f1ab9f9d1cb6d76abd64e47",
+            "core_processing_ms": 519.821333,
+            "full_input_semantic_distortion": 1.0,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 1.880612541000005,
+            "outside_named_regions": {
+              "input_observations": 65286,
+              "retained_fraction": 0.0,
+              "retained_observations": 0
+            },
+            "result_sha256": "a67fbc623b8b0ff7844b59799edd825d9dfc351d888de64c8a0d506c5f9a940f",
+            "retained_delay_mean_ms": null,
+            "retained_delay_p95_ms": null,
+            "retained_fraction": 0.0,
+            "retained_mean_cell_side_m": null,
+            "retained_mean_window_ms": null,
+            "retained_observations": 0,
+            "retained_only_semantic_loss": null,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 90045
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_20m_1000ms",
+          "metrics": {
+            "config_sha256": "7c8810318221f3cb008a1d5fd4d518ec5b7f882b8c945f7487f192646035e7d7",
+            "core_processing_ms": 320.551417,
+            "full_input_semantic_distortion": 1.0,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 1.6626160409999784,
+            "outside_named_regions": {
+              "input_observations": 65286,
+              "retained_fraction": 0.0,
+              "retained_observations": 0
+            },
+            "result_sha256": "1dbc0c82c75bffd7498229bf18867a50087de71933ed306d5b0a124ef840adc9",
+            "retained_delay_mean_ms": null,
+            "retained_delay_p95_ms": null,
+            "retained_fraction": 0.0,
+            "retained_mean_cell_side_m": null,
+            "retained_mean_window_ms": null,
+            "retained_observations": 0,
+            "retained_only_semantic_loss": null,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              }
+            },
+            "whole_footprint_suppressed_observations": 90045
+          }
+        }
+      ],
+      "source": "pedestrians"
+    },
+    {
+      "contract": "spatial20",
+      "rows": [
+        {
+          "implementation": "historical",
+          "method": "adaptive_immediate",
+          "metrics": {
+            "config_sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda",
+            "core_processing_ms": 42617.295709,
+            "full_input_semantic_distortion": 0.6207896051974013,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 44.47668395900001,
+            "outside_named_regions": {
+              "input_observations": 65286,
+              "retained_fraction": 0.6812333425236651,
+              "retained_observations": 44475
+            },
+            "result_sha256": "9f6784a4c3dd8884313e4bd461f1997810a8d5667b57969285a79568be6db1fd",
+            "retained_delay_mean_ms": 307.21706834208675,
+            "retained_delay_p95_ms": 400,
+            "retained_fraction": 0.6787606196901549,
+            "retained_mean_cell_side_m": 19.64340057919796,
+            "retained_mean_window_ms": 518.0663950653643,
+            "retained_observations": 61119,
+            "retained_only_semantic_loss": 0.4413193933146812,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.8628371457835439,
+                "retained_observations": 10109
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.8435409161091096,
+                "retained_observations": 4917
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.0,
+                "retained_observations": 0
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.28970456580125337,
+                "retained_observations": 1618
+              }
+            },
+            "whole_footprint_suppressed_observations": 28926
+          }
+        },
+        {
+          "implementation": "corrected",
+          "method": "adaptive_immediate",
+          "metrics": {
+            "config_sha256": "eff7a65e08c3f352a0c984d956917e7312da8815021f256e68db6b2189016bda",
+            "core_processing_ms": 31328.002583,
+            "full_input_semantic_distortion": 0.5707257482369926,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 32.82291195800002,
+            "outside_named_regions": null,
+            "result_sha256": "b36053cc46e520a78eb2cba92b33244b882d604b0974a7eef2608603913167d1",
+            "retained_delay_mean_ms": 302.0988094389392,
+            "retained_delay_p95_ms": 400,
+            "retained_fraction": 0.7788883336109723,
+            "retained_mean_cell_side_m": 19.562415341840737,
+            "retained_mean_window_ms": 507.1690311542026,
+            "retained_observations": 70135,
+            "retained_only_semantic_loss": 0.448862907250303,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.8628371457835439,
+                "retained_observations": 10109
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.8699605421170012,
+                "retained_observations": 5071
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.3769183548189073,
+                "retained_observations": 614
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.8451208594449419,
+                "retained_observations": 4720
+              }
+            },
+            "whole_footprint_suppressed_observations": 19910
+          }
+        },
+        {
+          "implementation": "historical",
+          "method": "adaptive_spatial_first",
+          "metrics": {
+            "config_sha256": "b96093993b8f82870026a3c772afe6eff34c71ff27f34364740992e1307a2074",
+            "core_processing_ms": 47475.913,
+            "full_input_semantic_distortion": 0.6373868621244934,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 49.237947625000004,
+            "outside_named_regions": {
+              "input_observations": 65286,
+              "retained_fraction": 0.7279355451398463,
+              "retained_observations": 47524
+            },
+            "result_sha256": "ad56ec37578d34f705c89a0fc9f98e339ec00c3673b652e8afeb72f350a6deb2",
+            "retained_delay_mean_ms": 1781.0133400931588,
+            "retained_delay_p95_ms": 3800,
+            "retained_fraction": 0.7009606307957132,
+            "retained_mean_cell_side_m": 17.81443090718971,
+            "retained_mean_window_ms": 3463.3416774929497,
+            "retained_observations": 63118,
+            "retained_only_semantic_loss": 0.482691149909693,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.7160293615568454,
+                "retained_observations": 8389
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.797735460627895,
+                "retained_observations": 4650
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.576427255985267,
+                "retained_observations": 939
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.2893464637421665,
+                "retained_observations": 1616
+              }
+            },
+            "whole_footprint_suppressed_observations": 26927
+          }
+        },
+        {
+          "implementation": "corrected",
+          "method": "adaptive_spatial_first",
+          "metrics": {
+            "config_sha256": "b96093993b8f82870026a3c772afe6eff34c71ff27f34364740992e1307a2074",
+            "core_processing_ms": 39041.24975,
+            "full_input_semantic_distortion": 0.6068132600366484,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 40.52629141700004,
+            "outside_named_regions": null,
+            "result_sha256": "8dced75d197056cf3c7dd8736182678b4bd9623c31c7746ae4d50dd2777df876",
+            "retained_delay_mean_ms": 1682.3749708556772,
+            "retained_delay_p95_ms": 3800,
+            "retained_fraction": 0.7621078349714032,
+            "retained_mean_cell_side_m": 17.989788557938912,
+            "retained_mean_window_ms": 3265.6971321986475,
+            "retained_observations": 68624,
+            "retained_only_semantic_loss": 0.48407991373280485,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.7160293615568454,
+                "retained_observations": 8389
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.8699605421170012,
+                "retained_observations": 5071
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.576427255985267,
+                "retained_observations": 939
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.8383169203222919,
+                "retained_observations": 4682
+              }
+            },
+            "whole_footprint_suppressed_observations": 21421
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_10m_1000ms",
+          "metrics": {
+            "config_sha256": "e45dbf9493c8f2cf5386f21b5fe402bf45535d65a1d203861c7e0aecdafebd78",
+            "core_processing_ms": 409.349875,
+            "full_input_semantic_distortion": 0.7917485701593647,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 1.7483139590000292,
+            "outside_named_regions": {
+              "input_observations": 65286,
+              "retained_fraction": 0.35848420794657354,
+              "retained_observations": 23404
+            },
+            "result_sha256": "0aef32d6644f148fef958402781e7e9269562e694d91cb86a6a1e35508d07255",
+            "retained_delay_mean_ms": 549.4533916382253,
+            "retained_delay_p95_ms": 1000,
+            "retained_fraction": 0.4165028596812705,
+            "retained_mean_cell_side_m": 10.0,
+            "retained_mean_window_ms": 1000.0,
+            "retained_observations": 37504,
+            "retained_only_semantic_loss": 0.5,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.7595595766473199,
+                "retained_observations": 8899
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.49871332990221307,
+                "retained_observations": 2907
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.13014119091467158,
+                "retained_observations": 212
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.3727842435094002,
+                "retained_observations": 2082
+              }
+            },
+            "whole_footprint_suppressed_observations": 52541
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_20m_400ms",
+          "metrics": {
+            "config_sha256": "cb5d998244f2b176a3247d112f44503329976c94ed129d8b737df7d12914f8a1",
+            "core_processing_ms": 535.97175,
+            "full_input_semantic_distortion": 0.5893109001055028,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 1.9115094169999907,
+            "outside_named_regions": {
+              "input_observations": 65286,
+              "retained_fraction": 0.7139662408479612,
+              "retained_observations": 46612
+            },
+            "result_sha256": "512cf781717ad41fc593363336e59457a03c0509d11085b8e2d92a90ac33398e",
+            "retained_delay_mean_ms": 250.03811146482536,
+            "retained_delay_p95_ms": 400,
+            "retained_fraction": 0.7430618024321173,
+            "retained_mean_cell_side_m": 20.0,
+            "retained_mean_window_ms": 400.0,
+            "retained_observations": 66909,
+            "retained_only_semantic_loss": 0.4473015588336397,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.8403038579720041,
+                "retained_observations": 9845
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.8634414136215475,
+                "retained_observations": 5033
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.4444444444444444,
+                "retained_observations": 724
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.8406445837063563,
+                "retained_observations": 4695
+              }
+            },
+            "whole_footprint_suppressed_observations": 23136
+          }
+        },
+        {
+          "implementation": "historical_fixed_reference",
+          "method": "fixed_20m_1000ms",
+          "metrics": {
+            "config_sha256": "b77d5fb5d002c9854e5498d0f32b4b1b03dd0fbce8eb37b85f6ad7d980656fc7",
+            "core_processing_ms": 325.615375,
+            "full_input_semantic_distortion": 0.5810206008107057,
+            "input_observations": 90045,
+            "native_process_wall_seconds": 1.6329587910000214,
+            "outside_named_regions": {
+              "input_observations": 65286,
+              "retained_fraction": 0.729329412125111,
+              "retained_observations": 47615
+            },
+            "result_sha256": "cd62f6380f96b3f3cf99768b6ad1517456cf736aac24f68788dee884e8727baf",
+            "retained_delay_mean_ms": 549.9405748829839,
+            "retained_delay_p95_ms": 1000,
+            "retained_fraction": 0.7568771169970571,
+            "retained_mean_cell_side_m": 20.0,
+            "retained_mean_window_ms": 1000.0,
+            "retained_observations": 68153,
+            "retained_only_semantic_loss": 0.4464366939092923,
+            "selectively_suppressed_observations": 0,
+            "source_point_regions": {
+              "central-through-footway": {
+                "input_observations": 11716,
+                "retained_fraction": 0.841669511778764,
+                "retained_observations": 9861
+              },
+              "east-footway-control": {
+                "input_observations": 5829,
+                "retained_fraction": 0.8814547949905644,
+                "retained_observations": 5138
+              },
+              "entrance-vicinity": {
+                "input_observations": 1629,
+                "retained_fraction": 0.4960098219766728,
+                "retained_observations": 808
+              },
+              "west-footway-control": {
+                "input_observations": 5585,
+                "retained_fraction": 0.8470904207699195,
+                "retained_observations": 4731
+              }
+            },
+            "whole_footprint_suppressed_observations": 21892
+          }
+        }
+      ],
+      "source": "pedestrians"
+    }
+  ],
+  "schema": "ump.spatial20-correction-aggregate-report.v1",
+  "scope": {
+    "baselines": "Historical fixed10m/1s and fixed20m/.4s,1s are unchanged-policy references. The corrected fixed20m/1s OFF identity control checks exact public/private logical equality; other fixed cases are not rerun.",
+    "conditional_metrics": "Semantic loss, cell side, interval length and observation-to-release delay condition on retained observations.",
+    "filtering": "ON is a separate root maximum selective-suppression fraction of 0.1; OFF policies retain byte identity. Compare ON/OFF within the same method and contract.",
+    "objective": "J=(N_input-N_retained+sum_retained taxonomy_loss)/N_input; unit omission cost. Lower is better; experimental utility, not privacy risk.",
+    "privacy": "Zero audited violations refers to selected operational constraints; neither attack resistance nor a privacy gain is measured.",
+    "provenance": "Reported source/native result digests are execution receipts from the verified runner; this lightweight report does not reread movement or private arrays.",
+    "regional_cohorts": "Compare the four named nonexclusive source-point cohorts; regional privacy/utility checks use full-cell intersections. Historical outside-policy-region counts remain as optional provenance, but the corrected audit does not provide this cohort. It is not reconstructed by subtracting overlapping named cohorts. Regional counts must not be summed as a partition.",
+    "study": "Two frozen sources, one realization each; post hoc implementation repair, no statistical population inference. Different source motion prevents an isolated taxonomy-causality claim.",
+    "timing": "Historical and corrected core/process timings are separate recordings, not paired statistical estimates. Core excludes simulation, Python audit, rendering and report writing."
+  },
+  "sources": {
+    "mixed": {
+      "bundle_sha256": "799a011133696ed6784d9ea3506af797fc45028a44cfb2fb98499a9de14b5d7c",
+      "capture_proof_sha256": "eba903f5cf22ad97083cee0735b2397e78fece8dda4f8b7e45274840b5265640",
+      "horizon_ms": 300000,
+      "input_observation_contributions": 82033,
+      "observations_sha256": "c24134c724acf2df38a85b2906a2e80f8de7b420529a4b8cda3f9e5f98a3eff5",
+      "original_binary_sha256": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9",
+      "sampling_period_ms": 100,
+      "summary_sha256": "429f41572f4a377662c9698141f00a8aa928ad129c95e4779a76335ca4f2d3e0"
+    },
+    "pedestrians": {
+      "bundle_sha256": "d451720ee15a0b422f7526fe89f4fbde6125ba0cb14aa9038b1ccfaa13671350",
+      "capture_proof_sha256": "2652ab50a75730c79e8c8d99ba62c78cc1fce49b57541f6f907a260727daa3f0",
+      "horizon_ms": 300000,
+      "input_observation_contributions": 90045,
+      "observations_sha256": "4abf12b390f29ce6685d37cbe5167793ed62dfc5c9207ffc42688e7419af5b5a",
+      "original_binary_sha256": "fa82c62bfd589f764671545579ab1ae5c1739722bd67a33e7d18d53d7dfa03b9",
+      "sampling_period_ms": 100,
+      "summary_sha256": "86c2c3c83838783c7b32d57697a1f9ad63d5b809971ac9f5f2d47aa8381a5f1e"
+    }
+  },
+  "status": "verified_aggregate_consistency"
+}

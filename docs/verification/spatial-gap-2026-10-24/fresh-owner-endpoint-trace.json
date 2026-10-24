@@ -1,0 +1,107 @@
+{
+  "schema": "ump.fresh-owner-handoff-endpoint-trace.v1",
+  "source": "mixed Spatial20 Semantic First, immutable v2 native result",
+  "result_sha256": "b6bf424608d88a7ac612bdc9c6ebceb5e313ad3057c8358bc7da40bbf26da4f2",
+  "parent60_first_source_ms": 6900,
+  "initial_aligned_epochs": [
+    {
+      "start_ms": 6800,
+      "end_ms": 10800,
+      "nonempty_owners": 14,
+      "empty_owners": 26,
+      "suppressed_observations": 61
+    },
+    {
+      "start_ms": 10800,
+      "end_ms": 14800,
+      "nonempty_owners": 29,
+      "empty_owners": 38,
+      "suppressed_observations": 148
+    }
+  ],
+  "first_parent60_phase_divergence": {
+    "at_ms": 15200,
+    "published_cell_id": 241,
+    "published_depth": 3,
+    "published_observations": 13,
+    "published_interval_ms": [
+      14800,
+      15200
+    ],
+    "still_open_sibling_cell_id": 240,
+    "still_open_start_ms": 14800,
+    "empty_siblings_retired_after_publication": [
+      242,
+      243
+    ],
+    "leaf_unit_clocks_after_endpoint": {
+      "14800": 64,
+      "15200": 192
+    }
+  },
+  "boundary_loss": {
+    "private_owner_cell_id": 3852,
+    "depth": 5,
+    "empty_interval_ms": [
+      19500,
+      19900
+    ],
+    "recorded_request": {
+      "evaluated_at_ms": 19600,
+      "boundary_ms": 20000
+    },
+    "first_new_measurement": {
+      "observed_at_ms": 19900,
+      "cell_id": 15408,
+      "type": "Adult E-Scooter Driver",
+      "observations": 1
+    },
+    "refined_children": [
+      15408,
+      15409,
+      15410,
+      15411
+    ],
+    "actual_child_intervals_ms": [
+      [
+        19900,
+        20300
+      ],
+      [
+        20300,
+        20700
+      ],
+      [
+        20700,
+        21100
+      ]
+    ],
+    "other_parent60_owner_intervals_ms": [
+      [
+        20000,
+        20400
+      ],
+      [
+        20400,
+        20800
+      ],
+      [
+        20800,
+        21200
+      ]
+    ],
+    "child_completion_reason": "coordination_handoff",
+    "mechanism": "A fresh successor with a shortened next endpoint is refined before the rendezvous. The old extension-count guard restores the default full window instead of preserving the earlier endpoint. Afterward children repeatedly retire beyond the fixed rendezvous, so the required common start is never achieved.",
+    "caveat": "Archived request actions omit the ancestor ID. The separate instrumented legacy replay confirms target 60 for this exact 19600-to-20000 request; the immutable result independently establishes its boundary and missed child endpoints.",
+    "instrumented_legacy_controller_confirmation": {
+      "source": "Separately instrumented legacy controller replay over the first 26 s of the unchanged source, reported by the root investigation.",
+      "requested_target_cell_id": 60,
+      "target_depth": 2,
+      "target_side_m": 20,
+      "requested_at_ms": 19600,
+      "boundary_ms": 20000,
+      "scope": "Confirms the ancestor intent omitted by the archived action serializer. This is diagnostic instrumentation, not a timing or performance result."
+    }
+  },
+  "scope": "Aggregate cells, times, counts and actions only. No individual identity, position or generated movement stream."
+}

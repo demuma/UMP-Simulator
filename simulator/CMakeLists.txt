@@ -285,7 +285,7 @@ if(UMP_BUILD_REPLAY)
     set_tests_properties(paced_replay_summary PROPERTIES LABELS "unit;replay;timing"
         ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1" TIMEOUT 15)
     foreach(evaluation occupancy privacy comparison capture oracle privacy_dataset empirical_privacy privacy_study coordination coordination_metrics coordination_scenarios coordination_study plot_coordination_study
-        compare_coordination_studies plot_privacy_coordination robustness_attacks run_privacy_robustness plot_privacy_robustness privacy_repair causal_privacy online_occupancy run_privacy_prefix_study selective_suppression semantic_adaptation semantic_tradeoffs semantic_queries scoped_semantic_queries run_scoped_semantic_utility recipient_support run_recipient_contract_study run_semantic_priority_study semantic_first moving_comparison moving_scoped_audit run_moving_scoped_comparison cell_size_caps four_second_window semantic_release local_policy_replay semantic_local_policy semantic_suppression_audit run_suppression_study replay_data)
+        compare_coordination_studies plot_privacy_coordination robustness_attacks run_privacy_robustness plot_privacy_robustness privacy_repair causal_privacy online_occupancy run_privacy_prefix_study selective_suppression semantic_adaptation semantic_tradeoffs semantic_queries scoped_semantic_queries run_scoped_semantic_utility recipient_support run_recipient_contract_study run_semantic_priority_study semantic_first moving_comparison moving_scoped_audit run_moving_scoped_comparison cell_size_caps four_second_window semantic_release local_policy_replay semantic_local_policy semantic_suppression_audit run_suppression_study replay_data diagnose_spatial20_gap report_spatial20_correction)
         add_test(NAME ${evaluation}_evaluation COMMAND ${Python3_EXECUTABLE} -m unittest discover
             -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/evaluation -p test_${evaluation}.py)
         set_tests_properties(${evaluation}_evaluation PROPERTIES LABELS "unit;evaluation"
@@ -449,6 +449,15 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS AND UMP_MAPPED_SCENE_PYTHON)
             LABELS "unit;mapped_scene;tools" TIMEOUT 60
             ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1;UMP_REPLAY_BINARY=$<TARGET_FILE:AggregationReplay>;UMP_MAPPED_CORE_TEST_BINARY=$<TARGET_FILE:MappedSceneConfigurationTests>")
     endforeach()
+    # The correction runner imports the mapped comparison helpers and PyYAML.
+    # Keep this protocol test in the same explicit environment as those tools;
+    # the normal standard-library evaluation interpreter need not have PyYAML.
+    add_test(NAME run_spatial20_correction_evaluation COMMAND "${UMP_MAPPED_SCENE_PYTHON}"
+        -m unittest discover -s "${CMAKE_CURRENT_SOURCE_DIR}/../tools/evaluation"
+        -p test_run_spatial20_correction.py)
+    set_tests_properties(run_spatial20_correction_evaluation PROPERTIES
+        LABELS "unit;evaluation;mapped_scene;tools" TIMEOUT 30
+        ENVIRONMENT "PYTHONDONTWRITEBYTECODE=1")
     # The seeded multi-geometry suite takes about 53 s in isolation; allow
     # bounded headroom for parallel CI without including native drainage here.
     set_tests_properties(mapped_build_mapped_scene_tools PROPERTIES TIMEOUT 120)

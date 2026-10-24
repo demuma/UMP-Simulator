@@ -1,0 +1,881 @@
+{
+  "schema": "ump.spatial-gap-diagnosis.v1",
+  "status": "verified_exact_membership_join",
+  "adaptive": "spatial20_adaptive_spatial_first",
+  "fixed": "spatial20_fixed_20m_1000ms",
+  "source_observations": 90045,
+  "observations_sha256": "4abf12b390f29ce6685d37cbe5167793ed62dfc5c9207ffc42688e7419af5b5a",
+  "result_sha256": {
+    "spatial20_adaptive_spatial_first": "ad56ec37578d34f705c89a0fc9f98e339ec00c3673b652e8afeb72f350a6deb2",
+    "spatial20_fixed_20m_1000ms": "cd62f6380f96b3f3cf99768b6ad1517456cf736aac24f68788dee884e8727baf"
+  },
+  "membership": {
+    "adaptive_only": 4138,
+    "neither": 17754,
+    "both_retained": 58980,
+    "fixed_only": 9173
+  },
+  "net_fixed_advantage": 5035,
+  "by_source_type": {
+    "Adult Pedestrian": {
+      "adaptive_only": 834,
+      "both_retained": 14236,
+      "neither": 3339,
+      "fixed_only": 2327
+    },
+    "Child Pedestrian": {
+      "neither": 3313,
+      "fixed_only": 2604,
+      "both_retained": 11318,
+      "adaptive_only": 561
+    },
+    "Pedestrian With Mobility Aid": {
+      "neither": 3843,
+      "both_retained": 10797,
+      "adaptive_only": 1082,
+      "fixed_only": 1232
+    },
+    "Pedestrian With Stroller": {
+      "adaptive_only": 942,
+      "neither": 4711,
+      "both_retained": 12348,
+      "fixed_only": 1841
+    },
+    "Senior Pedestrian": {
+      "neither": 2548,
+      "adaptive_only": 719,
+      "both_retained": 10281,
+      "fixed_only": 1169
+    }
+  },
+  "by_source_point_region": {
+    "central-through-footway": {
+      "adaptive_only": 225,
+      "both_retained": 8164,
+      "neither": 1630,
+      "fixed_only": 1697
+    },
+    "east-footway-control": {
+      "neither": 691,
+      "fixed_only": 488,
+      "both_retained": 4650
+    },
+    "entrance-vicinity": {
+      "neither": 637,
+      "adaptive_only": 184,
+      "both_retained": 755,
+      "fixed_only": 53
+    },
+    "outside_policy_regions": {
+      "adaptive_only": 3729,
+      "neither": 13942,
+      "both_retained": 43795,
+      "fixed_only": 3820
+    },
+    "west-footway-control": {
+      "neither": 854,
+      "both_retained": 1616,
+      "fixed_only": 3115
+    }
+  },
+  "fixed_only_adaptive_completion_reasons": {
+    "policy_or_window_deadline": 2204,
+    "coordination_handoff": 6969
+  },
+  "fixed_only_adaptive_failed_metric_combinations": {
+    "distinct_contributors + min_category_distinct_contributors + semantic_max_loss": 5292,
+    "distinct_contributors + min_category_distinct_contributors": 3873,
+    "distinct_contributors + min_category_distinct_contributors + semantic_max_loss + window_duration_ms": 8
+  },
+  "fixed_only_adaptive_duration_ms": {
+    "100": 2,
+    "300": 6,
+    "400": 6137,
+    "500": 16,
+    "700": 5,
+    "800": 19,
+    "900": 9,
+    "1000": 40,
+    "1200": 15,
+    "1300": 16,
+    "1400": 64,
+    "1500": 6,
+    "1700": 8,
+    "2100": 20,
+    "4000": 2810
+  },
+  "fixed_only_adaptive_action_presence": {
+    "evaluate_finest": 9173,
+    "finalize": 9173,
+    "extend_window": 3025,
+    "coordination_hold": 1745,
+    "handoff_requested": 1293
+  },
+  "fixed_only_by_parent20": {
+    "61": 837,
+    "63": 249,
+    "60": 2124,
+    "52": 32,
+    "57": 484,
+    "59": 386,
+    "58": 4921,
+    "54": 124,
+    "56": 16
+  },
+  "fixed_only_counterfactual_parent_failed_metrics": {
+    "distinct_contributors": 205,
+    "min_category_distinct_contributors": 205,
+    "semantic_max_loss": 205,
+    "window_duration_ms": 43,
+    "age_at_evaluation_ms": 35
+  },
+  "fixed_only_counterfactual_classification": {
+    "parent_same_interval_fails_other_constraints": 198,
+    "parent_passes_same_interval_but_owner_starts_differ": 8932,
+    "parent_same_interval_exceeds_regional_time_or_age_limit": 43
+  },
+  "contributing_suppressed_cell_windows": 2232,
+  "fixed_releases_recomputed": 109,
+  "examples": [
+    {
+      "first_source_time_ms": 4000,
+      "source_type": "Child Pedestrian",
+      "source_point_regions": [
+        "east-footway-control"
+      ],
+      "adaptive_failure": {
+        "start_ms": 3400,
+        "end_ms": 4400,
+        "evaluated_at_ms": 4400,
+        "cell_id": 15709,
+        "depth": 6,
+        "observation_contributions": 10,
+        "completion_reason": "policy_or_window_deadline",
+        "reason": "policy_or_window_deadline",
+        "metrics": {
+          "observation_contributions": 10,
+          "distinct_contributors": 1,
+          "mean_sample_occupancy": 1,
+          "cell_side_m": 1.25,
+          "cell_area_m2": 1.5625,
+          "window_duration_ms": 1000,
+          "age_at_evaluation_ms": 1000,
+          "post_window_delay_ms": 0,
+          "measured_sample_fraction": 1,
+          "occupancy_mae": null,
+          "min_category_distinct_contributors": 1,
+          "semantic_max_loss": 1,
+          "semantic_mean_loss": 1,
+          "semantic_suppression_fraction": 0
+        },
+        "failed_checks": [
+          {
+            "metric": "distinct_contributors",
+            "min": 5,
+            "max": null,
+            "observed": 1,
+            "status": "fail",
+            "reason": "below_minimum"
+          },
+          {
+            "metric": "min_category_distinct_contributors",
+            "min": 5,
+            "max": null,
+            "observed": 1,
+            "status": "fail",
+            "reason": "below_minimum"
+          },
+          {
+            "metric": "semantic_max_loss",
+            "min": null,
+            "max": 0.5,
+            "observed": 1,
+            "status": "fail",
+            "reason": "above_maximum"
+          }
+        ],
+        "temporal_actions": {
+          "evaluate_finest": 7,
+          "extend_window": 6,
+          "finalize": 1
+        }
+      },
+      "same_interval_parent": {
+        "cell_id": 61,
+        "depth": 2,
+        "start_ms": 3400,
+        "end_ms": 4400,
+        "evaluated_at_ms": 4400,
+        "metrics": {
+          "observation_contributions": 36,
+          "distinct_contributors": 4,
+          "mean_sample_occupancy": 3.6,
+          "cell_side_m": 20.0,
+          "cell_area_m2": 400.0,
+          "window_duration_ms": 1000,
+          "age_at_evaluation_ms": 1000,
+          "post_window_delay_ms": 0,
+          "measured_sample_fraction": 1.0,
+          "min_category_distinct_contributors": null,
+          "semantic_max_loss": null,
+          "semantic_mean_loss": null,
+          "semantic_suppression_fraction": 0
+        },
+        "effective_requirements": {
+          "distinct_contributors": {
+            "min": 5
+          },
+          "min_category_distinct_contributors": {
+            "min": 5
+          },
+          "cell_side_m": {
+            "min": 1.25,
+            "max": 20
+          },
+          "window_duration_ms": {
+            "min": 400,
+            "max": 1000
+          },
+          "age_at_evaluation_ms": {
+            "max": 1000
+          },
+          "semantic_max_loss": {
+            "max": 0.5
+          },
+          "semantic_suppression_fraction": {
+            "max": 0
+          }
+        },
+        "intersected_regions": [
+          "east-footway-control"
+        ],
+        "passing": false,
+        "failed_metrics": [
+          "distinct_contributors",
+          "min_category_distinct_contributors",
+          "semantic_max_loss"
+        ],
+        "semantic_categories": [],
+        "source_type_counts": {
+          "Child Pedestrian": 10,
+          "Senior Pedestrian": 20,
+          "Adult Pedestrian": 6
+        }
+      },
+      "parent_clock_evidence": {
+        "covered_leaf_units": 256,
+        "expected_leaf_units": 256,
+        "starts_leaf_units": {
+          "3400": 256
+        },
+        "full_coverage": true,
+        "all_starts_match": true,
+        "earlier_same_endpoint_retirements": 3,
+        "other_clock_examples": [],
+        "scope": "Retirement ownership immediately before the endpoint; later refinements can make archived scopes finer than the live frontier. Different starts are exact; live handoff intent is not reconstructed."
+      },
+      "fixed_actual_release": {
+        "cell_id": 61,
+        "depth": 2,
+        "start_ms": 4000,
+        "end_ms": 5000,
+        "evaluated_at_ms": 5000,
+        "metrics": {
+          "observation_contributions": 45,
+          "distinct_contributors": 6,
+          "mean_sample_occupancy": 4.5,
+          "cell_side_m": 20.0,
+          "cell_area_m2": 400.0,
+          "window_duration_ms": 1000,
+          "age_at_evaluation_ms": 1000,
+          "post_window_delay_ms": 0,
+          "measured_sample_fraction": 1.0,
+          "min_category_distinct_contributors": 6,
+          "semantic_max_loss": 0.5,
+          "semantic_mean_loss": 0.5,
+          "semantic_suppression_fraction": 0
+        },
+        "effective_requirements": {
+          "distinct_contributors": {
+            "min": 5
+          },
+          "min_category_distinct_contributors": {
+            "min": 5
+          },
+          "cell_side_m": {
+            "min": 1.25,
+            "max": 20
+          },
+          "window_duration_ms": {
+            "min": 400,
+            "max": 1000
+          },
+          "age_at_evaluation_ms": {
+            "max": 1000
+          },
+          "semantic_max_loss": {
+            "max": 0.5
+          },
+          "semantic_suppression_fraction": {
+            "max": 0
+          }
+        },
+        "intersected_regions": [
+          "east-footway-control"
+        ],
+        "passing": true,
+        "failed_metrics": [],
+        "semantic_categories": [
+          {
+            "category_id": "pedestrian",
+            "observations": 45,
+            "distinct_tracks": 6
+          }
+        ],
+        "source_type_counts": {
+          "Child Pedestrian": 10,
+          "Senior Pedestrian": 20,
+          "Adult Pedestrian": 10,
+          "Pedestrian With Stroller": 5
+        }
+      }
+    },
+    {
+      "first_source_time_ms": 28800,
+      "source_type": "Senior Pedestrian",
+      "source_point_regions": [],
+      "adaptive_failure": {
+        "start_ms": 28800,
+        "end_ms": 32800,
+        "evaluated_at_ms": 32800,
+        "cell_id": 16143,
+        "depth": 6,
+        "observation_contributions": 7,
+        "completion_reason": "policy_or_window_deadline",
+        "reason": "policy_or_window_deadline",
+        "metrics": {
+          "observation_contributions": 7,
+          "distinct_contributors": 3,
+          "mean_sample_occupancy": 0.175,
+          "cell_side_m": 1.25,
+          "cell_area_m2": 1.5625,
+          "window_duration_ms": 4000,
+          "age_at_evaluation_ms": 4000,
+          "post_window_delay_ms": 0,
+          "measured_sample_fraction": 1,
+          "occupancy_mae": null,
+          "min_category_distinct_contributors": 3,
+          "semantic_max_loss": 1,
+          "semantic_mean_loss": 1,
+          "semantic_suppression_fraction": 0
+        },
+        "failed_checks": [
+          {
+            "metric": "distinct_contributors",
+            "min": 5,
+            "max": null,
+            "observed": 3,
+            "status": "fail",
+            "reason": "below_minimum"
+          },
+          {
+            "metric": "min_category_distinct_contributors",
+            "min": 5,
+            "max": null,
+            "observed": 3,
+            "status": "fail",
+            "reason": "below_minimum"
+          }
+        ],
+        "temporal_actions": {
+          "evaluate_finest": 37,
+          "extend_window": 36,
+          "finalize": 1
+        }
+      },
+      "same_interval_parent": {
+        "cell_id": 63,
+        "depth": 2,
+        "start_ms": 28800,
+        "end_ms": 32800,
+        "evaluated_at_ms": 32800,
+        "metrics": {
+          "observation_contributions": 530,
+          "distinct_contributors": 19,
+          "mean_sample_occupancy": 13.25,
+          "cell_side_m": 20.0,
+          "cell_area_m2": 400.0,
+          "window_duration_ms": 4000,
+          "age_at_evaluation_ms": 4000,
+          "post_window_delay_ms": 0,
+          "measured_sample_fraction": 1.0,
+          "min_category_distinct_contributors": 19,
+          "semantic_max_loss": 0.5,
+          "semantic_mean_loss": 0.5,
+          "semantic_suppression_fraction": 0
+        },
+        "effective_requirements": {
+          "distinct_contributors": {
+            "min": 5
+          },
+          "min_category_distinct_contributors": {
+            "min": 5
+          },
+          "cell_side_m": {
+            "min": 1.25,
+            "max": 20
+          },
+          "window_duration_ms": {
+            "min": 400,
+            "max": 4000
+          },
+          "age_at_evaluation_ms": {
+            "max": 4000
+          },
+          "semantic_max_loss": {
+            "max": 1
+          },
+          "semantic_suppression_fraction": {
+            "max": 0
+          }
+        },
+        "intersected_regions": [],
+        "passing": true,
+        "failed_metrics": [],
+        "semantic_categories": [
+          {
+            "category_id": "pedestrian",
+            "observations": 530,
+            "distinct_tracks": 19
+          }
+        ],
+        "source_type_counts": {
+          "Adult Pedestrian": 171,
+          "Child Pedestrian": 147,
+          "Senior Pedestrian": 97,
+          "Pedestrian With Mobility Aid": 45,
+          "Pedestrian With Stroller": 70
+        }
+      },
+      "parent_clock_evidence": {
+        "covered_leaf_units": 256,
+        "expected_leaf_units": 256,
+        "starts_leaf_units": {
+          "28800": 254,
+          "32700": 2
+        },
+        "full_coverage": true,
+        "all_starts_match": false,
+        "earlier_same_endpoint_retirements": 8,
+        "other_clock_examples": [
+          {
+            "cell_id": 16129,
+            "depth": 6,
+            "start_ms": 32700,
+            "end_ms": 33200,
+            "earlier_same_endpoint": false
+          },
+          {
+            "cell_id": 16130,
+            "depth": 6,
+            "start_ms": 32700,
+            "end_ms": 33100,
+            "earlier_same_endpoint": false
+          }
+        ],
+        "scope": "Retirement ownership immediately before the endpoint; later refinements can make archived scopes finer than the live frontier. Different starts are exact; live handoff intent is not reconstructed."
+      },
+      "fixed_actual_release": {
+        "cell_id": 63,
+        "depth": 2,
+        "start_ms": 28000,
+        "end_ms": 29000,
+        "evaluated_at_ms": 29000,
+        "metrics": {
+          "observation_contributions": 198,
+          "distinct_contributors": 20,
+          "mean_sample_occupancy": 19.8,
+          "cell_side_m": 20.0,
+          "cell_area_m2": 400.0,
+          "window_duration_ms": 1000,
+          "age_at_evaluation_ms": 1000,
+          "post_window_delay_ms": 0,
+          "measured_sample_fraction": 1.0,
+          "min_category_distinct_contributors": 20,
+          "semantic_max_loss": 0.5,
+          "semantic_mean_loss": 0.5,
+          "semantic_suppression_fraction": 0
+        },
+        "effective_requirements": {
+          "distinct_contributors": {
+            "min": 5
+          },
+          "min_category_distinct_contributors": {
+            "min": 5
+          },
+          "cell_side_m": {
+            "min": 1.25,
+            "max": 20
+          },
+          "window_duration_ms": {
+            "min": 400,
+            "max": 4000
+          },
+          "age_at_evaluation_ms": {
+            "max": 4000
+          },
+          "semantic_max_loss": {
+            "max": 1
+          },
+          "semantic_suppression_fraction": {
+            "max": 0
+          }
+        },
+        "intersected_regions": [],
+        "passing": true,
+        "failed_metrics": [],
+        "semantic_categories": [
+          {
+            "category_id": "pedestrian",
+            "observations": 198,
+            "distinct_tracks": 20
+          }
+        ],
+        "source_type_counts": {
+          "Adult Pedestrian": 60,
+          "Pedestrian With Mobility Aid": 28,
+          "Child Pedestrian": 50,
+          "Senior Pedestrian": 30,
+          "Pedestrian With Stroller": 30
+        }
+      }
+    },
+    {
+      "first_source_time_ms": 37900,
+      "source_type": "Adult Pedestrian",
+      "source_point_regions": [
+        "central-through-footway"
+      ],
+      "adaptive_failure": {
+        "start_ms": 37900,
+        "end_ms": 38000,
+        "evaluated_at_ms": 38000,
+        "cell_id": 15604,
+        "depth": 6,
+        "observation_contributions": 2,
+        "completion_reason": "coordination_handoff",
+        "reason": "coordination_handoff",
+        "metrics": {
+          "observation_contributions": 2,
+          "distinct_contributors": 2,
+          "mean_sample_occupancy": 2,
+          "cell_side_m": 1.25,
+          "cell_area_m2": 1.5625,
+          "window_duration_ms": 100,
+          "age_at_evaluation_ms": 100,
+          "post_window_delay_ms": 0,
+          "measured_sample_fraction": 1,
+          "occupancy_mae": null,
+          "min_category_distinct_contributors": 2,
+          "semantic_max_loss": 1,
+          "semantic_mean_loss": 1,
+          "semantic_suppression_fraction": 0
+        },
+        "failed_checks": [
+          {
+            "metric": "distinct_contributors",
+            "min": 5,
+            "max": null,
+            "observed": 2,
+            "status": "fail",
+            "reason": "below_minimum"
+          },
+          {
+            "metric": "window_duration_ms",
+            "min": 400,
+            "max": 4000,
+            "observed": 100,
+            "status": "fail",
+            "reason": "below_minimum"
+          },
+          {
+            "metric": "min_category_distinct_contributors",
+            "min": 5,
+            "max": null,
+            "observed": 2,
+            "status": "fail",
+            "reason": "below_minimum"
+          },
+          {
+            "metric": "semantic_max_loss",
+            "min": null,
+            "max": 0.5,
+            "observed": 1,
+            "status": "fail",
+            "reason": "above_maximum"
+          }
+        ],
+        "temporal_actions": {
+          "evaluate_finest": 1,
+          "finalize": 1
+        }
+      },
+      "same_interval_parent": {
+        "cell_id": 60,
+        "depth": 2,
+        "start_ms": 37900,
+        "end_ms": 38000,
+        "evaluated_at_ms": 38000,
+        "metrics": {
+          "observation_contributions": 32,
+          "distinct_contributors": 32,
+          "mean_sample_occupancy": 32.0,
+          "cell_side_m": 20.0,
+          "cell_area_m2": 400.0,
+          "window_duration_ms": 100,
+          "age_at_evaluation_ms": 100,
+          "post_window_delay_ms": 0,
+          "measured_sample_fraction": 1.0,
+          "min_category_distinct_contributors": 5,
+          "semantic_max_loss": 0,
+          "semantic_mean_loss": 0.0,
+          "semantic_suppression_fraction": 0
+        },
+        "effective_requirements": {
+          "distinct_contributors": {
+            "min": 5
+          },
+          "min_category_distinct_contributors": {
+            "min": 5
+          },
+          "cell_side_m": {
+            "min": 1.25,
+            "max": 20
+          },
+          "window_duration_ms": {
+            "min": 400,
+            "max": 4000
+          },
+          "age_at_evaluation_ms": {
+            "max": 4000
+          },
+          "semantic_max_loss": {
+            "max": 0.5
+          },
+          "semantic_suppression_fraction": {
+            "max": 0
+          }
+        },
+        "intersected_regions": [
+          "central-through-footway"
+        ],
+        "passing": false,
+        "failed_metrics": [
+          "window_duration_ms"
+        ],
+        "semantic_categories": [
+          {
+            "category_id": "adult_pedestrian",
+            "observations": 10,
+            "distinct_tracks": 10
+          },
+          {
+            "category_id": "child_pedestrian",
+            "observations": 5,
+            "distinct_tracks": 5
+          },
+          {
+            "category_id": "senior_pedestrian",
+            "observations": 5,
+            "distinct_tracks": 5
+          },
+          {
+            "category_id": "pedestrian_with_stroller",
+            "observations": 6,
+            "distinct_tracks": 6
+          },
+          {
+            "category_id": "pedestrian_with_mobility_aid",
+            "observations": 6,
+            "distinct_tracks": 6
+          }
+        ],
+        "source_type_counts": {
+          "Adult Pedestrian": 10,
+          "Child Pedestrian": 5,
+          "Pedestrian With Stroller": 6,
+          "Pedestrian With Mobility Aid": 6,
+          "Senior Pedestrian": 5
+        }
+      },
+      "parent_clock_evidence": {
+        "covered_leaf_units": 256,
+        "expected_leaf_units": 256,
+        "starts_leaf_units": {
+          "35900": 1,
+          "37200": 1,
+          "37300": 1,
+          "37500": 1,
+          "37600": 250,
+          "37700": 1,
+          "37900": 1
+        },
+        "full_coverage": true,
+        "all_starts_match": false,
+        "earlier_same_endpoint_retirements": 21,
+        "other_clock_examples": [
+          {
+            "cell_id": 240,
+            "depth": 3,
+            "start_ms": 37600,
+            "end_ms": 41600,
+            "earlier_same_endpoint": false
+          },
+          {
+            "cell_id": 3902,
+            "depth": 5,
+            "start_ms": 37600,
+            "end_ms": 38000,
+            "earlier_same_endpoint": false
+          },
+          {
+            "cell_id": 3903,
+            "depth": 5,
+            "start_ms": 37600,
+            "end_ms": 38000,
+            "earlier_same_endpoint": false
+          },
+          {
+            "cell_id": 15471,
+            "depth": 6,
+            "start_ms": 37600,
+            "end_ms": 41600,
+            "earlier_same_endpoint": false
+          },
+          {
+            "cell_id": 15475,
+            "depth": 6,
+            "start_ms": 37600,
+            "end_ms": 41600,
+            "earlier_same_endpoint": false
+          },
+          {
+            "cell_id": 15477,
+            "depth": 6,
+            "start_ms": 37600,
+            "end_ms": 41600,
+            "earlier_same_endpoint": false
+          },
+          {
+            "cell_id": 15482,
+            "depth": 6,
+            "start_ms": 37600,
+            "end_ms": 41600,
+            "earlier_same_endpoint": false
+          },
+          {
+            "cell_id": 15524,
+            "depth": 6,
+            "start_ms": 37600,
+            "end_ms": 38000,
+            "earlier_same_endpoint": false
+          }
+        ],
+        "scope": "Retirement ownership immediately before the endpoint; later refinements can make archived scopes finer than the live frontier. Different starts are exact; live handoff intent is not reconstructed."
+      },
+      "fixed_actual_release": {
+        "cell_id": 60,
+        "depth": 2,
+        "start_ms": 37000,
+        "end_ms": 38000,
+        "evaluated_at_ms": 38000,
+        "metrics": {
+          "observation_contributions": 340,
+          "distinct_contributors": 36,
+          "mean_sample_occupancy": 34.0,
+          "cell_side_m": 20.0,
+          "cell_area_m2": 400.0,
+          "window_duration_ms": 1000,
+          "age_at_evaluation_ms": 1000,
+          "post_window_delay_ms": 0,
+          "measured_sample_fraction": 1.0,
+          "min_category_distinct_contributors": 5,
+          "semantic_max_loss": 0,
+          "semantic_mean_loss": 0.0,
+          "semantic_suppression_fraction": 0
+        },
+        "effective_requirements": {
+          "distinct_contributors": {
+            "min": 5
+          },
+          "min_category_distinct_contributors": {
+            "min": 5
+          },
+          "cell_side_m": {
+            "min": 1.25,
+            "max": 20
+          },
+          "window_duration_ms": {
+            "min": 400,
+            "max": 4000
+          },
+          "age_at_evaluation_ms": {
+            "max": 4000
+          },
+          "semantic_max_loss": {
+            "max": 0.5
+          },
+          "semantic_suppression_fraction": {
+            "max": 0
+          }
+        },
+        "intersected_regions": [
+          "central-through-footway"
+        ],
+        "passing": true,
+        "failed_metrics": [],
+        "semantic_categories": [
+          {
+            "category_id": "adult_pedestrian",
+            "observations": 104,
+            "distinct_tracks": 11
+          },
+          {
+            "category_id": "child_pedestrian",
+            "observations": 65,
+            "distinct_tracks": 7
+          },
+          {
+            "category_id": "senior_pedestrian",
+            "observations": 50,
+            "distinct_tracks": 5
+          },
+          {
+            "category_id": "pedestrian_with_stroller",
+            "observations": 61,
+            "distinct_tracks": 7
+          },
+          {
+            "category_id": "pedestrian_with_mobility_aid",
+            "observations": 60,
+            "distinct_tracks": 6
+          }
+        ],
+        "source_type_counts": {
+          "Adult Pedestrian": 104,
+          "Child Pedestrian": 65,
+          "Pedestrian With Stroller": 61,
+          "Pedestrian With Mobility Aid": 60,
+          "Senior Pedestrian": 50
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "Membership is exact for the recorded outputs; counterfactual parent checks do not prove a different online schedule can recover every loss.",
+    "Counterfactual classification is noncausal: changing earlier releases also changes available sibling support, windows and other outcomes.",
+    "Archived interval starts establish phase differences, but live handoff intentions and exact intermediate refinement order are not reconstructed.",
+    "Regional source-point memberships are nonexclusive and differ from conservative whole-cell policy intersections.",
+    "No raw identities, individual positions or generated movement stream are exported."
+  ]
+}
