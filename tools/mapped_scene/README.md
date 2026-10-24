@@ -30,6 +30,39 @@ visits have finished. The [implementation guide](../../docs/STOREFRONT_NAVIGATIO
 defines source behavior, manual overrides, geometry/lifecycle boundaries and the
 separate acceptance gates. All generated movement remains local and ignored.
 
+## Map presentation layers and retained-background refresh
+
+New `map_background.png` files contain functional geometry and original building
+outlines only. Shop/building names, entrances and access debugging marks are not
+baked into the raster: the replay draws its names and entrance markers once in
+separate toggle-controlled vector layers. OpenStreetMap attribution remains in
+PNG metadata and the map metadata used by the readable replay footer. The scene
+manifest records `background_rendering`; PNG metadata contains the same contract
+under `UMP.MapRendering`.
+
+A retained recording with a legacy annotated background can be refreshed without
+regenerating routes, running the Simulator or reading MongoDB:
+
+```sh
+/private/tmp/ump-mapped-venv/bin/python tools/mapped_scene/refresh_background.py \
+  --scene results/YOUR_RETAINED_RUN/scene \
+  --replay results/YOUR_RETAINED_RUN/replay
+```
+
+The command requires a verified capture, identical scene/replay configuration and
+public access geometry, matching frozen source/transform/map-builder provenance,
+and all original artifact digests. Scene/replay folders must be distinct and
+non-overlapping and must not contain the repository. It stages and validates the new presentation
+before replacement. Original PNGs, scene manifest, replay bundle and capture proof
+are archived under `presentation_history/` (inside `private/` for replay history).
+Explicit presentation-refresh records retain the original provenance; only the
+current PNG and its digest manifests change. Observations, native results, source,
+configuration and access geometry keep their exact bytes. Existing history is
+never overwritten; repeating an already-clean refresh is a no-op. This is a local
+presentation repair, not a new simulation or new aggregation result.
+
+See the [background cleanup test report](../../docs/REPLAY_BACKGROUND_CLEANUP_TEST_REPORT_2026-10-24.md).
+
 ## Earlier two-building fixture
 
 
@@ -334,3 +367,32 @@ whole-system correctness/performance review as separate gates. M03 specifically
 retains history/merge checks, diagnostics and private empty-retirement publication
 costs. Preserve logical output across optimization. Only compact aggregate reports
 may be committed; full replay/GT/observations stay local under ignored `results/`.
+
+## Experimental narrow-passage routing
+
+Default storefront generation preserves the accepted coarse-lattice source. The
+optional `--experimental-narrow-passages` flag (generator and `run_scene.py`,
+storefronts only) enables a bounded exact polygon-visibility fallback after a
+failed lattice query. It repairs static Barkhof connectivity without changing
+hard clearance, road permissions, d6 or native movement. Construction metadata
+records its mode, limits and unresolved native coordination gate.
+
+Both frozen Barkhof directions and sparse 64-person native drainage pass. The
+dense experimental 128-person gate exceeds its existing wall budget; a bounded
+diagnostic shows prolonged local stops/repeated failed replans. Keep this mode
+out of accepted comparisons until native opposing-flow coordination is validated.
+The opt-in is a source change and requires a new recording. Existing recordings
+and default source generation retain their old trajectories.
+
+## Source classes and release categories
+
+The general simulator uses `agents.road_user_taxonomy` in `simulator/config.yaml`.
+This mapped fixture creates its own five `PROFILES` and `profiles()` in
+`build_mapped_scene.py`; `corridor_people()` applies weights `[16,12,12,12,12]`.
+Explicit `mapped_scene.people` determines generated types/speeds. Editing a
+profile probability after generation does not regenerate those people. Cyclists
+and scooters need their own supported movement geometry/behavior before inclusion.
+The separate `aggregation.semantic_taxonomy` maps these inputs to release nodes;
+its node costs are explicit, not inferred from depth. See the
+[presentation protocol](../../docs/PRESENTATION_COMPARISON_PROTOCOL_2026-10-24.md)
+for policy-matched baseline/ablation definitions and the meaning of a 0.5 ceiling.

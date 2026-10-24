@@ -208,6 +208,14 @@ work in the reference and both policy-result panels, including cell focus. The f
 is disabled; these controls affect the additional overlays only. Colored
 fronts distinguish shops sharing one actual footprint. Exact doors keep their
 physical width and their entrance symbols remain independently toggleable.
+Entrance glyphs use a fixed readable screen size (12-pixel synthetic diamond,
+11-pixel observed square); these display dimensions do not alter admission,
+world coordinates or the separately drawn physical doorway width. New mapped
+backgrounds contain geometry only: names, entrance symbols and attribution text
+are not baked beneath the controls. Names and entrances each have one overlay;
+readable attribution remains in the footer and PNG/map metadata. Historical
+backgrounds need a verified presentation refresh before this single-layer
+contract applies to them.
 Shop names use the ordinary supplied-map typography and POI positions, with
 the same collision avoidance as other map names. Numbered white shop callouts
 and their entrance-to-label construction lines are no longer drawn. Modeled

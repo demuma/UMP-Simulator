@@ -101,12 +101,13 @@ function drawBuildingAccess(layout){
    for(const portal of buildingAccess.portals){
      const point=toCanvas(portal.point),[start,end]=M.portalSegment(portal).map(toCanvas),synthetic=portal.provenance==='synthetic';
      ctx.strokeStyle=synthetic?'#b44720':'#12658a';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(start.x,start.y);ctx.lineTo(end.x,end.y);ctx.stroke();
-     // A small screen-space glyph identifies the exact point. It is not a
-     // collision/admission radius and does not change with world zoom.
+     // A readable screen-space glyph identifies the exact point. Its pixel
+     // size is independent of zoom and is not a physical admission radius;
+     // the separately drawn facade stroke retains the recorded door width.
      ctx.beginPath();
-     if(synthetic){ctx.moveTo(point.x,point.y-4);ctx.lineTo(point.x+4,point.y);ctx.lineTo(point.x,point.y+4);ctx.lineTo(point.x-4,point.y);ctx.closePath();}
-     else ctx.rect(point.x-3.5,point.y-3.5,7,7);
-     ctx.fillStyle=synthetic?'#fff4e9':'#e6f6ff';ctx.fill();ctx.lineWidth=1.6;ctx.stroke();
+     if(synthetic){ctx.moveTo(point.x,point.y-6);ctx.lineTo(point.x+6,point.y);ctx.lineTo(point.x,point.y+6);ctx.lineTo(point.x-6,point.y);ctx.closePath();}
+     else ctx.rect(point.x-5.5,point.y-5.5,11,11);
+     ctx.fillStyle=synthetic?'#fff4e9':'#e6f6ff';ctx.fill();ctx.lineWidth=2;ctx.stroke();
    }
  }
  ctx.restore();

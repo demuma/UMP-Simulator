@@ -1,0 +1,28 @@
+Test project /Users/maxdemu/Developer/UMP-Simulator/simulator/build
+    Start 65: replay_viewer_evaluation
+1/8 Test #65: replay_viewer_evaluation .............   Passed    1.84 sec
+    Start 66: replay_viewer_model
+2/8 Test #66: replay_viewer_model ..................   Passed    0.15 sec
+    Start 79: mapped_audit_building_access_tools
+3/8 Test #79: mapped_audit_building_access_tools ...   Passed    0.13 sec
+    Start 80: mapped_build_mapped_scene_tools
+4/8 Test #80: mapped_build_mapped_scene_tools ......   Passed   51.19 sec
+    Start 81: mapped_storefront_router_tools
+5/8 Test #81: mapped_storefront_router_tools .......   Passed   29.80 sec
+    Start 82: mapped_export_replay_tools
+6/8 Test #82: mapped_export_replay_tools ...........   Passed    1.62 sec
+    Start 83: mapped_analyze_tracks_tools
+7/8 Test #83: mapped_analyze_tracks_tools ..........   Passed    0.27 sec
+    Start 84: mapped_run_comparison_tools
+8/8 Test #84: mapped_run_comparison_tools ..........   Passed    0.26 sec
+
+100% tests passed out of 8
+
+Label Time Summary:
+evaluation      =   1.84 sec*proc (1 test)
+mapped_scene    =  83.26 sec*proc (6 tests)
+tools           =  83.26 sec*proc (6 tests)
+unit            =  85.26 sec*proc (8 tests)
+viewer          =   2.00 sec*proc (2 tests)
+
+Total Test time (real) =  85.27 sec

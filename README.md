@@ -59,6 +59,19 @@ synthetic results and verification are recorded in the October 19 test report. T
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 
+**October 24 single map layer and controlled topology:** the retained replay's
+background is now geometry-only, with one supplied-name layer, larger entrance
+symbols and readable external OSM attribution. Previous PNG/manifests/proof are
+archived; observations/results/native source remain unchanged. See the
+[background cleanup report](docs/REPLAY_BACKGROUND_CLEANUP_TEST_REPORT_2026-10-24.md).
+Barkhof's static connectivity repair is available only through an explicit
+experimental flag; dense native passage coordination remains an open gate and
+accepted default movement is preserved. See the
+[topology test report](docs/BARKHOF_TOPOLOGY_TEST_REPORT_2026-10-24.md). The new
+[presentation comparison protocol](docs/PRESENTATION_COMPARISON_PROTOCOL_2026-10-24.md)
+separates hard semantic ceilings, forced family projection and preservation
+priorities, and records the current source-class configuration and baseline gaps.
+
 **October 24 geometry fast path and clean map labels:** ordinary supplied shop
 names/font replace the numbered white entrance callouts and construction lines.
 A conservative boundary-distance prefilter preserves bit-identical native frames,

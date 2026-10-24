@@ -194,18 +194,37 @@ def build_geometry(repo, local, layers, access, source_hash, overrides=None):
 
 
 class SafeRouter:
-    """Bounded A* with exact center-segment containment and seeded detours."""
-    def __init__(self, geometry):
+    """Coarse A* plus a bounded exact-geometry visibility fallback.
+
+    The visibility repair is experimental and disabled by default until dense
+    native narrow-passage coordination passes its separate acceptance gate.
+    Keep previously routable queries on their original 0.5 m lattice paths.
+    A connected narrow passage can contain no lattice edge: only after that
+    search fails, attach exact polygon vertices with visibility edges. Neither
+    this fallback nor its simplification widens the allowed center geometry.
+    """
+    def __init__(self, geometry, experimental_narrow_passages=False):
         self.geometry = geometry
+        self.experimental_narrow_passages = experimental_narrow_passages
         self.prepared = prep(geometry.buffer(1e-8))
         self.grid_side = 161
         self.grid_step = .5
         self.points = [(x*self.grid_step,y*self.grid_step) for y in range(self.grid_side) for x in range(self.grid_side)]
         self.valid = {i for i,p in enumerate(self.points) if self.prepared.covers(Point(p))}
         self.cache = {}
+        self.max_visibility_vertices = 1024
+        # Lazily built per polygon component. Cached checks are undirected and
+        # bounded by n*(n-1)/2 for each finite, capped visibility graph.
+        self.visibility_graphs = {}
     def clear(self,a,b):
         return self.prepared.covers(LineString([a,b]))
     def route(self,start,goal):
+        try:
+            return self._lattice_route(start,goal)
+        except ValueError:
+            if not self.experimental_narrow_passages:raise
+            return self._visibility_route(start,goal)
+    def _lattice_route(self,start,goal):
         if self.clear(start,goal): return [list(start),list(goal)]
         def attach(p):
             return [(i,math.dist(p,self.points[i])) for i in sorted(self.valid,key=lambda i:math.dist(p,self.points[i]))[:24]
@@ -237,12 +256,59 @@ class SafeRouter:
         chain=[reached]
         while chain[-1] in previous:chain.append(previous[chain[-1]])
         raw=[start]+[self.points[i] for i in reversed(chain)]+[goal]
-        result=[list(start)];i=0
+        return self._simplify(raw)
+    def _simplify(self,raw):
+        result=[list(raw[0])];i=0
         while i<len(raw)-1:
             j=next(j for j in range(len(raw)-1,i,-1) if self.clear(raw[i],raw[j]))
             if math.dist(result[-1],raw[j])>1e-8:result.append(list(raw[j]))
             i=j
         return result
+    def _visibility_route(self,start,goal):
+        # A full polygon visibility graph is finite and complete for polygonal
+        # point-center paths. Component restriction avoids exploring unrelated
+        # islands, while the explicit cap bounds nodes and potential edge work.
+        # The existing 1e-8 containment tolerance is numerical only; body-safe
+        # geometry was already eroded by clearance plus a 2 mm margin.
+        component = next(((i,p) for i,p in enumerate(parts(self.geometry))
+                          if p.buffer(1e-8).covers(Point(start))
+                          and p.buffer(1e-8).covers(Point(goal))),None)
+        if component is None:
+            raise ValueError("No connected boundary/door route in allowed geometry")
+        identifier,polygon=component
+        if identifier not in self.visibility_graphs:
+            vertices=sorted({tuple(p) for ring in [polygon.exterior,*polygon.interiors]
+                             for p in list(ring.coords)[:-1]})
+            if len(vertices)>self.max_visibility_vertices:
+                raise ValueError("Exact visibility fallback exceeds bounded vertex limit")
+            self.visibility_graphs[identifier]=(vertices,{})
+        vertices,cache=self.visibility_graphs[identifier]
+        # Endpoints are query-local: their visibility is never retained across
+        # potentially numerous requests; only fixed geometry edges are cached.
+        points=[tuple(start),tuple(goal)]+vertices
+        distance={0:0.0};previous={};queue=[(math.dist(start,goal),0.0,0)];settled=set()
+        while queue:
+            _,cost,i=heapq.heappop(queue)
+            if cost!=distance.get(i) or i in settled:continue
+            settled.add(i)
+            if i==1:
+                chain=[i]
+                while chain[-1] in previous:chain.append(previous[chain[-1]])
+                return self._simplify([points[j] for j in reversed(chain)])
+            for j,point in enumerate(points):
+                if j in settled:continue
+                candidate=cost+math.dist(points[i],point)
+                if candidate>=distance.get(j,math.inf):continue
+                if i>=2 and j>=2:
+                    key=min(i,j),max(i,j)
+                    if key not in cache:cache[key]=self.clear(points[i],point)
+                    visible=cache[key]
+                else:
+                    visible=self.clear(points[i],point)
+                if not visible:continue
+                distance[j]=candidate;previous[j]=i
+                heapq.heappush(queue,(candidate+math.dist(point,goal),candidate,j))
+        raise ValueError("No connected boundary/door route in exact visibility graph")
     def varied_route(self,start,goal,rng):
         direct=self.route(start,goal)
         baseline=LineString(direct).length
@@ -260,9 +326,10 @@ class SafeRouter:
         return direct
 
 
-def make_scene(repo, local, layers, access, source_hash, seed, people, interval, overrides=None):
+def make_scene(repo, local, layers, access, source_hash, seed, people, interval, overrides=None,
+               experimental_narrow_passages=False):
     context, internals, safe, rows = build_geometry(repo,local,layers,access,source_hash,overrides)
-    router=SafeRouter(safe)
+    router=SafeRouter(safe,experimental_narrow_passages=experimental_narrow_passages)
     rng=random.Random(seed ^ 0x6A09E667F3BCC909)
     tokens=random.Random(seed ^ 0xCBBB9D5DC1059ED8)
     boundaries=[r for r in context["boundary_intervals"] if r["spawn_supported"]]
@@ -321,7 +388,14 @@ def make_scene(repo, local, layers, access, source_hash, seed, people, interval,
                                 "replan_after_ms":1500,"replan_interval_ms":1000}},
         "portals":context["portals"],"routes":routes,"people":people}
     construction={"scope":"Four modeled POI storefronts share their true original building outline; frontages and entrances are synthetic, not surveyed doors or interior walls. Seeded finite pedestrian cohort with explicit boundary requests, geometric paths and relative hidden dwell.",
-        "navigation_lattice_m":.5,"max_route_vertices":64,"body_plus_clearance_radius_m":CLEARANCE,"erosion_numerical_margin_m":.002,
+        "navigation_lattice_m":.5,
+        "navigation_fallback":{"enabled":experimental_narrow_passages,
+                               "status":"experimental_opt_in" if experimental_narrow_passages else "disabled_original_lattice_default",
+                               "experimental_native_coordination_gate":"unresolved_128_person_drain_timeout_180s",
+                               "method":"bounded_exact_polygon_visibility_after_lattice_failure",
+                               "max_vertices_per_component":router.max_visibility_vertices,
+                               "edge_oracle":"unchanged_allowed_center_segment_containment"},
+        "max_route_vertices":64,"body_plus_clearance_radius_m":CLEARANCE,"erosion_numerical_margin_m":.002,
         "demand":{"visit_fraction":.5,"destination_weights":{p["id"]:1 for p in context["portals"]},
                   "boundary_selection":"uniform connected intervals; uniform interior arclength (.02,.98)","arrival_interval_ms":interval,
                   "scope":"Declared experimental demand, not empirical store visitation or calibrated arrival rates."},

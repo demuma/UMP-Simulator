@@ -10,6 +10,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 import yaml
 from shapely.geometry import LineString, Point, Polygon, box
@@ -103,6 +104,7 @@ class MappedSceneGeneratorTests(unittest.TestCase):
             self.assertEqual(cfg["database"]["db_name"], DATABASE)
             manifest = json.loads((output / "scene_manifest.json").read_text())
             self.assertEqual(manifest["status"], "pass")
+            self.assertEqual(manifest["background_rendering"], builder.background_rendering())
             # PNG header gives width/height without adding a new image dependency.
             raw = (output / "map_background.png").read_bytes()
             self.assertEqual(raw[:8], b"\x89PNG\r\n\x1a\n")
@@ -111,6 +113,47 @@ class MappedSceneGeneratorTests(unittest.TestCase):
             again = subprocess.run(command, capture_output=True, text=True)
             self.assertNotEqual(again.returncode, 0)
             self.assertIn("already exists", again.stderr)
+
+    def test_background_keeps_geometry_and_omits_baked_presentation_layers(self):
+        import matplotlib.pyplot as plt
+        from PIL import Image
+        context = {"buildings": [{"polygons": [[[10, 10], [20, 10], [20, 20], [10, 10]]]}],
+                   "portals": [{"point": [15, 10]}],
+                   "store_fronts": [{"poi": {"name": "Duplicated shop name"}}],
+                   "facade_separators": [{"points": [[15, 10], [15, 12]]}],
+                   "boundary_intervals": [{"points": [[0, 0], [0, 5]]}]}
+        with tempfile.TemporaryDirectory() as temporary:
+            output = pathlib.Path(temporary) / "background.png"
+            with mock.patch.object(plt, "close"):
+                rendering = builder.draw_background(self.layers, output, context)
+                figure = plt.gcf()
+                axes = figure.axes[0]
+                self.assertEqual(axes.texts[:], [])
+                self.assertGreater(len(axes.patches), 0)
+                self.assertEqual(len(axes.lines), 1)  # Exact original footprint only.
+                self.assertEqual(list(axes.lines[0].get_xdata()), [10, 20, 20, 10])
+                self.assertEqual(list(axes.lines[0].get_ydata()), [10, 10, 20, 10])
+            plt.close(figure)
+            with Image.open(output) as image:
+                self.assertEqual(image.size, (800, 800))
+                self.assertEqual(json.loads(image.info["UMP.MapRendering"]), rendering)
+                self.assertIn("OpenStreetMap contributors", image.info["Attribution"])
+                self.assertIn("openstreetmap.org/copyright", image.info["Attribution"])
+            self.assertFalse(rendering["baked_names"])
+            self.assertFalse(rendering["baked_entrances"])
+            self.assertFalse(rendering["baked_debug_annotations"])
+            self.assertFalse(rendering["baked_attribution"])
+
+    def test_background_without_access_still_has_no_legacy_door_glyph(self):
+        import matplotlib.pyplot as plt
+        with tempfile.TemporaryDirectory() as temporary:
+            with mock.patch.object(plt, "close"):
+                builder.draw_background(self.layers, pathlib.Path(temporary) / "background.png")
+                figure = plt.gcf()
+                self.assertEqual(figure.axes[0].texts[:], [])
+                self.assertEqual(figure.axes[0].lines[:], [])
+                self.assertGreater(len(figure.axes[0].patches), 0)
+            plt.close(figure)
 
     def test_reserved_database_rejected_before_output(self):
         with tempfile.TemporaryDirectory(prefix="ump-mapped-invalid-test-") as temp:

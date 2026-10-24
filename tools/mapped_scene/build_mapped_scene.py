@@ -275,13 +275,14 @@ def storefront_module():
 
 
 @functools.lru_cache(maxsize=8)
-def storefront_scene(repo, seed, population, duration_s, interval_ms=None, overrides_json=None):
+def storefront_scene(repo, seed, population, duration_s, interval_ms=None, overrides_json=None,
+                     experimental_narrow_passages=False):
     repo = pathlib.Path(repo)
     _, local, layers, _, provenance = load_source(repo)
     people, interval = corridor_people(seed, population, duration_s, interval_ms)
     overrides = json.loads(overrides_json) if overrides_json is not None else None
     return storefront_module().make_scene(repo, local, layers, access_module(),
-        provenance["source_geometry_sha256"], seed, people, interval, overrides)
+        provenance["source_geometry_sha256"], seed, people, interval, overrides, experimental_narrow_passages)
 
 
 def profiles():
@@ -354,7 +355,10 @@ def regions():
     return list(types.values()), rows
 
 
-def make_config(repo, database, duration, render, seed, motion_mode="integration", population=64, arrival_interval_ms=None, shop_overrides=None):
+def make_config(repo, database, duration, render, seed, motion_mode="integration", population=64,
+                arrival_interval_ms=None, shop_overrides=None, experimental_narrow_passages=False):
+    if experimental_narrow_passages and motion_mode != "storefronts":
+        raise ValueError("Experimental narrow passages require storefronts mode")
     cfg = yaml.safe_load((repo / "simulator/examples/temporal-aggregation/config.yaml").read_text())
     cfg["display"].update(width=1000, height=900, pixels_per_meter=10, title="UMP Mönckebergstraße — mapped visit scene")
     cfg["renderer"].update(show_renderer=render, show_trajectories=True, show_waypoints=False,
@@ -394,7 +398,8 @@ def make_config(repo, database, duration, render, seed, motion_mode="integration
     if motion_mode == "storefronts":
         cfg["simulation"]["datetime"] = "2026-10-24T00:00:00Z"
         cfg["mapped_scene"], _, _, _ = copy.deepcopy(storefront_scene(str(repo), seed, population, duration, arrival_interval_ms,
-            json.dumps(shop_overrides, sort_keys=True) if shop_overrides is not None else None))
+            json.dumps(shop_overrides, sort_keys=True) if shop_overrides is not None else None,
+            experimental_narrow_passages))
         cfg["agents"]["num_agents"] = population
         for row in cfg["agents"]["road_user_taxonomy"]:
             row["probability"] = sum(p["type"] == row["type"] for p in cfg["mapped_scene"]["people"]) / population
@@ -482,16 +487,35 @@ def audit_config(cfg):
     return result
 
 
+def background_rendering():
+    """Describe the raster independently of toggle-controlled replay overlays.
+
+    Names, entrances and attribution belong to the presentation layer. Keeping
+    them out of the bitmap prevents small baked glyphs from surviving a hidden
+    overlay or duplicating the viewer's readable labels and entrance markers.
+    """
+    return {"schema": "ump.map-background.v1", "content": "functional_geometry",
+            "baked_names": False, "baked_entrances": False,
+            "baked_debug_annotations": False, "baked_attribution": False,
+            "attribution_location": "map_metadata_and_png_metadata"}
+
+
 def draw_background(layers, output, building_access=None):
+    """Render map geometry only; all interactive overlays remain vector layers.
+
+    Original building boundaries remain visible. POI labels, route/access debug
+    marks and entrance glyphs are deliberately omitted from this raster. The
+    attribution stays in image metadata and the exported map's readable footer.
+    """
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from matplotlib.patches import PathPatch
     from matplotlib.path import Path
-    colors = {"building": "#CBD1D9", "road": "#E4B66B", "walking": "#B8DDD5", "cycling": "#B9CAE4", "crossing": "#D5BFDF", "entrance": "#E4B295"}
+    colors = {"building": "#CBD1D9", "road": "#E4B66B", "walking": "#B8DDD5", "cycling": "#B9CAE4", "crossing": "#D5BFDF"}
     fig = plt.figure(figsize=(8, 8), dpi=100)
     ax = fig.add_axes([0, 0, 1, 1]); ax.set_facecolor("#F4F5F7")
-    for kind in ["road", "walking", "cycling", "crossing", "building"] + ([] if building_access else ["entrance"]):
+    for kind in ["road", "walking", "cycling", "crossing", "building"]:
         geometry = layers[kind]
         parts = [geometry] if geometry.geom_type == "Polygon" else getattr(geometry, "geoms", [])
         for polygon in parts:
@@ -508,43 +532,18 @@ def draw_background(layers, output, building_access=None):
             ax.add_patch(PathPatch(Path(vertices, codes), facecolor=colors[kind],
                                    edgecolor="#7A8590" if kind == "building" else "none", linewidth=.5))
     if building_access:
-        # Original footprints are kept distinct rather than merged into one
-        # grey mask, including shared/adjacent boundaries and clipped edges.
+        # Keep original footprint boundaries distinct, including clipped/shared
+        # edges. These are geometry, not assumed shopfront/entrance annotations.
         for building in building_access["buildings"]:
             for ring in building["polygons"] + building.get("holes", []):
                 ax.plot([p[0] for p in ring], [p[1] for p in ring], color="#59636F", linewidth=1.1)
-        selected_buildings = {p["building_id"] for p in building_access["portals"]}
-        for building in building_access["buildings"]:
-            if building["id"] in selected_buildings:
-                polygon = max((Polygon(ring) for ring in building["polygons"]), key=lambda p:p.area)
-                label_point = polygon.representative_point()
-                ax.text(label_point.x, label_point.y, building["name"], fontsize=7,
-                        color="#36414B", ha="center", va="center")
-        for index, front in enumerate(building_access.get("store_fronts", [])):
-            ax.plot([p[0] for p in front["frontage"]], [p[1] for p in front["frontage"]], color=["#865B8D", "#497E72", "#A97A36", "#5F6EAA"][index % 4], linewidth=2)
-            ax.text(max(4,min(76,front["poi"]["point"][0])), max(3,min(77,front["poi"]["point"][1])), front["poi"]["name"], fontsize=6, color="#36414B", ha="center")
-        for separator in building_access.get("facade_separators", []):
-            ax.plot([p[0] for p in separator["points"]], [p[1] for p in separator["points"]], color="#7B4B35", linewidth=1, linestyle="--")
-        for interval in building_access.get("boundary_intervals", []):
-            points = interval["points"]
-            ax.plot([p[0] for p in points], [p[1] for p in points], color={"walking":"#167B65","cycling":"#4B6CA3","road":"#A46C26"}[interval["mode"]], linewidth=3, linestyle="-" if interval["spawn_supported"] else "--")
-        for portal in building_access["portals"]:
-            a, b = portal["facade"]
-            length = math.dist(a, b)
-            tangent = [(b[i]-a[i])/length for i in range(2)]
-            center, half = portal["point"], portal["width_m"]/2
-            ax.plot([center[0]-half*tangent[0], center[0]+half*tangent[0]],
-                    [center[1]-half*tangent[1], center[1]+half*tangent[1]],
-                    color="#C44720", linewidth=3, solid_capstyle="butt")
-            ax.plot(center[0], center[1], marker="o", color="#8B2E13", markersize=2)
-        ax.text(1, 1, "© OpenStreetMap contributors | ODbL 1.0\n" + ("Orange door: synthetic facade midpoint; synthetic motion" if building_access["schema"] == "ump.building-access.v1" else "Orange door: synthetic shop access; dashed ticks: modeled fronts"),
-                fontsize=6, color="#36414B", va="top",
-                bbox={"facecolor":"white", "alpha":.92, "edgecolor":"none", "pad":3})
-    else:
-        ax.plot(DOOR[0], DOOR[1], marker="o", color="#A64422", markersize=4)
     ax.set_xlim(0, SIDE); ax.set_ylim(SIDE, 0); ax.set_aspect("equal"); ax.set_axis_off()
-    fig.savefig(output, dpi=100, facecolor="#F4F5F7", pad_inches=0)
+    rendering = background_rendering()
+    fig.savefig(output, dpi=100, facecolor="#F4F5F7", pad_inches=0,
+                metadata={"Attribution": "© OpenStreetMap contributors; ODbL 1.0; https://www.openstreetmap.org/copyright",
+                          "UMP.MapRendering": json.dumps(rendering, sort_keys=True, separators=(",", ":"))})
     plt.close(fig)
+    return rendering
 
 
 def main():
@@ -559,7 +558,11 @@ def main():
     parser.add_argument("--population",type=int,default=64,help="Stateful corridor/building/storefront population; historical mode stays at 64")
     parser.add_argument("--arrival-interval-ms",type=int,help="Stateful source interval, multiple of 50 ms; default spreads requests across horizon")
     parser.add_argument("--shop-overrides", type=pathlib.Path, help="Optional source-hash-bound synthetic shop entrance overrides")
+    parser.add_argument("--experimental-narrow-passages", action="store_true",
+        help="EXPERIMENTAL storefront visibility repair; dense native narrow-passage coordination is unresolved")
     args = parser.parse_args()
+    if args.experimental_narrow_passages and args.motion_mode != "storefronts":
+        parser.error("--experimental-narrow-passages requires --motion-mode storefronts")
     repo = args.repo.resolve()
     if not re.fullmatch(r"UMP_Mapped_[0-9a-f]{32}", args.database):
         parser.error("Use an owned UMP_Mapped_<32 lower-case UUID hex> namespace")
@@ -569,11 +572,12 @@ def main():
         parser.error("output directory already exists; choose a fresh output")
     _, local, layers, assumptions, provenance = load_source(repo)
     cfg = make_config(repo, args.database, args.duration_s, args.render, args.seed,args.motion_mode,args.population,args.arrival_interval_ms,
-        json.loads(args.shop_overrides.read_text()) if args.shop_overrides else None)
+        json.loads(args.shop_overrides.read_text()) if args.shop_overrides else None, args.experimental_narrow_passages)
     context, construction = None, None
     if args.motion_mode == "storefronts":
         _, context, construction, geometry = copy.deepcopy(storefront_scene(str(repo), args.seed, args.population, args.duration_s, args.arrival_interval_ms,
-            json.dumps(json.loads(args.shop_overrides.read_text()), sort_keys=True) if args.shop_overrides else None))
+            json.dumps(json.loads(args.shop_overrides.read_text()), sort_keys=True) if args.shop_overrides else None,
+            args.experimental_narrow_passages))
     elif args.motion_mode == "buildings":
         context, _, construction = copy.deepcopy(building_geometry(str(repo)))
         geometry = access_module().audit_access(local, layers, cfg["mapped_scene"]["routes"], context["portals"])
@@ -585,11 +589,12 @@ def main():
     args.output.mkdir(parents=True)
     config_bytes = yaml.safe_dump(cfg, sort_keys=False, allow_unicode=True).encode()
     (args.output / "config.yaml").write_bytes(config_bytes)
-    draw_background(layers, args.output / "map_background.png", context)
+    rendering = draw_background(layers, args.output / "map_background.png", context)
     if context is not None:
         (args.output / "building_access.json").write_text(json.dumps(context, indent=2, ensure_ascii=False) + "\n")
     report = {"status": "pass", "seed": args.seed, "configuration_sha256": sha(config_bytes),
               "background_sha256": sha((args.output / "map_background.png").read_bytes()),
+              "background_rendering": rendering,
               "generator_sha256": sha(pathlib.Path(__file__).read_bytes()), **provenance,
               "route_geometry": geometry, "scene_contract": scene,
               "map_width_assumptions": assumptions,

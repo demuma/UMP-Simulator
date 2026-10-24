@@ -15,6 +15,26 @@ initial correctness/process review and nominal paced runtime measurement are com
 native source/I/O timing and atomic empty checkpoints now pass the first M03 slice;
 remaining controller/source and paced external receipt timing stay open. The full three-scenario effectiveness study remains open. October 18 is historical.**
 
+**October 24 presentation and topology gate:** the current replay now uses a
+geometry-only background, one toggle-controlled name layer, readable entrance
+symbols and external attribution. Old presentation artifacts/proofs are archived;
+source observations/results remain unchanged. The Barkhof visibility repair is
+implemented as an explicit experimental opt-in: static routes and sparse native
+execution pass, but dense native coordination remains unresolved. Read the
+[background report](docs/REPLAY_BACKGROUND_CLEANUP_TEST_REPORT_2026-10-24.md),
+[topology test report](docs/BARKHOF_TOPOLOGY_TEST_REPORT_2026-10-24.md) and
+[presentation comparison protocol](docs/PRESENTATION_COMPARISON_PROTOCOL_2026-10-24.md).
+
+- [x] Remove baked tiny names/attribution/entrance glyphs from map PNGs. Refresh
+  the retained replay with original geometry and archived prior proof; preserve
+  config/source/observations/results/access bytes. Verify both overlay toggles.
+- [ ] Freeze one source/policy/query contract for the presentation comparison,
+  then compare the declared fixed portfolio with one local adaptive controller.
+  Add verified temporal/spatial/semantic action restrictions sequentially, followed
+  by priority sensitivity. A hard loss cap of 0.5 allows family output; forced
+  family projection is a separate action, and Semantic First preserves detail.
+  Keep a residential and traffic scenario as subsequent source/evaluation stages.
+
 **October 24 follow-up — policy identity and navigation capacity:** replay panels
 now identify the actual PolicyTree ID/version and method. The current bundle has
 one tree/result selected in both views. Read the
@@ -50,11 +70,22 @@ one tree/result selected in both views. Read the
   50-ms source step, eight active stall diagnostics at the censored cutoff. No
   claim of 500 concurrent realtime actors; that density is a separate headroom
   stress, not the clarified requirement. Aggregation/DB costs are additional.
-- [ ] **M05 map-to-graph correctness:** retain junction/access/direction/crossing
-  metadata; test vector versus navigation-graph connectivity. Fix the Barkhof
-  narrow-connection artifact: geometric footway exists, but all 96 current guidance
-  routes avoid the road and the 0.5-m router cannot cross it. Keep navigation
-  resolution separate from D6 privacy cells; use bounded local topology repair.
+- [x] **M05a static Barkhof topology:** bounded exact polygon-visibility fallback
+  after coarse-lattice failure, explicit `--experimental-narrow-passages` opt-in.
+  Both directions pass independent body/wall checks without widening geometry or
+  changing d6; old successful/default routes remain unchanged. New experimental
+  64-person guidance has 54/96 crossing routes. This is not accepted dense motion.
+- [ ] **M05b next — native narrow-passage coordination:** prevent conflicting
+  entry into the new neck, provide waiting/clear-exit behavior and finite fair
+  direction ownership/batches. The experimental 128-person gate exceeded 180 s;
+  a 90-s diagnostic had 46 stalled tracks and max stop 58.85 s. Keep default
+  crossings disabled until declared 64/128 and 500-total flows pass complete
+  lifecycle, swept safety and bounded stop/runtime gates. Do not mask the issue
+  by extending test budgets or only increasing A* resolution/node limits.
+- [ ] **M05c general map-to-graph correctness:** retain junction/access/direction/
+  crossing metadata and provenance; test vector versus movement-graph connectivity.
+  Offline visibility repair does not repair the native 0.5-m dynamic replan graph.
+  Keep movement resolution separate from D6 privacy cells.
 - [ ] **M05.1 additional mapped entrances:** upper-left observed main entrance
   (`4616972979`, `level=1`) and cafe main/secondary nodes (`9370793427`,
   `11062053180`) exist but are not active destinations. Preserve provenance and
@@ -72,7 +103,10 @@ one tree/result selected in both views. Read the
 - [ ] **M07 controlled mixed modes:** cyclist/scooter age variants, semantic branches,
   per-mode allowed routes/source intervals and reviewed dimensions/kinematics.
   Current pedestrian-safe 0.55-m geometry does not fit existing 1.0–1.25-m cyclist
-  envelopes. Keep mode mix/demand/policies separate experimental factors.
+  envelopes. Parameterize mapped source profiles/weights instead of silently
+  overriding the general config; map every input label to a release terminal.
+  Declare Pedestrian/Cyclist/E-Scooter family costs explicitly (e.g. 0.5) and
+  retain finer subtype levels. Keep mix/demand/policies separate factors.
 - [ ] **M08 road and crossing behavior:** explicit direction/lane demand, crossing
   connectors with yielding/gaps or declared signals, waiting and swept inter-mode
   conflict tests. Retain Barkhof as a preferred connection while permitting seeded,

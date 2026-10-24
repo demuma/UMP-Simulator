@@ -661,5 +661,141 @@ class NativeRecordingTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError,'256 MiB'):export.write_json(Path(directory)/'too-large.json',{'larger':'than bound'})
 
 
+class RetainedBackgroundRefreshTests(unittest.TestCase):
+    """Presentation changes preserve the original capture and reject stale proof."""
+
+    @classmethod
+    def setUpClass(cls):
+        import refresh_background
+        cls.refresh = refresh_background
+        cls.repo = Path(__file__).resolve().parents[2]
+        cls.builder = cls.refresh.module_at('ump_refresh_test_builder', cls.repo / 'tools/mapped_scene/build_mapped_scene.py')
+        _, _, cls.layers, _, cls.provenance = cls.builder.load_source(cls.repo)
+
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory(prefix='ump-refresh-test-')
+        self.addCleanup(self.temporary.cleanup)
+        self.scene, self.replay = Path(self.temporary.name) / 'scene', Path(self.temporary.name) / 'replay'
+        self.scene.mkdir()
+        cfg, raw = native_fixture()
+        access = {'schema':'ump.building-access.v1','bounds':dict(x=0,y=0,width=80,height=80),
+                  'buildings':[{'id':'way1','name':'Shop building','polygons':[[[10,10],[30,10],[30,30],[10,30],[10,10]]]}],
+                  'portals':[{'id':'entry1','building_id':'way1','point':[20,10],
+                              'facade':[[10,10],[30,10]],'width_m':1.2,'provenance':'synthetic'}]}
+        cfg['simulation'].update(width=80, height=80)
+        cfg['mapped_scene'] = {'epoch_utc':'2026-10-23T10:30:00.000Z', 'portals':copy.deepcopy(access['portals'])}
+        (self.scene / 'config.yaml').write_text(export.yaml.safe_dump(cfg))
+        (self.scene / 'building_access.json').write_text(json.dumps(access))
+        def chunk(kind, body):
+            return struct.pack('!I',len(body))+kind+body+struct.pack('!I',zlib.crc32(kind+body)&0xffffffff)
+        png = (b'\x89PNG\r\n\x1a\n'+chunk(b'IHDR',struct.pack('!IIBBBBB',1,1,8,6,0,0,0))
+               +chunk(b'IDAT',zlib.compress(b'\x00\xff\xff\xff\xff'))+chunk(b'IEND',b''))
+        (self.scene / 'map_background.png').write_bytes(png)
+        manifest = {**self.provenance, 'motion_mode':'buildings', 'generator_sha256':'original-generator',
+                    'configuration_sha256':export.digest(self.scene/'config.yaml'),
+                    'building_access_sha256':export.digest(self.scene/'building_access.json'),
+                    'background_sha256':export.digest(self.scene/'map_background.png')}
+        (self.scene / 'scene_manifest.json').write_text(json.dumps(manifest))
+        mapping = {'image':'map_background.png','bounds':dict(x=0,y=0,width=80,height=80),
+                   'attribution':'© OpenStreetMap contributors; ODbL 1.0',
+                   'labels':[{'text':'Readable shop name','kind':'shop','x':20,'y':20}], 'legend':[],
+                   'building_access':'building_access.json'}
+        with mock.patch.object(export,'load_native',return_value=raw), mock.patch.object(export,'map_metadata',return_value=mapping):
+            export.export_scene(self.scene, self.replay)
+
+    def test_refresh_archives_original_evidence_and_preserves_all_nonpresentation_bytes(self):
+        before = {root: {str(path.relative_to(root)): path.read_bytes() for path in root.rglob('*') if path.is_file()}
+                  for root in (self.scene, self.replay)}
+        result = self.refresh.refresh_background(self.scene, self.replay, self.repo)
+        self.assertEqual(result['status'], 'refreshed')
+        changed = {self.scene: {'map_background.png', 'scene_manifest.json'},
+                   self.replay: {'map_background.png', 'bundle.json', 'capture-proof.json'}}
+        for root, files in before.items():
+            for name, contents in files.items():
+                if name not in changed[root]:
+                    self.assertEqual((root / name).read_bytes(), contents, name)
+        manifest = json.loads((self.scene/'scene_manifest.json').read_text())
+        proof = json.loads((self.replay/'capture-proof.json').read_text())
+        self.assertEqual(manifest['generator_sha256'], 'original-generator')
+        self.assertEqual(manifest['background_rendering'], self.builder.background_rendering())
+        record = proof['presentation_refreshes'][0]
+        for name in changed[self.scene]:
+            self.assertEqual((self.scene/record['scene_archive']/name).read_bytes(), before[self.scene][name])
+        for name in changed[self.replay]:
+            self.assertEqual((self.replay/record['replay_archive']/name).read_bytes(), before[self.replay][name])
+        bundle = json.loads((self.replay/'bundle.json').read_text())
+        old_bundle = json.loads(before[self.replay]['bundle.json'])
+        self.assertEqual(bundle['map'], old_bundle['map'])  # Attribution and toggleable names survive.
+        for name, expected in proof['files_sha256'].items():
+            self.assertEqual(export.digest(self.replay/name), expected)
+        again = self.refresh.refresh_background(self.scene, self.replay, self.repo)
+        self.assertEqual(again['status'], 'unchanged')
+        self.assertEqual(len(json.loads((self.replay/'capture-proof.json').read_text())['presentation_refreshes']), 1)
+
+    def test_overlapping_and_repository_directories_are_rejected_without_writes(self):
+        temporary = Path(self.temporary.name)
+        before = {str(path.relative_to(temporary)): path.read_bytes()
+                  for path in temporary.rglob('*') if path.is_file()}
+        cases = [(self.scene, self.scene), (temporary, self.replay),
+                 (self.scene, temporary), (self.repo, self.replay),
+                 (self.scene, self.repo), (self.repo.parent, self.replay),
+                 (self.scene, self.repo.parent)]
+        with mock.patch.object(self.refresh.tempfile, 'TemporaryDirectory', side_effect=AssertionError('Guard must run before staging')):
+            for scene, replay in cases:
+                with self.subTest(scene=scene, replay=replay):
+                    with self.assertRaisesRegex(ValueError, 'non-overlapping|contain the repository'):
+                        self.refresh.refresh_background(scene, replay, self.repo)
+                    after = {str(path.relative_to(temporary)): path.read_bytes()
+                             for path in temporary.rglob('*') if path.is_file()}
+                    self.assertEqual(before, after)
+
+    def test_corrupt_capture_hash_is_rejected_without_changes(self):
+        path = self.replay/'capture-proof.json'
+        proof = json.loads(path.read_text())
+        proof['files_sha256']['private/config.yaml'] = '0'*64
+        path.write_text(json.dumps(proof))
+        image = (self.replay/'map_background.png').read_bytes()
+        with self.assertRaisesRegex(ValueError, 'Original capture digest mismatch'):
+            self.refresh.refresh_background(self.scene, self.replay, self.repo)
+        self.assertEqual((self.replay/'map_background.png').read_bytes(), image)
+        self.assertFalse((self.scene/'presentation_history').exists())
+
+    def test_incomplete_original_proof_is_rejected(self):
+        path = self.replay/'capture-proof.json'
+        proof = json.loads(path.read_text())
+        del proof['files_sha256']['private/native_source.json']
+        path.write_text(json.dumps(proof))
+        with self.assertRaisesRegex(ValueError, 'missing required artifact digests'):
+            self.refresh.refresh_background(self.scene, self.replay, self.repo)
+        self.assertFalse((self.scene/'presentation_history').exists())
+
+    def test_changed_scene_and_frozen_source_are_rejected(self):
+        path = self.scene/'scene_manifest.json'
+        original = json.loads(path.read_text())
+        for field in ('source_geometry_sha256', 'compressed_source_sha256', 'coordinate_transform', 'map_builder_sha256', 'background_sha256'):
+            with self.subTest(field=field):
+                changed = copy.deepcopy(original)
+                changed[field] = {} if field == 'coordinate_transform' else '0'*64
+                path.write_text(json.dumps(changed))
+                with self.assertRaises(ValueError):
+                    self.refresh.refresh_background(self.scene, self.replay, self.repo)
+        path.write_text(json.dumps(original))
+        self.assertFalse((self.scene/'presentation_history').exists())
+
+    def test_existing_history_is_never_overwritten(self):
+        output = Path(self.temporary.name)/'clean.png'
+        access = json.loads((self.scene/'building_access.json').read_text())
+        self.builder.draw_background(self.layers, output, access)
+        refresh_id = 'geometry-only-'+export.digest(self.scene/'map_background.png')[:12]+'-'+export.digest(output)[:12]
+        archive = self.scene/'presentation_history'/refresh_id
+        archive.mkdir(parents=True)
+        sentinel = archive/'keep.txt'
+        sentinel.write_text('prior evidence')
+        with self.assertRaisesRegex(ValueError, 'Refusing to replace prior presentation history'):
+            self.refresh.refresh_background(self.scene, self.replay, self.repo)
+        self.assertEqual(sentinel.read_text(), 'prior evidence')
+        self.assertFalse((self.replay/'private/presentation_history').exists())
+
+
 if __name__=='__main__':
     unittest.main()

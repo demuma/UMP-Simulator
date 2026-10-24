@@ -13,6 +13,27 @@ now preserves raw-bit 64/500-source output and reduces the fresh 500-person
 wall pair from 213.30 to 155.89 s; all 86 suites pass. Read the
 [optimization test report](NAVIGATION_GEOMETRY_TEST_REPORT_2026-10-24.md).
 
+## Current presentation and topology checkpoint
+
+The retained replay now has a geometry-only PNG, one supplied-name layer, readable
+entrance symbols and external attribution; the prior presentation and proof are
+archived. See the [background report](REPLAY_BACKGROUND_CLEANUP_TEST_REPORT_2026-10-24.md).
+
+A bounded exact visibility fallback now repairs static Barkhof connectivity only
+when `--experimental-narrow-passages` is explicitly enabled. Default source paths
+are preserved. Sparse experimental native drainage passes; the dense 128-person
+gate times out and its bounded diagnostic shows persistent local congestion and
+failed replans. Native opposing-flow/waiting coordination is therefore the next
+gate before default activation. This is a partial static topology implementation,
+not accepted mixed-density crossing behavior. Read the
+[topology report](BARKHOF_TOPOLOGY_TEST_REPORT_2026-10-24.md).
+
+The [presentation protocol](PRESENTATION_COMPARISON_PROTOCOL_2026-10-24.md)
+predeclares policy-matched fixed/adaptive comparisons, semantic-ceiling versus
+family-projection distinctions and staged action/priority ablations. The current
+source remains pedestrian-only; mixed modes and residential/traffic scenes are
+later independent source gates.
+
 ## Three separate kinds of constraints
 
 Map access/connectivity and actor kinematics determine physically modeled movement.
@@ -254,8 +275,10 @@ Do not invent an unrequested general car class or infer exceptions from map colo
    Repeat the clarified 500-total scenario with full-pipeline timing and measured
    active population. Controlled 250/500 simultaneous-active fixtures are later
    optional headroom tests, not the current user requirement.
-3. Preserve map topology/access metadata and fix the Barkhof graph-connectivity
-   artifact with a reproducible regression and explicit geometry assumptions.
+3. Static Barkhof fallback is implemented as experimental opt-in. Next, validate
+   native opposing-flow admission, waiting/clear exit and finite fair ownership
+   before enabling it by default. Preserve map topology/access metadata; offline
+   visibility repair does not repair the native dynamic replan graph.
 4. Inventory and activate additional upper-left/cafe accesses only after explicit
    floor, destination-association and connector gates. Add per-door single-file/
    bidirectional capacity and logical destinations, with physical/lifecycle/export/

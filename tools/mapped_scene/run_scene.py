@@ -39,6 +39,8 @@ def main():
     parser.add_argument('--population', type=int, default=64)
     parser.add_argument('--shop-overrides', type=pathlib.Path, help='Source-bound synthetic shop entrance overrides (storefronts mode only)')
     parser.add_argument('--arrival-interval-ms',type=int)
+    parser.add_argument('--experimental-narrow-passages',action='store_true',
+        help='EXPERIMENTAL storefront visibility repair; dense native narrow-passage coordination is unresolved')
     parser.add_argument('--output', type=pathlib.Path, help='Fresh scene folder; replay becomes its sibling')
     parser.add_argument('--no-record',action='store_true',help='Skip the persistent local recording')
     parser.add_argument('--cleanup', action='store_true', help='Remove only owned DBs after a verified recording/run')
@@ -47,6 +49,8 @@ def main():
     if args.no_record and args.replay: parser.error('--replay requires recording')
     if args.shop_overrides is not None and args.motion_mode != 'storefronts':
         parser.error('--shop-overrides requires --motion-mode storefronts')
+    if args.experimental_narrow_passages and args.motion_mode != 'storefronts':
+        parser.error('--experimental-narrow-passages requires --motion-mode storefronts')
     if not 1<=args.port<=65535: parser.error('Port must be 1..65535')
     repo = pathlib.Path(__file__).resolve().parents[2]
     binary = repo/'simulator/build/Simulator'
@@ -75,6 +79,7 @@ def main():
     if args.arrival_interval_ms is not None: command += ['--arrival-interval-ms',str(args.arrival_interval_ms)]
     if args.shop_overrides is not None: command += ['--shop-overrides', str(args.shop_overrides.resolve())]
     if args.render: command.append('--render')
+    if args.experimental_narrow_passages: command.append('--experimental-narrow-passages')
     subprocess.run(command,check=True)
     print('Scene: '+str(output),flush=True)
     print('Owned MongoDB databases: '+', '.join(names),flush=True)

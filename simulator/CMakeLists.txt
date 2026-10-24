@@ -408,7 +408,7 @@ if(UMP_BUILD_MAPPED_SCENE_TESTS AND UMP_MAPPED_SCENE_PYTHON)
     if(NOT EXISTS "${UMP_MAPPED_SCENE_PYTHON}")
         message(FATAL_ERROR "UMP_MAPPED_SCENE_PYTHON does not exist")
     endif()
-    foreach(mapped_test audit_building_access build_mapped_scene export_replay analyze_tracks run_comparison)
+    foreach(mapped_test audit_building_access build_mapped_scene storefront_router export_replay analyze_tracks run_comparison)
         if(mapped_test STREQUAL "build_mapped_scene")
             # Keep geometry/config checks fast. Native finite-drain cases have
             # separate budgets below, independent of inherited shell settings.
