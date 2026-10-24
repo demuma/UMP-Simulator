@@ -220,6 +220,20 @@ class NativeRecordingTests(unittest.TestCase):
                 next(r for r in self.raw['agents'] if r['data_type']=='mapped source summary')[name]=value
                 with self.assertRaises(ValueError):self.build()
 
+    def test_local_navigation_counters_are_retained_without_inferring_motion_guarantees(self):
+        summary=next(r for r in self.raw['agents'] if r['data_type']=='mapped source summary')
+        counts={'navigation_steering_steps':12,'navigation_replans':3,'navigation_replan_failures':1,
+                'navigation_candidate_checks':50,'navigation_max_search_nodes':20}
+        summary.update(counts,motion_model='local_navigation')
+        proof=self.build()[2]
+        self.assertEqual(proof['motion_quality']['source_model'],'local_navigation')
+        for name,value in counts.items():
+            self.assertEqual(proof['motion_quality']['reported_diagnostics'][name],value)
+            summary[name]=-1
+            with self.assertRaisesRegex(ValueError,'Invalid source diagnostic'):self.build()
+            summary[name]=value
+        self.assertIn('collision safety beyond recorded checks',proof['motion_quality']['scope'])
+
     def test_configured_episode_registry_is_independently_checked(self):
         self.cfg['mapped_scene']={'people':[{'person_id':f'private-person-{i:03d}',
             'episodes':[{'track_id':f'track-{i:03d}','route_id':'fixture-route','start_ms':0}]}
@@ -585,6 +599,41 @@ class NativeRecordingTests(unittest.TestCase):
                     if mutation=='missing_geometry':changed.pop('building_access_sha256')
                     (scene/'scene_manifest.json').write_text(json.dumps(changed))
                     with self.assertRaisesRegex(ValueError,'digest'):export.validate_scene_building_access(scene,cfg,path)
+
+    def test_storefront_navigation_and_boundary_metadata_must_match_native_configuration(self):
+        polygons=[{'outer':[[0,0],[80,0],[80,80],[0,80],[0,0]],'holes':[]}]
+        boundary={'id':'west-walk','mode':'walking','side':'west','points':[[0,10],[0,20]],
+                  'length_m':10,'spawn_supported':True,'provenance':'derived_frozen_functional_zone_boundary'}
+        nav_digest=export.hashlib.sha256(json.dumps(polygons,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+        access={'schema':'ump.building-access.v2','bounds':dict(x=0,y=0,width=80,height=80),
+            'buildings':[],'portals':[],'store_fronts':[],'facade_separators':[],
+            'boundary_intervals':[boundary],'navigation':{'body_clearance_m':.55,
+                'allowed_center_polygons_sha256':nav_digest,'scope':'Fixture geometry.'}}
+        cfg={'simulation':dict(width=80,height=80),'mapped_scene':{'portals':[],
+            'routes':[{'id':'r','points':[[0,10],[0,20]],'start_portal':'west-walk','end_portal':'west-walk'}],
+            'motion':{'mode':'local_navigation','navigation':{'allowed_center_polygons':polygons,
+                'center_clearance_m':.55}}}}
+        with tempfile.TemporaryDirectory() as directory:
+            scene=Path(directory);path=scene/'building_access.json';path.write_text(json.dumps(access))
+            proof=export.validate_scene_building_access(scene,cfg,path)
+            self.assertTrue(proof['native_navigation_geometry_and_boundaries_verified'])
+            self.assertEqual(proof['boundary_intervals'],1)
+            for mutation in ('geometry','clearance','boundary','missing_boundary','missing_geometry'):
+                with self.subTest(mutation=mutation):
+                    changed=copy.deepcopy(cfg);nav=changed['mapped_scene']['motion']['navigation']
+                    if mutation=='geometry':nav['allowed_center_polygons'][0]['outer'][1][0]=79
+                    if mutation=='clearance':nav['center_clearance_m']=.4
+                    if mutation=='boundary':changed['mapped_scene']['routes'][0]['points'][0]=[0,9]
+                    if mutation=='missing_boundary':changed['mapped_scene']['routes'][0]['start_portal']='missing'
+                    if mutation=='missing_geometry':nav.pop('allowed_center_polygons')
+                    with self.assertRaisesRegex(ValueError,'native|Native'):export.validate_scene_building_access(scene,changed,path)
+            (scene/'config.yaml').write_text(export.yaml.safe_dump(cfg));(scene/'map_background.png').write_bytes(b'map')
+            manifest={'motion_mode':'storefronts','configuration_sha256':export.digest(scene/'config.yaml'),
+                'background_sha256':export.digest(scene/'map_background.png'),'building_access_sha256':export.digest(path)}
+            (scene/'scene_manifest.json').write_text(json.dumps(manifest))
+            self.assertTrue(export.validate_scene_building_access(scene,cfg,path)['generated_manifest_config_and_background_verified'])
+            manifest['configuration_sha256']='a'*64;(scene/'scene_manifest.json').write_text(json.dumps(manifest))
+            with self.assertRaisesRegex(ValueError,'digest'):export.validate_scene_building_access(scene,cfg,path)
 
     def test_map_metadata_only_references_optional_local_public_building_artifact(self):
         with tempfile.TemporaryDirectory() as directory:

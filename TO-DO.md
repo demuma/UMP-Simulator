@@ -15,6 +15,48 @@ initial correctness/process review and nominal paced runtime measurement are com
 native source/I/O timing and atomic empty checkpoints now pass the first M03 slice;
 remaining controller/source and paced external receipt timing stay open. The full three-scenario effectiveness study remains open. October 18 is historical.**
 
+**October 24 storefront/local-navigation implementation checkpoint:** the new
+native motion passes the 64/128-person finite-drain gates. The 64-person source
+also passes full native capture, independent GT/body audits and browser acceptance.
+Read the
+[test report](docs/STOREFRONT_NAVIGATION_TEST_REPORT_2026-10-24.md) and [behavior and reproduction guide](docs/STOREFRONT_NAVIGATION_2026-10-24.md).
+Preserve the earlier two-building fixture as its original bounded regression.
+
+- [x] Keep the original OSM building outline and model four separate shop
+  destinations. Project their POIs orthogonally onto reachable original facades;
+  permit source-hash-bound manual door overrides. Do not invent structural
+  building separations, known interior walls or surveyed access rights.
+- [x] Draw separate colored shop frontage polylines, short assumed division
+  ticks, exact named entrance targets and an inspectable destination inventory.
+- [x] Derive map-edge functional-zone intervals. Draw walking/cycling/road context
+  and distinguish implemented pedestrian source/sink eligibility from other modes.
+  Sample individual reachable walking endpoints and seeded geometric path variation.
+- [x] Add opt-in native `local_navigation`: actual positions, angular/speed steering,
+  conservative swept-body reservations, bounded A* replanning, intentional per-door
+  coordination and realized lifecycle/indoor-return timing. Keep source routing
+  independent of the aggregation quadtree and PolicyTree.
+- [x] Extend the closed public geometry schema to v2; check native portals,
+  center-safe geometry digest/clearance, route endpoint eligibility and generated
+  artifact hashes before export. Keep private identities/schedules outside serving.
+- [x] Register finite-source native drain checks separately from the geometry
+  suite, with declared case-specific timeouts and serial resource use. The seeded
+  geometry suite has its own 120-s budget; other mapped tools retain 60 s.
+- [x] Complete native capture and independent all-step geometry/lifecycle audits
+  with the final source/runtime. Report pending/active episodes and stop tails at
+  the selected horizon; do not equate a completed source clock with drained trips.
+- [x] Complete sparse/dense finite-drain, legacy-output, sanitizer and browser
+  acceptance gates; record exact final configuration/binary/artifact hashes in
+  the separate report. No unmeasured realtime or general crowd-liveness claim.
+- [ ] Preserve the measured utility loss (11,875 / 42,574 observations published)
+  and dense-source 25.5-s stop tail in the next evaluation. Inspect demand/PolicyTree
+  effects on matched streams and baselines; source completion alone is not success.
+- [ ] Use the accepted source to define the next privacy experiment: protected
+  episode/secret, adversary knowledge and complete release history. Keep unchanged
+  operational support policies distinct from measured inference protection.
+- [ ] Later: calibrated shop demand/arrival rates, surveyed doors/accessibility,
+  richer demographics and movement characteristics, extended network behavior
+  and traffic modes. The new finite synthetic scene is not an empirical street model.
+
 **October 24 multi-building gate completed:** explicit synthetic facade midpoint
 doors, separate building boundaries, body/angle-aware door admission, distributed
 visits and replay overlays are implemented. The native 64-person source completes

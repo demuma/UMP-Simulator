@@ -1,0 +1,490 @@
+{
+  "schema": "ump.storefront-navigation-checkpoint.v1",
+  "date": "2026-10-24",
+  "status": "verified_with_stated_limits",
+  "source_mode": "storefronts",
+  "native_mode": "local_navigation",
+  "source_characteristics": {
+    "population": 64,
+    "profiles": {
+      "Pedestrian With Mobility Aid": 12,
+      "Senior Pedestrian": 12,
+      "Pedestrian With Stroller": 12,
+      "Child Pedestrian": 12,
+      "Adult Pedestrian": 16
+    },
+    "episodes": 96,
+    "visitors": 32,
+    "unique_boundary_origins": 64,
+    "unique_boundary_final_targets": 64,
+    "route_geometries": 96,
+    "max_route_vertices": 9,
+    "source_intervals_used": [
+      "boundary-walking-east-1",
+      "boundary-walking-east-2",
+      "boundary-walking-east-3",
+      "boundary-walking-north-1",
+      "boundary-walking-south-1",
+      "boundary-walking-west-1",
+      "boundary-walking-west-2"
+    ],
+    "max_radius_m": 0.45,
+    "navigation_polygon_count": 1,
+    "navigation_ring_vertices": 528,
+    "navigation_clearance_m": 0.55,
+    "navigation_grid_m": 0.5,
+    "boundary_intervals_total": 11,
+    "boundary_intervals_active": 7,
+    "shop_names": [
+      "Apollo",
+      "Ditsch",
+      "Adidas Originals",
+      "H&M HOME"
+    ],
+    "root_policy": {
+      "distinct_contributors": {
+        "min": 5
+      },
+      "min_category_distinct_contributors": {
+        "min": 5
+      },
+      "cell_side_m": {
+        "min": 1.25,
+        "max": 10
+      },
+      "window_duration_ms": {
+        "min": 400,
+        "max": 4000
+      },
+      "age_at_evaluation_ms": {
+        "max": 4000
+      },
+      "semantic_max_loss": {
+        "max": 1
+      }
+    },
+    "execution": {
+      "publication_model": "private_final_snapshot",
+      "strategy": "semantic_first",
+      "semantic_secondary_strategy": "temporal_first",
+      "release_trigger": "policy_satisfied"
+    },
+    "regions": [
+      {
+        "id": "entrance-vicinity",
+        "type": "mapped_entrance",
+        "area": {
+          "x": 20,
+          "y": 65,
+          "width": 10,
+          "height": 10
+        }
+      },
+      {
+        "id": "west-footway-control",
+        "type": "mapped_fresh_footway",
+        "area": {
+          "x": 0,
+          "y": 62.5,
+          "width": 15,
+          "height": 12.5
+        }
+      },
+      {
+        "id": "central-through-footway",
+        "type": "mapped_through",
+        "area": {
+          "x": 40,
+          "y": 50,
+          "width": 20,
+          "height": 12.5
+        }
+      },
+      {
+        "id": "east-footway-control",
+        "type": "mapped_fresh_footway",
+        "area": {
+          "x": 65,
+          "y": 40,
+          "width": 15,
+          "height": 12.5
+        }
+      }
+    ],
+    "region_taxonomy": [
+      {
+        "type": "mapped_entrance",
+        "color": "orange",
+        "alpha": 0.08,
+        "granularities": {
+          "spatial": {
+            "min": 0,
+            "max": 1000
+          },
+          "temporal": {
+            "min": 0,
+            "max": 10
+          }
+        },
+        "privacy": {
+          "k_anonymity": {
+            "min": 1
+          },
+          "l_diversity": {
+            "min": 1
+          }
+        },
+        "metric_requirements": {
+          "distinct_contributors": {
+            "min": 10
+          }
+        }
+      },
+      {
+        "type": "mapped_fresh_footway",
+        "color": "green",
+        "alpha": 0.08,
+        "granularities": {
+          "spatial": {
+            "min": 0,
+            "max": 1000
+          },
+          "temporal": {
+            "min": 0,
+            "max": 10
+          }
+        },
+        "privacy": {
+          "k_anonymity": {
+            "min": 1
+          },
+          "l_diversity": {
+            "min": 1
+          }
+        },
+        "metric_requirements": {
+          "cell_side_m": {
+            "max": 5
+          },
+          "window_duration_ms": {
+            "max": 1000
+          },
+          "age_at_evaluation_ms": {
+            "max": 1000
+          },
+          "semantic_max_loss": {
+            "max": 0.5
+          }
+        }
+      },
+      {
+        "type": "mapped_through",
+        "color": "green",
+        "alpha": 0.08,
+        "granularities": {
+          "spatial": {
+            "min": 0,
+            "max": 1000
+          },
+          "temporal": {
+            "min": 0,
+            "max": 10
+          }
+        },
+        "privacy": {
+          "k_anonymity": {
+            "min": 1
+          },
+          "l_diversity": {
+            "min": 1
+          }
+        },
+        "metric_requirements": {
+          "semantic_max_loss": {
+            "max": 0.5
+          }
+        }
+      }
+    ],
+    "public_geometry_sha256": "ddee09cd7c2796dc385604761606ec7555b5e846f07c17506d38dbecdd726952"
+  },
+  "configured_tests": {
+    "passed": 86,
+    "total": 86,
+    "wall_seconds": 180.82,
+    "targeted_final_audit_methods": 14,
+    "targeted_final_audit_ctest": "pass",
+    "targeted_final_viewer_ctest_suites": 2,
+    "targeted_final_viewer_ctest_wall_seconds": 1.97,
+    "final_python_viewer_methods": 62
+  },
+  "sanitizers": {
+    "core_groups": 21,
+    "yaml_rejection_cases": 48,
+    "asan": "pass",
+    "ubsan": "pass",
+    "leak_detection": "disabled_unsupported_on_this_macos_runtime",
+    "final_config_test_binary_sha256": "1573fce3678283b518d557d80aa25c970140f1e3e29037b40ec1e83853e16673"
+  },
+  "finite_drain_cases": [
+    {
+      "people": 64,
+      "episodes": 96,
+      "seed": 20261023,
+      "arrival_interval_ms": 1000,
+      "horizon_ms": 600000,
+      "realized_starts": 96,
+      "realized_ends": 96,
+      "active": 0,
+      "pending": 0,
+      "stalled": 0,
+      "overlaps": 0,
+      "last_end_ms": 186900,
+      "maximum_zero_motion_stop_ms": 250,
+      "navigation_replans": 16,
+      "navigation_replan_failures": 13
+    },
+    {
+      "people": 128,
+      "episodes": 192,
+      "seed": 20261024,
+      "arrival_interval_ms": 500,
+      "horizon_ms": 600000,
+      "realized_starts": 192,
+      "realized_ends": 192,
+      "active": 0,
+      "pending": 0,
+      "stalled": 0,
+      "overlaps": 0,
+      "last_end_ms": 344200,
+      "maximum_zero_motion_stop_ms": 25500,
+      "navigation_replans": 758,
+      "navigation_replan_failures": 460
+    }
+  ],
+  "independent_public_frame_trace_64": {
+    "tracked_episodes": 96,
+    "last_end_ms": 186900,
+    "episode_duration_to_guidance_time_ratio": {
+      "min": 0.6936912803964685,
+      "median": 1.0063282831860874,
+      "p95": 1.1664113810473866,
+      "max": 1.2959877528365051
+    },
+    "total_actual_travel_m": 5401.794954259998,
+    "scope": "Independent evaluation-only frameAt/lifecycle trace using opaque episode tokens and configured guide speed/length; no private person linkage used. Not recipient-only evidence. Actual travel excludes at most the final motion step per episode."
+  },
+  "native_capture": {
+    "schema": "ump.mapped-recording-proof.v1",
+    "status": "verified",
+    "source_completed": true,
+    "source_horizon_completed": true,
+    "source_completion_semantics": "source_completed is a compatibility alias for source_horizon_completed; it does not mean all episodes completed.",
+    "all_scheduled_episodes_completed": true,
+    "lifecycle_quality": {
+      "status": "all_scheduled_episodes_completed",
+      "gt_coverage_status": "verified_against_recorded_visible_intervals",
+      "event_rows": 192,
+      "expected_gt_rows": 85207,
+      "source_steps_checked": 4800,
+      "scheduled_people": 64,
+      "scheduled_episodes": 96,
+      "realized_starts": 96,
+      "realized_ends": 96,
+      "pending_episodes_at_horizon": 0,
+      "active_episodes_at_horizon": 0
+    },
+    "motion_quality": {
+      "status": "scheduled_episodes_completed",
+      "source_model": "bounded_local_navigation",
+      "reported_diagnostics": {
+        "blocked_motion_steps": 742,
+        "admission_wait_steps": 768,
+        "merge_admission_wait_steps": 0,
+        "max_consecutive_stop_ms": 250,
+        "active_stalled_tracks": 0,
+        "body_overlap_violations": 0,
+        "navigation_steering_steps": 10612,
+        "navigation_replans": 16,
+        "navigation_replan_failures": 13,
+        "navigation_candidate_checks": 2471003,
+        "navigation_max_search_nodes": 4665
+      },
+      "scope": "Recorded source counters and event/GT consistency only. Completion does not establish realistic motion, general queue liveness, collision safety beyond recorded checks or privacy."
+    },
+    "source_origin_epoch_ms": 1792800000000,
+    "gt_rows": 85207,
+    "measured_samples": 2399,
+    "measured_empty_samples": 531,
+    "raw_cell_rows": 41881,
+    "input_observation_contributions": 42574,
+    "recipient_release_documents": 346,
+    "published_cell_windows": 346,
+    "unique_published_cell_ids": 13,
+    "private_retirements": 44561,
+    "private_empty_retirements": 44215,
+    "track_person_inflated_published_cells": 0,
+    "scope": "Exact recorded source/lifecycle/count/category/policy and committed journal agreement. No general motion liveness, empirical privacy or baseline superiority claim.",
+    "empty_measurement_evidence": "Completed source horizon, event-audited GT coverage, fail-fast GT writes and configured sensor clock; raw rows alone do not prove empty measurement.",
+    "building_access": {
+      "status": "verified_native_portal_agreement",
+      "building_footprints": 8,
+      "routable_portals": 4,
+      "generated_manifest_geometry_digest_verified": true,
+      "generated_manifest_config_and_background_verified": true,
+      "storefront_destinations": 4,
+      "boundary_intervals": 11,
+      "native_navigation_geometry_and_boundaries_verified": true
+    },
+    "native_execution": {
+      "schema": "ump.mapped-execution.v1",
+      "state": "complete",
+      "binary_sha256": "71e18ff66ca0d494a2b5f027e928db67d14869b13e728dadb69a2f67b21f7267",
+      "config_sha256": "4afdbb975c248fcd6561c19b2fe404251c04ca5e26b67cc29fed9972d92b6d2c",
+      "exit_code": 0,
+      "binary_wall_seconds": 50.433926291999995,
+      "scope": "Includes native startup, source, aggregation and DB I/O; not a per-step deadline."
+    },
+    "files_sha256": {
+      "observations.json": "0a951f930c2fe9c37abba9488c90453ec30d7381184fbf2de356676273f7d21a",
+      "native_result.json": "dc6137458c35b9d8507d03578f98a70c7545ab832f44374689020eb38f1ef456",
+      "map_background.png": "4c9f5f33cfaebb826597d905f1b383438d9ce1ae157fe60a4ab0af922cb55d20",
+      "building_access.json": "ddee09cd7c2796dc385604761606ec7555b5e846f07c17506d38dbecdd726952",
+      "private/native_source.json": "82aed0281c01e11f8ef2beaef8f246c703f1e0267133ab05d11e43f4637305c3",
+      "private/config.yaml": "4afdbb975c248fcd6561c19b2fe404251c04ca5e26b67cc29fed9972d92b6d2c",
+      "bundle.json": "00ba8e3618b6eabff375187c7662330ed48bec982878e1d0f1cd97d7caae9073",
+      "private/execution.json": "2a00620d78444798a735c36064fc66984c06a14f15a575590d617f1d511f2478"
+    }
+  },
+  "independent_gt_audit": {
+    "status": "pass",
+    "independent_gt_body_pair_checks": 1431041,
+    "independent_gt_swept_body_pair_checks": 1431041,
+    "minimum_swept_body_clearance_margin_m": 1.7369019561591648e-05,
+    "minimum_body_clearance_margin_m": 1.7369019561591648e-05,
+    "maximum_observed_route_distance_m": 5.162096609500427,
+    "navigation_motion_segments_checked": 85207,
+    "navigation_terminal_segments_checked": 96,
+    "navigation_static_body_checks": 85207,
+    "navigation_positions_over_2cm_from_original_guide": 74001,
+    "navigation_velocity_checks": 85111,
+    "maximum_navigation_velocity_error_mps": 0.00020564608791163221,
+    "boundary_endpoint_checks": 128,
+    "minimum_realized_hidden_gap_ms": 8000,
+    "targets_with_completed_entries": 4,
+    "buildings_with_completed_entries": 1,
+    "buildings_with_realized_exits": 1,
+    "all_planned_entries_completed": true,
+    "portals": {
+      "shop-10771056021": {
+        "planned_entries": 8,
+        "completed_entries": 8,
+        "realized_exits": 8,
+        "max_start_distance_m": 3.817158982832773e-06,
+        "max_last_frame_distance_m": 0.05547896385983191
+      },
+      "shop-2887815990": {
+        "planned_entries": 8,
+        "completed_entries": 8,
+        "realized_exits": 8,
+        "max_start_distance_m": 1.8197092843154685e-06,
+        "max_last_frame_distance_m": 0.06238798406150189
+      },
+      "shop-990030917": {
+        "planned_entries": 8,
+        "completed_entries": 8,
+        "realized_exits": 8,
+        "max_start_distance_m": 1.200626617447282e-06,
+        "max_last_frame_distance_m": 0.06846783386458567
+      },
+      "shop-442443889": {
+        "planned_entries": 8,
+        "completed_entries": 8,
+        "realized_exits": 8,
+        "max_start_distance_m": 1.0933143516997816e-06,
+        "max_last_frame_distance_m": 0.04943230732491355
+      }
+    },
+    "scope": "All stored native source frames, route or navigation-geometry containment, pairwise circular body+clearance separation, exact portal lifecycle and realized indoor timing; local navigation additionally checks actual sweeps, speed/velocity and compatible boundary endpoints when source geometry is supplied. No private identities in this report.",
+    "config_sha256": "4afdbb975c248fcd6561c19b2fe404251c04ca5e26b67cc29fed9972d92b6d2c",
+    "native_source_sha256": "82aed0281c01e11f8ef2beaef8f246c703f1e0267133ab05d11e43f4637305c3"
+  },
+  "legacy_equivalence": {
+    "schema": "ump.mapped-mongo-cost-comparison.v1",
+    "equal": true,
+    "checks": {
+      "agents": {
+        "equal": true,
+        "rows": 95605,
+        "normalized_sha256": "d499cccfb2f819831a7ea35b583e2db60e025522d02b64b89d22d6253efc9896"
+      },
+      "sensor": {
+        "equal": true,
+        "rows": 42852,
+        "normalized_sha256": "ebeb66ae7060434ee7f661bef74e3865ea6f5d2636ebe9320de39d6a62c2a3b4"
+      },
+      "releases": {
+        "equal": true,
+        "rows": 509,
+        "normalized_sha256": "142583733aad34ae2102c33fd7cfab20603b3d4223b5b2b52cc1d0d3795452ff"
+      },
+      "journals": {
+        "equal": true,
+        "rows": 47106,
+        "normalized_sha256": "1867a264d4cc8139cc51ca43a0bcc5c6c86e0fa9836a179dc37bde2bd2a8fb3e"
+      }
+    },
+    "normalization": "fresh raw BSON _id, run UUID, database cursor row order only"
+  },
+  "actual_capture_mapped_scene_equal_frozen_drain": true,
+  "capture_duration_ms": 240000,
+  "whole_native_speedup": 4.758701486187277,
+  "source_code_sha256": {
+    "simulator/src/MappedScene.cpp": "9b2e949be648c9e17ca47be9bb2e78603959df82342063e90390914c1f05b078",
+    "simulator/src/MappedSceneConfiguration.cpp": "4d3eea4021fa9c028bcb4ed7098c82a3a9038a75082295597dd30ec4eb702b7a",
+    "simulator/src/Simulation.cpp": "c134a8b61f38ccbf58160f87cdf51275ed170816cc65cef7d008c1efe7d764ac",
+    "simulator/include/MappedScene.hpp": "849aaf69c2c93af3e8685c556cdb7c0fa89478d93f00f6eb0387edf837bfc5b8",
+    "simulator/include/MappedSceneConfiguration.hpp": "7891b9df9d990d106aecdef35cac2adb7908a1274fa91e406fe8a1e6a8b2d205",
+    "tools/mapped_scene/storefront_scene.py": "0bef514e849af14e4dc1bb29aad835cc02230fc2fef2665525193097adcef161",
+    "tools/mapped_scene/build_mapped_scene.py": "1fa8d096602ca0be94e03e20764ffe2b348dfc615362484e653238ed3a574b4f",
+    "tools/mapped_scene/audit_building_access.py": "3b5c658fd9783608277c84c90044ee1ecec4cd2936a6e926f06f4aaf346bdf66",
+    "tools/replay_viewer/viewer.js": "955255fc77f320c29ec72a90e64498b3565b82104c5549b59deb8d6916e207ba",
+    "tools/replay_viewer/index.html": "ef8624ea3e6f9c0051ea013633c10356a7aee5d9391d72cb0fe127f91be8f27a",
+    "tools/replay_viewer/model.js": "4c137fca95ee6cc1f33cb08731028c71f22dea2a94225c7cdde5db1628e7429a",
+    "tools/replay_viewer/serve.py": "d4ecf20be8e6977787d027472e3a401a0d6c4bdd819d56d8729a71dc64c409fd"
+  },
+  "limitations": [
+    "Synthetic shop locations/frontages/demand, not surveyed doors or calibrated behavior.",
+    "Bounded heuristic navigation; no ORCA or general crowd liveness guarantee. Dense source has a 25.5-s maximum zero-motion stop.",
+    "Whole-run speedup includes source, aggregation and database I/O and is not a per-step deadline guarantee.",
+    "Unchanged illustrative support policies; no measured privacy gain or adaptive-baseline superiority in this checkpoint.",
+    "Full movement, GT and replay data remain local and ignored; compact aggregate evidence only in Git."
+  ],
+  "publication_coverage": {
+    "published_observation_contributions": 11875,
+    "input_observation_contributions": 42574,
+    "fraction": 0.2789261051345892,
+    "scope": "Retained illustrative operational policies. Not a privacy gain or baseline comparison."
+  },
+  "visual_acceptance": {
+    "status": "pass",
+    "browser": "Chrome",
+    "replay_url": "http://127.0.0.1:8787/",
+    "seek_ms": 50000,
+    "visible_track_ids": 40,
+    "distinct_visible_xy": 40,
+    "checks": [
+      "aligned canvases",
+      "original buildings and distinct assumed shop frontages",
+      "named exact synthetic doors",
+      "eligible walking boundary arrows and context modes",
+      "play/pause advancement",
+      "rewind clears stale samples/releases",
+      "selected-cell focus with unchanged world coordinates",
+      "four destinations and seven walking intervals in inventory",
+      "zero current tracks at horizon with historical releases retained",
+      "honest highlight-only controls over frozen map context"
+    ],
+    "screenshot_git_retained": false
+  }
+}

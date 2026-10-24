@@ -314,6 +314,15 @@ test('Precise entrance segment keeps physical width and midpoint on diagonal fac
  assert.equal(JSON.stringify(portal),before);
  assert.throws(()=>M.portalSegment({point:[1,1],facade:[[1,1],[1,1]],width_m:1}),/positive length/);
 });
+test('Boundary arrows retain the map edge and physical inward orientation at every side',()=>{
+ for(const [side,points,inward]of [['west',[[0,10],[0,30]],[1,0]],['east',[[80,10],[80,30]],[-1,0]],['north',[[10,0],[30,0]],[0,1]],['south',[[10,80],[30,80]],[0,-1]]]){
+   const frame=M.boundaryFrame({side,points});assert.deepEqual(frame.inward,inward);
+   assert.deepEqual(frame.midpoint,[(points[0][0]+points[1][0])/2,(points[0][1]+points[1][1])/2]);
+   assert.equal(Math.hypot(...frame.tangent),1);
+ }
+ assert.throws(()=>M.boundaryFrame({side:'west',points:[[0,0],[0,0]]}),/positive length/);
+ assert.throws(()=>M.boundaryFrame({side:'unknown',points:[[0,0],[0,1]]}),/boundary side/);
+});
 test('Declared mapped source provenance does not rely on names or presumed realism',()=>{
  assert.deepEqual(M.inputProvenance({input_provenance:'Kinematic mapped routes; no collision solver.'}),
  {kind:'declared',text:'Declared input: Kinematic mapped routes; no collision solver.'});

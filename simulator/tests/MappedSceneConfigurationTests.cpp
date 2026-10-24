@@ -5,9 +5,11 @@
 
 namespace {
 void require(bool value, const char* message) { if (!value) throw std::runtime_error(message); }
+int rejectionCase=0;
 template<class F> void rejects(F work) {
+    ++rejectionCase;
     try { work(); } catch (const std::exception&) { return; }
-    throw std::runtime_error("Expected mapped configuration rejection");
+    throw std::runtime_error("Expected mapped configuration rejection case "+std::to_string(rejectionCase));
 }
 YAML::Node fixture() {
     return YAML::Load(R"(
@@ -37,8 +39,8 @@ int drainConfiguration(const std::string& path, ump::AggregationTime endMs) {
     const double width=cfg["simulation"]["width"].as<double>();
     const double height=cfg["simulation"]["height"].as<double>();
     ump::MappedScene scene(readMappedSceneConfiguration(cfg["mapped_scene"],width,height,profiles));
-    require(scene.configuration().motionMode==ump::MappedMotionMode::CorridorFollowing,
-        "Drain gate requires stateful corridor motion");
+    require(scene.configuration().motionMode!=ump::MappedMotionMode::Integration,
+        "Drain gate requires stateful mapped motion");
     require(endMs>0 && endMs%scene.configuration().motionStepMs==0,
         "Drain horizon must be positive and aligned with the motion step");
     std::size_t expected=0;
@@ -56,6 +58,8 @@ int drainConfiguration(const std::string& path, ump::AggregationTime endMs) {
         <<" ends="<<d.realizedEnds<<" active="<<d.activeTracks<<" pending="<<d.pendingTracks
         <<" stalled="<<d.activeStalledTracks<<" overlaps="<<d.overlapViolations
         <<" max_stop_ms="<<d.maxConsecutiveStopMs<<" merge_wait_steps="<<d.mergeAdmissionWaitSteps
+        <<" navigation_steering="<<d.navigationSteeringSteps<<" navigation_replans="<<d.navigationReplans
+        <<" navigation_replan_failures="<<d.navigationReplanFailures<<" navigation_search_max="<<d.navigationMaxSearchNodes
         <<" last_end_ms="<<lastEnd<<" horizon_ms="<<endMs<<'\n';
     require(d.realizedStarts==expected && d.realizedEnds==expected && starts==ends
         && starts.size()==expected && scene.events().size()==2*expected,
@@ -131,6 +135,39 @@ int main(int argc,char** argv) {
         rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"].push_back(YAML::Clone(n["portals"][0]));read(n);});
         rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"][0]["width_m"]=.7;read(n);});
         rejects([&]{auto n=YAML::Clone(explicitDoors);n["portals"][0]["id"]="different-door";read(n);});
+        auto navigating=YAML::Clone(corridor);
+        navigating["motion"]=YAML::Load(R"({mode: local_navigation, step_ms: 50, clearance_m: .1,
+            navigation: {center_clearance_m: .55, grid_resolution_m: .5, max_replan_nodes: 500,
+            replan_after_ms: 1500, replan_interval_ms: 1000,
+            allowed_center_polygons: [{outer: [[0,0],[10,0],[10,10],[0,10]], holes: []}]}})");
+        const auto navigationConfig=read(navigating);
+        require(navigationConfig.motionMode==ump::MappedMotionMode::LocalNavigation
+            && navigationConfig.navigation.centerClearanceM==.55
+            && navigationConfig.navigation.allowedCenterPolygons.size()==1
+            && navigationConfig.navigation.maxReplanNodes==500,
+            "Local navigation YAML lost its explicit geometry and bounded settings");
+        ump::MappedScene navigatingScene(navigationConfig);
+        validateMappedCaptureStep(navigatingScene,50);
+        rejects([&]{validateMappedCaptureStep(navigatingScene,100);});
+        rejects([&]{validateMappedCaptureStep(navigatingScene,25);});
+        rejects([&]{validateMappedCaptureStep(navigatingScene,0);});
+        rejects([&]{validateMappedCaptureStep(navigatingScene,50.4);});
+        validateMappedCaptureStep(scene,100);validateMappedCaptureStep(queued,100);
+        navigatingScene.advanceTo(20000);
+        require(navigatingScene.motionDiagnostics().realizedEnds==2,
+            "Local navigation YAML visit failed to finish");
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["step_ms"]=1.5;read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["clearance_m"]="invalid";read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["people"][0]["radius_m"]="invalid";read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"].remove("navigation");read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["mode"]="corridor_following";read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["typo"]=true;read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["allowed_center_polygons"]=YAML::Load("[]");read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["allowed_center_polygons"][0]["outer"][0]=YAML::Load("[0,0,1]");read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["allowed_center_polygons"][0]["holes"]=YAML::Load("[[[20,20],[21,20],[20,21]]]");read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["center_clearance_m"]=.49;read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["max_replan_nodes"]=-1;read(n);});
+        rejects([&]{auto n=YAML::Clone(navigating);n["motion"]["navigation"]["replan_interval_ms"]=0;read(n);});
         std::cout << "Mapped scene YAML and retained-history support guards passed\n";
         return 0;
     } catch (const std::exception& e) { std::cerr << e.what() << '\n'; return 1; }

@@ -84,6 +84,13 @@
     return [[portal.point[0]-dx/length*half,portal.point[1]-dy/length*half],
       [portal.point[0]+dx/length*half,portal.point[1]+dy/length*half]];
   }
+  function boundaryFrame(boundary) {
+    const [a,b]=boundary.points,dx=b[0]-a[0],dy=b[1]-a[1],length=Math.hypot(dx,dy);
+    if(!Number.isFinite(length)||length<=0)throw new RangeError('Boundary interval must have positive length');
+    const inward={west:[1,0],east:[-1,0],north:[0,1],south:[0,-1]}[boundary.side];
+    if(!inward)throw new RangeError('Unknown map boundary side');
+    return {midpoint:[(a[0]+b[0])/2,(a[1]+b[1])/2],tangent:[dx/length,dy/length],inward};
+  }
   function eventTimes(variants, end, privateMode=false) {
     const rows=privateMode?'windows':'releases',stamp=privateMode?'evaluated_at_ms':'sealed_at_ms';
     return [...new Set([0,end,...variants.flatMap(v => v.result[rows].map(r => r[stamp]))])].sort((a,b)=>a-b);
@@ -236,5 +243,5 @@
     if(index.cache.size>=32)index.cache.delete(index.cache.keys().next().value);
     index.cache.set(key,summary);return summary;
   }
-  return {lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,referenceSample,inputProvenance,selectCell,mosaicAt,selectEntry,entryContains,MAX_VISIBLE_FRAGMENTS,buildSourceIndex,sourceGroups,releaseAccounting,policyAt,mapImageRectangle,mapPoint,portalSegment};
+  return {lastAtOrBefore, observationAt, releaseAt, diagnosticAt, cumulativeReleased,eventTimes,eventAfter,eventBefore,contains,privateCells,referenceSample,inputProvenance,selectCell,mosaicAt,selectEntry,entryContains,MAX_VISIBLE_FRAGMENTS,buildSourceIndex,sourceGroups,releaseAccounting,policyAt,mapImageRectangle,mapPoint,portalSegment,boundaryFrame};
 }));

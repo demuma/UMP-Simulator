@@ -321,6 +321,142 @@ class MappedSceneGeneratorTests(unittest.TestCase):
                     self.assertIn(f"scheduled={expected} starts={expected} ends={expected} active=0 pending=0",result.stdout)
                     self.assertIn("stalled=0 overlaps=0",result.stdout)
 
+    def test_storefronts_preserve_buildings_and_project_four_distinct_shop_targets(self):
+        source=builder.make_config(REPO,DATABASE,180,False,20261023,"storefronts",64,1000)
+        _,context,construction,audit=builder.storefront_scene(str(REPO),20261023,64,180,1000)
+        self.assertEqual(context["schema"],"ump.building-access.v2")
+        self.assertEqual(len(context["buildings"]),8)
+        self.assertEqual(len(context["store_fronts"]),4)
+        self.assertEqual(len(context["facade_separators"]),3)
+        self.assertEqual(len({p["building_id"] for p in context["portals"]}),1)
+        self.assertEqual({p["poi"]["name"] for p in context["store_fronts"]},
+                         {"Apollo","Ditsch","Adidas Originals","H&M HOME"})
+        original=next(g for p,g in self.local if p["kind"]=="building" and p["osm_id"]==43117523)
+        portals={p["id"]:p for p in context["portals"]}
+        for front in context["store_fronts"]:
+            portal=portals[front["portal_id"]]
+            point=Point(portal["point"]);wall=LineString(portal["facade"])
+            poi=Point(front["poi"]["point"])
+            self.assertLess(point.distance(wall.interpolate(wall.project(poi))),1e-8)
+            self.assertLess(wall.difference(original.boundary.buffer(1e-7)).length,1e-7)
+            self.assertLess(point.distance(LineString(front["frontage"])),1e-8)
+            self.assertTrue(box(0,0,80,80).covers(LineString(front["frontage"])))
+            self.assertEqual(set(portal),{"id","building_id","point","facade","width_m","provenance"})
+        self.assertEqual(audit["status"],"pass")
+        self.assertEqual(source["mapped_scene"]["motion"]["mode"],"local_navigation")
+        self.assertEqual(source["simulation"]["datetime"],"2026-10-24T00:00:00Z")
+        self.assertEqual(construction["demand"]["visit_fraction"],.5)
+
+    def test_storefront_boundary_intervals_are_body_safe_and_mode_compatible(self):
+        source,context,_,_=builder.storefront_scene(str(REPO),20261023,64,180,1000)
+        module=builder.storefront_module()
+        allowed=module.geometry_from_rows(source["motion"]["navigation"]["allowed_center_polygons"])
+        boundaries={r["id"]:r for r in context["boundary_intervals"]}
+        self.assertEqual(set(r["mode"] for r in boundaries.values()),{"walking","cycling","road"})
+        endpoints=set()
+        for interval in boundaries.values():
+            line=LineString(interval["points"])
+            self.assertGreater(line.length,.05)
+            self.assertLess(line.difference(box(0,0,80,80).boundary).length,1e-7)
+            self.assertAlmostEqual(line.length,interval["length_m"])
+            self.assertEqual(interval["spawn_supported"],interval["mode"]=="walking")
+            if interval["spawn_supported"]:self.assertLess(line.difference(allowed.buffer(1e-7)).length,1e-7)
+        for route in source["routes"]:
+            for key,point in [(route["start_portal"],route["points"][0]),(route["end_portal"],route["points"][-1])]:
+                if key.startswith("boundary-"):
+                    self.assertTrue(boundaries[key]["spawn_supported"])
+                    self.assertEqual(boundaries[key]["mode"],"walking")
+                    self.assertLess(Point(point).distance(LineString(boundaries[key]["points"])),1e-7)
+                    endpoints.add(tuple(point))
+        self.assertGreater(len(endpoints),60)
+        self.assertEqual(context["navigation"]["allowed_center_polygons_sha256"],
+            module.canonical_hash(source["motion"]["navigation"]["allowed_center_polygons"]))
+        buildings=__import__("shapely.ops",fromlist=["unary_union"]).unary_union([g for p,g in self.local if p["kind"]=="building"])
+        self.assertLess(allowed.intersection(buildings.buffer(-1e-7)).area,1e-6)
+
+    def test_storefront_seed_changes_actual_paths_without_changing_policy(self):
+        first=builder.make_config(REPO,DATABASE,180,False,20261023,"storefronts",64,1000)
+        same=builder.make_config(REPO,DATABASE,180,False,20261023,"storefronts",64,1000)
+        other=builder.make_config(REPO,DATABASE,180,False,20261024,"storefronts",64,1000)
+        self.assertEqual(first,same)
+        self.assertNotEqual([r["points"] for r in first["mapped_scene"]["routes"]],
+                            [r["points"] for r in other["mapped_scene"]["routes"]])
+        routes=first["mapped_scene"]["routes"]
+        self.assertEqual(len({json.dumps(r["points"]) for r in routes}),len(routes))
+        historical=builder.make_config(REPO,DATABASE,180,False,20261023,"buildings",64,1000)
+        for field in ["regions","region_taxonomy","sensors"]:self.assertEqual(first[field],historical[field])
+        self.assertEqual(first["agents"],historical["agents"])
+        report=builder.audit_config(first)
+        self.assertEqual(report["scheduled_visitors"],32)
+        self.assertEqual(report["minimum_hidden_gap_ms"],8000)
+        lookup={r["id"]:r for r in routes}
+        targets=[lookup[p["episodes"][0]["route_id"]]["end_portal"]
+                 for p in first["mapped_scene"]["people"] if len(p["episodes"])>1]
+        self.assertEqual(sorted(targets.count(portal["id"]) for portal in first["mapped_scene"]["portals"]),[8,8,8,8])
+
+    def test_storefront_manual_overrides_are_hash_bound_and_checked_against_real_facades(self):
+        module=builder.storefront_module()
+        _,context,_,_=builder.storefront_scene(str(REPO),20261023,64,180,1000)
+        front=context["store_fronts"][0];portal=context["portals"][0]
+        override={"schema":"ump.shop-entrance-overrides.v1","source_geometry_sha256":self.provenance["source_geometry_sha256"],
+                  "entrances":[{"poi_osm_id":front["poi"]["osm_id"],"point":portal["point"]}]}
+        source=builder.make_config(REPO,DATABASE,180,False,20261023,"storefronts",64,1000,override)
+        self.assertEqual(source["mapped_scene"]["portals"],context["portals"])
+        shifted=copy.deepcopy(override)
+        a,b=portal["facade"];length=math.dist(a,b)
+        shifted["entrances"][0]["point"]=[portal["point"][i]+.5*(b[i]-a[i])/length for i in range(2)]
+        changed,_,_,_=module.build_geometry(REPO,self.local,self.layers,builder.access_module(),self.provenance["source_geometry_sha256"],shifted)
+        self.assertNotEqual(changed["portals"][0]["point"],portal["point"])
+        self.assertEqual(changed["store_fronts"][0]["projection_method"],"manual_original_facade_override")
+        for bad in [{**override,"source_geometry_sha256":"0"*64},
+                    {**override,"entrances":[{"poi_osm_id":front["poi"]["osm_id"],"point":[40,79]}]},
+                    {**override,"entrances":override["entrances"]*2}]:
+            with self.assertRaises(ValueError):
+                module.build_geometry(REPO,self.local,self.layers,builder.access_module(),self.provenance["source_geometry_sha256"],bad)
+        with self.assertRaises(ValueError):
+            builder.make_config(REPO,DATABASE,180,False,20261023,"buildings",64,1000,override)
+
+    def test_storefront_geometry_rejects_wall_crossing_and_wrong_boundary(self):
+        source,context,_,_=copy.deepcopy(builder.storefront_scene(str(REPO),20261023,64,180,1000))
+        module=builder.storefront_module()
+        corrupt=copy.deepcopy(source)
+        corrupt["routes"][0]["points"].insert(1,[40,79])
+        with self.assertRaises(ValueError):module.audit_scene(self.local,self.layers,corrupt,context)
+        corrupt=copy.deepcopy(source)
+        corrupt["routes"][0]["start_portal"]="boundary-road-west-1"
+        with self.assertRaisesRegex(ValueError,"eligible walking boundary"):
+            module.audit_scene(self.local,self.layers,corrupt,context)
+
+    def test_storefront_cli_writes_v2_geometry_and_no_sampled_movement(self):
+        with tempfile.TemporaryDirectory(prefix="ump-storefront-config-test-") as temp:
+            output=pathlib.Path(temp)/"scene"
+            subprocess.run([sys.executable,str(HERE/"build_mapped_scene.py"),"--repo",str(REPO),
+                "--output",str(output),"--database",DATABASE,"--motion-mode","storefronts",
+                "--duration-s","180","--population","64","--arrival-interval-ms","1000"],
+                check=True,capture_output=True,text=True,timeout=60)
+            self.assertEqual({p.name for p in output.iterdir()},
+                {"config.yaml","map_background.png","scene_manifest.json","building_access.json"})
+            manifest=json.loads((output/"scene_manifest.json").read_text())
+            self.assertEqual(manifest["motion_mode"],"storefronts")
+            self.assertEqual(manifest["route_geometry"]["status"],"pass")
+            self.assertEqual(manifest["building_access_sha256"],builder.sha((output/"building_access.json").read_bytes()))
+            self.assertEqual(json.loads((output/"building_access.json").read_text())["schema"],"ump.building-access.v2")
+
+    @unittest.skipUnless(os.environ.get("UMP_MAPPED_CORE_TEST_BINARY"),
+                         "Set UMP_MAPPED_CORE_TEST_BINARY for native storefront finite-source drainage")
+    def test_storefront_native_sources_drain_without_lost_tracks_or_overlap(self):
+        for population,seed,arrival_ms in [(64,20261023,1000),(128,20261024,500)]:
+            with self.subTest(population=population,seed=seed):
+                source=builder.make_config(REPO,DATABASE,180,False,seed,"storefronts",population,arrival_ms)
+                expected=sum(len(p["episodes"]) for p in source["mapped_scene"]["people"])
+                with tempfile.TemporaryDirectory(prefix="ump-storefront-drain-test-") as temp:
+                    config=pathlib.Path(temp)/"config.yaml";config.write_text(yaml.safe_dump(source,sort_keys=False),encoding="utf-8")
+                    result=subprocess.run([os.environ["UMP_MAPPED_CORE_TEST_BINARY"],"--drain-config",str(config),"--end-ms","600000"],
+                        capture_output=True,text=True,timeout=180)
+                    self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+                    self.assertIn(f"scheduled={expected} starts={expected} ends={expected} active=0 pending=0",result.stdout)
+                    self.assertIn("stalled=0 overlaps=0",result.stdout)
+
     def test_historical_population_and_corridor_flow_guards(self):
         for kwargs in [{"population":128},{"arrival_interval_ms":1000}]:
             with self.assertRaises(ValueError):

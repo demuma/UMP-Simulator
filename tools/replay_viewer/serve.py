@@ -195,7 +195,7 @@ def validate_map(root: Path, manifest: dict, coverage: dict):
 def validate_building_access(root: Path, mapping: dict, coverage: dict):
     """Allow only bounded public geometry, never source schedules or identities.
 
-    This optional v1 artifact deliberately has a closed schema: blindly serving
+    Both optional artifact versions deliberately have a closed schema: blindly serving
     a scene manifest could expose stable private people or planned episodes.
     Coordinates use the same local metres as the observations, including zoom.
     """
@@ -207,7 +207,10 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
     if path.stat().st_size > MAX_BUILDING_ACCESS_BYTES:
         raise ValueError('Building access geometry exceeds 2 MiB')
     value = read_json(path)
-    if not isinstance(value,dict) or set(value) != {'schema','bounds','buildings','portals'} or value.get('schema') != 'ump.building-access.v1':
+    schemas={'ump.building-access.v1':{'schema','bounds','buildings','portals'},
+             'ump.building-access.v2':{'schema','bounds','buildings','portals','store_fronts',
+                                       'facade_separators','boundary_intervals','navigation'}}
+    if not isinstance(value,dict) or value.get('schema') not in schemas or set(value)!=schemas[value['schema']]:
         raise ValueError('Invalid public building access schema')
     bounds = value['bounds']
     if not isinstance(bounds,dict) or set(bounds) != {'x','y','width','height'} or any(type(bounds.get(k)) not in (int,float) or not math.isfinite(bounds[k]) or bounds[k] != coverage[k] for k in bounds):
@@ -276,6 +279,85 @@ def validate_building_access(root: Path, mapping: dict, coverage: dict):
         numeric(portal['width_m'],'entrance width',.1)
         if portal['width_m']>20 or portal['width_m']>length+1e-5:
             raise ValueError('Entrance width exceeds facade or 20 m')
+    if value['schema']=='ump.building-access.v2':
+        def segment(item,name,clipped=True):
+            if not isinstance(item,list) or len(item)!=2: raise ValueError(name+' requires two endpoints')
+            for endpoint in item: point(endpoint,clipped)
+            length=math.dist(*item)
+            if length<=1e-7: raise ValueError(name+' must have positive length')
+            return length
+        def on_segment(candidate,line,tolerance=1e-5):
+            a,b=line;dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy)
+            fraction=((candidate[0]-a[0])*dx+(candidate[1]-a[1])*dy)/(length*length)
+            return (-tolerance<=fraction<=1+tolerance and
+                    abs((candidate[0]-a[0])*dy-(candidate[1]-a[1])*dx)/length<=tolerance)
+        def bounded_rows(name,limit):
+            rows=value[name]
+            if not isinstance(rows,list) or len(rows)>limit: raise ValueError('Invalid bounded '+name)
+            return rows
+        fronts=bounded_rows('store_fronts',512);front_ids=set();destinations=set();front_portals=set()
+        lookup={portal['id']:portal for portal in portals}
+        for front in fronts:
+            required={'id','destination_id','building_id','poi','portal_id','frontage','provenance','projection_method'}
+            if not isinstance(front,dict) or set(front)!=required: raise ValueError('Storefront contains unsupported or private fields')
+            for field in ('id','destination_id','building_id','portal_id'): text(front[field],'storefront '+field,128)
+            if front['id'] in front_ids or front['destination_id'] in destinations or front['portal_id'] in front_portals:
+                raise ValueError('Duplicate storefront, destination or entrance')
+            front_ids.add(front['id']);destinations.add(front['destination_id']);front_portals.add(front['portal_id'])
+            portal=lookup.get(front['portal_id'])
+            if portal is None or front['building_id']!=portal['building_id']: raise ValueError('Storefront references unknown or inconsistent building/portal')
+            if front['provenance']!='synthetic_poi_projection' or front['projection_method'] not in ('orthogonal_to_reachable_original_facade','manual_original_facade_override'):
+                raise ValueError('Unknown storefront construction provenance')
+            poi=front['poi']
+            if not isinstance(poi,dict) or set(poi)!={'osm_type','osm_id','name','point'}: raise ValueError('Storefront POI contains unsupported or private fields')
+            if poi['osm_type'] not in ('node','way','relation') or type(poi['osm_id']) is not int or poi['osm_id']<=0: raise ValueError('Invalid storefront OSM identity')
+            text(poi['name'],'storefront name');point(poi['point'])
+            if front['projection_method']=='orthogonal_to_reachable_original_facade':
+                a,b=portal['facade'];dx,dy=b[0]-a[0],b[1]-a[1]
+                if abs((poi['point'][0]-portal['point'][0])*dx+(poi['point'][1]-portal['point'][1])*dy)/math.hypot(dx,dy)>1e-5:
+                    raise ValueError('Storefront entrance is not the declared orthogonal POI projection')
+            frontage=front['frontage']
+            if not isinstance(frontage,list) or not 2<=len(frontage)<=256: raise ValueError('Storefront frontage requires a bounded polyline')
+            for coordinate in frontage: point(coordinate,False)
+            pieces=list(zip(frontage,frontage[1:]))
+            facades=[item['facade'] for item in portals if item['building_id']==front['building_id']]
+            if any(math.dist(*piece)<=1e-7 or not any(all(on_segment(endpoint,facade) for endpoint in piece) for facade in facades) for piece in pieces) or not any(on_segment(portal['point'],piece) for piece in pieces):
+                raise ValueError('Storefront entrance/frontage disagree with facade')
+            if min(math.dist(portal['point'],endpoint) for endpoint in portal['facade'])<portal['width_m']/2-1e-5:
+                raise ValueError('Storefront entrance width extends beyond facade')
+        if front_portals!=portal_ids: raise ValueError('Every storefront entrance needs exactly one destination')
+        separator_ids=set()
+        for separator in bounded_rows('facade_separators',1024):
+            if not isinstance(separator,dict) or set(separator)!={'id','building_id','points','provenance'}: raise ValueError('Facade separator contains unsupported or private fields')
+            text(separator['id'],'separator ID',128)
+            if separator['id'] in separator_ids: raise ValueError('Duplicate facade separator')
+            separator_ids.add(separator['id'])
+            text(separator['building_id'],'separator building ID',128)
+            if separator['building_id'] not in identities or separator['provenance']!='synthetic_frontage_division_not_interior_wall': raise ValueError('Invalid facade separator relationship/provenance')
+            if segment(separator['points'],'Facade separator')>5: raise ValueError('Facade separators are short display ticks, not inferred interior walls')
+            if not any(front['building_id']==separator['building_id'] and any(math.dist(separator['points'][0],endpoint)<1e-5 for endpoint in front['frontage']) for front in fronts):
+                raise ValueError('Facade separator must begin at modeled frontage division')
+        boundary_ids=set()
+        for boundary in bounded_rows('boundary_intervals',2048):
+            required={'id','mode','side','points','length_m','spawn_supported','provenance'}
+            if not isinstance(boundary,dict) or set(boundary)!=required: raise ValueError('Boundary interval contains unsupported or private fields')
+            text(boundary['id'],'boundary interval ID',128)
+            if boundary['id'] in portal_ids: raise ValueError('Boundary interval cannot shadow a building entrance')
+            if boundary['id'] in boundary_ids: raise ValueError('Duplicate boundary interval')
+            boundary_ids.add(boundary['id'])
+            if boundary['mode'] not in ('walking','cycling','road') or boundary['side'] not in ('west','east','north','south') or type(boundary['spawn_supported']) is not bool: raise ValueError('Invalid boundary mode/side/eligibility')
+            if boundary['spawn_supported'] and boundary['mode']!='walking': raise ValueError('Only pedestrian boundary spawning is implemented')
+            if boundary['provenance']!='derived_frozen_functional_zone_boundary': raise ValueError('Invalid boundary construction provenance')
+            length=segment(boundary['points'],'Boundary interval');numeric(boundary['length_m'],'boundary length',0)
+            if abs(length-boundary['length_m'])>1e-5: raise ValueError('Boundary interval length disagrees with geometry')
+            axis,coordinate={'west':(0,coverage['x']),'east':(0,coverage['x']+coverage['width']),
+                             'north':(1,coverage['y']),'south':(1,coverage['y']+coverage['height'])}[boundary['side']]
+            if any(abs(endpoint[axis]-coordinate)>1e-5 for endpoint in boundary['points']): raise ValueError('Boundary interval must lie on its declared map edge')
+        navigation=value['navigation']
+        if not isinstance(navigation,dict) or set(navigation)!={'body_clearance_m','allowed_center_polygons_sha256','scope'}: raise ValueError('Navigation summary contains unsupported or private fields')
+        numeric(navigation['body_clearance_m'],'navigation body clearance',.01)
+        if navigation['body_clearance_m']>10 or not isinstance(navigation['allowed_center_polygons_sha256'],str) or not re.fullmatch(r'[a-f0-9]{64}',navigation['allowed_center_polygons_sha256']): raise ValueError('Invalid navigation geometry digest/clearance')
+        text(navigation['scope'],'navigation scope',1024)
     return path
 
 

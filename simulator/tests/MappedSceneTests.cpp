@@ -445,6 +445,172 @@ void opposedSingleLaneStopsSafelyWithoutClaimingCompletion() {
     for (const auto& track:scene.frameAt(20000))
         require(track.velocity.x==0 && track.velocity.y==0,"A stopped track was overwritten by preferred velocity");
 }
+
+MappedSceneConfig localScene(double width=20,double height=12) {
+    MappedSceneConfig config;config.width=width;config.height=height;
+    config.motionMode=MappedMotionMode::LocalNavigation;
+    config.navigation.allowedCenterPolygons={{{{0,0},{width,0},{width,height},{0,height}}, {}}};
+    return config;
+}
+
+void localOpposingTrafficSteersAndDrains() {
+    auto input=localScene();
+    input.routes={{"east-nav",{{0,6},{20,6}},"",""},{"west-nav",{{20,6},{0,6}},"",""}};
+    input.people={{"east-private","Adult Pedestrian",1.3,{{"east-visible","east-nav",0}}},
+        {"west-private","Adult Pedestrian",1.3,{{"west-visible","west-nav",0}}}};
+    MappedScene scene(input);
+    bool lateral=false;std::map<std::string,Point> previous;
+    for(int time=0;time<=40000;time+=50) {
+        scene.advanceTo(time);const auto frame=scene.frameAt(time);
+        for(const auto& track:frame) {
+            lateral|=std::abs(track.position.y-6)>.2;
+            require(std::hypot(track.velocity.x,track.velocity.y)<=1.3+1e-8,"Local steering exceeded preferred speed");
+            if(previous.count(track.trackId)) {
+                const auto before=previous.at(track.trackId);
+                require(std::abs(track.velocity.x-(track.position.x-before.x)/.05)<1e-8
+                    && std::abs(track.velocity.y-(track.position.y-before.y)/.05)<1e-8,
+                    "Local steering velocity was projected onto the original route");
+            }
+        }
+        previous.clear();for(const auto& track:frame) previous[track.trackId]=track.position;
+    }
+    const auto d=scene.motionDiagnostics();
+    require(lateral && d.navigationSteeringSteps>0 && d.realizedEnds==2
+        && d.activeTracks==0 && d.overlapViolations==0,
+        "Opposing local traffic did not pass laterally and finish safely");
+    auto renamed=input;std::reverse(renamed.people.begin(),renamed.people.end());
+    renamed.people[0].personId="hidden-rename-1";renamed.people[1].personId="hidden-rename-2";
+    MappedScene other(renamed);other.advanceTo(40000);
+    require(other.events().size()==scene.events().size(),"Private renaming changed local lifecycle count");
+    for(std::size_t i=0;i<scene.events().size();++i)
+        require(scene.events()[i].trackId==other.events()[i].trackId
+            && scene.events()[i].atMs==other.events()[i].atMs,
+            "Private identity/order or caller cadence changed local navigation");
+}
+
+void localCrossingFlowsAndStaticHole() {
+    auto input=localScene();
+    input.routes={{"cross-east",{{0,6},{20,6}},"",""},
+        {"cross-west",{{20,6},{0,6}},"",""},
+        {"cross-south",{{10,0},{10,12}},"",""},
+        {"cross-north",{{10,12},{10,0}},"",""}};
+    for(std::size_t i=0;i<input.routes.size();++i)
+        input.people.push_back({"private-cross-"+std::to_string(i),"Adult Pedestrian",1.2,
+            {{"visible-cross-"+std::to_string(i),input.routes[i].id,0}}});
+    MappedScene crossing(input);crossing.advanceTo(45000);
+    require(crossing.motionDiagnostics().realizedEnds==4
+        && crossing.motionDiagnostics().overlapViolations==0,"Intersecting local flows failed to drain safely");
+    auto hole=localScene();
+    hole.navigation.allowedCenterPolygons[0].holes={{{8,4},{12,4},{12,8},{8,8}}};
+    hole.routes={{"around-wall",{{0,6},{7,3},{13,3},{20,6}},"",""}};
+    hole.people={{"hole-private","Adult Pedestrian",1.4,{{"hole-visible","around-wall",0}}}};
+    MappedScene avoiding(hole);
+    for(int time=0;time<=40000;time+=50) {
+        avoiding.advanceTo(time);
+        for(const auto& track:avoiding.frameAt(time))
+            require(!(track.position.x>8 && track.position.x<12 && track.position.y>4 && track.position.y<8),
+                "Local center entered a static hole");
+    }
+    require(avoiding.motionDiagnostics().realizedEnds==1,"Static obstacle route failed to finish");
+    auto thin=hole;thin.routes[0].points={{0,6},{20,6}};
+    thin.navigation.allowedCenterPolygons[0].holes={{{9.999,1},{10.001,1},{10.001,11},{9.999,11}}};
+    rejects([&]{MappedScene unsafe(thin);});
+}
+
+void localFiniteDenseSourceAndDoorVisits() {
+    auto input=localScene(20,14);
+    input.routes={{"walk-east",{{0,4},{20,4}},"",""},{"walk-west",{{20,8},{0,8}},"",""},
+        {"shop-in",{{0,10},{10,10.5},{10,12}},"","shop-door"},
+        {"shop-out",{{10,12},{10,10.5},{20,10}},"shop-door",""}};
+    input.portals={{"shop-door","shop-building",{10,12},{8,12},{12,12},1.2,"synthetic"}};
+    for(int i=0;i<16;++i)
+        input.people.push_back({"dense-private-"+std::to_string(i),"Adult Pedestrian",1.1+(i%4)*.1,
+            {{"dense-visible-"+std::to_string(i),i%2?"walk-east":"walk-west",i*250}}});
+    input.people.push_back({"shop-private","Pedestrian With Stroller",1.2,
+        {{"shop-arrival","shop-in",500},{"shop-return","shop-out",0,8000}},.45});
+    MappedScene scene(input);scene.advanceTo(90000);
+    const auto d=scene.motionDiagnostics();
+    require(d.realizedStarts==18 && d.realizedEnds==18 && d.pendingTracks==0
+        && d.activeTracks==0 && d.overlapViolations==0,"Finite local source and building visit failed to drain");
+    AggregationTime arrival=-1,returned=-1;
+    for(const auto& event:scene.events()) {
+        if(event.trackId=="shop-arrival" && event.kind==MappedEventKind::EpisodeEnd) arrival=event.atMs;
+        if(event.trackId=="shop-return" && event.kind==MappedEventKind::EpisodeStart) returned=event.atMs;
+    }
+    require(arrival>0 && returned-arrival>=8000,"Local building dwell was not based on realized arrival");
+}
+
+void localBoundedReplanningAndValidation() {
+    auto input=localScene(10,10);
+    input.navigation.allowedCenterPolygons={{{{0,4.99},{10,4.99},{10,5.01},{0,5.01}}, {}}};
+    input.navigation.maxReplanNodes=5;input.navigation.replanAfterMs=100;input.navigation.replanIntervalMs=500;
+    input.routes={{"narrow-east",{{0,5},{10,5}},"",""},{"narrow-west",{{10,5},{0,5}},"",""}};
+    input.people={{"narrow-a-private","Adult Pedestrian",1,{{"narrow-a","narrow-east",0}}},
+        {"narrow-b-private","Adult Pedestrian",1,{{"narrow-b","narrow-west",0}}}};
+    MappedScene narrow(input);narrow.advanceTo(20000);
+    const auto d=narrow.motionDiagnostics();
+    require(d.overlapViolations==0 && d.activeTracks==2 && d.navigationReplans>0
+        && d.navigationReplanFailures>0 && d.navigationMaxSearchNodes<=5,
+        "A blocked local corridor hid its bounded failed searches or teleported through traffic");
+    const auto bad=[&](const std::function<void(MappedSceneConfig&)>& mutate) {
+        auto config=input;mutate(config);rejects([&]{MappedScene checked(config);});
+    };
+    bad([](auto& c){c.navigation.allowedCenterPolygons.clear();});
+    bad([](auto& c){c.navigation.gridResolutionM=0;});
+    bad([](auto& c){c.navigation.gridResolutionM=std::numeric_limits<double>::quiet_NaN();});
+    bad([](auto& c){c.navigation.gridResolutionM=.0001;});
+    bad([](auto& c){c.navigation.maxReplanNodes=0;});
+    bad([](auto& c){c.navigation.replanAfterMs=0;});
+    bad([](auto& c){c.navigation.allowedCenterPolygons[0].outer={{0,0},{10,10},{0,10},{10,0}};});
+    bad([](auto& c){c.navigation.allowedCenterPolygons[0].holes={{{1,1},{2,1},{2,2},{1,2}}};});
+    auto visit=explicitVisitingScene();visit.motionMode=MappedMotionMode::LocalNavigation;
+    visit.navigation=localScene(visit.width,visit.height).navigation;
+    visit.portals.push_back({"different-door","building-a",{8,5},{7,5},{9,5},1,"synthetic"});
+    visit.routes[1].startPortal="different-door";visit.routes[1].points.front()={8,5};
+    rejects([&]{MappedScene wrongReturn(visit);});
+}
+
+
+void localVisibleGuidesDoNotCauseBacktrackingAfterDoorWaits() {
+    auto simple=localScene(20,14);
+    simple.routes={{"guide-route",{{0,7},{4,11},{6,3},{10,10},{14,4},{20,7}},"",""}};
+    simple.people={{"guide-private","Adult Pedestrian",1,{{"guide-visible","guide-route",0}}}};
+    MappedScene direct(simple);direct.advanceTo(21000);
+    require(direct.motionDiagnostics().realizedEnds==1 && direct.episodeEndMs("guide-visible")==20000,
+        "Visible guide points were treated as mandatory historical visits rather than topology hints");
+    auto input=localScene(20,14);
+    input.portals={{"queue-door","queue-building",{10,12},{8,12},{12,12},1.2,"synthetic"}};
+    for(int i=0;i<8;++i) {
+        const auto suffix=std::to_string(i);
+        input.routes.push_back({"queue-in-"+suffix,
+            {{0,3+i*.8},{4,4+i*.6},{8,9},{10,10.5},{10,12}},"","queue-door"});
+        input.routes.push_back({"queue-out-"+suffix,
+            {{10,12},{10,10.5},{15,8+i*.3},{20,7+i*.3}},"queue-door",""});
+        input.people.push_back({"queue-private-"+suffix,"Adult Pedestrian",1.2,
+            {{"queue-arrival-"+suffix,"queue-in-"+suffix,i*250},
+                {"queue-return-"+suffix,"queue-out-"+suffix,0,8000}}});
+    }
+    MappedScene queued(input);queued.advanceTo(180000);
+    const auto d=queued.motionDiagnostics();
+    require(d.realizedEnds==16 && d.activeTracks==0 && d.pendingTracks==0
+        && d.overlapViolations==0 && d.navigationSteeringSteps>0,
+        "Doorway waiting followed by rejoining later visible guides failed to drain safely");
+    AggregationTime last=0;
+    for(const auto& event:queued.events()) if(event.kind==MappedEventKind::EpisodeEnd) last=std::max(last,event.atMs);
+    require(last<120000,"Stale guide backtracking reintroduced excessive post-door detours");
+    auto invalid=input;invalid.routes[0].points[invalid.routes[0].points.size()-2].x+=.1;
+    rejects([&]{MappedScene obliqueEntry(invalid);});
+    invalid=input;invalid.routes[1].points[1].x+=.1;
+    rejects([&]{MappedScene obliqueExit(invalid);});
+    invalid=input;invalid.routes[0].points[invalid.routes[0].points.size()-2]={10,11.8};
+    rejects([&]{MappedScene insufficientThroat(invalid);});
+    // Another shop's facade exception never belongs to an unrelated passer.
+    invalid=localScene(20,14);invalid.portals=input.portals;
+    invalid.routes={{"unrelated",{{0,12},{20,12}},"",""}};
+    invalid.people={{"unrelated-private","Adult Pedestrian",1,{{"unrelated-visible","unrelated",0}}}};
+    rejects([&]{MappedScene wrongFacadeException(invalid);});
+}
+
 } // namespace
 
 int main() {
@@ -465,6 +631,11 @@ int main() {
         splitDoorThroatPreventsOpposingContactDeadlock();
         invalidExplicitDoors();
         opposedSingleLaneStopsSafelyWithoutClaimingCompletion();
+        localOpposingTrafficSteersAndDrains();
+        localCrossingFlowsAndStaticHole();
+        localFiniteDenseSourceAndDoorVisits();
+        localBoundedReplanningAndValidation();
+        localVisibleGuidesDoNotCauseBacktrackingAfterDoorWaits();
         std::cout << "Mapped scene route, lifecycle, identity-boundary and validation tests passed\n";
     } catch (const std::exception& error) {
         std::cerr << "Mapped scene test failed: " << error.what() << '\n';

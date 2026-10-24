@@ -265,6 +265,27 @@ class ComparisonTests(unittest.TestCase):
         self.assertEqual(viewer['sha256']['building_access.json'],comparison.sha(output/'building_access.json'))
         self.assertFalse((output/'private/native_source.json').exists())
 
+    def test_storefront_v2_geometry_is_retained_without_native_navigation_or_schedules(self):
+        self.add_building_access();path=self.recording/'building_access.json';access=comparison.read(path)
+        access['schema']='ump.building-access.v2';access.update(
+            store_fronts=[{'id':'front1','destination_id':'shop1','building_id':'way1','portal_id':'entry1',
+                'poi':{'osm_type':'node','osm_id':2,'name':'Fixture shop','point':[20,15]},
+                'frontage':[[10,10],[30,10]],'provenance':'synthetic_poi_projection',
+                'projection_method':'orthogonal_to_reachable_original_facade'}],facade_separators=[],
+            boundary_intervals=[{'id':'west1','mode':'walking','side':'west','points':[[0,20],[0,40]],
+                'length_m':20,'spawn_supported':True,'provenance':'derived_frozen_functional_zone_boundary'}],
+            navigation={'body_clearance_m':.55,'allowed_center_polygons_sha256':'a'*64,'scope':'Public geometry digest only.'})
+        self.write_json(path,access);self.manifest['sha256'][path.name]=comparison.sha(path)
+        self.write_json(self.recording/'bundle.json',self.manifest)
+        self.proof['files_sha256'][path.name]=comparison.sha(path)
+        self.proof['files_sha256']['bundle.json']=comparison.sha(self.recording/'bundle.json');self.write_proof()
+        output=self.root/'storefront-comparison';self.run_mocked(output)
+        self.assertEqual((output/path.name).read_bytes(),path.read_bytes())
+        public=comparison.read(output/path.name)
+        self.assertEqual(public['store_fronts'][0]['poi']['name'],'Fixture shop')
+        self.assertNotIn('allowed_center_polygons',public['navigation'])
+        self.assertFalse((output/'private/config.yaml').exists())
+
     def test_public_building_recording_digest_cannot_be_missing_or_changed(self):
         self.add_building_access()
         original=(self.recording/'building_access.json').read_bytes()

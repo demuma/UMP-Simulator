@@ -44,7 +44,20 @@ struct MappedPerson {
     double radiusM = .25;
 };
 
-enum class MappedMotionMode { Integration, CorridorFollowing };
+// Local navigation uses an explicitly supplied union of center-safe polygons.
+// Geometry is generated from body-eroded walking space; holes remain obstacles.
+struct MappedNavigationPolygon {
+    std::vector<Point> outer;
+    std::vector<std::vector<Point>> holes;
+};
+struct MappedNavigationConfig {
+    std::vector<MappedNavigationPolygon> allowedCenterPolygons;
+    double gridResolutionM = .5, centerClearanceM = .55;
+    std::size_t maxReplanNodes = 20000;
+    AggregationTime replanAfterMs = 1500, replanIntervalMs = 1000;
+};
+
+enum class MappedMotionMode { Integration, CorridorFollowing, LocalNavigation };
 
 struct MappedSceneConfig {
     double width, height;
@@ -55,12 +68,17 @@ struct MappedSceneConfig {
     double clearanceM = .1;
     double portalGateRadiusM = 3; // Historical undeclared-portal mode only.
     std::vector<MappedPortal> portals;
+    MappedNavigationConfig navigation;
 };
 
 struct MappedMotionDiagnostics {
     std::uint64_t blockedMotionSteps = 0, admissionWaitSteps = 0;
     std::uint64_t realizedStarts = 0, realizedEnds = 0, overlapViolations = 0;
     std::uint64_t mergeAdmissionWaitSteps = 0;
+    // Opt-in deterministic local-navigation work and bounded-search telemetry.
+    std::uint64_t navigationSteeringSteps = 0, navigationReplans = 0;
+    std::uint64_t navigationReplanFailures = 0, navigationCandidateChecks = 0;
+    std::size_t navigationMaxSearchNodes = 0;
     AggregationTime maxConsecutiveStopMs = 0;
     std::size_t activeStalledTracks = 0, pendingTracks = 0, activeTracks = 0;
 };
@@ -122,9 +140,18 @@ private:
         double progress = 0;
         Point position{0, 0}, velocity{0, 0};
         AggregationTime admittedAtMs = -1, arrivedAtMs = -1, stoppedForMs = 0;
+        std::size_t navigationWaypoint = 1, detourWaypoint = 0;
+        std::vector<Point> detour;
+        AggregationTime lastReplanMs = -1, navigationNoProgressMs = 0;
+        double navigationBestGoalDistance = 1e300;
+        Point navigationTarget{1e300,1e300};
     };
     void admitPending(AggregationTime nowMs);
     void advanceCorridorStep(AggregationTime nextMs);
+    void advanceNavigationStep(AggregationTime nextMs);
+    void updateNavigationDoors(AggregationTime nowMs);
+    bool navigationSegmentAllowed(Point from, Point to, const MappedRoute* route = nullptr) const;
+    bool replanNavigation(const std::string& trackId, Point goal);
     MappedVisibleTrack visibleState(const std::string& trackId, double travelled, Point velocity) const;
     MappedSceneConfig config;
     std::vector<RouteData> routeData;
@@ -134,6 +161,13 @@ private:
     std::optional<AggregationTime> minimumGap;
     std::map<std::string, RuntimeTrack> runtime;
     std::map<std::string, Point> portalPoints;
+    struct NavigationDoor {
+        Point approach;
+        std::string owner;
+        std::map<std::string,AggregationTime> requests;
+        std::map<std::string,Point> waitingPoints;
+    };
+    std::map<std::string,NavigationDoor> navigationDoors;
     // Explicit doors reserve only a local body-clearance throat for tracks
     // that actually enter/exit that door. Unrelated passers use the same swept
     // body collision checks without acquiring an artificial entrance resource.

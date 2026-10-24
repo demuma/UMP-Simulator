@@ -1,4 +1,5 @@
 #include "MappedSceneConfiguration.hpp"
+#include <cmath>
 #include <set>
 #include <stdexcept>
 
@@ -36,13 +37,45 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
     result.width = width; result.height = height;
     if (node["motion"]) {
         const auto motion=node["motion"];
-        keys(motion,{"mode","step_ms","clearance_m","portal_gate_radius_m"},"mapped_scene.motion");
-        if (text(motion["mode"],"mapped motion mode")!="corridor_following")
-            throw std::invalid_argument("Only explicit corridor_following motion settings are supported");
-        result.motionMode=ump::MappedMotionMode::CorridorFollowing;
-        result.motionStepMs=motion["step_ms"].as<ump::AggregationTime>(50);
-        result.clearanceM=motion["clearance_m"].as<double>(.1);
-        result.portalGateRadiusM=motion["portal_gate_radius_m"].as<double>(3);
+        keys(motion,{"mode","step_ms","clearance_m","portal_gate_radius_m","navigation"},"mapped_scene.motion");
+        const auto mode=text(motion["mode"],"mapped motion mode");
+        if (mode=="corridor_following") result.motionMode=ump::MappedMotionMode::CorridorFollowing;
+        else if (mode=="local_navigation") result.motionMode=ump::MappedMotionMode::LocalNavigation;
+        else throw std::invalid_argument("Mapped motion mode must be corridor_following or local_navigation");
+        if (motion["navigation"]) {
+            if (result.motionMode!=ump::MappedMotionMode::LocalNavigation)
+                throw std::invalid_argument("Navigation geometry requires local_navigation motion");
+            const auto navigation=motion["navigation"];
+            keys(navigation,{"allowed_center_polygons","grid_resolution_m","center_clearance_m","max_replan_nodes",
+                "replan_after_ms","replan_interval_ms"},"mapped_scene.motion.navigation");
+            const auto polygons=navigation["allowed_center_polygons"];
+            if (!polygons || !polygons.IsSequence())
+                throw std::invalid_argument("Navigation allowed_center_polygons must be a sequence");
+            const auto ring=[](const YAML::Node& nodes) {
+                if (!nodes || !nodes.IsSequence()) throw std::invalid_argument("Navigation ring must be a sequence");
+                std::vector<ump::Point> result;
+                for (const auto& value:nodes) result.push_back(point(value,"navigation ring point"));
+                return result;
+            };
+            for (const auto& polygon:polygons) {
+                keys(polygon,{"outer","holes"},"navigation polygon");
+                ump::MappedNavigationPolygon value;
+                value.outer=ring(polygon["outer"]);
+                if (polygon["holes"]) {
+                    if (!polygon["holes"].IsSequence()) throw std::invalid_argument("Navigation holes must be a sequence");
+                    for (const auto& hole:polygon["holes"]) value.holes.push_back(ring(hole));
+                }
+                result.navigation.allowedCenterPolygons.push_back(std::move(value));
+            }
+            result.navigation.gridResolutionM=navigation["grid_resolution_m"] ? navigation["grid_resolution_m"].as<double>() : .5;
+            result.navigation.centerClearanceM=navigation["center_clearance_m"] ? navigation["center_clearance_m"].as<double>() : .55;
+            result.navigation.maxReplanNodes=navigation["max_replan_nodes"] ? navigation["max_replan_nodes"].as<std::size_t>() : 20000;
+            result.navigation.replanAfterMs=navigation["replan_after_ms"] ? navigation["replan_after_ms"].as<ump::AggregationTime>() : 1500;
+            result.navigation.replanIntervalMs=navigation["replan_interval_ms"] ? navigation["replan_interval_ms"].as<ump::AggregationTime>() : 1000;
+        }
+        result.motionStepMs=motion["step_ms"] ? motion["step_ms"].as<ump::AggregationTime>() : 50;
+        result.clearanceM=motion["clearance_m"] ? motion["clearance_m"].as<double>() : .1;
+        result.portalGateRadiusM=motion["portal_gate_radius_m"] ? motion["portal_gate_radius_m"].as<double>() : 3;
     }
     if (node["portals"]) {
         if (!node["portals"].IsSequence()) throw std::invalid_argument("mapped_scene.portals must be a sequence");
@@ -78,7 +111,7 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
         person.type = text(p["type"], "observed profile type");
         if (!knownProfiles.count(person.type)) throw std::invalid_argument("Unknown mapped behavior profile: " + person.type);
         person.speedMps = p["speed_mps"].as<double>();
-        person.radiusM = p["radius_m"].as<double>(.25);
+        person.radiusM = p["radius_m"] ? p["radius_m"].as<double>() : .25;
         if (!p["episodes"].IsSequence()) throw std::invalid_argument("Mapped person episodes must be a sequence");
         for (const auto& e : p["episodes"]) {
             keys(e, {"track_id", "route_id", "start_ms", "after_previous_ms"}, "mapped episode");
@@ -97,4 +130,11 @@ void validateMappedSupportHorizon(const ump::MappedScene& scene, ump::Aggregatio
     if (horizonMs <= 0) throw std::invalid_argument("Mapped support horizon must be positive");
     if (const auto gap = scene.minimumHiddenGapMs(); gap && *gap <= horizonMs)
         throw std::invalid_argument("Mapped indoor gap must exceed the complete retained aggregation history; track IDs are not person IDs");
+}
+
+void validateMappedCaptureStep(const ump::MappedScene& scene, double simulationStepMs) {
+    if (scene.configuration().motionMode==ump::MappedMotionMode::LocalNavigation
+        && (!std::isfinite(simulationStepMs)
+            || std::abs(simulationStepMs-scene.configuration().motionStepMs)>1e-6))
+        throw std::invalid_argument("Local navigation requires the simulation capture step to equal its motion step");
 }

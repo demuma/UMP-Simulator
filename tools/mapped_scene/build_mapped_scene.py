@@ -267,6 +267,23 @@ def building_scene(repo, seed, population, duration_s, interval_ms=None):
         "portals": context["portals"], "routes": individual, "people": people}, context, construction
 
 
+def storefront_module():
+    spec = importlib.util.spec_from_file_location("ump_storefront_scene", pathlib.Path(__file__).with_name("storefront_scene.py"))
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@functools.lru_cache(maxsize=8)
+def storefront_scene(repo, seed, population, duration_s, interval_ms=None, overrides_json=None):
+    repo = pathlib.Path(repo)
+    _, local, layers, _, provenance = load_source(repo)
+    people, interval = corridor_people(seed, population, duration_s, interval_ms)
+    overrides = json.loads(overrides_json) if overrides_json is not None else None
+    return storefront_module().make_scene(repo, local, layers, access_module(),
+        provenance["source_geometry_sha256"], seed, people, interval, overrides)
+
+
 def profiles():
     result = []
     colors = ["blue", "magenta", "purple", "orange", "green"]
@@ -337,7 +354,7 @@ def regions():
     return list(types.values()), rows
 
 
-def make_config(repo, database, duration, render, seed, motion_mode="integration", population=64, arrival_interval_ms=None):
+def make_config(repo, database, duration, render, seed, motion_mode="integration", population=64, arrival_interval_ms=None, shop_overrides=None):
     cfg = yaml.safe_load((repo / "simulator/examples/temporal-aggregation/config.yaml").read_text())
     cfg["display"].update(width=1000, height=900, pixels_per_meter=10, title="UMP Mönckebergstraße — mapped visit scene")
     cfg["renderer"].update(show_renderer=render, show_trajectories=True, show_waypoints=False,
@@ -372,7 +389,16 @@ def make_config(repo, database, duration, render, seed, motion_mode="integration
     agg["semantic_taxonomy"] = {"id": "ump-mapped-pedestrian-release", "version": "1", "nodes":
         [{"id": "road_user", "loss": 1}, {"id": "pedestrian", "parent": "road_user", "loss": .5}] +
         [{"id": node, "parent": "pedestrian", "loss": 0, "input_types": [label]} for node, label in zip(leaves, PROFILES)]}
-    if motion_mode == "buildings":
+    if shop_overrides is not None and motion_mode != "storefronts":
+        raise ValueError("Shop entrance overrides apply only to storefronts mode")
+    if motion_mode == "storefronts":
+        cfg["simulation"]["datetime"] = "2026-10-24T00:00:00Z"
+        cfg["mapped_scene"], _, _, _ = copy.deepcopy(storefront_scene(str(repo), seed, population, duration, arrival_interval_ms,
+            json.dumps(shop_overrides, sort_keys=True) if shop_overrides is not None else None))
+        cfg["agents"]["num_agents"] = population
+        for row in cfg["agents"]["road_user_taxonomy"]:
+            row["probability"] = sum(p["type"] == row["type"] for p in cfg["mapped_scene"]["people"]) / population
+    elif motion_mode == "buildings":
         cfg["mapped_scene"], _, _ = building_scene(repo, seed, population, duration, arrival_interval_ms)
         cfg["agents"]["num_agents"] = population
         for row in cfg["agents"]["road_user_taxonomy"]:
@@ -399,7 +425,8 @@ def audit_config(cfg):
     minimum_gap = math.inf
     last_end = 0
     visits = 0
-    corridor = cfg["mapped_scene"].get("motion",{}).get("mode")=="corridor_following"
+    motion_mode = cfg["mapped_scene"].get("motion",{}).get("mode")
+    corridor = motion_mode in ("corridor_following", "local_navigation")
     for person in people:
         assert person["person_id"] not in person_ids
         person_ids.add(person["person_id"])
@@ -448,6 +475,10 @@ def audit_config(cfg):
         result.update(building_destinations=len({p["building_id"] for p in cfg["mapped_scene"]["portals"]}),
             portal_scope="Synthetic, reachable original-facade midpoints. Exact endpoint admission, not arbitrary wall contact. Exterior geometry does not establish real doors, shops or access permission.",
             route_variation_scope="Individual smooth through corridors; checked fixed access branches at two distinct buildings, with exact facade endpoints. No per-frame access jitter or general route-planner claim.")
+    if motion_mode == "local_navigation":
+        result.update(motion_scope="Individual seeded boundary-to-boundary and storefront paths on body-safe derived walking geometry; native local steering, bounded replanning and realized lifecycle events.",
+            portal_scope="Four distinct synthetic POI-projected shop entrances on original building facades, with modeled storefront divisions. No invented physical building separations or surveyed-door claim.",
+            route_variation_scope="Individual continuous boundary endpoints and seeded bounded geometric detours, with exact shop endpoints. No fixed through lanes.")
     return result
 
 
@@ -489,6 +520,14 @@ def draw_background(layers, output, building_access=None):
                 label_point = polygon.representative_point()
                 ax.text(label_point.x, label_point.y, building["name"], fontsize=7,
                         color="#36414B", ha="center", va="center")
+        for index, front in enumerate(building_access.get("store_fronts", [])):
+            ax.plot([p[0] for p in front["frontage"]], [p[1] for p in front["frontage"]], color=["#865B8D", "#497E72", "#A97A36", "#5F6EAA"][index % 4], linewidth=2)
+            ax.text(max(4,min(76,front["poi"]["point"][0])), max(3,min(77,front["poi"]["point"][1])), front["poi"]["name"], fontsize=6, color="#36414B", ha="center")
+        for separator in building_access.get("facade_separators", []):
+            ax.plot([p[0] for p in separator["points"]], [p[1] for p in separator["points"]], color="#7B4B35", linewidth=1, linestyle="--")
+        for interval in building_access.get("boundary_intervals", []):
+            points = interval["points"]
+            ax.plot([p[0] for p in points], [p[1] for p in points], color={"walking":"#167B65","cycling":"#4B6CA3","road":"#A46C26"}[interval["mode"]], linewidth=3, linestyle="-" if interval["spawn_supported"] else "--")
         for portal in building_access["portals"]:
             a, b = portal["facade"]
             length = math.dist(a, b)
@@ -498,7 +537,7 @@ def draw_background(layers, output, building_access=None):
                     [center[1]-half*tangent[1], center[1]+half*tangent[1]],
                     color="#C44720", linewidth=3, solid_capstyle="butt")
             ax.plot(center[0], center[1], marker="o", color="#8B2E13", markersize=2)
-        ax.text(1, 1, "© OpenStreetMap contributors | ODbL 1.0\nOrange door: synthetic facade midpoint; synthetic motion",
+        ax.text(1, 1, "© OpenStreetMap contributors | ODbL 1.0\n" + ("Orange door: synthetic facade midpoint; synthetic motion" if building_access["schema"] == "ump.building-access.v1" else "Orange door: synthetic shop access; dashed ticks: modeled fronts"),
                 fontsize=6, color="#36414B", va="top",
                 bbox={"facecolor":"white", "alpha":.92, "edgecolor":"none", "pad":3})
     else:
@@ -516,9 +555,10 @@ def main():
     parser.add_argument("--duration-s", type=int, default=90)
     parser.add_argument("--seed", type=int, default=20261023)
     parser.add_argument("--render", action="store_true")
-    parser.add_argument("--motion-mode",choices=["integration","corridor","buildings"],default="integration")
-    parser.add_argument("--population",type=int,default=64,help="Corridor/buildings explicit population; historical mode stays at 64")
-    parser.add_argument("--arrival-interval-ms",type=int,help="Corridor source interval, multiple of 50 ms; default spreads requests across horizon")
+    parser.add_argument("--motion-mode",choices=["integration","corridor","buildings","storefronts"],default="integration")
+    parser.add_argument("--population",type=int,default=64,help="Stateful corridor/building/storefront population; historical mode stays at 64")
+    parser.add_argument("--arrival-interval-ms",type=int,help="Stateful source interval, multiple of 50 ms; default spreads requests across horizon")
+    parser.add_argument("--shop-overrides", type=pathlib.Path, help="Optional source-hash-bound synthetic shop entrance overrides")
     args = parser.parse_args()
     repo = args.repo.resolve()
     if not re.fullmatch(r"UMP_Mapped_[0-9a-f]{32}", args.database):
@@ -528,9 +568,13 @@ def main():
     if args.output.exists():
         parser.error("output directory already exists; choose a fresh output")
     _, local, layers, assumptions, provenance = load_source(repo)
-    cfg = make_config(repo, args.database, args.duration_s, args.render, args.seed,args.motion_mode,args.population,args.arrival_interval_ms)
+    cfg = make_config(repo, args.database, args.duration_s, args.render, args.seed,args.motion_mode,args.population,args.arrival_interval_ms,
+        json.loads(args.shop_overrides.read_text()) if args.shop_overrides else None)
     context, construction = None, None
-    if args.motion_mode == "buildings":
+    if args.motion_mode == "storefronts":
+        _, context, construction, geometry = copy.deepcopy(storefront_scene(str(repo), args.seed, args.population, args.duration_s, args.arrival_interval_ms,
+            json.dumps(json.loads(args.shop_overrides.read_text()), sort_keys=True) if args.shop_overrides else None))
+    elif args.motion_mode == "buildings":
         context, _, construction = copy.deepcopy(building_geometry(str(repo)))
         geometry = access_module().audit_access(local, layers, cfg["mapped_scene"]["routes"], context["portals"])
     else:
@@ -551,10 +595,12 @@ def main():
               "map_width_assumptions": assumptions,
               "policy_scope": "Four illustrative disjoint raster-aligned regions through the normal Region/PolicyTree adapter. Requirements are declared experimental choices, not validated privacy protection or map-derived law.",
               "execution": "cd to this output folder, then run the maintained simulator/build/Simulator; no simulation or DB operation was executed by this generator."}
-    if args.motion_mode in ("corridor", "buildings"): report["motion_mode"] = args.motion_mode
+    if args.motion_mode in ("corridor", "buildings", "storefronts"): report["motion_mode"] = args.motion_mode
     if context is not None:
         report["building_access"] = construction
         report["building_access_sha256"] = sha((args.output / "building_access.json").read_bytes())
+        if args.motion_mode == "storefronts":
+            report["storefront_generator_sha256"] = sha(pathlib.Path(__file__).with_name("storefront_scene.py").read_bytes())
     (args.output / "scene_manifest.json").write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
     print(json.dumps({"status": "pass", "output": str(args.output), "config_sha256": report["configuration_sha256"],
                       "people": scene["scheduled_people"], "episodes": scene["visible_episodes"], "visitors": scene["scheduled_visitors"]}))

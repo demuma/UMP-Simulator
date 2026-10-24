@@ -9,9 +9,31 @@ in Git. See the [identity contract](../../docs/MAPPED_SCENE_IDENTITY_CONTRACT_20
 [historical integration report](../../docs/MAPPED_SCENE_TEST_REPORT_2026-10-23.md)
 and [current integration report](../../docs/MAPPED_REPLAY_INTEGRATION_TEST_REPORT_2026-10-23.md).
 
-## Multi-building access (current default)
+## Storefronts and individual pedestrian navigation (current default)
 
-The launcher now defaults to `--motion-mode buildings`. It draws eight separate
+`run_scene.py` now defaults to `--motion-mode storefronts`. The original building
+outline is retained; Apollo, Ditsch, Adidas Originals and H&M HOME become separate
+modeled destinations with synthetic facade projections. Short divider ticks are
+assumed shopfront divisions, not known indoor walls. Walking map-edge intervals
+provide individual source/sink points. Seeded routes and native steering/replanning
+replace shared fixed access lines. Road/cycling intervals are context only.
+
+```sh
+/private/tmp/ump-mapped-venv/bin/python tools/mapped_scene/run_scene.py \
+  --motion-mode storefronts --population 64 --duration-s 240 --arrival-interval-ms 1000 \
+  --output results/storefront-run-new/scene --replay --port 8787
+```
+
+Choose a fresh output parent. The duration is an observation horizon; inspect
+capture-proof active/pending/completed counts rather than assuming all requested
+visits have finished. The [implementation guide](../../docs/STOREFRONT_NAVIGATION_2026-10-24.md)
+defines source behavior, manual overrides, geometry/lifecycle boundaries and the
+separate acceptance gates. All generated movement remains local and ignored.
+
+## Earlier two-building fixture
+
+
+Explicit `--motion-mode buildings` draws eight separate
 cached OSM footprints and connects two buildings through **synthetic** exact
 original-wall midpoint doors: Rappolthaus and MöGrill. Door widths are modeled,
 not inferred from OSM. Actual route-end arrival controls entry; the former 3-m

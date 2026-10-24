@@ -11,3 +11,8 @@ ump::MappedSceneConfig readMappedSceneConfiguration(const YAML::Node& node,
 // No GT oracle is used to satisfy operational support. The first scene instead
 // declares and validates an episode-separation assumption for retained windows.
 void validateMappedSupportHorizon(const ump::MappedScene& scene, ump::AggregationTime horizonMs);
+
+// Local-navigation velocities and lifecycle frames represent one motion step.
+// A different outer capture cadence would silently discard realized substeps.
+// Historical integration/corridor modes retain their established contract.
+void validateMappedCaptureStep(const ump::MappedScene& scene, double simulationStepMs);

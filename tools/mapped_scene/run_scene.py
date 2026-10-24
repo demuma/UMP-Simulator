@@ -35,8 +35,9 @@ def main():
     parser.add_argument('--port', type=int, default=8780)
     parser.add_argument('--duration-s', type=int, default=90)
     parser.add_argument('--seed', type=int, default=20261023)
-    parser.add_argument('--motion-mode', choices=['integration','corridor','buildings'], default='buildings')
+    parser.add_argument('--motion-mode', choices=['integration','corridor','buildings','storefronts'], default='storefronts')
     parser.add_argument('--population', type=int, default=64)
+    parser.add_argument('--shop-overrides', type=pathlib.Path, help='Source-bound synthetic shop entrance overrides (storefronts mode only)')
     parser.add_argument('--arrival-interval-ms',type=int)
     parser.add_argument('--output', type=pathlib.Path, help='Fresh scene folder; replay becomes its sibling')
     parser.add_argument('--no-record',action='store_true',help='Skip the persistent local recording')
@@ -44,6 +45,8 @@ def main():
     args = parser.parse_args()
     if args.open and not args.replay: parser.error('--open requires --replay')
     if args.no_record and args.replay: parser.error('--replay requires recording')
+    if args.shop_overrides is not None and args.motion_mode != 'storefronts':
+        parser.error('--shop-overrides requires --motion-mode storefronts')
     if not 1<=args.port<=65535: parser.error('Port must be 1..65535')
     repo = pathlib.Path(__file__).resolve().parents[2]
     binary = repo/'simulator/build/Simulator'
@@ -70,6 +73,7 @@ def main():
                '--duration-s',str(args.duration_s),'--seed',str(args.seed),
                '--motion-mode',args.motion_mode,'--population',str(args.population)]
     if args.arrival_interval_ms is not None: command += ['--arrival-interval-ms',str(args.arrival_interval_ms)]
+    if args.shop_overrides is not None: command += ['--shop-overrides', str(args.shop_overrides.resolve())]
     if args.render: command.append('--render')
     subprocess.run(command,check=True)
     print('Scene: '+str(output),flush=True)

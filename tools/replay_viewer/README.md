@@ -167,3 +167,44 @@ node tools/replay_viewer/verify_source_groups.js PATH_TO_REPLAY_BUNDLES
 The pure-JavaScript model tests cover timeline behavior plus cell selection, explicit private opt-in, seal/evaluation gating even after cache reuse, exact half-open spatial and temporal grouping, distinct identity deduplication, observed sample averages, empty footprints and bounded summary caching. A one-time spatial/time index retains references to the existing observations. Its grid is capped at 256 × 256 buckets and its summary cache at 32 count-only entries; it does not retain additional identity sets or rescan the whole run on every render. The Python server tests cover source compatibility, malformed/non-finite inputs, window timing, coverage, digests, path/symlink rejection, accessible cell controls, default-private opt-in, optional region metadata shape/geometry/bound limits, truthful reference provenance, reference-focus accessibility and the real HTTP allowlist. The HTTP test starts a short-lived localhost server. Local-mode acceptance additionally checks scope replacement, clipping provenance, event order, independent public/private state, rewind and budget failure; final counts are recorded in the dated test report.
 
 `verify_source_groups.js` recursively finds viewer bundles below the required directory argument. It independently scans raw XY observations for the first/last cells of each variant’s first/last nonempty recipient release, removing duplicate selections. It compares exact per-type observations, distinct users and measured-sample means with the indexed inspector, checks recorded public cell totals, and checks private opt-in and sealing gates. This is a sampled real-artifact check, not an exhaustive audit of every cell. It has no hardcoded repository or data paths.
+
+
+## Storefront and map-edge extension
+
+`ump.building-access.v2` preserves original building footprints and the six-field
+portal representation from v1. It adds a closed, bounded geometry-only schema:
+
+- `store_fronts` associates public POI names with scenario destinations, exact
+  synthetic entrance targets and frontage polylines along original facade
+  segments. A frontage can follow a wall joint; its vertices are not replaced
+  with a chord.
+- `facade_separators` contains short assumed frontage-divider ticks. They are
+  displayed dashed and never described as known indoor walls or separate OSM
+  buildings.
+- `boundary_intervals` identifies functional-zone intersections with each map
+  edge. Solid green walking intervals with paired arrows permit both source
+  and sink endpoints. Cycling/road intervals provide context only; this source
+  has no cycling or motor-traffic model. Unsupported walking intervals are
+  listed as context only.
+- `navigation` contains only body clearance, a digest of native center-safe
+  polygons, and a bounded scope statement. It contains no person schedules,
+  stable private identities or full native configuration.
+
+The **Highlight modeled shop fronts** and **Highlight source / sink intervals** controls
+work in the reference and both comparison panels, including cell focus. The frozen background keeps its existing map context when a highlight
+is disabled; these controls affect the additional overlays only. Colored
+fronts distinguish shops sharing one actual footprint. Exact doors keep their
+physical width and use named screen-space callouts; labels may move for
+legibility but a leader remains anchored to the physical target. Matching raw
+shop labels are hidden to avoid duplicate POI labels. The inventory separates
+actual building context, modeled shop destinations and boundary eligibility.
+
+The server validates public geometry before serving it, rejects unknown fields
+at every new level, and checks bounded coordinates, relationships, supported
+source modes and map-edge membership. The exporter additionally checks exact
+portal agreement, native navigation polygon digest/clearance, original route
+endpoints against eligible boundaries/doors, and generated config/background/
+geometry digests. Validation does not regenerate motion. Same-source comparison
+bundles copy the public geometry byte-for-byte and never copy private source
+sidecars or the native configuration. Existing v1 bundles remain accepted with
+their previous contract.

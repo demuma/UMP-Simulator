@@ -18,6 +18,14 @@
 #include "CellLocalAggregation.hpp"
 #include <mongocxx/exception/exception.hpp>
 
+namespace {
+const char* mappedMotionModelName(ump::MappedMotionMode mode) {
+    if (mode == ump::MappedMotionMode::LocalNavigation) return "bounded_local_navigation";
+    if (mode == ump::MappedMotionMode::CorridorFollowing) return "bounded_swept_body_corridor_following";
+    return "scheduled_polyline_without_crowd_interactions";
+}
+}
+
 // Simulation constructor
 Simulation::Simulation(
     SharedBuffer<agentBufferFrameType>& agentBuffer,
@@ -334,6 +342,7 @@ void Simulation::initializeMappedScene() {
     for (const auto& item : agentTypeAttributes) profiles.insert(item.first);
     mappedScene = std::make_unique<ump::MappedScene>(readMappedSceneConfiguration(
         config["mapped_scene"], simulationWidth, simulationHeight, profiles));
+    validateMappedCaptureStep(*mappedScene, config["simulation"]["time_step"].as<double>() * 1000.0);
     for (const auto& person : mappedScene->configuration().people) {
         const auto& attributes = agentTypeAttributes.at(person.type);
         if (!std::isfinite(attributes.velocity.min) || !std::isfinite(attributes.velocity.max)
@@ -341,7 +350,7 @@ void Simulation::initializeMappedScene() {
             || !std::isfinite(static_cast<float>(person.speedMps)) || static_cast<float>(person.speedMps) <= 0
             || !std::isfinite(attributes.bodyRadius) || attributes.bodyRadius <= 0)
             throw std::invalid_argument("Mapped speed/radius is outside its declared behavior profile");
-        if (mappedScene->configuration().motionMode == ump::MappedMotionMode::CorridorFollowing
+        if (mappedScene->configuration().motionMode != ump::MappedMotionMode::Integration
             && std::abs(person.radiusM - attributes.bodyRadius) > 1e-6)
             throw std::invalid_argument("Mapped corridor body radius must match its declared observed profile");
     }
@@ -917,9 +926,9 @@ void Simulation::run() {
                     for (const auto& person : mappedScene->configuration().people) count += person.episodes.size();
                     return count;
                 }());
-        if (mappedScene->configuration().motionMode == ump::MappedMotionMode::CorridorFollowing) {
+        if (mappedScene->configuration().motionMode != ump::MappedMotionMode::Integration) {
             const auto motion = mappedScene->motionDiagnostics();
-            summary << "motion_model" << "bounded_swept_body_corridor_following"
+            summary << "motion_model" << mappedMotionModelName(mappedScene->configuration().motionMode)
                 << "realized_track_starts" << static_cast<std::int64_t>(motion.realizedStarts)
                 << "realized_track_ends" << static_cast<std::int64_t>(motion.realizedEnds)
                 << "blocked_motion_steps" << static_cast<std::int64_t>(motion.blockedMotionSteps)
@@ -930,6 +939,13 @@ void Simulation::run() {
                 << "pending_tracks" << static_cast<std::int64_t>(motion.pendingTracks)
                 << "active_tracks" << static_cast<std::int64_t>(motion.activeTracks)
                 << "body_overlap_violations" << static_cast<std::int64_t>(motion.overlapViolations);
+            if (mappedScene->configuration().motionMode == ump::MappedMotionMode::LocalNavigation) {
+                summary << "navigation_steering_steps" << static_cast<std::int64_t>(motion.navigationSteeringSteps)
+                    << "navigation_replans" << static_cast<std::int64_t>(motion.navigationReplans)
+                    << "navigation_replan_failures" << static_cast<std::int64_t>(motion.navigationReplanFailures)
+                    << "navigation_candidate_checks" << static_cast<std::int64_t>(motion.navigationCandidateChecks)
+                    << "navigation_max_search_nodes" << static_cast<std::int64_t>(motion.navigationMaxSearchNodes);
+            }
         }
         collection.insert_one(summary << bsoncxx::builder::stream::finalize);
     }
@@ -1053,8 +1069,7 @@ void Simulation::postMetadata() {
                  << "ground_truth_identity_unit" << "synthetic_person"
                  << "support_contract" << "one_episode_per_retained_history"
                  << "minimum_hidden_gap_ms" << mappedScene->minimumHiddenGapMs().value_or(0)
-                 << "motion_model" << (mappedScene->configuration().motionMode == ump::MappedMotionMode::CorridorFollowing
-                    ? "bounded_swept_body_corridor_following" : "scheduled_polyline_without_crowd_interactions");
+                 << "motion_model" << mappedMotionModelName(mappedScene->configuration().motionMode);
     }
 
     // Insert the metadata document into the collection

@@ -59,6 +59,24 @@ synthetic results and verification are recorded in the October 19 test report. T
 complete-background stress test remains separate; no formal privacy guarantee is claimed.**
 
 
+**October 24 storefront and local-navigation implementation:** the mapped launcher
+now selects `storefronts`. Four modeled shop destinations (Apollo, Ditsch, Adidas
+Originals and H&M HOME) share the original Rappolthaus footprint, with synthetic
+POI-projected facade targets, colored fronts and short assumed division ticks.
+Body-safe walking intersections at the map edge supply seeded source/sink points;
+individual routes, local steering, swept-body reservations and bounded replanning
+replace the fixture's shared access lines. Exact doors coordinate only intentional
+entries/exits; indoor returns keep a new visible track. The global navigation grid
+is 0.5 m, independent of the 1.25-m D6 sensor leaves. Geometry, source motion and
+policy regions remain separate. The 64/128-person sources drain completely;
+a verified 240-s native recording completes all 96 visible episodes/32 shop visits.
+All 86 suites pass; source/body audits and browser acceptance pass. Dense-source
+25.5-s stops remain a stated model limitation. See the
+[test report](docs/STOREFRONT_NAVIGATION_TEST_REPORT_2026-10-24.md) and
+[implementation and reproduction guide](docs/STOREFRONT_NAVIGATION_2026-10-24.md).
+Full GT, movement and replay data remain local and ignored. These synthetic
+building visits do not establish measured privacy improvement.
+
 **October 24 multi-building access:** a new mapped `buildings` mode draws eight
 separate cached footprints and distributes visits across exact synthetic facade
 midpoints at Rappolthaus and MöGrill. Native entry/return uses the exact door,

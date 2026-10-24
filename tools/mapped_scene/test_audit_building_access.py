@@ -1,5 +1,9 @@
 """Independent capture audit rejects early disappearance, wrong exits and overlap."""
+import math
 import unittest
+from datetime import datetime, timedelta, timezone
+
+from shapely.geometry import box
 
 from audit_building_access import audit
 
@@ -31,6 +35,145 @@ def fixture():
                 'observation_track_id': track, 'event': event,
                 'timestamp': '2026-10-24T00:00:' + at + 'Z', 'portal_id': portal})
     return cfg, raw
+
+
+def navigation_fixture():
+    cfg, raw = fixture()
+    cfg['simulation'].update(width=10, height=3)
+    scene = cfg['mapped_scene']
+    for portal in scene['portals']:
+        portal['building_id'] = 'one-physical-building'
+        x = portal['point'][0]
+        portal.update(facade=[[x - .6, 1], [x + .6, 1]], width_m=1.2)
+    scene['motion'].update(mode='local_navigation', navigation={
+        'allowed_center_polygons': [{'outer': [[0, 0], [10, 0], [10, 1], [0, 1]]}]})
+    for person in scene['people']:
+        person['speed_mps'] = 1.5
+    raw['agents'] = [row for row in raw['agents'] if row['data_type'] != 'agent data']
+    origin = datetime(2026, 10, 24, tzinfo=timezone.utc)
+    for x in [1, 8]:
+        previous = None
+        for ms in range(0, 1000, 50):
+            point = [x + .02 * math.sin(math.pi * ms / 950), ms / 1000]
+            velocity = [0, 0] if previous is None else [(point[i] - previous[i]) / .05 for i in [0, 1]]
+            raw['agents'].append({'data_type': 'agent data', 'agent_id': str(x) + 'a',
+                'timestamp': (origin + timedelta(milliseconds=ms)).isoformat(),
+                'position': dict(zip(['x', 'y'], point)), 'velocity': dict(zip(['x', 'y'], velocity))})
+            previous = point
+        raw['agents'].append({'data_type': 'agent data', 'agent_id': str(x) + 'b',
+                'timestamp': (origin + timedelta(seconds=9)).isoformat(),
+                'position': {'x': x, 'y': 1}, 'velocity': {'x': 0, 'y': 0}})
+    context = {'boundary_intervals': [{'points': [[0, 0], [10, 0]],
+                                      'mode': 'walking', 'spawn_supported': True}]}
+    layers = {'walking': box(0, 0, 10, 1.3), 'buildings': box(0, 1.3, 10, 3)}
+    return cfg, raw, context, layers
+
+
+class NavigationAuditTests(unittest.TestCase):
+    def test_actual_off_guide_motion_two_shops_same_building_and_boundaries(self):
+        cfg, raw, context, layers = navigation_fixture()
+        result = audit(cfg, raw, public_context=context, map_layers=layers)
+        self.assertEqual(result['buildings_with_completed_entries'], 1)
+        self.assertEqual(result['targets_with_completed_entries'], 2)
+        self.assertEqual(result['navigation_motion_segments_checked'], 40)
+        self.assertEqual(result['navigation_terminal_segments_checked'], 2)
+        self.assertEqual(result['navigation_velocity_checks'], 38)
+        self.assertEqual(result['boundary_endpoint_checks'], 2)
+        self.assertGreater(result['maximum_observed_route_distance_m'], .019)
+        self.assertGreater(result['navigation_static_body_checks'], 40)
+
+    def test_off_navigation_missing_frames_speed_and_velocity_are_rejected(self):
+        for failure in ['outside', 'missing', 'speed', 'velocity']:
+            with self.subTest(failure=failure):
+                cfg, raw, _, _ = navigation_fixture()
+                rows = [row for row in raw['agents'] if row.get('agent_id') == '1a']
+                if failure == 'outside':
+                    rows[0]['position']['x'] = -.2
+                    expected = 'position leaves navigation'
+                elif failure == 'missing':
+                    raw['agents'].remove(rows[5])
+                    expected = 'missing source frames'
+                elif failure == 'speed':
+                    rows[5]['position']['x'] += 1
+                    expected = 'preferred speed'
+                else:
+                    rows[5]['velocity']['x'] += .1
+                    expected = 'velocity differs'
+                with self.assertRaisesRegex(ValueError, expected):
+                    audit(cfg, raw)
+
+    def test_continuous_sweep_rejects_thin_hole_between_valid_endpoints(self):
+        cfg, raw, _, _ = navigation_fixture()
+        cfg['mapped_scene']['motion']['navigation']['allowed_center_polygons'][0]['holes'] = [
+            [[1.002, .07], [1.009, .07], [1.009, .08], [1.002, .08]]]
+        with self.assertRaisesRegex(ValueError, 'sweep leaves navigation'):
+            audit(cfg, raw)
+
+    def test_other_shops_door_does_not_exempt_body_from_wall_checks(self):
+        cfg, raw, context, layers = navigation_fixture()
+        cfg['mapped_scene']['portals'].append({'id': 'unrelated-shop',
+            'building_id': 'one-physical-building', 'point': [4, 1.3]})
+        row = next(row for row in raw['agents'] if row.get('agent_id') == '1a')
+        row['position'] = {'x': 4, 'y': 1}
+        layers = {'walking': box(0, 0, 10, 1), 'buildings': box(0, 1, 10, 3)}
+        with self.assertRaisesRegex(ValueError, 'body leaves derived walking'):
+            audit(cfg, raw, public_context=context, map_layers=layers)
+
+    def test_stationary_sweep_in_nonrectangular_geometry_is_a_point(self):
+        cfg, raw, _, _ = navigation_fixture()
+        cfg['mapped_scene']['motion']['navigation']['allowed_center_polygons'][0]['outer'] = [
+            [0, 0], [10, 0], [10, 2], [6, 1.9], [0, 2]]
+        raw['agents'].append({'data_type': 'agent data', 'agent_id': '1b',
+            'timestamp': '2026-10-24T00:00:09.050Z', 'position': {'x': 1, 'y': 1},
+            'velocity': {'x': 0, 'y': 0}})
+        result = audit(cfg, raw)
+        self.assertEqual(result['navigation_motion_segments_checked'], 41)
+
+    def test_final_half_open_step_still_checks_holes_and_other_bodies(self):
+        cfg, raw, _, _ = navigation_fixture()
+        cfg['mapped_scene']['motion']['navigation']['allowed_center_polygons'][0]['holes'] = [
+            [[.995, .97], [1.005, .97], [1.005, .98], [.995, .98]]]
+        with self.assertRaisesRegex(ValueError, 'sweep leaves navigation'):
+            audit(cfg, raw)
+        cfg, raw, _, _ = navigation_fixture()
+        cfg['mapped_scene']['people'][0]['speed_mps'] = 200
+        cfg['mapped_scene']['portals'][0]['point'] = [7.5, 1]
+        cfg['mapped_scene']['routes'][0]['points'][-1] = [7.5, 1]
+        cfg['mapped_scene']['routes'][1]['points'][0] = [7.5, 1]
+        with self.assertRaisesRegex(ValueError, 'swept body-clearance'):
+            audit(cfg, raw)
+
+    def test_declared_door_width_is_not_a_wider_circular_marker(self):
+        cfg, raw, context, _ = navigation_fixture()
+        row = next(row for row in raw['agents'] if row.get('agent_id') == '1a')
+        row['position'] = {'x': 1.3, 'y': 1}
+        layers = {'walking': box(0, 0, 10, 1), 'buildings': box(0, 1, 10, 3)}
+        with self.assertRaisesRegex(ValueError, 'body leaves derived walking'):
+            audit(cfg, raw, public_context=context, map_layers=layers)
+
+    def test_crossing_bodies_are_rejected_between_separated_frames(self):
+        cfg, raw, _, _ = navigation_fixture()
+        for person in cfg['mapped_scene']['people']:
+            person['speed_mps'] = 200
+        for x, swapped in [(1, 8), (8, 1)]:
+            rows = [row for row in raw['agents'] if row.get('agent_id') == str(x) + 'a']
+            rows[1]['position']['x'] = swapped
+            for previous, row in zip(rows, rows[1:]):
+                row['velocity'] = {axis: (row['position'][axis] - previous['position'][axis]) / .05
+                                   for axis in ['x', 'y']}
+        with self.assertRaisesRegex(ValueError, 'swept body-clearance'):
+            audit(cfg, raw)
+
+    def test_boundary_compatibility_and_exact_same_shop_return(self):
+        cfg, raw, context, _ = navigation_fixture()
+        context['boundary_intervals'][0]['points'] = [[5, 0], [10, 0]]
+        with self.assertRaisesRegex(ValueError, 'eligible walking intervals'):
+            audit(cfg, raw, public_context=context)
+        cfg, raw, _, _ = navigation_fixture()
+        cfg['mapped_scene']['routes'][1]['start_portal'] = 'door-8'
+        cfg['mapped_scene']['routes'][1]['points'][0] = [8, 1]
+        with self.assertRaisesRegex(ValueError, 'shop entrance'):
+            audit(cfg, raw)
 
 
 class BuildingAccessAuditTests(unittest.TestCase):

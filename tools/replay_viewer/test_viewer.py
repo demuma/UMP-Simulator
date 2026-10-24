@@ -84,6 +84,74 @@ class ViewerTests(unittest.TestCase):
         (self.root/'building_access.json').write_text(json.dumps(value))
         return value
 
+    def add_storefront_access(self):
+        value=self.add_building_access();value['schema']='ump.building-access.v2'
+        value['portals'][0]['point']=[18,10]  # Projection need not be facade midpoint.
+        value.update(store_fronts=[{'id':'front1','destination_id':'shop1','building_id':'way1',
+            'poi':{'osm_type':'node','osm_id':2,'name':'Example shop','point':[18,16]},
+            'portal_id':'door1','frontage':[[10,10],[25,10]],'provenance':'synthetic_poi_projection',
+            'projection_method':'orthogonal_to_reachable_original_facade'}],
+            facade_separators=[{'id':'divider1','building_id':'way1','points':[[25,10],[25,11]],
+                'provenance':'synthetic_frontage_division_not_interior_wall'}],
+            boundary_intervals=[{'id':'walk-west','mode':'walking','side':'west',
+                'points':[[0,40],[0,60]],'length_m':20,'spawn_supported':True,
+                'provenance':'derived_frozen_functional_zone_boundary'}],
+            navigation={'body_clearance_m':.55,'allowed_center_polygons_sha256':'a'*64,
+                'scope':'Bounded body-clearance navigation, not inferred indoor walls.'})
+        (self.root/'building_access.json').write_text(json.dumps(value));return value
+
+    def test_storefront_v2_non_midpoint_entrance_and_boundary_geometry_validate(self):
+        value=self.add_storefront_access();self.write();serve.validate_bundle(self.root)
+        for mode in ('cycling','road'):
+            value['boundary_intervals'][0].update(mode=mode,spawn_supported=False)
+            (self.root/'building_access.json').write_text(json.dumps(value));serve.validate_bundle(self.root)
+
+    def test_storefront_v2_manual_override_preserves_exact_checked_door_without_orthogonal_claim(self):
+        value=self.add_storefront_access();front=value['store_fronts'][0]
+        front['projection_method']='manual_original_facade_override'
+        front['poi']['point']=[19,16]
+        (self.root/'building_access.json').write_text(json.dumps(value));self.write()
+        serve.validate_bundle(self.root)
+        front['projection_method']='unverified_real_door'
+        (self.root/'building_access.json').write_text(json.dumps(value));self.rejected()
+
+    def test_storefront_v2_rejects_private_fields_at_every_new_level(self):
+        for level in ('front','poi','separator','boundary','navigation'):
+            with self.subTest(level=level):
+                value=self.add_storefront_access()
+                target={'front':value['store_fronts'][0],'poi':value['store_fronts'][0]['poi'],
+                    'separator':value['facade_separators'][0],'boundary':value['boundary_intervals'][0],
+                    'navigation':value['navigation']}[level]
+                target['person_schedule']='private';(self.root/'building_access.json').write_text(json.dumps(value));self.rejected()
+
+    def test_storefront_v2_checks_geometry_relationships_and_source_eligibility(self):
+        for mutation in ('unknown_portal','different_building','duplicate_front','unmatched_portal',
+                'poi_outside','projection_not_orthogonal','frontage_off_wall','entrance_outside_frontage','end_width','separator_off_front',
+                'separator_too_long','boundary_interior','boundary_side','boundary_length','cycling_source',
+                'boolean_eligibility','boundary_shadows_portal','navigation_digest','navigation_clearance'):
+            with self.subTest(mutation=mutation):
+                value=self.add_storefront_access();front=value['store_fronts'][0];boundary=value['boundary_intervals'][0]
+                if mutation=='unknown_portal':front['portal_id']='missing'
+                if mutation=='different_building':front['building_id']='missing'
+                if mutation=='duplicate_front':value['store_fronts'].append(copy.deepcopy(front))
+                if mutation=='unmatched_portal':value['store_fronts']=[]
+                if mutation=='poi_outside':front['poi']['point']=[81,10]
+                if mutation=='projection_not_orthogonal':front['poi']['point']=[19,16]
+                if mutation=='frontage_off_wall':front['frontage'][1]=[25,11]
+                if mutation=='entrance_outside_frontage':front['frontage']=[[10,10],[15,10]]
+                if mutation=='end_width':value['portals'][0]['point']=[10.1,10]
+                if mutation=='separator_off_front':value['facade_separators'][0]['points'][0]=[24,10]
+                if mutation=='separator_too_long':value['facade_separators'][0]['points'][1]=[25,20]
+                if mutation=='boundary_interior':boundary['points']=[[1,40],[1,60]]
+                if mutation=='boundary_side':boundary['side']='east'
+                if mutation=='boundary_length':boundary['length_m']=19
+                if mutation=='cycling_source':boundary['mode']='cycling'
+                if mutation=='boolean_eligibility':boundary['spawn_supported']=1
+                if mutation=='boundary_shadows_portal':boundary['id']='door1'
+                if mutation=='navigation_digest':value['navigation']['allowed_center_polygons_sha256']='bad'
+                if mutation=='navigation_clearance':value['navigation']['body_clearance_m']=0
+                (self.root/'building_access.json').write_text(json.dumps(value));self.rejected()
+
     def test_public_building_geometry_is_optional_and_hash_checked(self):
         self.add_building_access();self.write()
         _,files=serve.validate_bundle(self.root)
@@ -608,6 +676,22 @@ class ViewerTests(unittest.TestCase):
         self.assertEqual(controls.select['aria-describedby'], 'referenceFocusHint')
         self.assertEqual([option['value'] for option in controls.options], ['full', 'A', 'B'])
         self.assertFalse(any('selected' in option for option in controls.options[1:]))
+
+    def test_storefront_overlay_controls_are_explicitly_highlights_of_fixed_map_context(self):
+        html=(Path(__file__).parent/'index.html').read_text()
+        self.assertIn('Highlight modeled shop fronts',html)
+        self.assertIn('Highlight source / sink intervals',html)
+        self.assertNotIn('Show modeled shop fronts',html)
+        self.assertNotIn('Show source / sink intervals',html)
+
+    def test_verbose_source_provenance_is_below_reference_map_and_outside_its_header(self):
+        html=(Path(__file__).parent/'index.html').read_text()
+        reference=html.split('<section class="panel reference">',1)[1].split('</section>',1)[0]
+        header=reference.split('<div class="map">',1)[0]
+        self.assertNotIn('id="source"',header)
+        self.assertNotIn('id="referenceProvenance"',header)
+        self.assertLess(reference.index('id="reference"'),reference.index('id="referenceProvenance"'))
+        self.assertIn('class="source-provenance"',reference)
 
     def test_reference_wording_does_not_assume_simulator_generation(self):
         html = (Path(__file__).parent/'index.html').read_text()

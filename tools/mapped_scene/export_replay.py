@@ -188,7 +188,9 @@ def audit_lifecycle(cfg, raw, frames, person_by_track, origin, step, end, summar
         if name in summary:
             insist(count(summary[name],name)==value, 'Source/lifecycle diagnostic mismatch: '+name)
     diagnostic_names=('blocked_motion_steps','admission_wait_steps','merge_admission_wait_steps',
-                      'max_consecutive_stop_ms','active_stalled_tracks','body_overlap_violations')
+                      'max_consecutive_stop_ms','active_stalled_tracks','body_overlap_violations',
+                      'navigation_steering_steps','navigation_replans','navigation_replan_failures',
+                      'navigation_candidate_checks','navigation_max_search_nodes')
     # Historical integration captures did not record these diagnostics. Null is
     # intentional: absence of a counter is not evidence of zero violations.
     diagnostics={name:count(summary[name],name) if name in summary else None
@@ -220,7 +222,7 @@ def audit_lifecycle(cfg, raw, frames, person_by_track, origin, step, end, summar
             'source_model':summary.get('motion_model','not_recorded'),
             'reported_diagnostics':diagnostics,
             'scope':'Recorded source counters and event/GT consistency only. Completion does not establish '
-                    'realistic motion, general queue liveness, swept collision avoidance or privacy.'}}
+                    'realistic motion, general queue liveness, collision safety beyond recorded checks or privacy.'}}
 
 
 def build_recording(cfg, raw):
@@ -478,12 +480,44 @@ def validate_scene_building_access(scene, cfg, access_path):
     by_id={portal['id']:portal for portal in declared}
     insist(len(by_id)==len(declared) and by_id=={portal['id']:portal for portal in access['portals']},
            'Public building access portals differ from native scene configuration')
+    v2=access.get('schema')=='ump.building-access.v2'
+    if v2:
+        navigation=cfg.get('mapped_scene',{}).get('motion',{}).get('navigation',{})
+        polygons=navigation.get('allowed_center_polygons')
+        insist(isinstance(polygons,list) and polygons, 'Public navigation requires native allowed-center polygons')
+        navigation_digest=hashlib.sha256(json.dumps(polygons,sort_keys=True,separators=(',',':'),allow_nan=False).encode()).hexdigest()
+        insist(access['navigation']['allowed_center_polygons_sha256']==navigation_digest,
+               'Public navigation geometry differs from native scene configuration')
+        insist(access['navigation']['body_clearance_m']==navigation.get('center_clearance_m'),
+               'Public navigation clearance differs from native scene configuration')
+        # Public geometry identifies source/sink eligibility. No planned person
+        # schedules or identity mapping are copied into this public artifact.
+        boundary_lookup={interval['id']:interval for interval in access['boundary_intervals']}
+        endpoint_targets={**by_id,**boundary_lookup}
+        routes=cfg.get('mapped_scene',{}).get('routes')
+        insist(isinstance(routes,list) and routes, 'Public navigation requires native source routes')
+        for route in routes:
+            points=route.get('points')
+            insist(isinstance(points,list) and len(points)>=2, 'Invalid native source route geometry')
+            for field,endpoint in (('start_portal',points[0]),('end_portal',points[-1])):
+                target=endpoint_targets.get(route.get(field))
+                insist(target is not None, 'Native route references undeclared public entrance or boundary interval')
+                if 'point' in target:
+                    insist(endpoint==target['point'], 'Native route endpoint differs from exact public entrance')
+                else:
+                    insist(target['mode']=='walking' and target['spawn_supported'],
+                           'Native route endpoint uses ineligible public boundary interval')
+                    a,b=target['points'];dx,dy=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dy)
+                    px,py=endpoint[0]-a[0],endpoint[1]-a[1]
+                    fraction=(px*dx+py*dy)/(length*length)
+                    insist(-1e-7<=fraction<=1+1e-7 and abs(px*dy-py*dx)/length<=1e-5,
+                           'Native route endpoint lies outside declared public boundary interval')
     manifest_path=scene/'scene_manifest.json'
     manifest=json.loads(manifest_path.read_text()) if manifest_path.is_file() else {}
     if 'building_access_sha256' in manifest:
         insist(manifest['building_access_sha256']==digest(access_path),
                'Public building access differs from generated scene manifest digest')
-    generated=manifest.get('motion_mode')=='buildings'
+    generated=manifest.get('motion_mode') in ('buildings','storefronts')
     if generated:
         insist(manifest.get('configuration_sha256')==digest(scene/'config.yaml'),
                'Native building configuration differs from generated scene manifest digest')
@@ -494,7 +528,10 @@ def validate_scene_building_access(scene, cfg, access_path):
     return {'status':'verified_native_portal_agreement','building_footprints':len(access['buildings']),
             'routable_portals':len(access['portals']),
             'generated_manifest_geometry_digest_verified':'building_access_sha256' in manifest,
-            'generated_manifest_config_and_background_verified':generated}
+            'generated_manifest_config_and_background_verified':generated,
+            **({'storefront_destinations':len(access['store_fronts']),
+                'boundary_intervals':len(access['boundary_intervals']),
+                'native_navigation_geometry_and_boundaries_verified':True} if v2 else {})}
 
 
 def export_scene(scene, output):

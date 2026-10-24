@@ -1,0 +1,371 @@
+"""Frozen-map storefront targets, boundary sources and seeded pedestrian paths.
+
+POI projections and frontage divisions are explicit modeling assumptions, never
+claimed as surveyed doors, interior walls, access rights or calibrated demand.
+"""
+from __future__ import annotations
+import copy
+import hashlib
+import heapq
+import json
+import math
+import random
+import uuid
+from shapely.geometry import LineString, Point, Polygon, box
+from shapely.ops import unary_union, linemerge
+from shapely.prepared import prep
+
+SIDE = 80
+CLEARANCE = .55
+SHOP_NAMES = {"Apollo", "Ditsch", "Adidas Originals", "H&M HOME"}
+
+
+def canonical_hash(value):
+    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def parts(geom, kind="Polygon"):
+    if geom.is_empty:
+        return []
+    if geom.geom_type == kind:
+        return [geom]
+    return [p for p in getattr(geom, "geoms", []) if p.geom_type == kind and not p.is_empty]
+
+
+def polygon_rows(geometry):
+    return [{"outer": [[float(x), float(y)] for x, y in p.exterior.coords],
+             "holes": [[[float(x), float(y)] for x, y in ring.coords] for ring in p.interiors]}
+            for p in sorted(parts(geometry), key=lambda p:(p.bounds, p.area))]
+
+
+def geometry_from_rows(rows):
+    return unary_union([Polygon(row["outer"], row["holes"]) for row in rows])
+
+
+def _segments(geom):
+    for polygon in parts(geom):
+        ring = list(polygon.exterior.coords)
+        for a, b in zip(ring, ring[1:]):
+            yield a, b
+
+
+def projected_shops(repo, local, layers, access, source_hash, overrides=None):
+    labels = json.loads((repo / "tools/osm_regions/data/moenckeberg/close/poi_labels.json").read_text())
+    originals = {f"osm-{p['osm_type']}-{p['osm_id']}": g for p,g in local if p["kind"] == "building"}
+    building_id = "osm-way-43117523"
+    building = originals[building_id]
+    all_buildings = unary_union(list(originals.values()))
+    override_points = {}
+    if overrides is not None:
+        if (not isinstance(overrides, dict) or set(overrides) != {"schema", "source_geometry_sha256", "entrances"}
+                or overrides["schema"] != "ump.shop-entrance-overrides.v1" or overrides["source_geometry_sha256"] != source_hash):
+            raise ValueError("Shop overrides must declare the exact frozen source hash and supported schema")
+        if not isinstance(overrides["entrances"], list) or len(overrides["entrances"]) > 4:
+            raise ValueError("Shop overrides require a bounded list of at most four entrances")
+        for row in overrides["entrances"]:
+            if not isinstance(row, dict) or set(row) != {"poi_osm_id", "point"} or row["poi_osm_id"] in override_points:
+                raise ValueError("Duplicate or invalid shop override")
+            point = row["point"]
+            if not isinstance(point, list) or len(point) != 2 or any(not isinstance(v,(int,float)) or isinstance(v,bool) or not math.isfinite(v) for v in point):
+                raise ValueError("Shop override requires a finite local coordinate pair")
+            override_points[row["poi_osm_id"]] = point
+    portals, fronts, internals = [], [], []
+    selected = sorted([row for row in labels["labels"] if row["text"] in SHOP_NAMES], key=lambda r:r["x"])
+    if len(selected) != 4 or set(override_points)-{r["osm_id"] for r in selected}:
+        raise ValueError("Frozen storefronts or override targets do not match the four declared POIs")
+    for row in selected:
+        poi = Point(row["x"], row["y"])
+        if not building.covers(poi):
+            raise ValueError("Shop POI is not inside its declared original building")
+        choices = []
+        for a,b in _segments(building):
+            wall = LineString([a,b]); length = wall.length
+            projection = wall.interpolate(wall.project(poi))
+            if projection.distance(Point(a)) < .65 or projection.distance(Point(b)) < .65:
+                continue
+            if row["osm_id"] in override_points:
+                projection = Point(override_points[row["osm_id"]])
+                if projection.distance(wall) > 1e-7 or min(projection.distance(Point(a)),projection.distance(Point(b))) < .65:
+                    continue
+            tangent = ((b[0]-a[0])/length, (b[1]-a[1])/length)
+            for normal in [(-tangent[1],tangent[0]),(tangent[1],-tangent[0])]:
+                center = list(projection.coords)[0]
+                approach = [center[i]+normal[i]*1.5 for i in range(2)]
+                if building.covers(Point(approach)) or not box(0,0,80,80).covers(projection):
+                    continue
+                # Only a 1.2m-wide facade throat may relax the circular body's
+                # wall clearance; center paths never enter the building.
+                throat = Polygon([[center[i]+normal[i]*d+tangent[i]*w for i in range(2)]
+                                  for d,w in [(-.56,-.6),(1.7,-.6),(1.7,.6),(-.56,.6)]])
+                footprint = LineString([center,approach]).buffer(CLEARANCE)
+                if footprint.difference(layers["walking"].union(throat)).area > 1e-8:
+                    continue
+                if footprint.intersection(all_buildings.difference(throat)).area > 1e-8:
+                    continue
+                choices.append((poi.distance(projection),list(center),list(a),list(b),normal,tangent,throat))
+        if not choices:
+            raise ValueError(f"No reachable original facade projection for {row['text']}")
+        _,center,a,b,normal,tangent,throat = min(choices,key=lambda q:q[0])
+        identifier = f"shop-{row['osm_id']}"
+        portal = {"id":identifier,"building_id":building_id,"point":center,"facade":[a,b],"width_m":1.2,"provenance":"synthetic"}
+        portals.append(portal)
+        fronts.append({"id":"front-"+identifier,"destination_id":identifier,"building_id":building_id,
+                       "poi":{"osm_type":row["osm_type"],"osm_id":row["osm_id"],"name":row["text"],"point":[row["x"],row["y"]]},
+                       "portal_id":identifier,"frontage":[],"provenance":"synthetic_poi_projection",
+                       "projection_method":"manual_original_facade_override" if row["osm_id"] in override_points else "orthogonal_to_reachable_original_facade"})
+        internals.append({"normal":normal,"tangent":tangent,"throat":throat,"approach":[center[i]+normal[i]*1.5 for i in range(2)]})
+    # Divide the connected, original southern facade by nearest-door arclength.
+    walls = unary_union([LineString(portal["facade"]) for portal in portals])
+    wallchain = (linemerge(walls) if walls.geom_type == "MultiLineString" else walls).intersection(box(0,0,80,80))
+    if wallchain.geom_type != "LineString":
+        raise ValueError("Selected storefront facades do not form one original connected frontage")
+    if wallchain.coords[0][0] > wallchain.coords[-1][0]:
+        wallchain = LineString(list(wallchain.coords)[::-1])
+    measures = [wallchain.project(Point(p["point"])) for p in portals]
+    if any(b-a < 1.2 for a,b in zip(measures,measures[1:])):
+        raise ValueError("Shop entrance overrides must preserve distinct ordered storefronts")
+    separators = []
+    cuts = [0]+[(a+b)/2 for a,b in zip(measures,measures[1:])]+[wallchain.length]
+    for index,front in enumerate(fronts):
+        left,right = wallchain.interpolate(cuts[index]),wallchain.interpolate(cuts[index+1])
+        # Include real facade corners, never draw a chord across a wall bend.
+        vertices=[list(left.coords)[0]]
+        for vertex in list(wallchain.coords)[1:-1]:
+            distance=wallchain.project(Point(vertex))
+            if cuts[index]<distance<cuts[index+1]: vertices.append(vertex)
+        vertices.append(list(right.coords)[0])
+        front["frontage"] = [list(p) for p in vertices]
+        if index < len(fronts)-1:
+            center = wallchain.interpolate(cuts[index+1]); around=wallchain.interpolate(min(wallchain.length,cuts[index+1]+.01))
+            dx,dy=around.x-center.x,around.y-center.y; length=math.hypot(dx,dy)
+            normal=(-dy/length,dx/length)
+            # Inward-facing short ticks are modeled storefront divisions,
+            # explicitly not building partitions or inferred interior walls.
+            a=[center.x,center.y]; b=[center.x+normal[0]*1.1,center.y+normal[1]*1.1]
+            if not building.covers(Point(b)): b=[center.x-normal[0]*1.1,center.y-normal[1]*1.1]
+            separators.append({"id":f"storefront-division-{index+1}","building_id":building_id,
+                               "points":[a,b],"provenance":"synthetic_frontage_division_not_interior_wall"})
+    context = access.building_context(local)
+    context.update(schema="ump.building-access.v2",portals=portals,store_fronts=fronts,facade_separators=separators)
+    return context, internals, all_buildings
+
+
+def build_geometry(repo, local, layers, access, source_hash, overrides=None):
+    context, internals, buildings = projected_shops(repo,local,layers,access,source_hash,overrides)
+    domain = box(0,0,SIDE,SIDE)
+    # Outside-domain padding makes partial circular bodies at open map edges
+    # valid. Actual buildings beyond the clipping edge remain obstacles.
+    padded = layers["walking"].union(domain.buffer(1).difference(domain)).difference(buildings)
+    safe = padded.buffer(-(CLEARANCE + .002), resolution=16).intersection(domain)
+    strips = []
+    for portal,internal in zip(context["portals"],internals):
+        center=portal["point"]; normal=internal["normal"]; tangent=internal["tangent"]
+        strip = Polygon([[center[i]+normal[i]*d+tangent[i]*w for i in range(2)]
+                         for d,w in [(0,-.035),(1.6,-.035),(1.6,.035),(0,.035)]])
+        strips.append(strip.difference(buildings.buffer(-1e-8)))
+    safe = unary_union([safe]+strips).intersection(domain).buffer(0)
+    rows = polygon_rows(safe)
+    intervals = []
+    sides = {"west":LineString([(0,0),(0,80)]),"east":LineString([(80,0),(80,80)]),
+             "north":LineString([(0,0),(80,0)]),"south":LineString([(0,80),(80,80)])}
+    for mode in ["walking","cycling","road"]:
+        for side,edge in sides.items():
+            intersection = layers[mode].intersection(edge)
+            merged = unary_union(parts(intersection,"LineString"))
+            if merged.geom_type == "MultiLineString": merged=linemerge(merged)
+            for raw in sorted(parts(merged,"LineString"),key=lambda line:line.bounds):
+                # Preserve contextual boundary geometry for unsupported modes;
+                # actual pedestrian source intervals are eroded-body safe.
+                intersection_safe = raw.intersection(safe) if mode == "walking" else raw
+                if intersection_safe.geom_type == "MultiLineString": intersection_safe = linemerge(intersection_safe)
+                lines = parts(intersection_safe,"LineString")
+                for line in lines:
+                    if line.length <= .05: continue
+                    intervals.append({"id":f"boundary-{mode}-{side}-{sum(r['mode']==mode and r['side']==side for r in intervals)+1}",
+                        "mode":mode,"side":side,"points":[list(line.coords[0]),list(line.coords[-1])],
+                        "length_m":line.length,"spawn_supported":mode=="walking",
+                        "provenance":"derived_frozen_functional_zone_boundary"})
+    if len([r for r in intervals if r["spawn_supported"]]) < 2:
+        raise ValueError("Insufficient positive-length body-safe walking boundaries")
+    context["boundary_intervals"] = intervals
+    context["navigation"] = {"body_clearance_m":CLEARANCE,"allowed_center_polygons_sha256":canonical_hash(rows),
+        "scope":"Pre-eroded derived walking geometry with clipped-edge circular-body access and narrow declared facade transitions. Road/cycle boundaries are context only; active sources are pedestrians."}
+    return context, internals, safe, rows
+
+
+class SafeRouter:
+    """Bounded A* with exact center-segment containment and seeded detours."""
+    def __init__(self, geometry):
+        self.geometry = geometry
+        self.prepared = prep(geometry.buffer(1e-8))
+        self.grid_side = 161
+        self.grid_step = .5
+        self.points = [(x*self.grid_step,y*self.grid_step) for y in range(self.grid_side) for x in range(self.grid_side)]
+        self.valid = {i for i,p in enumerate(self.points) if self.prepared.covers(Point(p))}
+        self.cache = {}
+    def clear(self,a,b):
+        return self.prepared.covers(LineString([a,b]))
+    def route(self,start,goal):
+        if self.clear(start,goal): return [list(start),list(goal)]
+        def attach(p):
+            return [(i,math.dist(p,self.points[i])) for i in sorted(self.valid,key=lambda i:math.dist(p,self.points[i]))[:24]
+                    if math.dist(p,self.points[i])<=5 and self.clear(p,self.points[i])]
+        sources,targets=attach(start),dict(attach(goal))
+        if not sources or not targets: raise ValueError("Route endpoint cannot reach bounded walking lattice")
+        distance={}; previous={}; queue=[]
+        for i,d in sources:
+            distance[i]=d;heapq.heappush(queue,(d+math.dist(self.points[i],goal),d,i))
+        reached=None
+        while queue:
+            _,cost,i=heapq.heappop(queue)
+            if cost != distance.get(i): continue
+            if i in targets: reached=i;break
+            x,y=i%self.grid_side,i//self.grid_side
+            for dx,dy in [(-1,0),(1,0),(0,-1),(0,1),(-1,-1),(-1,1),(1,-1),(1,1)]:
+                nx,ny=x+dx,y+dy
+                if not (0<=nx<self.grid_side and 0<=ny<self.grid_side):continue
+                j=ny*self.grid_side+nx
+                if j not in self.valid:continue
+                key=min(i,j),max(i,j)
+                if key not in self.cache:self.cache[key]=self.clear(self.points[i],self.points[j])
+                if not self.cache[key]:continue
+                candidate=cost+math.dist(self.points[i],self.points[j])
+                if candidate<distance.get(j,math.inf):
+                    distance[j]=candidate;previous[j]=i
+                    heapq.heappush(queue,(candidate+math.dist(self.points[j],goal),candidate,j))
+        if reached is None:raise ValueError("No connected boundary/door route")
+        chain=[reached]
+        while chain[-1] in previous:chain.append(previous[chain[-1]])
+        raw=[start]+[self.points[i] for i in reversed(chain)]+[goal]
+        result=[list(start)];i=0
+        while i<len(raw)-1:
+            j=next(j for j in range(len(raw)-1,i,-1) if self.clear(raw[i],raw[j]))
+            if math.dist(result[-1],raw[j])>1e-8:result.append(list(raw[j]))
+            i=j
+        return result
+    def varied_route(self,start,goal,rng):
+        direct=self.route(start,goal)
+        baseline=LineString(direct).length
+        # Draw a geometrically admissible waypoint close to the route. A
+        # bounded detour changes actual geometry, not just a route identifier.
+        candidates=list(self.valid);rng.shuffle(candidates)
+        for node in candidates[:160]:
+            point=self.points[node]
+            distance=LineString(direct).distance(Point(point))
+            if not .7<=distance<=3.5 or min(math.dist(point,start),math.dist(point,goal))<3:continue
+            try:left,right=self.route(start,point),self.route(point,goal)
+            except ValueError:continue
+            joined=left+right[1:]
+            if LineString(joined).length<=baseline*1.35+2 and len(joined)<=64:return joined
+        return direct
+
+
+def make_scene(repo, local, layers, access, source_hash, seed, people, interval, overrides=None):
+    context, internals, safe, rows = build_geometry(repo,local,layers,access,source_hash,overrides)
+    router=SafeRouter(safe)
+    rng=random.Random(seed ^ 0x6A09E667F3BCC909)
+    tokens=random.Random(seed ^ 0xCBBB9D5DC1059ED8)
+    boundaries=[r for r in context["boundary_intervals"] if r["spawn_supported"]]
+    routes=[]
+    portal_by_id={p["id"]:p for p in context["portals"]}
+    def boundarypoint(row):
+        return list(LineString(row["points"]).interpolate(rng.uniform(.02,.98),normalized=True).coords)[0]
+    eligibility_cache={}
+    def eligible(point):
+        key=tuple(point)
+        if key not in eligibility_cache:
+            valid=[]
+            for row in boundaries:
+                mid=list(LineString(row["points"]).interpolate(.5,normalized=True).coords)[0]
+                try: router.route(mid,point);valid.append(row)
+                except ValueError: pass
+            eligibility_cache[key]=valid
+        return eligibility_cache[key]
+    def add(points,start_portal,end_portal):
+        identifier="storefront-route-"+str(uuid.UUID(int=tokens.getrandbits(128),version=4))
+        routes.append({"id":identifier,"points":points,"start_portal":start_portal,"end_portal":end_portal})
+        return identifier
+    for index,person in enumerate(people):
+        visit=index%2==0
+        if visit:
+            portal=context["portals"][(index//2)%len(context["portals"])]
+            internal=internals[(index//2)%len(context["portals"])]
+            options=eligible(internal["approach"])
+            if not options:raise ValueError("Shop is disconnected from all walking boundaries")
+            origin=rng.choice(options);destination=rng.choice(options)
+            start,end=boundarypoint(origin),boundarypoint(destination)
+            incoming=router.varied_route(start,internal["approach"],rng)+[portal["point"]]
+            outgoing=[portal["point"]]+router.varied_route(internal["approach"],end,rng)
+            first=person["episodes"][0]
+            first["route_id"]=add(incoming,origin["id"],portal["id"])
+            person["episodes"]=[first,{"track_id":str(uuid.UUID(int=tokens.getrandbits(128),version=4)),
+                "route_id":add(outgoing,portal["id"],destination["id"]),"start_ms":0,"after_previous_ms":8000 if index%4==0 else 10000}]
+        else:
+            # Components with at least two distinct boundary intervals support
+            # through trips. Sampling uses connected intervals and interior arclength,
+            # not one fixed lane.
+            viable=[]
+            for origin in boundaries:
+                midpoint=list(LineString(origin["points"]).interpolate(.5,normalized=True).coords)[0]
+                options=[r for r in eligible(midpoint) if r["id"]!=origin["id"]]
+                if options:viable.append((origin,options))
+            if not viable:raise ValueError("No connected pair of walking source/sink intervals")
+            origin,options=rng.choice(viable);destination=rng.choice(options)
+            start,end=boundarypoint(origin),boundarypoint(destination)
+            first=person["episodes"][0]
+            first["route_id"]=add(router.varied_route(start,end,rng),origin["id"],destination["id"])
+            person["episodes"]=[first]
+    scene={"support_contract":"one_episode_per_retained_history",
+        "motion":{"mode":"local_navigation","step_ms":50,"clearance_m":.1,"portal_gate_radius_m":1.3,
+                  "navigation":{"center_clearance_m":CLEARANCE,"allowed_center_polygons":rows,"grid_resolution_m":.5,"max_replan_nodes":20000,
+                                "replan_after_ms":1500,"replan_interval_ms":1000}},
+        "portals":context["portals"],"routes":routes,"people":people}
+    construction={"scope":"Four modeled POI storefronts share their true original building outline; frontages and entrances are synthetic, not surveyed doors or interior walls. Seeded finite pedestrian cohort with explicit boundary requests, geometric paths and relative hidden dwell.",
+        "navigation_lattice_m":.5,"max_route_vertices":64,"body_plus_clearance_radius_m":CLEARANCE,"erosion_numerical_margin_m":.002,
+        "demand":{"visit_fraction":.5,"destination_weights":{p["id"]:1 for p in context["portals"]},
+                  "boundary_selection":"uniform connected intervals; uniform interior arclength (.02,.98)","arrival_interval_ms":interval,
+                  "scope":"Declared experimental demand, not empirical store visitation or calibrated arrival rates."},
+        "overrides_sha256":canonical_hash(overrides) if overrides is not None else None}
+    audit=audit_scene(local,layers,scene,context)
+    return scene,context,construction,audit
+
+
+def audit_scene(local,layers,scene,context):
+    domain=box(0,0,80,80)
+    buildings=unary_union([g for p,g in local if p["kind"]=="building"])
+    allowed=geometry_from_rows(scene["motion"]["navigation"]["allowed_center_polygons"])
+    lookup={p["id"]:p for p in context["portals"]}
+    boundary={r["id"]:r for r in context["boundary_intervals"] if r["spawn_supported"]}
+    normals={}
+    for portal in lookup.values():
+        center=portal["point"];a,b=portal["facade"];length=math.dist(a,b)
+        tangent=[(b[i]-a[i])/length for i in range(2)]
+        normals[portal["id"]]=next(n for n in [(-tangent[1],tangent[0]),(tangent[1],-tangent[0])]
+                                      if not buildings.covers(Point([center[i]+n[i] for i in range(2)])))
+    result={}
+    for route in scene["routes"]:
+        points=route["points"];line=LineString(points)
+        if len(points)>64 or not domain.covers(line) or not allowed.buffer(1e-7).covers(line):
+            raise ValueError("Storefront route fails exact center navigation containment")
+        exemptions=[]
+        for key,point in [(route["start_portal"],points[0]),(route["end_portal"],points[-1])]:
+            if key in lookup:
+                portal=lookup[key]
+                if math.dist(portal["point"],point)>1e-8:raise ValueError("Route misses exact shop facade point")
+                a,b=portal["facade"];length=math.dist(a,b);tangent=[(b[i]-a[i])/length for i in range(2)];n=normals[key]
+                exemptions.append(Polygon([[point[i]+n[i]*d+tangent[i]*w for i in range(2)]
+                    for d,w in [(-.56,-.6),(1.7,-.6),(1.7,.6),(-.56,.6)]]))
+            elif key not in boundary or Point(point).distance(LineString(boundary[key]["points"]))>1e-7:
+                raise ValueError("Route endpoint is not on an eligible walking boundary interval")
+        exemption=unary_union(exemptions)
+        body=line.buffer(CLEARANCE,resolution=32).intersection(domain)
+        outside=body.difference(layers["walking"].union(exemption)).area
+        wall=body.intersection(buildings.difference(exemption)).area
+        interior=line.intersection(buildings.buffer(-1e-7)).length
+        if outside>1e-6 or wall>1e-6 or interior>1e-6:
+            raise ValueError(f"Storefront swept footprint failed: outside={outside}, wall={wall}, interior={interior}")
+        result[route["id"]]={"vertices":len(points),"length_m":line.length,"body_outside_walkable_area_m2":outside,
+                              "body_building_intersection_outside_portal_m2":wall,"building_interior_length_m":interior}
+    return {"status":"pass","routes":result,"portal_count":len(lookup),"storefront_count":len(context["store_fronts"]),
+        "building_count":len({p["building_id"] for p in lookup.values()}),"body_plus_clearance_radius_m":CLEARANCE,
+        "scope":"Exact center paths and swept .55m body against frozen walking/building geometry; only referenced 1.2m-wide declared facade throats exempt body overlap. Domain-edge circular-body clipping is explicit; no false building walls."}
