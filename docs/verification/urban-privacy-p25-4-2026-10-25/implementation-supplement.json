@@ -1,0 +1,30 @@
+{
+  "archival": "Lossless gzip per created result/audit/public file after all derived uses; retain raw SHA and verified archive SHA. No source motion or Mongo database is deleted.",
+  "contract": "No frozen analysis or native helper changed. Independent source capture; TRAIN-only fits; CAL-only thresholds; grouped TEST; exact queries and rates; all outcomes retained.",
+  "created_at": "2026-10-25T22:51:54.981444+00:00",
+  "files_sha256": {
+    "tools/evaluation/run_urban_privacy_primary.py": "01d2aa02cceeb5266be0484cb3929f31b66ffd339170b9c7f24f4a87e14cbf02",
+    "tools/evaluation/run_urban_privacy_primary_sources.py": "502a88908ce503461081072f5e3e84c1ab1d8000bbdfca3505a1eda0dab4b488",
+    "tools/evaluation/test_run_urban_privacy_primary.py": "979b7474a0fa56ce61c22b8c60226b43d56fa8e898cab74a2467418765b8abb9",
+    "tools/evaluation/test_run_urban_privacy_primary_sources.py": "f9ce20489c7396d42baca5789a3e7f58253e9225626e419cf08ded3b438aaf3b",
+    "tools/evaluation/test_urban_privacy_analysis.py": "356fd3c847cfecc1b47263248a08d44b448d9f1f1b4fb04a01c1fbcd5ac6ee25",
+    "tools/evaluation/test_urban_privacy_queries.py": "08d34b7eb54a117a560a480780e75b9eafbf426f7ade6c6d7a076b4966617872",
+    "tools/evaluation/test_urban_privacy_statistics.py": "974bde4bea0b5d155b057159978d9a6a1cf024037a244e34058bed8a5baabca6",
+    "tools/evaluation/urban_privacy_analysis.py": "5cc2a5a43d3a17051c31a5ba4f008fdd44c474f03d0a70e0ab94b84691f84896",
+    "tools/evaluation/urban_privacy_queries.py": "dc39b67e804b3a7b4d0529f3f473bc6d0170251df04b75a17d29a551df8f6d66",
+    "tools/evaluation/urban_privacy_statistics.py": "5389e37a55d77ed38de354428831bfb64e264275e513eaf877a48f73f9b7a72f"
+  },
+  "manifest_sha256": "5c12a45072da540f71d96115341b5f7fb1a6d9b5be84e8ba3922ac233586056a",
+  "schema": "ump.urban-primary-implementation.v1",
+  "status": "verified_before_test",
+  "test_receipts": [
+    {
+      "path": "unit-validation-receipt.json",
+      "sha256": "30be8eb367c8889255cf8ad50e5db78ce42adced41f73940c9ef6206f384330c"
+    },
+    {
+      "path": "dev-integration-current-code-receipt.json",
+      "sha256": "6be8de4968bb2c584e5bcbda84f068de9b3ab444928960f1644f3c9d008e9b83"
+    }
+  ]
+}

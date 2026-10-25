@@ -131,8 +131,11 @@ evidence only. A second site is a later transfer question after this gate.
 - [Causal visibility implementation](CAUSAL_PRIVACY_IMPLEMENTATION.md).
 - [Attribute and online contract](PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
 
-The immediate next task is **P25.4**: complete and validate the urban main-study
-orchestrator, exact root-query coverage and exact rate intervals; record an
-implementation supplement before generating or inspecting TEST. Then execute the
-frozen grouped risk/utility experiment. The pilot is DEV only; main attack results
-and privacy-benefit estimates remain unmeasured.
+**P25.4 is running.** The primary runner, exact root-query coverage and exact
+rate intervals pass 176 affected Python tests and all 22 existing-source DEV
+recipient streams. Their implementation supplement is frozen before TEST.
+The unchanged grouped primary source/mechanism study is executing serially;
+TRAIN/CAL fits and thresholds must be locked before TEST sources. The inspected
+pilot remains DEV only; completed primary privacy-benefit estimates are pending.
+See the [P25.4 protocol](URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) and
+[validation/execution report](URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).

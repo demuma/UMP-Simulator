@@ -28,11 +28,15 @@ Research questions describe the dissertation; this is the implementation queue.
   ungenerated, no attack fit or privacy gain claimed.
   [Protocol](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md) and
   [test report](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md).
-- [ ] P25.4: implement/validate the urban study runner, exact root-query coverage
-  and exact binomial intervals; freeze implementation evidence before TEST
-  generation/inspection. Then run the frozen joint risk/utility comparison, report AUC and observed
-  TPR/FPR with source-group uncertainty, coverage/detail/delay and all outcomes;
-  retain raw movement privately and publish compact evidence and test report.
+- [ ] P25.4: implementation gate complete: 176 affected Python tests pass,
+  18 native +4 regional DEV streams verified; exact root queries, exact intervals,
+  grouped source/execution runners and locked TRAIN/CAL analysis are implemented.
+  Supplement frozen before TEST; serial primary execution is running. Complete
+  the unchanged 24/16/32 grouped risk/utility study, authenticate all archives and
+  source pairs, report controls/AUC/TPR/FPR/uncertainty, coverage/detail/delay and
+  failures. Raw movement/models/scores stay local; compact evidence only in Git.
+  [Protocol](docs/URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) and
+  [validation/execution report](docs/URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).
 
 Work through these gates sequentially. A second site, globally adaptive uniform
 raster, new attacks on sensitive visits and aggregation-heuristic changes are

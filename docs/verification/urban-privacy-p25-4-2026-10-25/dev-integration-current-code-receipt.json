@@ -1,0 +1,140 @@
+{
+  "attack_fitted": false,
+  "derived_cases": 4,
+  "exact_queries_per_world": 19200,
+  "implementation_files_sha256": {
+    "tools/evaluation/run_urban_privacy_primary.py": "01d2aa02cceeb5266be0484cb3929f31b66ffd339170b9c7f24f4a87e14cbf02",
+    "tools/evaluation/run_urban_privacy_primary_sources.py": "502a88908ce503461081072f5e3e84c1ab1d8000bbdfca3505a1eda0dab4b488",
+    "tools/evaluation/test_run_urban_privacy_primary.py": "979b7474a0fa56ce61c22b8c60226b43d56fa8e898cab74a2467418765b8abb9",
+    "tools/evaluation/test_run_urban_privacy_primary_sources.py": "f9ce20489c7396d42baca5789a3e7f58253e9225626e419cf08ded3b438aaf3b",
+    "tools/evaluation/test_urban_privacy_analysis.py": "356fd3c847cfecc1b47263248a08d44b448d9f1f1b4fb04a01c1fbcd5ac6ee25",
+    "tools/evaluation/test_urban_privacy_queries.py": "08d34b7eb54a117a560a480780e75b9eafbf426f7ade6c6d7a076b4966617872",
+    "tools/evaluation/test_urban_privacy_statistics.py": "974bde4bea0b5d155b057159978d9a6a1cf024037a244e34058bed8a5baabca6",
+    "tools/evaluation/urban_privacy_analysis.py": "5cc2a5a43d3a17051c31a5ba4f008fdd44c474f03d0a70e0ab94b84691f84896",
+    "tools/evaluation/urban_privacy_queries.py": "dc39b67e804b3a7b4d0529f3f473bc6d0170251df04b75a17d29a551df8f6d66",
+    "tools/evaluation/urban_privacy_statistics.py": "5389e37a55d77ed38de354428831bfb64e264275e513eaf877a48f73f9b7a72f"
+  },
+  "independent_sources": 1,
+  "methods": 11,
+  "native_binary_sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+  "native_cases": 18,
+  "observed_DEV_exact_coverage": [
+    {
+      "coverage": 0.0,
+      "method": "fixed10_400ms",
+      "world": "IN"
+    },
+    {
+      "coverage": 0.02276041666666667,
+      "method": "fixed10_1000ms",
+      "world": "IN"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed10_2000ms",
+      "world": "IN"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed10_4000ms",
+      "world": "IN"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed20_400ms",
+      "world": "IN"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed20_1000ms",
+      "world": "IN"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed20_2000ms",
+      "world": "IN"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed20_4000ms",
+      "world": "IN"
+    },
+    {
+      "coverage": 0.0,
+      "method": "regional_static10",
+      "world": "IN"
+    },
+    {
+      "coverage": 0.0,
+      "method": "regional_static20",
+      "world": "IN"
+    },
+    {
+      "coverage": 0.0,
+      "method": "adaptive_semantic_first",
+      "world": "IN"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed10_400ms",
+      "world": "OUT"
+    },
+    {
+      "coverage": 0.0221875,
+      "method": "fixed10_1000ms",
+      "world": "OUT"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed10_2000ms",
+      "world": "OUT"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed10_4000ms",
+      "world": "OUT"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed20_400ms",
+      "world": "OUT"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed20_1000ms",
+      "world": "OUT"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed20_2000ms",
+      "world": "OUT"
+    },
+    {
+      "coverage": 0.0,
+      "method": "fixed20_4000ms",
+      "world": "OUT"
+    },
+    {
+      "coverage": 0.0,
+      "method": "regional_static10",
+      "world": "OUT"
+    },
+    {
+      "coverage": 0.0,
+      "method": "regional_static20",
+      "world": "OUT"
+    },
+    {
+      "coverage": 0.0,
+      "method": "adaptive_semantic_first",
+      "world": "OUT"
+    }
+  ],
+  "original_dev_rows_sha256": "6b17fe728461315e3e36f03e24ab38b4187feb61926eab15d02e55bd0da8efcb",
+  "recipient_streams": 22,
+  "schema": "ump.urban-primary-dev-validation.v1",
+  "scope": "Reauthenticate full22stream DEV integration on current P25.4 code: all raw/public/archive SHA chains; native identities,bounds,secondary andrelease trigger;111/31publicfeatures+controls;world-specific query results; no primaryTEST.",
+  "seconds": 14.273334334,
+  "status": "verified",
+  "test_data_seen": false
+}

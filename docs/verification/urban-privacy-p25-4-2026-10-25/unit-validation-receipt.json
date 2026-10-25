@@ -1,0 +1,37 @@
+{
+  "errors": 0,
+  "failures": 0,
+  "implementation_files_sha256": {
+    "tools/evaluation/test_regional_public_transcript.py": "4bc0815326b33314831bab3190671bdb1eba3270e10d5a716ef3891089e398b8",
+    "tools/evaluation/test_run_urban_privacy_channel_pilot.py": "cff6d2b213540bc22bfeb295bfd7c63aa21c7a6bf7222765b3d23b2e9decfa94",
+    "tools/evaluation/test_run_urban_privacy_primary.py": "979b7474a0fa56ce61c22b8c60226b43d56fa8e898cab74a2467418765b8abb9",
+    "tools/evaluation/test_run_urban_privacy_primary_sources.py": "f9ce20489c7396d42baca5789a3e7f58253e9225626e419cf08ded3b438aaf3b",
+    "tools/evaluation/test_run_urban_privacy_sources.py": "37588cbb375750d570b73077d09d0040d9ab216c912b2247604582e402bdf2a6",
+    "tools/evaluation/test_semantic_privacy.py": "59c9de7d41cd6ae55b2eb1a8d4029d8d419115d912742936af339a51653671af",
+    "tools/evaluation/test_urban_privacy_analysis.py": "356fd3c847cfecc1b47263248a08d44b448d9f1f1b4fb04a01c1fbcd5ac6ee25",
+    "tools/evaluation/test_urban_privacy_fixture.py": "23f85f826acea70455bad91d94ae15a574f5823278461d647a626562cdf1b128",
+    "tools/evaluation/test_urban_privacy_queries.py": "08d34b7eb54a117a560a480780e75b9eafbf426f7ade6c6d7a076b4966617872",
+    "tools/evaluation/test_urban_privacy_split.py": "2b564182f82051618cc2335a4500a606364ab639ebed9bcf0549149a31cc6307",
+    "tools/evaluation/test_urban_privacy_statistics.py": "974bde4bea0b5d155b057159978d9a6a1cf024037a244e34058bed8a5baabca6"
+  },
+  "log_sha256": "fc1449aaff39310d6b33e9c0b1e90d8d4041c01eed5ab0f12db215c0940af21f",
+  "modules": [
+    "test_urban_privacy_analysis",
+    "test_urban_privacy_fixture",
+    "test_urban_privacy_queries",
+    "test_urban_privacy_split",
+    "test_urban_privacy_statistics",
+    "test_run_urban_privacy_primary_sources",
+    "test_run_urban_privacy_primary",
+    "test_semantic_privacy",
+    "test_regional_public_transcript",
+    "test_run_urban_privacy_channel_pilot",
+    "test_run_urban_privacy_sources"
+  ],
+  "schema": "ump.urban-primary-unit-validation.v1",
+  "seconds": 16.202760458,
+  "skipped": 0,
+  "status": "verified",
+  "test_data_seen": false,
+  "tests": 176
+}
