@@ -12,9 +12,13 @@ Research questions describe the dissertation; this is the implementation queue.
   Completed: full 300-s source, 171 eligible episodes, 357 target observations
   removed, 90 identical auxiliary points; 14 unit methods and 6 affected CTest
   groups pass. [Test report](docs/URBAN_PRIVACY_P25_1_TEST_REPORT_2026-10-25.md).
-- [ ] P25.2: extend the strict public exporter/attacks to actual semantic outputs
+- [x] P25.2: extend the strict public exporter/attacks to actual semantic outputs
   and construct the audited regional-static recipient transcript. Verify public-
   only input, truthful counts and causal release availability; run a plumbing pilot.
+  Completed: semantic v2, 111 public-only features, audited regional streams;
+  ten native DEV runs and twelve recipient streams verified. Default availability
+  is a final snapshot at H, not measured live delivery.
+  [Test report](docs/URBAN_PRIVACY_P25_2_TEST_REPORT_2026-10-25.md).
 - [ ] P25.3: record an initial eight independent same-site source realizations;
   reuse each recording across methods. Then freeze the primary grouped TRAIN/CAL/
   TEST design, comparator selection and required additional source counts before

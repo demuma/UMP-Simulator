@@ -1,0 +1,991 @@
+{
+  "all_frozen_artifacts_rechecked": true,
+  "all_native_raw_audits_verified": true,
+  "availability_model": "final_snapshot_at_horizon",
+  "development_only": true,
+  "excluded_from_Git": [
+    "raw source/replay/recipient streams",
+    "target identity/type/trace",
+    "auxiliary sightings",
+    "feature values",
+    "private group/label manifests"
+  ],
+  "feature_dimension": 111,
+  "fitting_executed": false,
+  "fresh_public_only_process_revalidated": true,
+  "full_regression": {
+    "ctest_reported_wall_seconds": 303.57,
+    "failures": 0,
+    "groups": [
+      {
+        "name": "timestamp_utilities",
+        "seconds": 0.0484472,
+        "status": "passed"
+      },
+      {
+        "name": "sensor_regression",
+        "seconds": 0.458293,
+        "status": "passed"
+      },
+      {
+        "name": "frame_regression",
+        "seconds": 0.109072,
+        "status": "passed"
+      },
+      {
+        "name": "aggregation_regression",
+        "seconds": 0.00426967,
+        "status": "passed"
+      },
+      {
+        "name": "metric_regression",
+        "seconds": 0.00503925,
+        "status": "passed"
+      },
+      {
+        "name": "playback_regression",
+        "seconds": 3.02814,
+        "status": "passed"
+      },
+      {
+        "name": "policy_regression",
+        "seconds": 0.0106528,
+        "status": "passed"
+      },
+      {
+        "name": "policy_configuration",
+        "seconds": 0.060517,
+        "status": "passed"
+      },
+      {
+        "name": "aggregation_diagnostics",
+        "seconds": 0.0582613,
+        "status": "passed"
+      },
+      {
+        "name": "history_regression",
+        "seconds": 0.00628692,
+        "status": "passed"
+      },
+      {
+        "name": "occupied_history",
+        "seconds": 0.008059,
+        "status": "passed"
+      },
+      {
+        "name": "history_query_range",
+        "seconds": 0.0314538,
+        "status": "passed"
+      },
+      {
+        "name": "spatial_regression",
+        "seconds": 0.00685175,
+        "status": "passed"
+      },
+      {
+        "name": "selective_suppression_regression",
+        "seconds": 0.00767,
+        "status": "passed"
+      },
+      {
+        "name": "publication_regression",
+        "seconds": 0.00568554,
+        "status": "passed"
+      },
+      {
+        "name": "adaptive_aggregation_regression",
+        "seconds": 0.00801883,
+        "status": "passed"
+      },
+      {
+        "name": "publication_store_regression",
+        "seconds": 0.103089,
+        "status": "passed"
+      },
+      {
+        "name": "publication_pipeline_regression",
+        "seconds": 0.111355,
+        "status": "passed"
+      },
+      {
+        "name": "aggregation_presentation",
+        "seconds": 0.00513675,
+        "status": "passed"
+      },
+      {
+        "name": "paced_replay",
+        "seconds": 0.0262492,
+        "status": "passed"
+      },
+      {
+        "name": "replay_regression",
+        "seconds": 0.238273,
+        "status": "passed"
+      },
+      {
+        "name": "live_measurement_helpers",
+        "seconds": 0.050231,
+        "status": "passed"
+      },
+      {
+        "name": "paced_replay_summary",
+        "seconds": 0.157817,
+        "status": "passed"
+      },
+      {
+        "name": "occupancy_evaluation",
+        "seconds": 0.0357507,
+        "status": "passed"
+      },
+      {
+        "name": "privacy_evaluation",
+        "seconds": 0.0328857,
+        "status": "passed"
+      },
+      {
+        "name": "comparison_evaluation",
+        "seconds": 0.835001,
+        "status": "passed"
+      },
+      {
+        "name": "capture_evaluation",
+        "seconds": 0.0759266,
+        "status": "passed"
+      },
+      {
+        "name": "oracle_evaluation",
+        "seconds": 0.489008,
+        "status": "passed"
+      },
+      {
+        "name": "privacy_dataset_evaluation",
+        "seconds": 1.7869,
+        "status": "passed"
+      },
+      {
+        "name": "empirical_privacy_evaluation",
+        "seconds": 0.0404113,
+        "status": "passed"
+      },
+      {
+        "name": "privacy_study_evaluation",
+        "seconds": 11.363,
+        "status": "passed"
+      },
+      {
+        "name": "coordination_evaluation",
+        "seconds": 0.905233,
+        "status": "passed"
+      },
+      {
+        "name": "coordination_metrics_evaluation",
+        "seconds": 0.0303269,
+        "status": "passed"
+      },
+      {
+        "name": "coordination_scenarios_evaluation",
+        "seconds": 0.480746,
+        "status": "passed"
+      },
+      {
+        "name": "coordination_study_evaluation",
+        "seconds": 3.33251,
+        "status": "passed"
+      },
+      {
+        "name": "plot_coordination_study_evaluation",
+        "seconds": 0.0430709,
+        "status": "passed"
+      },
+      {
+        "name": "compare_coordination_studies_evaluation",
+        "seconds": 0.344556,
+        "status": "passed"
+      },
+      {
+        "name": "plot_privacy_coordination_evaluation",
+        "seconds": 0.0348943,
+        "status": "passed"
+      },
+      {
+        "name": "robustness_attacks_evaluation",
+        "seconds": 0.0480432,
+        "status": "passed"
+      },
+      {
+        "name": "run_privacy_robustness_evaluation",
+        "seconds": 4.33722,
+        "status": "passed"
+      },
+      {
+        "name": "plot_privacy_robustness_evaluation",
+        "seconds": 0.0342307,
+        "status": "passed"
+      },
+      {
+        "name": "privacy_repair_evaluation",
+        "seconds": 5.60441,
+        "status": "passed"
+      },
+      {
+        "name": "causal_privacy_evaluation",
+        "seconds": 0.149526,
+        "status": "passed"
+      },
+      {
+        "name": "online_occupancy_evaluation",
+        "seconds": 0.0569894,
+        "status": "passed"
+      },
+      {
+        "name": "run_privacy_prefix_study_evaluation",
+        "seconds": 9.42431,
+        "status": "passed"
+      },
+      {
+        "name": "selective_suppression_evaluation",
+        "seconds": 6.58688,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_adaptation_evaluation",
+        "seconds": 2.89946,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_tradeoffs_evaluation",
+        "seconds": 0.0493679,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_queries_evaluation",
+        "seconds": 0.0543144,
+        "status": "passed"
+      },
+      {
+        "name": "scoped_semantic_queries_evaluation",
+        "seconds": 0.0708876,
+        "status": "passed"
+      },
+      {
+        "name": "run_scoped_semantic_utility_evaluation",
+        "seconds": 1.77708,
+        "status": "passed"
+      },
+      {
+        "name": "recipient_support_evaluation",
+        "seconds": 0.0842224,
+        "status": "passed"
+      },
+      {
+        "name": "run_recipient_contract_study_evaluation",
+        "seconds": 1.10352,
+        "status": "passed"
+      },
+      {
+        "name": "run_semantic_priority_study_evaluation",
+        "seconds": 1.05785,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_first_evaluation",
+        "seconds": 1.86335,
+        "status": "passed"
+      },
+      {
+        "name": "moving_comparison_evaluation",
+        "seconds": 1.21769,
+        "status": "passed"
+      },
+      {
+        "name": "moving_scoped_audit_evaluation",
+        "seconds": 0.0381219,
+        "status": "passed"
+      },
+      {
+        "name": "run_moving_scoped_comparison_evaluation",
+        "seconds": 0.26882,
+        "status": "passed"
+      },
+      {
+        "name": "cell_size_caps_evaluation",
+        "seconds": 3.11995,
+        "status": "passed"
+      },
+      {
+        "name": "four_second_window_evaluation",
+        "seconds": 0.864495,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_release_evaluation",
+        "seconds": 1.30948,
+        "status": "passed"
+      },
+      {
+        "name": "local_policy_replay_evaluation",
+        "seconds": 0.34478,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_local_policy_evaluation",
+        "seconds": 1.02343,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_suppression_audit_evaluation",
+        "seconds": 6.09475,
+        "status": "passed"
+      },
+      {
+        "name": "run_suppression_study_evaluation",
+        "seconds": 0.377933,
+        "status": "passed"
+      },
+      {
+        "name": "replay_data_evaluation",
+        "seconds": 0.0484129,
+        "status": "passed"
+      },
+      {
+        "name": "diagnose_spatial20_gap_evaluation",
+        "seconds": 0.0459528,
+        "status": "passed"
+      },
+      {
+        "name": "report_spatial20_correction_evaluation",
+        "seconds": 0.0381523,
+        "status": "passed"
+      },
+      {
+        "name": "urban_privacy_fixture_evaluation",
+        "seconds": 1.51754,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_privacy_evaluation",
+        "seconds": 0.0845147,
+        "status": "passed"
+      },
+      {
+        "name": "regional_public_transcript_evaluation",
+        "seconds": 0.453174,
+        "status": "passed"
+      },
+      {
+        "name": "run_urban_privacy_channel_pilot_evaluation",
+        "seconds": 0.0818808,
+        "status": "passed"
+      },
+      {
+        "name": "replay_viewer_evaluation",
+        "seconds": 1.78486,
+        "status": "passed"
+      },
+      {
+        "name": "replay_viewer_compact_projection",
+        "seconds": 0.136145,
+        "status": "passed"
+      },
+      {
+        "name": "replay_viewer_model",
+        "seconds": 0.101242,
+        "status": "passed"
+      },
+      {
+        "name": "cell_local_coordination",
+        "seconds": 0.0391656,
+        "status": "passed"
+      },
+      {
+        "name": "cell_local_coordination_stress",
+        "seconds": 0.772938,
+        "status": "passed"
+      },
+      {
+        "name": "scoped_publication",
+        "seconds": 0.00975779,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_taxonomy",
+        "seconds": 0.00774421,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_history",
+        "seconds": 0.00559225,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_pipeline",
+        "seconds": 0.00887537,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_suppression",
+        "seconds": 0.00891887,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_first_core",
+        "seconds": 0.0110142,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_cell_local",
+        "seconds": 0.0242875,
+        "status": "passed"
+      },
+      {
+        "name": "semantic_publication_store",
+        "seconds": 0.128686,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_scene",
+        "seconds": 0.704647,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_scene_configuration",
+        "seconds": 0.0158039,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_motion_probe_contract",
+        "seconds": 0.0820932,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_pedestrian_semantics",
+        "seconds": 0.00544483,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_audit_building_access_tools",
+        "seconds": 0.930103,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_build_mapped_scene_tools",
+        "seconds": 68.3949,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_storefront_router_tools",
+        "seconds": 102.614,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_transit_access_tools",
+        "seconds": 13.3813,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_export_replay_tools",
+        "seconds": 3.29608,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_analyze_tracks_tools",
+        "seconds": 0.287822,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_run_comparison_tools",
+        "seconds": 1.95459,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_plot_policy_comparison_tools",
+        "seconds": 0.426093,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_plot_spatial_portfolio_tools",
+        "seconds": 0.553414,
+        "status": "passed"
+      },
+      {
+        "name": "run_spatial20_correction_evaluation",
+        "seconds": 0.573651,
+        "status": "passed"
+      },
+      {
+        "name": "run_strategy_window_extension_evaluation",
+        "seconds": 0.796705,
+        "status": "passed"
+      },
+      {
+        "name": "run_temporal_region_study_evaluation",
+        "seconds": 0.919395,
+        "status": "passed"
+      },
+      {
+        "name": "static_regional_schedule_evaluation",
+        "seconds": 0.595366,
+        "status": "passed"
+      },
+      {
+        "name": "run_current_paced_study_profiling",
+        "seconds": 0.133127,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_transit_access_drain_tools",
+        "seconds": 20.7805,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_dense_corridor_drain_tools",
+        "seconds": 8.27718,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_building_drain_tools",
+        "seconds": 17.4063,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_storefront_drain_tools",
+        "seconds": 42.1639,
+        "status": "passed"
+      },
+      {
+        "name": "mapped_urban_traffic_drain_tools",
+        "seconds": 77.3014,
+        "status": "passed"
+      }
+    ],
+    "junit_sha256": "e4f36d73d5f5183c1867a27532036ffd189ddd0a9dc40e0cb7f4192870fa2383",
+    "passed_groups": 108,
+    "registered_groups": 108,
+    "skipped": 0,
+    "status": "passed"
+  },
+  "independent_source_groups": 1,
+  "native_binary_sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+  "native_cases": [
+    {
+      "accounted_observations": 82033,
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "id": "IN_adaptive_semantic_first",
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "scalar_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 82033,
+      "method": "adaptive_semantic_first",
+      "private_audit_sha256": "12c6515b1900fb1714544dccf50441b3c064b46a0e5a7d604ea64b5094c7e8ae",
+      "public_sha256": "07bf1bbf4bed871280882b8a829b22dab6392e9d97ebc2816d4a62ad99d91b1e",
+      "published_cells": 1514,
+      "published_releases": 1514,
+      "result_sha256": "96a6bcb3c04582f3373c25373d0330355b72ae84fbaa31b01cefb917e9ffb638",
+      "status": "verified",
+      "world": "IN"
+    },
+    {
+      "accounted_observations": 82033,
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "id": "IN_fixed20_1000ms",
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "scalar_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 82033,
+      "method": "fixed20_1000ms",
+      "private_audit_sha256": "e9975c873a03330c7146048e701133e98a709d90d4e3cf49eb232638d332515b",
+      "public_sha256": "9113fdbe7a37f6a2d3fcca97e84b6f3008f0af5b50b421f69c18a2b014532ff3",
+      "published_cells": 467,
+      "published_releases": 102,
+      "result_sha256": "e608406dd2a2f80aa8fcc62e69df7c3eeb666c0018dc7b7b0ae2132c6862edcb",
+      "status": "verified",
+      "world": "IN"
+    },
+    {
+      "accounted_observations": 82033,
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "id": "IN_fixed20_2000ms",
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "scalar_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 82033,
+      "method": "fixed20_2000ms",
+      "private_audit_sha256": "92067905507cbd0fe5e51b616748a9d938ae73294b3bc7046fc09cdff159177e",
+      "public_sha256": "720b61dec2ea7959fd13fe1a6d3efc55d1e9b148a209f1e286d5f882357b3113",
+      "published_cells": 208,
+      "published_releases": 47,
+      "result_sha256": "bcdcecea69dfc56afac0e8065adc6aeb9c0abeceec49846e3a30be96807f5b7e",
+      "status": "verified",
+      "world": "IN"
+    },
+    {
+      "accounted_observations": 82033,
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "id": "IN_fixed20_4000ms",
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "scalar_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 82033,
+      "method": "fixed20_4000ms",
+      "private_audit_sha256": "ad769b67075ea73e45204d59f18ad0112230a05a208d50c3952c33b5a9193528",
+      "public_sha256": "403aec918341e6504d0afe4c9ec9e0abba0d4c5bfa742231624586e7e7f76acf",
+      "published_cells": 119,
+      "published_releases": 24,
+      "result_sha256": "b966eb9669482cde647924273957276fe49ffc96b7da5bc4b2c3fa7974dc9d3e",
+      "status": "verified",
+      "world": "IN"
+    },
+    {
+      "accounted_observations": 82033,
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "id": "IN_fixed20_400ms",
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "scalar_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 82033,
+      "method": "fixed20_400ms",
+      "private_audit_sha256": "8b2adc640ab20efe12196fac0e80547023b6a27f78aa8c5ffd60611657e84a52",
+      "public_sha256": "c785ec7ecf9431ee3ff3cbe15c8f7c964564b929a337e8f32266697e73029f9a",
+      "published_cells": 1142,
+      "published_releases": 253,
+      "result_sha256": "fea2400372f0dab452fa41d3fab73fb9d23512901ea47ca43ce6787721ce2fd2",
+      "status": "verified",
+      "world": "IN"
+    },
+    {
+      "accounted_observations": 81676,
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "id": "OUT_adaptive_semantic_first",
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "scalar_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 81676,
+      "method": "adaptive_semantic_first",
+      "private_audit_sha256": "19620454d1be8e7ffc70230c423bdaf1016f3ea57a6b5af4c4aced0b4bc58c1d",
+      "public_sha256": "a655c7d9d2c000e491a9823632f94bb4a53655a576ee1d55fec4464c5ca5f5ea",
+      "published_cells": 1490,
+      "published_releases": 1490,
+      "result_sha256": "5fbb3b3bb2fb57e7ad8988b382be01bd0c67a8a347e89b84a1a03f5694e5c41b",
+      "status": "verified",
+      "world": "OUT"
+    },
+    {
+      "accounted_observations": 81676,
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "id": "OUT_fixed20_1000ms",
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "scalar_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 81676,
+      "method": "fixed20_1000ms",
+      "private_audit_sha256": "99a34b200d055d700bb205e33dabe9af96bc24a6c597b94de98209d23e172914",
+      "public_sha256": "2c9f30b3b7ed7a0958bd0c6a29f2b29af5aad622a38ef9cf0d06c2cfee3ffef6",
+      "published_cells": 458,
+      "published_releases": 102,
+      "result_sha256": "62205d42a94dac2c141bb25c9aafa758924c85cf2ea0e718c58c89d75de91c4a",
+      "status": "verified",
+      "world": "OUT"
+    },
+    {
+      "accounted_observations": 81676,
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "id": "OUT_fixed20_2000ms",
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "scalar_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 81676,
+      "method": "fixed20_2000ms",
+      "private_audit_sha256": "f3f166169a981eb1e6c86f025f89b76b9679780ef7c99da4d2aca8601f70f0ed",
+      "public_sha256": "ccee8abfb3057fccf439047b837e02ba2e0aa41083751dcc05b3dcf97a750f4c",
+      "published_cells": 202,
+      "published_releases": 47,
+      "result_sha256": "6fca1e22aa0f0528deae4af0d579caaf5787968ba9f140780e62bbf405c242f7",
+      "status": "verified",
+      "world": "OUT"
+    },
+    {
+      "accounted_observations": 81676,
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "id": "OUT_fixed20_4000ms",
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "scalar_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 81676,
+      "method": "fixed20_4000ms",
+      "private_audit_sha256": "368116f8c64a83ac839c2b8319f9add105616b09cb1764ba07d94448e2c0948f",
+      "public_sha256": "3bca913f287c772ea365a782d01a0acbf26308584976fcbdb31e917be4028653",
+      "published_cells": 115,
+      "published_releases": 24,
+      "result_sha256": "ed6080537d9181ad9d4342ec6419b58b1d39858eff9048a0ca3006b573213768",
+      "status": "verified",
+      "world": "OUT"
+    },
+    {
+      "accounted_observations": 81676,
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "id": "OUT_fixed20_400ms",
+      "independent_audit": {
+        "published_policy_violations": 0,
+        "scalar_valid": true,
+        "status": "verified"
+      },
+      "input_observations": 81676,
+      "method": "fixed20_400ms",
+      "private_audit_sha256": "04daf042b00f47dfde3cae3ff16048e0ce2efaf3c665110acfdbdd88cb1d0f60",
+      "public_sha256": "94bc23e6874025c3145417a0aeabf3579e0bdd33d0991831e26bf1ea5c27f9cc",
+      "published_cells": 1120,
+      "published_releases": 253,
+      "result_sha256": "2a7c36f690c9fcaacc3c4f652bfd85f1ec065a9245e33720bf31dc152c0aa29d",
+      "status": "verified",
+      "world": "OUT"
+    }
+  ],
+  "new_unit_test_methods": {
+    "test_regional_public_transcript.py": 10,
+    "test_run_urban_privacy_channel_pilot.py": 11,
+    "test_semantic_privacy.py": 13
+  },
+  "pilot_protocol_sha256": "69cc4e6243d65cb3149a6d5655299beb3c91c2a5084222497b47704ac2b46017",
+  "pilot_summary_sha256": "fd4f6b442b10e448c3ee4921670b82dc3ba3cb9f1378d8370f9746b6dd287726",
+  "predeclared_feature_names": [
+    "scalar.release_count",
+    "scalar.public_cell_count",
+    "scalar.public_mean_known_fraction",
+    "scalar.public_contributions_sum",
+    "scalar.public_distinct_support_sum",
+    "scalar.public_mean_occupancy_sum",
+    "scalar.public_mean_occupancy_mean",
+    "scalar.public_mean_occupancy_max",
+    "scalar.target_cell_matched_fraction",
+    "scalar.target_mean_known_fraction",
+    "scalar.target_mean_occupancy_mean",
+    "scalar.target_mean_occupancy_max",
+    "scalar.target_contributions_mean",
+    "scalar.target_distinct_support_mean",
+    "scalar.target_first_half_mean_known_fraction",
+    "scalar.target_first_half_mean_occupancy_mean",
+    "scalar.target_second_half_mean_known_fraction",
+    "scalar.target_second_half_mean_occupancy_mean",
+    "scalar.release_duration_mean_ms",
+    "scalar.release_duration_max_ms",
+    "scalar.release_seal_delay_mean_ms",
+    "scalar.public_cell_area_mean_m2",
+    "scalar.public_cell_area_max_m2",
+    "scalar.public_cell_depth_mean",
+    "scalar.public_released_area_time_fraction",
+    "scalar.public_last_release_end_fraction",
+    "scalar.target_matched_cell_area_mean_m2",
+    "scalar.target_matched_cell_depth_mean",
+    "scalar.target_matched_window_mean_ms",
+    "scalar.target_matched_release_age_mean_ms",
+    "scalar.target_matched_seal_delay_mean_ms",
+    "semantic.public_min_category_support_mean",
+    "semantic.public_semantic_mean_loss_mean",
+    "semantic.public_semantic_max_loss_max",
+    "semantic.target_min_category_support_mean",
+    "semantic.target_semantic_mean_loss_mean",
+    "semantic.target_semantic_max_loss_max",
+    "category[adult_cyclist].public_published_cell_fraction",
+    "category[adult_cyclist].public_contributions_sum",
+    "category[adult_cyclist].public_distinct_support_sum",
+    "category[adult_cyclist].target_published_fraction",
+    "category[adult_cyclist].target_contributions_mean",
+    "category[adult_cyclist].target_distinct_support_mean",
+    "category[adult_e_scooter_rider].public_published_cell_fraction",
+    "category[adult_e_scooter_rider].public_contributions_sum",
+    "category[adult_e_scooter_rider].public_distinct_support_sum",
+    "category[adult_e_scooter_rider].target_published_fraction",
+    "category[adult_e_scooter_rider].target_contributions_mean",
+    "category[adult_e_scooter_rider].target_distinct_support_mean",
+    "category[adult_pedestrian].public_published_cell_fraction",
+    "category[adult_pedestrian].public_contributions_sum",
+    "category[adult_pedestrian].public_distinct_support_sum",
+    "category[adult_pedestrian].target_published_fraction",
+    "category[adult_pedestrian].target_contributions_mean",
+    "category[adult_pedestrian].target_distinct_support_mean",
+    "category[child_pedestrian].public_published_cell_fraction",
+    "category[child_pedestrian].public_contributions_sum",
+    "category[child_pedestrian].public_distinct_support_sum",
+    "category[child_pedestrian].target_published_fraction",
+    "category[child_pedestrian].target_contributions_mean",
+    "category[child_pedestrian].target_distinct_support_mean",
+    "category[cyclist].public_published_cell_fraction",
+    "category[cyclist].public_contributions_sum",
+    "category[cyclist].public_distinct_support_sum",
+    "category[cyclist].target_published_fraction",
+    "category[cyclist].target_contributions_mean",
+    "category[cyclist].target_distinct_support_mean",
+    "category[e_scooter_rider].public_published_cell_fraction",
+    "category[e_scooter_rider].public_contributions_sum",
+    "category[e_scooter_rider].public_distinct_support_sum",
+    "category[e_scooter_rider].target_published_fraction",
+    "category[e_scooter_rider].target_contributions_mean",
+    "category[e_scooter_rider].target_distinct_support_mean",
+    "category[pedestrian].public_published_cell_fraction",
+    "category[pedestrian].public_contributions_sum",
+    "category[pedestrian].public_distinct_support_sum",
+    "category[pedestrian].target_published_fraction",
+    "category[pedestrian].target_contributions_mean",
+    "category[pedestrian].target_distinct_support_mean",
+    "category[pedestrian_with_mobility_aid].public_published_cell_fraction",
+    "category[pedestrian_with_mobility_aid].public_contributions_sum",
+    "category[pedestrian_with_mobility_aid].public_distinct_support_sum",
+    "category[pedestrian_with_mobility_aid].target_published_fraction",
+    "category[pedestrian_with_mobility_aid].target_contributions_mean",
+    "category[pedestrian_with_mobility_aid].target_distinct_support_mean",
+    "category[pedestrian_with_stroller].public_published_cell_fraction",
+    "category[pedestrian_with_stroller].public_contributions_sum",
+    "category[pedestrian_with_stroller].public_distinct_support_sum",
+    "category[pedestrian_with_stroller].target_published_fraction",
+    "category[pedestrian_with_stroller].target_contributions_mean",
+    "category[pedestrian_with_stroller].target_distinct_support_mean",
+    "category[road_user].public_published_cell_fraction",
+    "category[road_user].public_contributions_sum",
+    "category[road_user].public_distinct_support_sum",
+    "category[road_user].target_published_fraction",
+    "category[road_user].target_contributions_mean",
+    "category[road_user].target_distinct_support_mean",
+    "category[senior_cyclist].public_published_cell_fraction",
+    "category[senior_cyclist].public_contributions_sum",
+    "category[senior_cyclist].public_distinct_support_sum",
+    "category[senior_cyclist].target_published_fraction",
+    "category[senior_cyclist].target_contributions_mean",
+    "category[senior_cyclist].target_distinct_support_mean",
+    "category[senior_pedestrian].public_published_cell_fraction",
+    "category[senior_pedestrian].public_contributions_sum",
+    "category[senior_pedestrian].public_distinct_support_sum",
+    "category[senior_pedestrian].target_published_fraction",
+    "category[senior_pedestrian].target_contributions_mean",
+    "category[senior_pedestrian].target_distinct_support_mean",
+    "semantic.release_availability_delay_mean_ms",
+    "semantic.target_availability_age_mean_ms"
+  ],
+  "privacy_estimate": null,
+  "public_context_equal": true,
+  "published_hard_policy_violations": 0,
+  "real_uniform_control": {
+    "equal_complete_native_4s_transcript": true,
+    "native_runtime": null,
+    "private_audit_sha256": "74bd1c7ddfde53ab51c0de4596b36b06f88f7ab7f9e412fdae95ba5909143745",
+    "published_cell_windows": 140
+  },
+  "recipient_streams": 12,
+  "regional_cases": {
+    "IN_regional_static20": {
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "native_runtime": null,
+      "public_sha256": "f18dc6d2c498c5a2d5aca3567cde2ca3c7a88bfe5dc3ba38dcc232a39951f125",
+      "status": "verified"
+    },
+    "OUT_regional_static20": {
+      "feature_checks": {
+        "before_horizon_no_snapshot": true,
+        "features": 111,
+        "finite": true,
+        "full_horizon_view_equal": true,
+        "no_output_same_dimension": true
+      },
+      "native_runtime": null,
+      "public_sha256": "6f82cbcd210a2c90cea7b789ee5ecbb3e6f003e517e5a69ecb8bcb70381e6da4",
+      "status": "verified"
+    }
+  },
+  "regional_schedule_equal_IN_OUT": true,
+  "schema": "ump.urban-privacy-p25-2-evidence.v1",
+  "scope": "Recipient/feature plumbing on one already inspected DEV pair; no new independent source, TRAIN/CAL/TEST assessment, privacy gain or wall-clock delivery claim.",
+  "source_files_sha256": {
+    "simulator/CMakeLists.txt": "5e8261112e50f07f2bbc11166d56b118c77f7501def30a3dac444364ac0427a9",
+    "tools/evaluation/regional_public_transcript.py": "2a07b34d1685c5c245028b36b42ad2434126883ab7c7835f8f022f2754e261f4",
+    "tools/evaluation/run_urban_privacy_channel_pilot.py": "fe86c24fd761036212a554407707078212aa1ee17963485bd2c1d06b3c199dd2",
+    "tools/evaluation/semantic_privacy.py": "16ba7ad97a010c082aa7647b9ca5af95f7192d1598b73be0d63911e24358eeec",
+    "tools/evaluation/test_regional_public_transcript.py": "4bc0815326b33314831bab3190671bdb1eba3270e10d5a716ef3891089e398b8",
+    "tools/evaluation/test_run_urban_privacy_channel_pilot.py": "cff6d2b213540bc22bfeb295bfd7c63aa21c7a6bf7222765b3d23b2e9decfa94",
+    "tools/evaluation/test_semantic_privacy.py": "59c9de7d41cd6ae55b2eb1a8d4029d8d419115d912742936af339a51653671af"
+  },
+  "source_neighbor_pairs": 1,
+  "status": "verified"
+}

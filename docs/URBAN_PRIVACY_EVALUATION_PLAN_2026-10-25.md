@@ -1,8 +1,9 @@
 # Urban privacy evaluation: the next four implementation gates
 
-Date: 2026-10-25. Status: **P25.1 complete**. The [frozen urban contract](URBAN_PRIVACY_MEMBERSHIP_CONTRACT_2026-10-25.md)
+Date: 2026-10-25. Status: **P25.1 and P25.2 complete**. The [frozen urban contract](URBAN_PRIVACY_MEMBERSHIP_CONTRACT_2026-10-25.md)
 and [verified development fixture](URBAN_PRIVACY_P25_1_TEST_REPORT_2026-10-25.md) are
-implemented. No urban attack assessment or held-out result is claimed. This is the implementation
+implemented. The [semantic recipient adapters and DEV pilot](URBAN_PRIVACY_P25_2_TEST_REPORT_2026-10-25.md)
+are also verified. No urban attack assessment or held-out result is claimed. This is the implementation
 sequence for the four agreed privacy tasks. The dissertation research questions
 organize the interpretation; they do not add parallel implementation work.
 
@@ -123,5 +124,6 @@ evidence only. A second site is a later transfer question after this gate.
 - [Causal visibility implementation](CAUSAL_PRIVACY_IMPLEMENTATION.md).
 - [Attribute and online contract](PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
 
-The immediate next task is **P25.2**. Its visibility/unit contract is concrete.
-Begin the main experimental matrix only after the remaining protocol gates pass.
+The immediate next task is **P25.3**: independent same-site recordings and a
+frozen grouped experiment manifest. The semantic recipient/feature boundary is
+ready. Begin the main assessment only after the remaining protocol gates pass.

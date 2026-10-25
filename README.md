@@ -5,14 +5,25 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
+**Urban privacy gate P25.2 — 2026-10-25.** Semantic recipient v2 and the
+regional-static public stream are implemented. Ten independently audited native
+DEV executions produce twelve verified recipient streams, each with 111 fixed
+public-only feature coordinates. A real uniform control reproduces the complete
+native 4-s transcript. Historical scalar v1 stays unchanged. All **108/108 CTest groups pass**
+(303.57 s), including 34 new test methods in three groups. Availability is an
+explicit final-horizon snapshot assumption; no live receipt or privacy-benefit
+claim follows. Next: independent source recordings and grouped evaluation.
+Read the [channel contract](docs/URBAN_SEMANTIC_RECIPIENT_CHANNEL_2026-10-25.md)
+and [test report](docs/URBAN_PRIVACY_P25_2_TEST_REPORT_2026-10-25.md).
+
 **Urban privacy gate P25.1 — 2026-10-25.** The first urban source-membership
 contract and verified development IN/OUT fixture are complete. Filtering one full
 visible episode removes exactly 357 of 82,033 observations while preserving all
 background observations and 2999 measurement batches. Both worlds share 90 exact
 auxiliary sightings. Fourteen new unit methods and six affected CTest groups pass;
 raw movement/labels remain private locally. This supplies a verified input pair,
-not an attack result or privacy-benefit claim. Next is P25.2: semantic-aware public
-transcripts/features and the regional-static recipient stream. See the
+not an attack result or privacy-benefit claim. The completed semantic-channel
+follow-up is recorded above. See the
 [contract](docs/URBAN_PRIVACY_MEMBERSHIP_CONTRACT_2026-10-25.md),
 [test report](docs/URBAN_PRIVACY_P25_1_TEST_REPORT_2026-10-25.md), and
 [ordered plan](docs/URBAN_PRIVACY_EVALUATION_PLAN_2026-10-25.md).
