@@ -1,0 +1,109 @@
+{
+  "artifact_permissions": {
+    "directory": "0700",
+    "files": "0600"
+  },
+  "auxiliary_byte_identical": true,
+  "auxiliary_points": 90,
+  "background_unchanged": true,
+  "checks": [
+    "source hashes before/after",
+    "complete lifecycle/sensor token proof",
+    "complete raw per-episode GT intervals",
+    "IN source byte identity",
+    "exact target-only filter over every batch",
+    "background canonical bytes/values/order",
+    "duplicate time/id and stable types",
+    "coordinate/leaf geometry and full cadence",
+    "count/type conservation",
+    "outcome-independent target/aux reconstruction",
+    "identical coordinate/time/cell auxiliary for both labels",
+    "one private dependent development source group"
+  ],
+  "complete_lifecycle_GT_sensor_projection_verified": true,
+  "development_only": true,
+  "empty_batches_after_filter": 1209,
+  "excluded_from_export": [
+    "track/person IDs",
+    "target type or interval",
+    "trajectories/positions",
+    "auxiliary points",
+    "per-type IN/OUT differences",
+    "private source-group metadata",
+    "raw source or recipient data"
+  ],
+  "executions": {
+    "attack": false,
+    "motion_regeneration": false,
+    "native_aggregation": false
+  },
+  "fixture_pairs": 1,
+  "in_source_observations": 82033,
+  "independent_fresh_process_verification": true,
+  "independent_reference_crosscheck": {
+    "imports_fixture_implementation": false,
+    "scope": "Standalone original-byte, target-rank, complete OUT filter and auxiliary reconstruction; lifecycle/GT verification is separately provided by fixture verifier.",
+    "verified": true
+  },
+  "independent_sources": 1,
+  "measurement_batches": 2999,
+  "original_IN_bytes_unchanged": true,
+  "original_empty_batches": 1209,
+  "out_source_observations": 81676,
+  "private_manifest_sha256": "6aad9ffdb7648431bdd6b11d18bafceb1a5c3c9eb7e6dae68f887ec3efbaa128",
+  "protected_unit": "one complete visible observation-track episode",
+  "protocol_sha256": "4cd82eff8fd69bec7ed1885a57542e209e809c1036444070c28192900a77a348",
+  "removed_target_observations": 357,
+  "sampling_period_ms": 100,
+  "schema": "ump.urban-membership-p25-1-evidence.v1",
+  "scope": "Development source-neighbor verification only; no empirical privacy, utility, TRAIN/CAL/TEST or independently generated P25.3 sample claim.",
+  "secret": "source contribution inclusion",
+  "source_episodes": 171,
+  "source_files_sha256": {
+    "docs/URBAN_PRIVACY_MEMBERSHIP_CONTRACT_2026-10-25.md": "059b16b889d12c2a56bf49df4382f522a2dab067fac34307d6ef4195a7c2e615",
+    "simulator/CMakeLists.txt": "db53f7410145a8d73404c58a66c72af49f9dbe7613ef4f841f7e2bef3bb96294",
+    "tools/evaluation/test_urban_privacy_fixture.py": "23f85f826acea70455bad91d94ae15a574f5823278461d647a626562cdf1b128",
+    "tools/evaluation/urban_privacy_fixture.py": "d3f8e117ad616b481b6325ffa3979f8c926ebf0dca0ce53372c5a3fd911cf5d5"
+  },
+  "source_horizon_ms": 300000,
+  "status": "verified",
+  "tests": {
+    "ctest_group_count": 6,
+    "ctest_groups": [
+      {
+        "name": "privacy_evaluation",
+        "seconds": 0.034232,
+        "status": "passed"
+      },
+      {
+        "name": "privacy_dataset_evaluation",
+        "seconds": 1.91968,
+        "status": "passed"
+      },
+      {
+        "name": "empirical_privacy_evaluation",
+        "seconds": 0.0443123,
+        "status": "passed"
+      },
+      {
+        "name": "causal_privacy_evaluation",
+        "seconds": 0.295045,
+        "status": "passed"
+      },
+      {
+        "name": "replay_data_evaluation",
+        "seconds": 0.0508223,
+        "status": "passed"
+      },
+      {
+        "name": "urban_privacy_fixture_evaluation",
+        "seconds": 1.52739,
+        "status": "passed"
+      }
+    ],
+    "ctest_reported_wall_seconds": 1.96,
+    "junit_sha256": "d04fd54b9e75da2398dd9426e098cf981b5d65c7d4ce2b16f9df7c3d51885d6e",
+    "new_unit_test_methods": 14,
+    "status": "passed"
+  }
+}

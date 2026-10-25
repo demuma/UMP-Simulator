@@ -1,6 +1,33 @@
 # TO-DO — UMP-Simulator
 
 
+## Next: urban privacy evaluation — four ordered gates
+
+Follow the [consolidated plan](docs/URBAN_PRIVACY_EVALUATION_PLAN_2026-10-25.md).
+Research questions describe the dissertation; this is the implementation queue.
+
+- [x] P25.1: write the urban contribution-membership threat/recipient contract;
+  fix protected episode/horizon, auxiliary knowledge, semantic visibility and EOF;
+  verify one frozen IN/OUT pair with identical background observations.
+  Completed: full 300-s source, 171 eligible episodes, 357 target observations
+  removed, 90 identical auxiliary points; 14 unit methods and 6 affected CTest
+  groups pass. [Test report](docs/URBAN_PRIVACY_P25_1_TEST_REPORT_2026-10-25.md).
+- [ ] P25.2: extend the strict public exporter/attacks to actual semantic outputs
+  and construct the audited regional-static recipient transcript. Verify public-
+  only input, truthful counts and causal release availability; run a plumbing pilot.
+- [ ] P25.3: record an initial eight independent same-site source realizations;
+  reuse each recording across methods. Then freeze the primary grouped TRAIN/CAL/
+  TEST design, comparator selection and required additional source counts before
+  held-out evaluation. Eight pilot recordings alone do not establish privacy power.
+- [ ] P25.4: run the frozen joint risk/utility comparison, report AUC and observed
+  TPR/FPR with source-group uncertainty, coverage/detail/delay and all outcomes;
+  retain raw movement privately and publish compact evidence and test report.
+
+Work through these gates sequentially. A second site, globally adaptive uniform
+raster, new attacks on sensitive visits and aggregation-heuristic changes are
+later extensions. Reuse existing E02 work; retain RT03 as a separate open load issue.
+
+
 ## Strategy, real-time and local-policy sequence — 2026-10-25
 
 Follow the [frozen-study protocol](docs/STRATEGY_TIMING_LOCAL_POLICY_PROTOCOL_2026-10-25.md).

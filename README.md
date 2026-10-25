@@ -1,7 +1,21 @@
 # UMP-Simulator — Urban Mobility Privacy Simulator
 
-Research workspace for the dissertation on quantifying privacy and utility in urban
-mobility data and adapting spatial and temporal aggregation under regional constraints.
+Research workspace for **Adaptive, Metric-Based and Privacy-Preserving Sharing
+of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
+retaining application utility, using metrics and regional policies to guide
+adaptive spatial, temporal and semantic aggregation and assess its effects.
+
+**Urban privacy gate P25.1 — 2026-10-25.** The first urban source-membership
+contract and verified development IN/OUT fixture are complete. Filtering one full
+visible episode removes exactly 357 of 82,033 observations while preserving all
+background observations and 2999 measurement batches. Both worlds share 90 exact
+auxiliary sightings. Fourteen new unit methods and six affected CTest groups pass;
+raw movement/labels remain private locally. This supplies a verified input pair,
+not an attack result or privacy-benefit claim. Next is P25.2: semantic-aware public
+transcripts/features and the regional-static recipient stream. See the
+[contract](docs/URBAN_PRIVACY_MEMBERSHIP_CONTRACT_2026-10-25.md),
+[test report](docs/URBAN_PRIVACY_P25_1_TEST_REPORT_2026-10-25.md), and
+[ordered plan](docs/URBAN_PRIVACY_EVALUATION_PLAN_2026-10-25.md).
 
 **Latest experiment checkpoint — 2026-10-25.** Standalone Temporal First,
 fixed 5/10/20 m at 2/4 s, and a paired regional freshness study add **72 independently
