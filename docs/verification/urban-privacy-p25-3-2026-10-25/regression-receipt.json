@@ -1,0 +1,23 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "simulator/build",
+    "--output-on-failure"
+  ],
+  "configured_tests": 110,
+  "elapsed_seconds": 448.17,
+  "failed": 0,
+  "full_log_sha256": "e55ef45ca31ae8d4c0871d423f399a6e159eaef4d607df127f5248d08314e713",
+  "new_python_methods": {
+    "run_urban_privacy_sources": 11,
+    "urban_privacy_split": 21
+  },
+  "passed": 110,
+  "schema": "ump.p253-regression-receipt.v1",
+  "source_correction_tests": [
+    "projected_boundary_body_crossing_singleton_and_opposite_apron",
+    "pending_crossing_wait_before_grant",
+    "concave_boundary_detour_crossing"
+  ]
+}

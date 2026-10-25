@@ -556,6 +556,68 @@ void localCrossingEmptyRoadDoesNotRequireImpossibleEntryStaging() {
         "Empty-road singleton deadlocked because its narrow entry sidewalk had no off-apron staging room");
 }
 
+void localCrossingPendingWaitIsMeasuredBeforeGrant() {
+    MappedScene scene(crossingPriorityFixture());scene.advanceTo(5500);
+    const auto waiting=scene.motionDiagnostics();
+    require(waiting.crossingPedestrianWaitSteps>0 && waiting.crossingBatches==0
+        && waiting.maxCrossingPedestrianWaitMs>0,
+        "An outstanding crossing request was invisible until a later grant");
+    scene.advanceTo(40000);const auto drained=scene.motionDiagnostics();
+    require(drained.realizedEnds==2 && drained.activeTracks==0 && drained.overlapViolations==0,
+        "Measuring pending crossing waits changed safe completion");
+}
+
+void localCrossingProjectedBoundaryIntentDrainsTangentialBodies() {
+    auto input=crossingPriorityFixture();input.people.resize(1);
+    input.routes[0]={"projected-ped",{{0,6.7001},{30,0}},"","","",{{30,0},{30,6.7001}}};
+    input.people[0].episodes[0].routeId="projected-ped";
+    input.navigation.crossings[0].maxBatchSize=1;
+    const auto check=[&](const MappedSceneConfig& config) {
+        MappedScene scene(config);std::map<std::string,Point> previous;
+        for(int now=0;now<=60000;now+=50) {
+            scene.advanceTo(now);const auto frame=scene.frameAt(now);
+            if(frame.size()==2 && previous.count(frame[0].trackId) && previous.count(frame[1].trackId)) {
+                const auto a=previous.at(frame[0].trackId),b=previous.at(frame[1].trackId);
+                const double rx=a.x-b.x,ry=a.y-b.y;
+                const double vx=frame[0].position.x-a.x-frame[1].position.x+b.x;
+                const double vy=frame[0].position.y-a.y-frame[1].position.y+b.y;
+                const double squared=vx*vx+vy*vy;
+                const double at=squared>1e-20?std::clamp(-(rx*vx+ry*vy)/squared,0.0,1.0):0;
+                require(std::hypot(rx+at*vx,ry+at*vy)>=.55-1e-7,
+                    "Projected crossing intent bypassed swept body clearance");
+            }
+            for(const auto& track:frame) {
+                require(std::hypot(track.velocity.x,track.velocity.y)<=1.3+1e-8,
+                    "Projected crossing intent exceeded preferred speed");
+                if(previous.count(track.trackId)) require(std::hypot(track.position.x-previous[track.trackId].x,
+                    track.position.y-previous[track.trackId].y)<=1.3*.05+1e-8,
+                    "Projected crossing intent teleported a pedestrian");
+                previous[track.trackId]=track.position;
+            }
+            if(frame.size()==2) require(std::hypot(frame[0].position.x-frame[1].position.x,
+                frame[0].position.y-frame[1].position.y)>=.55-1e-7,
+                "Projected crossing intent bypassed body clearance");
+        }
+        const auto d=scene.motionDiagnostics();
+        require(d.realizedEnds==config.people.size() && d.activeTracks==0 && d.pendingTracks==0
+            && d.overlapViolations==0 && d.crossingBatches>0,
+            "Terminal boundary projection caused a tangential crossing request to be discarded forever");
+        MappedScene coarse(config);coarse.advanceTo(60000);
+        require(coarse.events().size()==scene.events().size(),"Projected crossing cadence changed lifecycle");
+        for(std::size_t i=0;i<scene.events().size();++i)
+            require(coarse.events()[i].trackId==scene.events()[i].trackId
+                && coarse.events()[i].atMs==scene.events()[i].atMs,
+                "Projected crossing intent is not deterministic across caller cadence");
+    };
+    check(input);
+    // An opposite crosser's receiving apron contains the tangent wait position.
+    // Its body must stay authoritative until the projected-boundary walker clears.
+    input.routes.push_back({"opposite-projected",{{12.1,20},{12.1,0}},"",""});
+    input.people.push_back({"opposite-projected-private","Adult Pedestrian",1.3,
+        {{"opposite-projected-visible","opposite-projected",5000}},.25});
+    check(input);
+}
+
 void localCrossingOppositeReceivingApronsRemainClear() {
     auto input=crossingPriorityFixture();input.navigation.crossings[0].maxBatchSize=1;
     input.routes.push_back({"opposite-ped-cross",{{15,20},{15,0}},"",""});
@@ -1284,6 +1346,8 @@ int main() {
         localCrossingPriorityYieldsBeforeEntryAndKeepsPhysicalChecks();
         localCrossingPriorityFiniteFairnessAndValidation();
         localCrossingOppositeReceivingApronsRemainClear();
+        localCrossingProjectedBoundaryIntentDrainsTangentialBodies();
+        localCrossingPendingWaitIsMeasuredBeforeGrant();
         localCrossingEmptyRoadDoesNotRequireImpossibleEntryStaging();
         localBoundaryIntervalsAvoidPointSinkConvergence();
         localMovementSpacesStaySeparate();

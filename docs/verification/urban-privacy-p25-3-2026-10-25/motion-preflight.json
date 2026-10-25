@@ -1,0 +1,99 @@
+{
+  "all_horizon_ms": 300000,
+  "candidate": "boundary_goal_request_retention_only",
+  "cases": [
+    {
+      "active": 0,
+      "completed_episodes": 172,
+      "expected_episodes": 172,
+      "last_end_ms": 176150,
+      "overlaps": 0,
+      "pending": 0,
+      "seed": 2026102501,
+      "stalled": 0
+    },
+    {
+      "active": 0,
+      "completed_episodes": 169,
+      "expected_episodes": 169,
+      "last_end_ms": 197050,
+      "overlaps": 0,
+      "pending": 0,
+      "seed": 2026102502,
+      "stalled": 0
+    },
+    {
+      "active": 0,
+      "completed_episodes": 170,
+      "expected_episodes": 170,
+      "last_end_ms": 182450,
+      "overlaps": 0,
+      "pending": 0,
+      "seed": 2026102503,
+      "stalled": 0
+    },
+    {
+      "active": 0,
+      "completed_episodes": 165,
+      "expected_episodes": 165,
+      "last_end_ms": 190650,
+      "overlaps": 0,
+      "pending": 0,
+      "seed": 2026102504,
+      "stalled": 0
+    },
+    {
+      "active": 0,
+      "completed_episodes": 171,
+      "expected_episodes": 171,
+      "last_end_ms": 218550,
+      "overlaps": 0,
+      "pending": 0,
+      "seed": 2026102505,
+      "stalled": 0
+    },
+    {
+      "active": 0,
+      "completed_episodes": 169,
+      "expected_episodes": 169,
+      "last_end_ms": 171450,
+      "overlaps": 0,
+      "pending": 0,
+      "seed": 2026102506,
+      "stalled": 0
+    },
+    {
+      "active": 0,
+      "completed_episodes": 173,
+      "expected_episodes": 173,
+      "last_end_ms": 196400,
+      "overlaps": 0,
+      "pending": 0,
+      "seed": 2026102507,
+      "stalled": 0
+    },
+    {
+      "active": 0,
+      "completed_episodes": 170,
+      "expected_episodes": 170,
+      "last_end_ms": 203600,
+      "overlaps": 0,
+      "pending": 0,
+      "seed": 2026102508,
+      "stalled": 0
+    }
+  ],
+  "implementation_sha256": {
+    "MappedScene.cpp": "678999284ecfe6e5d6cd757f3a45848da2d384928a533a72fb55f26f78a67a38",
+    "include/MappedScene.hpp": "96a0ce876df67f243994ad5c7c8994b8c346f1d5ef82dd41a4f07c925774a0af"
+  },
+  "limitation": "Only the confirmed terminal-goal/request-retention inconsistency is corrected. Legacy detour/staging/center-apron scheduling remains; general liveness and first-body-contact scheduling are not established.",
+  "probe_binary_sha256": "78ccbd0cbd795f1314b7003390b5ab4ece51720b5aa0ade57f29d7cecdbb5725",
+  "schema": "ump.p253.motion-preflight-summary.v1",
+  "scope": "Aggregate-only native motion preflight. No MongoDB, Simulator source export, sensor/aggregation run, GT export, capture proof, privacy estimate or live runtime benchmark.",
+  "seed_count": 8,
+  "status": "pass",
+  "total_completed_episodes": 1359,
+  "total_expected_episodes": 1359,
+  "zero_active_pending_stalled_overlaps": true
+}

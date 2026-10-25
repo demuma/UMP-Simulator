@@ -1,0 +1,21 @@
+{
+  "command": [
+    "ctest",
+    "--test-dir",
+    "simulator/build",
+    "--output-on-failure",
+    "-R",
+    "^(sensor_regression|mapped_scene|mapped_scene_configuration|mapped_motion_probe_contract|urban_privacy_split_evaluation|run_urban_privacy_sources_evaluation|mapped_.*_drain_tools)$"
+  ],
+  "context": "Final narrow fix after eight motion preflights; earlier complete110-group checkpoint retained separately.",
+  "elapsed_seconds": 175.51,
+  "failed_groups": 0,
+  "full_log_sha256": "170555eadbcbfbb2c3ed01630f3a9c37d24c116f81335ea57046978a699d06a3",
+  "new_python_methods": {
+    "run_urban_privacy_sources": 11,
+    "urban_privacy_split": 22
+  },
+  "passed_groups": 11,
+  "schema": "ump.p253-final-source-regression.v1",
+  "simulator_sha256": "c17a458690f0332b10f47c51586b8973568cdeed06558755dd689c89f7cb7bc8"
+}

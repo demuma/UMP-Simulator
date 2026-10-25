@@ -200,6 +200,8 @@ private:
     void updateNavigationDoorPipelines(AggregationTime nowMs);
     bool doorEntryAllowed(const std::string& trackId, const std::string& portalId) const;
     void updateNavigationPassages(AggregationTime nowMs);
+    struct NavigationGoal { Point point; std::optional<Point> boundaryGoal; };
+    NavigationGoal navigationGoal(const std::string& trackId, Point from) const;
     void updateNavigationCrossings(AggregationTime nowMs);
     bool crossingSegmentAllowed(const std::string& trackId, Point from, Point to, bool request = true);
     struct NavigationCrossing {

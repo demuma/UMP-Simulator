@@ -1429,6 +1429,21 @@ void MappedScene::updateNavigationPassages(AggregationTime nowMs) {
     }
 }
 
+MappedScene::NavigationGoal MappedScene::navigationGoal(const std::string& id,Point from) const {
+    const auto& state=runtime.at(id);const auto& route=config.routes[tracks.at(id).route];
+    NavigationGoal result{route.points[state.navigationWaypoint],state.boundaryGoal};
+    if(!route.endBoundary.empty() && state.navigationWaypoint+1==route.points.size()) {
+        const auto a=route.endBoundary[0],b=route.endBoundary[1];
+        const double dx=b.x-a.x,dy=b.y-a.y;
+        const double along=std::clamp(((from.x-a.x)*dx+(from.y-a.y)*dy)/(dx*dx+dy*dy),0.0,1.0);
+        const Point projected{a.x+along*dx,a.y+along*dy};
+        const bool visible=navigationSegmentAllowed(from,projected,&route);
+        result.point=visible?projected:state.boundaryGoal.value_or(projected);
+        result.boundaryGoal=visible?std::nullopt:std::optional<Point>{result.point};
+    }
+    return result;
+}
+
 void MappedScene::updateNavigationCrossings(AggregationTime nowMs) {
     const auto distanceToRing=[](Point from,Point to,const std::vector<Point>& ring) {
         if(ringLocation(from,ring)>=0 || ringLocation(to,ring)>=0) return 0.0;
@@ -1469,13 +1484,16 @@ void MappedScene::updateNavigationCrossings(AggregationTime nowMs) {
             const auto& data=tracks.at(it->first);const auto& route=config.routes[data.route];
             const double margin=config.people[data.person].radiusM+config.clearanceM+1e-7;
             const bool stillIntendsEntry=state.navigationWaypoint<route.points.size()
-                && distanceToRing(state.position,route.points[state.navigationWaypoint],crossing.conflictRing)<=margin;
+                && distanceToRing(state.position,navigationGoal(it->first,state.position).point,crossing.conflictRing)<=margin;
             if(state.state!=RuntimeTrack::State::Active
                 || (!resource.granted.count(it->first) && (!stillIntendsEntry
                     || distanceToRing(state.position,state.position,crossing.conflictRing)>8.0))) {
                 resource.waitingPoints.erase(it->first);resource.stagingAttempts.erase(it->first);it=resource.requests.erase(it);
             } else ++it;
         }
+        // Measure pending requests before any grant; traversal time is not waiting.
+        for(const auto& [id,at]:resource.requests) if(!resource.granted.count(id))
+            diagnostics.maxCrossingPedestrianWaitMs=std::max(diagnostics.maxCrossingPedestrianWaitMs,nowMs-at);
         // An already crossing pedestrian is never asked to stop in the road.
         // No legitimate source may spawn there (constructor validation).
         for(const auto& [id,state]:runtime) if(state.state==RuntimeTrack::State::Active && !priority(id) && inside(id)) {
@@ -1742,18 +1760,8 @@ void MappedScene::advanceNavigationStep(AggregationTime nextMs) {
         if (passageTraversal) followingPassage=passageEntryAllowed(id)
             && state.navigationWaypoint>passageTraversal->entryWaypoint
             && state.navigationWaypoint<=passageTraversal->exitWaypoint;
-        if (!route.endBoundary.empty() && state.navigationWaypoint+1==route.points.size()) {
-            const auto a=route.endBoundary[0],b=route.endBoundary[1];
-            const double dx=b.x-a.x,dy=b.y-a.y;
-            const double along=std::clamp(((state.position.x-a.x)*dx+(state.position.y-a.y)*dy)/(dx*dx+dy*dy),0.0,1.0);
-            const Point projected{a.x+along*dx,a.y+along*dy};
-            if (navigationSegmentAllowed(state.position,projected,&route)) {
-                state.boundaryGoal.reset();goal=projected;
-            } else {
-                if (!state.boundaryGoal) state.boundaryGoal=projected;
-                goal=*state.boundaryGoal;
-            }
-        }
+        const auto resolvedGoal=navigationGoal(id,state.position);
+        goal=resolvedGoal.point;state.boundaryGoal=resolvedGoal.boundaryGoal;
         bool waitingForDoor=false;
         const auto door=navigationDoors.find(route.endPortal);
         if (door!=navigationDoors.end() && !doorEntryAllowed(id,door->first)) {
@@ -1953,8 +1961,14 @@ MappedMotionDiagnostics MappedScene::motionDiagnostics() const {
     for (const auto& [id,state] : runtime) {
         result.pendingTracks+=state.state==RuntimeTrack::State::Pending;
         result.activeTracks+=state.state==RuntimeTrack::State::Active;
+        bool overdueCrossing=false;
+        for(const auto& resource:navigationCrossings) {
+            const auto request=resource.requests.find(id);
+            overdueCrossing=overdueCrossing || (request!=resource.requests.end()
+                && !resource.granted.count(id) && currentMs-request->second>=10000);
+        }
         result.activeStalledTracks+=state.state==RuntimeTrack::State::Active
-            && (state.stoppedForMs>=10000 || (config.motionMode==MappedMotionMode::LocalNavigation
+            && (overdueCrossing || state.stoppedForMs>=10000 || (config.motionMode==MappedMotionMode::LocalNavigation
                 && state.navigationNoProgressMs>=10000));
     }
     return result;

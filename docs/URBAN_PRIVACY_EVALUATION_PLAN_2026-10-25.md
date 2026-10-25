@@ -70,6 +70,11 @@ privacy-benefit claim or tuning against final TEST outcomes.
 
 ## P25.3 — Record independent sources and freeze the experiment manifest
 
+Implementation/source checks are in progress. The first fresh source pilot caught
+a real crossing-request starvation case; its negative matrix is retained. Close
+the source correction and same-seed validation before claiming the eight-source
+gate or freezing the main design. See the [P25.3 protocol and draft design](URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md).
+
 Start with eight independent same-site recordings as the reproducibility/source
 pilot (the agreed 5–10 range). Keep map, configured demand/class distribution and
 policy conditions fixed; vary declared trajectory-generation seeds. Record actual

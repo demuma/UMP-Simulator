@@ -1,0 +1,83 @@
+{
+  "attempted": 3,
+  "cases": [
+    {
+      "capture_proof_sha256": "5aee1a8b8caa9e458f4537844b9ee4a58f8ad333d80be443428a6252558cdd5a",
+      "error": "Spatial portfolio requires all scheduled episodes completed",
+      "lifecycle": {
+        "active_episodes_at_horizon": 2,
+        "pending_episodes_at_horizon": 0,
+        "realized_ends": 170,
+        "realized_starts": 172,
+        "scheduled_episodes": 172,
+        "scheduled_people": 128,
+        "status": "censored_at_source_horizon"
+      },
+      "observations_sha256": "acc6a4264a89a5b544bc57b2e43814fbb69f14f714c9753f23057e20638848b6",
+      "seed": 2026102501,
+      "sensor_observability_status": "pass",
+      "status": "invalid"
+    },
+    {
+      "capture_proof_sha256": "59db6e3481756b6e06985fcd63f096b7b94e17e87ceaf56adf32beb4f91be234",
+      "lifecycle": {
+        "active_episodes_at_horizon": 0,
+        "pending_episodes_at_horizon": 0,
+        "realized_ends": 169,
+        "realized_starts": 169,
+        "scheduled_episodes": 169,
+        "scheduled_people": 128,
+        "status": "all_scheduled_episodes_completed"
+      },
+      "observations_sha256": "8e480f46fcd397e09fb3518502f09eb3115e2952782fafa2029267b505e058ea",
+      "seed": 2026102502,
+      "sensor_observability_status": "pass",
+      "status": "verified"
+    },
+    {
+      "error": "Seed directory exists without a completed source receipt; it will never be retried.",
+      "seed": 2026102503,
+      "status": "interrupted"
+    },
+    {
+      "seed": 2026102504,
+      "status": "not_attempted"
+    },
+    {
+      "seed": 2026102505,
+      "status": "not_attempted"
+    },
+    {
+      "seed": 2026102506,
+      "status": "not_attempted"
+    },
+    {
+      "seed": 2026102507,
+      "status": "not_attempted"
+    },
+    {
+      "seed": 2026102508,
+      "status": "not_attempted"
+    }
+  ],
+  "git_head_before_correction": "75346687350a531d20532e33749b720d82203ba8",
+  "original_simulator_sha256": "1b8db7607fb504cd857edd45bc87eb7e381a45ef92c66abce2d4ab6ff2ae502d",
+  "planned": 8,
+  "private_artifacts": "Complete captures, partial/interrupted artifacts, logs and original executable retained only under ignored results/.",
+  "private_partial_report_sha256": "e2a6df6acdfe46bd02a254b7278d1b3b0ddc9caf5a09e949c15e5d15e5cda634",
+  "protocol_sha256": "37100f1949ee3c130519ec201a86dcb13f3d366696345be23a30662f826e4e1f",
+  "replacement_rule": "No seed replacement or relaxed quality gate. Any corrected pilot is separately versioned, retains this negative matrix and repeats the same eight declared seeds.",
+  "schema": "ump.urban-privacy-p253-negative-source.v1",
+  "source_failure": {
+    "diagnosis": "Crossing request/admission uses nominal waypoint while actual final movement can use a projected boundary goal. A needed request can be pruned, blocking another pedestrian receiving apron.",
+    "diagnostic_limit": "Expected crossing waits reset stall timers; maximum crossing wait was recorded only for granted requests.",
+    "last_other_episode_end_s": 176.15,
+    "stationary_at_horizon": 2,
+    "stationary_durations_s": [
+      216.05,
+      238.35
+    ]
+  },
+  "status": "stopped_after_confirmed_crossing_starvation",
+  "verified": 1
+}

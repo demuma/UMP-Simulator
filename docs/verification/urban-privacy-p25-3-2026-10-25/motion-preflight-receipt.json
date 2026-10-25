@@ -1,0 +1,8 @@
+{
+  "captured_sensor_data": false,
+  "interpretation": "Eight aggregate-only native motion preflights; full Simulator source capture and independent physical audit remain separate gates.",
+  "private_archive": "results/urban-privacy-p253-verification-2026-10-25/final-boundary-motion-preflight",
+  "private_manifest_sha256": "a537dacd795910efe6f4c44919fcbec0c3e2df685858287ef5c360c89c74672c",
+  "public_summary_sha256": "fe67a02f9f9d3ffc33a75704e057af39f6f2a0387806a960f27de3b00ca82b3e",
+  "schema": "ump.p253-preflight-artifact-receipt.v1"
+}

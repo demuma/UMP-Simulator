@@ -23,6 +23,11 @@ Research questions describe the dissertation; this is the implementation queue.
   reuse each recording across methods. Then freeze the primary grouped TRAIN/CAL/
   TEST design, comparator selection and required additional source counts before
   held-out evaluation. Eight pilot recordings alone do not establish privacy power.
+  In progress: source/split tooling and the prospective 24/16/32 grouped design
+  are implemented. The first source pilot caught crossing-request starvation;
+  preserve its negative matrix and close the source correction/regression gate
+  before a separately frozen same-seed pilot and the main manifest.
+  [Protocol and draft design](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md).
 - [ ] P25.4: run the frozen joint risk/utility comparison, report AUC and observed
   TPR/FPR with source-group uncertainty, coverage/detail/delay and all outcomes;
   retain raw movement privately and publish compact evidence and test report.
@@ -2592,6 +2597,11 @@ from the selected obstruction scenarios. The route planner choice remains open.
   roles separately instead of treating routing and local avoidance as interchangeable.
 - [ ] Include heterogeneous agent sizes/speeds, yielding rules, narrow passages and deadlocks.
 - [ ] Measure collisions, completion, motion plausibility and processing cost on identical inputs.
+- [ ] Study detour-aware crossing admission and body-contact/receiving-apron capacity
+  separately, including slow pedestrians and unavailable holding space. P25.3 ships
+  only the confirmed terminal-goal/request-retention correction. Broader prototypes
+  introduced liveness regressions and remain negative evidence, not solved cases.
+  [P25.3 source/test report](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md).
 
 **Acceptance:** a measured improvement on agreed movement scenarios without unbounded
 runtime cost. Correct S02 safety/lifetime defects before evaluating a replacement model.

@@ -1,0 +1,135 @@
+{
+  "attempted": 4,
+  "cases": [
+    {
+      "capture_proof_sha256": "32de28baf63be62cc2bb870d3a9fd90759c1e3941ca5e8928434fdb899919c3c",
+      "lifecycle": {
+        "active_episodes_at_horizon": 0,
+        "pending_episodes_at_horizon": 0,
+        "realized_ends": 172,
+        "realized_starts": 172,
+        "scheduled_episodes": 172,
+        "scheduled_people": 128,
+        "status": "all_scheduled_episodes_completed"
+      },
+      "observations_sha256": "ee5975e8d73e48a8b839268414d82aed92603b06235f24dbb1fc7f48f4bb9fc2",
+      "reported_diagnostics": {
+        "active_stalled_tracks": 0,
+        "admission_wait_steps": 1754,
+        "blocked_motion_steps": 9825,
+        "body_overlap_violations": 0,
+        "crossing_batches": 38,
+        "crossing_fairness_closures": 13,
+        "crossing_pedestrian_wait_steps": 7919,
+        "crossing_rider_wait_steps": 988,
+        "max_consecutive_stop_ms": 9100,
+        "max_crossing_pedestrian_wait_ms": 19000,
+        "merge_admission_wait_steps": 0,
+        "navigation_candidate_checks": 4748126,
+        "navigation_max_search_nodes": 15402,
+        "navigation_replan_failures": 77,
+        "navigation_replans": 118,
+        "navigation_steering_steps": 22537
+      },
+      "seed": 2026102501,
+      "status": "verified"
+    },
+    {
+      "capture_proof_sha256": "bef09ba6ec12f6cb4698deaefd43876798733367a305472b0c6dfed824792cc4",
+      "error": "Spatial portfolio requires all scheduled episodes completed",
+      "lifecycle": {
+        "active_episodes_at_horizon": 1,
+        "pending_episodes_at_horizon": 0,
+        "realized_ends": 168,
+        "realized_starts": 169,
+        "scheduled_episodes": 169,
+        "scheduled_people": 128,
+        "status": "censored_at_source_horizon"
+      },
+      "observations_sha256": "e6db63047015db8f3dc3568b1e7ce4ffa0a131742811318817a24218d3baed2d",
+      "reported_diagnostics": {
+        "active_stalled_tracks": 1,
+        "admission_wait_steps": 987,
+        "blocked_motion_steps": 17041,
+        "body_overlap_violations": 0,
+        "crossing_batches": 39,
+        "crossing_fairness_closures": 18,
+        "crossing_pedestrian_wait_steps": 20152,
+        "crossing_rider_wait_steps": 1546,
+        "max_consecutive_stop_ms": 9200,
+        "max_crossing_pedestrian_wait_ms": 237650,
+        "merge_admission_wait_steps": 0,
+        "navigation_candidate_checks": 5320643,
+        "navigation_max_search_nodes": 15509,
+        "navigation_replan_failures": 149,
+        "navigation_replans": 291,
+        "navigation_steering_steps": 29136
+      },
+      "seed": 2026102502,
+      "status": "invalid"
+    },
+    {
+      "capture_proof_sha256": "98f5726e0e5b31bac8248adf4dfd07623d61564e71e84520a69d0624a118a573",
+      "lifecycle": {
+        "active_episodes_at_horizon": 0,
+        "pending_episodes_at_horizon": 0,
+        "realized_ends": 170,
+        "realized_starts": 170,
+        "scheduled_episodes": 170,
+        "scheduled_people": 128,
+        "status": "all_scheduled_episodes_completed"
+      },
+      "observations_sha256": "12fac99dc7e4e0acbeadeb555957da4971ac291e5e693999eb51e70683db5e60",
+      "reported_diagnostics": {
+        "active_stalled_tracks": 0,
+        "admission_wait_steps": 752,
+        "blocked_motion_steps": 20057,
+        "body_overlap_violations": 0,
+        "crossing_batches": 36,
+        "crossing_fairness_closures": 15,
+        "crossing_pedestrian_wait_steps": 17368,
+        "crossing_rider_wait_steps": 1802,
+        "max_consecutive_stop_ms": 13300,
+        "max_crossing_pedestrian_wait_ms": 47950,
+        "merge_admission_wait_steps": 0,
+        "navigation_candidate_checks": 5096775,
+        "navigation_max_search_nodes": 5248,
+        "navigation_replan_failures": 220,
+        "navigation_replans": 311,
+        "navigation_steering_steps": 27145
+      },
+      "seed": 2026102503,
+      "status": "verified"
+    },
+    {
+      "error": "Seed directory exists without a completed source receipt; it will never be retried.",
+      "seed": 2026102504,
+      "status": "interrupted"
+    },
+    {
+      "seed": 2026102505,
+      "status": "not_attempted"
+    },
+    {
+      "seed": 2026102506,
+      "status": "not_attempted"
+    },
+    {
+      "seed": 2026102507,
+      "status": "not_attempted"
+    },
+    {
+      "seed": 2026102508,
+      "status": "not_attempted"
+    }
+  ],
+  "diagnosis": "Hypothetical staging origins and actual positions can evaluate retained detours differently, invalidating staging targets on arrival and causing an empty-road oscillation.",
+  "original_simulator_sha256": "f4947cbf658db6e99e7f90c6a0145c638098523b4daf6badc157eb8cbbefcb3c",
+  "planned": 8,
+  "private_partial_report_sha256": "8da60f8f3d2c74bd717b5ec09081caf069ad21517e031da4c8220d98bf8d0b02",
+  "protocol_sha256": "2c81fb5bb53c09d5ac07b971adb41fa72d88de60fd462d59defef9673574868e",
+  "replacement_rule": "Preserve this matrix; fix and run all eight aggregate motion preflights before separately freezing a new same-seed capture protocol.",
+  "schema": "ump.urban-privacy-p253-negative-source.v1",
+  "status": "stopped_after_confirmed_crossing_staging_inconsistency",
+  "verified": 2
+}
