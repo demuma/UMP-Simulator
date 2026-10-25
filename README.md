@@ -5,6 +5,26 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
+**Urban privacy gate P25.3 — 2026-10-25.** Eight independent same-site DEV
+recordings pass complete cohort, observability, provenance and physical-motion
+audits: 40 simulated minutes, **1,359 visible episodes and 708,246 observation
+contributions**, with peak observed tracks 123–127. A narrow boundary-goal/request
+retention fix removes a source starvation case; broader scheduling prototypes
+were rejected and retained as negative evidence. The aggregation executable is
+unchanged. All eight motion preflights and all 11 affected final regression groups
+pass, including 33 new Python test methods.
+
+The primary **24 TRAIN / 16 CAL / 32 TEST** recording-group design is now frozen,
+including methods, local400 policy, knowledge/features, fitting/calibration and
+uncertainty rules. Those 72 additional recordings are **not generated**, and no
+urban attack has been fitted. The inspected pilot sources are DEV only. P25.4
+must complete and validate the main runner, exact-query coverage and rate intervals
+before generating or inspecting TEST. Raw movements stay local; the compact
+aggregate/design evidence package is about 225 KiB. See the
+[P25.3 protocol](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md),
+[test report and source table](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md),
+and [frozen primary design](docs/verification/urban-privacy-p25-3-2026-10-25/primary-design.json).
+
 **Urban privacy gate P25.2 — 2026-10-25.** Semantic recipient v2 and the
 regional-static public stream are implemented. Ten independently audited native
 DEV executions produce twelve verified recipient streams, each with 111 fixed
@@ -12,7 +32,7 @@ public-only feature coordinates. A real uniform control reproduces the complete
 native 4-s transcript. Historical scalar v1 stays unchanged. All **108/108 CTest groups pass**
 (303.57 s), including 34 new test methods in three groups. Availability is an
 explicit final-horizon snapshot assumption; no live receipt or privacy-benefit
-claim follows. Next: independent source recordings and grouped evaluation.
+claim follows. The completed source/split follow-up is recorded above.
 Read the [channel contract](docs/URBAN_SEMANTIC_RECIPIENT_CHANNEL_2026-10-25.md)
 and [test report](docs/URBAN_PRIVACY_P25_2_TEST_REPORT_2026-10-25.md).
 

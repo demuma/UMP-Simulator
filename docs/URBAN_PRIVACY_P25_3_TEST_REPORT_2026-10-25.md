@@ -1,8 +1,10 @@
 # P25.3: source independence, crossing correction and split tests
 
-Date: 2026-10-25. Status: all-eight narrow motion preflight passed; v3 full captures are in
-progress. Negative v1/v2 captures and rejected prototypes remain retained. Primary manifest is not frozen. No fitted urban attack, held-out risk estimate or privacy-benefit
-claim is made. See the [protocol and draft design](URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md).
+Date: 2026-10-25. Status: **P25.3 complete**. Eight v3 full captures pass fresh
+source/physical/independence verification. The primary manifest is frozen and
+reverified; main recordings and attack fits remain zero. Negative v1/v2 captures
+and rejected prototypes are retained. No privacy-benefit estimate is claimed.
+See the [protocol](URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md).
 
 ## What the attack features mean
 
@@ -145,15 +147,15 @@ origins can disagree about the preserved detour, invalidating a holding point
 exactly on arrival. This is a second source defect; the matrix was stopped and
 retained with 2 verified, 1 invalid, 1 interrupted and 4 unattempted
 cases. [Compact negative v2 matrix](verification/urban-privacy-p25-3-2026-10-25/negative-v2.json).
-A corrected all-eight aggregate motion preflight is required before another
-versioned MongoDB capture matrix. Source results and final prospective-freeze
-receipts will be added after all eight capture/audit gates pass. Raw motion, IDs, database names
+The corrected all-eight aggregate preflight passed before the separately
+frozen v3 capture matrix. Source results and final prospective-freeze
+receipts are recorded in the completed v3 section below. Raw motion, IDs, database names
 and public/private native streams remain outside Git under ignored `results/`.
 
 ## Main-study interpretation and next gate
 
-The main design remains a draft until eight final v3 sources pass and the immutable
-prospective split is verified. Its 24 TRAIN/16 CAL/32 TEST recordings are additional
+All eight final v3 sources now pass, and the immutable prospective split is
+verified. Its 24 TRAIN/16 CAL/32 TEST recordings are additional
 sources, with one candidate each; the inspected eight are DEV only. All family
 methods share the same hard local400 policy and suppression OFF. Full111 logistic
 regression is a fixed bounded attacker; scalar31 is a joint representation
@@ -171,11 +173,57 @@ After the eight-source motion preflight, all 11 affected source/sensor/split gro
 pass again (175.51 s), including every finite source drain. The latest Python
 suite has 33 new methods (11 source-runner +22 split), including numeric-header
 reserialization clone rejection. See the [final affected-test receipt](verification/urban-privacy-p25-3-2026-10-25/final-source-regression.json).
-The full110-group checkpoint above remains historical evidence, not a repeated
+The full 110-group checkpoint above remains historical evidence, not a repeated
 full-suite claim for every rejected candidate.
 
 V3 protocol SHA-256:
 `d36f2677c9b50e8e2d8830c12148cfe7810a315e0e7fef3cd30b1dea36b98f61`.
 It freezes the final narrow source, same eight seeds, parameters and acceptance
-gates. Full capture and independent physical audits are running; the main design
-remains unfrozen until all eight pass.
+gates. All eight full captures and independent physical audits pass; the main design
+is now frozen and reverified.
+
+## Completed v3 source results and primary freeze
+
+All **8/8** original seeds pass full 300-s Simulator capture, observability,
+configuration/executable provenance, exact cohort completion and independent
+physical audits. Fresh verification reopens every authenticated artifact. All
+normalized trajectory and route-plan fingerprints differ across the eight;
+none overlaps the inspected historical source fingerprints. Each source has
+128 configured private people and 2999 measured sensor batches. Those people/
+episodes/observations are not additional independent statistical source groups.
+
+| Seed | Episodes completed | Observation contributions | Peak observed tracks |
+|---|---:|---:|---:|
+| 2026102501 | 172/172 | 83,119 | 124 |
+| 2026102502 | 169/169 | 90,066 | 127 |
+| 2026102503 | 170/170 | 88,069 | 125 |
+| 2026102504 | 165/165 | 88,003 | 124 |
+| 2026102505 | 171/171 | 90,926 | 123 |
+| 2026102506 | 169/169 | 84,556 | 123 |
+| 2026102507 | 173/173 | 89,882 | 125 |
+| 2026102508 | 170/170 | 93,625 | 126 |
+
+Total: **1,359 visible episodes; 708,246 observation contributions; 40 simulated
+minutes; 8 independent modeled source groups**. Realized type/density counts and
+source hashes are in the [compact pilot receipt](verification/urban-privacy-p25-3-2026-10-25/source-pilot.json).
+Raw movement, IDs, full GT/native streams and database namespaces remain local.
+The source-capture policy is distinct from the later shared local400 replay
+condition; no capture policy was tuned to produce an adaptive/privacy win.
+
+The main manifest is independently verified, SHA-256:
+`5c12a45072da540f71d96115341b5f7fb1a6d9b5be84e8ba3922ac233586056a`.
+It preassigns 24 TRAIN, 16 CAL and 32 TEST groups, one target each, and excludes
+all inspected sources. The full native family has 1,296 planned IN/OUT cases;
+288 regional compositions give 1,584 planned recipient streams before controls.
+These are planned counts: **0 actual primary recordings and 0 attack runs**.
+The [freeze receipt](verification/urban-privacy-p25-3-2026-10-25/primary-freeze.json),
+[frozen design](verification/urban-privacy-p25-3-2026-10-25/primary-design.json),
+[policy](verification/urban-privacy-p25-3-2026-10-25/policy-local400.json) and
+[prospective groups](verification/urban-privacy-p25-3-2026-10-25/prospective-groups.json)
+are compact research metadata, excluded from evaluated recipient features.
+
+P25.4 still needs the urban orchestration, exact root-query coverage and exact
+rate-interval implementations. Validate and hash-bind that supplement before
+TEST generation/inspection, then perform the declared TRAIN/CAL/TEST assessment.
+Low success of a bounded attacker cannot establish universal privacy, and this
+source/split gate itself produces no attack-success estimate.

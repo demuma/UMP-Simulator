@@ -1,6 +1,6 @@
 # Urban privacy evaluation: the next four implementation gates
 
-Date: 2026-10-25. Status: **P25.1 and P25.2 complete**. The [frozen urban contract](URBAN_PRIVACY_MEMBERSHIP_CONTRACT_2026-10-25.md)
+Date: 2026-10-25. Status: **P25.1, P25.2 and P25.3 complete**. The [frozen urban contract](URBAN_PRIVACY_MEMBERSHIP_CONTRACT_2026-10-25.md)
 and [verified development fixture](URBAN_PRIVACY_P25_1_TEST_REPORT_2026-10-25.md) are
 implemented. The [semantic recipient adapters and DEV pilot](URBAN_PRIVACY_P25_2_TEST_REPORT_2026-10-25.md)
 are also verified. No urban attack assessment or held-out result is claimed. This is the implementation
@@ -70,10 +70,12 @@ privacy-benefit claim or tuning against final TEST outcomes.
 
 ## P25.3 — Record independent sources and freeze the experiment manifest
 
-Implementation/source checks are in progress. The first fresh source pilot caught
-a real crossing-request starvation case; its negative matrix is retained. Close
-the source correction and same-seed validation before claiming the eight-source
-gate or freezing the main design. See the [P25.3 protocol and draft design](URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md).
+Completed: eight fresh native captures pass source/physical/independence checks;
+the main 24/16/32 grouped design is prospectively frozen with zero generated
+primary sources and zero attack fits. A source starvation defect was corrected
+narrowly; failed source versions and broader prototypes remain negative evidence.
+See the [P25.3 protocol](URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md) and
+[test report](URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md).
 
 Start with eight independent same-site recordings as the reproducibility/source
 pilot (the agreed 5–10 range). Keep map, configured demand/class distribution and
@@ -129,6 +131,8 @@ evidence only. A second site is a later transfer question after this gate.
 - [Causal visibility implementation](CAUSAL_PRIVACY_IMPLEMENTATION.md).
 - [Attribute and online contract](PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
 
-The immediate next task is **P25.3**: independent same-site recordings and a
-frozen grouped experiment manifest. The semantic recipient/feature boundary is
-ready. Begin the main assessment only after the remaining protocol gates pass.
+The immediate next task is **P25.4**: complete and validate the urban main-study
+orchestrator, exact root-query coverage and exact rate intervals; record an
+implementation supplement before generating or inspecting TEST. Then execute the
+frozen grouped risk/utility experiment. The pilot is DEV only; main attack results
+and privacy-benefit estimates remain unmeasured.

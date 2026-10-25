@@ -1,0 +1,35 @@
+{
+  "actual_primary_recordings": 0,
+  "attack_runs": 0,
+  "budget_projection": {
+    "episode_pairs": 72,
+    "independent_out_unit_fpr_step": {
+      "calibration": 0.0625,
+      "test": 0.03125
+    },
+    "independent_recordings": 72,
+    "interpretation": "Exploratory bounded design; pooled episodes are dependent. No statistical-power claim. Native bound assumes no shared-IN reuse.",
+    "native_cases_without_reuse": 1296,
+    "native_wall_cap_s_without_reuse": 233280,
+    "pooled_dependent_episode_out_fpr_step": {
+      "calibration": 0.0625,
+      "test": 0.03125
+    },
+    "source_wall_cap_s": 60480
+  },
+  "design_file_sha256": "f6fb6a685e763be6f76488479db962be0a3630bb23ede0c918e33104fdb0727b",
+  "design_sha256": "a85203ad1491f7884a18f94c595bc9130d3a73243c21af6981f2fc44adff8f6e",
+  "freeze_receipt_sha256": "8253eaac5bd0556dc4d6674659f013ebfc3a3310bdce221c3a794c9d9884e613",
+  "historical_source_exclusion_records": 8,
+  "manifest_sha256": "5c12a45072da540f71d96115341b5f7fb1a6d9b5be84e8ba3922ac233586056a",
+  "pilot_exclusion_groups": 8,
+  "planned_group_counts": {
+    "calibration": 16,
+    "test": 32,
+    "train": 24
+  },
+  "recipient_streams_planned": 1584,
+  "regional_compositions_planned": 288,
+  "schema": "ump.urban-privacy-split-freeze-verification.v1",
+  "status": "verified"
+}

@@ -1,0 +1,947 @@
+{
+  "attack_runs": 0,
+  "design_sha256": "a85203ad1491f7884a18f94c595bc9130d3a73243c21af6981f2fc44adff8f6e",
+  "groups": [
+    {
+      "group_id": "urban-primary-20261025-v1-g00066",
+      "seeds": {
+        "auxiliary_selection": 582881368438247322,
+        "source_generation": 469896209862140013,
+        "target_selection": 428438012011321089
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00063",
+      "seeds": {
+        "auxiliary_selection": 1071518873373355576,
+        "source_generation": 673683257952323316,
+        "target_selection": 8282087223782141
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00032",
+      "seeds": {
+        "auxiliary_selection": 789575059716001904,
+        "source_generation": 46575306524530263,
+        "target_selection": 208429288484160096
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00028",
+      "seeds": {
+        "auxiliary_selection": 123353327753571039,
+        "source_generation": 349479110427854922,
+        "target_selection": 371118788629947649
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00038",
+      "seeds": {
+        "auxiliary_selection": 104801251980166086,
+        "source_generation": 318147761774937425,
+        "target_selection": 1103958210591653065
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00053",
+      "seeds": {
+        "auxiliary_selection": 600069452068699158,
+        "source_generation": 320343823509219053,
+        "target_selection": 217361230589639823
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00049",
+      "seeds": {
+        "auxiliary_selection": 470427518082524499,
+        "source_generation": 1147248493605947918,
+        "target_selection": 477208969466655692
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00020",
+      "seeds": {
+        "auxiliary_selection": 477085326031674497,
+        "source_generation": 11437831024438206,
+        "target_selection": 951269213893623679
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00052",
+      "seeds": {
+        "auxiliary_selection": 356809304743561090,
+        "source_generation": 353050409788684970,
+        "target_selection": 187337596446801335
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00027",
+      "seeds": {
+        "auxiliary_selection": 391788132564148144,
+        "source_generation": 164049017310679119,
+        "target_selection": 481798679228709075
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00065",
+      "seeds": {
+        "auxiliary_selection": 655748731244541888,
+        "source_generation": 1120675465618493209,
+        "target_selection": 218689329517438809
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00029",
+      "seeds": {
+        "auxiliary_selection": 491758283480093519,
+        "source_generation": 1040812509064421432,
+        "target_selection": 410812543065220634
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00069",
+      "seeds": {
+        "auxiliary_selection": 493138402026077114,
+        "source_generation": 1122117599061936038,
+        "target_selection": 913626871851087445
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00014",
+      "seeds": {
+        "auxiliary_selection": 742846510287582777,
+        "source_generation": 647635582007889346,
+        "target_selection": 720874710275418403
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00057",
+      "seeds": {
+        "auxiliary_selection": 1034157646910236855,
+        "source_generation": 787462969377498896,
+        "target_selection": 986498611394674426
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00064",
+      "seeds": {
+        "auxiliary_selection": 1058080034801281507,
+        "source_generation": 9413572690838501,
+        "target_selection": 277357601966967181
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00021",
+      "seeds": {
+        "auxiliary_selection": 224490839377410035,
+        "source_generation": 1132091591485485331,
+        "target_selection": 484100577330789391
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00044",
+      "seeds": {
+        "auxiliary_selection": 721914946708402203,
+        "source_generation": 1036246933370323611,
+        "target_selection": 15588549253738662
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00019",
+      "seeds": {
+        "auxiliary_selection": 217483209296851973,
+        "source_generation": 215635085545279944,
+        "target_selection": 932691757622056229
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00042",
+      "seeds": {
+        "auxiliary_selection": 623591589550817408,
+        "source_generation": 172499909609976939,
+        "target_selection": 115361719705887157
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00043",
+      "seeds": {
+        "auxiliary_selection": 713476956356575392,
+        "source_generation": 682158722860820500,
+        "target_selection": 941303175616325284
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00025",
+      "seeds": {
+        "auxiliary_selection": 365153173908231164,
+        "source_generation": 806392548251805375,
+        "target_selection": 1049359592745338450
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00034",
+      "seeds": {
+        "auxiliary_selection": 735952910169450619,
+        "source_generation": 251636138180450197,
+        "target_selection": 252777998071763825
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00051",
+      "seeds": {
+        "auxiliary_selection": 515152327423486601,
+        "source_generation": 841968612043197093,
+        "target_selection": 223753421409699499
+      },
+      "source_state": "planned_not_generated",
+      "split": "train",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00040",
+      "seeds": {
+        "auxiliary_selection": 545389646219558530,
+        "source_generation": 9034628520780026,
+        "target_selection": 1129227032901530448
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00039",
+      "seeds": {
+        "auxiliary_selection": 628902006275594774,
+        "source_generation": 469446432314746865,
+        "target_selection": 625786002575864972
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00022",
+      "seeds": {
+        "auxiliary_selection": 670650976102341510,
+        "source_generation": 279857115236975462,
+        "target_selection": 1127003967870864742
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00011",
+      "seeds": {
+        "auxiliary_selection": 714219500856780277,
+        "source_generation": 273238991211054854,
+        "target_selection": 837273691292971361
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00008",
+      "seeds": {
+        "auxiliary_selection": 127636845061239207,
+        "source_generation": 1023807061415623029,
+        "target_selection": 744506894394309890
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00037",
+      "seeds": {
+        "auxiliary_selection": 214755474063299303,
+        "source_generation": 476544808160952580,
+        "target_selection": 1037185885218568448
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00062",
+      "seeds": {
+        "auxiliary_selection": 701529195624136047,
+        "source_generation": 730267858465303010,
+        "target_selection": 294305885752361881
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00001",
+      "seeds": {
+        "auxiliary_selection": 326824681654506832,
+        "source_generation": 923890172229534219,
+        "target_selection": 1072296692345999637
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00030",
+      "seeds": {
+        "auxiliary_selection": 641404917538469234,
+        "source_generation": 1059326063457338243,
+        "target_selection": 821200665785629585
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00068",
+      "seeds": {
+        "auxiliary_selection": 47159781754342650,
+        "source_generation": 770319181625267902,
+        "target_selection": 727548699506465872
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00046",
+      "seeds": {
+        "auxiliary_selection": 630266451213916035,
+        "source_generation": 129266305309000763,
+        "target_selection": 998883622998821886
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00033",
+      "seeds": {
+        "auxiliary_selection": 893213573693201827,
+        "source_generation": 503691430320059395,
+        "target_selection": 475578787963396052
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00060",
+      "seeds": {
+        "auxiliary_selection": 754169825926490356,
+        "source_generation": 571881923343013915,
+        "target_selection": 1129015548840848085
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00035",
+      "seeds": {
+        "auxiliary_selection": 956027582220764610,
+        "source_generation": 1070198149901169360,
+        "target_selection": 470485706613699813
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00071",
+      "seeds": {
+        "auxiliary_selection": 334166954140310582,
+        "source_generation": 744650347150167054,
+        "target_selection": 26229535823582849
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00058",
+      "seeds": {
+        "auxiliary_selection": 133508400045105245,
+        "source_generation": 381845004227238758,
+        "target_selection": 1023545166940709385
+      },
+      "source_state": "planned_not_generated",
+      "split": "calibration",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00047",
+      "seeds": {
+        "auxiliary_selection": 467834946615743955,
+        "source_generation": 35486197334519699,
+        "target_selection": 714649524029372715
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00031",
+      "seeds": {
+        "auxiliary_selection": 120583654227172339,
+        "source_generation": 375448628348865040,
+        "target_selection": 67224744764392416
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00045",
+      "seeds": {
+        "auxiliary_selection": 599214160527789426,
+        "source_generation": 1004759912344990459,
+        "target_selection": 158587285331572036
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00059",
+      "seeds": {
+        "auxiliary_selection": 432560367666385298,
+        "source_generation": 930599931455886101,
+        "target_selection": 688716636330231093
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00018",
+      "seeds": {
+        "auxiliary_selection": 93189461855746191,
+        "source_generation": 557502901875573355,
+        "target_selection": 752777810357579175
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00003",
+      "seeds": {
+        "auxiliary_selection": 98947190318705815,
+        "source_generation": 269860946840372556,
+        "target_selection": 491301167901085831
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00017",
+      "seeds": {
+        "auxiliary_selection": 907489718809636533,
+        "source_generation": 673717262773277602,
+        "target_selection": 635108859331770540
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00010",
+      "seeds": {
+        "auxiliary_selection": 1051015272303341340,
+        "source_generation": 324750035342718470,
+        "target_selection": 768083689864073507
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00006",
+      "seeds": {
+        "auxiliary_selection": 935359807677093728,
+        "source_generation": 706438110095483515,
+        "target_selection": 58266062268051861
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00055",
+      "seeds": {
+        "auxiliary_selection": 937171638868434890,
+        "source_generation": 80886310747537132,
+        "target_selection": 809484231032008532
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00054",
+      "seeds": {
+        "auxiliary_selection": 172613293280812380,
+        "source_generation": 1031802000982257098,
+        "target_selection": 1145318089959769819
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00024",
+      "seeds": {
+        "auxiliary_selection": 757586031244497975,
+        "source_generation": 775340267382896666,
+        "target_selection": 849373243990412748
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00016",
+      "seeds": {
+        "auxiliary_selection": 314991817495898012,
+        "source_generation": 187735748588904094,
+        "target_selection": 23448794370819550
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00067",
+      "seeds": {
+        "auxiliary_selection": 814737783226770896,
+        "source_generation": 102701000411561769,
+        "target_selection": 337477318761301541
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00000",
+      "seeds": {
+        "auxiliary_selection": 924421861656417490,
+        "source_generation": 1012431295707515248,
+        "target_selection": 475667564679778973
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00009",
+      "seeds": {
+        "auxiliary_selection": 670331713585622075,
+        "source_generation": 410137617107325154,
+        "target_selection": 862938956127382545
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00015",
+      "seeds": {
+        "auxiliary_selection": 287276315415749864,
+        "source_generation": 661717385482985159,
+        "target_selection": 628465771237416438
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00002",
+      "seeds": {
+        "auxiliary_selection": 1126583387991728027,
+        "source_generation": 1076033918189259231,
+        "target_selection": 332873301192054364
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00056",
+      "seeds": {
+        "auxiliary_selection": 103948773873227821,
+        "source_generation": 1114718980716478115,
+        "target_selection": 546033527356780595
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00070",
+      "seeds": {
+        "auxiliary_selection": 707172408714413940,
+        "source_generation": 58836949247722940,
+        "target_selection": 984497178378779708
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00036",
+      "seeds": {
+        "auxiliary_selection": 94192688255351091,
+        "source_generation": 841945885750494615,
+        "target_selection": 773879131447367510
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00012",
+      "seeds": {
+        "auxiliary_selection": 584615319599207481,
+        "source_generation": 154485835929664833,
+        "target_selection": 567966238808173409
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00048",
+      "seeds": {
+        "auxiliary_selection": 87110218005812513,
+        "source_generation": 918056892454779721,
+        "target_selection": 272285921245596183
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00041",
+      "seeds": {
+        "auxiliary_selection": 151567522741175397,
+        "source_generation": 1022403983213807734,
+        "target_selection": 634140872352736163
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00050",
+      "seeds": {
+        "auxiliary_selection": 28821029658010486,
+        "source_generation": 813615897735237164,
+        "target_selection": 127329593726150963
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00026",
+      "seeds": {
+        "auxiliary_selection": 212901475471261077,
+        "source_generation": 265858935450308975,
+        "target_selection": 70773196618088000
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00005",
+      "seeds": {
+        "auxiliary_selection": 1088268676778706751,
+        "source_generation": 823077435695645416,
+        "target_selection": 938783903585611034
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00004",
+      "seeds": {
+        "auxiliary_selection": 1137737768985562306,
+        "source_generation": 703119522747376282,
+        "target_selection": 709427440048600257
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00013",
+      "seeds": {
+        "auxiliary_selection": 919938571385276394,
+        "source_generation": 683878882178148480,
+        "target_selection": 120275222501658836
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00023",
+      "seeds": {
+        "auxiliary_selection": 515656091710063819,
+        "source_generation": 1066727968120773045,
+        "target_selection": 657429748228155484
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00007",
+      "seeds": {
+        "auxiliary_selection": 258936592774349597,
+        "source_generation": 884414255207630487,
+        "target_selection": 907979678607591742
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    },
+    {
+      "group_id": "urban-primary-20261025-v1-g00061",
+      "seeds": {
+        "auxiliary_selection": 908721991767211555,
+        "source_generation": 457250672675594484,
+        "target_selection": 853559995705716958
+      },
+      "source_state": "planned_not_generated",
+      "split": "test",
+      "target_slots": [
+        "target-00"
+      ]
+    }
+  ],
+  "manifest_sha256": "5c12a45072da540f71d96115341b5f7fb1a6d9b5be84e8ba3922ac233586056a",
+  "recordings_generated": 0,
+  "schema": "ump.p253.public-prospective-groups.v1",
+  "scope": "Research reproducibility metadata, excluded from the evaluated recipient/attacker input channel.",
+  "status": "planned_not_generated"
+}

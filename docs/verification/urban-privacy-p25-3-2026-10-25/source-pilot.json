@@ -1,0 +1,418 @@
+{
+  "attempted_sources": 8,
+  "cases": [
+    {
+      "capture_proof_sha256": "bb6ef7ee14905f830afc8c046c5656c25aa1301d92aa54f92550f76212677707",
+      "checks": {
+        "all_scheduled_episodes_completed": true,
+        "fixed_geometry": true,
+        "full_horizon": true,
+        "independent_physical_audit": "pass",
+        "same_configuration_law": true,
+        "source_hashes_verified": true,
+        "source_observability": "pass"
+      },
+      "group_id": "source-seed2026102501",
+      "normalized_source_fingerprint": "a6471e75dc701ee564c709aa2ef7fc37140d3b05ac35e604da3dd1db06c38b2c",
+      "observations_sha256": "c0f03fdac2689d6ec078557147b5d0e8835a1d5dd2b10ee8a78d1addfe2827d1",
+      "planned_route_fingerprint": "81cfe1a224780918ba03c7dc37eb8c410e337a2034bc17cc7ec98ba77ab4a3d3",
+      "realized": {
+        "measured_empty_samples": 1238,
+        "measured_samples": 2999,
+        "observation_contributions": 83119,
+        "observed_contributions_by_type": {
+          "Adult Cyclist": 2956,
+          "Adult E-Scooter Driver": 2519,
+          "Adult Pedestrian": 16421,
+          "Child Pedestrian": 11790,
+          "Pedestrian With Mobility Aid": 16809,
+          "Pedestrian With Stroller": 19022,
+          "Senior Cyclist": 2871,
+          "Senior Pedestrian": 10731
+        },
+        "observed_episode_count": 172,
+        "peak_observed_tracks": 124,
+        "population_by_type": {
+          "Adult Cyclist": 9,
+          "Adult E-Scooter Driver": 8,
+          "Adult Pedestrian": 23,
+          "Child Pedestrian": 20,
+          "Pedestrian With Mobility Aid": 20,
+          "Pedestrian With Stroller": 22,
+          "Senior Cyclist": 9,
+          "Senior Pedestrian": 17
+        },
+        "sampling_period_ms": 100,
+        "scheduled_episodes": 172,
+        "scheduled_people": 128,
+        "source_horizon_ms": 300000
+      },
+      "seed": 2026102501,
+      "status": "verified"
+    },
+    {
+      "capture_proof_sha256": "02fd6599662aaa411f0e15d918a8424058558ef5a8a60e1ac1bc441eb6b698a5",
+      "checks": {
+        "all_scheduled_episodes_completed": true,
+        "fixed_geometry": true,
+        "full_horizon": true,
+        "independent_physical_audit": "pass",
+        "same_configuration_law": true,
+        "source_hashes_verified": true,
+        "source_observability": "pass"
+      },
+      "group_id": "source-seed2026102502",
+      "normalized_source_fingerprint": "0aff72dfcb3550680f0c8c9ee4786f89e5993958bf87bbab925c5666639915c2",
+      "observations_sha256": "ca803fca13c89360604cb20d3c5fdea0ce6f5403d89f36703df086bc4e477563",
+      "planned_route_fingerprint": "18db74f4c22f9f830a11e16d3b4abee00d92c091feb62d9b832e2a20dcf573a3",
+      "realized": {
+        "measured_empty_samples": 1029,
+        "measured_samples": 2999,
+        "observation_contributions": 90066,
+        "observed_contributions_by_type": {
+          "Adult Cyclist": 3347,
+          "Adult E-Scooter Driver": 2782,
+          "Adult Pedestrian": 18226,
+          "Child Pedestrian": 13793,
+          "Pedestrian With Mobility Aid": 16968,
+          "Pedestrian With Stroller": 16554,
+          "Senior Cyclist": 2941,
+          "Senior Pedestrian": 15455
+        },
+        "observed_episode_count": 169,
+        "peak_observed_tracks": 127,
+        "population_by_type": {
+          "Adult Cyclist": 9,
+          "Adult E-Scooter Driver": 8,
+          "Adult Pedestrian": 27,
+          "Child Pedestrian": 19,
+          "Pedestrian With Mobility Aid": 19,
+          "Pedestrian With Stroller": 18,
+          "Senior Cyclist": 9,
+          "Senior Pedestrian": 19
+        },
+        "sampling_period_ms": 100,
+        "scheduled_episodes": 169,
+        "scheduled_people": 128,
+        "source_horizon_ms": 300000
+      },
+      "seed": 2026102502,
+      "status": "verified"
+    },
+    {
+      "capture_proof_sha256": "381ff492318aab7dbda45c6e1ef1089fca26e290fbeed14f6be358ef216c33d2",
+      "checks": {
+        "all_scheduled_episodes_completed": true,
+        "fixed_geometry": true,
+        "full_horizon": true,
+        "independent_physical_audit": "pass",
+        "same_configuration_law": true,
+        "source_hashes_verified": true,
+        "source_observability": "pass"
+      },
+      "group_id": "source-seed2026102503",
+      "normalized_source_fingerprint": "1bc33380076bc1687d3da97e0a062f33c0d7dc04e42e00bd1efab7631a4c2563",
+      "observations_sha256": "17641e539a47095fc8a5b5f34ca4bb9ffaefccb35f3afd7e89f3af79be34833a",
+      "planned_route_fingerprint": "75db75343d9a5277049e0eb4d091b1f9050d6be394f765023e8f0503b788a4f8",
+      "realized": {
+        "measured_empty_samples": 1175,
+        "measured_samples": 2999,
+        "observation_contributions": 88069,
+        "observed_contributions_by_type": {
+          "Adult Cyclist": 3373,
+          "Adult E-Scooter Driver": 3353,
+          "Adult Pedestrian": 18683,
+          "Child Pedestrian": 11650,
+          "Pedestrian With Mobility Aid": 18134,
+          "Pedestrian With Stroller": 16925,
+          "Senior Cyclist": 3623,
+          "Senior Pedestrian": 12328
+        },
+        "observed_episode_count": 170,
+        "peak_observed_tracks": 125,
+        "population_by_type": {
+          "Adult Cyclist": 9,
+          "Adult E-Scooter Driver": 8,
+          "Adult Pedestrian": 27,
+          "Child Pedestrian": 17,
+          "Pedestrian With Mobility Aid": 22,
+          "Pedestrian With Stroller": 18,
+          "Senior Cyclist": 9,
+          "Senior Pedestrian": 18
+        },
+        "sampling_period_ms": 100,
+        "scheduled_episodes": 170,
+        "scheduled_people": 128,
+        "source_horizon_ms": 300000
+      },
+      "seed": 2026102503,
+      "status": "verified"
+    },
+    {
+      "capture_proof_sha256": "72219c856c2f23c8424e34b8c2fc5f210a8215f6f0bc70e17869319a09cff5db",
+      "checks": {
+        "all_scheduled_episodes_completed": true,
+        "fixed_geometry": true,
+        "full_horizon": true,
+        "independent_physical_audit": "pass",
+        "same_configuration_law": true,
+        "source_hashes_verified": true,
+        "source_observability": "pass"
+      },
+      "group_id": "source-seed2026102504",
+      "normalized_source_fingerprint": "bd6ef9404f129081f1a22b8d7e4eda3930b562c565ce294b1769934bba5e55c9",
+      "observations_sha256": "620ab9d2a2fc22df0a98caa240bed88e4ab273abbda481009179c43faa7dd634",
+      "planned_route_fingerprint": "2ae4900ab15286eccc209daf5771f8026f452c59de1e0f8bcaebda1753d6e50b",
+      "realized": {
+        "measured_empty_samples": 1093,
+        "measured_samples": 2999,
+        "observation_contributions": 88003,
+        "observed_contributions_by_type": {
+          "Adult Cyclist": 3403,
+          "Adult E-Scooter Driver": 3219,
+          "Adult Pedestrian": 21439,
+          "Child Pedestrian": 10996,
+          "Pedestrian With Mobility Aid": 14778,
+          "Pedestrian With Stroller": 18657,
+          "Senior Cyclist": 3414,
+          "Senior Pedestrian": 12097
+        },
+        "observed_episode_count": 165,
+        "peak_observed_tracks": 124,
+        "population_by_type": {
+          "Adult Cyclist": 9,
+          "Adult E-Scooter Driver": 8,
+          "Adult Pedestrian": 29,
+          "Child Pedestrian": 16,
+          "Pedestrian With Mobility Aid": 17,
+          "Pedestrian With Stroller": 22,
+          "Senior Cyclist": 9,
+          "Senior Pedestrian": 18
+        },
+        "sampling_period_ms": 100,
+        "scheduled_episodes": 165,
+        "scheduled_people": 128,
+        "source_horizon_ms": 300000
+      },
+      "seed": 2026102504,
+      "status": "verified"
+    },
+    {
+      "capture_proof_sha256": "418e51503641c5824f550ed397c097cb1bf1d166b9a4ac46f62d5c082e1206a4",
+      "checks": {
+        "all_scheduled_episodes_completed": true,
+        "fixed_geometry": true,
+        "full_horizon": true,
+        "independent_physical_audit": "pass",
+        "same_configuration_law": true,
+        "source_hashes_verified": true,
+        "source_observability": "pass"
+      },
+      "group_id": "source-seed2026102505",
+      "normalized_source_fingerprint": "75f2d0a2195365c006a049224ee7b9f01156cd699d61d9b0cd6a75a2932b0fbf",
+      "observations_sha256": "0fa7e5be080b370efdbe4941f2ad59ae0350f67e74d880f7ec32673b4f61a5db",
+      "planned_route_fingerprint": "0e9a88f10a3c1b19e1a139afb34942bc271fe7b36007876eb026c11410e392f3",
+      "realized": {
+        "measured_empty_samples": 814,
+        "measured_samples": 2999,
+        "observation_contributions": 90926,
+        "observed_contributions_by_type": {
+          "Adult Cyclist": 3660,
+          "Adult E-Scooter Driver": 3382,
+          "Adult Pedestrian": 19860,
+          "Child Pedestrian": 12448,
+          "Pedestrian With Mobility Aid": 18080,
+          "Pedestrian With Stroller": 15341,
+          "Senior Cyclist": 4075,
+          "Senior Pedestrian": 14080
+        },
+        "observed_episode_count": 171,
+        "peak_observed_tracks": 123,
+        "population_by_type": {
+          "Adult Cyclist": 9,
+          "Adult E-Scooter Driver": 8,
+          "Adult Pedestrian": 25,
+          "Child Pedestrian": 16,
+          "Pedestrian With Mobility Aid": 21,
+          "Pedestrian With Stroller": 19,
+          "Senior Cyclist": 9,
+          "Senior Pedestrian": 21
+        },
+        "sampling_period_ms": 100,
+        "scheduled_episodes": 171,
+        "scheduled_people": 128,
+        "source_horizon_ms": 300000
+      },
+      "seed": 2026102505,
+      "status": "verified"
+    },
+    {
+      "capture_proof_sha256": "491ae29d78ffdd7970fc26c1c0b65c48fabcc1d28ea5ab240058052d0313ed62",
+      "checks": {
+        "all_scheduled_episodes_completed": true,
+        "fixed_geometry": true,
+        "full_horizon": true,
+        "independent_physical_audit": "pass",
+        "same_configuration_law": true,
+        "source_hashes_verified": true,
+        "source_observability": "pass"
+      },
+      "group_id": "source-seed2026102506",
+      "normalized_source_fingerprint": "6169d5a6574069547a7fd7474498129e1a44356821c7fb201d4e2a585fcd2014",
+      "observations_sha256": "78175ea240f6b3f311415f57b7f391d0d908e149460a115425553b7835404071",
+      "planned_route_fingerprint": "0a9312809eace7ab4df1ba2feea1c24b3ea6c36b2a6a18d963f35269bfea4394",
+      "realized": {
+        "measured_empty_samples": 1285,
+        "measured_samples": 2999,
+        "observation_contributions": 84556,
+        "observed_contributions_by_type": {
+          "Adult Cyclist": 3522,
+          "Adult E-Scooter Driver": 3102,
+          "Adult Pedestrian": 16864,
+          "Child Pedestrian": 14737,
+          "Pedestrian With Mobility Aid": 14336,
+          "Pedestrian With Stroller": 15195,
+          "Senior Cyclist": 3288,
+          "Senior Pedestrian": 13512
+        },
+        "observed_episode_count": 169,
+        "peak_observed_tracks": 123,
+        "population_by_type": {
+          "Adult Cyclist": 9,
+          "Adult E-Scooter Driver": 8,
+          "Adult Pedestrian": 25,
+          "Child Pedestrian": 19,
+          "Pedestrian With Mobility Aid": 19,
+          "Pedestrian With Stroller": 19,
+          "Senior Cyclist": 9,
+          "Senior Pedestrian": 20
+        },
+        "sampling_period_ms": 100,
+        "scheduled_episodes": 169,
+        "scheduled_people": 128,
+        "source_horizon_ms": 300000
+      },
+      "seed": 2026102506,
+      "status": "verified"
+    },
+    {
+      "capture_proof_sha256": "83fc8627100c94a95f2986996218f3fcc434a10932a8e301f731e7a2e30f7783",
+      "checks": {
+        "all_scheduled_episodes_completed": true,
+        "fixed_geometry": true,
+        "full_horizon": true,
+        "independent_physical_audit": "pass",
+        "same_configuration_law": true,
+        "source_hashes_verified": true,
+        "source_observability": "pass"
+      },
+      "group_id": "source-seed2026102507",
+      "normalized_source_fingerprint": "94ba563428a4f316e0e5bd44df4aea153995143e1e3cfd111988d29525111c0e",
+      "observations_sha256": "7a1b2fdae3cd6cedc8268629287561464c52639fcada7092824bf5252695a199",
+      "planned_route_fingerprint": "f5bd9b143faee0a5a9290a0e64133eec9c5d1eb6d695ec70eb55c924b3376cde",
+      "realized": {
+        "measured_empty_samples": 1036,
+        "measured_samples": 2999,
+        "observation_contributions": 89882,
+        "observed_contributions_by_type": {
+          "Adult Cyclist": 3024,
+          "Adult E-Scooter Driver": 2951,
+          "Adult Pedestrian": 19930,
+          "Child Pedestrian": 14303,
+          "Pedestrian With Mobility Aid": 16118,
+          "Pedestrian With Stroller": 17909,
+          "Senior Cyclist": 3404,
+          "Senior Pedestrian": 12243
+        },
+        "observed_episode_count": 173,
+        "peak_observed_tracks": 125,
+        "population_by_type": {
+          "Adult Cyclist": 9,
+          "Adult E-Scooter Driver": 8,
+          "Adult Pedestrian": 27,
+          "Child Pedestrian": 20,
+          "Pedestrian With Mobility Aid": 19,
+          "Pedestrian With Stroller": 20,
+          "Senior Cyclist": 9,
+          "Senior Pedestrian": 16
+        },
+        "sampling_period_ms": 100,
+        "scheduled_episodes": 173,
+        "scheduled_people": 128,
+        "source_horizon_ms": 300000
+      },
+      "seed": 2026102507,
+      "status": "verified"
+    },
+    {
+      "capture_proof_sha256": "4166b24df6039ab02cbe47112ffe5e2e03c727a448c8b94a0ca0809e6e2ff482",
+      "checks": {
+        "all_scheduled_episodes_completed": true,
+        "fixed_geometry": true,
+        "full_horizon": true,
+        "independent_physical_audit": "pass",
+        "same_configuration_law": true,
+        "source_hashes_verified": true,
+        "source_observability": "pass"
+      },
+      "group_id": "source-seed2026102508",
+      "normalized_source_fingerprint": "44d797a50bb32b3863a8a324c31c78f416cec008ce9d9919bcbf13610c9a6d80",
+      "observations_sha256": "9102c81b2780c64e6603abaec2a4530d2938220e7b023122ec5ce5cbaf55718b",
+      "planned_route_fingerprint": "9465df415ea5b6fb94e4fb4e3764d3ca15821e8e5489d18a105c1c29f953d89b",
+      "realized": {
+        "measured_empty_samples": 964,
+        "measured_samples": 2999,
+        "observation_contributions": 93625,
+        "observed_contributions_by_type": {
+          "Adult Cyclist": 3933,
+          "Adult E-Scooter Driver": 3469,
+          "Adult Pedestrian": 20732,
+          "Child Pedestrian": 12600,
+          "Pedestrian With Mobility Aid": 15525,
+          "Pedestrian With Stroller": 19928,
+          "Senior Cyclist": 3862,
+          "Senior Pedestrian": 13576
+        },
+        "observed_episode_count": 170,
+        "peak_observed_tracks": 126,
+        "population_by_type": {
+          "Adult Cyclist": 9,
+          "Adult E-Scooter Driver": 8,
+          "Adult Pedestrian": 26,
+          "Child Pedestrian": 22,
+          "Pedestrian With Mobility Aid": 16,
+          "Pedestrian With Stroller": 20,
+          "Senior Cyclist": 9,
+          "Senior Pedestrian": 18
+        },
+        "sampling_period_ms": 100,
+        "scheduled_episodes": 170,
+        "scheduled_people": 128,
+        "source_horizon_ms": 300000
+      },
+      "seed": 2026102508,
+      "status": "verified"
+    }
+  ],
+  "configuration_law_sha256": "ef886049ee7833f1e5110b9618efcc5f9aff98729c8bac589fe6dcc2f1598992",
+  "distinct_normalized_sources": 8,
+  "distinct_route_plans": 8,
+  "fresh_verification_report_sha256": "5867ad250aef47228b0b1b8e9faa0c4845d4c1a5f7b65b9f50e18ed262eb5fa0",
+  "geometry_sha256": {
+    "building_access.json": "34d3ad3cb91dbd53900427f13099a7aa47eb4547d21eeba1294e8fdcd3d32597",
+    "map_background.png": "9c7f84be4af893f63d27fa6de235b846259cf14deffc0e4e9b114343274e972b"
+  },
+  "historical_source_fingerprint_overlap": false,
+  "interpretation": "Same fixed modeled site/law; independent seed-conditioned recordings, not independent real-world people/sites. No attack fit or privacy-benefit estimate. Raw movements/private identities/database names remain local.",
+  "planned_sources": 8,
+  "private_summary_sha256": "5867ad250aef47228b0b1b8e9faa0c4845d4c1a5f7b65b9f50e18ed262eb5fa0",
+  "protocol_sha256": "d36f2677c9b50e8e2d8830c12148cfe7810a315e0e7fef3cd30b1dea36b98f61",
+  "role": "DEV_only_excluded_from_primary_splits",
+  "schema": "ump.p253.completed-source-pilot.v1",
+  "simulator_sha256": "c17a458690f0332b10f47c51586b8973568cdeed06558755dd689c89f7cb7bc8",
+  "status": "verified",
+  "total_observation_contributions": 708246,
+  "total_simulated_seconds": 2400,
+  "total_visible_episodes": 1359,
+  "verified_sources": 8
+}

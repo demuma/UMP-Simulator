@@ -1,9 +1,9 @@
 # P25.3: independent urban sources and prospective experiment design
 
-Date: 2026-10-25. Status: all-eight narrow motion preflight passed; v3 full captures in progress; the main design
-below is a draft until the source-quality gate and immutable split freeze pass.
-No main training/calibration/test recordings, fitted attack or privacy gain are
-claimed by this document.
+Date: 2026-10-25. Status: **P25.3 complete**. All eight final v3 captures and
+independent source/physical audits pass. The prospective 24/16/32 main design is
+frozen and independently reverified; its 72 sources remain ungenerated. No fitted
+urban attack or privacy-benefit estimate is claimed.
 
 ## Purpose and scientific boundary
 
@@ -102,7 +102,7 @@ The eight recordings are inspected DEV pipeline evidence and are excluded from
 all later TRAIN/CAL/TEST groups. They establish neither real-world representativeness
 nor sufficient statistical power. A failed gate keeps P25.3 open.
 
-## Draft main design, pending source acceptance
+## Frozen main design, additional sources not generated
 
 The prospective design contains 24 TRAIN, 16 CAL and 32 TEST independent full
 recordings, one complete target episode per recording. Source-generation,
@@ -191,7 +191,7 @@ existing uniform spatial/constant-interval occupancy reconstruction, reporting
 its MAE together with answered/scored coverage. Unknown output is not a zero.
 Use the included IN or OUT observation population as the corresponding reference.
 
-The draft entails 72 primary recordings, 144 worlds, 1296 native cases and 288
+The frozen design entails 72 primary recordings, 144 worlds, 1296 native cases and 288
 regional compositions before controls. Generation, audits, native cases and
 storage need bounded staged execution in P25.4; caps are not runtime forecasts.
 Raw/private data and full replays stay local. Only compact design/aggregate
@@ -212,4 +212,12 @@ Prepare and execute the immutable DEV protocol using the explicit mapped Python:
 snapshot. It does not run the simulator. `urban_privacy_split.py` freezes the main
 manifest only with a verified eight-source pilot and authenticated exclusion and
 policy evidence. Its future slots explicitly say `planned_not_generated`.
-P25.4 begins after the source and immutable design gates pass.
+Both source and immutable design gates now pass. Manifest SHA-256:
+`5c12a45072da540f71d96115341b5f7fb1a6d9b5be84e8ba3922ac233586056a`.
+See the [source pilot receipt](verification/urban-privacy-p25-3-2026-10-25/source-pilot.json),
+[frozen design](verification/urban-privacy-p25-3-2026-10-25/primary-design.json) and
+[freeze verification](verification/urban-privacy-p25-3-2026-10-25/primary-freeze.json).
+P25.4 must implement/validate its missing orchestration, exact-query coverage and
+exact rate intervals and record their implementation supplement before generating
+or inspecting TEST. Existing feature/fitting/audit helper code and both native
+executables are hash-bound in the design. Actual main recordings and attacks are zero.

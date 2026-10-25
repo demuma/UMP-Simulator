@@ -19,16 +19,18 @@ Research questions describe the dissertation; this is the implementation queue.
   ten native DEV runs and twelve recipient streams verified. Default availability
   is a final snapshot at H, not measured live delivery.
   [Test report](docs/URBAN_PRIVACY_P25_2_TEST_REPORT_2026-10-25.md).
-- [ ] P25.3: record an initial eight independent same-site source realizations;
-  reuse each recording across methods. Then freeze the primary grouped TRAIN/CAL/
-  TEST design, comparator selection and required additional source counts before
-  held-out evaluation. Eight pilot recordings alone do not establish privacy power.
-  In progress: source/split tooling and the prospective 24/16/32 grouped design
-  are implemented. The first source pilot caught crossing-request starvation;
-  preserve its negative matrix and close the source correction/regression gate
-  before a separately frozen same-seed pilot and the main manifest.
-  [Protocol and draft design](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md).
-- [ ] P25.4: run the frozen joint risk/utility comparison, report AUC and observed
+- [x] P25.3: record eight independent same-site DEV sources and freeze the
+  grouped main design. Completed: 8/8 full captures and physical audits, 1359
+  episodes, 708246 observations; no ID-renamed/source-plan clones or historical
+  fingerprint overlap. Narrow source correction verified on all eight seeds;
+  rejected prototypes retained. Frozen 24 TRAIN/16 CAL/32 TEST groups, one target
+  each, methods/policy/features/analysis fixed. All 72 primary sources remain
+  ungenerated, no attack fit or privacy gain claimed.
+  [Protocol](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md) and
+  [test report](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md).
+- [ ] P25.4: implement/validate the urban study runner, exact root-query coverage
+  and exact binomial intervals; freeze implementation evidence before TEST
+  generation/inspection. Then run the frozen joint risk/utility comparison, report AUC and observed
   TPR/FPR with source-group uncertainty, coverage/detail/delay and all outcomes;
   retain raw movement privately and publish compact evidence and test report.
 
