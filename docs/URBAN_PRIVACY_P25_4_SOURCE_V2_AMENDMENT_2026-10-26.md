@@ -137,3 +137,33 @@ Local new version directories are `results/urban-privacy-primary-protocol-2026-1
 `results/urban-privacy-primary-study-2026-10-26-v2`. The latter retains the
 serial driver and phase logs. Raw v1/v2 data and fitted artifacts stay local.
 P25.4 empirical acceptance remains open until all final outcomes are reviewed.
+
+## Local storage operations after freeze
+
+The closed v1 GT JSON files were losslessly gzip-archived locally. All 40 archives
+match their original capture-proof SHA-256; 6.077 GiB becomes 0.603 GiB. A real
+same-path restoration was tested on the first negative source and matches its
+original capture hash. Other legacy GT files can be restored with:
+
+```sh
+python3 -B results/urban-privacy-source-correction-2026-10-26-v2/archive_legacy_gt.py \
+  --restore --seed 251636138180450197
+```
+
+Omit `--seed` to restore all 40 when sufficient storage is available. Old
+observations/results/proofs remain present. The original v1 data is retained,
+with its immutable archive/release/restoration receipts in the ignored results
+folder. Local filesystem snapshots can retain old allocated blocks, so archival
+size reduction alone is not treated as guaranteed immediately free disk space.
+
+For v2, only **completed, verified GT files** receive transparent local filesystem
+compression at the same path. Before atomic replacement, both copies must match
+the existing immutable capture-proof hash and logical size. Ordinary `open()`
+reads the same JSON bytes; no reader or scientific code changes. Temporary copies
+are outside the capture tree; active captures and invalid sources are untouched.
+A real full unchanged source validation passes after conversion, recorded in the
+[storage validation](verification/urban-privacy-p25-4-2026-10-26-v2/transparent-storage-validation.json).
+The storage worker records every before/after logical hash, size and allocated
+size, and exits after 72 files or a stopped driver. This is storage representation,
+not a new source realization or protocol/model change. All final source checks
+still use their original strict logical-byte digests. V2 replay paths stay usable.

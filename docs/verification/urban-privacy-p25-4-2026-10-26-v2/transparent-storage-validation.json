@@ -1,0 +1,12 @@
+{
+  "flags": 32,
+  "free_GiB": 15.071,
+  "full_existing_source_validator": "verified",
+  "logical_bytes": 147006686,
+  "physical_bytes": 17113088,
+  "schema": "ump.transparent-local-gt-compression-validation.v1",
+  "scope": "Only filesystem storage changed; ordinary reads and every source proof/path/hash remain identical. Existing frozen source validator rerun without modification.",
+  "sha256": "0804419442d50fbdced62036fbca46db9e53c33ea65e213f290746b4f139a577",
+  "source_group": "urban-primary-20261025-v1-g00052",
+  "status": "verified_same_path_bytes_and_full_source_gate"
+}
