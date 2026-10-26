@@ -5,6 +5,16 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
+**Current work — supplementary strategy comparison.** The original study below
+is complete. Four additional evaluations reuse its exact inputs and hard policies:
+Temporal First, Spatial First, and Semantic First with preference waiting under
+each secondary order. Implementation passes445 affected Python methods,22
+native groups and8 excluded-city DEV cases. The tested configuration is
+[frozen before execution](docs/verification/urban-strategy-supplement-2026-10-26-v1/pre-execution-freeze/);
+utility/runtime runs precede all new MIA fitting and scoring. Read the
+[declared protocol and ordered gates](docs/URBAN_STRATEGY_SUPPLEMENT_PROTOCOL_2026-10-26.md).
+New results are pending; no new policy or second attack is part of this block.
+
 **Doorway source correction — 2026-10-26.** The diagnosed local-navigation
 failure is corrected with a bounded fallback for an empty A* start frontier.
 All **92/92 DEV cases and 15,590/15,590 episodes** complete, including twelve new

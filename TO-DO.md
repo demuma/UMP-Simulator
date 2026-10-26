@@ -1,6 +1,28 @@
 # TO-DO — UMP-Simulator
 
 
+## Next: P26 supplementary strategy comparison for Thursday
+
+Follow the [declared supplementary protocol](docs/URBAN_STRATEGY_SUPPLEMENT_PROTOCOL_2026-10-26.md).
+Keep all hard policies and original evidence unchanged. Four new evaluations:
+Temporal First, Spatial First, Semantic First with preference waiting/Temporal
+secondary, and Semantic First with preference waiting/Spatial secondary. Reuse
+the original immediate Semantic First reference and all ten baselines.
+
+- [x] P26.1: define distinct behaviors, unchanged-input/hard-policy rules and
+  the supplementary exploratory contrasts before new native output.
+- [x] P26.2: implement the separate runner/reporter. All445 affected Python
+  methods,22 native regression groups and8 excluded-city DEV native cases pass.
+  Final independent code/layout checks pass; unchanged policy and inputs are
+  [frozen before execution](docs/verification/urban-strategy-supplement-2026-10-26-v1/pre-execution-freeze/).
+- [ ] P26.3: complete/audit all576 additional native cases and report utility
+  and offline runtime first; no MIA fitting/scoring before this gate.
+- [ ] P26.4: fit eight new attack variants on TRAIN/CAL only, preserve old22
+  variants/controls, then assess all32 TEST pairs and verify/report actual results.
+- [ ] P26.5: publish compact results, lineage, figures and detailed English test
+  report; update presentation evidence. Second attacks and policy search follow
+  later discussion and are outside this implementation block.
+
 ## Next: urban privacy evaluation — four ordered gates
 
 Follow the [consolidated plan](docs/URBAN_PRIVACY_EVALUATION_PLAN_2026-10-25.md).

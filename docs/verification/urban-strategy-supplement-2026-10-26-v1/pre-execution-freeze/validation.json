@@ -1,0 +1,40 @@
+{
+  "excluded_city_DEV": {
+    "model_fits": 0,
+    "native_cases": 8,
+    "policy_violations": 0,
+    "seconds": 371.58442820899995,
+    "source_generation": 0,
+    "verified": 8
+  },
+  "existing_native_regressions": {
+    "failures": 0,
+    "groups": 22
+  },
+  "independent_code_reviews": "Final runner, reporter completeness, and exact cosmetic-only figure delta verified.",
+  "proofs_sha256": {
+    "city_DEV": "3fb1b89ad04bd7ce5cb973e087948af776b70752567e5adeacaa453bdcc7130e",
+    "native": "1856e3cc68a943da4827bb3b04f26be0c6f5790aca75f23cea47a678e1d08283",
+    "native_semantics": "4d191fb963c8954e760b4f652f3615cf8fe6dc3e2f59d189c5425dc4ee119c5b",
+    "reporter_cosmetic_review": "312eb9e59477c002cbd7c28f8196be6ad15b18e07887ff010709540b94432e9f",
+    "reporter_review": "9967e30ba7696f738b3307dadbebc1b47d382c40b59f8f5cc0f17f199dbcc364",
+    "runner_review": "8010066d4611b5256fa469eca4119b6438318819e85f5f6a26938920734f4fe3",
+    "synthetic_visual": "5bbfa75d3ce52d99dcf30bde524dd616b3c27958edf555ec9b2e3d1b705eb937",
+    "units": "48eef3ebb521b3564cbcafad4fbdeb2830c84f9687dea29ef556350abf7a9476"
+  },
+  "schema": "ump.strategy-supplement-public-prevalidation.v1",
+  "scope": "Scopes overlap and are not summed; DEV input is excluded from the72 study recordings. No new study execution or MIA result is claimed.",
+  "status": "verified",
+  "synthetic_visual": {
+    "contrast_legend_and_spacing_verified": true,
+    "figures": 4,
+    "scope": "Synthetic layout only; actual results figures still require later inspection."
+  },
+  "units": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": 41.799965042000004,
+    "skips": 0,
+    "tests": 445
+  }
+}

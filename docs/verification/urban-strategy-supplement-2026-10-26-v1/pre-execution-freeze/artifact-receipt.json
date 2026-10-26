@@ -1,0 +1,11 @@
+{
+  "artifacts_sha256": {
+    "provenance.json": "e50a76c910713921ececd03990cb2845d147068aeabe0ed3f7a29652b8ee363c",
+    "summary.json": "b6e35346e367d667f61ab9f432cadb440d2fb54382972709a8f620ca3eed92a9",
+    "validation.json": "6524b966562b7d44cbef54f52794a804da51ea9ec79458574581ac360955d072"
+  },
+  "protocol_document_sha256": "46f81759fff2decd41389abdf703e7196a9fda895cf0d139cefa0806b13b7f31",
+  "schema": "ump.strategy-supplement-public-freeze-artifacts.v1",
+  "scope": "Aggregate pre-execution evidence only; no raw observations, group identities/seeds, models, features or individual scores.",
+  "utc": "2026-10-26T22:09:11.963184+00:00"
+}

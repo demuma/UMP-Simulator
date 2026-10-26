@@ -1,0 +1,60 @@
+{
+  "actual_new_MIA_fits_at_freeze": 0,
+  "actual_new_TEST_scores_at_freeze": 0,
+  "actual_new_native_cases_at_freeze": 0,
+  "exploratory_existing_TEST_sources": true,
+  "group_counts": {
+    "calibration": 16,
+    "test": 32,
+    "train": 24
+  },
+  "hard_policy_unchanged": true,
+  "new_methods": 4,
+  "ordering": "implementation/tests/DEV/freeze -> native utility/runtime -> utility review -> MIA fitting/lock -> MIA assessment -> final verification/report",
+  "original_method_models_preserved": 22,
+  "original_methods": 11,
+  "planned_all_rows": 2160,
+  "planned_new_method_attack_models": 8,
+  "planned_new_native_cases": 576,
+  "planned_new_rows": 576,
+  "schema": "ump.strategy-supplement-public-freeze.v1",
+  "scope": "Exploratory supplementary methods selected after original TEST results. Same inputs/pairs/hard policy. Utility/audits first, eight TRAIN-only fits/CAL locks last, then separate TEST scoring. Original study/22 models/controls unchanged; no new confirmatory claim.",
+  "source_generation": 0,
+  "status": "ready_before_native_execution",
+  "total_methods": 15,
+  "utc": "2026-10-26T22:09:11.963184+00:00",
+  "variants": [
+    {
+      "id": "adaptive_temporal_first",
+      "kind": "native_adaptive",
+      "label": "Temporal First",
+      "release_trigger": "policy_satisfied",
+      "secondary_strategy": null,
+      "strategy": "temporal_first"
+    },
+    {
+      "id": "adaptive_spatial_first",
+      "kind": "native_adaptive",
+      "label": "Spatial First",
+      "release_trigger": "policy_satisfied",
+      "secondary_strategy": null,
+      "strategy": "spatial_first"
+    },
+    {
+      "id": "adaptive_semantic_wait_temporal",
+      "kind": "native_adaptive",
+      "label": "Semantic First / wait / Temporal secondary",
+      "release_trigger": "priority_satisfied",
+      "secondary_strategy": "temporal_first",
+      "strategy": "semantic_first"
+    },
+    {
+      "id": "adaptive_semantic_wait_spatial",
+      "kind": "native_adaptive",
+      "label": "Semantic First / wait / Spatial secondary",
+      "release_trigger": "priority_satisfied",
+      "secondary_strategy": "spatial_first",
+      "strategy": "semantic_first"
+    }
+  ]
+}

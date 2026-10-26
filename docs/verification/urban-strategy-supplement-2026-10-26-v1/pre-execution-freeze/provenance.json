@@ -1,0 +1,98 @@
+{
+  "contract_sha256": "46f81759fff2decd41389abdf703e7196a9fda895cf0d139cefa0806b13b7f31",
+  "contrast_protocol": [
+    {
+      "confidence_level": 0.95,
+      "id": "temporal_vs_regional20",
+      "left": "adaptive_temporal_first",
+      "replicates": 1000,
+      "right": "regional_static20",
+      "seed": 20261026311
+    },
+    {
+      "confidence_level": 0.95,
+      "id": "spatial_vs_regional20",
+      "left": "adaptive_spatial_first",
+      "replicates": 1000,
+      "right": "regional_static20",
+      "seed": 20261026312
+    },
+    {
+      "confidence_level": 0.95,
+      "id": "semantic_wait_temporal_vs_regional20",
+      "left": "adaptive_semantic_wait_temporal",
+      "replicates": 1000,
+      "right": "regional_static20",
+      "seed": 20261026313
+    },
+    {
+      "confidence_level": 0.95,
+      "id": "semantic_wait_spatial_vs_regional20",
+      "left": "adaptive_semantic_wait_spatial",
+      "replicates": 1000,
+      "right": "regional_static20",
+      "seed": 20261026314
+    },
+    {
+      "confidence_level": 0.95,
+      "id": "temporal_vs_spatial",
+      "left": "adaptive_temporal_first",
+      "replicates": 1000,
+      "right": "adaptive_spatial_first",
+      "seed": 20261026315
+    },
+    {
+      "confidence_level": 0.95,
+      "id": "semantic_wait_temporal_vs_immediate",
+      "left": "adaptive_semantic_wait_temporal",
+      "replicates": 1000,
+      "right": "adaptive_semantic_first",
+      "seed": 20261026316
+    },
+    {
+      "confidence_level": 0.95,
+      "id": "semantic_wait_spatial_vs_immediate",
+      "left": "adaptive_semantic_wait_spatial",
+      "replicates": 1000,
+      "right": "adaptive_semantic_first",
+      "seed": 20261026317
+    },
+    {
+      "confidence_level": 0.95,
+      "id": "semantic_wait_temporal_vs_semantic_wait_spatial",
+      "left": "adaptive_semantic_wait_temporal",
+      "replicates": 1000,
+      "right": "adaptive_semantic_wait_spatial",
+      "seed": 20261026318
+    }
+  ],
+  "hard_policy_sha256": "4a4a0bb4a13882e2f5c34e2dff55bc8e5f3fa375846279e636e59f520f6a95b1",
+  "native_binary_sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+  "original_reference_hashes": {
+    "models": "62b34bcd88737d601ef1f6eabae95ac9ae51fc102189d1062d532e798af18a77",
+    "models_lock": "d0d56de7d89ba7c51135f88584ad533b1bcb4e1aa309eb1af8e233c059e9be81",
+    "protocol": "f8d15a0c40bbdfcf18888a25540f132763dc9b497fb0d18b0ff60eb2831f52a2",
+    "public_bundle": "c2feaf16133519e4582926104c291b443e598b2635223c4ed3ae4daff3cbeb7b",
+    "public_lineage": "913e44823cbb85fd9d8242868ae3d27d5b0ae9bed503d07cfaa54923c1fd026e",
+    "public_summary": "cfed694b1a34d97bc2aa99817f7cbde122cbec13bffd3c07199fa22f1e28ae72",
+    "repair_lineage": "913e44823cbb85fd9d8242868ae3d27d5b0ae9bed503d07cfaa54923c1fd026e",
+    "report": "70abeed6ff101fd51723a610a58120c5963db347510bfe630d882c5ad1509f71",
+    "train_cal_rows": "266b22c90303f62fce8644ba09d9c8da400ab6a3f141641f5a6058c3c6235a56",
+    "validation_ledger": "201890456e4b21b0f19bf7720c848bd2632d01d0a3935144b0e04f5d582c1f3e"
+  },
+  "owned_code_sha256": {
+    "tools/evaluation/report_urban_strategy_supplement.py": "696c860cd33cfdeec04e3b91a9fdca430269b2f8be6668de6986ce168574d272",
+    "tools/evaluation/run_urban_strategy_supplement.py": "6b3fb1413f884bae3e523f7f4cd8f7f448632b7562a30c7f3ff5ae9e95a4d9d4",
+    "tools/evaluation/test_report_urban_strategy_supplement.py": "b88392e8baf206abb970cddef9a4b550502dbe8a0fbd42d491f27aff5293cbc1",
+    "tools/evaluation/test_run_urban_strategy_supplement.py": "5bf3c64b1df53d4b8d6fcd00bd5433d7cb2542943f6fe96ddf209e41e9283a67"
+  },
+  "readiness_sha256": "2f4d0f64d86099502d8dcd5a69a296efb1c70cd722b6d0069d51c64d87333fb8",
+  "schema": "ump.strategy-supplement-public-freeze-provenance.v1",
+  "supplement_protocol_sha256": "eb7e225670935b3952d58d22b3758a3c48dabbcc2bb39da84ef10a564c1845ea",
+  "variant_configs_sha256": {
+    "adaptive_semantic_wait_spatial": "0910eb1758b5dcd1109415463f34c25b516b4c0e63e5294917af21d17f42774e",
+    "adaptive_semantic_wait_temporal": "820ff0032e9c348049094d72e42263c0dd23b92292f7fed6ee022ab39f59f151",
+    "adaptive_spatial_first": "6fe7d00a3ca91f699f24634df8050949805f6d4bb9d2e5402826a69c4cf87cc8",
+    "adaptive_temporal_first": "0da6ae213c1ac5084d75e3d0786537453406d3c079b320a62303ad17d9a1e09e"
+  }
+}
