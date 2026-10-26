@@ -1,6 +1,7 @@
 # P25.4: grouped urban protection and utility assessment
 
-Status: implementation validated and frozen before TEST; primary execution in progress.
+Status: implementation validated and frozen before TEST; v1 source gate failed
+before primary analysis. See the [source-only correction and amendment](URBAN_PRIVACY_SOURCE_CROSSING_DRAIN_FIX_2026-10-26.md).
 This document records implementation of the unchanged [P25.3 design](verification/urban-privacy-p25-3-2026-10-25/primary-design.json).
 It does not replace that design or change its source seeds, policy or analysis.
 

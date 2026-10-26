@@ -399,5 +399,67 @@ class PrimaryArchiveAndGroupingTests(unittest.TestCase):
                 runner.process_group(self.output,{}, {},g,source_case)
 
 
+class PrimaryModelLockTests(unittest.TestCase):
+    def test_lock_models_uses_authenticated_manifest_groups_and_method_order(self):
+        # A new authenticated study can retain the 24/16/32 design while using
+        # another manifest path, group namespace and ordered comparator family.
+        # No default legacy manifest may select its fitting/cohort matrix.
+        with tempfile.TemporaryDirectory() as temporary:
+            root=Path(temporary).resolve();output=root/'results/study';output.mkdir(parents=True)
+            source_directory=root/'results/sources';source_directory.mkdir()
+            groups=[dict(group_id=f'synthetic-v2-{role}-{index:03}',split=role)
+                    for role,count in (('train',24),('calibration',16),('test',32))
+                    for index in reversed(range(count))]
+            method_ids=['synthetic-v2-'+method['id'] for method in reversed(methods())]
+            manifest={'groups':groups,'design':{'methods':[{'id':name} for name in method_ids]}}
+            expected_groups={role:sorted(row['group_id'] for row in groups if row['split']==role)
+                             for role in ('train','calibration','test')}
+            rows=[dict(group_id=record['group_id'],split=record['split'],world=world,label=label,
+                       method_id=name,features=[0.]*111,scalar_features=[0.]*31,
+                       auxiliary_features=[1.]*8,
+                       controls={'prior_only':.5,'unprotected':float(label),'no_output_features':[0.]*111},
+                       utility={})
+                  for record in groups if record['split']!='test'
+                  for name in method_ids for world,label in (('IN',1),('OUT',0))]
+            summaries=[dict(**record,status='verified',pair={'group_id':record['group_id'],
+                        'split':record['split'],'synthetic_private_source':True})
+                       for record in groups if record['split']!='test']
+            self.assertEqual(len(rows),880);self.assertEqual(len(summaries),40)
+            supplement={'files_sha256':{'synthetic-implementation.py':'a'*64}}
+            dump(output/'implementation-supplement.json',supplement)
+            protocol={'manifest_sha256':'b'*64,'source_directory':str(source_directory)}
+            capture_protocol={'cases':[{'id':'synthetic-unstarted-test','split':'test'}]}
+            split_audit={'status':'verified','recordings':40,'test_sources_seen':0}
+            actual_prepare=runner.analysis.prepare_models
+            with mock.patch.object(runner,'ROOT',root), \
+                 mock.patch.object(runner,'authenticate_protocol',return_value=(output,protocol,manifest)), \
+                 mock.patch.object(runner.sources,'authenticate_supplement',return_value=supplement), \
+                 mock.patch.object(runner.sources,'read_protocol',return_value=(source_directory,capture_protocol,manifest)), \
+                 mock.patch.object(runner,'collect',return_value=(rows,summaries)), \
+                 mock.patch.object(runner.split,'verify_actual_sources',return_value=split_audit) as verify_sources, \
+                 mock.patch.object(runner.analysis,'PRIMARY_FREEZE',root/'legacy-default-manifest-must-not-open.json'), \
+                 mock.patch.object(runner.analysis,'prepare_models',wraps=actual_prepare) as prepare, \
+                 mock.patch.object(runner.sources,'authenticate_test_gate') as final_gate:
+                lock=runner.lock_models(output)
+            prepare.assert_called_once()
+            self.assertEqual(prepare.call_args.args[0],rows)
+            self.assertEqual(prepare.call_args.kwargs,
+                             {'expected_groups':expected_groups,'method_ids':method_ids})
+            verify_sources.assert_called_once_with(manifest,[row['pair'] for row in summaries],root)
+            fitted=json.loads((output/'models.json').read_text())
+            self.assertEqual(fitted['expected_groups'],expected_groups)
+            self.assertEqual(fitted['method_ids'],method_ids)
+            self.assertEqual(fitted['training_group_ids'],expected_groups['train'])
+            self.assertEqual(fitted['calibration_group_ids'],expected_groups['calibration'])
+            self.assertEqual(fitted['training_calibration_rows'],880)
+            self.assertEqual(fitted['test_rows_seen'],0)
+            self.assertEqual(len(fitted['models']),22)
+            self.assertEqual(lock['group_counts'],{'train':24,'calibration':16})
+            self.assertEqual(lock['models']['sha256'],runner.source.sha(output/'models.json'))
+            self.assertEqual(lock['data']['sha256'],runner.source.sha(output/'train-cal-rows.json'))
+            final_gate.assert_called_once_with(output/'implementation-supplement.json',
+                                               output/'models-lock.json',protocol['manifest_sha256'])
+
+
 if __name__=='__main__':
     unittest.main()

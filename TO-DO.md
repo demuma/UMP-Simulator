@@ -28,14 +28,16 @@ Research questions describe the dissertation; this is the implementation queue.
   ungenerated, no attack fit or privacy gain claimed.
   [Protocol](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md) and
   [test report](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md).
-- [ ] P25.4: implementation gate complete: 176 affected Python tests pass,
-  18 native +4 regional DEV streams verified; exact root queries, exact intervals,
-  grouped source/execution runners and locked TRAIN/CAL analysis are implemented.
-  Supplement frozen before TEST; serial primary execution is running. Complete
-  the unchanged 24/16/32 grouped risk/utility study, authenticate all archives and
-  source pairs, report controls/AUC/TPR/FPR/uncertainty, coverage/detail/delay and
-  failures. Raw movement/models/scores stay local; compact evidence only in Git.
-  [Protocol](docs/URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) and
+- [ ] P25.4: implementation gate complete (176 tests, 18 native + 4 regional DEV).
+  V1 source-validity gate failed on two TRAIN deadlocks (22/24 valid); CAL source
+  accounting continues, no primary mechanism/model/TEST executed. Preserve all
+  v1 outcomes. Validate/apply the finite-cohort source correction after the frozen
+  batch ends, freeze an explicit source-v2 amendment with unchanged 72 groups/splits/
+  seeds/policy/features/statistics, regenerate all 40 TRAIN/CAL, lock models and only
+  then generate 32 TEST. Complete joint risk/utility/control evidence and public
+  aggregate report; keep raw motion/models/scores local.
+  [Source correction](docs/URBAN_PRIVACY_SOURCE_CROSSING_DRAIN_FIX_2026-10-26.md),
+  [protocol](docs/URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) and
   [validation/execution report](docs/URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).
 
 Work through these gates sequentially. A second site, globally adaptive uniform

@@ -131,11 +131,13 @@ evidence only. A second site is a later transfer question after this gate.
 - [Causal visibility implementation](CAUSAL_PRIVACY_IMPLEMENTATION.md).
 - [Attribute and online contract](PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
 
-**P25.4 is running.** The primary runner, exact root-query coverage and exact
+**P25.4 is open: its v1 source-validity gate failed before primary analysis.** The primary runner, exact root-query coverage and exact
 rate intervals pass 176 affected Python tests and all 22 existing-source DEV
 recipient streams. Their implementation supplement is frozen before TEST.
-The unchanged grouped primary source/mechanism study is executing serially;
-TRAIN/CAL fits and thresholds must be locked before TEST sources. The inspected
+The frozen TRAIN/CAL source attempt batch is completing its failure accounting.
+A separately validated source-motion correction requires an explicit pre-TEST
+version; groups/seeds/policy/analysis remain unchanged, all 40 TRAIN/CAL must be
+regenerated, and models/thresholds locked before TEST sources. The inspected
 pilot remains DEV only; completed primary privacy-benefit estimates are pending.
 See the [P25.4 protocol](URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) and
 [validation/execution report](URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).

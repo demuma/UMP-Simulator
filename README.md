@@ -5,15 +5,17 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
-**Urban privacy gate P25.4 — running, 2026-10-25.** The main-study pipeline,
-exact occupancy-query coverage and exact rate intervals are implemented and frozen
-before TEST. **176 tests pass**, and an existing-source DEV pair passes all
-18 native plus four regional compositions (eleven methods, 22 recipient streams).
-The prospective 24 TRAIN /16 CAL /32 TEST study is now executing serially. Actual
-TRAIN/CAL rows and thresholds must be locked before TEST generation. No completed
-primary attack result or privacy gain is claimed yet. Raw movement/models/scores
-stay local; audited native artifacts are losslessly archived to bound disk use.
-See the [P25.4 protocol](docs/URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) and
+**Urban privacy gate P25.4 — source gate failed, correction under validation.**
+The implementation passes 176 affected Python tests and all 22 existing-source
+DEV recipient streams. The frozen v1 TRAIN batch found two coupled-crossing
+motion deadlocks (22/24 verified); the finite CAL batch continues for complete
+failure accounting. Primary mechanisms/models and all 32 TEST sources remain
+untouched. A separate finite-cohort motion candidate passes isolated regressions
+and repairs the exact first failed TRAIN case, preserving physical checks.
+The corrected source needs an explicit pre-TEST version with unchanged seeds,
+splits, policy and analysis; v1 stays negative evidence. P25.4 empirical acceptance
+is still open. See the [source diagnosis/correction](docs/URBAN_PRIVACY_SOURCE_CROSSING_DRAIN_FIX_2026-10-26.md),
+[P25.4 protocol](docs/URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) and
 [validation/execution report](docs/URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).
 The P25.3 and earlier blocks below describe their historical checkpoints.
 

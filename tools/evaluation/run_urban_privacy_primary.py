@@ -421,7 +421,10 @@ def lock_models(output):
     require(all(row['status']=='verified' for row in expected) and len(expected)==40,'All 40 TRAIN/CAL recording families required before model lock')
     clone_audit = split.verify_actual_sources(manifest, [row['pair'] for row in expected], ROOT)
     write(output/'train-cal-split-audit.json', clone_audit)
-    models=analysis.prepare_models(relevant)
+    expected_groups = {role: sorted(row['group_id'] for row in manifest['groups'] if row['split'] == role)
+                       for role in ('train', 'calibration', 'test')}
+    method_ids = [row['id'] for row in manifest['design']['methods']]
+    models=analysis.prepare_models(relevant, expected_groups=expected_groups, method_ids=method_ids)
     write(output/'train-cal-rows.json',relevant);write(output/'models.json',models)
     lock=dict(schema='ump.urban-primary-model-lock.v1',status='locked_before_test',created_at=source.now(),
               manifest_sha256=protocol['manifest_sha256'],implementation_sha256=source.sha(supplement_path),

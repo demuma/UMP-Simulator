@@ -1,6 +1,7 @@
 # P25.4 implementation validation and execution report
 
-Status: implementation gate passed; frozen primary execution in progress.
+Status: implementation gate passed; v1 source-validity gate failed before primary
+mechanisms/models/TEST; a separate source correction is under validation.
 No completed primary urban privacy result is claimed at this checkpoint.
 See the [protocol](URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md).
 
@@ -80,3 +81,22 @@ risk/utility findings after execution; no pilot result is extrapolated to TEST.
 
 P25.4 remains open until the final group outcomes, archive/source authentication,
 control diagnostics, risk/utility estimates and compact public report are available.
+
+## Source gate interruption — 2026-10-26
+
+The first 24 TRAIN attempts produced 22 verified and two invalid captures. The native
+clock/GT capture was complete, but coupled crossing queues left 49/56 active
+tracks and 14/13 pending episodes at H. Both report zero body overlaps. This is a
+source-motion/liveness defect, not a privacy or aggregator failure. The waiting
+native/model/TEST driver was stopped; the predefined CAL source attempts continue
+for complete failure accounting. No primary model or TEST source has been created.
+See the [retained aggregate checkpoint](verification/urban-privacy-p25-4-2026-10-25/source-gate-checkpoint-2026-10-26.json)
+and [mechanistic diagnosis and separate DEV correction](URBAN_PRIVACY_SOURCE_CROSSING_DRAIN_FIX_2026-10-26.md).
+
+The original ten implementation/test files were byte/hash-archived before a small
+main-runner clarification: model preparation now receives the current authenticated
+manifest's exact groups/methods explicitly. A new synthetic regression passes with
+an unavailable legacy default path; the main-runner suite is 25/25. The source
+runner/self-bound files and old native source remain unchanged while v1 runs.
+Any corrected primary run needs a fresh source/execution freeze and implementation
+supplement; original v1 evidence is not overwritten or pooled into the new version.

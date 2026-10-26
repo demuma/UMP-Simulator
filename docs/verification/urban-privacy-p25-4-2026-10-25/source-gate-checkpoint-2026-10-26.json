@@ -1,0 +1,92 @@
+{
+  "attempted_at_checkpoint": 26,
+  "invalid_at_checkpoint": 2,
+  "negative_cases": [
+    {
+      "capture_proof_sha256": "527eabf4ed0c450ba4c6233990beafc0b42621f8768ff68bc9e3fb784c2f820a",
+      "group_id": "urban-primary-20261025-v1-g00021",
+      "lifecycle": {
+        "active_episodes_at_horizon": 49,
+        "event_rows": 261,
+        "expected_gt_rows": 372637,
+        "gt_coverage_status": "verified_against_recorded_visible_intervals",
+        "interval_terminal_positions_checked": 73,
+        "pending_episodes_at_horizon": 14,
+        "realized_ends": 106,
+        "realized_starts": 155,
+        "scheduled_episodes": 169,
+        "scheduled_people": 128,
+        "source_steps_checked": 6000,
+        "status": "censored_at_source_horizon"
+      },
+      "motion_counters": {
+        "active_stalled_tracks": 43,
+        "admission_wait_steps": 888,
+        "blocked_motion_steps": 214059,
+        "body_overlap_violations": 0,
+        "crossing_batches": 17,
+        "crossing_fairness_closures": 10,
+        "crossing_pedestrian_wait_steps": 171592,
+        "crossing_rider_wait_steps": 17348,
+        "max_consecutive_stop_ms": 271950,
+        "max_crossing_pedestrian_wait_ms": 283450,
+        "merge_admission_wait_steps": 0,
+        "navigation_candidate_checks": 10763287,
+        "navigation_max_search_nodes": 15285,
+        "navigation_replan_failures": 2750,
+        "navigation_replans": 3239,
+        "navigation_steering_steps": 57294
+      },
+      "source_capture_complete": true,
+      "split": "train",
+      "status": "invalid"
+    },
+    {
+      "capture_proof_sha256": "2c19f00711dcde05beacad3ca2a7c0e4d6435e3d0928f2736fc42a90733a73d8",
+      "group_id": "urban-primary-20261025-v1-g00034",
+      "lifecycle": {
+        "active_episodes_at_horizon": 56,
+        "event_rows": 254,
+        "expected_gt_rows": 405257,
+        "gt_coverage_status": "verified_against_recorded_visible_intervals",
+        "interval_terminal_positions_checked": 65,
+        "pending_episodes_at_horizon": 13,
+        "realized_ends": 99,
+        "realized_starts": 155,
+        "scheduled_episodes": 168,
+        "scheduled_people": 128,
+        "source_steps_checked": 6000,
+        "status": "censored_at_source_horizon"
+      },
+      "motion_counters": {
+        "active_stalled_tracks": 51,
+        "admission_wait_steps": 1119,
+        "blocked_motion_steps": 246587,
+        "body_overlap_violations": 0,
+        "crossing_batches": 13,
+        "crossing_fairness_closures": 9,
+        "crossing_pedestrian_wait_steps": 215391,
+        "crossing_rider_wait_steps": 16845,
+        "max_consecutive_stop_ms": 270450,
+        "max_crossing_pedestrian_wait_ms": 286250,
+        "merge_admission_wait_steps": 0,
+        "navigation_candidate_checks": 11707577,
+        "navigation_max_search_nodes": 15540,
+        "navigation_replan_failures": 2464,
+        "navigation_replans": 2786,
+        "navigation_steering_steps": 59742
+      },
+      "source_capture_complete": true,
+      "split": "train",
+      "status": "invalid"
+    }
+  ],
+  "planned_recordings": 72,
+  "primary_mechanism_cases": 0,
+  "primary_model_fits": 0,
+  "schema": "ump.urban-primary-source-gate-checkpoint.v1",
+  "scope": "Ongoing v1 TRAIN/CAL source batch. Native exit0 and valid geometric checks do not establish all-scheduled-cohort completion; no privacy result. No replacement seed or relaxed threshold.",
+  "status": "source_validity_gate_failed_before_primary_execution",
+  "test_recordings_generated": 0,
+  "verified_at_checkpoint": 24
+}
