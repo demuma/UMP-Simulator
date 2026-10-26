@@ -1,0 +1,203 @@
+{
+  "actual_TEST_scores": 0,
+  "actual_TEST_sources": 0,
+  "actual_fitted_primary_models": 0,
+  "actual_primary_mechanism_groups": 0,
+  "availability": "final_snapshot_at_horizon",
+  "changed_role_assignments": 0,
+  "configured_people_per_source": 128,
+  "counters_scope": "Actual state AT THIS FREEZE; subsequent execution has separate evidence.",
+  "dataset_assignment_sha256": "0894a247cffe4b493a4ee8cba1b14029ba8a0b765b67a37adcd525204f86476c",
+  "dataset_manifest_sha256": "81e59a558acae956e8b38a9c1d58e18ef274d010e699659d56fd18ebf4d19567",
+  "dataset_master_seed": 202610263,
+  "dataset_namespace": "urban-primary-20261026-v3",
+  "evaluation_id_sha256": "6f3c6fe85c7ce4b9ab71fe1a3c65faa1c14872c3214e3940f3f69a65ead1c18c",
+  "evaluation_manifest_sha256": "faf818098ad2a4ab6e9b5a3eebb6c94c5b084397523ce74228439576e9c4ac50",
+  "execution_protocol_sha256": "c6916a610744e4aad769dfdd57697ad0fc24b57c4019e4ab32bbed82f179cb88",
+  "feature_dimensions": [
+    111,
+    31
+  ],
+  "group_counts": {
+    "calibration": 16,
+    "test": 32,
+    "train": 24
+  },
+  "hard_valid_window_sources": 40,
+  "implementation_supplement_sha256": "618bdf1a3de2bafeed15cd9e031921755764bdda252335ca10fce662754bbafc",
+  "import_ledger_sha256": "f761849f5b29e775418771fe5d1271e15728200cfd5fe5d7fc4d82d962643f8c",
+  "imported_TRAIN_CAL_sources": 40,
+  "measurements_per_source": 2999,
+  "methods": [
+    {
+      "fixed_depth": 3,
+      "grid_side_m": 10,
+      "hard_policy_rule": "Long fixed windows do not relax local400; audit every cell under the identical policy, retain failed/incomplete cases.",
+      "id": "fixed10_400ms",
+      "kind": "native_fixed",
+      "policy_audit_required": true,
+      "selection": "all_predeclared_reported",
+      "window_ms": 400
+    },
+    {
+      "fixed_depth": 3,
+      "grid_side_m": 10,
+      "hard_policy_rule": "Long fixed windows do not relax local400; audit every cell under the identical policy, retain failed/incomplete cases.",
+      "id": "fixed10_1000ms",
+      "kind": "native_fixed",
+      "policy_audit_required": true,
+      "selection": "all_predeclared_reported",
+      "window_ms": 1000
+    },
+    {
+      "fixed_depth": 3,
+      "grid_side_m": 10,
+      "hard_policy_rule": "Long fixed windows do not relax local400; audit every cell under the identical policy, retain failed/incomplete cases.",
+      "id": "fixed10_2000ms",
+      "kind": "native_fixed",
+      "policy_audit_required": true,
+      "selection": "all_predeclared_reported",
+      "window_ms": 2000
+    },
+    {
+      "fixed_depth": 3,
+      "grid_side_m": 10,
+      "hard_policy_rule": "Long fixed windows do not relax local400; audit every cell under the identical policy, retain failed/incomplete cases.",
+      "id": "fixed10_4000ms",
+      "kind": "native_fixed",
+      "policy_audit_required": true,
+      "selection": "all_predeclared_reported",
+      "window_ms": 4000
+    },
+    {
+      "fixed_depth": 2,
+      "grid_side_m": 20,
+      "hard_policy_rule": "Long fixed windows do not relax local400; audit every cell under the identical policy, retain failed/incomplete cases.",
+      "id": "fixed20_400ms",
+      "kind": "native_fixed",
+      "policy_audit_required": true,
+      "selection": "all_predeclared_reported",
+      "window_ms": 400
+    },
+    {
+      "fixed_depth": 2,
+      "grid_side_m": 20,
+      "hard_policy_rule": "Long fixed windows do not relax local400; audit every cell under the identical policy, retain failed/incomplete cases.",
+      "id": "fixed20_1000ms",
+      "kind": "native_fixed",
+      "policy_audit_required": true,
+      "selection": "all_predeclared_reported",
+      "window_ms": 1000
+    },
+    {
+      "fixed_depth": 2,
+      "grid_side_m": 20,
+      "hard_policy_rule": "Long fixed windows do not relax local400; audit every cell under the identical policy, retain failed/incomplete cases.",
+      "id": "fixed20_2000ms",
+      "kind": "native_fixed",
+      "policy_audit_required": true,
+      "selection": "all_predeclared_reported",
+      "window_ms": 2000
+    },
+    {
+      "fixed_depth": 2,
+      "grid_side_m": 20,
+      "hard_policy_rule": "Long fixed windows do not relax local400; audit every cell under the identical policy, retain failed/incomplete cases.",
+      "id": "fixed20_4000ms",
+      "kind": "native_fixed",
+      "policy_audit_required": true,
+      "selection": "all_predeclared_reported",
+      "window_ms": 4000
+    },
+    {
+      "components": [
+        "fixed10_400ms",
+        "fixed10_1000ms",
+        "fixed10_2000ms",
+        "fixed10_4000ms"
+      ],
+      "grid_side_m": 10,
+      "id": "regional_static10",
+      "kind": "regional_static",
+      "native_runtime": null,
+      "policy_audit_required": true,
+      "selection": "public_policy_only",
+      "window_rule": "Longest declared window satisfying every intersecting regional/root hard requirement; all four components independently audited."
+    },
+    {
+      "components": [
+        "fixed20_400ms",
+        "fixed20_1000ms",
+        "fixed20_2000ms",
+        "fixed20_4000ms"
+      ],
+      "grid_side_m": 20,
+      "id": "regional_static20",
+      "kind": "regional_static",
+      "native_runtime": null,
+      "policy_audit_required": true,
+      "selection": "public_policy_only",
+      "window_rule": "Longest declared window satisfying every intersecting regional/root hard requirement; all four components independently audited."
+    },
+    {
+      "id": "adaptive_semantic_first",
+      "kind": "native_adaptive",
+      "policy_audit_required": true,
+      "release_trigger": "policy_satisfied",
+      "secondary_strategy": "temporal_first",
+      "strategy": "semantic_first"
+    }
+  ],
+  "native_aggregation_binary_sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+  "native_source_binary_sha256": "f40ab79691ab14c5dcd9a22ef7ff3d66dbd0d2d3d4e35567cd0062de45297a0f",
+  "observation_contributions_across_imports": 3478736,
+  "observed_track_episodes_across_imports": 6792,
+  "policy_id": "local400",
+  "policy_sha256": "12fae5fa7558f27b1706a1a299c37578fb5746f4880f771a605f6ee4bd6be2c9",
+  "pre_execution_independent_audit_sha256": "0d8c8be0603d83eb4cd25b88cedfa1ed6aa2597ece889ac0da4f7cc13c95b739",
+  "pre_execution_independent_audit_status": "verified_before_primary_execution",
+  "preserved_original_strict_status_counts": {
+    "invalid": 1,
+    "verified": 39
+  },
+  "sampling_period_ms": 100,
+  "schema": "ump.observed-track-window-public-freeze.v1",
+  "scientific_scope": "All observed contributions of one operational track within[0,300000); quality is separate. No held-out privacy/utility result, real-time certification or person-level/universal guarantee at freeze.",
+  "source_horizon_ms": 300000,
+  "source_profile_sha256": "6c32952356d028267e434864fc31b2f05f61ce8b051a5fb5d746a431c864bccf",
+  "source_protocol_sha256": "574aaeed43514a14e5a0beeda2ef979b881be75abab72a6bbb0535782001f4eb",
+  "source_quality": {
+    "by_split": {
+      "calibration": {
+        "planned_sources": 16,
+        "quality_reports": 16,
+        "sources_with_active_at_horizon": 0,
+        "sources_with_pending_at_horizon": 0,
+        "sources_with_reported_stalls": 0,
+        "verified_sources": 16
+      },
+      "test": {
+        "planned_sources": 32,
+        "quality_reports": 0,
+        "sources_with_active_at_horizon": null,
+        "sources_with_pending_at_horizon": null,
+        "sources_with_reported_stalls": null,
+        "verified_sources": 0
+      },
+      "train": {
+        "planned_sources": 24,
+        "quality_reports": 24,
+        "sources_with_active_at_horizon": 1,
+        "sources_with_pending_at_horizon": 0,
+        "sources_with_reported_stalls": 1,
+        "verified_sources": 24
+      }
+    },
+    "quality_filters_enrollment": false,
+    "source_validation_profile": "observed_track_window_v1"
+  },
+  "source_validation_profile": "observed_track_window_v1",
+  "status": "frozen_before_primary_mechanisms_models_and_TEST",
+  "suppression": "OFF",
+  "unchanged_role_seeds": 216
+}

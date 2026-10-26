@@ -13,14 +13,30 @@ connector/search work bounds pass. All twelve affected CTest groups pass; the
 actual Simulator/MongoDB/replay capture also verifies all 169 episodes.
 Read the [source correction and test report](docs/URBAN_PRIVACY_DOORWAY_START_ATTACHMENT_FIX_2026-10-26.md).
 
-The fresh **`urban-primary-20261026-v3` study is frozen and running** with new
-24 TRAIN /16 CAL /32 TEST recordings and unchanged policies, methods and analysis.
-All 177 analysis tests and 22 new DEV recipient streams pass full reconstruction.
-The independent manifest/source review and unchanged freeze verifier pass.
-New TRAIN/CAL sources run first; the new model/CAL lock precedes new TEST generation,
-and complete source-quality gates precede each native phase. Risk/utility results
-are pending. Read the [restart protocol and compact frozen evidence](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md).
-Earlier TEST motion is exposed DEV now; old outcomes and fits remain historical.
+**Observed-track protection scope — 2026-10-26.** The user selected all
+observed contributions of one operational track inside a fixed 300-second window.
+Unfinished journeys, pending demand and stalls are reported separately as movement
+quality. Complete recording/clock/GT/sensor agreement, source provenance and hard
+physical validity remain mandatory. Read the
+[windowed privacy contract](docs/PRIVACY_TRACK_WINDOW_CONTRACT_2026-10-26.md).
+
+The original **`urban-primary-20261026-v3` complete-episode study is closed**:
+39/40 TRAIN/CAL sources pass, with zero primary mechanism groups, fitted models
+or TEST captures. One physically valid recording retains three active tracks at
+300 s and fails its original completion gate. Read the
+[strict source-only outcome](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_CLOSURE_2026-10-26.md).
+
+The separate `observed_track_window_v1` implementation passes **344/344 affected
+unit tests**, including the existing default paths. All forty original TRAIN/CAL
+captures pass independently checked full-window integrity; all 22 retained DEV
+streams and 66 archives are reconstructed. The new evaluation and implementation
+are [frozen before execution](docs/verification/urban-track-window-2026-10-26-v1/pre-test-freeze/). Fresh models/CAL thresholds must lock before the thirty-two original
+untouched TEST slots are generated. Policies, native source, methods and numerical
+analysis remain unchanged. Held-out risk/utility results are pending. Read the
+[implementation and test report](docs/URBAN_PRIVACY_TRACK_WINDOW_TEST_REPORT_2026-10-26.md).
+The [original restart evidence](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md)
+keeps its at-freeze meaning; earlier TEST motion is exposed DEV, and historical
+models/outcomes remain separate.
 
 **Closed P25.4 source-v2 — held-out result unavailable.**
 Source v2 finished all 72 frozen attempts: 24/24 TRAIN, 16/16 CAL and 31/32 TEST

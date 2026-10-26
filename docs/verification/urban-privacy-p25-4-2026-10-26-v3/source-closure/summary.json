@@ -1,0 +1,94 @@
+{
+  "date": "2026-10-26",
+  "driver": {
+    "completed_phases": [
+      "source_train_cal"
+    ],
+    "status": "failed_or_interrupted",
+    "stopped_at_source_gate_before_primary_mechanisms_or_fitting": true
+  },
+  "interpretation": [
+    "Source captures are different from primary paired-method executions. The source simulator may record its default aggregates without creating primary study results.",
+    "Native exit zero and full numerical horizon do not imply completed scheduled observation episodes.",
+    "No measured attack, control or primary utility result exists; this is neither evidence of privacy benefit nor evidence of a failed attack.",
+    "The user-selected observed-track-window unit requires a separate prospective evaluation binding. Original strict statuses remain unchanged.",
+    "Potential reuse of current TRAIN/CAL raw observations is conditional on the new contract, preserved roles and independently checked window validity; no TEST data/model reuse."
+  ],
+  "invalid_TRAIN_source_aggregate": {
+    "active_at_horizon": 3,
+    "all_planned_entries_completed": true,
+    "ended_episodes": 166,
+    "full_clock_horizon_ms": 300000,
+    "incomplete_scheduled_cohort_still_fails_original_contract": true,
+    "independent_physical_access_audit": "pass",
+    "known_steering_oscillation": true,
+    "native_source_exit_code": 0,
+    "pending_at_horizon": 0,
+    "reported_body_overlap_violations": 0,
+    "reported_stalled_active_tracks": 2,
+    "scheduled_episodes": 169,
+    "started_episodes": 169
+  },
+  "original_contract": "complete_scheduled_visible_episode_cohort",
+  "preservation": {
+    "available_case_TEST_estimate_used": false,
+    "old_at_freeze_package_unchanged": true,
+    "old_failure_promoted_to_success": false,
+    "original_frozen_files_unchanged_at_closure": true,
+    "original_helpers_archived": true,
+    "replacement_sources": 0
+  },
+  "primary_execution": {
+    "TEST_scores": 0,
+    "TEST_source_captures": 0,
+    "attack_control_utility_estimates": "unavailable_not_evaluated",
+    "fitted_models": 0,
+    "mechanism_native_groups": 0
+  },
+  "provenance_sha256": {
+    "closure_verification_receipt": "0b0e6cd5fcb98240a10f9a98eb73e7273e1eb986fdaab7a3a1889d1b937bf8e8",
+    "closure_verifier": "3887934c3c95b8f8a4fedbe705b37d0f968900cf8eb421ae16de008d821e61ca",
+    "dataset_manifest": "81e59a558acae956e8b38a9c1d58e18ef274d010e699659d56fd18ebf4d19567",
+    "driver_failure_receipt": "f0fb7ea20152640653261ca92fdd852ab4f14ced1525792eb8a46a155518afd1",
+    "invalid_source_capture_proof": "2c42b02c8bf80fe5648e21e9247f1cea09aba50761719003a0c99306c54041ef",
+    "invalid_source_physical_audit": "a04d87dca9486e74e0282cae53e89715fe2d7352b33356418ac7253e390ec4d0",
+    "original_at_freeze_bundle": "76c933a803d14abfad75b555854b865e095b5d5bb806a61635825c9b2985e613",
+    "read_only_motion_diagnosis": "1bf545f85e706a39b15854e74ceca84f3c6c74aed1aa0e92fafab0a70542172f",
+    "source_capture_protocol": "6f9aa8d3765eba0e58d8e42b821140d2256c7e22b462e28dbb8a4a33eda7971f",
+    "source_gate_receipt": "91fd4321d9cb85bac2041d4fec35857424ed17327cc9b68c45347a75bb274f55",
+    "source_summary": "0f4a1ac59683bd6ba9a9987c97c5f6b52139bb72f09a6eb8681c439842de88e1",
+    "strict_execution_protocol": "d12946f3386385a8546c3fc3a67b1298733f36c56b87f53ec6a8d4bec259bce0"
+  },
+  "recordings": {
+    "attempted": 40,
+    "by_split": {
+      "calibration": {
+        "invalid": 0,
+        "not_attempted": 0,
+        "verified": 16
+      },
+      "test": {
+        "invalid": 0,
+        "not_attempted": 32,
+        "verified": 0
+      },
+      "train": {
+        "invalid": 1,
+        "not_attempted": 0,
+        "verified": 23
+      }
+    },
+    "not_attempted": 32,
+    "planned": 72,
+    "strict_invalid": 1,
+    "strict_verified": 39
+  },
+  "schema": "ump.urban-primary-source-v3-public-closure.v1",
+  "status": "closed_incomplete_original_source_gate_failed",
+  "strict_source_gate": {
+    "expected": 40,
+    "observed": 40,
+    "status": "failed",
+    "verified": 39
+  }
+}

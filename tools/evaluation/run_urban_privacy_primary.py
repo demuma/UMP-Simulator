@@ -269,7 +269,7 @@ def archive_file(path):
     return record
 
 
-def process_group(output, protocol, manifest, group, source_case):
+def process_group(output, protocol, manifest, group, source_case, *, pair_selector=None):
     directory=output/'groups'/group['group_id']
     require(not directory.exists(),'Group exists; no retry/overwrite')
     directory.mkdir(mode=0o700)
@@ -277,7 +277,7 @@ def process_group(output, protocol, manifest, group, source_case):
     source_path=Path(source_case['replay_directory'])/'observations.json'
     require(source.sha(source_path)==source_case['observations_sha256'],'Source changed after authentication')
     present=source.load(source_path)
-    absent,knowledge,target=select_pair(present,source.sha(source_path),group)
+    absent,knowledge,target=(pair_selector or select_pair)(present,source.sha(source_path),group)
     os.link(source_path,directory/'in.json');write(directory/'out.json',absent);write(directory/'auxiliary.json',knowledge)
     pair=dict(group_id=group['group_id'],split=group['split'],source_generation_seed=group['seeds']['source_generation'],
               source=artifact(ROOT,directory/'in.json'),targets=[dict(target_slot='target-00',target_id=target['target_id'],out=artifact(ROOT,directory/'out.json'))])

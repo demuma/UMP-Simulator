@@ -1,0 +1,20 @@
+{
+  "actual_primary_model_fits": false,
+  "archive_roundtrip_authenticated": true,
+  "derived_cases": 4,
+  "methods": 11,
+  "native_binary_sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+  "new_native_cases": 0,
+  "private_receipt_sha256": "0090bccd92c97ff558a5d23a2eb690d68c59f201f652e01cbb1d089c14890702",
+  "query_count_per_world": 19200,
+  "raw_policy_audits_recomputed": true,
+  "recipient_streams": 22,
+  "regional_transcripts_recomposed": true,
+  "retained_native_cases": 18,
+  "rows_recomputed": true,
+  "schema": "ump.observed-track-window-public-DEV-evidence.v1",
+  "scope": "Revalidated retained DEV outputs with exact same source/OUT/auxiliary; zero new native simulations and zero primary fits.",
+  "source_validation_profile": "observed_track_window_v1",
+  "status": "verified",
+  "test_data_seen": false
+}

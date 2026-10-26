@@ -31,12 +31,17 @@ def epoch_ms(text):
     return round(parsed.timestamp() * 1000)
 
 
-def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
+def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None, *, profile='legacy_completed_v1'):
+    # Explicit opt-in changes destination coverage only; physical checks below
+    # always inspect the same recorded GT, including unfinished visible tracks.
+    require(profile in ('legacy_completed_v1', 'observed_track_window_v1'), 'Unsupported physical audit profile')
+    strict_coverage = profile == 'legacy_completed_v1'
     scene = cfg['mapped_scene']
     local_navigation = scene.get('motion', {}).get('mode') == 'local_navigation'
     portals = {p['id']: p for p in scene.get('portals', [])}
-    require(len(portals) >= 2, 'At least two explicit building portals are required')
-    if not local_navigation:
+    if strict_coverage:
+        require(len(portals) >= 2, 'At least two explicit building portals are required')
+    if strict_coverage and not local_navigation:
         require(len({p['building_id'] for p in portals.values()}) >= 2,
                 'Visit targets must include at least two distinct buildings')
     routes = {r['id']: r for r in scene['routes']}
@@ -317,12 +322,13 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
                          if row['completed_entries'] > 0 and portals[key].get('kind')!='surface_access'}
     exited_buildings = {portals[key]['building_id'] for key, row in counts.items()
                         if row['realized_exits'] > 0 and portals[key].get('kind')!='surface_access'}
-    if local_navigation:
-        require(sum(row['completed_entries'] > 0 and row['realized_exits'] > 0 for row in counts.values()) >= 2,
-                'Acceptance requires realized entry and return at two distinct destinations')
-    else:
-        require(len(visited_buildings) >= 2 and len(exited_buildings) >= 2,
-                'Acceptance requires realized entry and return at two distinct buildings')
+    destination_coverage = (sum(row['completed_entries'] > 0 and row['realized_exits'] > 0
+                                for row in counts.values()) >= 2 if local_navigation else
+                            len(visited_buildings) >= 2 and len(exited_buildings) >= 2)
+    if strict_coverage:
+        require(destination_coverage,
+                'Acceptance requires realized entry and return at two distinct ' +
+                ('destinations' if local_navigation else 'buildings'))
     minimum_gap = math.inf
     for person in scene['people']:
         for previous, following in zip(person['episodes'], person['episodes'][1:]):
@@ -362,7 +368,15 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None):
                 require(math.dist(tracks[track][-1][1], endpoint) <= speeds[track] * step_ms / 1000 + tolerance,
                         'Road user disappears before its sampled boundary target')
             boundary_endpoint_checks += 1
-    return {'status': 'pass', 'independent_gt_body_pair_checks': compared,
+    return {'status': 'pass',
+            **({'validation_profile': profile,
+                'movement_coverage_quality': {
+                    'declared_destination_count': len(portals),
+                    'declared_building_count': len({p['building_id'] for p in portals.values()}),
+                    'realized_two_destination_coverage': destination_coverage,
+                    'scope': 'Recorded movement coverage only; unfinished or unvisited destinations do not invalidate a complete observation window.'}}
+               if not strict_coverage else {}),
+            'independent_gt_body_pair_checks': compared,
             'independent_gt_swept_body_pair_checks': swept_compared,
             'minimum_swept_body_clearance_margin_m': None if minimum_swept_margin == math.inf else minimum_swept_margin,
             'minimum_body_clearance_margin_m': None if minimum_margin == math.inf else minimum_margin,
@@ -390,6 +404,8 @@ def main():
     parser.add_argument('--scene', type=Path, required=True)
     parser.add_argument('--replay', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--profile', choices=('legacy_completed_v1', 'observed_track_window_v1'),
+                        default='legacy_completed_v1', help='Explicit source acceptance profile; physical checks are unchanged')
     args = parser.parse_args()
     require(not args.output.exists(), 'Choose a fresh compact output file')
     config_path = args.scene / 'config.yaml'
@@ -416,7 +432,7 @@ def main():
         layers = dict(layers)
         layers['buildings'] = unary_union([geom for props, geom in local if props['kind'] == 'building'])
         source_access_validation=validate_expanded_shop_context(Path(__file__).resolve().parents[2],local,layers,provenance['source_geometry_sha256'],context)
-    result = audit(cfg, json.loads(raw_path.read_text()), public_context=context, map_layers=layers)
+    result = audit(cfg, json.loads(raw_path.read_text()), public_context=context, map_layers=layers, profile=args.profile)
     if source_access_validation and source_access_validation['status']=='pass':
         result['source_access_validation']=source_access_validation
     result['config_sha256'] = hashlib.sha256(config_path.read_bytes()).hexdigest()

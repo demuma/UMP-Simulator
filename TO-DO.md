@@ -28,16 +28,22 @@ Research questions describe the dissertation; this is the implementation queue.
   The later P25.4 execution is recorded below; no privacy gain is claimed.
   [Protocol](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md) and
   [test report](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md).
-- [ ] P25.4: **fresh source-v3 study frozen and running; held-out results pending.**
-  Source correction, 92-case DEV, current 177-method validation and 22-stream
-  recipient integration pass. The new independent 24 TRAIN /16 CAL /32 TEST
-  design uses new groups/role seeds with unchanged scientific choices. Complete
-  new sources, paired methods, new TRAIN/CAL fits and locked thresholds, then
-  untouched TEST and joint risk/utility/control reporting. No old data/model reuse.
-  [Frozen restart](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md).
-  The earlier [source-v2 failure](docs/URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md)
-  remains closed at 71/72 sources with zero TEST mechanism runs and unavailable
-  TEST estimates; preserve it separately.
+- [ ] P25.4: **held-out protection/utility evidence remains pending.** The strict
+  source-v3 TRAIN/CAL batch is closed at 39/40 valid sources; an incomplete TRAIN
+  journey fails its original complete-episode rule. Its source-only outcome is
+  preserved, with zero new primary fits or TEST generation. The user explicitly selected a
+  separate observed-track-within-300-s protection contract, with movement quality
+  reported independently. Implement/validate its explicit source profile; import
+  all 40 original TRAIN/CAL inputs without changing roles or hiding old failures;
+  freeze new code/contract/import provenance, fit fresh models/CAL thresholds,
+  then generate the32 original untouched TEST slots and assess actual risk/utility.
+  Complete clock/GT/sensor/provenance/physics remain hard gates. No trajectory
+  repair, quality filtering, replacement seeds or old model reuse.
+  [Windowed contract](docs/PRIVACY_TRACK_WINDOW_CONTRACT_2026-10-26.md).
+  Earlier [source-v2](docs/URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md)
+  and [source-v3 freeze](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md)
+  keep their original meanings; neither establishes held-out privacy improvement.
+
 
 
 Closed source-v2 engineering checkpoint: 177 affected Python tests, 10 reporter tests and 11 affected
@@ -68,19 +74,38 @@ Next, in order:
    Fresh 177-method validation and all 22 current-code DEV streams pass, including
    archive/public/policy/feature/utility reconstruction. New source/execution and
    implementation-supplement bindings are frozen before any new TEST data.
-5. [ ] Complete the running serial source/paired-method/TRAIN-CAL/model-lock/TEST
-   gates. Report every negative, missing or incomplete outcome; review controls
-   and paired uncertainty beside world-specific utility. Publish compact actual
-   results and figures, update this queue, and complete P25.4 only after the
-   held-out evidence is independently checked. Second-site work follows afterward.
+5. [x] Finish all 40 unchanged strict source-v3 TRAIN/CAL attempts and close the
+   original failed completion gate before primary mechanisms/fits/TEST. Actual
+   outcome: 39/40 valid, 32 TEST slots unattempted, zero primary groups/models/scores. Every
+   raw/proof/status field and original helper bytes are preserved.
+   [Closure report](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_CLOSURE_2026-10-26.md).
+6. [x] Declare the user-selected unit: every recorded contribution of one
+   operational track within 300 s. Retain exact IN/OUT removal, minimum-two-sample
+   eligibility and identical quarter-sample auxiliary knowledge. Motion quality
+   does not filter enrollment. [Contract](docs/PRIVACY_TRACK_WINDOW_CONTRACT_2026-10-26.md).
+7. [x] Validate explicit source/physical profiles and the thin evaluation adapter;
+   preserve legacy defaults. All 344 affected methods pass; all 40 read-only
+   same-role imports and all 22 retained DEV streams/66 archives authenticate.
+   Reject hard-invalid data; preserve quality separately. Original statuses and
+   legacy physical-audit provenance remain intact.
+   [Test report](docs/URBAN_PRIVACY_TRACK_WINDOW_TEST_REPORT_2026-10-26.md).
+8. [ ] Evaluation/profile/code/import ledger are frozen. Execute all 40 paired
+   comparison families, fit new TRAIN models/CAL thresholds, and bind a new lock.
+   Generate all 32 original untouched TEST sources only afterward. No old-lock reuse.
+9. [ ] Audit every TEST source under the new hard-integrity contract before TEST
+   mechanisms, then report actual controls, grouped uncertainty and own-world
+   utility beside movement quality. Publish compact results/figures and a detailed
+   test report. Complete P25.4 only after independent review of actual evidence.
 
+The original finite-cohort completion rule remains unchanged for its historical
+study. The new windowed evaluation does not assert realistic motion or repair
+persistent gridlock. Later source work should reproduce and correct the eastern
+Barkhof pedestrian two-position oscillation/no-progress recovery issue, and test
+receiving-apron coordination separately. This is lower priority than finishing
+the privacy evaluation. Historical TEST motion remains exposed DEV and excluded
+from fresh primary enrollment. Raw movement/models/scores remain local. No
+source-engineering result implies privacy improvement or a liveness/RT guarantee.
 
-The closed finite-cohort completion rule remains unchanged. A future streaming
-right-censoring study needs its own protected unit and behavioral-quality gate;
-it must not conceal persistent gridlock. Historical TEST motion is now DEV
-exposure and is excluded from fresh primary enrollment. Raw movement/models/scores
-remain local. The movement correction establishes source readiness, not measured
-privacy improvement or a general liveness/real-time guarantee.
 
 
 Work through these gates sequentially. A second site, globally adaptive uniform

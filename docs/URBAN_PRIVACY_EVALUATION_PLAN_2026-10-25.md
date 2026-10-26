@@ -7,6 +7,29 @@ are also verified. No urban attack assessment or held-out result is claimed. Thi
 sequence for the four agreed privacy tasks. The dissertation research questions
 organize the interpretation; they do not add parallel implementation work.
 
+## 26 October amendment: observed-track window
+
+The user selected **every observed contribution of one operational track within
+300 seconds**, with movement quality reported separately. The
+[explicit contract](PRIVACY_TRACK_WINDOW_CONTRACT_2026-10-26.md) governs the NEW
+`observed_track_window_v1` evaluation. The original complete-episode contracts and
+failed source-family outcomes remain unchanged. A still-active, stalled or pending
+journey alone is not a hard failure of the new observation-window unit; complete
+source/GT/sensor clock, provenance and physical validity still are.
+
+Finish/close the original strict forty-source TRAIN/CAL phase first. Independently
+validate ALL forty existing captures read-only in their same roles under the new
+profile, preserving original statuses and physical-audit provenance. Bind the new
+evaluation manifest, immutable import ledger, code/test evidence and unchanged
+original dataset assignment. Run fresh paired mechanisms/TRAIN fits/CAL locking,
+then generate the original thirty-two untouched TEST slots in separate outputs.
+No old lock, quality-selected subset, repaired route or replacement seed is valid.
+The methods, policies, features, fitting/calibration, query/statistical analysis and
+final-snapshot availability contract remain unchanged. Privacy results are pending.
+
+The older gate descriptions below retain their historical P25.1–P25.3 scope;
+completion-only requirements do not silently carry into the new declared unit.
+
 ## Goal and fixed scope
 
 The goal is privacy-preserving sharing with useful urban mobility information.

@@ -1,0 +1,11 @@
+{
+  "files_sha256": {
+    "DEV-summary.json": "601c8be8ec6fc9755ad878f0a1ccd7b78d6cdd15a93eb3394356c7e62625b586",
+    "README.md": "304797617eef4b9aaa116014a167d50e0115ab171c9d597dcd87f1c9540af9a6",
+    "freeze-summary.json": "77fe7435a92178e1219a1b06e410d7763016df25708e071abe875f5600c19248",
+    "unit-summary.json": "07114155286386a6dba218ce2efdee75fea2a99e76a1251f9df02eca9b53e939"
+  },
+  "schema": "ump.observed-track-window-public-freeze-bundle.v1",
+  "scope": "Compact aggregate/hash evidence only; original private data and at-freeze records remain unchanged.",
+  "status": "verified"
+}

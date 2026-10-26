@@ -1,0 +1,20 @@
+{
+  "closure_document_sha256": "c02faeedb48bf31934bdbf1ca860d49b41c632ac5d85cc59ddd995ac3ce71649",
+  "date": "2026-10-26",
+  "files": {
+    "README.md": {
+      "bytes": 1733,
+      "sha256": "d5cc4227f183961185bac7b0937e491f1925900b946c137fe6b78d672bdb3be9"
+    },
+    "summary.json": {
+      "bytes": 4015,
+      "sha256": "08c7bbe5b0c68121365c0d05cd74de4c674d729ca5e11e8f2a52669f2cc40c3a"
+    }
+  },
+  "hash_scope": "Every other file in this source-closure directory and the separate closure document; does not recursively hash this receipt.",
+  "original_at_freeze_bundle_sha256": "76c933a803d14abfad75b555854b865e095b5d5bb806a61635825c9b2985e613",
+  "schema": "ump.urban-primary-source-v3-public-closure-bundle.v1",
+  "scope": "Aggregate counts, fixed scientific labels and provenance hashes only; no raw source/target/group identities, seeds, private paths, configurations, movement, weights or score rows.",
+  "status": "closed_original_gate_failed",
+  "unchanged_original_restart_document_sha256": "243a904b3b587aca4d39a1d6eb90208fcaae8f8f0df6604f0329b3b62d9dcb94"
+}
