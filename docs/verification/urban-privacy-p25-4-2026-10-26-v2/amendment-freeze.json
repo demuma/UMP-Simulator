@@ -1,0 +1,24 @@
+{
+  "actual_new_fits": 0,
+  "actual_new_sources": 0,
+  "aggregation_binary_sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+  "all72_groups_and216_role_seeds_unchanged": true,
+  "design_sha256": "4e3032ad798bd68d97a407feecc14ecd5e80a52b3d954c20f0ac070f008c60ec",
+  "exclusions_unchanged": true,
+  "group_counts": {
+    "calibration": 16,
+    "test": 32,
+    "train": 24
+  },
+  "implementation_sha256": "40e58dbd20ae9a00dcdc1858cd7de405579778663177d45f50b2486a4d21648d",
+  "manifest_sha256": "e3b4296674c95d407baf6bc2d3def0564cb77eca37286fdbf9b92ff48c82d5c0",
+  "previous_source_outcomes": {
+    "attempted": 40,
+    "invalid": 3,
+    "verified": 37
+  },
+  "schema": "ump.urban-primary-source-amendment-freeze.v2",
+  "source_binary_sha256": "1e0536c5823a955d74045487db93d663ec0ad8dd75775b9532b76dc4fa9070a2",
+  "status": "verified_before_test",
+  "test_sources_seen": 0
+}

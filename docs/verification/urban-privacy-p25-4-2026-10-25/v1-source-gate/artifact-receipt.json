@@ -1,0 +1,8 @@
+{
+  "artifacts_sha256": {
+    "report.md": "d5302a2b002c93dd44177ce2697e4fabc72e146ff550fadce286fba4d01543d6",
+    "summary.json": "2d584d141d1b1ef5ed414fbc7750528a5c02293416d2dad92cade37cb9cb47a9"
+  },
+  "schema": "ump.urban-primary-public-artifacts.v1",
+  "source_report_sha256": "9c899a92c0e1d3a66c711b02e083edb87f20273b53d1b857f0e30637264beb8c"
+}

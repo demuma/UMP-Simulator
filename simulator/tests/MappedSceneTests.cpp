@@ -504,6 +504,154 @@ MappedSceneConfig crossingPriorityFixture() {
         {"private-rider","Adult Cyclist",3,{{"rider-visible","rider-through",0}},.45}};
     return c;
 }
+// A fairness closure at each of two independent resources can trap the same
+// opposite rider queues: every controller waits for its own occupied road to
+// clear while denying the next entry needed for that clearance. Queue leaders
+// are already between resources, so an exception only for bodies currently
+// inside a previous crossing cannot resolve this case.
+MappedSceneConfig twoCrossingSpillbackFixture(int ridersPerDirection) {
+    auto c=localScene(40,20);c.clearanceM=.05;c.navigation.centerClearanceM=1.05;
+    c.navigation.spaces.push_back({"east",{{{{0,10.5},{40,10.5},{40,11.5},{0,11.5}}, {}}},1.05});
+    c.navigation.spaces.push_back({"west",{{{{0,8.5},{40,8.5},{40,9.5},{0,9.5}}, {}}},1.05});
+    for (int index=0;index<2;++index) {
+        const double x=12+index*10;
+        MappedNavigationCrossing crossing;crossing.id="cross"+std::to_string(index);
+        crossing.conflictRing={{x,7},{x+4,7},{x+4,13},{x,13}};
+        crossing.prioritySpaces={"east","west"};crossing.pedestrianMaxWaitMs=1000;
+        crossing.pedestrianAdmissionMs=2000;crossing.riderServiceMs=1500;
+        c.navigation.crossings.push_back(crossing);
+        const auto route="ped-route"+std::to_string(index),track="ped"+std::to_string(index);
+        c.routes.push_back({route,{{x+2,0},{x+2,20}},"",""});
+        c.people.push_back({"person-"+track,"Adult Pedestrian",1.3,{{track,route,0}},.25});
+    }
+    c.routes.push_back({"east-route",{{0,11},{40,11}},"","","east",{{40,10.5},{40,11.5}}});
+    c.routes.push_back({"west-route",{{40,9},{0,9}},"","","west",{{0,8.5},{0,9.5}}});
+    for (int index=0;index<ridersPerDirection;++index) for (const auto lane:{"east","west"}) {
+        const auto track=std::string(lane)+std::to_string(index);
+        c.people.push_back({"person-"+track,"Adult Cyclist",3,
+            {{track,std::string(lane)+"-route",index*750}},1.0});
+    }
+    return c;
+}
+
+// Independent elementary geometry for the test oracle; no private motion-state
+// access and no reuse of the production collision predicate.
+double spillbackPointSegmentDistance(Point point,Point a,Point b) {
+    const double dx=b.x-a.x,dy=b.y-a.y,denominator=dx*dx+dy*dy;
+    const double along=denominator ? std::clamp(((point.x-a.x)*dx+(point.y-a.y)*dy)/denominator,0.0,1.0) : 0;
+    return std::hypot(point.x-a.x-along*dx,point.y-a.y-along*dy);
+}
+double spillbackCross(Point a,Point b,Point c) {
+    return (b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
+}
+double spillbackSegmentDistance(Point a,Point b,Point c,Point d) {
+    const bool boundsIntersect=std::max(std::min(a.x,b.x),std::min(c.x,d.x))
+            <=std::min(std::max(a.x,b.x),std::max(c.x,d.x))
+        && std::max(std::min(a.y,b.y),std::min(c.y,d.y))
+            <=std::min(std::max(a.y,b.y),std::max(c.y,d.y));
+    if (boundsIntersect && spillbackCross(a,b,c)*spillbackCross(a,b,d)<=0
+        && spillbackCross(c,d,a)*spillbackCross(c,d,b)<=0) return 0;
+    return std::min({spillbackPointSegmentDistance(a,c,d),spillbackPointSegmentDistance(b,c,d),
+        spillbackPointSegmentDistance(c,a,b),spillbackPointSegmentDistance(d,a,b)});
+}
+
+void checkTwoCrossingFiniteDrainage(int ridersPerDirection,AggregationTime horizonMs) {
+    const auto input=twoCrossingSpillbackFixture(ridersPerDirection);
+    MappedScene scene(input);
+    std::map<std::string,double> radii,speeds;
+    std::map<std::string,Point> routeEnds,previous;
+    std::map<AggregationTime,std::vector<MappedVisibleTrack>> observedFrames;
+    for (const auto& person:input.people) for (const auto& episode:person.episodes) {
+        radii[episode.trackId]=person.radiusM;speeds[episode.trackId]=person.speedMps;
+    }
+    for (const auto& route:input.routes) routeEnds[route.id]=route.points.back();
+    AggregationTime firstClosureMs=-1;
+    std::size_t consumedEvents=0,bodyChecks=0,sweptChecks=0;
+    for (AggregationTime now=0;now<=horizonMs;now+=input.motionStepMs) {
+        scene.advanceTo(now);const auto frame=scene.frameAt(now);
+        if (now==10000 || now==20000) observedFrames[now]=frame;
+        const auto d=scene.motionDiagnostics();
+        if (firstClosureMs<0 && d.crossingFairnessClosures>0) firstClosureMs=now;
+        std::map<std::string,Point> current,stepEnds;
+        for (const auto& track:frame) {
+            current[track.trackId]=track.position;stepEnds[track.trackId]=track.position;
+            require(std::hypot(track.velocity.x,track.velocity.y)<=speeds.at(track.trackId)+1e-8,
+                "Two-crossing drainage exceeded declared preferred speed");
+        }
+        // Endpoint bodies vanish at their half-open episode boundary. Retain
+        // the actual terminal step only for swept checks against bodies that
+        // already existed during that step; newly admitted bodies are separate.
+        const auto& events=scene.events();
+        for (;consumedEvents<events.size();++consumedEvents) {
+            const auto& event=events[consumedEvents];
+            if (event.kind==MappedEventKind::EpisodeEnd && previous.count(event.trackId))
+                stepEnds[event.trackId]=event.position.value_or(routeEnds.at(event.routeId));
+        }
+        for (const auto& [id,position]:stepEnds) if (previous.count(id))
+            require(std::hypot(position.x-previous.at(id).x,position.y-previous.at(id).y)
+                <=speeds.at(id)*input.motionStepMs/1000.0+1e-8,
+                "Two-crossing drainage teleported a road user");
+        for (auto a=stepEnds.begin();a!=stepEnds.end();++a) {
+            auto b=a;++b;
+            for (;b!=stepEnds.end();++b) {
+                const double separation=radii.at(a->first)+radii.at(b->first)+input.clearanceM;
+                if (current.count(a->first) && current.count(b->first)) {
+                    ++bodyChecks;
+                    require(std::hypot(a->second.x-b->second.x,a->second.y-b->second.y)>=separation-1e-8,
+                        "Two-crossing drainage bypassed independent body clearance");
+                }
+                if (previous.count(a->first) && previous.count(b->first)) {
+                    ++sweptChecks;
+                    require(spillbackSegmentDistance(previous.at(a->first),a->second,
+                            previous.at(b->first),b->second)>=separation-1e-8,
+                        "Two-crossing drainage bypassed independent swept clearance");
+                }
+            }
+        }
+        previous=std::move(current);
+    }
+    const auto d=scene.motionDiagnostics();
+    const auto expected=static_cast<std::size_t>(2*ridersPerDirection+2);
+    require(d.realizedStarts==expected && d.realizedEnds==expected && d.activeTracks==0
+        && d.pendingTracks==0 && d.overlapViolations==0 && d.crossingFairnessClosures>=2
+        && d.crossingBatches>=2 && d.crossingPedestrianWaitSteps>0 && bodyChecks>0 && sweptChecks>0,
+        "Two independently closed crossings retained a circular rider queue instead of finite drainage");
+    AggregationTime lastPedestrianEnd=-1,lastRiderEnd=-1;
+    std::size_t pedestrianEnds=0,laterRiderStarts=0;
+    for (const auto& event:scene.events()) {
+        const bool pedestrian=event.trackId.rfind("ped",0)==0;
+        if (event.kind==MappedEventKind::EpisodeEnd) {
+            if (pedestrian) {++pedestrianEnds;lastPedestrianEnd=std::max(lastPedestrianEnd,event.atMs);}
+            else lastRiderEnd=std::max(lastRiderEnd,event.atMs);
+        } else if (!pedestrian && firstClosureMs>=0 && event.atMs>firstClosureMs) ++laterRiderStarts;
+    }
+    require(pedestrianEnds==2 && lastPedestrianEnd>0 && lastPedestrianEnd<35000,
+        "Finite spillback control failed to serve both waiting pedestrians");
+    if (ridersPerDirection>4)
+        require(laterRiderStarts>0 && lastPedestrianEnd<lastRiderEnd,
+            "New rider arrivals prolonged closure until the whole future cohort finished");
+    // The configured 1,000 ms is a closure trigger, not a hard wait deadline.
+    // Assert progress without turning this bounded fixture into such a promise.
+    MappedScene coarse(input);
+    for (const auto& [time,expectedFrame]:observedFrames) {
+        coarse.advanceTo(time);sameFrame(expectedFrame,coarse.frameAt(time));
+    }
+    coarse.advanceTo(horizonMs);
+    require(coarse.events().size()==scene.events().size(),"Spillback caller cadence changed lifecycle count");
+    for (std::size_t index=0;index<scene.events().size();++index) {
+        const auto& a=scene.events()[index];const auto& b=coarse.events()[index];
+        require(a.kind==b.kind && a.trackId==b.trackId && a.atMs==b.atMs,
+            "Spillback caller cadence changed a lifecycle event");
+    }
+}
+
+void localTwoCrossingSpillbackDrainsOpposingQueues() {
+    checkTwoCrossingFiniteDrainage(4,60000);
+}
+void localTwoCrossingSpillbackServesPedestriansDespiteLaterArrivals() {
+    checkTwoCrossingFiniteDrainage(20,120000);
+}
+
 void localCrossingPriorityYieldsBeforeEntryAndKeepsPhysicalChecks() {
     auto input=crossingPriorityFixture();MappedScene scene(input);
     std::map<std::string,Point> previous;bool pedestrianWaited=false;
@@ -1344,6 +1492,8 @@ int main() {
     try {
         localSurfaceAccessIsTypedAndOnlyTerminatesOwningTrips();
         localCrossingPriorityYieldsBeforeEntryAndKeepsPhysicalChecks();
+        localTwoCrossingSpillbackDrainsOpposingQueues();
+        localTwoCrossingSpillbackServesPedestriansDespiteLaterArrivals();
         localCrossingPriorityFiniteFairnessAndValidation();
         localCrossingOppositeReceivingApronsRemainClear();
         localCrossingProjectedBoundaryIntentDrainsTangentialBodies();

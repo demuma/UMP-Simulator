@@ -210,6 +210,10 @@ private:
         std::map<std::string,Point> waitingPoints;
         std::map<std::string,AggregationTime> stagingAttempts;
         bool closingForFairness = false;
+        bool drainPhaseStarted = false;
+        // Fixed snapshot of priority road users eligible to drain a coupled
+        // closure. New arrivals cannot join before this closure phase ends.
+        std::set<std::string> drainPriority;
         AggregationTime batchStartedMs = -1, riderServiceUntilMs = -1;
     };
     std::vector<NavigationCrossing> navigationCrossings;

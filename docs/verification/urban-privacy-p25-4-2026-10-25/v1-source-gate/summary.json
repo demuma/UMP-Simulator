@@ -1,0 +1,571 @@
+{
+  "analysis_status": "not_evaluated",
+  "controls": {
+    "auxiliary_only": {
+      "calibration": null,
+      "complete_test_groups": 0,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": null,
+      "metrics": null,
+      "observed_test_rows": 0,
+      "status": "missing"
+    },
+    "no_output": {
+      "calibration": null,
+      "complete_test_groups": 0,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": null,
+      "metrics": null,
+      "observed_test_rows": 0,
+      "status": "missing"
+    },
+    "prior_only": {
+      "calibration": null,
+      "complete_test_groups": 0,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": null,
+      "metrics": null,
+      "observed_test_rows": 0,
+      "status": "missing"
+    },
+    "unprotected": {
+      "calibration": null,
+      "complete_test_groups": 0,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": null,
+      "metrics": null,
+      "observed_test_rows": 0,
+      "status": "missing"
+    }
+  },
+  "interpretation_gate": "not_evaluated",
+  "methods": [
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        },
+        "semantic111": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        }
+      },
+      "id": "fixed10_400ms",
+      "label": "Fixed 10 m / 0.4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        },
+        "semantic111": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        }
+      },
+      "id": "fixed10_1000ms",
+      "label": "Fixed 10 m / 1 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        },
+        "semantic111": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        }
+      },
+      "id": "fixed10_2000ms",
+      "label": "Fixed 10 m / 2 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        },
+        "semantic111": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        }
+      },
+      "id": "fixed10_4000ms",
+      "label": "Fixed 10 m / 4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        },
+        "semantic111": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        }
+      },
+      "id": "fixed20_400ms",
+      "label": "Fixed 20 m / 0.4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        },
+        "semantic111": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        }
+      },
+      "id": "fixed20_1000ms",
+      "label": "Fixed 20 m / 1 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        },
+        "semantic111": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        }
+      },
+      "id": "fixed20_2000ms",
+      "label": "Fixed 20 m / 2 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        },
+        "semantic111": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        }
+      },
+      "id": "fixed20_4000ms",
+      "label": "Fixed 20 m / 4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        },
+        "semantic111": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        }
+      },
+      "id": "regional_static10",
+      "label": "Regional static 10 m",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        },
+        "semantic111": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        }
+      },
+      "id": "regional_static20",
+      "label": "Regional static 20 m",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        },
+        "semantic111": {
+          "calibration": null,
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": null,
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "missing"
+        }
+      },
+      "id": "adaptive_semantic_first",
+      "label": "Adaptive Semantic First",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    }
+  ],
+  "negative_control_checks": {
+    "auxiliary_only": "unavailable",
+    "no_output": "unavailable",
+    "prior_only": "unavailable"
+  },
+  "positive_control_check": {
+    "status": "unavailable"
+  },
+  "primary_contrast": {
+    "left": "adaptive_semantic_first",
+    "metric": "ROC_AUC",
+    "representations": {
+      "scalar31": {
+        "status": "unavailable"
+      },
+      "semantic111": {
+        "status": "unavailable"
+      }
+    },
+    "right": "regional_static20"
+  },
+  "provenance": {
+    "implementation_sha256": "fbe0ec3bfd79fe42ac2c757e6011c8122141ff8a0f704cfe9a393bae5494c554",
+    "manifest_sha256": "5c12a45072da540f71d96115341b5f7fb1a6d9b5be84e8ba3922ac233586056a",
+    "private_report_sha256": "9c899a92c0e1d3a66c711b02e083edb87f20273b53d1b857f0e30637264beb8c"
+  },
+  "schema": "ump.urban-primary-public-report.v1",
+  "scope": [
+    "Protected secret: inclusion of one complete visible episode contribution; not person identity, physical presence or all visits.",
+    "Recipient availability: one retrospective final snapshot at H=300 s. Logical sealing delay is not measured live delivery latency.",
+    "Same local400 hard requirements and suppression OFF for every comparator/world; operational track support is distinct from empirical privacy.",
+    "Models and scaling use TRAIN only; operating thresholds use CAL only. No TEST-dependent score-direction flip, tuning or comparator selection.",
+    "Rate intervals are two-sided exact 95% Clopper-Pearson. Primary AUC-difference interval is a 1000-replicate paired TEST-recording bootstrap conditional on fixed fitted models.",
+    "Scalar31 is a joint representation ablation removing semantic and availability coordinates; it does not isolate semantic leakage.",
+    "Utility macro means weight recordings equally and use each world's own sampled input. Conditional occupancy MAE must be read with answered/scored coverage; unknown output is not zero.",
+    "No universal privacy guarantee, population FPR bound, person-level guarantee or real-time certification follows from these measurements."
+  ],
+  "source_and_execution": {
+    "method_world_status": {
+      "adaptive_semantic_first": {
+        "observed": 0,
+        "planned": 144,
+        "statuses": {},
+        "unreported": 144
+      },
+      "fixed10_1000ms": {
+        "observed": 0,
+        "planned": 144,
+        "statuses": {},
+        "unreported": 144
+      },
+      "fixed10_2000ms": {
+        "observed": 0,
+        "planned": 144,
+        "statuses": {},
+        "unreported": 144
+      },
+      "fixed10_4000ms": {
+        "observed": 0,
+        "planned": 144,
+        "statuses": {},
+        "unreported": 144
+      },
+      "fixed10_400ms": {
+        "observed": 0,
+        "planned": 144,
+        "statuses": {},
+        "unreported": 144
+      },
+      "fixed20_1000ms": {
+        "observed": 0,
+        "planned": 144,
+        "statuses": {},
+        "unreported": 144
+      },
+      "fixed20_2000ms": {
+        "observed": 0,
+        "planned": 144,
+        "statuses": {},
+        "unreported": 144
+      },
+      "fixed20_4000ms": {
+        "observed": 0,
+        "planned": 144,
+        "statuses": {},
+        "unreported": 144
+      },
+      "fixed20_400ms": {
+        "observed": 0,
+        "planned": 144,
+        "statuses": {},
+        "unreported": 144
+      },
+      "regional_static10": {
+        "observed": 0,
+        "planned": 144,
+        "statuses": {},
+        "unreported": 144
+      },
+      "regional_static20": {
+        "observed": 0,
+        "planned": 144,
+        "statuses": {},
+        "unreported": 144
+      }
+    },
+    "planned_by_split": {
+      "calibration": 16,
+      "test": 32,
+      "train": 24
+    },
+    "planned_native_cases": 1296,
+    "planned_recipient_streams": 1584,
+    "planned_recordings": 72,
+    "recording_status_by_split": {
+      "calibration": {
+        "invalid": 1,
+        "not_reported": 0,
+        "verified": 15
+      },
+      "test": {
+        "not_attempted": 32,
+        "not_reported": 0
+      },
+      "train": {
+        "invalid": 2,
+        "not_reported": 0,
+        "verified": 22
+      }
+    }
+  }
+}

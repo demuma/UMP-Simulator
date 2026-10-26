@@ -28,17 +28,17 @@ Research questions describe the dissertation; this is the implementation queue.
   ungenerated, no attack fit or privacy gain claimed.
   [Protocol](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md) and
   [test report](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md).
-- [ ] P25.4: implementation gate complete (176 tests, 18 native + 4 regional DEV).
-  V1 source-validity gate failed on two TRAIN deadlocks (22/24 valid); CAL source
-  accounting continues, no primary mechanism/model/TEST executed. Preserve all
-  v1 outcomes. Validate/apply the finite-cohort source correction after the frozen
-  batch ends, freeze an explicit source-v2 amendment with unchanged 72 groups/splits/
-  seeds/policy/features/statistics, regenerate all 40 TRAIN/CAL, lock models and only
-  then generate 32 TEST. Complete joint risk/utility/control evidence and public
-  aggregate report; keep raw motion/models/scores local.
-  [Source correction](docs/URBAN_PRIVACY_SOURCE_CROSSING_DRAIN_FIX_2026-10-26.md),
-  [protocol](docs/URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) and
-  [validation/execution report](docs/URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).
+- [ ] P25.4: v1 source gate closed at 37/40 valid; three deadlocks retained,
+  no primary model/TEST. Production source correction passes 48/48 known configs,
+  8,119 episodes, 11 affected CTest groups and 177 Python methods. The explicit
+  [source-v2 amendment](docs/URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md)
+  and implementation are frozen before TEST, preserving 72 groups/216 role seeds,
+  splits, policy, features and statistics. Fresh serial v2 execution is running:
+  regenerate 40 TRAIN/CAL, compare all methods, lock models/CAL thresholds, then
+  generate 32 original TEST slots and finish joint risk/utility/control evidence.
+  Authenticate all source/pair/archive artifacts and publish compact results;
+  keep raw motion/models/scores local. Preserve v1 separately without pooling.
+  [Source correction](docs/URBAN_PRIVACY_SOURCE_CROSSING_DRAIN_FIX_2026-10-26.md).
 
 Work through these gates sequentially. A second site, globally adaptive uniform
 raster, new attacks on sensitive visits and aggregation-heuristic changes are

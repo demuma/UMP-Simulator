@@ -100,3 +100,22 @@ an unavailable legacy default path; the main-runner suite is 25/25. The source
 runner/self-bound files and old native source remain unchanged while v1 runs.
 Any corrected primary run needs a fresh source/execution freeze and implementation
 supplement; original v1 evidence is not overwritten or pooled into the new version.
+
+## Corrected source v2 frozen and executing — 2026-10-26
+
+The complete v1 batch is 37/40 valid (22 TRAIN, 15 CAL), with three invalid captures and
+32 unattempted TEST slots. Its source-only report is closed before primary mechanisms,
+fits or attack scores. The production finite-cohort correction and two native
+regressions pass all 11 affected CTest groups (176.97 s). The new full Python check passes
+177 methods; the prior 22 recipient DEV streams are reauthenticated. AggregationReplay
+remains byte-identical.
+
+All 48 known motion configs pass, 8,119/8,119 episodes, including all three old failure cases,
+with independent physical/speed/displacement/cohort checks. A separate pre-TEST v2
+manifest is frozen at `e3b4296674c95d407baf6bc2d3def0564cb77eca37286fdbf9b92ff48c82d5c0`,
+with unchanged 72 groups, 216 role seeds, 17 exclusions, policy, methods, features and analysis.
+Fresh serial sources/mechanisms/models/TEST execution is running. No final held-out
+privacy estimate is claimed until the full outcomes and control gates are reviewed.
+See the [formal amendment](URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md),
+[48-case motion evidence](verification/urban-privacy-p25-4-2026-10-26-v2/motion-preflight.json)
+and [freeze receipt](verification/urban-privacy-p25-4-2026-10-26-v2/amendment-freeze.json).

@@ -131,13 +131,14 @@ evidence only. A second site is a later transfer question after this gate.
 - [Causal visibility implementation](CAUSAL_PRIVACY_IMPLEMENTATION.md).
 - [Attribute and online contract](PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
 
-**P25.4 is open: its v1 source-validity gate failed before primary analysis.** The primary runner, exact root-query coverage and exact
-rate intervals pass 176 affected Python tests and all 22 existing-source DEV
-recipient streams. Their implementation supplement is frozen before TEST.
-The frozen TRAIN/CAL source attempt batch is completing its failure accounting.
-A separately validated source-motion correction requires an explicit pre-TEST
-version; groups/seeds/policy/analysis remain unchanged, all 40 TRAIN/CAL must be
-regenerated, and models/thresholds locked before TEST sources. The inspected
-pilot remains DEV only; completed primary privacy-benefit estimates are pending.
-See the [P25.4 protocol](URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) and
+**P25.4 is executing with an explicit corrected source version.** The v1
+source gate closed at 37/40 valid and three motion deadlocks, with no primary
+mechanisms/models/TEST. The production source correction passes 48 known configs/
+8,119 episodes, 11 affected CTest groups and 177 Python methods. Source v2 and its
+implementation supplement are frozen before TEST, preserving all 72 groups/216 role
+seeds, policy, methods, features and statistics. All 40 TRAIN/CAL sources are regenerated;
+actual model/CAL locks must pass before the original 32 TEST realizations.
+The inspected DEV sources remain excluded; v1/v2 are never pooled as independent
+evidence. Final empirical privacy/utility conclusions remain pending.
+See the [v2 amendment](URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md) and
 [validation/execution report](URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).

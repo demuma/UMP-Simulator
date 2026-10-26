@@ -1,0 +1,19 @@
+{
+  "failures": 0,
+  "files_sha256": {
+    "simulator/build/AggregationReplay": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+    "simulator/build/MappedMotionProbe": "40fe14cf9e7b2a9e79afa49b162ef46148378b6866c2b16941787de11553a06d",
+    "simulator/build/MappedSceneTests": "e048bd74cf6cedcd31389ff9db5b8ea298e587b339517df1b9585d06f577a21f",
+    "simulator/build/Simulator": "1e0536c5823a955d74045487db93d663ec0ad8dd75775b9532b76dc4fa9070a2",
+    "simulator/include/MappedScene.hpp": "1cfbf1d2f0ee90e4d33738b157ea059b78cfcabfa44780274e49b40340ef9c76",
+    "simulator/src/MappedScene.cpp": "4a6be232fe622741272704974400977e911f8a2fcb190ff952cdcb39727791b0",
+    "simulator/tests/MappedSceneTests.cpp": "4330815d68551051a16c9925e31a0b54882d1967018ebe17613c806ced6bf1fc"
+  },
+  "groups": 11,
+  "log_sha256": "0f0fc1b0b10b6531b0487bcf9326bb0bc3ac34ae49b77e0f1571a96482e0fb50",
+  "schema": "ump.mapped-crossing-native-regression.v1",
+  "scope": "Affected sensor/native motion/configuration/probe/source/split and all finite mapped source drain regressions; production header private, two new coupled-crossing tests. No primary source capture or privacy assessment.",
+  "seconds": 176.97,
+  "status": "verified",
+  "test_data_seen": false
+}

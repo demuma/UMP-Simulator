@@ -1,36 +1,42 @@
 # Urban source correction: coupled crossing closure
 
-Status: isolated DEV correction and known-failure validation pass; production
-application and serial validation are pending the end of the frozen v1 source batch.
+Status: the v1 batch is closed at 37/40 valid sources; the production correction
+and two native regressions are applied. All 11 affected CTest groups and 177
+Python methods pass. All 48 serial known-configuration motion preflights now pass: 8,119/8,119
+episodes, including all three original invalid cases. Source v2 is frozen and
+fresh primary execution is running.
 This is a source-motion issue discovered by P25.4, not an aggregation or attack result.
 The [P25.4 protocol](URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) remains the analysis reference.
 
 ## Observed failure and retained evidence
 
-The first 24 prospective TRAIN sources contain 22 verified captures and two
-invalid captures. The finite CAL batch continues. No primary mechanism execution,
+The 24 prospective TRAIN sources contain 22 verified captures and two invalid
+captures. CAL contains 15 verified and one invalid capture. All 40 attempts are
+closed, cryptographically reauthenticated under the original implementation and
+retained; 37 pass and three fail the source gate. No primary mechanism execution,
 attack fit, calibration score or TEST source has been produced. The waiting
 execution driver was stopped before it could proceed with incomplete TRAIN data.
 All 72 slots and their attempted/unattempted states remain in v1's denominator.
 
-| TRAIN slot | Scheduled episodes | Started | Ended at 300 s | Active | Pending | Reported stalled | Body overlaps |
+| Role / slot | Scheduled episodes | Started | Ended at 300 s | Active | Pending | Reported stalled | Body overlaps |
 |---|---:|---:|---:|---:|---:|---:|---:|
 | 17 | 169 | 155 | 106 | 49 | 14 | 43 | 0 |
 | 23 | 168 | 155 | 99 | 56 | 13 | 51 | 0 |
+| CAL 13 | 165 | 157 | 118 | 39 | 8 | 36 | 0 |
 
 The source clock and captured GT/observation intervals are complete. Native exit
 zero and a successful geometry audit do not establish completion of all scheduled
-movement. The stricter cohort/liveness gate correctly rejects both recordings.
-Maximum reported pedestrian waits are 283.45 s and 286.25 s. The second case's
+movement. The stricter cohort/liveness gate correctly rejects all three recordings.
+Maximum reported pedestrian waits are 283.45 s, 286.25 s and 287.85 s. The second case's
 pending episodes are building returns waiting for preceding visible episodes.
 
 Retained local evidence includes complete scene configuration, capture proof,
 native execution, recorded observations and GT, independent physical audit,
 stdout/stderr and the source-attempt summary. No failed source is trimmed or
-replaced, and no stalled road user is silently removed. Final positions in both
-cases show priority-rider queues occupying adjacent crossing areas. The second
-case's captured output lacks controller phase flags, so its identical mechanism
-remains a hypothesis until the corrected motion preflight is run.
+replaced, and no stalled road user is silently removed. Final positions in all three cases show priority-rider queues occupying adjacent
+crossing areas. Captured output lacks per-resource phase flags, so the common
+mechanism in the second/third case remains a hypothesis until the corrected
+motion preflight is run.
 
 ## Mechanistic explanation and minimal reproduction
 
@@ -105,8 +111,14 @@ original motion code. Production CMake remains unchanged.
 All prototype files, exact patches, binaries, before/after hashes, raw logs,
 positive/negative receipts and independent checks are initially retained locally
 under `/private/tmp/ump-p254-two-crossings-dev`. They must be copied into ignored
-repository results before production application. Bulk validation is held until
-v1 source execution finishes, preserving its frozen source bytes and resource caps.
+repository results before production application. The full prototype package and original source/binary/test bytes are now also
+retained under ignored `results/urban-privacy-source-correction-2026-10-26-v2`.
+Production source/header/test hashes and both native executable hashes are recorded.
+`AggregationReplay` is unchanged at
+`72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f`.
+The 48-case motion check uses all eight original DEV and all forty TRAIN/CAL
+configurations, including the three failed cases: 8,119 episodes, zero TEST cases.
+Each case has one serial attempt and finite 60/70-s internal/process caps.
 
 ## Required pre-TEST amendment
 
@@ -122,3 +134,32 @@ implementation. Original TRAIN/CAL exposure stays in those roles. V1 and v2 are
 never pooled as independent evidence. The original 32 TEST realizations remain
 unseen until the fresh implementation supplement and actual TRAIN/CAL model lock
 pass. The v1 source-validity failure remains an explicit negative result.
+
+## Native implementation verification
+
+The actual Simulator, native scene/configuration tests and maintained motion probe
+build successfully. All 11 affected CTest groups pass in 176.97 s, including sensor
+regressions and the complete transit/corridor/building/storefront/urban-traffic
+finite-drain checks. Two new public-API tests cover the ten-episode crossing loop
+and a 42-episode later-arrival case with physical/cadence checks. The final affected
+Python suite passes 177 methods, including explicit current-manifest model binding.
+The prior 22-stream DEV recipient integration is reauthenticated with current code.
+These are implementation/source gates, not held-out privacy or real-time results.
+
+The complete v1 source-only outcome report retains all 72 slots and all 11 unavailable
+comparison methods, with no fabricated attack values or figures:
+[aggregate v1 report](verification/urban-privacy-p25-4-2026-10-25/v1-source-gate/report.md).
+
+The exact version/exposure/freeze rules are recorded in the
+[pre-TEST v2 amendment](URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md).
+
+## Complete motion preflight
+
+All 48 cases and 8,119 episodes pass/reverify, with 332,986,278 body and the same number
+of swept-body checks, 8,268,132 speed and 8,268,180 displacement checks, 45,941 cohort
+membership checks across 183 drain phases. No failure, retry, TEST access or input
+hash drift occurs. Last episode endpoints range 159.35–218.90 s. Minimum body
+clearance margin is 8.90e-7 m; minimum swept margin is 0 at required clearance.
+This is motion-only DEV/TRAIN/CAL validation; every fresh primary capture must
+still pass full sensor/GT/provenance/physical gates. The [compact receipt](verification/urban-privacy-p25-4-2026-10-26-v2/motion-preflight.json)
+contains all 48 case outcomes and the three repaired negative cases.

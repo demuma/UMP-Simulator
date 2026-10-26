@@ -1,0 +1,35 @@
+{
+  "actual_new_primary_sources": 0,
+  "completed_episodes": 8119,
+  "files_sha256": {
+    "simulator/include/MappedScene.hpp": "1cfbf1d2f0ee90e4d33738b157ea059b78cfcabfa44780274e49b40340ef9c76",
+    "simulator/src/MappedScene.cpp": "4a6be232fe622741272704974400977e911f8a2fcb190ff952cdcb39727791b0"
+  },
+  "independent_motion_cases": 48,
+  "limitations": "Finite cohort does not prove general liveness or a hard pedestrian wait bound. No TEST source used. Fresh complete source captures still required.",
+  "primary_test_sources_seen": 0,
+  "scheduled_episodes": 8119,
+  "schema": "ump.mapped-crossing-source-validation.v2",
+  "scope": "Actual production source correction;11native/sourceCTestgroups and48knownDEV/TRAIN/CALmotionconfigs. Old3source failures recovered; allphysical/cadence/cohortchecks pass. Motion-only preflight, not a fresh full capture or privacy estimate.",
+  "source_binary_sha256": "1e0536c5823a955d74045487db93d663ec0ad8dd75775b9532b76dc4fa9070a2",
+  "status": "verified",
+  "test_data_seen": false,
+  "test_receipts": [
+    {
+      "path": "results/urban-privacy-source-correction-2026-10-26-v2/native-regression-receipt.json",
+      "sha256": "ab33477f5a3eddb26161146dad2276c0fa6306cb54b30935f677c2be294941ba"
+    },
+    {
+      "path": "results/urban-privacy-source-correction-2026-10-26-v2/motion-preflight-v1/private-final-receipt.json",
+      "sha256": "8e5109b151fb5d3b55e2bb5b90e120ed3d649d243eb53998f724d1d353d0b869"
+    },
+    {
+      "path": "results/urban-privacy-source-correction-2026-10-26-v2/motion-preflight-v1/verification.json",
+      "sha256": "67865387513f78e12ac5f28f578bc7626a602db86398dad4bfa88d55dcd30f4b"
+    },
+    {
+      "path": "results/urban-privacy-source-correction-2026-10-26-v2/motion-preflight-v1/public-summary.json",
+      "sha256": "1a73912a18ced9ee1eb2768cbbafe9addcd1aae3843dff063316075cb867c523"
+    }
+  ]
+}

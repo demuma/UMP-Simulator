@@ -1476,7 +1476,7 @@ void MappedScene::updateNavigationCrossings(AggregationTime nowMs) {
             } else ++it;
         }
         if(hadBatch && resource.granted.empty()) {
-            resource.closingForFairness=false;
+            resource.closingForFairness=false; resource.drainPhaseStarted=false; resource.drainPriority.clear();
             resource.riderServiceUntilMs=nowMs+crossing.riderServiceMs;
         }
         for(auto it=resource.requests.begin();it!=resource.requests.end();) {
@@ -1569,7 +1569,7 @@ void MappedScene::updateNavigationCrossings(AggregationTime nowMs) {
             }
             if(chosen) resource.waitingPoints.emplace(id,*chosen);
         }
-        if(resource.requests.empty() && resource.granted.empty()) {resource.closingForFairness=false;continue;}
+        if(resource.requests.empty() && resource.granted.empty()) {resource.closingForFairness=false; resource.drainPhaseStarted=false; resource.drainPriority.clear();continue;}
         if(!resource.granted.empty() || nowMs<resource.riderServiceUntilMs) continue;
         auto oldest=std::min_element(resource.requests.begin(),resource.requests.end(),[](const auto& a,const auto& b) {
             return std::make_pair(a.second,a.first)<std::make_pair(b.second,b.first);
@@ -1594,6 +1594,30 @@ void MappedScene::updateNavigationCrossings(AggregationTime nowMs) {
                 remaining-=travel;position=next;
             }
             if(unsafe) break;
+        }
+        // Opposing queues can occupy a preceding crossing while their leaders
+        // wait in the road space before another closed crossing. Freeze a finite
+        // cohort once, including those leaders, so it can drain without admitting
+        // later arrivals. Pedestrian ownership and physical checks still apply.
+        // This conservative trigger is not a complete dependency-cycle detector.
+        if(unsafe && resource.closingForFairness && !resource.drainPhaseStarted) {
+            bool occupiedClosedNeighbor=false;
+            for(std::size_t other=0;other<navigationCrossings.size();++other) {
+                if(other==index || !navigationCrossings[other].closingForFairness) continue;
+                const auto& otherCrossing=config.navigation.crossings[other];
+                for(const auto& [id,state]:runtime) if(state.state==RuntimeTrack::State::Active) {
+                    const auto& route=config.routes[tracks.at(id).route];
+                    if(std::find(otherCrossing.prioritySpaces.begin(),otherCrossing.prioritySpaces.end(),route.navigationSpace)==otherCrossing.prioritySpaces.end()) continue;
+                    const double margin=config.people[tracks.at(id).person].radiusM+config.clearanceM+1e-7;
+                    if(distanceToRing(state.position,state.position,otherCrossing.conflictRing)<=margin)
+                        occupiedClosedNeighbor=true;
+                }
+            }
+            if(occupiedClosedNeighbor) {
+                resource.drainPhaseStarted=true;
+                for(const auto& [id,state]:runtime)
+                    if(state.state==RuntimeTrack::State::Active && priority(id)) resource.drainPriority.insert(id);
+            }
         }
         if(unsafe) continue;
         // Readiness is local to the receiving apron of each candidate. A lone
@@ -1675,7 +1699,7 @@ bool MappedScene::crossingSegmentAllowed(const std::string& id,Point from,Point 
         if(distance(from,from)<=margin || distance(from,to)>margin) continue;
         const bool rider=std::find(crossing.prioritySpaces.begin(),crossing.prioritySpaces.end(),route.navigationSpace)!=crossing.prioritySpaces.end();
         if(rider) {
-            if(resource.closingForFairness || !resource.granted.empty()) return false;
+            if((resource.closingForFairness && !resource.drainPriority.count(id)) || !resource.granted.empty()) return false;
         } else if(!resource.granted.count(id)) {
             if(request) resource.requests.try_emplace(id,currentMs);
             return false;

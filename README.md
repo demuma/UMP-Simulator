@@ -5,19 +5,20 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
-**Urban privacy gate P25.4 — source gate failed, correction under validation.**
-The implementation passes 176 affected Python tests and all 22 existing-source
-DEV recipient streams. The frozen v1 TRAIN batch found two coupled-crossing
-motion deadlocks (22/24 verified); the finite CAL batch continues for complete
-failure accounting. Primary mechanisms/models and all 32 TEST sources remain
-untouched. A separate finite-cohort motion candidate passes isolated regressions
-and repairs the exact first failed TRAIN case, preserving physical checks.
-The corrected source needs an explicit pre-TEST version with unchanged seeds,
-splits, policy and analysis; v1 stays negative evidence. P25.4 empirical acceptance
-is still open. See the [source diagnosis/correction](docs/URBAN_PRIVACY_SOURCE_CROSSING_DRAIN_FIX_2026-10-26.md),
-[P25.4 protocol](docs/URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) and
-[validation/execution report](docs/URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).
-The P25.3 and earlier blocks below describe their historical checkpoints.
+**Urban privacy gate P25.4 — corrected source v2 running.** V1 remains a
+separate source-validity failure: 37/40 TRAIN/CAL captures pass and three crossing
+deadlocks are retained; no primary model or TEST was run. The production motion
+correction passes **48/48 known configurations, 8,119/8,119 episodes**, all 11 affected
+CTest groups and 177 Python methods. The unchanged aggregation executable is reused.
+Source v2 and its implementation supplement are now frozen before TEST; its
+24 TRAIN/16 CAL/32 TEST groups,216 role seeds, policy, methods and statistics are unchanged.
+The full source/paired mechanism/attack study is running serially. No completed
+urban privacy-benefit estimate is claimed yet. Read the
+[v2 amendment](docs/URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md),
+[source correction](docs/URBAN_PRIVACY_SOURCE_CROSSING_DRAIN_FIX_2026-10-26.md),
+[compact source/method validation](docs/verification/urban-privacy-p25-4-2026-10-26-v2/amendment-freeze.json)
+and [v1 negative outcome](docs/verification/urban-privacy-p25-4-2026-10-25/v1-source-gate/report.md).
+Earlier blocks describe their historical checkpoints.
 
 **Urban privacy gate P25.3 — 2026-10-25.** Eight independent same-site DEV
 recordings pass complete cohort, observability, provenance and physical-motion

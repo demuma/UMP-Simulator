@@ -1,0 +1,15 @@
+{
+  "actual_new_primary_attacks": 0,
+  "actual_new_primary_sources_generated": 0,
+  "all216_role_seeds_identical": true,
+  "all72_groups_identical": true,
+  "candidate_design_sha256": "31ca88c88bd82c06bdd407b21dc19375a04afd7b6b27b4ea5ed2e805627f6cdf",
+  "frozen_manifest_sha256": "e3b4296674c95d407baf6bc2d3def0564cb77eca37286fdbf9b92ff48c82d5c0",
+  "original_dev_historical_exclusions_unchanged": true,
+  "same_configuration_law_geometry": true,
+  "same_policy_methods_features_analysis": true,
+  "same_train_cal_test_counts": true,
+  "schema": "ump.urban-primary-source-amendment-compatibility.v1",
+  "status": "verified_at_source_v2_freeze",
+  "test_data_seen": false
+}
