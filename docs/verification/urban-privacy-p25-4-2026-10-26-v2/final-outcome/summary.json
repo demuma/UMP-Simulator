@@ -1,0 +1,1307 @@
+{
+  "analysis_status": "incomplete_or_diagnostic",
+  "controls": {
+    "auxiliary_only": {
+      "calibration": {
+        "metrics": {
+          "advantage": 0.0,
+          "balanced_accuracy": 0.5,
+          "evaluation_prior": 0.5,
+          "false_negative": 16,
+          "false_positive": 0,
+          "fpr": 0.0,
+          "fpr_interval": null,
+          "negative_cases": 16,
+          "positive_cases": 16,
+          "precision_at_evaluation_prior": null,
+          "roc_auc": 0.5,
+          "threshold": 0.5000000000000001,
+          "tpr": 0.0,
+          "tpr_interval": null,
+          "true_negative": 16,
+          "true_positive": 0
+        },
+        "negative_case_fpr_resolution": 0.0625,
+        "target_fpr": 0.1,
+        "threshold": 0.5000000000000001
+      },
+      "complete_test_groups": 0,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": {
+        "converged": true,
+        "feature_count": 8,
+        "iterations": 1,
+        "training_objective": 0.6931471805599453,
+        "training_rows": 48
+      },
+      "metrics": null,
+      "observed_test_rows": 0,
+      "status": "incomplete"
+    },
+    "no_output": {
+      "calibration": {
+        "metrics": {
+          "advantage": 0.0,
+          "balanced_accuracy": 0.5,
+          "evaluation_prior": 0.5,
+          "false_negative": 16,
+          "false_positive": 0,
+          "fpr": 0.0,
+          "fpr_interval": null,
+          "negative_cases": 16,
+          "positive_cases": 16,
+          "precision_at_evaluation_prior": null,
+          "roc_auc": 0.5,
+          "threshold": 0.5000000000000001,
+          "tpr": 0.0,
+          "tpr_interval": null,
+          "true_negative": 16,
+          "true_positive": 0
+        },
+        "negative_case_fpr_resolution": 0.0625,
+        "target_fpr": 0.1,
+        "threshold": 0.5000000000000001
+      },
+      "complete_test_groups": 0,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": {
+        "converged": true,
+        "feature_count": 111,
+        "iterations": 1,
+        "training_objective": 0.6931471805599453,
+        "training_rows": 48
+      },
+      "metrics": null,
+      "observed_test_rows": 0,
+      "status": "incomplete"
+    },
+    "prior_only": {
+      "calibration": {
+        "metrics": {
+          "advantage": 0.0,
+          "balanced_accuracy": 0.5,
+          "evaluation_prior": 0.5,
+          "false_negative": 16,
+          "false_positive": 0,
+          "fpr": 0.0,
+          "fpr_interval": null,
+          "negative_cases": 16,
+          "positive_cases": 16,
+          "precision_at_evaluation_prior": null,
+          "roc_auc": 0.5,
+          "threshold": 0.5000000000000001,
+          "tpr": 0.0,
+          "tpr_interval": null,
+          "true_negative": 16,
+          "true_positive": 0
+        },
+        "negative_case_fpr_resolution": 0.0625,
+        "target_fpr": 0.1,
+        "threshold": 0.5000000000000001
+      },
+      "complete_test_groups": 0,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": null,
+      "metrics": null,
+      "observed_test_rows": 0,
+      "status": "incomplete"
+    },
+    "unprotected": {
+      "calibration": {
+        "metrics": {
+          "advantage": 1.0,
+          "balanced_accuracy": 1.0,
+          "evaluation_prior": 0.5,
+          "false_negative": 0,
+          "false_positive": 0,
+          "fpr": 0.0,
+          "fpr_interval": null,
+          "negative_cases": 16,
+          "positive_cases": 16,
+          "precision_at_evaluation_prior": 1.0,
+          "roc_auc": 1.0,
+          "threshold": 1.0,
+          "tpr": 1.0,
+          "tpr_interval": null,
+          "true_negative": 16,
+          "true_positive": 16
+        },
+        "negative_case_fpr_resolution": 0.0625,
+        "target_fpr": 0.1,
+        "threshold": 1.0
+      },
+      "complete_test_groups": 0,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": null,
+      "metrics": null,
+      "observed_test_rows": 0,
+      "status": "incomplete"
+    }
+  },
+  "interpretation_gate": "diagnose_controls_before_interpreting_lower_attack_success",
+  "methods": [
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.25,
+              "balanced_accuracy": 0.625,
+              "evaluation_prior": 0.5,
+              "false_negative": 11,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.8333333333333334,
+              "roc_auc": 0.634765625,
+              "threshold": 0.5683597856020512,
+              "tpr": 0.3125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 5
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5683597856020512
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 44,
+            "training_objective": 0.6675112174398442,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.1875,
+              "balanced_accuracy": 0.59375,
+              "evaluation_prior": 0.5,
+              "false_negative": 12,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.8,
+              "roc_auc": 0.650390625,
+              "threshold": 0.5937759986295168,
+              "tpr": 0.25,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 4
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5937759986295168
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 66,
+            "training_objective": 0.6467007247441913,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        }
+      },
+      "id": "fixed10_400ms",
+      "label": "Fixed 10 m / 0.4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.1875,
+              "balanced_accuracy": 0.59375,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 0,
+              "fpr": 0.0,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 1.0,
+              "roc_auc": 0.650390625,
+              "threshold": 0.6612525721898849,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 16,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6612525721898849
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 38,
+            "training_objective": 0.6621551522250461,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.646484375,
+              "threshold": 0.7453099567829689,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.7453099567829689
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 70,
+            "training_objective": 0.6516449044145487,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        }
+      },
+      "id": "fixed10_1000ms",
+      "label": "Fixed 10 m / 1 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 0,
+              "fpr": 0.0,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 1.0,
+              "roc_auc": 0.599609375,
+              "threshold": 0.6774281392697729,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 16,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6774281392697729
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 41,
+            "training_objective": 0.6710533898210094,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.607421875,
+              "threshold": 0.7124849047744575,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.7124849047744575
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 58,
+            "training_objective": 0.6678806109930505,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        }
+      },
+      "id": "fixed10_2000ms",
+      "label": "Fixed 10 m / 2 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 0,
+              "fpr": 0.0,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 1.0,
+              "roc_auc": 0.58984375,
+              "threshold": 0.655430183580012,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 16,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.655430183580012
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 42,
+            "training_objective": 0.668617477564593,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.57421875,
+              "threshold": 0.6928963409580335,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6928963409580335
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 57,
+            "training_objective": 0.6523972002285526,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        }
+      },
+      "id": "fixed10_4000ms",
+      "label": "Fixed 10 m / 4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.552734375,
+              "threshold": 0.5960022368567953,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5960022368567953
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 33,
+            "training_objective": 0.6823810650826545,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.556640625,
+              "threshold": 0.8304700529905062,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.8304700529905062
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 74,
+            "training_objective": 0.6687296983841464,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        }
+      },
+      "id": "fixed20_400ms",
+      "label": "Fixed 20 m / 0.4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.1875,
+              "balanced_accuracy": 0.59375,
+              "evaluation_prior": 0.5,
+              "false_negative": 12,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.8,
+              "roc_auc": 0.580078125,
+              "threshold": 0.542775495086469,
+              "tpr": 0.25,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 4
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.542775495086469
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 32,
+            "training_objective": 0.687316062420124,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.626953125,
+              "threshold": 0.6416147913077915,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6416147913077915
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 66,
+            "training_objective": 0.6790653379632161,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        }
+      },
+      "id": "fixed20_1000ms",
+      "label": "Fixed 20 m / 1 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 0,
+              "fpr": 0.0,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 1.0,
+              "roc_auc": 0.591796875,
+              "threshold": 0.5633220899908767,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 16,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5633220899908767
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 37,
+            "training_objective": 0.6862083042346478,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.607421875,
+              "threshold": 0.5961363729186854,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5961363729186854
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 65,
+            "training_objective": 0.6796796515306587,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        }
+      },
+      "id": "fixed20_2000ms",
+      "label": "Fixed 20 m / 2 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.580078125,
+              "threshold": 0.5800880189785196,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5800880189785196
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 35,
+            "training_objective": 0.6846099153997612,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.537109375,
+              "threshold": 0.6309874911447132,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6309874911447132
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 250,
+            "training_objective": 0.6679511700498851,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        }
+      },
+      "id": "fixed20_4000ms",
+      "label": "Fixed 20 m / 4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.5859375,
+              "threshold": 0.5954041996695961,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5954041996695961
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 108,
+            "training_objective": 0.6697764775687141,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.546875,
+              "threshold": 0.6688516377319285,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6688516377319285
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 40,
+            "training_objective": 0.6518462499081721,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        }
+      },
+      "id": "regional_static10",
+      "label": "Regional static 10 m",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.568359375,
+              "threshold": 0.6080697492970966,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6080697492970966
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 43,
+            "training_objective": 0.6830398125026155,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.564453125,
+              "threshold": 0.5863391573845352,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5863391573845352
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 134,
+            "training_objective": 0.6652869208567033,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        }
+      },
+      "id": "regional_static20",
+      "label": "Regional static 20 m",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.568359375,
+              "threshold": 0.6030139034048556,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6030139034048556
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 59,
+            "training_objective": 0.6683381467263549,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.599609375,
+              "threshold": 0.8261339311418837,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.8261339311418837
+          },
+          "complete_test_groups": 0,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 119,
+            "training_objective": 0.639862331422636,
+            "training_rows": 48
+          },
+          "metrics": null,
+          "observed_test_rows": 0,
+          "status": "incomplete"
+        }
+      },
+      "id": "adaptive_semantic_first",
+      "label": "Adaptive Semantic First",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {},
+          "observed_recordings": 0
+        }
+      }
+    }
+  ],
+  "negative_control_checks": {
+    "auxiliary_only": "unavailable",
+    "no_output": "unavailable",
+    "prior_only": "unavailable"
+  },
+  "positive_control_check": {
+    "status": "unavailable"
+  },
+  "primary_contrast": {
+    "left": "adaptive_semantic_first",
+    "metric": "ROC_AUC",
+    "representations": {
+      "scalar31": {
+        "status": "unavailable"
+      },
+      "semantic111": {
+        "status": "unavailable"
+      }
+    },
+    "right": "regional_static20"
+  },
+  "provenance": {
+    "implementation_sha256": "40e58dbd20ae9a00dcdc1858cd7de405579778663177d45f50b2486a4d21648d",
+    "manifest_sha256": "e3b4296674c95d407baf6bc2d3def0564cb77eca37286fdbf9b92ff48c82d5c0",
+    "private_report_sha256": "2446da17c46047db7f44a80fad39162ceafca93d66b5d5bbd5666c56c83f8710"
+  },
+  "schema": "ump.urban-primary-public-report.v1",
+  "scope": [
+    "Protected secret: inclusion of one complete visible episode contribution; not person identity, physical presence or all visits.",
+    "Recipient availability: one retrospective final snapshot at H=300 s. Logical sealing delay is not measured live delivery latency.",
+    "Same local400 hard requirements and suppression OFF for every comparator/world; operational track support is distinct from empirical privacy.",
+    "Models and scaling use TRAIN only; operating thresholds use CAL only. No TEST-dependent score-direction flip, tuning or comparator selection.",
+    "Rate intervals are two-sided exact 95% Clopper-Pearson. Primary AUC-difference interval is a 1000-replicate paired TEST-recording bootstrap conditional on fixed fitted models.",
+    "Scalar31 is a joint representation ablation removing semantic and availability coordinates; it does not isolate semantic leakage.",
+    "Utility macro means weight recordings equally and use each world's own sampled input. Conditional occupancy MAE must be read with answered/scored coverage; unknown output is not zero.",
+    "No universal privacy guarantee, population FPR bound, person-level guarantee or real-time certification follows from these measurements."
+  ],
+  "source_and_execution": {
+    "method_world_status": {
+      "adaptive_semantic_first": {
+        "observed": 80,
+        "planned": 144,
+        "statuses": {
+          "verified": 80
+        },
+        "unreported": 64
+      },
+      "fixed10_1000ms": {
+        "observed": 80,
+        "planned": 144,
+        "statuses": {
+          "verified": 80
+        },
+        "unreported": 64
+      },
+      "fixed10_2000ms": {
+        "observed": 80,
+        "planned": 144,
+        "statuses": {
+          "verified": 80
+        },
+        "unreported": 64
+      },
+      "fixed10_4000ms": {
+        "observed": 80,
+        "planned": 144,
+        "statuses": {
+          "verified": 80
+        },
+        "unreported": 64
+      },
+      "fixed10_400ms": {
+        "observed": 80,
+        "planned": 144,
+        "statuses": {
+          "verified": 80
+        },
+        "unreported": 64
+      },
+      "fixed20_1000ms": {
+        "observed": 80,
+        "planned": 144,
+        "statuses": {
+          "verified": 80
+        },
+        "unreported": 64
+      },
+      "fixed20_2000ms": {
+        "observed": 80,
+        "planned": 144,
+        "statuses": {
+          "verified": 80
+        },
+        "unreported": 64
+      },
+      "fixed20_4000ms": {
+        "observed": 80,
+        "planned": 144,
+        "statuses": {
+          "verified": 80
+        },
+        "unreported": 64
+      },
+      "fixed20_400ms": {
+        "observed": 80,
+        "planned": 144,
+        "statuses": {
+          "verified": 80
+        },
+        "unreported": 64
+      },
+      "regional_static10": {
+        "observed": 80,
+        "planned": 144,
+        "statuses": {
+          "verified": 80
+        },
+        "unreported": 64
+      },
+      "regional_static20": {
+        "observed": 80,
+        "planned": 144,
+        "statuses": {
+          "verified": 80
+        },
+        "unreported": 64
+      }
+    },
+    "planned_by_split": {
+      "calibration": 16,
+      "test": 32,
+      "train": 24
+    },
+    "planned_native_cases": 1296,
+    "planned_recipient_streams": 1584,
+    "planned_recordings": 72,
+    "recording_status_by_split": {
+      "calibration": {
+        "not_reported": 0,
+        "verified": 16
+      },
+      "test": {
+        "not_attempted": 32,
+        "not_reported": 0
+      },
+      "train": {
+        "not_reported": 0,
+        "verified": 24
+      }
+    }
+  }
+}

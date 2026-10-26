@@ -1,0 +1,89 @@
+{
+  "attempted": 72,
+  "available_case_risk_estimates": false,
+  "by_split": {
+    "calibration": {
+      "attempted": 16,
+      "invalid": 0,
+      "planned": 16,
+      "valid": 16,
+      "valid_source_episodes": 2709,
+      "valid_source_observation_contributions": 1370080
+    },
+    "test": {
+      "attempted": 32,
+      "invalid": 1,
+      "planned": 32,
+      "valid": 31,
+      "valid_source_episodes": 5269,
+      "valid_source_observation_contributions": 2683500
+    },
+    "train": {
+      "attempted": 24,
+      "invalid": 0,
+      "planned": 24,
+      "valid": 24,
+      "valid_source_episodes": 4051,
+      "valid_source_observation_contributions": 2069407
+    }
+  },
+  "cohort_people_per_recording": 128,
+  "eligibility_rule_relaxed": false,
+  "failed_capture": {
+    "body_pair_checks": 7562917,
+    "failure": "scheduled_episode_completion",
+    "full_capture_clock": true,
+    "independent_physical_audit": "pass",
+    "lifecycle": {
+      "active_episodes_at_horizon": 8,
+      "pending_episodes_at_horizon": 8,
+      "realized_ends": 153,
+      "realized_starts": 161,
+      "scheduled_episodes": 169,
+      "scheduled_people": 128
+    },
+    "minimum_body_clearance_margin_m": 1.1764387579035751e-05,
+    "minimum_swept_body_clearance_margin_m": 1.1764387579035751e-05,
+    "motion_audit_sha256": "a68d19ea8dbc8ee25a38d488ebb9cbf890b5638fbbf7f1dc8ec7402863bfd1f5",
+    "scope": "Static geometry diagnosis only; inferred declared route approach, not a recorded runtime waypoint. No native replay, A* search, reservation replay or end-to-end liveness-fix proof.",
+    "split": "test",
+    "static_diagnosis": {
+      "blocked_shop": "Adidas Originals",
+      "incoming_visitors": 7,
+      "native_start_connector_candidates": 25,
+      "passer_destination": "Apollo",
+      "statically_legal_native_start_connectors": 0,
+      "statically_legal_native_steering_candidates": 0,
+      "statically_legal_wider_diagnostic_connectors": 1,
+      "steering_candidates": 28,
+      "wider_diagnostic_connector_candidates": 49
+    },
+    "static_diagnosis_sha256": "1d03a0171387d166a36d1fce1e75964da91a2e6b1a5459399f0bd4c4a024444a",
+    "swept_body_pair_checks": 7562889
+  },
+  "horizon_ms": 300000,
+  "invalid": 1,
+  "manifest_sha256": "e3b4296674c95d407baf6bc2d3def0564cb77eca37286fdbf9b92ff48c82d5c0",
+  "schema": "ump.urban-primary-source-outcome-public.v1",
+  "scope": "Source captures are distinct from mechanism executions. Controls, empirical risk and TEST utility are unavailable because the source gate prevented evaluation, not because an attack failed. V1 and V2 are never pooled.",
+  "seed_replacements": 0,
+  "source_gate": {
+    "expected": 32,
+    "observed": 32,
+    "schema": "ump.urban-primary-driver-source-gate.v1",
+    "source_summary_sha256": "8d1f9622d5d4b71ffded5b32e7b0f7f3ab59a693e67b8ff4bbf04c382adbda67",
+    "status": "failed",
+    "verified": 31
+  },
+  "source_implementation_version": 2,
+  "source_summary_sha256": "8d1f9622d5d4b71ffded5b32e7b0f7f3ab59a693e67b8ff4bbf04c382adbda67",
+  "status": "source_validity_failed_before_test_mechanisms",
+  "test_attack_rows": 0,
+  "test_mechanism_groups": 0,
+  "test_predictions": 0,
+  "valid": 71,
+  "valid_peak_observed_tracks_range": [
+    123,
+    128
+  ]
+}

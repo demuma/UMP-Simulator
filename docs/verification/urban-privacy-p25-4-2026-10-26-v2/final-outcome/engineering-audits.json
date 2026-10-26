@@ -1,0 +1,71 @@
+{
+  "closure": {
+    "empirical_figures_generated": 0,
+    "main_report_verify_seconds": 68.90452475,
+    "receipt_sha256": "b119c9f09688353cf461144c6ca8002f0a0359282801d7982ce33f54079531a7",
+    "source_verify_seconds": 101.31371837500001,
+    "status": "source_gate_failed_closed_without_test_mechanisms",
+    "test_metrics": "unavailable"
+  },
+  "completed_train_cal_groups": 40,
+  "derived_regional_train_cal_streams": 160,
+  "final_na_closure_independent_audit_sha256": "c27d2d269647d7802bf295eac7d3ae823758830ba5abae1fa223bb81030a5a3c",
+  "first_train_spot_audit": {
+    "archived_files_roundtrip_verified": 66,
+    "archived_uncompressed_bytes_verified": 419651493,
+    "method_world_streams_verified": 22,
+    "published_cells_recomputed": 12932,
+    "status": "verified"
+  },
+  "first_train_spot_audit_sha256": "a098fdd01e5490f648c928c383b306568c275cdf86ae4b085ce9999b9499a445",
+  "implementation_sha256": "40e58dbd20ae9a00dcdc1858cd7de405579778663177d45f50b2486a4d21648d",
+  "lossless_local_storage": {
+    "all_logical_hashes_and_paths_unchanged": true,
+    "files": 71,
+    "logical_bytes": 10944960108,
+    "physical_bytes": 1317986304
+  },
+  "manifest_sha256": "e3b4296674c95d407baf6bc2d3def0564cb77eca37286fdbf9b92ff48c82d5c0",
+  "models": {
+    "calibration_false_positive_limit": 1,
+    "calibration_fpr_resolution": 0.0625,
+    "calibration_negative_units": 16,
+    "calibration_rows_per_method": 32,
+    "converged": 22,
+    "independent_audit_sha256": "f2470df7699045f36353070117e4869756e7efb7b033b99777aaa230cc8faeed",
+    "iteration_range": [
+      32,
+      250
+    ],
+    "lock_created_at": "2026-10-26T05:46:39.577608+00:00",
+    "lock_sha256": "cf549efdc185b866c13abcdf0d1636a942778c60b1d66d87f5e8594bdb3afdbc",
+    "model_bytes_sha256": "7566263cfb84384f27a813473eb922d6029e2c26a82bb04a14ac195438c62162",
+    "objective_error": 0.0,
+    "test_rows_at_lock": 0,
+    "train_scale_error": 0.0,
+    "train_scaling_error": 0.0,
+    "training_rows_bytes_sha256": "de70774190c5f81d351795a937601b45a353b57dd5bf2dfcffe5c0cb65e1ae8e",
+    "training_rows_per_method": 48,
+    "variants": 22
+  },
+  "native_audited_published_policy_violations": 0,
+  "native_train_cal_cases": 720,
+  "operational_seconds": {
+    "lock_models": 58.550767958000506,
+    "native_train_cal": 6491.151303958,
+    "source_test": 6399.8168107500005,
+    "source_train_cal": 7779.418496875
+  },
+  "schema": "ump.urban-primary-engineering-evidence-public.v1",
+  "scope": "Engineering evidence on TRAIN/CAL and DEV. Not held-out protection/utility evidence, a privacy-benefit result, or an isolated real-time benchmark. No movements, per-target IDs, seeds, model weights, private scores or local paths are included.",
+  "status": "implementation_validated_research_test_unavailable",
+  "train_cal_recipient_streams": 880,
+  "validation": {
+    "affected_native_ctest_groups": 11,
+    "affected_python_methods": 177,
+    "known_motion_episodes_completed": 8119,
+    "known_motion_preflights": 48,
+    "native_ctest_seconds": 176.97,
+    "separate_public_reporter_methods": 10
+  }
+}

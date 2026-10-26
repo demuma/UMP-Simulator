@@ -24,21 +24,44 @@ Research questions describe the dissertation; this is the implementation queue.
   episodes, 708246 observations; no ID-renamed/source-plan clones or historical
   fingerprint overlap. Narrow source correction verified on all eight seeds;
   rejected prototypes retained. Frozen 24 TRAIN/16 CAL/32 TEST groups, one target
-  each, methods/policy/features/analysis fixed. All 72 primary sources remain
-  ungenerated, no attack fit or privacy gain claimed.
+  each, methods/policy/features/analysis fixed before primary generation or fits.
+  The later P25.4 execution is recorded below; no privacy gain is claimed.
   [Protocol](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md) and
   [test report](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md).
-- [ ] P25.4: v1 source gate closed at 37/40 valid; three deadlocks retained,
-  no primary model/TEST. Production source correction passes 48/48 known configs,
-  8,119 episodes, 11 affected CTest groups and 177 Python methods. The explicit
-  [source-v2 amendment](docs/URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md)
-  and implementation are frozen before TEST, preserving 72 groups/216 role seeds,
-  splits, policy, features and statistics. Fresh serial v2 execution is running:
-  regenerate 40 TRAIN/CAL, compare all methods, lock models/CAL thresholds, then
-  generate 32 original TEST slots and finish joint risk/utility/control evidence.
-  Authenticate all source/pair/archive artifacts and publish compact results;
-  keep raw motion/models/scores local. Preserve v1 separately without pooling.
-  [Source correction](docs/URBAN_PRIVACY_SOURCE_CROSSING_DRAIN_FIX_2026-10-26.md).
+- [ ] P25.4: **implementation validated; held-out privacy/utility evidence remains
+  unavailable after the source-v2 gate failed.** All 72 source slots received one
+  attempt: TRAIN 24/24, CAL 16/16, TEST 31/32 valid. A doorway-navigation deadlock
+  invalidates one TEST source. No TEST native execution, prediction, empirical
+  figure, replacement seed or available-case AUC was produced. Preserve v1 and
+  v2 separately. [Final outcome](docs/URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md)
+  and [compact evidence](docs/verification/urban-privacy-p25-4-2026-10-26-v2/final-outcome/README.md).
+
+Completed within P25.4: 177 affected Python tests, 10 reporter tests and 11 affected
+native groups; all 40 TRAIN/CAL paired method families verified (720 native and
+160 derived regional streams), zero audited native publication-policy violations;
+22/22 fits converged and CAL thresholds independently verified before TEST.
+Final unchanged verification/reporting preserves all TEST estimates as unavailable.
+These are engineering/calibration results, not the planned held-out privacy result.
+
+Next, in order:
+
+1. Preserve the failed doorway recording and static diagnostic as development
+   evidence. Add a minimal regression for a passer and an incoming stroller near
+   a facade; exercise finite steering and the bounded A* start connector. Do not
+   assume that changing the connector from ±2 to ±3 cells proves liveness.
+2. Correct the bounded local-navigation failure while retaining body/swept/static
+   clearance and doorway/reservation rules. Check entry queues, unrelated passers,
+   return episodes and dense/mixed traffic; record failures and costs.
+3. Validate the source on a bounded independently seeded DEV matrix. Keep the
+   present finite-cohort completion rule unchanged for this closed run. Legitimate
+   streaming right-censoring needs a separately declared protected unit and a
+   nonprogress-quality gate; it must not conceal a persistent jam.
+4. Freeze a new study with fresh unseen evaluation realizations and explicit
+   historical exclusions. Refit only on its TRAIN groups, lock CAL thresholds,
+   then evaluate TEST. Report controls, paired uncertainty and utility together;
+   raw motion/models/scores remain local. Complete P25.4 only when that evidence
+   has passed review. Second-site and new-attack work follow afterward.
+
 
 Work through these gates sequentially. A second site, globally adaptive uniform
 raster, new attacks on sensitive visits and aggregation-heuristic changes are

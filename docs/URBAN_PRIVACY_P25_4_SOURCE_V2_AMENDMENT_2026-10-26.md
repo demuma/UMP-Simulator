@@ -1,10 +1,14 @@
 # P25.4 pre-TEST amendment: corrected source version v2
 
-Status: corrected source v2 and its implementation supplement are frozen before
-TEST. Fresh serial primary execution is running; TEST remains locked until
-complete TRAIN/CAL source/method/model gates pass. The existing
-[P25.3 primary design](verification/urban-privacy-p25-3-2026-10-25/primary-design.json)
-remains the reference for all unchanged scientific choices.
+Status: historical amendment frozen before TEST. The v2 main attempt is now
+closed incomplete: 71/72 sources are valid, with a new doorway-navigation failure
+in TEST. All 40 TRAIN/CAL method families and the pre-TEST model lock passed;
+the source gate prevented every TEST mechanism run. Read the
+[final outcome](URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md).
+The following sections preserve the prospective change and validation requirements;
+they are not a claim that the later main source gate passed. The existing
+[P25.3 design](verification/urban-privacy-p25-3-2026-10-25/primary-design.json)
+remains the reference for unchanged scientific choices.
 
 ## Reason and exposure
 

@@ -1,0 +1,13 @@
+{
+  "artifacts_sha256": {
+    "README.md": "351cdb55142bc8022bf94782e8d75bc549c74a4a617e506994abd06297566530",
+    "artifact-receipt.json": "c21f23373256ee190d8849b2458ac1639e03effa62418758d1b0066a13461123",
+    "engineering-audits.json": "075f604e7778d5e34b8ec84728c190d0e0833101b5e4e1aa11da8450048a3f53",
+    "report.md": "db1bed476b3e4e556880ea81b5f81c7677851aee01bd7bf5d0ce860729c317fc",
+    "source-outcomes.json": "b07300539a46f22f4ca92dbd12ceb4a304d5a1fd6a07b3d4eef9ae38034849bc",
+    "summary.json": "216917fc1f0896a82d845fd27b3ba6626aa3687027df784156ba8b2c7300a7c0"
+  },
+  "schema": "ump.urban-primary-public-bundle.v1",
+  "scope": "Allowlisted aggregate evidence only; no primary TEST estimates exist.",
+  "status": "negative_source_gate_preserved"
+}

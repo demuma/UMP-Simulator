@@ -5,19 +5,24 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
-**Urban privacy gate P25.4 — corrected source v2 running.** V1 remains a
-separate source-validity failure: 37/40 TRAIN/CAL captures pass and three crossing
-deadlocks are retained; no primary model or TEST was run. The production motion
-correction passes **48/48 known configurations, 8,119/8,119 episodes**, all 11 affected
-CTest groups and 177 Python methods. The unchanged aggregation executable is reused.
-Source v2 and its implementation supplement are now frozen before TEST; its
-24 TRAIN/16 CAL/32 TEST groups,216 role seeds, policy, methods and statistics are unchanged.
-The full source/paired mechanism/attack study is running serially. No completed
-urban privacy-benefit estimate is claimed yet. Read the
-[v2 amendment](docs/URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md),
-[source correction](docs/URBAN_PRIVACY_SOURCE_CROSSING_DRAIN_FIX_2026-10-26.md),
-[compact source/method validation](docs/verification/urban-privacy-p25-4-2026-10-26-v2/amendment-freeze.json)
-and [v1 negative outcome](docs/verification/urban-privacy-p25-4-2026-10-25/v1-source-gate/report.md).
+**Urban privacy gate P25.4 — implementation validated; held-out result unavailable.**
+Source v2 finished all 72 frozen attempts: 24/24 TRAIN, 16/16 CAL and 31/32 TEST
+captures are valid. One TEST recording exposes a new local-navigation deadlock
+at a shop entrance. The unchanged source gate stopped every TEST mechanism run;
+no TEST attack score, privacy-benefit estimate or TEST utility comparison exists.
+The 40 paired TRAIN/CAL families produced **720 audited native executions and 160
+regional streams**, with zero audited native publication-policy violations.
+All **22 model variants converged** and were locked before TEST generation.
+The affected checks pass **177 Python methods, 10 reporter methods and 11 native
+CTest groups**. This is engineering evidence; CAL diagnostics are not TEST results.
+
+Read the [final outcome and next steps](docs/URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md),
+[compact evidence (~55 kB)](docs/verification/urban-privacy-p25-4-2026-10-26-v2/final-outcome/README.md)
+and [test report](docs/URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).
+P25.4 remains open for held-out protection/utility evidence. No failed seed was
+replaced, no eligibility rule relaxed and no available-case AUC substituted.
+The earlier v1 source failure and [pre-TEST v2 amendment](docs/URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md)
+remain separate historical evidence. Raw movements, models and private scores stay local.
 Earlier blocks describe their historical checkpoints.
 
 **Urban privacy gate P25.3 — 2026-10-25.** Eight independent same-site DEV
@@ -29,13 +34,12 @@ were rejected and retained as negative evidence. The aggregation executable is
 unchanged. All eight motion preflights and all 11 affected final regression groups
 pass, including 33 new Python test methods.
 
-The primary **24 TRAIN / 16 CAL / 32 TEST** recording-group design is now frozen,
-including methods, local400 policy, knowledge/features, fitting/calibration and
-uncertainty rules. Those 72 additional recordings are **not generated**, and no
-urban attack has been fitted. The inspected pilot sources are DEV only. P25.4
-must complete and validate the main runner, exact-query coverage and rate intervals
-before generating or inspecting TEST. Raw movements stay local; the compact
-aggregate/design evidence package is about 225 KiB. See the
+At the P25.3 checkpoint, the primary **24 TRAIN / 16 CAL / 32 TEST** design was
+frozen before those sources or attacks existed, including methods, local400 policy,
+knowledge/features, fitting/calibration and uncertainty rules. The subsequent
+P25.4 execution and its failed source gate are recorded above. The inspected pilot
+sources remain DEV only. Raw movements stay local; P25.3's compact aggregate/design
+evidence package is about 225 KiB. See the
 [P25.3 protocol](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md),
 [test report and source table](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md),
 and [frozen primary design](docs/verification/urban-privacy-p25-3-2026-10-25/primary-design.json).

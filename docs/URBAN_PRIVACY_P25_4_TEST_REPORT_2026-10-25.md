@@ -1,13 +1,18 @@
 # P25.4 implementation validation and execution report
 
-Status: implementation gate passed; v1 source-validity gate failed before primary
-mechanisms/models/TEST; a separate source correction is under validation.
-No completed primary urban privacy result is claimed at this checkpoint.
-See the [protocol](URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md).
+Status: implementation validated; source-v2 main run closed incomplete before
+TEST mechanism evaluation. All 72 source slots were attempted, 71 valid. TRAIN/CAL
+sources and all 40 method families pass; all 22 model variants converge and lock
+before TEST. One TEST doorway-navigation deadlock fails the source gate, leaving
+all TEST risk/control/utility estimates unavailable. P25.4's held-out evidence
+requirement remains open. See the [final execution outcome](URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md)
+and [compact source/mechanism evidence](verification/urban-privacy-p25-4-2026-10-26-v2/final-outcome/README.md).
+The [protocol](URBAN_PRIVACY_P25_4_PROTOCOL_2026-10-25.md) remains unchanged;
+chronological implementation/source checkpoints follow below.
 
 ## Verified implementation
 
-The final affected Python suite passes **176/176 methods**, zero failures,
+The initial affected Python suite passed **176/176 methods**, zero failures,
 errors or skips, in 16.203 operational seconds. This includes 95 new P25.4 methods:
 statistics 14, exact/estimated occupancy queries 22, frozen analysis 18, primary
 source wrapper 17 and primary execution wrapper 24. The remaining methods cover
@@ -71,16 +76,47 @@ and [current-code DEV receipt](verification/urban-privacy-p25-4-2026-10-25/dev-i
 The public supplement omits the private local freeze-directory path; the original
 local supplement remains authoritative for runner authentication.
 
-## Primary execution and pending interpretation
+## Final source-v2 execution and interpretation
 
-The 24 TRAIN /16 CAL /32 TEST source slots and eleven methods remain unchanged.
-The first new TRAIN source passed full cohort, provenance, physical/access and
-clone/exclusion checks. The serial source batch and subsequent frozen phases are
-running. This section will be replaced by actual complete/failed counts and joint
-risk/utility findings after execution; no pilot result is extrapolated to TEST.
+- Source capture: **72/72 attempted, 71 valid**. TRAIN 24/24, CAL 16/16,
+  TEST 31/32. The final unchanged source verification reauthenticates these same
+  outcomes in 101.314 operational seconds.
+- Mechanisms: **40/40 TRAIN/CAL families verified**, **720 native executions**
+  and **160 derived regional streams** (880 method/world rows). All 720 native
+  independent audits record zero publication-policy violations. This is tested
+  operational policy compliance, not person-level k-anonymity or measured privacy.
+- Models: **22/22 variants converged**, 32–250 iterations; 48 TRAIN and 32 CAL
+  rows per method. The independent check reproduces TRAIN scaling/objectives and
+  every locked CAL threshold; each has at most 1/16 calibration false positives.
+  Model lock time is 2026-10-26T05:46:39Z, before any TEST generation.
+- TEST mechanisms: **0/32 attempted, zero predictions**. The frozen source gate
+  fails with 31/32 valid TEST captures. No retry, replacement or eligibility
+  relaxation occurs. Controls and risk/TEST utility are unavailable because the
+  source gate prevented evaluation; this is not a failed attack or evidence of
+  poor privacy.
+- Closure: unchanged reporting rechecks the 40 completed groups, original archive
+  bytes and model/implementation provenance in 68.905 operational seconds. The
+  strict projection retains all eleven methods and both representations with
+  TEST estimates unavailable. CAL diagnostics remain clearly labelled. No result
+  figures are generated. An independent final NA/hash/privacy-projection audit
+  passes; this is an honest incomplete scientific result.
 
-P25.4 remains open until the final group outcomes, archive/source authentication,
-control diagnostics, risk/utility estimates and compact public report are available.
+The first actual TRAIN group was also independently checked: 22 streams, 66
+archive round trips, 12,932 published cells recomputed from sampled source,
+111/31 features, paired controls, four exact regional compositions, and three
+query recomputations. The fixed workload remains 19,200 queries/world/method.
+This spot audit is engineering evidence on TRAIN, not a held-out estimate.
+
+The failed TEST source completes the full observation clock and physical audit
+but leaves 8 active and 8 pending episodes. Static analysis points to a narrow
+legal escape missed by finite local steering and the A* start connector near
+Adidas Originals. The wider-connector diagnostic is not an end-to-end fix proof.
+Details, next regression/source-validation steps and commands are in the
+[final outcome](URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md).
+
+P25.4 remains open for held-out joint protection/utility evidence. Preserve v1,
+v2, their source failures and frozen model lock. A subsequent corrected source
+needs bounded independent DEV validation and fresh unseen evaluation realizations.
 
 ## Source gate interruption — 2026-10-26
 
@@ -101,7 +137,7 @@ runner/self-bound files and old native source remain unchanged while v1 runs.
 Any corrected primary run needs a fresh source/execution freeze and implementation
 supplement; original v1 evidence is not overwritten or pooled into the new version.
 
-## Corrected source v2 frozen and executing — 2026-10-26
+## Historical checkpoint: corrected source v2 frozen — 2026-10-26
 
 The complete v1 batch is 37/40 valid (22 TRAIN, 15 CAL), with three invalid captures and
 32 unattempted TEST slots. Its source-only report is closed before primary mechanisms,
@@ -114,7 +150,7 @@ All 48 known motion configs pass, 8,119/8,119 episodes, including all three old 
 with independent physical/speed/displacement/cohort checks. A separate pre-TEST v2
 manifest is frozen at `e3b4296674c95d407baf6bc2d3def0564cb77eca37286fdbf9b92ff48c82d5c0`,
 with unchanged 72 groups, 216 role seeds, 17 exclusions, policy, methods, features and analysis.
-Fresh serial sources/mechanisms/models/TEST execution is running. No final held-out
+At this historical checkpoint serial sources/mechanisms/models/TEST execution began. No final held-out
 privacy estimate is claimed until the full outcomes and control gates are reviewed.
 See the [formal amendment](URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md),
 [48-case motion evidence](verification/urban-privacy-p25-4-2026-10-26-v2/motion-preflight.json)

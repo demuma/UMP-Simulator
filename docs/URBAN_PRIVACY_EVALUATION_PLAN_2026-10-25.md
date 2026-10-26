@@ -131,14 +131,21 @@ evidence only. A second site is a later transfer question after this gate.
 - [Causal visibility implementation](CAUSAL_PRIVACY_IMPLEMENTATION.md).
 - [Attribute and online contract](PRIVACY_ATTRIBUTE_AND_ONLINE_CONTRACT.md).
 
-**P25.4 is executing with an explicit corrected source version.** The v1
-source gate closed at 37/40 valid and three motion deadlocks, with no primary
-mechanisms/models/TEST. The production source correction passes 48 known configs/
-8,119 episodes, 11 affected CTest groups and 177 Python methods. Source v2 and its
-implementation supplement are frozen before TEST, preserving all 72 groups/216 role
-seeds, policy, methods, features and statistics. All 40 TRAIN/CAL sources are regenerated;
-actual model/CAL locks must pass before the original 32 TEST realizations.
-The inspected DEV sources remain excluded; v1/v2 are never pooled as independent
-evidence. Final empirical privacy/utility conclusions remain pending.
-See the [v2 amendment](URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md) and
+**P25.4 implementation is validated; the source-v2 main run is closed incomplete.**
+All 72 source slots were attempted once: TRAIN 24/24 and CAL 16/16 valid, TEST
+31/32 valid. All 40 TRAIN/CAL mechanism families and 22 model variants passed
+verification and were locked before TEST source generation. A new doorway
+local-navigation deadlock invalidated one TEST recording. The frozen source gate
+stopped all TEST mechanisms and predictions; attack/control/TEST utility estimates
+and the primary contrast remain unavailable. No seed replacement, available-case
+AUC or substitute TRAIN/CAL headline was used. The main held-out research gate
+remains open.
+
+The next prerequisite is a bounded doorway-navigation regression/correction and
+independently seeded DEV validation, followed by a fresh frozen evaluation cohort.
+This source failure is not evidence of a failed attack, poor privacy or adaptive
+inferiority. Keep all completed engineering evidence and both failed source
+versions without pooling. See the [final outcome](URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md),
+[compact source and mechanism outcomes](verification/urban-privacy-p25-4-2026-10-26-v2/final-outcome/README.md),
+[pre-TEST amendment](URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md) and
 [validation/execution report](URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).
