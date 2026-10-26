@@ -1,0 +1,18 @@
+{
+  "counts_AT_FREEZE_only": true,
+  "files_sha256": {
+    "audit.json": "be28e9c59ab936548930900bbc0463a6e916d3ac8de21b9378236405faa92a0d",
+    "design.json": "f380e9daf914e9800091a4342fd248c1fefa3216178803cc08c509b06cfa0589",
+    "freeze.json": "2fe83982456d8347ac6001c5a52e265c4fcb8599999dc3c8902b934997b80971",
+    "policy-local400.json": "12fae5fa7558f27b1706a1a299c37578fb5746f4880f771a605f6ee4bd6be2c9",
+    "validation.json": "1a683d0ce5a22c137f1813298bb794b4918b8dd4bdd6d9739bd594050a93f9c7"
+  },
+  "live_progress_not_exported": true,
+  "restart_document": {
+    "name": "URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md",
+    "sha256": "243a904b3b587aca4d39a1d6eb90208fcaae8f8f0df6604f0329b3b62d9dcb94"
+  },
+  "schema": "ump.urban-primary-source-v3-public-bundle.v1",
+  "scope": "allowlisted aggregate protocol/validation/audit evidence and static policy; no private case ledger or empirical results",
+  "status": "restart_freeze_validation_projection_results_pending"
+}

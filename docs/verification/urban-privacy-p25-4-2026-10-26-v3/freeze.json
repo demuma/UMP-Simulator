@@ -1,0 +1,32 @@
+{
+  "aggregation_binary_sha256": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+  "counts_AT_FREEZE_before_primary_execution": {
+    "primary_TEST_score_rows": 0,
+    "primary_source_recordings": 0,
+    "recorded_source_model_fits": 0
+  },
+  "current_source_or_model_progress": "not_reported_by_this_freeze_snapshot",
+  "design_sha256": "fec44a73a6066f7d8b1b79a15746a89fef14bd6f2bc9c2d50f36cf4d548c73b2",
+  "execution_protocol_sha256": "d12946f3386385a8546c3fc3a67b1298733f36c56b87f53ec6a8d4bec259bce0",
+  "execution_state_at_publication": "serial_primary_driver_running_new_TRAIN_CAL_source_phase",
+  "group_counts": {
+    "calibration": 16,
+    "test": 32,
+    "train": 24
+  },
+  "implementation_supplement_sha256": "fee2dcc6e7307e357a1685d003f8553afda180ec0cb288311c69043719ad1712",
+  "manifest_sha256": "81e59a558acae956e8b38a9c1d58e18ef274d010e699659d56fd18ebf4d19567",
+  "master_seed": 202610263,
+  "new_risk_utility_results": "pending_not_exported",
+  "planned_recording_groups": 72,
+  "policy_sha256": "12fae5fa7558f27b1706a1a299c37578fb5746f4880f771a605f6ee4bd6be2c9",
+  "primary_source_protocol_sha256": "6f9aa8d3765eba0e58d8e42b821140d2256c7e22b462e28dbb8a4a33eda7971f",
+  "role_seed_count": 216,
+  "schema": "ump.urban-primary-source-v3-public-freeze.v1",
+  "source_binary_sha256": "f40ab79691ab14c5dcd9a22ef7ff3d66dbd0d2d3d4e35567cd0062de45297a0f",
+  "source_binding_protocol_sha256": "e74ba48d6dc739bb25b03f8fec0491d60b484cb0ad3175f42dca5d4a26b3287d",
+  "standard_freeze_receipt_sha256": "fc7939f6fabf3b0a488ba6e583407449968c60a7924ecedda6c35bde2cd2a935",
+  "status": "manifest_and_pre_TEST_supplement_verified",
+  "study_id": "urban-primary-20261026-v3",
+  "targets_per_recording": 1
+}

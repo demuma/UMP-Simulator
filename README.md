@@ -13,15 +13,16 @@ connector/search work bounds pass. All twelve affected CTest groups pass; the
 actual Simulator/MongoDB/replay capture also verifies all 169 episodes.
 Read the [source correction and test report](docs/URBAN_PRIVACY_DOORWAY_START_ATTACHMENT_FIX_2026-10-26.md).
 
-A fresh `urban-primary-20261026-v3` study is being prepared with new 24 TRAIN /
-16 CAL /32 TEST recordings and unchanged policies, methods and analysis. Fresh
-unit validation passes 177 methods; all 22 new DEV recipient streams and their
-archive/public-policy/feature/utility reconstruction pass. The source binding is
-prepared for independent review before the new primary manifest is frozen. The earlier TEST configurations are exposed DEV regressions now;
-their old outcomes and fits remain historical, and no new primary TEST has been
-generated. Source validation is not a measured privacy gain.
+The fresh **`urban-primary-20261026-v3` study is frozen and running** with new
+24 TRAIN /16 CAL /32 TEST recordings and unchanged policies, methods and analysis.
+All 177 analysis tests and 22 new DEV recipient streams pass full reconstruction.
+The independent manifest/source review and unchanged freeze verifier pass.
+New TRAIN/CAL sources run first; the new model/CAL lock precedes new TEST generation,
+and complete source-quality gates precede each native phase. Risk/utility results
+are pending. Read the [restart protocol and compact frozen evidence](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md).
+Earlier TEST motion is exposed DEV now; old outcomes and fits remain historical.
 
-**Urban privacy gate P25.4 — implementation validated; held-out result unavailable.**
+**Closed P25.4 source-v2 — held-out result unavailable.**
 Source v2 finished all 72 frozen attempts: 24/24 TRAIN, 16/16 CAL and 31/32 TEST
 captures are valid. One TEST recording exposes a new local-navigation deadlock
 at a shop entrance. The unchanged source gate stopped every TEST mechanism run;

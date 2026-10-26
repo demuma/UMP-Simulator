@@ -96,7 +96,8 @@ The [bounded doorway attachment correction](URBAN_PRIVACY_DOORWAY_START_ATTACHME
 subsequently passes 92/92 DEV cases (including twelve fresh seeds) and the full
 production capture of the diagnosed configuration. Those are development results
 under a new source implementation; they do not change this closed run's source
-gate or create TEST privacy estimates. A fresh primary study is being prepared.
+gate or create TEST privacy estimates. The [fresh primary restart](URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md)
+is separately frozen and running.
 The commands recorded above ran with the matching archived source-v2 code/binary
 environment. Current corrected files intentionally fail the old frozen-current-
 file guards; use the matching archived environment to reproduce those checks.

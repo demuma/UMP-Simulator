@@ -1,0 +1,47 @@
+{
+  "all216_role_seeds_fresh": true,
+  "all_seven_scientific_blocks_unchanged": true,
+  "cross_version_pooling": false,
+  "exclusion_metadata": {
+    "authenticated_recording_exclusion_rows": 121,
+    "interpretation": "metadata rows are not counts of independent privacy samples; config-only DEV reservations assert no captured observations",
+    "seed_route_reservation_rows": 971,
+    "unique_reserved_seed_values": 879
+  },
+  "historical_exposure": {
+    "all_former_primary_TEST_motion_is_DEV": true,
+    "closed_source_v2_TEST_mechanism_groups": 0,
+    "closed_source_v2_TEST_score_rows": 0,
+    "closed_source_v2_TRAIN_CAL_groups_completed": 40,
+    "closed_source_v2_attempted": 72,
+    "closed_source_v2_fitted_variants": 22,
+    "closed_source_v2_invalid": 1,
+    "closed_source_v2_verified": 71,
+    "v1_and_v2_negative_outcomes_retained": true
+  },
+  "historical_feature_row_reuse": false,
+  "historical_model_or_threshold_reuse": false,
+  "implementation_supplement_code_files": 10,
+  "new_group_namespace": true,
+  "preparation_receipt_sha256": "28df831faaee526fd5a5b9106001a50bde737b44874849d477a66fff0dfb9c3e",
+  "public_projection_excludes": [
+    "source/candidate identities",
+    "per-case seeds and seed ledgers",
+    "private paths",
+    "raw movement",
+    "feature rows",
+    "weights and scores"
+  ],
+  "schema": "ump.urban-primary-source-v3-public-audit.v1",
+  "scope": "aggregate restart, compatibility and materialization metadata only",
+  "source_binding_dependency_hashes": 287,
+  "standard_layout_materializer": {
+    "configuration_only_reservations_kept_separate": true,
+    "monkeypatch_used": false,
+    "reason": "convenience constructor assumes captured-data exclusion rows; reviewed adapter retained truthful seed/route-only reservations in the standard artifact layout",
+    "recording_authentication_checks_preserved": true,
+    "source_or_completeness_rules_relaxed": false,
+    "used_unchanged_build_manifest": true,
+    "used_unchanged_verify_freeze": true
+  }
+}

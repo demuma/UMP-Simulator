@@ -28,15 +28,19 @@ Research questions describe the dissertation; this is the implementation queue.
   The later P25.4 execution is recorded below; no privacy gain is claimed.
   [Protocol](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md) and
   [test report](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md).
-- [ ] P25.4: **implementation validated; held-out privacy/utility evidence remains
-  unavailable after the source-v2 gate failed.** All 72 source slots received one
-  attempt: TRAIN 24/24, CAL 16/16, TEST 31/32 valid. A doorway-navigation deadlock
-  invalidates one TEST source. No TEST native execution, prediction, empirical
-  figure, replacement seed or available-case AUC was produced. Preserve v1 and
-  v2 separately. [Final outcome](docs/URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md)
-  and [compact evidence](docs/verification/urban-privacy-p25-4-2026-10-26-v2/final-outcome/README.md).
+- [ ] P25.4: **fresh source-v3 study frozen and running; held-out results pending.**
+  Source correction, 92-case DEV, current 177-method validation and 22-stream
+  recipient integration pass. The new independent 24 TRAIN /16 CAL /32 TEST
+  design uses new groups/role seeds with unchanged scientific choices. Complete
+  new sources, paired methods, new TRAIN/CAL fits and locked thresholds, then
+  untouched TEST and joint risk/utility/control reporting. No old data/model reuse.
+  [Frozen restart](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md).
+  The earlier [source-v2 failure](docs/URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md)
+  remains closed at 71/72 sources with zero TEST mechanism runs and unavailable
+  TEST estimates; preserve it separately.
 
-Completed within P25.4: 177 affected Python tests, 10 reporter tests and 11 affected
+
+Closed source-v2 engineering checkpoint: 177 affected Python tests, 10 reporter tests and 11 affected
 native groups; all 40 TRAIN/CAL paired method families verified (720 native and
 160 derived regional streams), zero audited native publication-policy violations;
 22/22 fits converged and CAL thresholds independently verified before TEST.
@@ -58,16 +62,18 @@ Next, in order:
    and raw-log/provenance verification pass. The production capture of the diagnosed
    case also verifies 169/169 observed episodes through MongoDB and replay export.
    [Correction report](docs/URBAN_PRIVACY_DOORWAY_START_ATTACHMENT_FIX_2026-10-26.md).
-4. [ ] Restart P25.4 with a fresh frozen study and genuinely unseen evaluation
-   realizations. The accepted draft `urban-primary-20261026-v3` uses 72 new groups
-   and 216 role seeds, disjoint from historical/reserved sources. Scientific
-   policies, eleven methods and all analysis rules stay unchanged. Fresh 177-method
-   validation and all 22 current-code DEV streams pass, including archive/public/
-   policy/feature/utility reconstruction. The source binding is prepared for
-   independent review. After reviewed source/implementation binding, fit only NEW TRAIN groups, lock CAL,
-   then generate/evaluate NEW TEST. Publish paired risk/uncertainty and utility
-   together, including controls and every incomplete/negative outcome. Complete
-   P25.4 only after that evidence is reviewed; second-site work follows afterward.
+4. [x] Freeze a fresh study after independent review and unchanged verifier:
+   `urban-primary-20261026-v3`, 72 new groups and 216 role seeds, disjoint from
+   historical/reserved sources. All seven scientific blocks remain unchanged.
+   Fresh 177-method validation and all 22 current-code DEV streams pass, including
+   archive/public/policy/feature/utility reconstruction. New source/execution and
+   implementation-supplement bindings are frozen before any new TEST data.
+5. [ ] Complete the running serial source/paired-method/TRAIN-CAL/model-lock/TEST
+   gates. Report every negative, missing or incomplete outcome; review controls
+   and paired uncertainty beside world-specific utility. Publish compact actual
+   results and figures, update this queue, and complete P25.4 only after the
+   held-out evidence is independently checked. Second-site work follows afterward.
+
 
 The closed finite-cohort completion rule remains unchanged. A future streaming
 right-censoring study needs its own protected unit and behavioral-quality gate;

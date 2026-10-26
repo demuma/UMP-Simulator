@@ -158,3 +158,11 @@ archive/public/policy/feature/utility reconstruction passes. The accepted fresh
 exposed sources; it has not generated new primary TEST data. The next gate is
 reviewed fresh source/implementation binding, new TRAIN/CAL fits and locked
 thresholds, followed by untouched TEST. The older incomplete result stays intact.
+
+The [fresh source-v3 restart](URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md)
+is now frozen and executing after independent source/manifest review, unchanged
+freeze verification and all fresh validation gates. New TRAIN/CAL sources run
+first, followed by new model/CAL locks, then new TEST sources and complete source
+gates before evaluation. Scientific choices stay fixed; actual risk/utility
+results remain pending. The earlier source-v2 result remains closed historical
+evidence, rather than a current claim that the corrected source is still blocked.

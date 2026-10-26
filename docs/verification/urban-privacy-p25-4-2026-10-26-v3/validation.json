@@ -1,0 +1,51 @@
+{
+  "affected_native_regression": {
+    "full_repository_rerun_claim": false,
+    "passed_groups": 12,
+    "receipt_sha256": "cea7688e0752233b3d7bbbdc9eccd3bec36b867f9890f2cb8630e8f81eabef14"
+  },
+  "analysis_units": {
+    "errors": 0,
+    "failures": 0,
+    "receipt_sha256": "5931b87b891f8270a6e6e34ddcddd10034e127fd9e930fcf1899e1c3ed26c942",
+    "scope": "maintained unit suite; any fitted toy matrices are synthetic unit fixtures, not recorded-source primary fits",
+    "skipped": 0,
+    "tests": 177
+  },
+  "fresh_recipient_DEV": {
+    "archives_reauthenticated": 66,
+    "derived_cases": 4,
+    "methods": 11,
+    "native_cases": 18,
+    "queries_per_world": 19200,
+    "raw_policy_audits_recomputed": true,
+    "receipt_sha256": "f84c3336430b8e910147f202dc2084e16b0aa46b345433101276149ddfface3e",
+    "recipient_streams": 22,
+    "recorded_source_classifier_fitted": false,
+    "regional_transcripts_recomposed": true
+  },
+  "motion_DEV": {
+    "cohorts": {
+      "fresh_DEV_configurations": 12,
+      "historical_closed_primary_configurations": 72,
+      "original_DEV_configurations": 8
+    },
+    "completed_episodes": 15590,
+    "independent_case_receipts_authenticated": 92,
+    "planned_cases": 92,
+    "raw_logs_reparsed": true,
+    "scheduled_episodes": 15590,
+    "scope": "finite physical/lifecycle/bounded-attachment validation; no general liveness or privacy guarantee",
+    "summary_sha256": "b1c8b98e8cd03be1401d7c14beb1a32573536bd73a1972bc3d17fbe978d51c66",
+    "verification_sha256": "daaced25f8b7bb82c96e91ee31dee859c7d831d573ab309cdd0b0249db6c0a88",
+    "verified_cases": 92
+  },
+  "production_DEV": {
+    "completed_observed_episodes": 169,
+    "full_capture_and_source_access_verified": true,
+    "recording_receipt_sha256": "f111400c07c34262761da5586f87eb42b7a8764c5830e1f3f25274b715ab55ad",
+    "scheduled_episodes": 169
+  },
+  "schema": "ump.urban-primary-source-v3-public-validation.v1",
+  "status": "verified_before_primary_execution"
+}

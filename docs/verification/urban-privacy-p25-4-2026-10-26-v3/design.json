@@ -1,0 +1,204 @@
+{
+  "all_seven_equal_to_closed_source_v2": true,
+  "assessment": {
+    "CAL_FPR_step": 0.0625,
+    "CAL_OUT_units": 16,
+    "TEST_FPR_step": 0.03125,
+    "TEST_OUT_units": 32,
+    "all_predeclared_methods_reported": true,
+    "availability": "final_snapshot_at_horizon",
+    "confidence_level": 0.95,
+    "fixed_queries": {
+      "category": "root/all road users",
+      "clock": "half-open intervals; t=0 initialization excluded",
+      "exact_coverage_separate_from_estimated_MAE": true,
+      "grid_side_m": 10,
+      "queries_per_world": 19200,
+      "window_ms": 1000
+    },
+    "logical_seals_are_retrospective_metadata": true,
+    "online_delivery_claim": false,
+    "primary_contrast": "AUC(adaptive_semantic_first) - AUC(regional_static20)",
+    "rate_intervals": "two-sided exact Clopper-Pearson with integer counts",
+    "secondary_comparators": [
+      "fixed20_400ms",
+      "regional_static10"
+    ],
+    "source_group_paired_bootstrap_replicates": 1000,
+    "uncertainty_scope": "conditional on fitted models and locked CAL thresholds; no population FPR or statistical-power guarantee",
+    "unknown_output_is_zero": false,
+    "utility_reference": "world-specific sampled source population"
+  },
+  "attacker": {
+    "CAL_rule": "score >= threshold; maximize CAL TPR under empirical FPR <=0.1; ties lower FPR, then higher threshold",
+    "L2": 0.1,
+    "ablation_scope": "joint scalar representation drops semantic AND availability coordinates; no semantic-only isolation",
+    "controls": [
+      "prior-only",
+      "auxiliary-only",
+      "no-output",
+      "unprotected exact auxiliary-point matching outside protected family"
+    ],
+    "max_iterations": 500,
+    "model": "deterministic L2 logistic regression",
+    "nonconvergence": "model-dependent result NA; no retuning",
+    "primary_composition": "31 scalar +6 semantic summary +72 taxonomy +2 availability",
+    "primary_dimensions": 111,
+    "scaling_and_fit": "TRAIN only; no hyperparameter search",
+    "score_direction_or_baseline_selection_from_TEST": false,
+    "secondary_dimensions": 31,
+    "tolerance": 1e-08
+  },
+  "budgets": {
+    "capture_wall_s": 420,
+    "native_case_wall_s": 180,
+    "planned_derived_streams": 288,
+    "planned_native_cases": 1296,
+    "planned_recipient_streams": 1584,
+    "scope": "finite operational caps, not measured runtime predictions",
+    "source_audit_wall_s": 420
+  },
+  "execution_gates": [
+    "all40 new TRAIN/CAL sources valid before complete paired family and fresh22 fits/CAL locks",
+    "new supplement and actual new TRAIN/CAL model lock before any new TEST generation",
+    "all32 new TEST sources valid before any TEST mechanism or prediction",
+    "no retries/replacement seeds/available-case TEST estimates; preserve incomplete outcomes"
+  ],
+  "master_seed": 202610263,
+  "membership": {
+    "OUT_rule": "remove only that episode observations from frozen IN; preserve background, clock and measured-empty batches",
+    "auxiliary_acquisition": "exact seeded retrospective full-episode sample; same bytes in IN and OUT",
+    "auxiliary_count": "ceil(n/4), at least one",
+    "auxiliary_fields": [
+      "observed_at_ms",
+      "x",
+      "y",
+      "cell_id"
+    ],
+    "auxiliary_fraction": 0.25,
+    "person_identity_or_all_person_episodes_claim": false,
+    "prior_IN": 0.5,
+    "protected_unit": "one complete visible observation episode contribution"
+  },
+  "methods": [
+    {
+      "grid_side_m": 10,
+      "id": "fixed10_400ms",
+      "kind": "native_fixed",
+      "selection": "all_predeclared_reported",
+      "window_ms": 400
+    },
+    {
+      "grid_side_m": 10,
+      "id": "fixed10_1000ms",
+      "kind": "native_fixed",
+      "selection": "all_predeclared_reported",
+      "window_ms": 1000
+    },
+    {
+      "grid_side_m": 10,
+      "id": "fixed10_2000ms",
+      "kind": "native_fixed",
+      "selection": "all_predeclared_reported",
+      "window_ms": 2000
+    },
+    {
+      "grid_side_m": 10,
+      "id": "fixed10_4000ms",
+      "kind": "native_fixed",
+      "selection": "all_predeclared_reported",
+      "window_ms": 4000
+    },
+    {
+      "grid_side_m": 20,
+      "id": "fixed20_400ms",
+      "kind": "native_fixed",
+      "selection": "all_predeclared_reported",
+      "window_ms": 400
+    },
+    {
+      "grid_side_m": 20,
+      "id": "fixed20_1000ms",
+      "kind": "native_fixed",
+      "selection": "all_predeclared_reported",
+      "window_ms": 1000
+    },
+    {
+      "grid_side_m": 20,
+      "id": "fixed20_2000ms",
+      "kind": "native_fixed",
+      "selection": "all_predeclared_reported",
+      "window_ms": 2000
+    },
+    {
+      "grid_side_m": 20,
+      "id": "fixed20_4000ms",
+      "kind": "native_fixed",
+      "selection": "all_predeclared_reported",
+      "window_ms": 4000
+    },
+    {
+      "components": [
+        "fixed10_400ms",
+        "fixed10_1000ms",
+        "fixed10_2000ms",
+        "fixed10_4000ms"
+      ],
+      "grid_side_m": 10,
+      "id": "regional_static10",
+      "kind": "regional_static",
+      "selection": "public_policy_only"
+    },
+    {
+      "components": [
+        "fixed20_400ms",
+        "fixed20_1000ms",
+        "fixed20_2000ms",
+        "fixed20_4000ms"
+      ],
+      "grid_side_m": 20,
+      "id": "regional_static20",
+      "kind": "regional_static",
+      "selection": "public_policy_only"
+    },
+    {
+      "id": "adaptive_semantic_first",
+      "kind": "native_adaptive",
+      "release_trigger": "policy_satisfied",
+      "secondary_strategy": "temporal_first",
+      "strategy": "semantic_first"
+    }
+  ],
+  "policy": {
+    "artifact": "policy-local400.json",
+    "condition": "local400",
+    "identical_hard_requirements_across_methods_and_worlds": true,
+    "sha256": "12fae5fa7558f27b1706a1a299c37578fb5746f4880f771a605f6ee4bd6be2c9",
+    "suppression": "OFF"
+  },
+  "recording_design": {
+    "GT_period_ms": 50,
+    "group_counts": {
+      "calibration": 16,
+      "test": 32,
+      "train": 24
+    },
+    "horizon_ms": 300000,
+    "independence_unit": "recording; all targets, IN/OUT worlds, methods, policy variants and excerpts remain grouped",
+    "modeled_people": 128,
+    "one_complete_episode_per_recording": true,
+    "role_seeds_unique_and_fresh": 216,
+    "sensor_period_ms": 100
+  },
+  "schema": "ump.urban-primary-source-v3-public-design.v1",
+  "study_id": "urban-primary-20261026-v3",
+  "unchanged_scientific_blocks": [
+    "group_counts",
+    "targets_per_recording",
+    "conditions",
+    "methods",
+    "attack_protocol",
+    "analysis_protocol",
+    "resource_limits"
+  ]
+}
