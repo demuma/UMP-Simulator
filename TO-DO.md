@@ -28,18 +28,17 @@ Research questions describe the dissertation; this is the implementation queue.
   The later P25.4 execution is recorded below; no privacy gain is claimed.
   [Protocol](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md) and
   [test report](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md).
-- [ ] P25.4: **held-out protection/utility evidence remains pending.** The strict
-  source-v3 complete-episode study remains closed at 39/40 TRAIN/CAL sources,
-  with no original primary mechanisms, fitted models or TEST generation. The
-  separate observed-window evaluation has 40 verified paired families and 22
-  pre-TEST locked attack variants. Its 32 original TEST captures completed but
-  failed original qualification in a reporting diagnostic. A documented
-  diagnostic-only amendment now qualifies all 72 original inputs without
-  resimulation, quality filtering, replacement or refitting. Execute and audit
-  actual TEST methods/scores next; report controls, grouped uncertainty and
-  world-specific utility beside movement quality. No measured privacy benefit
-  is claimed yet. [Contract](docs/PRIVACY_TRACK_WINDOW_CONTRACT_2026-10-26.md) and
-  [technical amendment](docs/URBAN_PRIVACY_TRACK_WINDOW_DIAGNOSTIC_REPAIR_2026-10-26.md).
+- [x] P25.4: **the declared observed-track-window evaluation is complete.** All
+  72 same-role sources and method groups verify; 22 pre-TEST locked variants
+  are assessed on all 32 TEST pairs without refitting. Zero audited native
+  publication-policy violations; controls pass. Adaptive retention and logical
+  delay improve over regional static20, but the primary AUC difference interval
+  crosses zero: no additional privacy benefit or equivalence is established.
+  TEST FPR exceeds the empirical CAL cap, and exact-query coverage is sparse.
+  Original strict-study and diagnostic failures remain preserved. Read the
+  [results/figures](docs/verification/urban-track-window-2026-10-26-v1/final-outcome/README.md)
+  and [execution/test report](docs/URBAN_PRIVACY_TRACK_WINDOW_EXECUTION_TEST_REPORT_2026-10-26.md).
+
 
 
 
@@ -98,10 +97,22 @@ Next, in order:
    physical audits) and the pre-TEST readiness gate. No source replacement,
    refit, recalibration or quality-based enrollment filter.
    [Technical amendment](docs/URBAN_PRIVACY_TRACK_WINDOW_DIAGNOSTIC_REPAIR_2026-10-26.md).
-10. [ ] Execute the original TEST method families and fixed-model assessment;
-   independently verify controls, paired-source uncertainty, policy accounting
-   and each world's utility. Preserve unavailable/nonconverged cases. Publish
-   compact evidence/figures and close P25.4 only after actual-result review.
+10. [x] Execute and authenticate all original TEST method families: 32 groups,
+   576 native cases, 128 regional streams and 704 new rows. Final raw/archive
+   validation passes; independent numerical checks (9244), public projection
+   checks (1147), provenance and actual figure QA pass. Publish the full mixed
+   outcome, including inconclusive primary contrast and calibration/query limits.
+   [Execution/test report](docs/URBAN_PRIVACY_TRACK_WINDOW_EXECUTION_TEST_REPORT_2026-10-26.md).
+
+Next scientific gates, to define before further mechanism changes:
+
+- [ ] Diagnose operating-threshold calibration stability on DEV and predeclare
+  larger/repeated calibration studies. Preserve this completed TEST outcome.
+- [ ] Select a traffic-query objective with coverage, freshness and error;
+  quantify the current sparse exact-query coverage before changing selection.
+- [ ] Predeclare new source/site and complementary attack studies for broader
+  privacy claims. Do not treat source realism or current support checks as proof.
+
 
 The original finite-cohort completion rule remains unchanged for its historical
 study. The new windowed evaluation does not assert realistic motion or repair

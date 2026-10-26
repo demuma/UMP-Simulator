@@ -1,0 +1,5336 @@
+{
+  "analysis_status": "complete",
+  "controls": {
+    "auxiliary_only": {
+      "calibration": {
+        "metrics": {
+          "advantage": 0.0,
+          "balanced_accuracy": 0.5,
+          "evaluation_prior": 0.5,
+          "false_negative": 16,
+          "false_positive": 0,
+          "fpr": 0.0,
+          "fpr_interval": null,
+          "negative_cases": 16,
+          "positive_cases": 16,
+          "precision_at_evaluation_prior": null,
+          "roc_auc": 0.5,
+          "threshold": 0.5000000000000001,
+          "tpr": 0.0,
+          "tpr_interval": null,
+          "true_negative": 16,
+          "true_positive": 0
+        },
+        "negative_case_fpr_resolution": 0.0625,
+        "target_fpr": 0.1,
+        "threshold": 0.5000000000000001
+      },
+      "complete_test_groups": 32,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": {
+        "converged": true,
+        "feature_count": 8,
+        "iterations": 1,
+        "training_objective": 0.6931471805599453,
+        "training_rows": 48
+      },
+      "metrics": {
+        "advantage": 0.0,
+        "balanced_accuracy": 0.5,
+        "evaluation_prior": 0.5,
+        "false_negative": 32,
+        "false_positive": 0,
+        "fpr": 0.0,
+        "fpr_interval": {
+          "confidence_level": 0.95,
+          "estimate": 0.0,
+          "lower": 0.0,
+          "method": "two_sided_exact_clopper_pearson",
+          "successes": 0,
+          "trials": 32,
+          "upper": 0.10888116067935288
+        },
+        "negative_cases": 32,
+        "positive_cases": 32,
+        "precision_at_evaluation_prior": null,
+        "roc_auc": 0.5,
+        "threshold": 0.5000000000000001,
+        "tpr": 0.0,
+        "tpr_interval": {
+          "confidence_level": 0.95,
+          "estimate": 0.0,
+          "lower": 0.0,
+          "method": "two_sided_exact_clopper_pearson",
+          "successes": 0,
+          "trials": 32,
+          "upper": 0.10888116067935288
+        },
+        "true_negative": 32,
+        "true_positive": 0
+      },
+      "observed_test_rows": 64,
+      "status": "evaluated"
+    },
+    "no_output": {
+      "calibration": {
+        "metrics": {
+          "advantage": 0.0,
+          "balanced_accuracy": 0.5,
+          "evaluation_prior": 0.5,
+          "false_negative": 16,
+          "false_positive": 0,
+          "fpr": 0.0,
+          "fpr_interval": null,
+          "negative_cases": 16,
+          "positive_cases": 16,
+          "precision_at_evaluation_prior": null,
+          "roc_auc": 0.5,
+          "threshold": 0.5000000000000001,
+          "tpr": 0.0,
+          "tpr_interval": null,
+          "true_negative": 16,
+          "true_positive": 0
+        },
+        "negative_case_fpr_resolution": 0.0625,
+        "target_fpr": 0.1,
+        "threshold": 0.5000000000000001
+      },
+      "complete_test_groups": 32,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": {
+        "converged": true,
+        "feature_count": 111,
+        "iterations": 1,
+        "training_objective": 0.6931471805599453,
+        "training_rows": 48
+      },
+      "metrics": {
+        "advantage": 0.0,
+        "balanced_accuracy": 0.5,
+        "evaluation_prior": 0.5,
+        "false_negative": 32,
+        "false_positive": 0,
+        "fpr": 0.0,
+        "fpr_interval": {
+          "confidence_level": 0.95,
+          "estimate": 0.0,
+          "lower": 0.0,
+          "method": "two_sided_exact_clopper_pearson",
+          "successes": 0,
+          "trials": 32,
+          "upper": 0.10888116067935288
+        },
+        "negative_cases": 32,
+        "positive_cases": 32,
+        "precision_at_evaluation_prior": null,
+        "roc_auc": 0.5,
+        "threshold": 0.5000000000000001,
+        "tpr": 0.0,
+        "tpr_interval": {
+          "confidence_level": 0.95,
+          "estimate": 0.0,
+          "lower": 0.0,
+          "method": "two_sided_exact_clopper_pearson",
+          "successes": 0,
+          "trials": 32,
+          "upper": 0.10888116067935288
+        },
+        "true_negative": 32,
+        "true_positive": 0
+      },
+      "observed_test_rows": 64,
+      "status": "evaluated"
+    },
+    "prior_only": {
+      "calibration": {
+        "metrics": {
+          "advantage": 0.0,
+          "balanced_accuracy": 0.5,
+          "evaluation_prior": 0.5,
+          "false_negative": 16,
+          "false_positive": 0,
+          "fpr": 0.0,
+          "fpr_interval": null,
+          "negative_cases": 16,
+          "positive_cases": 16,
+          "precision_at_evaluation_prior": null,
+          "roc_auc": 0.5,
+          "threshold": 0.5000000000000001,
+          "tpr": 0.0,
+          "tpr_interval": null,
+          "true_negative": 16,
+          "true_positive": 0
+        },
+        "negative_case_fpr_resolution": 0.0625,
+        "target_fpr": 0.1,
+        "threshold": 0.5000000000000001
+      },
+      "complete_test_groups": 32,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": null,
+      "metrics": {
+        "advantage": 0.0,
+        "balanced_accuracy": 0.5,
+        "evaluation_prior": 0.5,
+        "false_negative": 32,
+        "false_positive": 0,
+        "fpr": 0.0,
+        "fpr_interval": {
+          "confidence_level": 0.95,
+          "estimate": 0.0,
+          "lower": 0.0,
+          "method": "two_sided_exact_clopper_pearson",
+          "successes": 0,
+          "trials": 32,
+          "upper": 0.10888116067935288
+        },
+        "negative_cases": 32,
+        "positive_cases": 32,
+        "precision_at_evaluation_prior": null,
+        "roc_auc": 0.5,
+        "threshold": 0.5000000000000001,
+        "tpr": 0.0,
+        "tpr_interval": {
+          "confidence_level": 0.95,
+          "estimate": 0.0,
+          "lower": 0.0,
+          "method": "two_sided_exact_clopper_pearson",
+          "successes": 0,
+          "trials": 32,
+          "upper": 0.10888116067935288
+        },
+        "true_negative": 32,
+        "true_positive": 0
+      },
+      "observed_test_rows": 64,
+      "status": "evaluated"
+    },
+    "unprotected": {
+      "calibration": {
+        "metrics": {
+          "advantage": 1.0,
+          "balanced_accuracy": 1.0,
+          "evaluation_prior": 0.5,
+          "false_negative": 0,
+          "false_positive": 0,
+          "fpr": 0.0,
+          "fpr_interval": null,
+          "negative_cases": 16,
+          "positive_cases": 16,
+          "precision_at_evaluation_prior": 1.0,
+          "roc_auc": 1.0,
+          "threshold": 1.0,
+          "tpr": 1.0,
+          "tpr_interval": null,
+          "true_negative": 16,
+          "true_positive": 16
+        },
+        "negative_case_fpr_resolution": 0.0625,
+        "target_fpr": 0.1,
+        "threshold": 1.0
+      },
+      "complete_test_groups": 32,
+      "expected_independent_test_groups": 32,
+      "fit_diagnostics": null,
+      "metrics": {
+        "advantage": 1.0,
+        "balanced_accuracy": 1.0,
+        "evaluation_prior": 0.5,
+        "false_negative": 0,
+        "false_positive": 0,
+        "fpr": 0.0,
+        "fpr_interval": {
+          "confidence_level": 0.95,
+          "estimate": 0.0,
+          "lower": 0.0,
+          "method": "two_sided_exact_clopper_pearson",
+          "successes": 0,
+          "trials": 32,
+          "upper": 0.10888116067935288
+        },
+        "negative_cases": 32,
+        "positive_cases": 32,
+        "precision_at_evaluation_prior": 1.0,
+        "roc_auc": 1.0,
+        "threshold": 1.0,
+        "tpr": 1.0,
+        "tpr_interval": {
+          "confidence_level": 0.95,
+          "estimate": 1.0,
+          "lower": 0.8911188393206472,
+          "method": "two_sided_exact_clopper_pearson",
+          "successes": 32,
+          "trials": 32,
+          "upper": 1.0
+        },
+        "true_negative": 32,
+        "true_positive": 32
+      },
+      "observed_test_rows": 64,
+      "status": "evaluated"
+    }
+  },
+  "horizon_ms": 300000,
+  "interpretation_gate": "controls_pass",
+  "methods": [
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.587890625,
+              "threshold": 0.5361445093799552,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5361445093799552
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 42,
+            "training_objective": 0.6730578385310884,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.21875,
+            "balanced_accuracy": 0.609375,
+            "evaluation_prior": 0.5,
+            "false_negative": 22,
+            "false_positive": 3,
+            "fpr": 0.09375,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.09375,
+              "lower": 0.019767180173284896,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 3,
+              "trials": 32,
+              "upper": 0.25022695068379464
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.7692307692307693,
+            "roc_auc": 0.66357421875,
+            "threshold": 0.5361445093799552,
+            "tpr": 0.3125,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.3125,
+              "lower": 0.16118472408820084,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 10,
+              "trials": 32,
+              "upper": 0.5000775816321692
+            },
+            "true_negative": 29,
+            "true_positive": 10
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.544921875,
+              "threshold": 0.6266535326586692,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6266535326586692
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 99,
+            "training_objective": 0.6517385934336557,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.125,
+            "balanced_accuracy": 0.5625,
+            "evaluation_prior": 0.5,
+            "false_negative": 26,
+            "false_positive": 2,
+            "fpr": 0.0625,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.0625,
+              "lower": 0.0076607363464564066,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 2,
+              "trials": 32,
+              "upper": 0.20806942989500732
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.75,
+            "roc_auc": 0.67236328125,
+            "threshold": 0.6266535326586692,
+            "tpr": 0.1875,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.1875,
+              "lower": 0.0720761654584979,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 6,
+              "trials": 32,
+              "upper": 0.3643923098640893
+            },
+            "true_negative": 30,
+            "true_positive": 6
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        }
+      },
+      "id": "fixed10_400ms",
+      "label": "Fixed 10 m / 0.4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 725.67512640625,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8725715770107797,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8725715770107797,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 86496.1875,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 250.01120242033417,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 256.25,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 10.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 1116.53125,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 10.632812500000002,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 373.34375,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.019444986979166665,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 0.028452925602970726,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 373.34375,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.019444986979166665,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15332.03125,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3867.96875,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.3259693789749069,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 28221.0625,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6091288638778877,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 725.58307040625,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8741078183247053,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8741078183247053,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 85898.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 250.01404177574435,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 256.25,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 10.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 1101.15625,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 10.420312500000001,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 368.03125,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.019168294270833334,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 0.028284757721913453,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 368.03125,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.019168294270833334,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15340.21875,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3859.78125,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.3228455588470645,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 27752.09375,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.610080963647809,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.25,
+              "balanced_accuracy": 0.625,
+              "evaluation_prior": 0.5,
+              "false_negative": 11,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.8333333333333334,
+              "roc_auc": 0.56640625,
+              "threshold": 0.5386527057652296,
+              "tpr": 0.3125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 5
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5386527057652296
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 41,
+            "training_objective": 0.6747263553652303,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.21875,
+            "balanced_accuracy": 0.609375,
+            "evaluation_prior": 0.5,
+            "false_negative": 21,
+            "false_positive": 4,
+            "fpr": 0.125,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.125,
+              "lower": 0.03513065310331162,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 4,
+              "trials": 32,
+              "upper": 0.2899484201907553
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.7333333333333333,
+            "roc_auc": 0.6328125,
+            "threshold": 0.5386527057652296,
+            "tpr": 0.34375,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.34375,
+              "lower": 0.18571909171656636,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 11,
+              "trials": 32,
+              "upper": 0.5319310362802683
+            },
+            "true_negative": 28,
+            "true_positive": 11
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.1875,
+              "balanced_accuracy": 0.59375,
+              "evaluation_prior": 0.5,
+              "false_negative": 12,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.8,
+              "roc_auc": 0.5234375,
+              "threshold": 0.5470081043654493,
+              "tpr": 0.25,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 4
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5470081043654493
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 80,
+            "training_objective": 0.6637104671292714,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.28125,
+            "balanced_accuracy": 0.640625,
+            "evaluation_prior": 0.5,
+            "false_negative": 20,
+            "false_positive": 3,
+            "fpr": 0.09375,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.09375,
+              "lower": 0.019767180173284896,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 3,
+              "trials": 32,
+              "upper": 0.25022695068379464
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.8,
+            "roc_auc": 0.6220703125,
+            "threshold": 0.5470081043654493,
+            "tpr": 0.375,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.375,
+              "lower": 0.21100031642399308,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 12,
+              "trials": 32,
+              "upper": 0.5630775449030729
+            },
+            "true_negative": 29,
+            "true_positive": 12
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        }
+      },
+      "id": "fixed10_1000ms",
+      "label": "Fixed 10 m / 1 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 409.21214715625,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8969003111646996,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8969003111646996,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 86496.1875,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 550.1695329594054,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 556.25,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 10.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 436.75,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 2.38371822280925e-13,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 436.75,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.022747395833333333,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 5.457049794109324e-16,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 436.75,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.022747395833333333,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 436.75,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.022747395833333333,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15332.03125,
+              "recordings": 32
+            },
+            "query_exact.occupancy_mae": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3867.96875,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 436.75,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.022747395833333333,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.28935727585386656,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 25055.65625,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.643878165916098,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 409.0180651875,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8981728197646222,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8981728197646222,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 85898.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 550.1502985612287,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 540.625,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 10.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 430.34375,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 2.3390317460680876e-13,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 430.34375,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.022413736979166668,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 5.433138862177984e-16,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 430.34375,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.022413736979166668,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 430.34375,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.022413736979166668,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15340.21875,
+              "recordings": 32
+            },
+            "query_exact.occupancy_mae": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3859.78125,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 430.34375,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.022413736979166668,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.2867008137189112,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 24648.96875,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6449960543005377,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.1875,
+              "balanced_accuracy": 0.59375,
+              "evaluation_prior": 0.5,
+              "false_negative": 12,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.8,
+              "roc_auc": 0.580078125,
+              "threshold": 0.5664961689730706,
+              "tpr": 0.25,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 4
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5664961689730706
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 53,
+            "training_objective": 0.6743714275689169,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.15625,
+            "balanced_accuracy": 0.578125,
+            "evaluation_prior": 0.5,
+            "false_negative": 24,
+            "false_positive": 3,
+            "fpr": 0.09375,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.09375,
+              "lower": 0.019767180173284896,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 3,
+              "trials": 32,
+              "upper": 0.25022695068379464
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.7272727272727273,
+            "roc_auc": 0.626953125,
+            "threshold": 0.5664961689730706,
+            "tpr": 0.25,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.25,
+              "lower": 0.11461600510258849,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 8,
+              "trials": 32,
+              "upper": 0.43404937492224227
+            },
+            "true_negative": 29,
+            "true_positive": 8
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.1875,
+              "balanced_accuracy": 0.59375,
+              "evaluation_prior": 0.5,
+              "false_negative": 12,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.8,
+              "roc_auc": 0.576171875,
+              "threshold": 0.575273503882559,
+              "tpr": 0.25,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 4
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.575273503882559
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 81,
+            "training_objective": 0.6697414232771987,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.125,
+            "balanced_accuracy": 0.5625,
+            "evaluation_prior": 0.5,
+            "false_negative": 22,
+            "false_positive": 6,
+            "fpr": 0.1875,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.1875,
+              "lower": 0.0720761654584979,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 6,
+              "trials": 32,
+              "upper": 0.3643923098640893
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.625,
+            "roc_auc": 0.6201171875,
+            "threshold": 0.575273503882559,
+            "tpr": 0.3125,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.3125,
+              "lower": 0.16118472408820084,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 10,
+              "trials": 32,
+              "upper": 0.5000775816321692
+            },
+            "true_negative": 26,
+            "true_positive": 10
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        }
+      },
+      "id": "fixed10_2000ms",
+      "label": "Fixed 10 m / 2 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 301.01401940625,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8856170024177088,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8856170024177088,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 86496.1875,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 1050.214263986334,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 1050.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 1937.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 10.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 272.96875,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 215.99548611111112,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 545.9375,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.028434244791666667,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 0.3958375943501215,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 545.9375,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.028434244791666667,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15332.03125,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3867.96875,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.32840915618809446,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 28437.40625,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6519149398666394,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 299.47816146875,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8869010578985133,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8869010578985133,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 85898.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 1050.2257222756293,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 1050.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 1937.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 10.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 269.25,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 212.2892361111111,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 538.5,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.028046875,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 0.39433495123240253,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 538.5,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.028046875,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15340.21875,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3859.78125,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.325642758583659,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 27997.65625,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6529063544925142,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.1875,
+              "balanced_accuracy": 0.59375,
+              "evaluation_prior": 0.5,
+              "false_negative": 12,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.8,
+              "roc_auc": 0.583984375,
+              "threshold": 0.5670880884320084,
+              "tpr": 0.25,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 4
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5670880884320084
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 50,
+            "training_objective": 0.6776908337910516,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.125,
+            "balanced_accuracy": 0.5625,
+            "evaluation_prior": 0.5,
+            "false_negative": 22,
+            "false_positive": 6,
+            "fpr": 0.1875,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.1875,
+              "lower": 0.0720761654584979,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 6,
+              "trials": 32,
+              "upper": 0.3643923098640893
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.625,
+            "roc_auc": 0.595703125,
+            "threshold": 0.5670880884320084,
+            "tpr": 0.3125,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.3125,
+              "lower": 0.16118472408820084,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 10,
+              "trials": 32,
+              "upper": 0.5000775816321692
+            },
+            "true_negative": 26,
+            "true_positive": 10
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.583984375,
+              "threshold": 0.5879293587401355,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5879293587401355
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 102,
+            "training_objective": 0.6740532412444838,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.125,
+            "balanced_accuracy": 0.5625,
+            "evaluation_prior": 0.5,
+            "false_negative": 23,
+            "false_positive": 5,
+            "fpr": 0.15625,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.15625,
+              "lower": 0.05275056440213437,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 5,
+              "trials": 32,
+              "upper": 0.3278787656820411
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.6428571428571429,
+            "roc_auc": 0.5908203125,
+            "threshold": 0.5879293587401355,
+            "tpr": 0.28125,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.28125,
+              "lower": 0.13745690329550203,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 9,
+              "trials": 32,
+              "upper": 0.4674710996429341
+            },
+            "true_negative": 27,
+            "true_positive": 9
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        }
+      },
+      "id": "fixed10_4000ms",
+      "label": "Fixed 10 m / 4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 242.69879428125,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8653925914066044,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8653925914066044,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 86496.1875,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 2047.920952255356,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 2037.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 3828.125,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 10.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 189.1875,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 491.7734642094017,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 756.75,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.0394140625,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 0.6499334740058157,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 756.75,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.0394140625,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15332.03125,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3867.96875,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.38974150529805884,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 33741.84375,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.654613405085659,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 242.0727565,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8664764948600986,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8664764948600986,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 85898.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 2048.279096688581,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 2040.625,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 3828.125,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 10.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 187.375,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 485.950547542735,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 749.5,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.039036458333333336,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 0.648502261190633,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 749.5,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.039036458333333336,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15340.21875,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3859.78125,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.38759260477541285,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 33319.65625,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6554746602185642,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.537109375,
+              "threshold": 0.5375682090651529,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5375682090651529
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 36,
+            "training_objective": 0.6848034761252498,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.0625,
+            "balanced_accuracy": 0.53125,
+            "evaluation_prior": 0.5,
+            "false_negative": 26,
+            "false_positive": 4,
+            "fpr": 0.125,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.125,
+              "lower": 0.03513065310331162,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 4,
+              "trials": 32,
+              "upper": 0.2899484201907553
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.6,
+            "roc_auc": 0.57861328125,
+            "threshold": 0.5375682090651529,
+            "tpr": 0.1875,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.1875,
+              "lower": 0.0720761654584979,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 6,
+              "trials": 32,
+              "upper": 0.3643923098640893
+            },
+            "true_negative": 28,
+            "true_positive": 6
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0625,
+              "balanced_accuracy": 0.53125,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.6666666666666666,
+              "roc_auc": 0.552734375,
+              "threshold": 0.6592246602425609,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6592246602425609
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 69,
+            "training_objective": 0.6366013719123371,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.03125,
+            "balanced_accuracy": 0.515625,
+            "evaluation_prior": 0.5,
+            "false_negative": 28,
+            "false_positive": 3,
+            "fpr": 0.09375,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.09375,
+              "lower": 0.019767180173284896,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 3,
+              "trials": 32,
+              "upper": 0.25022695068379464
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.5714285714285714,
+            "roc_auc": 0.60498046875,
+            "threshold": 0.6592246602425609,
+            "tpr": 0.125,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.125,
+              "lower": 0.03513065310331162,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 4,
+              "trials": 32,
+              "upper": 0.2899484201907553
+            },
+            "true_negative": 29,
+            "true_positive": 4
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        }
+      },
+      "id": "fixed20_400ms",
+      "label": "Fixed 20 m / 0.4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 530.8876444375001,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.7866891982721492,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.7866891982721492,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 86496.1875,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 250.05180066795168,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 287.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 20.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 1339.875,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 3023.5578125,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 1999.0,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.10411458333333333,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.5133851750615606,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 1999.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.10411458333333333,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15332.03125,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3867.96875,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.5615812522537152,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 48571.6875,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6209161465402423,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 530.9644778125,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.7878965632106355,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.7878965632106355,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 85898.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 250.05157900604493,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 287.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 20.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 400.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 1330.28125,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 2988.7890625,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 1984.0,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.10333333333333333,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.5073919674937866,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 1984.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.10333333333333333,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15340.21875,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3859.78125,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.5595397719403891,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 48060.0625,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.621635940019533,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.560546875,
+              "threshold": 0.5540110801063104,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5540110801063104
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 40,
+            "training_objective": 0.68608107997147,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.0625,
+            "balanced_accuracy": 0.53125,
+            "evaluation_prior": 0.5,
+            "false_negative": 27,
+            "false_positive": 3,
+            "fpr": 0.09375,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.09375,
+              "lower": 0.019767180173284896,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 3,
+              "trials": 32,
+              "upper": 0.25022695068379464
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.625,
+            "roc_auc": 0.57177734375,
+            "threshold": 0.5540110801063104,
+            "tpr": 0.15625,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.15625,
+              "lower": 0.05275056440213437,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 5,
+              "trials": 32,
+              "upper": 0.3278787656820411
+            },
+            "true_negative": 29,
+            "true_positive": 5
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.1875,
+              "balanced_accuracy": 0.59375,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 0,
+              "fpr": 0.0,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 1.0,
+              "roc_auc": 0.580078125,
+              "threshold": 0.5873471249014137,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 16,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5873471249014137
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 55,
+            "training_objective": 0.6753561097461912,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.0625,
+            "balanced_accuracy": 0.53125,
+            "evaluation_prior": 0.5,
+            "false_negative": 27,
+            "false_positive": 3,
+            "fpr": 0.09375,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.09375,
+              "lower": 0.019767180173284896,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 3,
+              "trials": 32,
+              "upper": 0.25022695068379464
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.625,
+            "roc_auc": 0.60107421875,
+            "threshold": 0.5873471249014137,
+            "tpr": 0.15625,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.15625,
+              "lower": 0.05275056440213437,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 5,
+              "trials": 32,
+              "upper": 0.3278787656820411
+            },
+            "true_negative": 29,
+            "true_positive": 5
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        }
+      },
+      "id": "fixed20_1000ms",
+      "label": "Fixed 20 m / 1 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 325.04655340625,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8215114914722917,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8215114914722917,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 86496.1875,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 550.1258492495823,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 562.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 20.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 506.875,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 2945.275,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 2027.5,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.10559895833333334,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.4528106719947036,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 2027.5,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.10559895833333334,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15332.03125,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3867.96875,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.49604250005833744,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 42900.53125,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6403900813250935,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 322.40111715625,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8227270620070778,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8227270620070778,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 85898.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 550.1216082900411,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 559.375,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 20.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 1000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 503.03125,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 2913.2828125,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 2012.125,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.10479817708333333,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.4480238453331398,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 2012.125,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.10479817708333333,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15340.21875,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3859.78125,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.49405041510512754,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 42432.96875,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6413834542383661,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.1875,
+              "balanced_accuracy": 0.59375,
+              "evaluation_prior": 0.5,
+              "false_negative": 12,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.8,
+              "roc_auc": 0.560546875,
+              "threshold": 0.537069593041443,
+              "tpr": 0.25,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 4
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.537069593041443
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 41,
+            "training_objective": 0.6852038589183865,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.03125,
+            "balanced_accuracy": 0.515625,
+            "evaluation_prior": 0.5,
+            "false_negative": 26,
+            "false_positive": 5,
+            "fpr": 0.15625,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.15625,
+              "lower": 0.05275056440213437,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 5,
+              "trials": 32,
+              "upper": 0.3278787656820411
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.5454545454545454,
+            "roc_auc": 0.56103515625,
+            "threshold": 0.537069593041443,
+            "tpr": 0.1875,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.1875,
+              "lower": 0.0720761654584979,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 6,
+              "trials": 32,
+              "upper": 0.3643923098640893
+            },
+            "true_negative": 27,
+            "true_positive": 6
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 0,
+              "fpr": 0.0,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 1.0,
+              "roc_auc": 0.580078125,
+              "threshold": 0.6062040530687228,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 16,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6062040530687228
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 62,
+            "training_objective": 0.6782699091790728,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.03125,
+            "balanced_accuracy": 0.515625,
+            "evaluation_prior": 0.5,
+            "false_negative": 27,
+            "false_positive": 4,
+            "fpr": 0.125,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.125,
+              "lower": 0.03513065310331162,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 4,
+              "trials": 32,
+              "upper": 0.2899484201907553
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.5555555555555556,
+            "roc_auc": 0.56787109375,
+            "threshold": 0.6062040530687228,
+            "tpr": 0.15625,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.15625,
+              "lower": 0.05275056440213437,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 5,
+              "trials": 32,
+              "upper": 0.3278787656820411
+            },
+            "true_negative": 28,
+            "true_positive": 5
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        }
+      },
+      "id": "fixed20_2000ms",
+      "label": "Fixed 20 m / 2 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 253.99673040625,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8178903640971202,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8178903640971202,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 86496.1875,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 1050.5442547924267,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 1068.75,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 1959.375,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 20.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 271.78125,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 3062.3758680555557,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 2174.25,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.11324218750000001,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.4088602961330332,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 2174.25,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.11324218750000001,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15332.03125,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3867.96875,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.5082694420481488,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 43956.09375,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6418918101767486,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 252.239851625,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.819148407494268,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.819148407494268,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 85898.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 1050.5661072322441,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 1068.75,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 1962.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 20.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 2000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 269.8125,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 3029.5813368055556,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 2158.5,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.112421875,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.4039129533441939,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 2158.5,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.112421875,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15340.21875,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3859.78125,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.50624387656197,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 43478.84375,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6429490931611619,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.1875,
+              "balanced_accuracy": 0.59375,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 0,
+              "fpr": 0.0,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 1.0,
+              "roc_auc": 0.576171875,
+              "threshold": 0.5389571781609761,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 16,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5389571781609761
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 37,
+            "training_objective": 0.6881033280736306,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.125,
+            "balanced_accuracy": 0.5625,
+            "evaluation_prior": 0.5,
+            "false_negative": 23,
+            "false_positive": 5,
+            "fpr": 0.15625,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.15625,
+              "lower": 0.05275056440213437,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 5,
+              "trials": 32,
+              "upper": 0.3278787656820411
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.6428571428571429,
+            "roc_auc": 0.57470703125,
+            "threshold": 0.5389571781609761,
+            "tpr": 0.28125,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.28125,
+              "lower": 0.13745690329550203,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 9,
+              "trials": 32,
+              "upper": 0.4674710996429341
+            },
+            "true_negative": 27,
+            "true_positive": 9
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.1875,
+              "balanced_accuracy": 0.59375,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 0,
+              "fpr": 0.0,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 1.0,
+              "roc_auc": 0.560546875,
+              "threshold": 0.6023804254102936,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 16,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.6023804254102936
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 79,
+            "training_objective": 0.6815548706498813,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.0,
+            "balanced_accuracy": 0.5,
+            "evaluation_prior": 0.5,
+            "false_negative": 26,
+            "false_positive": 6,
+            "fpr": 0.1875,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.1875,
+              "lower": 0.0720761654584979,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 6,
+              "trials": 32,
+              "upper": 0.3643923098640893
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.5,
+            "roc_auc": 0.56689453125,
+            "threshold": 0.6023804254102936,
+            "tpr": 0.1875,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.1875,
+              "lower": 0.0720761654584979,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 6,
+              "trials": 32,
+              "upper": 0.3643923098640893
+            },
+            "true_negative": 26,
+            "true_positive": 6
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        }
+      },
+      "id": "fixed20_4000ms",
+      "label": "Fixed 20 m / 4 s",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 215.4263985625,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8087785701000887,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8087785701000887,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 86496.1875,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 2051.5236902116194,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 2068.75,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 3868.75,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 20.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 154.71875,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 3305.6829894497864,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 2475.5,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.12893229166666667,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.3361371474955153,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 2475.5,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.12893229166666667,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15332.03125,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3867.96875,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.5340700861336076,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 46181.625,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.642095052099294,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 214.170821625,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.8099968457072269,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8099968457072269,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 85898.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 2051.5242506339855,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 2065.625,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 3862.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 20.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 153.6875,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 3270.0416332799145,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 2459.0,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.12807291666666668,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.3305882447626523,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 2459.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.12807291666666668,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15340.21875,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3859.78125,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.5320125422468381,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 45687.71875,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6429800759630795,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.591796875,
+              "threshold": 0.5546249028719032,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5546249028719032
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 161,
+            "training_objective": 0.6764399646447503,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.03125,
+            "balanced_accuracy": 0.515625,
+            "evaluation_prior": 0.5,
+            "false_negative": 25,
+            "false_positive": 6,
+            "fpr": 0.1875,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.1875,
+              "lower": 0.0720761654584979,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 6,
+              "trials": 32,
+              "upper": 0.3643923098640893
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.5384615384615384,
+            "roc_auc": 0.6376953125,
+            "threshold": 0.5546249028719032,
+            "tpr": 0.21875,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.21875,
+              "lower": 0.09277153228471943,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 7,
+              "trials": 32,
+              "upper": 0.39972826371210723
+            },
+            "true_negative": 26,
+            "true_positive": 7
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.591796875,
+              "threshold": 0.5714921279332079,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5714921279332079
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 76,
+            "training_objective": 0.6719441908755427,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.125,
+            "balanced_accuracy": 0.5625,
+            "evaluation_prior": 0.5,
+            "false_negative": 23,
+            "false_positive": 5,
+            "fpr": 0.15625,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.15625,
+              "lower": 0.05275056440213437,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 5,
+              "trials": 32,
+              "upper": 0.3278787656820411
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.6428571428571429,
+            "roc_auc": 0.5791015625,
+            "threshold": 0.5714921279332079,
+            "tpr": 0.28125,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.28125,
+              "lower": 0.13745690329550203,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 9,
+              "trials": 32,
+              "upper": 0.4674710996429341
+            },
+            "true_negative": 27,
+            "true_positive": 9
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        }
+      },
+      "id": "regional_static10",
+      "label": "Regional static 10 m",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "full_input_J": {
+              "mean": 0.8337713288390587,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8337713288390587,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 86496.1875,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 1796.5322939242685,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 1718.75,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 3800.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 10.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 3496.6626387051674,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 376.96875,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 494.2078392094017,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 823.3125,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.042880859375,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 0.6003041780430368,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 823.3125,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.042880859375,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15332.03125,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3867.96875,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.4529768153426442,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 39207.5,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6331485190165147,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "full_input_J": {
+              "mean": 0.8351865939007349,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.8351865939007349,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 85898.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 1798.0002982814174,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 1718.75,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 3800.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 10.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 3498.988448430373,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 373.5,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 488.34273504273506,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 815.40625,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.04246907552083333,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 0.5989774048140823,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 815.40625,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.04246907552083333,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15340.21875,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3859.78125,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.4501651243488756,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 38690.28125,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6339747830378109,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 13,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.75,
+              "roc_auc": 0.564453125,
+              "threshold": 0.5224662646408852,
+              "tpr": 0.1875,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 3
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5224662646408852
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 42,
+            "training_objective": 0.6876291113841417,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.1875,
+            "balanced_accuracy": 0.59375,
+            "evaluation_prior": 0.5,
+            "false_negative": 15,
+            "false_positive": 11,
+            "fpr": 0.34375,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.34375,
+              "lower": 0.18571909171656636,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 11,
+              "trials": 32,
+              "upper": 0.5319310362802683
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.6071428571428571,
+            "roc_auc": 0.58056640625,
+            "threshold": 0.5224662646408852,
+            "tpr": 0.53125,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.53125,
+              "lower": 0.3474368092863932,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 17,
+              "trials": 32,
+              "upper": 0.7090601770939844
+            },
+            "true_negative": 21,
+            "true_positive": 17
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.25,
+              "balanced_accuracy": 0.625,
+              "evaluation_prior": 0.5,
+              "false_negative": 12,
+              "false_positive": 0,
+              "fpr": 0.0,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 1.0,
+              "roc_auc": 0.595703125,
+              "threshold": 0.5325898314865983,
+              "tpr": 0.25,
+              "tpr_interval": null,
+              "true_negative": 16,
+              "true_positive": 4
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5325898314865983
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 79,
+            "training_objective": 0.684108145774972,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.03125,
+            "balanced_accuracy": 0.515625,
+            "evaluation_prior": 0.5,
+            "false_negative": 19,
+            "false_positive": 12,
+            "fpr": 0.375,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.375,
+              "lower": 0.21100031642399308,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 12,
+              "trials": 32,
+              "upper": 0.5630775449030729
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.52,
+            "roc_auc": 0.56494140625,
+            "threshold": 0.5325898314865983,
+            "tpr": 0.40625,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.40625,
+              "lower": 0.23698410055174335,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 13,
+              "trials": 32,
+              "upper": 0.5935507534235236
+            },
+            "true_negative": 20,
+            "true_positive": 13
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        }
+      },
+      "id": "regional_static20",
+      "label": "Regional static 20 m",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "full_input_J": {
+              "mean": 0.772479661762014,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.772479661762014,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 86496.1875,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 1839.255186438011,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 1790.625,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 3800.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 20.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 3575.8068678573336,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 282.4375,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 3605.8556456997862,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 2670.625,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.13909505208333334,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.3512205114058167,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 2670.625,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.13909505208333334,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15332.03125,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3867.96875,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.6060266544845037,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 52408.3125,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6253774585311291,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "full_input_J": {
+              "mean": 0.7737385059190556,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.7737385059190556,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 85898.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 1838.6449224378964,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 1778.125,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 3800.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 4000.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 20.0,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 3574.5857606921663,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 280.875,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 3566.2588207799145,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 2653.375,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.13819661458333332,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.3451295596565538,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 2653.375,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.13819661458333332,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15340.21875,
+              "recordings": 32
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3859.78125,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.603891066375401,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 51864.125,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6260927416059888,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        }
+      }
+    },
+    {
+      "attacks": {
+        "scalar31": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.125,
+              "balanced_accuracy": 0.5625,
+              "evaluation_prior": 0.5,
+              "false_negative": 14,
+              "false_positive": 0,
+              "fpr": 0.0,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 1.0,
+              "roc_auc": 0.544921875,
+              "threshold": 0.5799268531689523,
+              "tpr": 0.125,
+              "tpr_interval": null,
+              "true_negative": 16,
+              "true_positive": 2
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5799268531689523
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 31,
+            "iterations": 43,
+            "training_objective": 0.6495969501327705,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": -0.03125,
+            "balanced_accuracy": 0.484375,
+            "evaluation_prior": 0.5,
+            "false_negative": 26,
+            "false_positive": 7,
+            "fpr": 0.21875,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.21875,
+              "lower": 0.09277153228471943,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 7,
+              "trials": 32,
+              "upper": 0.39972826371210723
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.46153846153846156,
+            "roc_auc": 0.59130859375,
+            "threshold": 0.5799268531689523,
+            "tpr": 0.1875,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.1875,
+              "lower": 0.0720761654584979,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 6,
+              "trials": 32,
+              "upper": 0.3643923098640893
+            },
+            "true_negative": 25,
+            "true_positive": 6
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        },
+        "semantic111": {
+          "calibration": {
+            "metrics": {
+              "advantage": 0.0,
+              "balanced_accuracy": 0.5,
+              "evaluation_prior": 0.5,
+              "false_negative": 15,
+              "false_positive": 1,
+              "fpr": 0.0625,
+              "fpr_interval": null,
+              "negative_cases": 16,
+              "positive_cases": 16,
+              "precision_at_evaluation_prior": 0.5,
+              "roc_auc": 0.544921875,
+              "threshold": 0.5583575083927389,
+              "tpr": 0.0625,
+              "tpr_interval": null,
+              "true_negative": 15,
+              "true_positive": 1
+            },
+            "negative_case_fpr_resolution": 0.0625,
+            "target_fpr": 0.1,
+            "threshold": 0.5583575083927389
+          },
+          "complete_test_groups": 32,
+          "expected_independent_test_groups": 32,
+          "fit_diagnostics": {
+            "converged": true,
+            "feature_count": 111,
+            "iterations": 70,
+            "training_objective": 0.6276995922633841,
+            "training_rows": 48
+          },
+          "metrics": {
+            "advantage": 0.09375,
+            "balanced_accuracy": 0.546875,
+            "evaluation_prior": 0.5,
+            "false_negative": 19,
+            "false_positive": 10,
+            "fpr": 0.3125,
+            "fpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.3125,
+              "lower": 0.16118472408820084,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 10,
+              "trials": 32,
+              "upper": 0.5000775816321692
+            },
+            "negative_cases": 32,
+            "positive_cases": 32,
+            "precision_at_evaluation_prior": 0.5652173913043478,
+            "roc_auc": 0.57763671875,
+            "threshold": 0.5583575083927389,
+            "tpr": 0.40625,
+            "tpr_interval": {
+              "confidence_level": 0.95,
+              "estimate": 0.40625,
+              "lower": 0.23698410055174335,
+              "method": "two_sided_exact_clopper_pearson",
+              "successes": 13,
+              "trials": 32,
+              "upper": 0.5935507534235236
+            },
+            "true_negative": 22,
+            "true_positive": 13
+          },
+          "observed_test_rows": 64,
+          "status": "evaluated"
+        }
+      },
+      "id": "adaptive_semantic_first",
+      "label": "Adaptive Semantic First",
+      "utility": {
+        "IN": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 32846.082844968754,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.7380202713924914,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.7380202713924914,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 86496.1875,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 3990.625,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 347.66530782869745,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 300.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 1003.125,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 2600.0,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 17.934663577440638,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 598.02578133566,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 1665.375,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 3025.200220357405,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 2401.625,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.12508463541666667,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.2601980267603965,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 2401.625,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.12508463541666667,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.59375,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 3.092447916666667e-05,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15332.03125,
+              "recordings": 32
+            },
+            "query_exact.occupancy_mae": {
+              "mean": 0.0,
+              "recordings": 14
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3867.96875,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.59375,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 3.092447916666667e-05,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.6852617784226285,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 59281.21875,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6179613902755814,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        },
+        "OUT": {
+          "expected_recordings": 32,
+          "macro_means": {
+            "core_processing_ms": {
+              "mean": 32714.34312375,
+              "recordings": 32
+            },
+            "full_input_J": {
+              "mean": 0.7394396123390538,
+              "recordings": 32
+            },
+            "full_input_semantic_loss": {
+              "mean": 0.7394396123390538,
+              "recordings": 32
+            },
+            "input_observations": {
+              "mean": 85898.5,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.maximum": {
+              "mean": 3990.625,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.mean": {
+              "mean": 347.86697793735755,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p50": {
+              "mean": 300.0,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p95": {
+              "mean": 1006.25,
+              "recordings": 32
+            },
+            "logical_seal_delay_ms.p99": {
+              "mean": 2587.5,
+              "recordings": 32
+            },
+            "mean_retained_cell_side_m": {
+              "mean": 17.945728800237337,
+              "recordings": 32
+            },
+            "mean_retained_interval_ms": {
+              "mean": 598.3356820857146,
+              "recordings": 32
+            },
+            "published_cells": {
+              "mean": 1652.375,
+              "recordings": 32
+            },
+            "published_policy_violations": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_estimate.absolute_error_sum": {
+              "mean": 2993.2844263249713,
+              "recordings": 32
+            },
+            "query_estimate.answered_queries": {
+              "mean": 2388.375,
+              "recordings": 32
+            },
+            "query_estimate.answered_query_coverage": {
+              "mean": 0.12439453125,
+              "recordings": 32
+            },
+            "query_estimate.occupancy_mae": {
+              "mean": 1.2540011621920828,
+              "recordings": 32
+            },
+            "query_estimate.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_estimate.scored_queries": {
+              "mean": 2388.375,
+              "recordings": 32
+            },
+            "query_estimate.scored_query_coverage": {
+              "mean": 0.12439453125,
+              "recordings": 32
+            },
+            "query_exact.absolute_error_sum": {
+              "mean": 0.0,
+              "recordings": 32
+            },
+            "query_exact.answered_queries": {
+              "mean": 0.53125,
+              "recordings": 32
+            },
+            "query_exact.answered_query_coverage": {
+              "mean": 2.7669270833333335e-05,
+              "recordings": 32
+            },
+            "query_exact.known_zero_reference_queries": {
+              "mean": 15340.21875,
+              "recordings": 32
+            },
+            "query_exact.occupancy_mae": {
+              "mean": 0.0,
+              "recordings": 13
+            },
+            "query_exact.positive_reference_queries": {
+              "mean": 3859.78125,
+              "recordings": 32
+            },
+            "query_exact.reference_availability": {
+              "mean": 1.0,
+              "recordings": 32
+            },
+            "query_exact.reference_available_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.reference_queries": {
+              "mean": 19200.0,
+              "recordings": 32
+            },
+            "query_exact.scored_queries": {
+              "mean": 0.53125,
+              "recordings": 32
+            },
+            "query_exact.scored_query_coverage": {
+              "mean": 2.7669270833333335e-05,
+              "recordings": 32
+            },
+            "retained_fraction": {
+              "mean": 0.682786014439759,
+              "recordings": 32
+            },
+            "retained_observations": {
+              "mean": 58658.34375,
+              "recordings": 32
+            },
+            "retained_semantic_loss": {
+              "mean": 0.6186192267108626,
+              "recordings": 32
+            }
+          },
+          "observed_recordings": 32
+        }
+      }
+    }
+  ],
+  "negative_control_checks": {
+    "auxiliary_only": "pass",
+    "no_output": "pass",
+    "prior_only": "pass"
+  },
+  "positive_control_check": {
+    "OUT_removal_monotone": true,
+    "auc_above_chance": true,
+    "in_contains_all_approved_sightings": true,
+    "status": "pass"
+  },
+  "primary_contrast": {
+    "left": "adaptive_semantic_first",
+    "metric": "ROC_AUC",
+    "representations": {
+      "scalar31": {
+        "auc_difference": 0.0107421875,
+        "confidence_level": 0.95,
+        "independent_groups": 32,
+        "interval": [
+          -0.0615234375,
+          0.091796875
+        ],
+        "replicates": 1000,
+        "scope": "Conditional on frozen TRAIN models/CAL thresholds; paired TEST-recording resampling.",
+        "status": "evaluated"
+      },
+      "semantic111": {
+        "auc_difference": 0.0126953125,
+        "confidence_level": 0.95,
+        "independent_groups": 32,
+        "interval": [
+          -0.04396972656249998,
+          0.072265625
+        ],
+        "replicates": 1000,
+        "scope": "Conditional on frozen TRAIN models/CAL thresholds; paired TEST-recording resampling.",
+        "status": "evaluated"
+      }
+    },
+    "right": "regional_static20"
+  },
+  "protected_unit": "all_observed_contributions_of_one_operational_track_within_fixed_300s",
+  "provenance": {
+    "dataset_manifest_sha256": "81e59a558acae956e8b38a9c1d58e18ef274d010e699659d56fd18ebf4d19567",
+    "evaluation_manifest_sha256": "faf818098ad2a4ab6e9b5a3eebb6c94c5b084397523ce74228439576e9c4ac50",
+    "implementation_sha256": "618bdf1a3de2bafeed15cd9e031921755764bdda252335ca10fce662754bbafc",
+    "import_ledger_sha256": "f761849f5b29e775418771fe5d1271e15728200cfd5fe5d7fc4d82d962643f8c",
+    "private_evaluation_id_sha256": "6f3c6fe85c7ce4b9ab71fe1a3c65faa1c14872c3214e3940f3f69a65ead1c18c",
+    "private_report_sha256": "70abeed6ff101fd51723a610a58120c5963db347510bfe630d882c5ad1509f71",
+    "source_profile_sha256": "6c32952356d028267e434864fc31b2f05f61ce8b051a5fb5d746a431c864bccf",
+    "source_protocol_sha256": "574aaeed43514a14e5a0beeda2ef979b881be75abab72a6bbb0535782001f4eb",
+    "source_split_audit_sha256": "6e9ed0e5d2d4fe9bf563a9b3baf0e79fd414c83bd1055db3f148a2b17d998454"
+  },
+  "schema": "ump.urban-track-window-public-report.v1",
+  "scope": [
+    "Protected secret: inclusion of all observed contributions of one operational track within [0,300 s), including valid censored/active tracks; not a full journey, person identity, physical presence or all visits.",
+    "Source validation profile: observed_track_window_v1. Full clock, hashes, source law, recorded-visible-interval agreement and physical/data validity remain hard gates. Scheduled journey/visit completion and reported stalls are separate quality diagnostics.",
+    "Movement quality does not filter enrollment. A pathology or oscillation is not a privacy benefit; interpret measured risk and utility for the recorded source distribution.",
+    "Targets require at least two observations; all short/unselected traces remain input. Auxiliary knowledge is the unchanged exact quarter-count sample with upward rounding, identical in IN and OUT.",
+    "Recipient availability: one retrospective final snapshot at H=300 s. Logical sealing delay is not measured live delivery latency; mechanism EOF does not manufacture a road-user exit.",
+    "Same local400 hard requirements and suppression OFF for every comparator/world; operational track support is distinct from empirical privacy.",
+    "Models and scaling use TRAIN only; operating thresholds use CAL only. No TEST-dependent score-direction flip, tuning or comparator selection.",
+    "Rate intervals are two-sided exact 95% Clopper-Pearson. Primary AUC-difference interval is a 1000-replicate paired TEST-recording bootstrap conditional on fixed fitted models.",
+    "Scalar31 is a joint representation ablation removing semantic and availability coordinates; it does not isolate semantic leakage.",
+    "Utility macro means weight recordings equally and use each world's own sampled input. Conditional occupancy MAE must be read with answered/scored coverage; unknown output is not zero.",
+    "Source artifacts, old status and original TRAIN/CAL roles are preserved under the new binding. A former exposed TEST source/model is not new held-out evidence.",
+    "No universal privacy guarantee, population FPR bound, person-level guarantee, navigation-liveness guarantee or real-time certification follows from these measurements."
+  ],
+  "source_and_execution": {
+    "method_world_status": {
+      "adaptive_semantic_first": {
+        "observed": 144,
+        "planned": 144,
+        "statuses": {
+          "verified": 144
+        },
+        "unreported": 0
+      },
+      "fixed10_1000ms": {
+        "observed": 144,
+        "planned": 144,
+        "statuses": {
+          "verified": 144
+        },
+        "unreported": 0
+      },
+      "fixed10_2000ms": {
+        "observed": 144,
+        "planned": 144,
+        "statuses": {
+          "verified": 144
+        },
+        "unreported": 0
+      },
+      "fixed10_4000ms": {
+        "observed": 144,
+        "planned": 144,
+        "statuses": {
+          "verified": 144
+        },
+        "unreported": 0
+      },
+      "fixed10_400ms": {
+        "observed": 144,
+        "planned": 144,
+        "statuses": {
+          "verified": 144
+        },
+        "unreported": 0
+      },
+      "fixed20_1000ms": {
+        "observed": 144,
+        "planned": 144,
+        "statuses": {
+          "verified": 144
+        },
+        "unreported": 0
+      },
+      "fixed20_2000ms": {
+        "observed": 144,
+        "planned": 144,
+        "statuses": {
+          "verified": 144
+        },
+        "unreported": 0
+      },
+      "fixed20_4000ms": {
+        "observed": 144,
+        "planned": 144,
+        "statuses": {
+          "verified": 144
+        },
+        "unreported": 0
+      },
+      "fixed20_400ms": {
+        "observed": 144,
+        "planned": 144,
+        "statuses": {
+          "verified": 144
+        },
+        "unreported": 0
+      },
+      "regional_static10": {
+        "observed": 144,
+        "planned": 144,
+        "statuses": {
+          "verified": 144
+        },
+        "unreported": 0
+      },
+      "regional_static20": {
+        "observed": 144,
+        "planned": 144,
+        "statuses": {
+          "verified": 144
+        },
+        "unreported": 0
+      }
+    },
+    "planned_by_split": {
+      "calibration": 16,
+      "test": 32,
+      "train": 24
+    },
+    "planned_native_cases": 1296,
+    "planned_recipient_streams": 1584,
+    "planned_recordings": 72,
+    "recording_status_by_split": {
+      "calibration": {
+        "not_reported": 0,
+        "verified": 16
+      },
+      "test": {
+        "not_reported": 0,
+        "verified": 32
+      },
+      "train": {
+        "not_reported": 0,
+        "verified": 24
+      }
+    }
+  },
+  "source_quality": {
+    "availability": "reported",
+    "by_split": {
+      "calibration": {
+        "planned_sources": 16,
+        "quality_reports": 16,
+        "sources_with_active_at_horizon": 0,
+        "sources_with_pending_at_horizon": 0,
+        "sources_with_reported_stalls": 0,
+        "verified_sources": 16
+      },
+      "test": {
+        "planned_sources": 32,
+        "quality_reports": 32,
+        "sources_with_active_at_horizon": 1,
+        "sources_with_pending_at_horizon": 0,
+        "sources_with_reported_stalls": 1,
+        "verified_sources": 32
+      },
+      "train": {
+        "planned_sources": 24,
+        "quality_reports": 24,
+        "sources_with_active_at_horizon": 1,
+        "sources_with_pending_at_horizon": 0,
+        "sources_with_reported_stalls": 1,
+        "verified_sources": 24
+      }
+    },
+    "count_unit": "sources, not tracks or observation contributions",
+    "missing_count_semantics": "Unknown counts are null/NA, never inferred zero.",
+    "quality_filters_enrollment": false,
+    "quality_scope": "Diagnostic reporting only; active/pending/stall counts do not establish normal movement, completed journeys or privacy protection.",
+    "source_validation_profile": "observed_track_window_v1"
+  },
+  "source_split_audit_status": "verified",
+  "source_validation_profile": "observed_track_window_v1"
+}

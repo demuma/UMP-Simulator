@@ -26,26 +26,27 @@ or TEST captures. One physically valid recording retains three active tracks at
 300 s and fails its original completion gate. Read the
 [strict source-only outcome](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_CLOSURE_2026-10-26.md).
 
-**Observed-window evaluation — technical repair qualified.** The separate
-`observed_track_window_v1` evaluation preserves all 40 TRAIN/CAL families
-(720 native executions, 160 regional compositions and 880 method/world rows).
-All 22 attack variants converged and the independently verified
-[model lock](docs/verification/urban-track-window-2026-10-26-v1/model-lock/)
-predates every TEST source capture. All 32 original TEST captures completed,
-but their original qualification attempts failed in a surface-access reporting
-diagnostic before any TEST mechanism or score.
+**Observed-window evaluation — completed, with mixed results.** All 72 original
+sources and method families verify (24 TRAIN / 16 CAL / 32 TEST). The 32 TEST
+families add 576 audited native executions and 128 regional compositions;
+all 22 pre-TEST locked attack variants are assessed without refitting. Audited
+native publication-policy violations are zero.
 
-After preserving that phase's failures, a diagnostic-only correction and
-field-qualified compatibility guard pass 373 current unit tests, six portal
-regressions and an actual city DEV opt-in window-profile CLI audit. The new
-ledger qualifies all 72 original inputs: 40 legacy-proof reauthentications and
-32 corrected TEST physical audits, with no resimulation, replacement, quality
-filter or refitting. Read the
-[technical amendment](docs/URBAN_PRIVACY_TRACK_WINDOW_DIAGNOSTIC_REPAIR_2026-10-26.md)
-and [profile/test report](docs/URBAN_PRIVACY_TRACK_WINDOW_TEST_REPORT_2026-10-26.md).
-Actual TEST method execution and held-out risk/utility assessment remain the
-next gate; P25.4 is still open. The original strict study and historical
-TEST/model evidence remain separate and unchanged.
+Against regional static20, Adaptive Semantic First retains 68.53% rather than
+60.60% of TEST IN contributions and reduces mean logical delay from 1.84 s to
+0.35 s. The primary attack-AUC difference is +0.01270, paired 95% interval
+[-0.04397,+0.07227]: **an additional privacy benefit or equivalence is not
+established**. Controls pass. The empirical CAL FPR cap of 10% does not generalize:
+adaptive TEST FPR is 31.25%. Exact-query coverage also remains very sparse.
+Read the [result interpretation and figures](docs/verification/urban-track-window-2026-10-26-v1/final-outcome/README.md)
+and [actual execution/test report](docs/URBAN_PRIVACY_TRACK_WINDOW_EXECUTION_TEST_REPORT_2026-10-26.md).
+
+The [diagnostic-only amendment](docs/URBAN_PRIVACY_TRACK_WINDOW_DIAGNOSTIC_REPAIR_2026-10-26.md)
+preserves all original source failures and inputs, reauthenticates 40 legacy
+proofs and runs 32 corrected physical audits before TEST mechanisms. All
+72 full raw-validation receipts pass. Original models/CAL thresholds remain
+byte-identical; original strict studies and historical exposed TEST data remain
+separate. Raw movements, models and individual scores stay local.
 
 **Closed P25.4 source-v2 — held-out result unavailable.**
 Source v2 finished all 72 frozen attempts: 24/24 TRAIN, 16/16 CAL and 31/32 TEST
@@ -61,7 +62,8 @@ CTest groups**. This is engineering evidence; CAL diagnostics are not TEST resul
 Read the [final outcome and next steps](docs/URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md),
 [compact evidence (~55 kB)](docs/verification/urban-privacy-p25-4-2026-10-26-v2/final-outcome/README.md)
 and [test report](docs/URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).
-P25.4 remains open for held-out protection/utility evidence. No failed seed was
+At that source-v2 checkpoint, P25.4 remained open; the completed observed-window
+assessment is recorded above. No failed seed was
 replaced, no eligibility rule relaxed and no available-case AUC substituted.
 The earlier v1 source failure and [pre-TEST v2 amendment](docs/URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md)
 remain separate historical evidence. Raw movements, models and private scores stay local.

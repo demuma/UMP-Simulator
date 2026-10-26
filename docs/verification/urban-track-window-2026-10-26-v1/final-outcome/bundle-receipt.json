@@ -1,0 +1,24 @@
+{
+  "artifacts_sha256": {
+    "README.md": "93d0e918c1cd35742f07f579773fd011f59122885f02a7cc62e5171bf32090f7",
+    "interpretation.md": "7a5092375245c508fe8b772bab1f1c2f70b45d4cda689643fbfe1ac035ff698c",
+    "numeric-artifact-receipt.json": "ed37a59236b7586458e629f190f4606813af5726092363a1a21f6113fcc44b8f",
+    "packet-receipt.json": "f94afc757b648b60f2046e5b64af55de701bb21d0447d42a9af700d290a559a4",
+    "repair-lineage-public.json": "913e44823cbb85fd9d8242868ae3d27d5b0ae9bed503d07cfaa54923c1fd026e",
+    "report.md": "8153adb47a74af1b0d67215c18b59ee234715981d1f2e1a4237748e27a0e9ed3",
+    "summary.json": "cfed694b1a34d97bc2aa99817f7cbde122cbec13bffd3c07199fa22f1e28ae72",
+    "urban-track-window-attack.png": "a56a3f13ff5e05682b9da51d44a12d7e61a2b5b50bed142aee00cf57839623f1",
+    "urban-track-window-attack.svg": "3fa716282651103fae02c12c9c490721be5c8aa80667b76931ead30613bdec36",
+    "urban-track-window-utility.png": "e476e65ce844c3ae0f0f86b4f2ba793ac364c2d856e33e98e658476f304d2402",
+    "urban-track-window-utility.svg": "46a6cab58bd384abfea958ca26a7cfed16c6a7f31618a871d4def6f125559446",
+    "verification.json": "f600033ebc951d24249eef0529347b3a7fa778e1285c4992761874d11d9115f3"
+  },
+  "external_document_sha256": {
+    "docs/URBAN_PRIVACY_TRACK_WINDOW_EXECUTION_TEST_REPORT_2026-10-26.md": "7426e2ce4e5b2d43795e3f933d181d5f503ebb0f44bfbfc083c138a6ab30524a"
+  },
+  "original_model_lock_sha256": "d0d56de7d89ba7c51135f88584ad533b1bcb4e1aa309eb1af8e233c059e9be81",
+  "private_report_sha256": "70abeed6ff101fd51723a610a58120c5963db347510bfe630d882c5ad1509f71",
+  "schema": "ump.track-window-final-outcome-bundle.v1",
+  "scope": "Complete aggregate numerical/figure/lineage/interpretation/verification package with adjacent execution/test report; original numeric and packet receipts preserved.",
+  "utc": "2026-10-26T19:45:22.167621+00:00"
+}

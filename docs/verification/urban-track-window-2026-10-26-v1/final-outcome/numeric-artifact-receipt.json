@@ -1,0 +1,13 @@
+{
+  "artifacts_sha256": {
+    "report.md": "8153adb47a74af1b0d67215c18b59ee234715981d1f2e1a4237748e27a0e9ed3",
+    "summary.json": "cfed694b1a34d97bc2aa99817f7cbde122cbec13bffd3c07199fa22f1e28ae72",
+    "urban-track-window-attack.png": "a56a3f13ff5e05682b9da51d44a12d7e61a2b5b50bed142aee00cf57839623f1",
+    "urban-track-window-attack.svg": "3fa716282651103fae02c12c9c490721be5c8aa80667b76931ead30613bdec36",
+    "urban-track-window-utility.png": "e476e65ce844c3ae0f0f86b4f2ba793ac364c2d856e33e98e658476f304d2402",
+    "urban-track-window-utility.svg": "46a6cab58bd384abfea958ca26a7cfed16c6a7f31618a871d4def6f125559446"
+  },
+  "schema": "ump.urban-track-window-public-artifacts.v1",
+  "source_report_sha256": "70abeed6ff101fd51723a610a58120c5963db347510bfe630d882c5ad1509f71",
+  "source_validation_profile": "observed_track_window_v1"
+}
