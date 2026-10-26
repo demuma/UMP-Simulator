@@ -30,8 +30,10 @@ The separate `observed_track_window_v1` implementation passes **344/344 affected
 unit tests**, including the existing default paths. All forty original TRAIN/CAL
 captures pass independently checked full-window integrity; all 22 retained DEV
 streams and 66 archives are reconstructed. The new evaluation and implementation
-are [frozen before execution](docs/verification/urban-track-window-2026-10-26-v1/pre-test-freeze/). Fresh models/CAL thresholds must lock before the thirty-two original
-untouched TEST slots are generated. Policies, native source, methods and numerical
+are [frozen before execution](docs/verification/urban-track-window-2026-10-26-v1/pre-test-freeze/). All 22 fresh model variants now converge; TRAIN scaling, objectives and CAL
+thresholds pass independent no-refit verification. The
+[actual model lock](docs/verification/urban-track-window-2026-10-26-v1/model-lock/)
+precedes generation of the thirty-two original untouched TEST slots. Policies, native source, methods and numerical
 analysis remain unchanged. Held-out risk/utility results are pending. Read the
 [implementation and test report](docs/URBAN_PRIVACY_TRACK_WINDOW_TEST_REPORT_2026-10-26.md).
 The [original restart evidence](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md)

@@ -1,0 +1,8 @@
+{
+  "files_sha256": {
+    "README.md": "caccf7667b932288a1bff4770a98912cef15d8aa37250d0e8fec580ad665ab24",
+    "summary.json": "967fa0aa6190f3d1d810fd2655629d9e57d836f270691e64208b9b3b8c415d43"
+  },
+  "schema": "ump.observed-track-window-public-model-lock-bundle.v1",
+  "status": "verified"
+}

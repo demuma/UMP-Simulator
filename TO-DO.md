@@ -89,9 +89,11 @@ Next, in order:
    Reject hard-invalid data; preserve quality separately. Original statuses and
    legacy physical-audit provenance remain intact.
    [Test report](docs/URBAN_PRIVACY_TRACK_WINDOW_TEST_REPORT_2026-10-26.md).
-8. [ ] Evaluation/profile/code/import ledger are frozen. Execute all 40 paired
-   comparison families, fit new TRAIN models/CAL thresholds, and bind a new lock.
-   Generate all 32 original untouched TEST sources only afterward. No old-lock reuse.
+8. [ ] Evaluation/profile/code/import ledger are frozen. All 40 paired families
+   pass; all 22 fresh variants converge and independent TRAIN/CAL numerical
+   verification passes. The actual new lock is bound. Generate all 32 original
+   untouched TEST sources only afterward; no old-lock reuse.
+   [Model-lock evidence](docs/verification/urban-track-window-2026-10-26-v1/model-lock/).
 9. [ ] Audit every TEST source under the new hard-integrity contract before TEST
    mechanisms, then report actual controls, grouped uncertainty and own-world
    utility beside movement quality. Publish compact results/figures and a detailed

@@ -154,6 +154,30 @@ this freeze. The new lock must authenticate actual fresh 880 paired rows and
 review barrier additionally checks that actual lock before the serial driver
 continues.
 
+## Actual TRAIN/CAL execution and independent model lock
+
+All 40 paired recording families complete: 720 native executions and 160 derived
+regional streams, yielding 880 exact paired rows. Every published-cell source and
+policy audit passes. This is TRAIN/CAL engineering evidence; TEST assessment
+remains prospective at this lock.
+
+All 22 method/representation classifiers converge within 36–161 iterations under
+the unchanged 500-iteration budget. Two fitted and two direct controls also lock.
+A separate auditor recomputes TRAIN population means/scales, final training
+objectives, probabilities and CAL threshold selection without fitting again.
+Scaling matches exactly; all final objective absolute errors are zero. Every
+locked threshold matches the independent maximum-TPR selection at the empirical
+1/10 FPR cap, including its tie rules. With 16 CAL negatives, this admits at most
+one false positive; a population FPR bound is not inferred.
+
+The actual gradient norms are diagnostic, approximately 8.07e-5 to 0.002618.
+Convergence follows the frozen stopping rule, which can use relative objective
+improvement; it is not a claim of 1e-8 stationarity. No raw-constant-column
+roundoff artifact affects these actual variants. All original and new TEST
+source/native directories remain absent before and after the audit. Root reviews
+the private verified receipt before releasing the workflow's independent barrier.
+Read the [compact actual model-lock evidence](verification/urban-track-window-2026-10-26-v1/model-lock/).
+
 ## Reproduction and artifact policy
 
 From the repository root, use a Python environment with the project's mapped-scene
