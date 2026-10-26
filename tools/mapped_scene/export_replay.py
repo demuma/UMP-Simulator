@@ -243,6 +243,8 @@ def audit_lifecycle(cfg, raw, frames, person_by_track, origin, step, end, summar
                       'max_consecutive_stop_ms','active_stalled_tracks','body_overlap_violations',
                       'navigation_steering_steps','navigation_replans','navigation_replan_failures',
                       'navigation_candidate_checks','navigation_max_search_nodes',
+                      'navigation_start_connector_checks','navigation_expanded_start_searches',
+                      'navigation_max_start_connector_checks',
                       'crossing_pedestrian_wait_steps','crossing_rider_wait_steps','crossing_batches',
                       'crossing_fairness_closures','max_crossing_pedestrian_wait_ms')
     # Historical integration captures did not record these diagnostics. Null is

@@ -1,0 +1,74 @@
+{
+  "checks": [
+    "Original full suite fails new outer attachment completion regression",
+    "Corrected full suite passes",
+    "Positive fixture follows actual legal upper bypass",
+    "Independent body/swept clearance, speed and displacement checks",
+    "Private identity/order and caller cadence invariance",
+    "Truly blocked strips remain blocked with N=5 and N=20,000",
+    "Maximum connector work 30 and 281; zero false A* expansion on unreachable grid"
+  ],
+  "diagnostic_exit_code_note": "Attachment diagnostic exit code zero reports successful execution, not episode completion; lifecycle counts determine completion.",
+  "receipt_sha256": "b24f1a98f440a0fc1e1ce5e15b2cd11a8310001f9a1dc635c1e970b33fdf873c",
+  "schema": "ump.doorway-start-attachment.public-red-green.v1",
+  "scope": "Small synthetic fixture and complete mapped-scene unit suite against archived/corrected implementations; no city-source privacy inference.",
+  "status": "verified",
+  "synthetic_fixture": {
+    "corrected": {
+      "completed_by_25s": 2,
+      "failed_replans": 1,
+      "max_A_star_nodes": 23,
+      "replans": 34,
+      "scheduled": 2
+    },
+    "genuinely_blocked_controls": [
+      {
+        "completed": 0,
+        "max_replan_nodes": 5,
+        "max_start_connector_checks": 30
+      },
+      {
+        "completed": 0,
+        "max_replan_nodes": 20000,
+        "max_start_connector_checks": 281
+      }
+    ],
+    "original": {
+      "completed_at_60s": 0,
+      "failed_replans": 366,
+      "max_A_star_nodes": 0,
+      "replans": 366,
+      "scheduled": 2
+    }
+  },
+  "test_and_diagnostic_runs": [
+    {
+      "binary_sha256": "0ab738543e29d29c1ddc768a9399dab32d80453a0084f89d88ad0c7851f879c0",
+      "name": "MappedSceneTests-old",
+      "returncode": 1,
+      "stderr_sha256": "86cdb50be4cce390a78ee93deafdc9811a9aceefa9d5c682d1960e8181662b16",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "binary_sha256": "f4fb427e8d6781898087d5b46d681f99d200e582420d26f280e1fc0ffc7badfa",
+      "name": "MappedSceneTests-new",
+      "returncode": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2a003ba6a40fbbb9bd70325dec9a260b25911ca9f02064c2df18aaa76aa409a9"
+    },
+    {
+      "binary_sha256": "c117c32d526fc6b62665f2274194d38ebcb77d99eae82770f0c8064ef3e7dcb6",
+      "name": "Attachment-old",
+      "returncode": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "84a3ff4c591d811c05194fe4a432804edf2baa3732ee78dceeecdd259ac3ed9b"
+    },
+    {
+      "binary_sha256": "0b9df6efba497f182336a2cb2264a664295c17f1450325dcba901aca3211ed71",
+      "name": "Attachment-new",
+      "returncode": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "3af840efbb46331cc9b75950920c46ec058aeba485e1934d475e44595efecd66"
+    }
+  ]
+}

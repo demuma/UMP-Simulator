@@ -1,0 +1,58 @@
+{
+  "current_role": "DEV",
+  "implementations": {
+    "corrected": {
+      "binary_sha256": "fc98427a32515d81f4557d2f2739d32e383c2ca5f71287f461a9cddc481f314d",
+      "elapsed_seconds": 24.662270541999998,
+      "outcome": {
+        "active": 0,
+        "ends": 169,
+        "expanded_start_searches": 46,
+        "expected_episodes": 169,
+        "last_end_ms": 215050,
+        "max_start_connector_checks": 281,
+        "overlaps": 0,
+        "peak_active": 127,
+        "pending": 0,
+        "replan_failures": 63,
+        "replans": 162,
+        "simulated_ms": 215050,
+        "stalled": 0,
+        "start_connector_checks": 15352,
+        "starts": 169,
+        "state": "complete",
+        "steps": 4301
+      },
+      "returncode": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f87be1dcfdd717527ac19b0afa8a0efcf6ef41bb96c59d6f1ecd138aeb11b485"
+    },
+    "original": {
+      "binary_sha256": "40fe14cf9e7b2a9e79afa49b162ef46148378b6866c2b16941787de11553a06d",
+      "elapsed_seconds": 29.117269166,
+      "outcome": {
+        "active": 8,
+        "ends": 153,
+        "expected_episodes": 169,
+        "last_end_ms": 211450,
+        "overlaps": 0,
+        "peak_active": 127,
+        "pending": 8,
+        "replan_failures": 583,
+        "replans": 697,
+        "simulated_ms": 300000,
+        "stalled": 2,
+        "starts": 161,
+        "state": "horizon_incomplete",
+        "steps": 6000
+      },
+      "returncode": 3,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "55126b121e2b2c297a209075359e0ef91377e3c206212dea31098ca445c593e5"
+    }
+  },
+  "matrix_case_ordinal": 56,
+  "same_unchanged_configuration_before_after": true,
+  "schema": "ump.doorway-start-attachment.public-known-case.v1",
+  "timing_scope": "Operational times cover different simulated work: original reaches 300 s with incomplete cohort; corrected stops at completion at 215.05 s. No speedup, real-time or worst-case execution-time inference."
+}

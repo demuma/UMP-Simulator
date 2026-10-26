@@ -96,6 +96,9 @@ void report(const char* state, bool final, Time atMs, std::size_t expected,
         << ",\"stalled\":" << d.activeStalledTracks << ",\"overlaps\":" << d.overlapViolations
         << ",\"replans\":" << d.navigationReplans << ",\"replan_failures\":" << d.navigationReplanFailures
         << ",\"candidate_checks\":" << d.navigationCandidateChecks
+        << ",\"start_connector_checks\":" << d.navigationStartConnectorChecks
+        << ",\"expanded_start_searches\":" << d.navigationExpandedStartSearches
+        << ",\"max_start_connector_checks\":" << d.navigationMaxStartConnectorChecks
         << ",\"passage_wait_steps\":" << d.passageWaitSteps << ",\"passage_batches\":" << d.passageBatches
         << ",\"passage_cleared_tracks\":" << d.passageClearedTracks
         << ",\"max_passage_wait_ms\":" << d.maxPassageWaitMs << ",\"max_stop_ms\":" << d.maxConsecutiveStopMs

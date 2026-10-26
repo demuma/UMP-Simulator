@@ -1,0 +1,45 @@
+{
+  "closed_primary_study": {
+    "TEST_attack_control_utility_estimates": "unavailable",
+    "TEST_mechanism_runs": 0,
+    "TEST_predictions": 0,
+    "planned_sources": 72,
+    "status": "closed_unchanged",
+    "valid_sources": 71
+  },
+  "correction": "Preserve initial 25 local-grid connectors; expand square rings only when their frontier is empty, with at most min(maxReplanNodes,256) extra exact connector checks. Existing A* expansion and movement guards remain separate.",
+  "date": "2026-10-26",
+  "evidence": {
+    "DEV_matrix_cases_verified": 92,
+    "DEV_matrix_episodes_completed": 15590,
+    "affected_CTest_groups": 12,
+    "affected_CTest_seconds": 177.68830425,
+    "production_DEV_capture_episodes_completed": 169,
+    "production_DEV_capture_measured_samples": 2999,
+    "production_DEV_capture_observation_contributions": 89591,
+    "synthetic_RED_GREEN": "verified",
+    "unchanged_diagnosed_configuration_before_after": "verified"
+  },
+  "future_primary_study": {
+    "model_fits": 0,
+    "sources_generated": 0,
+    "status": "DRAFT"
+  },
+  "limits": [
+    "Finite grid attachment fallback, not a complete continuous planner.",
+    "Nonempty but disconnected initial frontiers are unchanged.",
+    "No general liveness, maximum waiting-time, hard real-time or worst-case execution-time guarantee.",
+    "No new empirical privacy gain or adaptive-versus-baseline conclusion.",
+    "Separate source/analysis DEV integration is outside this correction packet."
+  ],
+  "schema": "ump.doorway-start-attachment.public-summary.v1",
+  "scope": {
+    "current_role": "DEV",
+    "formerly_held_out_source_configs_used_as_development": 32,
+    "historical_closed_TEST_motion_exposure": true,
+    "no_TEST_mechanism_or_score_access": true,
+    "no_new_primary_TEST_generation": true,
+    "privacy_inference": false
+  },
+  "status": "source_correction_validated_in_declared_development_scope"
+}

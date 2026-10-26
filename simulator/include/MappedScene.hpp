@@ -119,6 +119,11 @@ struct MappedMotionDiagnostics {
     std::uint64_t navigationSteeringSteps = 0, navigationReplans = 0;
     std::uint64_t navigationReplanFailures = 0, navigationCandidateChecks = 0;
     std::size_t navigationMaxSearchNodes = 0;
+    // Start attachment checks are separate from expanded A* nodes. The legacy
+    // stencil checks at most 25 nodes; an empty stencil adds at most min(N,256),
+    // where N is maxReplanNodes. These counters do not imply a liveness guarantee.
+    std::uint64_t navigationStartConnectorChecks = 0, navigationExpandedStartSearches = 0;
+    std::size_t navigationMaxStartConnectorChecks = 0;
     std::uint64_t passageWaitSteps = 0, passageBatches = 0, passageClearedTracks = 0;
     std::uint64_t crossingPedestrianWaitSteps = 0, crossingRiderWaitSteps = 0;
     std::uint64_t crossingBatches = 0, crossingFairnessClosures = 0;

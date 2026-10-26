@@ -1,0 +1,43 @@
+{
+  "bytes_excluding_this_receipt": 102533,
+  "correction_report_sha256": "699a79b39169eecb5641caa36af1d21cbbabf2168415167c734c8e342e020890",
+  "date": "2026-10-26",
+  "files": {
+    "README.md": {
+      "bytes": 2814,
+      "sha256": "48d48adae9911c3f6e163cf040fc238249761525288e9df892b4f75c474eceba"
+    },
+    "affected-tests.json": {
+      "bytes": 929,
+      "sha256": "ec1b88bdc07e97413d78bd35eb2427843e8e46f3e0bfa74dcc6c1de4f72a18e8"
+    },
+    "code-provenance.json": {
+      "bytes": 3362,
+      "sha256": "225220dfb0d40852d8360d6308d1c827427e1b301aea232140e83673f9b7cfaf"
+    },
+    "development-matrix.json": {
+      "bytes": 85350,
+      "sha256": "a7a0f2ba74b4e1c35f54d5d6a8a90f28768020308e710cd8d28eb3c2184b019b"
+    },
+    "known-case.json": {
+      "bytes": 2066,
+      "sha256": "fc973352c0c41b2ad9e47946b65a0054994e3ef2e07fb28f3626b59e412a1bbc"
+    },
+    "production-capture.json": {
+      "bytes": 3124,
+      "sha256": "55d901dcd0bd88c4cd6a958c0e1eeb2ae87bff971572c57da53a43a7838007a5"
+    },
+    "red-green.json": {
+      "bytes": 2984,
+      "sha256": "5e6e9ba0392b2547c10131b4eed4a39aeefa51d2e8052eea23e2d403eecaf584"
+    },
+    "summary.json": {
+      "bytes": 1904,
+      "sha256": "89105b3efed413a5693e3e4f820de1669e5f46e9d01681a1942090d160d4bc61"
+    }
+  },
+  "files_excluding_this_receipt": 8,
+  "privacy_export_scope": "Explicit aggregate/case-ordinal metadata, public code labels, protocol/log/receipt hashes only; no seeds, private identifiers, private paths, raw motion, configurations or fitted artifacts.",
+  "receipt_hash_scope": "This receipt hashes every other file in this directory and the linked correction report; it does not recursively hash itself.",
+  "schema": "ump.doorway-start-attachment.public-bundle-receipt.v1"
+}

@@ -1,0 +1,20 @@
+{
+  "CTest_groups_failed": 0,
+  "CTest_groups_passed": 12,
+  "command": [
+    "ctest",
+    "--test-dir",
+    "simulator/build",
+    "--output-on-failure",
+    "-j",
+    "1",
+    "-R",
+    "^(sensor_regression|urban_privacy_split_evaluation|mapped_scene|mapped_scene_configuration|mapped_motion_probe_contract|mapped_export_replay_tools|run_urban_privacy_sources_evaluation|mapped_transit_access_drain_tools|mapped_dense_corridor_drain_tools|mapped_building_drain_tools|mapped_storefront_drain_tools|mapped_urban_traffic_drain_tools)$"
+  ],
+  "elapsed_seconds": 177.68830425,
+  "export_tests_passed_within_CTest": 55,
+  "log_sha256": "da43f820328ed9bb4f50ef238d724cef18e91046e75d39c4e135265597e465e6",
+  "schema": "ump.doorway-start-attachment.public-affected-tests.v1",
+  "scope": "Affected test groups, not every repository test. The 55 export tests are a subset, not an additional independent suite.",
+  "status": "verified"
+}

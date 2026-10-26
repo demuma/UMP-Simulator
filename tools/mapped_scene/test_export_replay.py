@@ -301,7 +301,9 @@ class NativeRecordingTests(unittest.TestCase):
     def test_local_navigation_counters_are_retained_without_inferring_motion_guarantees(self):
         summary=next(r for r in self.raw['agents'] if r['data_type']=='mapped source summary')
         counts={'navigation_steering_steps':12,'navigation_replans':3,'navigation_replan_failures':1,
-                'navigation_candidate_checks':50,'navigation_max_search_nodes':20}
+                'navigation_candidate_checks':50,'navigation_max_search_nodes':20,
+                'navigation_start_connector_checks':91,'navigation_expanded_start_searches':2,
+                'navigation_max_start_connector_checks':49}
         summary.update(counts,motion_model='local_navigation')
         proof=self.build()[2]
         self.assertEqual(proof['motion_quality']['source_model'],'local_navigation')

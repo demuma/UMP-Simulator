@@ -1013,6 +1013,123 @@ void localFiniteDenseSourceAndDoorVisits() {
     require(arrival>0 && returned-arrival>=8000,"Local building dwell was not based on realized arrival");
 }
 
+// A valid continuous corridor need not contain a node of the replanning grid.
+// The two bodies cannot pass in the 0.4m center strip (0.45m required gap).
+// Once they meet centrally, every connector in the initial 5x5 stencil is
+// obstructed. A farther connector into an end room and the upper bypass remain
+// legal: failure to attach locally must not be mistaken for no geometric path.
+MappedSceneConfig localOffGridAttachmentScene() {
+    auto input=localScene(10,10);input.clearanceM=.05;
+    input.navigation.gridResolutionM=1;input.navigation.centerClearanceM=.25;
+    input.navigation.maxReplanNodes=200;input.navigation.replanAfterMs=200;
+    input.navigation.replanIntervalMs=300;
+    input.navigation.allowedCenterPolygons={
+        {{{0,0},{2.5,0},{2.5,10},{0,10}},{}},
+        {{{7.5,0},{10,0},{10,10},{7.5,10}},{}},
+        {{{0,0},{10,0},{10,3},{0,3}},{}},
+        {{{0,5.1},{10,5.1},{10,5.5},{0,5.5}},{}}};
+    input.routes={{"attachment-east",{{0,5.3},{10,5.3}},"",""},
+        {"attachment-west",{{10,5.3},{0,5.3}},"",""}};
+    input.people={{"attachment-private-e","Adult Pedestrian",1,
+            {{"attachment-visible-e","attachment-east",0}},.2},
+        {"attachment-private-w","Adult Pedestrian",1,
+            {{"attachment-visible-w","attachment-west",0}},.2}};
+    return input;
+}
+
+void localExpandedStartAttachmentFindsOuterLegalPath() {
+    const auto input=localOffGridAttachmentScene();MappedScene scene(input);
+    std::map<std::string,Point> previous;
+    std::map<AggregationTime,std::vector<MappedVisibleTrack>> snapshots;
+    std::size_t consumed=0,bodyChecks=0,sweptChecks=0;bool usedBypass=false;
+    for (AggregationTime now=0;now<=30000;now+=50) {
+        scene.advanceTo(now);const auto frame=scene.frameAt(now);
+        if (now==10000 || now==15000) snapshots[now]=frame;
+        std::map<std::string,Point> current,stepEnds;
+        for (const auto& track:frame) {
+            const auto p=track.position;current[track.trackId]=p;stepEnds[track.trackId]=p;
+            usedBypass|=p.x>2.5 && p.x<7.5 && p.y<=3+1e-8;
+            require(p.x>=-1e-8 && p.x<=10+1e-8 && p.y>=-1e-8 && p.y<=10+1e-8
+                && (p.x<=2.5+1e-8 || p.x>=7.5-1e-8 || p.y<=3+1e-8
+                    || (p.y>=5.1-1e-8 && p.y<=5.5+1e-8)),
+                "Expanded start attachment left its declared center-space union");
+            require(std::hypot(track.velocity.x,track.velocity.y)<=1+1e-8,
+                "Expanded start attachment exceeded declared preferred speed");
+        }
+        const auto& events=scene.events();
+        for (;consumed<events.size();++consumed) {
+            const auto& event=events[consumed];
+            if (event.kind==MappedEventKind::EpisodeEnd && previous.count(event.trackId))
+                stepEnds[event.trackId]=event.routeId=="attachment-east"?Point{10,5.3}:Point{0,5.3};
+        }
+        for (const auto& [id,p]:stepEnds) if (previous.count(id))
+            require(std::hypot(p.x-previous.at(id).x,p.y-previous.at(id).y)<=.05+1e-8,
+                "Expanded start attachment teleported a pedestrian");
+        if (current.size()==2) {
+            const auto a=current.begin(),b=std::next(a);++bodyChecks;
+            require(std::hypot(a->second.x-b->second.x,a->second.y-b->second.y)>=.45-1e-8,
+                "Expanded start attachment bypassed independent body clearance");
+        }
+        if (stepEnds.size()==2 && previous.size()==2) {
+            const auto a=stepEnds.begin(),b=std::next(a);++sweptChecks;
+            require(spillbackSegmentDistance(previous.at(a->first),a->second,
+                    previous.at(b->first),b->second)>=.45-1e-8,
+                "Expanded start attachment bypassed independent swept clearance");
+        }
+        previous=std::move(current);
+    }
+    const auto d=scene.motionDiagnostics();
+    require(d.realizedEnds==2 && d.activeTracks==0 && d.pendingTracks==0 && usedBypass,
+        "Off-grid start attachment failed to use an existing outer connector and bypass");
+    require(d.overlapViolations==0 && bodyChecks>0 && sweptChecks>0
+        && d.navigationReplans>d.navigationReplanFailures && d.navigationExpandedStartSearches>0
+        && d.navigationMaxStartConnectorChecks>25
+        && d.navigationMaxStartConnectorChecks<=225
+        && d.navigationStartConnectorChecks<=d.navigationReplans*225
+        && d.navigationMaxSearchNodes<=input.navigation.maxReplanNodes,
+        "Expanded attachment did not retain separate bounded connector/search work");
+    auto renamed=input;std::reverse(renamed.people.begin(),renamed.people.end());
+    renamed.people[0].personId="changed-hidden-name-a";
+    renamed.people[1].personId="changed-hidden-name-b";
+    MappedScene coarse(renamed);
+    for (const auto& [now,expected]:snapshots) {
+        coarse.advanceTo(now);sameFrame(expected,coarse.frameAt(now));
+    }
+    coarse.advanceTo(30000);
+    require(coarse.events().size()==scene.events().size(),"Private names changed attachment lifecycle count");
+    for (std::size_t i=0;i<scene.events().size();++i)
+        require(scene.events()[i].kind==coarse.events()[i].kind
+            && scene.events()[i].trackId==coarse.events()[i].trackId
+            && scene.events()[i].atMs==coarse.events()[i].atMs,
+            "Private identity/order or caller cadence changed expanded attachment");
+}
+
+void localExpandedStartAttachmentKeepsTrulyBlockedCorridorBounded() {
+    for (const auto budget:{std::size_t{5},std::size_t{20000}}) {
+        auto input=localOffGridAttachmentScene();
+        const double side=budget==5?10:40,centre=side/2+.3;
+        input.width=side;input.height=side;input.navigation.maxReplanNodes=budget;
+        input.navigation.allowedCenterPolygons={
+            {{{0,centre-.2},{side,centre-.2},{side,centre+.2},{0,centre+.2}},{}}};
+        input.routes[0].points={{0,centre},{side,centre}};
+        input.routes[1].points={{side,centre},{0,centre}};
+        MappedScene blocked(input);blocked.advanceTo(budget==5?20000:45000);
+        const auto d=blocked.motionDiagnostics();
+        const auto connectorLimit=25+std::min<std::size_t>(budget,256);
+        require(d.realizedEnds==0 && d.activeTracks==2 && d.overlapViolations==0
+            && d.navigationReplans>0 && d.navigationReplanFailures==d.navigationReplans
+            && d.navigationExpandedStartSearches==d.navigationReplans
+            && d.navigationMaxSearchNodes==0
+            && d.navigationMaxStartConnectorChecks==connectorLimit
+            && d.navigationStartConnectorChecks<=d.navigationReplans*connectorLimit,
+            "An off-grid blocked corridor hid failure, escaped its connector cap or fabricated a path");
+        const auto frame=blocked.frameAt(budget==5?20000:45000);
+        require(frame.size()==2 && std::hypot(frame[0].position.x-frame[1].position.x,
+                frame[0].position.y-frame[1].position.y)>=.45-1e-8,
+            "Failed start attachment bypassed body clearance");
+    }
+}
+
 void localBoundedReplanningAndValidation() {
     auto input=localScene(10,10);
     input.navigation.allowedCenterPolygons={{{{0,4.99},{10,4.99},{10,5.01},{0,5.01}}, {}}};
@@ -1522,6 +1639,8 @@ int main() {
         localOpposingTrafficSteersAndDrains();
         localCrossingFlowsAndStaticHole();
         localFiniteDenseSourceAndDoorVisits();
+        localExpandedStartAttachmentFindsOuterLegalPath();
+        localExpandedStartAttachmentKeepsTrulyBlockedCorridorBounded();
         localBoundedReplanningAndValidation();
         localDoorArrivalDoesNotBacktrackToPassedMouth();
         localDoorPipelinesShareThroatAndDrainOpposingDemand();

@@ -1070,15 +1070,51 @@ bool MappedScene::replanNavigation(const std::string& id,Point goal) {
     std::priority_queue<Work,std::vector<Work>,std::greater<Work>> queue;
     const auto startColumn=static_cast<std::int64_t>(std::llround(state.position.x/resolution));
     const auto startRow=static_cast<std::int64_t>(std::llround(state.position.y/resolution));
-    for (std::int64_t y=startRow-2;y<=startRow+2;++y) for (std::int64_t x=startColumn-2;x<=startColumn+2;++x) {
-        if (x<0 || y<0 || x>=static_cast<std::int64_t>(columns) || y>=static_cast<std::int64_t>(rows)) continue;
+    std::size_t connectorChecks=0;
+    const auto seedStart=[&](std::int64_t x,std::int64_t y) {
+        if (x<0 || y<0 || x>=static_cast<std::int64_t>(columns) || y>=static_cast<std::int64_t>(rows)) return;
+        ++connectorChecks;
         const auto node=static_cast<std::size_t>(y)*columns+static_cast<std::size_t>(x);
         const auto p=point(node);
-        if (!clear(state.position,p)) continue;
+        if (!clear(state.position,p)) return;
         cost[node]=std::hypot(state.position.x-p.x,state.position.y-p.y);
         parent[node]=-1;
         queue.emplace(cost[node]+std::hypot(p.x-goal.x,p.y-goal.y),cost[node],node);
+    };
+    // Preserve the original start attachment, including its deterministic order.
+    for (std::int64_t y=startRow-2;y<=startRow+2;++y)
+        for (std::int64_t x=startColumn-2;x<=startColumn+2;++x) seedStart(x,y);
+    if (queue.empty()) {
+        ++diagnostics.navigationExpandedStartSearches;
+        // A legal continuous position can have no visible node in the small
+        // stencil (e.g. beside a facade and a waiting body). Grow only this
+        // attachment search; the exact static/body/passage predicate above and
+        // later per-step reservations still decide whether motion is allowed.
+        // Cap EXTRA visibility checks independently of the A* expansion bound.
+        // Failure remains explicit: neither grid attachment nor crowd liveness
+        // is guaranteed by this finite fallback.
+        const auto extraBudget=std::min<std::size_t>(settings.maxReplanNodes,256);
+        const auto initialChecks=connectorChecks;
+        const auto maximumRing=static_cast<std::int64_t>(std::max(columns,rows));
+        const auto tryExtra=[&](std::int64_t x,std::int64_t y) {
+            if (connectorChecks-initialChecks<extraBudget) seedStart(x,y);
+        };
+        for (std::int64_t ring=3;queue.empty() && ring<=maximumRing
+                && connectorChecks-initialChecks<extraBudget;++ring) {
+            // Visit each perimeter node once, in fixed clockwise order. Finish
+            // the first successful ring (within budget), retaining all its seeds.
+            for (std::int64_t x=startColumn-ring;x<=startColumn+ring;++x)
+                tryExtra(x,startRow-ring);
+            for (std::int64_t y=startRow-ring+1;y<=startRow+ring;++y)
+                tryExtra(startColumn+ring,y);
+            for (std::int64_t x=startColumn+ring-1;x>=startColumn-ring;--x)
+                tryExtra(x,startRow+ring);
+            for (std::int64_t y=startRow+ring-1;y>startRow-ring;--y)
+                tryExtra(startColumn-ring,y);
+        }
     }
+    diagnostics.navigationStartConnectorChecks+=connectorChecks;
+    diagnostics.navigationMaxStartConnectorChecks=std::max(diagnostics.navigationMaxStartConnectorChecks,connectorChecks);
     std::size_t expanded=0,found=count;
     while (!queue.empty() && expanded<settings.maxReplanNodes) {
         const auto [estimate,travelled,node]=queue.top();queue.pop();

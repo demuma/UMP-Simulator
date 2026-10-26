@@ -141,6 +141,9 @@ int drainConfiguration(const std::string& path, ump::AggregationTime endMs,
         <<" max_stop_ms="<<d.maxConsecutiveStopMs<<" merge_wait_steps="<<d.mergeAdmissionWaitSteps
         <<" navigation_steering="<<d.navigationSteeringSteps<<" navigation_replans="<<d.navigationReplans
         <<" navigation_replan_failures="<<d.navigationReplanFailures<<" navigation_search_max="<<d.navigationMaxSearchNodes
+        <<" navigation_start_connector_checks="<<d.navigationStartConnectorChecks
+        <<" navigation_expanded_start_searches="<<d.navigationExpandedStartSearches
+        <<" navigation_max_start_connector_checks="<<d.navigationMaxStartConnectorChecks
         <<" passage_wait_steps="<<d.passageWaitSteps<<" passage_batches="<<d.passageBatches
         <<" passage_cleared_tracks="<<d.passageClearedTracks<<" max_passage_wait_ms="<<d.maxPassageWaitMs
         <<" crossing_pedestrian_wait_steps="<<d.crossingPedestrianWaitSteps<<" crossing_rider_wait_steps="<<d.crossingRiderWaitSteps

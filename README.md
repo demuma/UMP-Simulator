@@ -5,6 +5,22 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
+**Doorway source correction — 2026-10-26.** The diagnosed local-navigation
+failure is corrected with a bounded fallback for an empty A* start frontier.
+All **92/92 DEV cases and 15,590/15,590 episodes** complete, including twelve new
+independent DEV seeds. Independent body/swept/speed/displacement/cohort checks and
+connector/search work bounds pass. All twelve affected CTest groups pass; the
+actual Simulator/MongoDB/replay capture also verifies all 169 episodes.
+Read the [source correction and test report](docs/URBAN_PRIVACY_DOORWAY_START_ATTACHMENT_FIX_2026-10-26.md).
+
+A fresh `urban-primary-20261026-v3` study is being prepared with new 24 TRAIN /
+16 CAL /32 TEST recordings and unchanged policies, methods and analysis. Fresh
+unit validation passes 177 methods; all 22 new DEV recipient streams and their
+archive/public-policy/feature/utility reconstruction pass. The source binding is
+prepared for independent review before the new primary manifest is frozen. The earlier TEST configurations are exposed DEV regressions now;
+their old outcomes and fits remain historical, and no new primary TEST has been
+generated. Source validation is not a measured privacy gain.
+
 **Urban privacy gate P25.4 — implementation validated; held-out result unavailable.**
 Source v2 finished all 72 frozen attempts: 24/24 TRAIN, 16/16 CAL and 31/32 TEST
 captures are valid. One TEST recording exposes a new local-navigation deadlock

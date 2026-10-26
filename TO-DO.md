@@ -45,22 +45,36 @@ These are engineering/calibration results, not the planned held-out privacy resu
 
 Next, in order:
 
-1. Preserve the failed doorway recording and static diagnostic as development
-   evidence. Add a minimal regression for a passer and an incoming stroller near
-   a facade; exercise finite steering and the bounded A* start connector. Do not
-   assume that changing the connector from ±2 to ±3 cells proves liveness.
-2. Correct the bounded local-navigation failure while retaining body/swept/static
-   clearance and doorway/reservation rules. Check entry queues, unrelated passers,
-   return episodes and dense/mixed traffic; record failures and costs.
-3. Validate the source on a bounded independently seeded DEV matrix. Keep the
-   present finite-cohort completion rule unchanged for this closed run. Legitimate
-   streaming right-censoring needs a separately declared protected unit and a
-   nonprogress-quality gate; it must not conceal a persistent jam.
-4. Freeze a new study with fresh unseen evaluation realizations and explicit
-   historical exclusions. Refit only on its TRAIN groups, lock CAL thresholds,
-   then evaluate TEST. Report controls, paired uncertainty and utility together;
-   raw motion/models/scores remain local. Complete P25.4 only when that evidence
-   has passed review. Second-site and new-attack work follow afterward.
+1. [x] Preserve the failed doorway recording and add a minimal synthetic public-API
+   regression. The same new suite is RED against archived source-v2 code and
+   GREEN against the correction; a truly blocked corridor retains bounded failure.
+2. [x] Correct empty initial A* attachment with a bounded ring fallback. Keep the
+   initial 25 checks, exact safety/resource rules and per-step motion guards;
+   add at most min(maxReplanNodes, 256) extra checks and expose their work counters.
+   All twelve affected CTest groups pass, including 55 replay-export tests.
+3. [x] Complete the predeclared 92-case DEV matrix: all 72 closed source-v2
+   configurations, eight original DEV configurations and twelve fresh seeds.
+   All 15,590 episodes finish; all independent physical/cohort/work-bound checks
+   and raw-log/provenance verification pass. The production capture of the diagnosed
+   case also verifies 169/169 observed episodes through MongoDB and replay export.
+   [Correction report](docs/URBAN_PRIVACY_DOORWAY_START_ATTACHMENT_FIX_2026-10-26.md).
+4. [ ] Restart P25.4 with a fresh frozen study and genuinely unseen evaluation
+   realizations. The accepted draft `urban-primary-20261026-v3` uses 72 new groups
+   and 216 role seeds, disjoint from historical/reserved sources. Scientific
+   policies, eleven methods and all analysis rules stay unchanged. Fresh 177-method
+   validation and all 22 current-code DEV streams pass, including archive/public/
+   policy/feature/utility reconstruction. The source binding is prepared for
+   independent review. After reviewed source/implementation binding, fit only NEW TRAIN groups, lock CAL,
+   then generate/evaluate NEW TEST. Publish paired risk/uncertainty and utility
+   together, including controls and every incomplete/negative outcome. Complete
+   P25.4 only after that evidence is reviewed; second-site work follows afterward.
+
+The closed finite-cohort completion rule remains unchanged. A future streaming
+right-censoring study needs its own protected unit and behavioral-quality gate;
+it must not conceal persistent gridlock. Historical TEST motion is now DEV
+exposure and is excluded from fresh primary enrollment. Raw movement/models/scores
+remain local. The movement correction establishes source readiness, not measured
+privacy improvement or a general liveness/real-time guarantee.
 
 
 Work through these gates sequentially. A second site, globally adaptive uniform

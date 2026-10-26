@@ -1,0 +1,78 @@
+{
+  "checks": {
+    "all_scheduled_episodes_completed": true,
+    "fixed_geometry": true,
+    "full_horizon": true,
+    "independent_physical_audit": "pass",
+    "same_configuration_law": true,
+    "source_hashes_verified": true,
+    "source_observability": "pass"
+  },
+  "connector_telemetry_retained_and_bounded": true,
+  "current_role": "DEV",
+  "independent_audit": {
+    "all_planned_entries_completed": true,
+    "boundary_endpoint_checks": 237,
+    "buildings_with_completed_entries": 2,
+    "buildings_with_realized_exits": 2,
+    "independent_gt_body_pair_checks": 7285742,
+    "independent_gt_swept_body_pair_checks": 7285742,
+    "maximum_navigation_velocity_error_mps": 0.00019324573177933058,
+    "minimum_body_clearance_margin_m": 9.899272756005995e-06,
+    "minimum_realized_hidden_gap_ms": 8000,
+    "minimum_swept_body_clearance_margin_m": 9.899272756005995e-06,
+    "navigation_motion_segments_checked": 179260,
+    "navigation_static_body_checks": 179260,
+    "navigation_terminal_segments_checked": 169,
+    "navigation_velocity_checks": 179091,
+    "status": "pass",
+    "surface_access_entries": 10,
+    "surface_access_exits": 9,
+    "targets_with_completed_entries": 8
+  },
+  "lifecycle": {
+    "active_episodes_at_horizon": 0,
+    "event_rows": 338,
+    "expected_gt_rows": 179260,
+    "pending_episodes_at_horizon": 0,
+    "realized_ends": 169,
+    "realized_starts": 169,
+    "source_steps_checked": 6000
+  },
+  "operational_elapsed_seconds": {
+    "capture": 147.510633458,
+    "independent_audit": 49.582864124999986
+  },
+  "provenance": {
+    "audit_execution_receipt_sha256": "c7996b47d4c677910fc3baaf5c066a570c82b4fc4c0f6e3e91c112001e7e3446",
+    "capture_proof_sha256": "015187accbb787ce67921a4bb55e57cce25965e8c7d87cd8d0a305a1e32d82c9",
+    "physical_audit_receipt_sha256": "3651202f75f451b8445c0c899ff0c00a9afb0c2a6e0090e859db8d148fe97385",
+    "protocol_sha256": "4b90db476700a5dc3e28ba84b9f7bc43218257c9d99263d829b2e3569c004710",
+    "runner_sha256": "dd42671433066c41ac9f1057ee7e2940c8b9eb0ba98f636e8a07eee5319a0f83"
+  },
+  "reported_motion_diagnostics": {
+    "active_stalled_tracks": 0,
+    "body_overlap_violations": 0,
+    "navigation_expanded_start_searches": 46,
+    "navigation_max_search_nodes": 15597,
+    "navigation_max_start_connector_checks": 281,
+    "navigation_replan_failures": 63,
+    "navigation_replans": 162,
+    "navigation_start_connector_checks": 15352
+  },
+  "sampling": {
+    "measured_empty_samples": 849,
+    "measured_samples": 2999,
+    "observation_contributions": 89591,
+    "observed_episode_count": 169,
+    "peak_observed_tracks": 127,
+    "sampling_period_ms": 100,
+    "scheduled_episodes": 169,
+    "scheduled_people": 128,
+    "source_horizon_ms": 300000
+  },
+  "schema": "ump.doorway-start-attachment.public-production-capture.v1",
+  "scope": "Production Simulator to MongoDB to replay export and independent physical/access audit; not primary method fitting or TEST attack evaluation.",
+  "status": "verified",
+  "timing_scope": "Production capture/export and separate audit operational timings; no real-time guarantee or comparison speedup."
+}

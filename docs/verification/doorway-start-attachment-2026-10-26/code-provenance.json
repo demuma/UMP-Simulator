@@ -1,0 +1,37 @@
+{
+  "aggregation_replay_byte_identical": true,
+  "corrected_code_and_binaries_sha256": {
+    "simulator/build/AggregationReplay": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+    "simulator/build/MappedMotionProbe": "fc98427a32515d81f4557d2f2739d32e383c2ca5f71287f461a9cddc481f314d",
+    "simulator/build/Simulator": "f40ab79691ab14c5dcd9a22ef7ff3d66dbd0d2d3d4e35567cd0062de45297a0f",
+    "simulator/include/MappedScene.hpp": "740af628329e273a7cb104f6b1d8bd1c4fb151bfb0a91adf351aa76f4dd2f78b",
+    "simulator/src/MappedScene.cpp": "eaea4d695dd931b97a31fe614965902f339768988d102a5de32024aa439f54e5",
+    "simulator/src/Simulation.cpp": "31522ab1a9d293f9d86a618af00e2b30c2cf0c01fb811e8fe5f9cfca8f21f0a5",
+    "simulator/tests/MappedMotionProbe.cpp": "3b1820316b546da96259e4f80184b5ca6f63053f9a6d584d78fe6811840d6962",
+    "simulator/tests/MappedSceneConfigurationTests.cpp": "8280d503172bdcacbf2eb157900e9d0400cab7364937c68a7e65164b72dddd73",
+    "simulator/tests/MappedSceneTests.cpp": "15132e525bceded7cd8ef53c4f08a962ded017f08860486f6f56b57a65087044",
+    "tools/mapped_scene/export_replay.py": "f6ae92e12808cc0e8d744326435d39c4fc3e4c648bca4cf5d27f696b287be2c5",
+    "tools/mapped_scene/test_export_replay.py": "53c087b02c3162b5f0e56229fac6191e19526d3e025fcca5e74c4d274d98279a"
+  },
+  "original_archive_receipt_sha256": "36edb68f3ecdcdcfc37c9dd18889d290cc6a3b5290b9c4ca3ef0c86b9dc34def",
+  "original_archives_verified": true,
+  "original_code_and_binaries_sha256": {
+    "simulator/CMakeLists.txt": "d9892d9ad8cdf4e692a465ec258388ad12a3e64db112eb28b5517cdf2a17ca25",
+    "simulator/build/AggregationReplay": "72fc0aff452ee036d7dfdd8bd8ca7bd343c7462923ec00ccb39f904ee655502f",
+    "simulator/build/MappedMotionProbe": "40fe14cf9e7b2a9e79afa49b162ef46148378b6866c2b16941787de11553a06d",
+    "simulator/build/MappedSceneConfigurationTests": "aaa1154fae0de857a6b0a9da7e9cd902ba90e96af347bab456ac5666c60629a5",
+    "simulator/build/MappedSceneTests": "e048bd74cf6cedcd31389ff9db5b8ea298e587b339517df1b9585d06f577a21f",
+    "simulator/build/Simulator": "1e0536c5823a955d74045487db93d663ec0ad8dd75775b9532b76dc4fa9070a2",
+    "simulator/include/MappedScene.hpp": "1cfbf1d2f0ee90e4d33738b157ea059b78cfcabfa44780274e49b40340ef9c76",
+    "simulator/include/MappedSceneConfiguration.hpp": "7891b9df9d990d106aecdef35cac2adb7908a1274fa91e406fe8a1e6a8b2d205",
+    "simulator/src/MappedScene.cpp": "4a6be232fe622741272704974400977e911f8a2fcb190ff952cdcb39727791b0",
+    "simulator/src/MappedSceneConfiguration.cpp": "1780d18766d7f230d34c51262285dc389838597db40697d3d86eae4260a7de83",
+    "simulator/src/Simulation.cpp": "53862efbbd8696d9a3ff443880bea20ff8be2c11b748233d4d6dbf17b4b503c7",
+    "simulator/tests/MappedSceneTests.cpp": "4330815d68551051a16c9925e31a0b54882d1967018ebe17613c806ced6bf1fc",
+    "tools/mapped_scene/export_replay.py": "bd10e6229091be0e8fb40886dc1575370d584c219aa0c8115a08d525ab205b94",
+    "tools/mapped_scene/test_export_replay.py": "85c3339fecbfc32a885973e6554d4c08cc3e5b1fdc1092144509895e16909869"
+  },
+  "original_serialization_archive_receipt_sha256": "ef6cb6c1597d6b274f8cff414076ca8fb4d3d4b95fdcf046c535afee6ee291df",
+  "schema": "ump.doorway-start-attachment.public-code-provenance.v1",
+  "scope": "Public repository artifact labels and hashes only; archived binaries and complete local receipts are not distributed."
+}

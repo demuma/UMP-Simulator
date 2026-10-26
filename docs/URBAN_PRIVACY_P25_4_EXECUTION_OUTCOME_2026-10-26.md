@@ -89,3 +89,14 @@ Retain the failed doorway as an explicit regression case. Investigate its local 
 Do not relax the present completion gate after observing its failure. A future streaming design may legitimately protect all observed contributions within a fixed horizon, including right-censored tracks, but it must explicitly define that protected unit, eligibility and a separate behavioral-validity gate before assessment. Persistent unintended gridlock should not be relabeled as ordinary boundary censoring or repaired by forced EOF exits.
 
 The diagnosed TEST motion is now development knowledge. Any later corrected-source privacy study should freeze its source and eligibility design before fresh unseen evaluation realizations, retain this failed cohort and its model lock as historical evidence, and keep the same distinction between source validity, policy compliance and measured privacy benefit. The current P25.4 research acceptance criterion remains open.
+
+## Subsequent development correction
+
+The [bounded doorway attachment correction](URBAN_PRIVACY_DOORWAY_START_ATTACHMENT_FIX_2026-10-26.md)
+subsequently passes 92/92 DEV cases (including twelve fresh seeds) and the full
+production capture of the diagnosed configuration. Those are development results
+under a new source implementation; they do not change this closed run's source
+gate or create TEST privacy estimates. A fresh primary study is being prepared.
+The commands recorded above ran with the matching archived source-v2 code/binary
+environment. Current corrected files intentionally fail the old frozen-current-
+file guards; use the matching archived environment to reproduce those checks.

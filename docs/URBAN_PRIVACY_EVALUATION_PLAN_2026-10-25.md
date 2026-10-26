@@ -149,3 +149,12 @@ versions without pooling. See the [final outcome](URBAN_PRIVACY_P25_4_EXECUTION_
 [compact source and mechanism outcomes](verification/urban-privacy-p25-4-2026-10-26-v2/final-outcome/README.md),
 [pre-TEST amendment](URBAN_PRIVACY_P25_4_SOURCE_V2_AMENDMENT_2026-10-26.md) and
 [validation/execution report](URBAN_PRIVACY_P25_4_TEST_REPORT_2026-10-25.md).
+
+The source prerequisite now passes: the [doorway correction](URBAN_PRIVACY_DOORWAY_START_ATTACHMENT_FIX_2026-10-26.md)
+completes 92/92 DEV cases and a verified production capture. Fresh unit validation
+passes 177 methods, and the new 22-stream recipient integration with complete
+archive/public/policy/feature/utility reconstruction passes. The accepted fresh
+`urban-primary-20261026-v3` draft preserves scientific choices and excludes all
+exposed sources; it has not generated new primary TEST data. The next gate is
+reviewed fresh source/implementation binding, new TRAIN/CAL fits and locked
+thresholds, followed by untouched TEST. The older incomplete result stays intact.
