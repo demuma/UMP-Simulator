@@ -26,19 +26,26 @@ or TEST captures. One physically valid recording retains three active tracks at
 300 s and fails its original completion gate. Read the
 [strict source-only outcome](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_CLOSURE_2026-10-26.md).
 
-The separate `observed_track_window_v1` implementation passes **344/344 affected
-unit tests**, including the existing default paths. All forty original TRAIN/CAL
-captures pass independently checked full-window integrity; all 22 retained DEV
-streams and 66 archives are reconstructed. The new evaluation and implementation
-are [frozen before execution](docs/verification/urban-track-window-2026-10-26-v1/pre-test-freeze/). All 22 fresh model variants now converge; TRAIN scaling, objectives and CAL
-thresholds pass independent no-refit verification. The
-[actual model lock](docs/verification/urban-track-window-2026-10-26-v1/model-lock/)
-precedes generation of the thirty-two original untouched TEST slots. Policies, native source, methods and numerical
-analysis remain unchanged. Held-out risk/utility results are pending. Read the
-[implementation and test report](docs/URBAN_PRIVACY_TRACK_WINDOW_TEST_REPORT_2026-10-26.md).
-The [original restart evidence](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md)
-keeps its at-freeze meaning; earlier TEST motion is exposed DEV, and historical
-models/outcomes remain separate.
+**Observed-window evaluation — technical repair qualified.** The separate
+`observed_track_window_v1` evaluation preserves all 40 TRAIN/CAL families
+(720 native executions, 160 regional compositions and 880 method/world rows).
+All 22 attack variants converged and the independently verified
+[model lock](docs/verification/urban-track-window-2026-10-26-v1/model-lock/)
+predates every TEST source capture. All 32 original TEST captures completed,
+but their original qualification attempts failed in a surface-access reporting
+diagnostic before any TEST mechanism or score.
+
+After preserving that phase's failures, a diagnostic-only correction and
+field-qualified compatibility guard pass 373 current unit tests, six portal
+regressions and an actual city DEV opt-in window-profile CLI audit. The new
+ledger qualifies all 72 original inputs: 40 legacy-proof reauthentications and
+32 corrected TEST physical audits, with no resimulation, replacement, quality
+filter or refitting. Read the
+[technical amendment](docs/URBAN_PRIVACY_TRACK_WINDOW_DIAGNOSTIC_REPAIR_2026-10-26.md)
+and [profile/test report](docs/URBAN_PRIVACY_TRACK_WINDOW_TEST_REPORT_2026-10-26.md).
+Actual TEST method execution and held-out risk/utility assessment remain the
+next gate; P25.4 is still open. The original strict study and historical
+TEST/model evidence remain separate and unchanged.
 
 **Closed P25.4 source-v2 — held-out result unavailable.**
 Source v2 finished all 72 frozen attempts: 24/24 TRAIN, 16/16 CAL and 31/32 TEST

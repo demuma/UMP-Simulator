@@ -372,7 +372,7 @@ def audit(cfg, raw, tolerance=1e-4, public_context=None, map_layers=None, *, pro
             **({'validation_profile': profile,
                 'movement_coverage_quality': {
                     'declared_destination_count': len(portals),
-                    'declared_building_count': len({p['building_id'] for p in portals.values()}),
+                    'declared_building_count': len({p['building_id'] for p in portals.values() if p.get('kind') != 'surface_access'}),
                     'realized_two_destination_coverage': destination_coverage,
                     'scope': 'Recorded movement coverage only; unfinished or unvisited destinations do not invalidate a complete observation window.'}}
                if not strict_coverage else {}),

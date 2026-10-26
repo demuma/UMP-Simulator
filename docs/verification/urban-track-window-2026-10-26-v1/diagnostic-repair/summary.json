@@ -1,0 +1,29 @@
+{
+  "failed_or_missing_qualifications": 0,
+  "held_out_privacy_utility": "pending; readiness is not a privacy result",
+  "imported_mechanism_groups": 40,
+  "imported_rows": 880,
+  "locked_variants": 22,
+  "model_refits": 0,
+  "movement_quality": "reported separately; no quality-based enrollment",
+  "new_full_raw_receipts": 72,
+  "new_physical_audits": 32,
+  "original_failure": "surface-access building-count diagnostic KeyError",
+  "original_qualification_failures": 32,
+  "original_test_captures": 32,
+  "protected_unit": "all observed contributions of one operational track in [0,300000) ms",
+  "qualified_sources": {
+    "calibration": 16,
+    "test": 32,
+    "train": 24
+  },
+  "reused_legacy_proofs": 40,
+  "schema": "ump.track-window-diagnostic-repair-public-readiness.v1",
+  "source_replacements": 0,
+  "source_resimulations": 0,
+  "status": "qualified_before_TEST_assessment",
+  "test_mechanism_groups_at_readiness": 0,
+  "test_model_evaluations_at_readiness": 0,
+  "threshold_retunes": 0,
+  "utc": "2026-10-26T17:48:21.308957+00:00"
+}

@@ -29,20 +29,17 @@ Research questions describe the dissertation; this is the implementation queue.
   [Protocol](docs/URBAN_PRIVACY_P25_3_PROTOCOL_2026-10-25.md) and
   [test report](docs/URBAN_PRIVACY_P25_3_TEST_REPORT_2026-10-25.md).
 - [ ] P25.4: **held-out protection/utility evidence remains pending.** The strict
-  source-v3 TRAIN/CAL batch is closed at 39/40 valid sources; an incomplete TRAIN
-  journey fails its original complete-episode rule. Its source-only outcome is
-  preserved, with zero new primary fits or TEST generation. The user explicitly selected a
-  separate observed-track-within-300-s protection contract, with movement quality
-  reported independently. Implement/validate its explicit source profile; import
-  all 40 original TRAIN/CAL inputs without changing roles or hiding old failures;
-  freeze new code/contract/import provenance, fit fresh models/CAL thresholds,
-  then generate the32 original untouched TEST slots and assess actual risk/utility.
-  Complete clock/GT/sensor/provenance/physics remain hard gates. No trajectory
-  repair, quality filtering, replacement seeds or old model reuse.
-  [Windowed contract](docs/PRIVACY_TRACK_WINDOW_CONTRACT_2026-10-26.md).
-  Earlier [source-v2](docs/URBAN_PRIVACY_P25_4_EXECUTION_OUTCOME_2026-10-26.md)
-  and [source-v3 freeze](docs/URBAN_PRIVACY_P25_4_SOURCE_V3_RESTART_2026-10-26.md)
-  keep their original meanings; neither establishes held-out privacy improvement.
+  source-v3 complete-episode study remains closed at 39/40 TRAIN/CAL sources,
+  with no original primary mechanisms, fitted models or TEST generation. The
+  separate observed-window evaluation has 40 verified paired families and 22
+  pre-TEST locked attack variants. Its 32 original TEST captures completed but
+  failed original qualification in a reporting diagnostic. A documented
+  diagnostic-only amendment now qualifies all 72 original inputs without
+  resimulation, quality filtering, replacement or refitting. Execute and audit
+  actual TEST methods/scores next; report controls, grouped uncertainty and
+  world-specific utility beside movement quality. No measured privacy benefit
+  is claimed yet. [Contract](docs/PRIVACY_TRACK_WINDOW_CONTRACT_2026-10-26.md) and
+  [technical amendment](docs/URBAN_PRIVACY_TRACK_WINDOW_DIAGNOSTIC_REPAIR_2026-10-26.md).
 
 
 
@@ -89,15 +86,22 @@ Next, in order:
    Reject hard-invalid data; preserve quality separately. Original statuses and
    legacy physical-audit provenance remain intact.
    [Test report](docs/URBAN_PRIVACY_TRACK_WINDOW_TEST_REPORT_2026-10-26.md).
-8. [ ] Evaluation/profile/code/import ledger are frozen. All 40 paired families
-   pass; all 22 fresh variants converge and independent TRAIN/CAL numerical
-   verification passes. The actual new lock is bound. Generate all 32 original
-   untouched TEST sources only afterward; no old-lock reuse.
+8. [x] Complete all 40 observed-window paired families, lock the 22 converged
+   variants and independently verify TRAIN scaling/CAL thresholds before TEST
+   generation. Retain the original 32 TEST captures and their failed diagnostic
+   qualifications; the source gate stopped all TEST mechanisms/scores.
    [Model-lock evidence](docs/verification/urban-track-window-2026-10-26-v1/model-lock/).
-9. [ ] Audit every TEST source under the new hard-integrity contract before TEST
-   mechanisms, then report actual controls, grouped uncertainty and own-world
-   utility beside movement quality. Publish compact results/figures and a detailed
-   test report. Complete P25.4 only after independent review of actual evidence.
+9. [x] Close the original source phase before the diagnostic-only patch; retain
+   all failures and exact original inputs/models. Verify current 373-test QA,
+   the portal regression and actual city DEV opt-in CLI, then authenticate all
+   72 new raw-validation receipts (40 reused legacy proofs + 32 corrected TEST
+   physical audits) and the pre-TEST readiness gate. No source replacement,
+   refit, recalibration or quality-based enrollment filter.
+   [Technical amendment](docs/URBAN_PRIVACY_TRACK_WINDOW_DIAGNOSTIC_REPAIR_2026-10-26.md).
+10. [ ] Execute the original TEST method families and fixed-model assessment;
+   independently verify controls, paired-source uncertainty, policy accounting
+   and each world's utility. Preserve unavailable/nonconverged cases. Publish
+   compact evidence/figures and close P25.4 only after actual-result review.
 
 The original finite-cohort completion rule remains unchanged for its historical
 study. The new windowed evaluation does not assert realistic motion or repair

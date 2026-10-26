@@ -1,0 +1,37 @@
+{
+  "city_DEV_smoke": {
+    "actual_TEST_read": false,
+    "model_fits": 0,
+    "new_native_jobs": 0,
+    "receipt_sha256": "9bacb2df9888c7ffd456dceef0b8f88e07874dfcd1c34bbf63f3e03887bad3cc",
+    "seconds": 48.770289915999996,
+    "status": "verified"
+  },
+  "current_unit_tests": {
+    "errors": 0,
+    "failures": 0,
+    "receipt_sha256": "bdf8287b455c24beab46e41f5d29598f584e5f5667855f7f1c79a1e20fff352e",
+    "seconds": 33.166406583000004,
+    "skips": 0,
+    "tests": 373
+  },
+  "field_guard_tests": {
+    "actual_archived_to_current_byteguard": "verified",
+    "byteguard_receipt_sha256": "e7b2f5826ddc052687c30421727a6226e47aacdfd7eb4c5677a1ad2630313fa4",
+    "receipt_sha256": "66f3b8f86fa5b34741df3196ec07577b344b219356e2b6a5eb9fa9828db2c08a",
+    "tests": 29
+  },
+  "independent_metadata_audit": {
+    "raw_reconstruction_repeated": false,
+    "receipt_sha256": "bd1a9883060caf6ebb93cb6a0c197221970a4e92e454bcf8424335dba843543d",
+    "status": "verified_complete_before_TEST"
+  },
+  "portal_regressions": {
+    "errors": 0,
+    "failures": 0,
+    "receipt_sha256": "994ce3ea91e1491ec17e3b2e0ddaea86200f1cea4dc573467515c39881749139",
+    "tests": 6
+  },
+  "schema": "ump.track-window-diagnostic-repair-public-validation.v1",
+  "scope": "Overlapping test scopes are not summed. Audit timings are not mechanism real-time evidence."
+}

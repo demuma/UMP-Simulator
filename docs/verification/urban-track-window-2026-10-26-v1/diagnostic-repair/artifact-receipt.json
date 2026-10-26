@@ -1,0 +1,11 @@
+{
+  "artifacts_sha256": {
+    "provenance.json": "21e2f6311eaf923ca9bff906d256381c3698bd7cf8dda01eb98632012ac3644a",
+    "summary.json": "aac9879a52ced32376da957205f8197b898fa17d5fcb708c9784fd69afbe2610",
+    "validation.json": "9d489cd0cc6cec3edf538751dec7006260e8b29ee0544d68de99d4a32f8a00f8"
+  },
+  "schema": "ump.track-window-diagnostic-repair-readiness-artifacts.v1",
+  "scope": "Aggregate pre-TEST readiness/code/test/lineage evidence only; no raw movements, models, individual labels or scores.",
+  "technical_amendment_sha256": "de5b1626da413eed79204142f19b8371377db81d016a8a0f76d2744ca93d0f8b",
+  "utc": "2026-10-26T17:48:21.308957+00:00"
+}
