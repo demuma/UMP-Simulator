@@ -1,6 +1,57 @@
 # TO-DO — UMP-Simulator
 
 
+## Optional: regional execution preferences — review on 27 October 2026, evening
+
+Planning addition after completed P26. Review this option this evening
+(Europe/Madrid) before deciding whether it adds sufficient value for the Thursday,
+29 October presentation. Status: optional proposal pending the evening review;
+completed P26 evidence remains frozen.
+
+- [ ] **OPT-R01 — Evening decision:** compare implementation/validation effort
+  with presentation preparation and the proposed second-attack pilot. Keep this
+  extension optional; the existing local-constraint results remain usable.
+- [ ] **OPT-R02 — Bounded first scope, if selected:** keep Semantic First and its
+  secondary preference global; resolve only the release trigger regionally.
+  Compare global immediate release, global preference waiting, and exactly one
+  mixed configuration: preference waiting at shop entrances, immediate release
+  elsewhere. Keep every hard regional constraint and input recording unchanged.
+- [ ] **OPT-R03 — Execution contract before code:** specify root defaults,
+  regional inheritance/overlap and deterministic resolution for a candidate
+  intersecting multiple regions. Waiting is a preference bounded by the existing
+  hard deadlines. Different strategies have no automatic "strictest" ordering.
+  Full regional primary/secondary strategy selection is a later, larger extension.
+- [ ] **OPT-R04 — Coordination design review:** identify how effective preferences
+  follow each owned window and candidate through split, merge, compaction, renewal
+  and future handoff. Audit every existing global strategy/trigger branch in
+  `CellLocalAggregation`; do not change only the owner-release branch while
+  leaving parent-rescue checks or diagnostics global. Preserve ownership,
+  immutable retirement, non-reuse, deadline and sink-acknowledgement invariants.
+- [ ] **OPT-R05 — Correctness gate before experiments:** verify default/uniform
+  behavior against the current implementation, mixed-region parent candidates,
+  differently aged siblings, mixed-depth cuts, overlap, handoff boundaries,
+  early exact-semantic success, deadline fallback, EOF, empty input and sink retry.
+  Check both policy conformance and intended preference ordering; existing hard
+  policy/ownership audits alone cannot establish correct waiting behavior.
+- [ ] **OPT-R06 — One regional example, if justified:** report retention, J,
+  retained semantic/spatial detail, query coverage and logical delay/tails per
+  region as well as overall. Treat a single recording as a demonstration, not an
+  independent statistical comparison. Reuse identical observations across all
+  configurations and preserve the existing frozen results/binaries separately.
+- [ ] **OPT-R07 — Privacy scope:** a functionality/utility demonstration needs
+  no new MIA claim. A privacy comparison for the mixed configuration requires
+  separately declared TRAIN-only attack fits, CAL thresholds and TEST assessment;
+  old strategy AUCs cannot be transferred to this new output distribution. Keep
+  reused-TEST comparisons exploratory and predeclare any fresh confirmation.
+
+Initial code-based assessment: the ownership frontier, history, deadline handling,
+handoff mechanism and publication ledger can likely be retained. This is still
+more than a configuration edit: global execution preferences currently influence
+owner processing, parent rescue, waiting and diagnostics. A trigger-only extension
+has a smaller surface than fully regional strategy selection, but requires
+explicit cross-region rules and targeted coordination regressions. No simulator
+or aggregator implementation is changed by this optional planning entry.
+
 ## Completed: P26 supplementary strategy comparison
 
 Followed the [declared protocol](docs/URBAN_STRATEGY_SUPPLEMENT_PROTOCOL_2026-10-26.md)
