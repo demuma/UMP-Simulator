@@ -1,0 +1,130 @@
+{
+  "TEST_pairs_per_attack": 32,
+  "checks": {
+    "final_actual_figures": {
+      "receipt_sha256": "20a6df8168ee787c617c611bbb8ada1801cf717b3118ff8379ce252e7b38b106",
+      "status": "visually_verified"
+    },
+    "final_arithmetic": {
+      "receipt_sha256": "37cd6489fe170cf35e14ad3bc046364b9a8f1be1224bef379a439b8865ee6e40",
+      "status": "verified"
+    },
+    "final_metadata": {
+      "receipt_sha256": "fb3a5df6bdcc756cbdbbd8f5a54bde0efa00c5cd881541744346b6efbb11fae6",
+      "status": "verified"
+    },
+    "final_public_lineage": {
+      "receipt_sha256": "3e8ae8d72eedb5d6618570011a9e41382cf1ce1be49eb059f8743be4ce9711b3",
+      "status": "verified"
+    },
+    "model_lock_arithmetic": {
+      "receipt_sha256": "fdab8e19ca9dda648d9839a51311958cfbc7826792ece375149bad78afcccb0c",
+      "status": "verified"
+    },
+    "utility_arithmetic": {
+      "receipt_sha256": "d1e6c167a82d526f4471ba0192258e7f0207c5588339a2b8b04f1d2aae730fb5",
+      "status": "verified"
+    },
+    "utility_metadata": {
+      "receipt_sha256": "4419c56487aa89e2516b316439daac442237d3b6ed1a390dad04c764c97fbf91",
+      "status": "verified"
+    },
+    "utility_public_artifacts": {
+      "receipt_sha256": "76b3d55e216b31efea318ff9aaadc4fb679767e8dc758cb1ac997da1b7443aa4",
+      "status": "verified"
+    }
+  },
+  "code_freeze_commit": "85ed5b5",
+  "combined_method_representation_variants": 30,
+  "combined_native_cases": 1872,
+  "combined_recipient_rows": 2160,
+  "controls": 4,
+  "independent_arithmetic_comparisons": {
+    "final": 9206,
+    "model_lock": 5142,
+    "utility": 6334
+  },
+  "models_lock_sha256": "dd769e1da7cabeb9647e4cf303f0b8fd2124be5faaeda2d594127dc19d99ccb8",
+  "models_sha256": "82e95ec2b81c2afcd4f00d7ec17c9e28f2423c1319ff59dc8efa4a8aa68f849d",
+  "new_case_failures": 0,
+  "new_fit_count": 8,
+  "new_native_cases": 576,
+  "new_published_policy_violations": 0,
+  "original_models_or_thresholds_refit": 0,
+  "original_primary_and_attacks_preserved": true,
+  "phases": {
+    "final-export": {
+      "ended_at": "2026-10-27T06:12:05.439263+00:00",
+      "receipt_sha256": "d0236947b97be0d607b777e3d341fdb81c63fb75e1f436ea32ce33289ceb29b7",
+      "returncode": 0,
+      "seconds": 1.5338325829999349,
+      "started_at": "2026-10-27T06:12:03.905449+00:00",
+      "status": "complete"
+    },
+    "native-utility": {
+      "ended_at": "2026-10-27T05:46:30.441383+00:00",
+      "receipt_sha256": "cd44b2fc879f958bea8b53e3ce21c651387da7109620a2c5e2f3d6a59ec72828",
+      "returncode": 0,
+      "seconds": 27184.588305792,
+      "started_at": "2026-10-26T22:13:25.722511+00:00",
+      "status": "complete"
+    },
+    "new-mia-assessment": {
+      "ended_at": "2026-10-27T06:12:03.904452+00:00",
+      "receipt_sha256": "a5e9e03837656d293f22275b8aaef6d4de4491b39f8c588ce3617335aef58dcf",
+      "returncode": 0,
+      "seconds": 953.3585344999999,
+      "started_at": "2026-10-27T05:56:10.565005+00:00",
+      "status": "complete"
+    },
+    "new-mia-fit": {
+      "ended_at": "2026-10-27T05:53:21.761237+00:00",
+      "receipt_sha256": "546c5d895fbdc6cb3f906b1b59b33ca1bee3c418dcfd4690c340131783621aa7",
+      "returncode": 0,
+      "seconds": 7.8790929169999995,
+      "started_at": "2026-10-27T05:53:13.882051+00:00",
+      "status": "complete"
+    },
+    "utility-export": {
+      "ended_at": "2026-10-27T05:49:02.102273+00:00",
+      "receipt_sha256": "ba30c1e7997700077e42a649f7fa2f5def41a98d0ab6e43eac17614e7b15fc6c",
+      "returncode": 0,
+      "seconds": 1.0720260419984697,
+      "started_at": "2026-10-27T05:49:01.030261+00:00",
+      "status": "complete"
+    },
+    "utility-report": {
+      "ended_at": "2026-10-27T05:49:01.029386+00:00",
+      "receipt_sha256": "6a24d298e1f4f6477110c949e6afacfbac3f9dc92e2117b6e05b78e41bf79a1e",
+      "returncode": 0,
+      "seconds": 150.59069683300186,
+      "started_at": "2026-10-27T05:46:30.443602+00:00",
+      "status": "complete"
+    }
+  },
+  "pre_TEST_model_lock_publication_commit": "91c257a3668c2a0f527c479804750e11715862d2",
+  "private_final_report_sha256": "74d4bc6fc964f6112726a7924cef6ab3c2dbf388872b35aeb49b5b59a58efffd",
+  "private_movements_features_models_individual_scores_published": false,
+  "protocol_sha256": "eb7e225670935b3952d58d22b3758a3c48dabbcc2bb39da84ef10a564c1845ea",
+  "recorded_at": "2026-10-27T06:19:34.682488+00:00",
+  "regional_compositions": 288,
+  "retained_QA_diagnostics": [
+    "The private v1 metadata checker incorrectly required native runtime N=32 for regional compositions; its failed invocation and original code were preserved, and a narrow two-method v2 exception passed 31 synthetic tests. No scientific code or result changed.",
+    "Regenerated SVG timestamps/internal identifiers need not equal an earlier phase. Actual final exports match their own manifest and copied package byte-for-byte; corresponding utility/detail PNGs are unchanged.",
+    "The MIA assessment emitted only the informational Matplotlib font-cache build notice; exit status and all final gates passed."
+  ],
+  "schema": "ump.strategy-supplement.public-final-gates.v1",
+  "sources": {
+    "calibration": 16,
+    "test": 32,
+    "train": 24
+  },
+  "status": "all_declared_phases_verified",
+  "supplementary_exploratory": true,
+  "tests": {
+    "affected_Python_methods_passed": 445,
+    "excluded_city_DEV_cases_passed": 8,
+    "native_groups_passed": 22,
+    "private_metadata_checker_v2_synthetic_tests_passed": 31
+  }
+}

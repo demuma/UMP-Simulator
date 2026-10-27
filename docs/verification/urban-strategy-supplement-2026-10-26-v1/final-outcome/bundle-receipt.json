@@ -1,0 +1,37 @@
+{
+  "artifact_bytes_excluding_this_receipt": 1252603,
+  "artifacts_sha256": {
+    "README.md": "97098d02ad154dbad18b28b5a7e201c7621b75321c5f3a46946f5d5c76e63a13",
+    "artifact-receipt.json": "515a1e51930e7624b945d0da5211196d75da1c11ec724c04f2783b5940468421",
+    "completed-gates-public.json": "5eedef483d4e10c9689db4a246b4f431668de85b47bfe4d5e014a91e70fd27f5",
+    "repair-lineage-public.json": "f717b201a3010b59c288e218c4e9855bea28c85050bd770cc175f959053385fd",
+    "report.md": "9b1b7bb8f4ecf9699db94bdef59fb0b17b72a69d8b8f52f6184e5df108da1573",
+    "summary.json": "1046531f851e34b1bc485e35c068764bc9a7ca83c075eb95bbd0a81121cb2a43",
+    "urban-strategy-supplement-attack.png": "93052fcfdba53e2fad64cbf164310bf54d3641a3b16760a688e91219cb92062b",
+    "urban-strategy-supplement-attack.svg": "960390c485371773eb999b513e9ba2a6b48e4ddfcf176e1779e4d2f1a4e84cdf",
+    "urban-strategy-supplement-contrasts.png": "9875b1ca4e2e2ff936434adf345e3b099473500742a92fb622878383bd296fa3",
+    "urban-strategy-supplement-contrasts.svg": "d278890acf5dfd9bf4b778b042f25d42f62637b245e060b76092617e3c45bf1d",
+    "urban-strategy-supplement-detail-runtime.png": "cc74a019ce4614f31f590008acaa2f5a3cb840ee41e10018b3cd90d56c103c15",
+    "urban-strategy-supplement-detail-runtime.svg": "1a0a775d3b6d94d1ba3e71c244267fba8d92c6700e55f4850fced7a1b83b4a69",
+    "urban-strategy-supplement-utility.png": "05adae2dd645615685e604be6d1e99a4e3d074bcae09846d2d55737de4b9430e",
+    "urban-strategy-supplement-utility.svg": "9c35e9bed80a07d4ae9faeb391bb1aaecc1bcab438f9dfe10d08ef1a58a99149"
+  },
+  "code_freeze_commit": "85ed5b5",
+  "created_at": "2026-10-27T06:24:14.313036+00:00",
+  "document_publication_audit_sha256": "2e956c1f2ef7514e5492db814b57bc4153cee31e5e36465db043bdaf30b26ba5",
+  "document_review_resolution": "Five pre-existing absolute home paths in README were normalized to ~/ for portability; earlier review retained. No study code or result changed.",
+  "external_document_sha256": {
+    "README.md": "ef228cb7f0496bdde1260018874fc6f5d96086e1c6a1b664ffe97b2343591a46",
+    "TO-DO.md": "c7d876c4d9dd04ad91840560e9d2b0776d1afffac5883f4a1cb1284b87c4cbcb",
+    "docs/URBAN_STRATEGY_SUPPLEMENT_TEST_REPORT_2026-10-27.md": "c4148c93b13aa87d66933f5a1eb7770600396c594b27988b8288d8e414934b34"
+  },
+  "file_count_excluding_this_receipt": 14,
+  "original_primary_evidence_preserved": true,
+  "prior_document_review_receipt_sha256": "056ab9b52b0053073ff984359a5e8659ecdcca94b362a020f4ed1ac6ed77223e",
+  "private_final_report_sha256": "74d4bc6fc964f6112726a7924cef6ab3c2dbf388872b35aeb49b5b59a58efffd",
+  "published_pre_TEST_model_lock_commit": "91c257a3668c2a0f527c479804750e11715862d2",
+  "raw_movements_feature_rows_fitted_parameters_individual_scores_included": false,
+  "schema": "ump.strategy-supplement.final-public-bundle.v1",
+  "status": "verified_for_publication",
+  "study_design": "supplementary_exploratory_existing_recordings"
+}

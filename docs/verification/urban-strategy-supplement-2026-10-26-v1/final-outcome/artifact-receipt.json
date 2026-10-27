@@ -1,0 +1,21 @@
+{
+  "artifacts_sha256": {
+    "repair-lineage-public.json": "f717b201a3010b59c288e218c4e9855bea28c85050bd770cc175f959053385fd",
+    "report.md": "9b1b7bb8f4ecf9699db94bdef59fb0b17b72a69d8b8f52f6184e5df108da1573",
+    "summary.json": "1046531f851e34b1bc485e35c068764bc9a7ca83c075eb95bbd0a81121cb2a43",
+    "urban-strategy-supplement-attack.png": "93052fcfdba53e2fad64cbf164310bf54d3641a3b16760a688e91219cb92062b",
+    "urban-strategy-supplement-attack.svg": "960390c485371773eb999b513e9ba2a6b48e4ddfcf176e1779e4d2f1a4e84cdf",
+    "urban-strategy-supplement-contrasts.png": "9875b1ca4e2e2ff936434adf345e3b099473500742a92fb622878383bd296fa3",
+    "urban-strategy-supplement-contrasts.svg": "d278890acf5dfd9bf4b778b042f25d42f62637b245e060b76092617e3c45bf1d",
+    "urban-strategy-supplement-detail-runtime.png": "cc74a019ce4614f31f590008acaa2f5a3cb840ee41e10018b3cd90d56c103c15",
+    "urban-strategy-supplement-detail-runtime.svg": "1a0a775d3b6d94d1ba3e71c244267fba8d92c6700e55f4850fced7a1b83b4a69",
+    "urban-strategy-supplement-utility.png": "05adae2dd645615685e604be6d1e99a4e3d074bcae09846d2d55737de4b9430e",
+    "urban-strategy-supplement-utility.svg": "9c35e9bed80a07d4ae9faeb391bb1aaecc1bcab438f9dfe10d08ef1a58a99149"
+  },
+  "phase": "mia",
+  "reporter_sha256": "696c860cd33cfdeec04e3b91a9fdca430269b2f8be6668de6986ce168574d272",
+  "schema": "ump.urban-strategy-supplement-public-artifacts.v1",
+  "source_report_sha256": "74d4bc6fc964f6112726a7924cef6ab3c2dbf388872b35aeb49b5b59a58efffd",
+  "source_validation_profile": "observed_track_window_v1",
+  "study_design": "supplementary_exploratory_existing_recordings"
+}

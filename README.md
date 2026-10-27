@@ -5,15 +5,24 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
-**Current work — supplementary strategy comparison.** The original study below
-is complete. Four additional evaluations reuse its exact inputs and hard policies:
-Temporal First, Spatial First, and Semantic First with preference waiting under
-each secondary order. Implementation passes445 affected Python methods,22
-native groups and8 excluded-city DEV cases. The tested configuration is
-[frozen before execution](docs/verification/urban-strategy-supplement-2026-10-26-v1/pre-execution-freeze/);
-utility/runtime runs precede all new MIA fitting and scoring. Read the
-[declared protocol and ordered gates](docs/URBAN_STRATEGY_SUPPLEMENT_PROTOCOL_2026-10-26.md).
-New results are pending; no new policy or second attack is part of this block.
+**Supplementary strategy comparison — completed, 27 October 2026.** All four
+additional configurations reuse the same 72 recordings and unchanged hard
+policies: Temporal First, Spatial First, and Semantic First with preference
+waiting under each secondary order. All **576/576 new native cases verify**,
+with zero audited publication-policy violations. Eight new TRAIN/CAL attack fits
+were independently checked and locked in published commit `91c257a` before TEST
+scoring; all 30 combined attack variants are evaluated without old-model refits.
+
+Waiting/Spatial retains 70.33% of TEST IN contributions versus 68.53% for immediate
+Semantic First and 60.60% for regional static20. Relative to immediate release,
+its mean logical delay rises from 0.35 s to 1.81 s. Spatial First preserves finer
+retained spatial/semantic detail at lower retention. Every added paired AUC
+interval includes zero: **no additional MIA privacy benefit, strategy ranking or
+equivalence is established**. Read the [results and presentation evidence](docs/verification/urban-strategy-supplement-2026-10-26-v1/final-outcome/README.md)
+and [detailed English test report](docs/URBAN_STRATEGY_SUPPLEMENT_TEST_REPORT_2026-10-27.md).
+The [frozen protocol](docs/URBAN_STRATEGY_SUPPLEMENT_PROTOCOL_2026-10-26.md)
+retains its declaration-time status. Policy search and a second attack remain
+separate follow-up discussions.
 
 **Doorway source correction — 2026-10-26.** The diagnosed local-navigation
 failure is corrected with a bounded fallback for an empty A* start frontier.
@@ -927,7 +936,7 @@ at year-end. See TO-DO for targets, acceptance checks and fallback scope.
 
 ## 3. Origin and repository layout
 
-Local repository: `/Users/maxdemu/Developer/UMP-Simulator`.
+Local repository: `~/Developer/UMP-Simulator`.
 
 Moved on 2026-10-09 from `Coding/UrbanMobilityPrivacy` into the user-created
 `UMP-Simulator` directory. The repository name is **Urban Mobility Privacy Simulator**.
@@ -1256,7 +1265,7 @@ Its introduction commit in Coding is `438fe33`, dated 2025-10-25, with the messa
 early graphics/system test in a Metal-oriented exploration. It does not establish native
 Metal API usage in the retained source, or prove a direct code lineage to Modern.
 
-The separate project /Users/maxdemu/Developer/UAM-Simulator-Modern directly links Cocoa,
+The separate project ~/Developer/UAM-Simulator-Modern directly links Cocoa,
 Metal, MetalKit and QuartzCore and uses Objective-C++. Its README describes a C++ core,
 sensor snapshots and native 3D rendering. Its visible local Git history begins on 2026-06-28;
 that is the first retained commit, not proof of its actual project creation date.
@@ -1457,7 +1466,7 @@ remain adjacent: align them in an evaluation configuration before comparing sens
 After building, run the complete [example configuration](simulator/examples/regional-policy/config.yaml):
 
 ```bash
-cd /Users/maxdemu/Developer/UMP-Simulator/simulator/examples/regional-policy
+cd ~/Developer/UMP-Simulator/simulator/examples/regional-policy
 ../../build/Simulator
 ```
 
@@ -1496,7 +1505,7 @@ fixed-candidate assessment. For the newer mixed-depth selection use
 ### Show actual spatial aggregation in the live renderer
 
 ```sh
-cd /Users/maxdemu/Developer/UMP-Simulator/simulator/examples/spatial-selection
+cd ~/Developer/UMP-Simulator/simulator/examples/spatial-selection
 ../../build/Simulator
 ```
 
@@ -1513,7 +1522,7 @@ windows. This original example remains diagnostic-only. Separate examples below 
 ### Durable publication and temporal adaptation
 
 ```sh
-cd /Users/maxdemu/Developer/UMP-Simulator/simulator/examples/temporal-aggregation
+cd ~/Developer/UMP-Simulator/simulator/examples/temporal-aggregation
 ../../build/Simulator
 ```
 

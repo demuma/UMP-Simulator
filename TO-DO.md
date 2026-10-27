@@ -1,29 +1,45 @@
 # TO-DO — UMP-Simulator
 
 
-## Next: P26 supplementary strategy comparison for Thursday
+## Completed: P26 supplementary strategy comparison
 
-Follow the [declared supplementary protocol](docs/URBAN_STRATEGY_SUPPLEMENT_PROTOCOL_2026-10-26.md).
-Keep all hard policies and original evidence unchanged. Four new evaluations:
-Temporal First, Spatial First, Semantic First with preference waiting/Temporal
-secondary, and Semantic First with preference waiting/Spatial secondary. Reuse
-the original immediate Semantic First reference and all ten baselines.
+Followed the [declared protocol](docs/URBAN_STRATEGY_SUPPLEMENT_PROTOCOL_2026-10-26.md)
+with unchanged hard policies and original evidence. Four added evaluations:
+Temporal First, Spatial First, Semantic First with waiting/Temporal secondary,
+and Semantic First with waiting/Spatial secondary. The original immediate
+Semantic First reference and all ten baselines are exact imports.
 
 - [x] P26.1: define distinct behaviors, unchanged-input/hard-policy rules and
-  the supplementary exploratory contrasts before new native output.
-- [x] P26.2: implement the separate runner/reporter. All445 affected Python
-  methods,22 native regression groups and8 excluded-city DEV native cases pass.
-  Final independent code/layout checks pass; unchanged policy and inputs are
-  [frozen before execution](docs/verification/urban-strategy-supplement-2026-10-26-v1/pre-execution-freeze/).
-- [ ] P26.3: complete/audit all576 additional native cases and report utility
-  and offline runtime first; no MIA fitting/scoring before this gate.
-- [ ] P26.4: fit eight new attack variants on TRAIN/CAL only, preserve old22
-  variants/controls, then assess all32 TEST pairs and verify/report actual results.
-- [ ] P26.5: publish compact results, lineage, figures and detailed English test
-  report; update presentation evidence. Second attacks and policy search follow
-  later discussion and are outside this implementation block.
+  exploratory contrasts before new native output.
+- [x] P26.2: implement the separate runner/reporter. All 445 affected Python
+  methods, 22 native regression groups and eight excluded-city DEV cases pass;
+  independent code/layout/readiness checks precede the
+  [execution freeze](docs/verification/urban-strategy-supplement-2026-10-26-v1/pre-execution-freeze/).
+- [x] P26.3: all 576 additional native cases / 72 groups verify with zero
+  publication-policy violations. Utility/runtime report, 6334 independent
+  arithmetic checks, metadata/public checks and actual-figure QA complete
+  before new MIA fitting. [Utility checkpoint](docs/verification/urban-strategy-supplement-2026-10-26-v1/utility-outcome/report.md).
+- [x] P26.4: eight new attack fits converge using TRAIN/CAL only. The original
+  22 variants/controls remain exact; 5142 model-lock checks pass. Lock published
+  in `91c257a` before TEST scoring. All 30 variants are assessed on 32 TEST pairs;
+  9206 independent final arithmetic checks and final provenance checks pass.
+- [x] P26.5: publish compact aggregate results, lineage, four reviewed figures,
+  presentation evidence and the detailed English
+  [execution/test report](docs/URBAN_STRATEGY_SUPPLEMENT_TEST_REPORT_2026-10-27.md).
+  [Results and interpretation](docs/verification/urban-strategy-supplement-2026-10-26-v1/final-outcome/README.md).
 
-## Next: urban privacy evaluation — four ordered gates
+Observed outcome: waiting improves retention modestly at much higher logical
+delay; Spatial First favors retained detail. Every exploratory AUC difference
+interval includes zero. No new privacy winner or equivalence is established.
+The private metadata auditor's regional-runtime assumption failure and narrow
+correction are documented; no frozen scientific code or result was changed.
+
+Before further implementation, discuss how to present the measured operating
+points and uncertainty. Policy-effectiveness studies, a second attack and a live
+real-time benchmark need separate designs. The existing presentation edits are
+user-owned; this block supplies standalone figures and claims for integration.
+
+## Completed: urban privacy evaluation — four ordered gates
 
 Follow the [consolidated plan](docs/URBAN_PRIVACY_EVALUATION_PLAN_2026-10-25.md).
 Research questions describe the dissertation; this is the implementation queue.
