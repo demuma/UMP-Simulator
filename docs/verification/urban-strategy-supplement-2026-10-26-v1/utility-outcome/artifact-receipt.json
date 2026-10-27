@@ -1,0 +1,17 @@
+{
+  "artifacts_sha256": {
+    "repair-lineage-public.json": "40cf7d0f9460bb6b7dd1744de382864a469c8ddccb4c33a7678b97da6d6434c7",
+    "report.md": "3e298ccb19d52e3361c27366ed42afbe6998fae3458ab08858754e1d8ae642fb",
+    "summary.json": "5b40be9d64325e3b156c2e7d43d7e02450b4c2c59b0e89c1391810c5a8b8dbf7",
+    "urban-strategy-supplement-detail-runtime.png": "cc74a019ce4614f31f590008acaa2f5a3cb840ee41e10018b3cd90d56c103c15",
+    "urban-strategy-supplement-detail-runtime.svg": "799b4f7a69b3040778210a7b62465f94c7612978d40c5c7773bf0f2e88a5d9fd",
+    "urban-strategy-supplement-utility.png": "05adae2dd645615685e604be6d1e99a4e3d074bcae09846d2d55737de4b9430e",
+    "urban-strategy-supplement-utility.svg": "c04880056b9cbbc915ca5062f51376a2ee5e021d51b2d76359adc87deff933b2"
+  },
+  "phase": "utility",
+  "reporter_sha256": "696c860cd33cfdeec04e3b91a9fdca430269b2f8be6668de6986ce168574d272",
+  "schema": "ump.urban-strategy-supplement-public-artifacts.v1",
+  "source_report_sha256": "3a4149197a8a506a9aa4462578c517b860b99e9cec4d8d9f47a5d7efee240790",
+  "source_validation_profile": "observed_track_window_v1",
+  "study_design": "supplementary_exploratory_existing_recordings"
+}
