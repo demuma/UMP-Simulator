@@ -88,6 +88,8 @@ AdaptiveAggregation::AdaptiveAggregation(AggregationConfig settings,
     MetricEvaluator metrics, Sink output)
     : config(std::move(settings)), temporal(timeSettings), evaluator(std::move(metrics)),
       selector(config, spatial), sink(std::move(output)), durationCapMs(temporal.maxWindowMs) {
+    if (config.semanticGeneralization != evaluator.semanticGeneralization())
+        throw std::invalid_argument("Adaptive aggregation requires the same immutable semantic action mode as its evaluator");
     adaptationStrategyName(temporal.strategy);
     semanticSecondaryStrategyName(temporal.semanticSecondaryStrategy);
     releaseTriggerName(temporal.releaseTrigger);
@@ -208,7 +210,8 @@ void AdaptiveAggregation::evaluate(AggregationTime endMs, AggregationTime nowMs,
         double selectedCeiling = 0;
         std::size_t attemptedCeilings = 1;
         bool terminalFallback = false;
-        if ((terminal || immediatePolicy) && complete && !selectedAll) {
+        if (evaluator.semanticGeneralization() == SemanticGeneralizationMode::Enabled
+            && (terminal || immediatePolicy) && complete && !selectedAll) {
             std::vector<double> ceilings;
             for (const auto& node : config.semanticTaxonomy->nodes())
                 if (node.loss > 0) ceilings.push_back(node.loss);

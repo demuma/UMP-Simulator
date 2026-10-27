@@ -153,11 +153,32 @@ SemanticRepresentation SemanticTaxonomy::representation(std::vector<SemanticBin>
     return result;
 }
 
+const char* semanticGeneralizationModeName(SemanticGeneralizationMode mode) {
+    switch (mode) {
+        case SemanticGeneralizationMode::Enabled: return "enabled";
+        case SemanticGeneralizationMode::ExactOnly: return "exact_only";
+    }
+    throw std::invalid_argument("Unknown semantic generalization mode");
+}
+
 SemanticRepresentation SemanticTaxonomy::select(const SemanticEvidence& evidence,std::uint64_t totalObs,
-    std::uint64_t totalDistinct,std::uint64_t minimumSupport) const {
+    std::uint64_t totalDistinct,std::uint64_t minimumSupport,SemanticGeneralizationMode mode) const {
+    semanticGeneralizationModeName(mode);
     validateEvidence(evidence,totalObs,totalDistinct);
     if (!minimumSupport || minimumSupport>exactMaximum) throw std::invalid_argument("Semantic support threshold must be positive and within the exact metric range");
     if (!totalObs) return representation({});
+    if (mode == SemanticGeneralizationMode::ExactOnly) {
+        std::vector<SemanticBin> bins;
+        for (const auto& terminal : catalog) {
+            if (!children.at(terminal.id).empty()) continue;
+            const auto& counts=evidence.nodes.at(terminal.id);
+            if (counts.observationContributions)
+                bins.push_back({terminal.id,counts.observationContributions,counts.distinctContributors});
+        }
+        // Do not omit a rare leaf or promote it to an ancestor. Existing hard
+        // category-support checks decide whether the whole footprint can publish.
+        return representation(std::move(bins));
+    }
     struct Cut { bool passes; std::vector<SemanticBin> bins; };
     std::function<Cut(const std::string&)> visit=[&](const std::string& id)->Cut {
         const auto& value=evidence.nodes.at(id);

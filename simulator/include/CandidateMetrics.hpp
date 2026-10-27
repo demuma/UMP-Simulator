@@ -108,16 +108,20 @@ struct WindowMetricAssessment {
 class MetricEvaluator {
 public:
     explicit MetricEvaluator(std::optional<MetricPolicy> policy = std::nullopt,
-        std::shared_ptr<const SemanticTaxonomy> taxonomy = nullptr);
+        std::shared_ptr<const SemanticTaxonomy> taxonomy = nullptr,
+        SemanticGeneralizationMode generalization = SemanticGeneralizationMode::Enabled);
     explicit MetricEvaluator(std::shared_ptr<const PolicyTree> tree,
-        std::shared_ptr<const SemanticTaxonomy> taxonomy = nullptr);
+        std::shared_ptr<const SemanticTaxonomy> taxonomy = nullptr,
+        SemanticGeneralizationMode generalization = SemanticGeneralizationMode::Enabled);
     const std::shared_ptr<const SemanticTaxonomy>& semanticTaxonomy() const { return taxonomy; }
+    SemanticGeneralizationMode semanticGeneralization() const { return generalization; }
     WindowMetricAssessment evaluate(const AggregationCandidate& candidate, AggregationTime evaluatedAtMs) const;
 
 private:
     std::optional<MetricPolicy> policy;
     std::shared_ptr<const PolicyTree> tree;
     std::shared_ptr<const SemanticTaxonomy> taxonomy;
+    SemanticGeneralizationMode generalization;
 };
 
 } // namespace ump

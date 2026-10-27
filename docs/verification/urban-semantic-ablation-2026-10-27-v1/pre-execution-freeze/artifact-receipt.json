@@ -1,0 +1,10 @@
+{
+  "created_at": "2026-10-27T15:43:58.541626+00:00",
+  "files_sha256": {
+    "README.md": "9b0d0e356a45f9badf33ec90144ac40d92b22cbb2fef7e9af107182a367aad32",
+    "provenance.json": "ab1621ab7bf24fb0fc0ad0f222da6ee11230ebd701d06b70debef417a68046d5",
+    "validation.json": "97e16a11a8176e498daafbdcdb9952d12fd68785f8469560c9a053e87f9d0ad3"
+  },
+  "raw_movements_features_models_or_individual_scores_included": false,
+  "schema": "ump.semantic-ablation-preflight-artifacts.v1"
+}

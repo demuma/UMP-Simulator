@@ -5,6 +5,16 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
+**Current work — controlled semantic-generalization ablation.** Seven fixed,
+regional-static and adaptive configurations are compared with their semantic
+coarsening action disabled, while preserving input classes, taxonomy and all
+hard local400 requirements. Native/helper/DEV gates precede utility and fourteen
+new MIA fits; the original sources, models and completed results remain separate.
+Read the [declared ON/OFF protocol](docs/URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md).
+The530 affected Python tests and22 native suites pass. The complete excluded-source
+DEV gate and independent reviews pass; actual utility and MIA outcomes remain
+pending. Read the [implementation and test report](docs/URBAN_SEMANTIC_ABLATION_TEST_REPORT_2026-10-27.md).
+
 **Supplementary strategy comparison — completed, 27 October 2026.** All four
 additional configurations reuse the same 72 recordings and unchanged hard
 policies: Temporal First, Spatial First, and Semantic First with preference

@@ -54,13 +54,20 @@ const char* assessmentStatusName(AssessmentStatus status) {
 }
 
 MetricEvaluator::MetricEvaluator(std::optional<MetricPolicy> configured,
-    std::shared_ptr<const SemanticTaxonomy> catalog)
-    : policy(std::move(configured)), taxonomy(std::move(catalog)) {
+    std::shared_ptr<const SemanticTaxonomy> catalog, SemanticGeneralizationMode action)
+    : policy(std::move(configured)), taxonomy(std::move(catalog)), generalization(action) {
+    semanticGeneralizationModeName(generalization);
+    if (generalization == SemanticGeneralizationMode::ExactOnly && !taxonomy)
+        throw std::invalid_argument("Exact-only semantic release requires a taxonomy");
     if (taxonomy && !policy) throw std::invalid_argument("Semantic release requires an explicit metric policy");
     if (!policy) return;
     if (policy->id.empty() || policy->version.empty())
         throw std::invalid_argument("Metric policy requires ID and version");
     validateMetricRequirements(policy->requirements);
+    if (generalization == SemanticGeneralizationMode::ExactOnly
+        && std::any_of(policy->requirements.begin(), policy->requirements.end(), [](const auto& requirement) {
+            return requirement.id == MetricId::SemanticSuppressionFraction && requirement.max && *requirement.max > 0;
+        })) throw std::invalid_argument("Exact-only semantic release does not support selective suppression");
     if (!taxonomy && std::any_of(policy->requirements.begin(), policy->requirements.end(), [](const auto& requirement) {
             return requirement.id == MetricId::SemanticSuppressionFraction && requirement.max && *requirement.max > 0;
         })) throw std::invalid_argument("Semantic contribution suppression requires a semantic taxonomy");
@@ -68,9 +75,15 @@ MetricEvaluator::MetricEvaluator(std::optional<MetricPolicy> configured,
 }
 
 MetricEvaluator::MetricEvaluator(std::shared_ptr<const PolicyTree> compiled,
-    std::shared_ptr<const SemanticTaxonomy> catalog)
-    : tree(std::move(compiled)), taxonomy(std::move(catalog)) {
+    std::shared_ptr<const SemanticTaxonomy> catalog, SemanticGeneralizationMode action)
+    : tree(std::move(compiled)), taxonomy(std::move(catalog)), generalization(action) {
     if (!tree) throw std::invalid_argument("Regional metric evaluator requires a policy tree");
+    semanticGeneralizationModeName(generalization);
+    if (generalization == SemanticGeneralizationMode::ExactOnly) {
+        if (!taxonomy) throw std::invalid_argument("Exact-only semantic release requires a taxonomy");
+        if (tree->permitsSemanticSuppression())
+            throw std::invalid_argument("Exact-only semantic release does not support selective suppression");
+    }
 }
 
 void validateMetricRequirements(const std::vector<MetricRequirement>& requirements, bool allowEmpty) {
@@ -234,6 +247,8 @@ WindowMetricAssessment MetricEvaluator::evaluate(const AggregationCandidate& can
             result.metrics.at(static_cast<std::size_t>(MetricId::SemanticSuppressionFraction)).unavailableReason.clear();
         if (suppressionCap > 0 && !taxonomy)
             throw std::invalid_argument("Semantic contribution suppression requires a semantic taxonomy");
+        if (suppressionCap > 0 && generalization == SemanticGeneralizationMode::ExactOnly)
+            throw std::invalid_argument("Exact-only semantic release does not support selective suppression");
         const auto setSemanticMetrics = [](CellMetricAssessment& target, const SemanticRepresentation& representation) {
             const auto set = [&](MetricId id, double value) {
                 auto& measured = target.metrics.at(static_cast<std::size_t>(id));
@@ -290,7 +305,7 @@ WindowMetricAssessment MetricEvaluator::evaluate(const AggregationCandidate& can
                         throw std::invalid_argument("Semantic evidence contradicts raw type observations");
                 }
                 setSemanticMetrics(result, taxonomy->select(*cell.counts.semanticEvidence,
-                    cell.counts.observationContributions, cell.counts.distinctContributors, support));
+                    cell.counts.observationContributions, cell.counts.distinctContributors, support, generalization));
             }
         }
         assess(result);

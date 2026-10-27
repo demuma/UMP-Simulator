@@ -29,6 +29,11 @@ struct GridCoverage {
 enum class InputCapabilities { IdentityCellObservations, CountsOnly };
 enum class ObservationStatus { Measured, Unavailable };
 
+// Execution action restriction, independent of every privacy/utility policy bound.
+// ExactOnly keeps the declared taxonomy and all occupied terminal categories.
+enum class SemanticGeneralizationMode { Enabled, ExactOnly };
+const char* semanticGeneralizationModeName(SemanticGeneralizationMode mode);
+
 struct CellObservation {
     std::string contributorId; // Internal only; never copied into candidate output.
     std::string type;
@@ -61,6 +66,7 @@ struct AggregationConfig {
     InputCapabilities capabilities = InputCapabilities::IdentityCellObservations;
     std::optional<HistoryLimits> history = std::nullopt;
     std::shared_ptr<const SemanticTaxonomy> semanticTaxonomy = nullptr;
+    SemanticGeneralizationMode semanticGeneralization = SemanticGeneralizationMode::Enabled;
 };
 
 // Private exact taxonomy-node evidence. No contributor IDs leave the accumulator.

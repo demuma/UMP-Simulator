@@ -177,7 +177,7 @@ MetricEvaluator evaluatorFrom(const YAML::Node& config, const AggregationConfig&
         if (config["policy_regions"] && config["policy_regions"].size())
             throw std::invalid_argument("policy_regions requires policy_tree");
         return MetricEvaluator(MetricPolicy{nonempty(uniform, "id"), nonempty(uniform, "version"),
-            readMetricRequirements(uniform["requirements"])}, settings.semanticTaxonomy);
+            readMetricRequirements(uniform["requirements"])}, settings.semanticTaxonomy, settings.semanticGeneralization);
     }
     keys(tree, {"id", "version", "root", "regions", "max_nodes", "execution"}, "policy_tree");
     const auto budget = tree["max_nodes"].as<std::int64_t>(65536);
@@ -205,7 +205,8 @@ MetricEvaluator evaluatorFrom(const YAML::Node& config, const AggregationConfig&
     if (settings.semanticTaxonomy) validateSemanticMetricRequirements(rootRequirements);
     return MetricEvaluator(std::make_shared<const PolicyTree>(PolicyTreeConfig{
         nonempty(tree, "id"), nonempty(tree, "version"), settings.applicationId, settings.coverage,
-        rootRequirements, static_cast<std::size_t>(budget)}, std::move(selected)), settings.semanticTaxonomy);
+        rootRequirements, static_cast<std::size_t>(budget)}, std::move(selected)), settings.semanticTaxonomy,
+        settings.semanticGeneralization);
 }
 
 struct Options {
@@ -213,6 +214,7 @@ struct Options {
     std::string mode;
     std::optional<int> fixedDepth;
     std::optional<AggregationTime> fixedWindowMs;
+    SemanticGeneralizationMode semanticGeneralization = SemanticGeneralizationMode::Enabled;
     std::optional<double> paceRate;
     std::optional<AggregationTime> progressStepMs;
     std::size_t queueCapacity = 64;
@@ -261,6 +263,7 @@ Settings parseSettings(YAML::Node node, const Input& input, const Options& optio
     settings.maxObservationsPerWindow = static_cast<std::uint64_t>(maxObservations);
     settings.history = readHistoryLimits(node["history"]);
     settings.semanticTaxonomy = readSemanticTaxonomy(node);
+    settings.semanticGeneralization = options.semanticGeneralization;
     if (!settings.history) throw std::invalid_argument("Replay requires explicit bounded history");
     const auto spatial = readSpatialSelection(node, input.grid.leafDepth);
     if (!spatial) throw std::invalid_argument("Replay requires explicit spatial_selection limits");
@@ -504,6 +507,8 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
     const auto progressStepMs = progressStepFor(input, options);
     const auto started = std::chrono::steady_clock::now();
     const auto& config = settings.aggregation;
+    if (config.semanticGeneralization != options.semanticGeneralization)
+        throw std::invalid_argument("Replay options and immutable semantic action mode disagree");
     const bool audited = options.decisionDigest || options.diagnostics == "minimal";
     std::optional<ReplayDecisionDigest> decisionAudit;
     if (audited) decisionAudit.emplace();
@@ -647,6 +652,7 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
                     {"classification", quoted("private_research_failure_telemetry")},
                     {"successful_replay_result", "false"}, {"reason", quoted(failure.what())},
                     {"mode", quoted(options.mode)}, {"diagnostics", quoted(options.diagnostics)},
+                    {"semantic_generalization", quoted(semanticGeneralizationModeName(config.semanticGeneralization))},
                     {"source_end_ms", number(input.endMs)}, {"sampling_period_ms", number(input.periodMs)},
                     {"progress_step_ms", number(progressStepMs)}, {"rate", number(*options.paceRate)},
                     {"queue_capacity", number(options.queueCapacity)}, {"peak_queue_depth", number(failure.completed.peakQueueDepth)},
@@ -687,6 +693,7 @@ std::string run(const Input& input, const Settings& settings, const Options& opt
     const auto elapsed = std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - started).count();
     const auto& g = input.grid;
     std::vector<std::pair<std::string, std::string>> parameters{
+        {"semantic_generalization", quoted(semanticGeneralizationModeName(config.semanticGeneralization))},
         {"coordination", quoted(localMode ? "cell_local" : "common_window")},
         {"window_ms", number(config.windowMs)}, {"fixed_depth", options.mode == "fixed" ? number(settings.fixedDepth) : "null"},
         {"min_depth", number(settings.spatial.minDepth)},
@@ -784,6 +791,11 @@ Options arguments(int argc, char** argv) {
         else if (key == "--config") result.config = value;
         else if (key == "--output") result.output = value;
         else if (key == "--mode") result.mode = value;
+        else if (key == "--semantic-generalization") {
+            if (value == "enabled") result.semanticGeneralization = SemanticGeneralizationMode::Enabled;
+            else if (value == "exact_only") result.semanticGeneralization = SemanticGeneralizationMode::ExactOnly;
+            else throw std::invalid_argument("Semantic generalization must be enabled or exact_only");
+        }
         else if (key == "--diagnostics") {
             if (value != "full" && value != "minimal") throw std::invalid_argument("Diagnostics must be full or minimal");
             result.diagnostics = value;

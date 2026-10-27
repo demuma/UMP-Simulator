@@ -43,7 +43,8 @@ public:
     bool contains(const std::string& ancestor, const std::string& node) const;
     void validateEvidence(const SemanticEvidence&, std::uint64_t totalObs, std::uint64_t totalDistinct) const;
     SemanticRepresentation select(const SemanticEvidence&, std::uint64_t totalObs,
-        std::uint64_t totalDistinct, std::uint64_t minimumSupport) const;
+        std::uint64_t totalDistinct, std::uint64_t minimumSupport,
+        SemanticGeneralizationMode mode = SemanticGeneralizationMode::Enabled) const;
     // Deterministic taxonomy-tier proposals, not arbitrary subsets of people.
     // Each proposal removes whole terminal domains with insufficient support.
     // Stable terminal identity membership makes every retained union exact.

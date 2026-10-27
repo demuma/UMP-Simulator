@@ -110,6 +110,15 @@ PolicyTree::PolicyTree(PolicyTreeConfig setup, std::vector<PolicyRegion> selecte
     regions.clear(); regions.shrink_to_fit();
 }
 
+bool PolicyTree::permitsSemanticSuppression() const {
+    return std::any_of(policies.begin(), policies.end(), [](const auto& policy) {
+        return std::any_of(policy.requirements.begin(), policy.requirements.end(), [](const auto& requirement) {
+            return requirement.id == MetricId::SemanticSuppressionFraction
+                && requirement.max && *requirement.max > 0;
+        });
+    });
+}
+
 bool PolicyTree::intersects(const Rect& a, const Rect& b) {
     return a.x < b.x + b.width && b.x < a.x + a.width
         && a.y < b.y + b.height && b.y < a.y + a.height;

@@ -1,6 +1,28 @@
 # TO-DO — UMP-Simulator
 
 
+## Active: P27 controlled semantic-generalization ON/OFF study
+
+Authorized 27 October 2026. Follow the [declared protocol](docs/URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md).
+Preserve paper/presentation edits and all frozen historical results. Compare seven
+ON/OFF pairs under identical local400 hard requirements; dependent fixed20 time
+windows support the regional-static OFF composition. Regional execution remains
+optional and separate.
+
+- [x] P27.1: immutable enabled/exact_only execution option, preserving taxonomy,
+  truthful leaf evidence and all support/ownership/publication checks.
+- [x] P27.2: native regressions, default-ON equivalence, helper tests and one
+  excluded-city DEV pilot for all modes/composition; review before full execution.
+- [ ] P27.3: freeze code/binary/queries/import lineage and execute utility first:
+  1296 new native cases, 144 regional compositions, 2016 headline rows including
+  imported ON references, plus 432 auxiliary fixed-window rows.
+- [ ] P27.4: independent utility/class/regional/query review and actual-figure QA;
+  only then fourteen new TRAIN/CAL OFF fits, model-lock validation/publication,
+  and matched TEST MIA. Reuse fourteen ON objects and the original controls.
+- [ ] P27.5: independent final statistics/provenance/publication checks, English
+  results/test report, README update and compact Git publication. All seven OFF
+  configurations remain visible; observed duplicates are not independent proof.
+
 ## Optional: regional execution preferences — review on 27 October 2026, evening
 
 Planning addition after completed P26. Review this option this evening

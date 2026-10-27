@@ -13,6 +13,8 @@ std::string keyPart(const std::string& value) {
 PublicationCoordinator::PublicationCoordinator(AggregationConfig settings, MetricEvaluator metrics,
     PublicationLimits bounds, std::optional<AggregationTime> maximum, bool scoped)
     : config(std::move(settings)), evaluator(std::move(metrics)), limits(bounds), maximumWindowMs(maximum), cellLocal(scoped) {
+    if (config.semanticGeneralization != evaluator.semanticGeneralization())
+        throw std::invalid_argument("Publication requires the same immutable semantic action mode as its evaluator");
     if (config.semanticTaxonomy != evaluator.semanticTaxonomy())
         throw std::invalid_argument("Publication requires the same immutable semantic taxonomy as its evaluator");
 

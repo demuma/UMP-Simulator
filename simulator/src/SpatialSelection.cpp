@@ -44,6 +44,8 @@ SpatialSelection SpatialSelector::select(const AggregationCandidate& finest,
 SpatialSelection SpatialSelector::propose(const AggregationCandidate& finest,
     const AggregationHistory& history, const MetricEvaluator& evaluator,
     std::optional<double> semanticLossCeiling, bool allowSpatialMerges) const {
+    if (config.semanticGeneralization != evaluator.semanticGeneralization())
+        throw std::invalid_argument("Spatial selection requires the same immutable semantic action mode as its evaluator");
     if (semanticLossCeiling && (!std::isfinite(*semanticLossCeiling)
             || *semanticLossCeiling < 0 || *semanticLossCeiling > 1
             || !config.semanticTaxonomy || config.semanticTaxonomy != evaluator.semanticTaxonomy()))

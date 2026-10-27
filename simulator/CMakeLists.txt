@@ -275,6 +275,11 @@ if(UMP_BUILD_REPLAY)
     target_link_libraries(ReplayRegressionTests PRIVATE SFML::Graphics yaml-cpp::yaml-cpp Threads::Threads)
     add_test(NAME replay_regression COMMAND ReplayRegressionTests)
     set_tests_properties(replay_regression PROPERTIES LABELS "unit;replay;evaluation" TIMEOUT 30)
+    add_executable(SemanticGeneralizationTests tests/SemanticGeneralizationTests.cpp ${UMP_REPLAY_CORE_SOURCES})
+    target_compile_features(SemanticGeneralizationTests PRIVATE cxx_std_17)
+    target_link_libraries(SemanticGeneralizationTests PRIVATE SFML::Graphics yaml-cpp::yaml-cpp Threads::Threads)
+    add_test(NAME semantic_generalization COMMAND SemanticGeneralizationTests)
+    set_tests_properties(semantic_generalization PROPERTIES LABELS "unit;replay;semantics" TIMEOUT 30)
     find_package(Python3 3.9 COMPONENTS Interpreter REQUIRED)
     add_test(NAME live_measurement_helpers COMMAND ${Python3_EXECUTABLE} -m unittest discover
         -s ${CMAKE_CURRENT_SOURCE_DIR}/../tools/profiling/live -p "test_live*.py")
@@ -382,7 +387,7 @@ foreach(core_target Simulator SensorRegressionTests AggregationRegressionTests M
     PolicyRegressionTests PolicyConfigurationTests HistoryRegressionTests OccupiedHistoryTests HistoryQueryRangeTests SpatialRegressionTests
     SelectiveSuppressionRegressionTests PublicationRegressionTests AdaptiveAggregationRegressionTests
     PublicationStoreRegressionTests PublicationPipelineRegressionTests AggregationPresentationTests
-    AggregationReplay ReplayRegressionTests CoordinationRegressionTests CoordinationStressTests
+    AggregationReplay ReplayRegressionTests SemanticGeneralizationTests CoordinationRegressionTests CoordinationStressTests
     ScopedPublicationRegressionTests SemanticTaxonomyTests SemanticHistoryTests SemanticPipelineTests
     SemanticPublicationStoreTests SemanticFirstTests SemanticCellLocalTests SemanticSuppressionTests)
     if(TARGET ${core_target})

@@ -1,0 +1,90 @@
+{
+  "DEV": {
+    "legacy_fixed_controls": 2,
+    "model_fits": 0,
+    "native_exact_only_cases": 18,
+    "physical_source_audit_reexecutions": 0,
+    "regional_compositions": 2,
+    "reused_excluded_sources": 1,
+    "scope": "One existing excluded city recording in matched IN/OUT worlds; not an extra statistical source."
+  },
+  "created_at": "2026-10-27T15:43:58.538796+00:00",
+  "default_enabled_legacy_scientific_output_equal": true,
+  "evidence": {
+    "DEV_harness_review": {
+      "local_artifact": "results/urban-semantic-ablation-implementation-2026-10-27/city-DEV-query-shape-review-v1.json",
+      "sha256": "b977cb0679de11b1fe8a378a529a4382d43bba9f98718fc0b4a279311ff7eced"
+    },
+    "city_integration_DEV": {
+      "local_artifact": "results/urban-semantic-ablation-implementation-2026-10-27/city-DEV-integration-v2/receipt.json",
+      "sha256": "4ac3c6df5a8324da759bb8009f2c88c9768b5217bd54595dc094949d47910b82"
+    },
+    "historical_bridge": {
+      "local_artifact": "results/urban-semantic-ablation-implementation-2026-10-27/history-bridge-smoke-v2/receipt.json",
+      "sha256": "b1aa8a821d8ac362c17ba35bef2232f4f675d249527e000cae56151ed615cc5c"
+    },
+    "native_action_DEV": {
+      "local_artifact": "results/urban-semantic-ablation-implementation-2026-10-27/native/city-DEV-action-v1/receipt.json",
+      "sha256": "43ba98901d358e04f33b8b2a48dc2e354600a988acdecfad50513539144d7784"
+    },
+    "native_regressions": {
+      "local_artifact": "results/urban-semantic-ablation-implementation-2026-10-27/native/ctest-v1/receipt.json",
+      "sha256": "a3136b8825dc67871ad78c419f34c4e38132a491ee235363dcfd8e18497667e1"
+    },
+    "proof_binding_fix": {
+      "local_artifact": "results/urban-semantic-ablation-implementation-2026-10-27/capture-proof-binding-fix-v1/receipt.json",
+      "sha256": "c4ad652c26035433b76f26007d282808771af9b20db588455bb5397f3bd336d0"
+    },
+    "python_regressions": {
+      "local_artifact": "results/urban-semantic-ablation-implementation-2026-10-27/current-code-unit-validation-v2/receipt.json",
+      "sha256": "395db0bca1273ebd90525c940b3f6eaf0f62ad5f41a097a8abdcd4eb6be93b7c"
+    },
+    "report_cosmetic_addendum": {
+      "local_artifact": "results/urban-semantic-ablation-implementation-2026-10-27/report-query-peer-review-v1/cosmetic-addendum.json",
+      "sha256": "619106a6e310102fea544193c838872c393d3c4c65a79a75ff0446c220e18918"
+    },
+    "report_query_peer_review": {
+      "local_artifact": "results/urban-semantic-ablation-implementation-2026-10-27/report-query-peer-review-v1/receipt.json",
+      "sha256": "8ee933b4fdc27739ed29588d2ecf2abb128ff736b059392f8781f0a1fa3db031"
+    },
+    "root_synthetic_figure_QA": {
+      "local_artifact": "results/urban-semantic-ablation-implementation-2026-10-27/root-synthetic-figure-review-v1.json",
+      "sha256": "f9869dd402e476c1eda3ec8f2b07391bc6844e6b47df48f7b54c63c41e6220f5"
+    },
+    "runner_peer_review": {
+      "local_artifact": "results/urban-semantic-ablation-implementation-2026-10-27/runner-code-peer-review-v1.json",
+      "sha256": "307713ff59e09d289e9c4e06c794cbbf36406a9fd92a51ebc615959df8b3bd09"
+    }
+  },
+  "failed_DEV_attempt": {
+    "cause": "Root harness compared full query object with its intentionally stored exact/estimate projection. Independent repeat matched442 leaf values with zero numeric differences; corrected full gate rerun.",
+    "preserved": true,
+    "verified_OFF_cases": 10
+  },
+  "historical_capture_binding_groups": 72,
+  "native_suites": {
+    "failed": 0,
+    "groups": 22,
+    "seconds": 4.751143125,
+    "skipped": 0
+  },
+  "pending": [
+    "All1296 actual native cases and144 regional compositions",
+    "Complete utility and independent actual-figure/numerical review",
+    "Fourteen new TRAIN-only fits/CAL locks and public lock beforeTEST",
+    "Final TEST scoring, paired contrasts and source/archive reconstructions"
+  ],
+  "python_tests": {
+    "errors": 0,
+    "failures": 0,
+    "seconds": 50.887967458000006,
+    "skipped": 0,
+    "tests": 530
+  },
+  "query_fixture_tests": 15,
+  "reporter_fixture_tests": 27,
+  "runner_fixture_tests": 43,
+  "schema": "ump.semantic-ablation-preflight-validation.v1",
+  "scientific_results_claimed": false,
+  "status": "verified_before_new_study_cases"
+}

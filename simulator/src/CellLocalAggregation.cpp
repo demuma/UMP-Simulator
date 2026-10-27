@@ -23,6 +23,8 @@ CellLocalAggregation::CellLocalAggregation(AggregationConfig settings,
     MetricEvaluator metrics, Sink output, std::size_t maximum)
     : config(std::move(settings)), temporal(timeSettings), spatial(spaceSettings),
       evaluator(std::move(metrics)), sink(std::move(output)), maxActiveCells(maximum) {
+    if (config.semanticGeneralization != evaluator.semanticGeneralization())
+        throw std::invalid_argument("Cell-local aggregation requires the same immutable semantic action mode as its evaluator");
     historyCell(config.coverage, 12, 1);
     adaptationStrategyName(temporal.strategy);
     semanticSecondaryStrategyName(temporal.semanticSecondaryStrategy);
@@ -293,13 +295,15 @@ SpatialSelection CellLocalAggregation::selectionFor(const Window& source,
             || reason == "coordination_handoff" || candidate.coverage != WindowCoverage::Complete;
         const std::optional<double> actual = selected
             ? std::optional<double>{assessment.cells.at(0).semantic->maxLoss} : std::nullopt;
-        const double ceiling = actual.value_or(candidate.counts.observationContributions && terminal ? 1.0 : 0.0);
+        const bool canGeneralize = evaluator.semanticGeneralization() == SemanticGeneralizationMode::Enabled;
+        const double ceiling = actual.value_or(canGeneralize && candidate.counts.observationContributions && terminal ? 1.0 : 0.0);
         // In local mode this counts ordered representation tiers through the
         // selected cost, not parent evaluator calls or measured search runtime.
         // Ancestor evidence is cached once and compared against those same tiers.
         std::set<double> considered{0};
-        for (const auto& node : config.semanticTaxonomy->nodes())
-            if (node.loss > 0 && node.loss <= ceiling) considered.insert(node.loss);
+        if (canGeneralize)
+            for (const auto& node : config.semanticTaxonomy->nodes())
+                if (node.loss > 0 && node.loss <= ceiling) considered.insert(node.loss);
         result.semanticPriority = SemanticPrioritySelection{ceiling, actual, considered.size(),
             terminal && ceiling > 0, semanticSecondaryStrategyName(temporal.semanticSecondaryStrategy),
             releaseTriggerName(temporal.releaseTrigger), selected && temporal.releaseTrigger == ReleaseTrigger::PolicySatisfied};
@@ -765,7 +769,7 @@ void CellLocalAggregation::process(AggregationTime now, const AggregationHistory
         std::set<int> proposals;
         std::set<int> holdDomains;
         std::vector<double> semanticCeilings{0};
-        if (semanticFirst) {
+        if (semanticFirst && evaluator.semanticGeneralization() == SemanticGeneralizationMode::Enabled) {
             for (const auto& node : config.semanticTaxonomy->nodes())
                 if (node.loss > 0) semanticCeilings.push_back(node.loss);
             std::sort(semanticCeilings.begin(), semanticCeilings.end());

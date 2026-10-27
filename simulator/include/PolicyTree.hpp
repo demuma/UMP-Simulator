@@ -29,6 +29,9 @@ public:
     const std::string& version() const { return config.version; }
     std::size_t nodeCount() const { return nodes.size(); }
     std::size_t effectivePolicyCount() const { return policies.size(); }
+    // Inspect all compiled footprints, including unoccupied regions, without
+    // weakening an inherited bound or consulting current observations.
+    bool permitsSemanticSuppression() const;
 
 private:
     static constexpr std::size_t absent = std::numeric_limits<std::size_t>::max();

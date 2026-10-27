@@ -8,3 +8,4 @@
 .vscode/
 results/
 __pycache__/
+/simulator/build-semantic-ablation/
