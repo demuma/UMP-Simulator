@@ -1,0 +1,21 @@
+{
+  "figures": {
+    "urban-selective-suppression-attack.png": "bd2f45842433b7f8a8627d5fcdc8f955356da3b6bb147b3c75622eb242b20de0",
+    "urban-selective-suppression-contrasts.png": "0b7a491a9dc4159fbe03622f7bb9dde3c0068d420cd284ad6c356cf0e0df5d36",
+    "urban-selective-suppression-omission.png": "9f05a3c5a29f881dd9d0e0d1543c91f05edc7eb2cf949896b7b7eae09afc5dd5",
+    "urban-selective-suppression-utility.png": "d40edaa5e637a9aee1ec37bfee99ceb6dc77c9b3bc1193d0830bb364b70344d5"
+  },
+  "labels_markers_axes_and_legends_legible": true,
+  "notes": [
+    "Four actual PNGs visually inspected after final independent audit, not only synthetic fixtures.",
+    "Omission numerical annotations are measured values. Near-zero values can appear gray; unavailable data would be explicitly marked NA. The final README clarifies the generic gray title.",
+    "Full111 fixed-grid contrast upper endpoint is slightly negative; precise numeric intervals are retained in summary, not inferred from pixel positions.",
+    "Plots show exploratory outcomes on reused TEST recordings, with no equivalence or universal privacy claim."
+  ],
+  "root_visual_review": true,
+  "schema": "ump.selective-final-root-figure-review.v1",
+  "source_type_count": 8,
+  "status": "verified",
+  "svg_exports_preserved": true,
+  "values_match_verified_aggregates": true
+}

@@ -1,0 +1,19 @@
+{
+  "caveat": "The independent final auditor recomputes locked scores and fixed-threshold metrics. Its source-role metadata ordering follows the separately published additive correction. It does not independently rerun bootstrap intervals or the physical simulation. Reported intervals remain conditional on fixed TRAIN/CAL objects and reused TEST recordings.",
+  "final_report_sha256": "2765094482116a3a2aa6b084380d6e50eff9eb247428301395cc4887a57a88c1",
+  "independent_audit_sha256": "cd0e58e651e020287df4eb8ee4b2d2208e3b7b19f53c93cac1c286b3495b202c",
+  "reporter_artifact_receipt_sha256": "b266242c86d76c4e2c32e52deba2fe796fa469dca373175efe7812465a40879e",
+  "schema": "ump.urban-selective-suppression-independent-verification-scope.v1",
+  "scope": {
+    "independent_bootstrap_interval_reexecution": false,
+    "independent_locked_logistic_scores_and_fixed_metrics": true,
+    "new_models_fitted": 0,
+    "operating_choices_retuned": false,
+    "physical_simulation_reexecuted": false,
+    "source_membership_changed": false,
+    "source_order_metadata_addendum_applied": true,
+    "source_roles_changed": false,
+    "sources_regenerated": false
+  },
+  "status": "verified_with_declared_scope"
+}

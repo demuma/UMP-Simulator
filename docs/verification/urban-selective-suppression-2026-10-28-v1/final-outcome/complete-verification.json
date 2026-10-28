@@ -1,0 +1,21 @@
+{
+  "checks": {
+    "model_lock_sha256": "17611b5a0a230564364ceecde4b89a92bf2d04bddbea1f2b6f7de83d2e63ade1",
+    "models_fitted": 0,
+    "recordings": 72,
+    "scope": "Original independent locked-score and pair-count AUC/fixed-metric checks with canonical source-role metadata ordering. Bootstrap intervals and physical simulation are not independently reexecuted.",
+    "test_score_checks": 1792,
+    "thresholds_retuned": 0
+  },
+  "figure_review_sha256": "60554190e9233893ecbea94d0f10e2efef526cae244543a81a2a600aed1ef940",
+  "independent_bootstrap_interval_reexecution": true,
+  "independent_bootstrap_receipt_sha256": "6dccd301545b686bced2e79a0efa65c654055ac7e6338883442271ac3ea7def1",
+  "independent_score_audit_sha256": "cd0e58e651e020287df4eb8ee4b2d2208e3b7b19f53c93cac1c286b3495b202c",
+  "metadata_order_addendum": true,
+  "model_refits_after_lock": 0,
+  "original_v1_audit_pass_claimed": false,
+  "physical_simulation_reexecuted": false,
+  "protocol_sha256": "68bfd022f6f170dbe669ae03a9925f3b1444b4bb66fd406e4aacf7ee0a774bff",
+  "schema": "ump.selective-complete-public-verification.v1",
+  "status": "verified"
+}

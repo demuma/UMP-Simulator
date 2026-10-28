@@ -5,21 +5,21 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
-**Selective-contribution suppression study — utility verified, 28 October 2026.**
+**Selective-contribution suppression study — completed, 28 October 2026.**
 All 72 recordings, 1,296 native cases and 144 regional compositions verify in the
-six-worker run (2 h 1 min). The 632 affected tests and independent utility audit
-pass. With semantics enabled throughout, selective permission improves retention
-and the declared J/taxonomy measures for all seven methods. Best retention rises
-from 70.33% to 73.11%; regional static20 rises from 60.60% to 68.39%. Adaptive
-retained cell means become coarser, and E-Scooter omission increases: benefits are
-not uniform across metrics or original types. Eight source types are accounted
-for; a declaration-time prose count is explicitly corrected. Fourteen new TRAIN/CAL
-models are independently verified and locked; new TEST scoring is pending. The
-audit metadata-order correction is documented separately, with no refit.
-Read the [verified utility packet](docs/verification/urban-selective-suppression-2026-10-28-v1/utility-outcome/README.md),
-[protocol](docs/URBAN_SELECTIVE_SUPPRESSION_PROTOCOL_2026-10-28.md) and
-[test report](docs/URBAN_SELECTIVE_SUPPRESSION_TEST_REPORT_2026-10-28.md) and
-[pre-TEST model lock](docs/verification/urban-selective-suppression-2026-10-28-v1/model-lock/README.md).
+six-worker batch (2 h 1 min). All seven semantic-ON method pairs retain more input
+and improve J with selective permission enabled. Best retention rises from 70.33%
+to 73.11%, versus regional static20 at 68.39%. Conditional adaptive spatial means
+become coarser and E-Scooter omission increases; the trade-offs remain visible.
+
+All fourteen new TRAIN/CAL models are locked before new TEST scoring, with no
+refit after the separately documented source-order audit correction. Independent
+score checks and all 66 paired-interval checks pass. Only Fixed20/Full111 has a
+marginal exploratory AUC-reduction interval below zero; the other 23 AUC contrasts
+include zero. Additional adaptive privacy benefit or equivalence is unestablished.
+Read the [complete results and figures](docs/verification/urban-selective-suppression-2026-10-28-v1/final-outcome/README.md)
+and [execution/test report](docs/URBAN_SELECTIVE_SUPPRESSION_TEST_REPORT_2026-10-28.md).
+Raw movement and fitted/individual artifacts remain local.
 
 **Six-worker evaluation infrastructure — verified, 28 October 2026.** Independent
 recordings can run in six spawned workers while each replay remains sequential.
@@ -28,7 +28,7 @@ one worker versus 28.71 s with six; all 12 native results and decision hashes ag
 and pass independent audits. This is a single operational throughput comparison,
 not a hard real-time benchmark. The reusable scheduler and separate fresh-study
 adapter preserve completed studies. The suppression-ON native/utility study has
-completed with the same six-worker design; new MIA verification is in progress. Read the [implementation and test report](docs/PARALLEL_EVALUATION_2026-10-28.md).
+completed with the same six-worker design; its utility and MIA outcome is verified. Read the [implementation and test report](docs/PARALLEL_EVALUATION_2026-10-28.md).
 
 **Semantic-generalization ablation — completed, 28 October 2026.** Seven ON/OFF
 pairs reuse the same 72 recordings and hard policies. All 1,296 new native cases

@@ -1,7 +1,7 @@
 # TO-DO — UMP-Simulator
 
 
-## In progress: P28 selective-contribution suppression study — 28 October 2026
+## Completed: P28 selective-contribution suppression study — 28 October 2026
 
 User authorized seven semantic-ON methods with selective suppression ON, paired
 with the seven immutable suppression-OFF references, on the same 72 recordings.
@@ -16,11 +16,16 @@ and [execution/test report](docs/URBAN_SELECTIVE_SUPPRESSION_TEST_REPORT_2026-10
   native cases, 144 regional streams, retained accounting and old references.
 - [x] P28.4: independently audit and publish the complete utility outcome before
   fourteen new TRAIN/CAL fits; publish the model lock before TEST scoring.
-- [ ] P28.5: score and independently audit MIA, paired contrasts and controls;
+- [x] P28.5: score and independently audit MIA, paired contrasts and controls;
   verify figures, document interpretation and publish compact aggregates only.
 
-Semantic-OFF/selective-ON, another attack and policy tuning remain separate
-follow-ups. No favorable outcome is assumed and no failed source is replaced.
+Completion: all native, utility, model, score and 66 paired-interval checks pass.
+The preserved model-audit failure is corrected additively before TEST, with no
+refit or source replacement. See the [final outcome](docs/verification/urban-selective-suppression-2026-10-28-v1/final-outcome/README.md).
+
+Semantic-OFF/selective-ON, another attack, fresh independent confirmation and
+policy tuning remain separate follow-ups. Per-type omission and the lack of
+established adaptive MIA improvement must accompany utility claims.
 
 ## Completed: six-worker evaluation infrastructure — 28 October 2026
 

@@ -1,0 +1,81 @@
+{
+  "files": {
+    "README.md": {
+      "bytes": 6997,
+      "sha256": "620ecbb13b3d6c71b329e7ea79ae8aef81f0b8769c92084eef30561ddfc1ee6d"
+    },
+    "artifact-receipt.json": {
+      "bytes": 1991,
+      "sha256": "b266242c86d76c4e2c32e52deba2fe796fa469dca373175efe7812465a40879e"
+    },
+    "complete-verification.json": {
+      "bytes": 1122,
+      "sha256": "3c0cb6327acedc3994a2ee43ef6cc96517dc1b5c1f20fc844ba3c57ec9808e41"
+    },
+    "figure-review.json": {
+      "bytes": 1333,
+      "sha256": "60554190e9233893ecbea94d0f10e2efef526cae244543a81a2a600aed1ef940"
+    },
+    "independent-verification.json": {
+      "bytes": 1199,
+      "sha256": "9224ec6a7040630bb96d1666f0ed1bea4ef7c7571dcbb3d441bee9d1853db92f"
+    },
+    "lineage-public.json": {
+      "bytes": 763,
+      "sha256": "10a4a5fe0e227e74eebeca3f9ed7a8369f247945d2bf2d3fb5fe85ed482c8735"
+    },
+    "paired-bootstrap-verification.json": {
+      "bytes": 22096,
+      "sha256": "0fd89f00222383304cf14ac92deade410f18c399e870092bac50543ce912a44e"
+    },
+    "paired_bootstrap_checker.py": {
+      "bytes": 18514,
+      "sha256": "31104dad84559501e0d99333d898d7b8ec39fafa4b141538460d66230161ac7a"
+    },
+    "report.md": {
+      "bytes": 7612,
+      "sha256": "519c7845f1c930e94847be718fef75758724aa1233fa34579c7f71f6a14aaa8a"
+    },
+    "summary.json": {
+      "bytes": 376330,
+      "sha256": "ebc59301739cd1334ffd280a20a559f6391f7aa3625d69c159aadd0da8357013"
+    },
+    "urban-selective-suppression-attack.png": {
+      "bytes": 99509,
+      "sha256": "bd2f45842433b7f8a8627d5fcdc8f955356da3b6bb147b3c75622eb242b20de0"
+    },
+    "urban-selective-suppression-attack.svg": {
+      "bytes": 73524,
+      "sha256": "da0940b210f79b9fa4bbf3ce47572256c8b708aebd2947c40311c08935974d27"
+    },
+    "urban-selective-suppression-contrasts.png": {
+      "bytes": 89248,
+      "sha256": "0b7a491a9dc4159fbe03622f7bb9dde3c0068d420cd284ad6c356cf0e0df5d36"
+    },
+    "urban-selective-suppression-contrasts.svg": {
+      "bytes": 65660,
+      "sha256": "e1a54b878a471744968e3951e65608be9163ce3560a5c9a2f0f9911a54953253"
+    },
+    "urban-selective-suppression-omission.png": {
+      "bytes": 187146,
+      "sha256": "9f05a3c5a29f881dd9d0e0d1543c91f05edc7eb2cf949896b7b7eae09afc5dd5"
+    },
+    "urban-selective-suppression-omission.svg": {
+      "bytes": 139637,
+      "sha256": "c599b987cc6bb6da00024564c14995db5f91222947e6c19e5c38ae9d7fa8f3ae"
+    },
+    "urban-selective-suppression-utility.png": {
+      "bytes": 116426,
+      "sha256": "d40edaa5e637a9aee1ec37bfee99ceb6dc77c9b3bc1193d0830bb364b70344d5"
+    },
+    "urban-selective-suppression-utility.svg": {
+      "bytes": 107663,
+      "sha256": "a0e0452cee186a1e25671257bf3d679092eabc7b428dc89b34f5426f047f0fa3"
+    }
+  },
+  "final_report_sha256": "2765094482116a3a2aa6b084380d6e50eff9eb247428301395cc4887a57a88c1",
+  "protocol_sha256": "68bfd022f6f170dbe669ae03a9925f3b1444b4bb66fd406e4aacf7ee0a774bff",
+  "raw_motion_or_individual_model_artifacts_in_repository": false,
+  "schema": "ump.selective-final-publication-packet.v1",
+  "status": "verified_ready_for_publication"
+}

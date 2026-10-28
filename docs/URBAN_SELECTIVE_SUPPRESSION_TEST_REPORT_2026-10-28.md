@@ -1,6 +1,6 @@
 # Selective-contribution suppression — execution and test report
 
-Date: 28 October 2026. Status: utility and additive model verification complete; model lock ready for publication before new TEST scoring.
+Date: 28 October 2026. Status: completed; utility, model lock, scores and paired intervals independently verified; all four figures reviewed.
 The [declared protocol](URBAN_SELECTIVE_SUPPRESSION_PROTOCOL_2026-10-28.md)
 defines the new semantic-enabled permission comparison. Utility and attack evidence
 are reported separately. No new MIA result is claimed before model-lock and final
@@ -130,3 +130,16 @@ published before the correction. The [public model-lock packet](verification/urb
 contains only convergence metadata, provenance and the explicit correction.
 Fitted arrays, operating thresholds, raw movement and individual scores stay
 local. New TEST scoring begins only after this packet is pushed and verified.
+
+
+## Complete independent MIA and interval verification
+
+The model-lock packet was published and actual remote/file bytes verified at `2098b5385f1fc93310d342168d970722318339e3` before new TEST scoring. The frozen assessment completes in 834.836 s; the additive independent score audit completes in 823.768 s, with 1792 locked-score checks and zero refits/retunes. All historical attack/control/primary outcomes and the utility gate remain exact.
+
+The separate stdlib-only checker independently verifies all 24 AUC and 42 utility intervals (1,000 paired-source resamples each), maximum arithmetic difference 0.0, in 1.316 s. It passes nine synthetic checks and calls no producer bootstrap helper, prediction or fit. Its published source and hash permit inspection; raw scores remain local.
+
+New Full111 AUC ranges from 0.5327 to 0.5972 and Scalar31 from 0.5522 to 0.6079. Only Fixed20/Full111 ON-minus-OFF has a marginal 95% interval below zero (−0.06152 [−0.14258,−0.000952]); all other 23 declared AUC intervals include zero. This supports no general additional adaptive privacy benefit, no equivalence and no ranking by privacy. New TEST FPR is 6.25–34.38%; CAL 10% is a calibration operating target.
+
+All four actual PNGs are visually verified against aggregates; SVG exports remain available. The final packet contains compact tables/figures, code and verification hashes only. The scientific files are unchanged. The failed original model audit and corrective verification are explicit; no physical simulation or model fit was repeated.
+
+[Complete interpretation, tables and figures](verification/urban-selective-suppression-2026-10-28-v1/final-outcome/README.md). The declared hypotheses and all limitations remain unchanged.

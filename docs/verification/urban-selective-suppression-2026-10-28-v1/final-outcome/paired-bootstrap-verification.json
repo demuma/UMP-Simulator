@@ -1,0 +1,777 @@
+{
+  "auc_checks": [
+    {
+      "auc_difference": -0.0615234375,
+      "contrast": "fixed20_400ms_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.142578125,
+        -0.0009521484375000222
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028501
+    },
+    {
+      "auc_difference": -0.009765625,
+      "contrast": "fixed20_400ms_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.041015625,
+        0.025390625
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028501
+    },
+    {
+      "auc_difference": 0.0322265625,
+      "contrast": "regional_static20_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.029296875,
+        0.0810546875
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028502
+    },
+    {
+      "auc_difference": -0.005859375,
+      "contrast": "regional_static20_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.04299316406249998,
+        0.029296875
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028502
+    },
+    {
+      "auc_difference": -0.0458984375,
+      "contrast": "adaptive_temporal_first_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.1142578125,
+        0.009765625
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028503
+    },
+    {
+      "auc_difference": -0.03515625,
+      "contrast": "adaptive_temporal_first_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.080078125,
+        0.005883789062499978
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028503
+    },
+    {
+      "auc_difference": -0.0390625,
+      "contrast": "adaptive_spatial_first_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.09865722656249998,
+        0.018579101562499978
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028504
+    },
+    {
+      "auc_difference": -0.0341796875,
+      "contrast": "adaptive_spatial_first_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.08010253906249998,
+        0.019555664062499978
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028504
+    },
+    {
+      "auc_difference": -0.0380859375,
+      "contrast": "adaptive_semantic_first_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.1103515625,
+        0.021484375
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028505
+    },
+    {
+      "auc_difference": -0.0390625,
+      "contrast": "adaptive_semantic_first_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.08984375,
+        0.0087890625
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028505
+    },
+    {
+      "auc_difference": -0.0205078125,
+      "contrast": "adaptive_semantic_wait_temporal_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.05861816406249998,
+        0.009765625
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028506
+    },
+    {
+      "auc_difference": 0.0107421875,
+      "contrast": "adaptive_semantic_wait_temporal_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.0283203125,
+        0.0625
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028506
+    },
+    {
+      "auc_difference": -0.0107421875,
+      "contrast": "adaptive_semantic_wait_spatial_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.05178222656249998,
+        0.03908691406249998
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028507
+    },
+    {
+      "auc_difference": -0.009765625,
+      "contrast": "adaptive_semantic_wait_spatial_selective_vs_disabled",
+      "independent_groups": 32,
+      "interval": [
+        -0.048828125,
+        0.05373535156249998
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028507
+    },
+    {
+      "auc_difference": -0.064453125,
+      "contrast": "adaptive_temporal_first_selective_vs_regional_selective",
+      "independent_groups": 32,
+      "interval": [
+        -0.15625,
+        0.013671875
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028601
+    },
+    {
+      "auc_difference": -0.0185546875,
+      "contrast": "adaptive_temporal_first_selective_vs_regional_selective",
+      "independent_groups": 32,
+      "interval": [
+        -0.06640625,
+        0.021508789062499978
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028601
+    },
+    {
+      "auc_difference": -0.056640625,
+      "contrast": "adaptive_spatial_first_selective_vs_regional_selective",
+      "independent_groups": 32,
+      "interval": [
+        -0.11037597656249998,
+        4.882812499995559e-05
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028602
+    },
+    {
+      "auc_difference": -0.0009765625,
+      "contrast": "adaptive_spatial_first_selective_vs_regional_selective",
+      "independent_groups": 32,
+      "interval": [
+        -0.05666503906249998,
+        0.046875
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028602
+    },
+    {
+      "auc_difference": -0.0576171875,
+      "contrast": "adaptive_semantic_first_selective_vs_regional_selective",
+      "independent_groups": 32,
+      "interval": [
+        -0.14455566406249998,
+        0.0283203125
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028603
+    },
+    {
+      "auc_difference": -0.0224609375,
+      "contrast": "adaptive_semantic_first_selective_vs_regional_selective",
+      "independent_groups": 32,
+      "interval": [
+        -0.06740722656249998,
+        0.015625
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028603
+    },
+    {
+      "auc_difference": -0.03125,
+      "contrast": "adaptive_semantic_wait_temporal_selective_vs_regional_selective",
+      "independent_groups": 32,
+      "interval": [
+        -0.0869140625,
+        0.026391601562499978
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028604
+    },
+    {
+      "auc_difference": 0.033203125,
+      "contrast": "adaptive_semantic_wait_temporal_selective_vs_regional_selective",
+      "independent_groups": 32,
+      "interval": [
+        -0.00390625,
+        0.07622070312499996
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028604
+    },
+    {
+      "auc_difference": -0.0263671875,
+      "contrast": "adaptive_semantic_wait_spatial_selective_vs_regional_selective",
+      "independent_groups": 32,
+      "interval": [
+        -0.0966796875,
+        0.052734375
+      ],
+      "replicates": 1000,
+      "representation": "semantic111",
+      "seed": 20261028605
+    },
+    {
+      "auc_difference": 0.0126953125,
+      "contrast": "adaptive_semantic_wait_spatial_selective_vs_regional_selective",
+      "independent_groups": 32,
+      "interval": [
+        -0.0234375,
+        0.05380859374999991
+      ],
+      "replicates": 1000,
+      "representation": "scalar31",
+      "seed": 20261028605
+    }
+  ],
+  "auc_implementation": "Independent integer pairwise concordance-difference kernel weighted by sampled source multiplicities; no producer rank/bootstrap helpers.",
+  "auc_intervals_verified": 24,
+  "checker_sha256": "31104dad84559501e0d99333d898d7b8ec39fafa4b141538460d66230161ac7a",
+  "final_report_sha256": "2765094482116a3a2aa6b084380d6e50eff9eb247428301395cc4887a57a88c1",
+  "independent_receipt_sha256": "6dccd301545b686bced2e79a0efa65c654055ac7e6338883442271ac3ea7def1",
+  "interval_rule": "linear interpolation at (B-1)*q; marginal95% intervals conditional on fixed TRAIN models and CAL thresholds",
+  "maximum_absolute_arithmetic_difference": 0.0,
+  "models_refitted": 0,
+  "new_predictions_computed": false,
+  "preparation_synthetic_checks": 9,
+  "producer_bootstrap_helpers_called": false,
+  "protocol_sha256": "68bfd022f6f170dbe669ae03a9925f3b1444b4bb66fd406e4aacf7ee0a774bff",
+  "replicates_per_interval": 1000,
+  "schema": "ump.urban-selective-independent-paired-bootstrap.v1",
+  "scope": "Recompute declared intervals from existing assessed TEST scores and stored utility only; no rescore, refit, data replacement or additional physical/source audit. No simultaneous-family or equivalence claim.",
+  "seconds": 1.316152625,
+  "source_resampling_unit": "one matched TEST recording with both worlds and both methods",
+  "status": "verified",
+  "thresholds_retuned": false,
+  "utility_checks": [
+    {
+      "ci95": [
+        0.04203486691952695,
+        0.05689955649135468
+      ],
+      "contrast": "fixed20_400ms_selective_vs_disabled",
+      "mean_difference": 0.04915701438893794,
+      "metric": "retained_fraction",
+      "paired_recordings": 32,
+      "seed": 20261028701
+    },
+    {
+      "ci95": [
+        -0.03485395209310212,
+        -0.026469075049298706
+      ],
+      "contrast": "fixed20_400ms_selective_vs_disabled",
+      "mean_difference": -0.03052380056434699,
+      "metric": "full_input_J",
+      "paired_recordings": 32,
+      "seed": 20261028701
+    },
+    {
+      "ci95": [
+        -0.023662482752561772,
+        -0.016773541369218395
+      ],
+      "contrast": "fixed20_400ms_selective_vs_disabled",
+      "mean_difference": -0.019958315327043973,
+      "metric": "retained_semantic_loss",
+      "paired_recordings": 32,
+      "seed": 20261028701
+    },
+    {
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "contrast": "fixed20_400ms_selective_vs_disabled",
+      "mean_difference": 0.0,
+      "metric": "mean_retained_cell_side_m",
+      "paired_recordings": 32,
+      "seed": 20261028701
+    },
+    {
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "contrast": "fixed20_400ms_selective_vs_disabled",
+      "mean_difference": 0.0,
+      "metric": "mean_retained_interval_ms",
+      "paired_recordings": 32,
+      "seed": 20261028701
+    },
+    {
+      "ci95": [
+        -0.03286062311333502,
+        -0.017616086008234676
+      ],
+      "contrast": "fixed20_400ms_selective_vs_disabled",
+      "mean_difference": -0.025415561400523146,
+      "metric": "logical_seal_delay_ms.mean",
+      "paired_recordings": 32,
+      "seed": 20261028701
+    },
+    {
+      "ci95": [
+        0.06927953346605732,
+        0.08713397777545312
+      ],
+      "contrast": "regional_static20_selective_vs_disabled",
+      "mean_difference": 0.07787891215667059,
+      "metric": "retained_fraction",
+      "paired_recordings": 32,
+      "seed": 20261028702
+    },
+    {
+      "ci95": [
+        -0.06430142687926514,
+        -0.053518304876629376
+      ],
+      "contrast": "regional_static20_selective_vs_disabled",
+      "mean_difference": -0.058690457988561456,
+      "metric": "full_input_J",
+      "paired_recordings": 32,
+      "seed": 20261028702
+    },
+    {
+      "ci95": [
+        -0.04978462918616438,
+        -0.038329500748403536
+      ],
+      "contrast": "regional_static20_selective_vs_disabled",
+      "mean_difference": -0.043698424044960577,
+      "metric": "retained_semantic_loss",
+      "paired_recordings": 32,
+      "seed": 20261028702
+    },
+    {
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "contrast": "regional_static20_selective_vs_disabled",
+      "mean_difference": 0.0,
+      "metric": "mean_retained_cell_side_m",
+      "paired_recordings": 32,
+      "seed": 20261028702
+    },
+    {
+      "ci95": [
+        -104.2309573911822,
+        -37.06553407541072
+      ],
+      "contrast": "regional_static20_selective_vs_disabled",
+      "mean_difference": -69.36778559954836,
+      "metric": "mean_retained_interval_ms",
+      "paired_recordings": 32,
+      "seed": 20261028702
+    },
+    {
+      "ci95": [
+        -54.800507988709136,
+        -21.135815731001934
+      ],
+      "contrast": "regional_static20_selective_vs_disabled",
+      "mean_difference": -37.282852116593084,
+      "metric": "logical_seal_delay_ms.mean",
+      "paired_recordings": 32,
+      "seed": 20261028702
+    },
+    {
+      "ci95": [
+        0.016872681510146474,
+        0.022368138037754382
+      ],
+      "contrast": "adaptive_temporal_first_selective_vs_disabled",
+      "mean_difference": 0.019542585892580913,
+      "metric": "retained_fraction",
+      "paired_recordings": 32,
+      "seed": 20261028703
+    },
+    {
+      "ci95": [
+        -0.018724270782469212,
+        -0.01466853255928377
+      ],
+      "contrast": "adaptive_temporal_first_selective_vs_disabled",
+      "mean_difference": -0.01667094706365795,
+      "metric": "full_input_J",
+      "paired_recordings": 32,
+      "seed": 20261028703
+    },
+    {
+      "ci95": [
+        -0.015445395131095304,
+        -0.011101153931031555
+      ],
+      "contrast": "adaptive_temporal_first_selective_vs_disabled",
+      "mean_difference": -0.013155987936749016,
+      "metric": "retained_semantic_loss",
+      "paired_recordings": 32,
+      "seed": 20261028703
+    },
+    {
+      "ci95": [
+        0.3450236292941422,
+        0.4783562776773918
+      ],
+      "contrast": "adaptive_temporal_first_selective_vs_disabled",
+      "mean_difference": 0.4130560386730324,
+      "metric": "mean_retained_cell_side_m",
+      "paired_recordings": 32,
+      "seed": 20261028703
+    },
+    {
+      "ci95": [
+        -17.881233946589376,
+        -9.731793076332686
+      ],
+      "contrast": "adaptive_temporal_first_selective_vs_disabled",
+      "mean_difference": -13.918195031031633,
+      "metric": "mean_retained_interval_ms",
+      "paired_recordings": 32,
+      "seed": 20261028703
+    },
+    {
+      "ci95": [
+        -8.603329200492634,
+        -4.520837692811282
+      ],
+      "contrast": "adaptive_temporal_first_selective_vs_disabled",
+      "mean_difference": -6.607194058461779,
+      "metric": "logical_seal_delay_ms.mean",
+      "paired_recordings": 32,
+      "seed": 20261028703
+    },
+    {
+      "ci95": [
+        0.01843852626230326,
+        0.02464816044660543
+      ],
+      "contrast": "adaptive_spatial_first_selective_vs_disabled",
+      "mean_difference": 0.02162522392454373,
+      "metric": "retained_fraction",
+      "paired_recordings": 32,
+      "seed": 20261028704
+    },
+    {
+      "ci95": [
+        -0.03183789570334832,
+        -0.024243100654108375
+      ],
+      "contrast": "adaptive_spatial_first_selective_vs_disabled",
+      "mean_difference": -0.02797149725146785,
+      "metric": "full_input_J",
+      "paired_recordings": 32,
+      "seed": 20261028704
+    },
+    {
+      "ci95": [
+        -0.03349195705661001,
+        -0.023529413220827553
+      ],
+      "contrast": "adaptive_spatial_first_selective_vs_disabled",
+      "mean_difference": -0.028340046673561384,
+      "metric": "retained_semantic_loss",
+      "paired_recordings": 32,
+      "seed": 20261028704
+    },
+    {
+      "ci95": [
+        0.47416560219010656,
+        0.7060408902546146
+      ],
+      "contrast": "adaptive_spatial_first_selective_vs_disabled",
+      "mean_difference": 0.5931793597000078,
+      "metric": "mean_retained_cell_side_m",
+      "paired_recordings": 32,
+      "seed": 20261028704
+    },
+    {
+      "ci95": [
+        -46.85554127932606,
+        -16.346080384332176
+      ],
+      "contrast": "adaptive_spatial_first_selective_vs_disabled",
+      "mean_difference": -30.79267892621384,
+      "metric": "mean_retained_interval_ms",
+      "paired_recordings": 32,
+      "seed": 20261028704
+    },
+    {
+      "ci95": [
+        -25.280566441473578,
+        -10.235893081560054
+      ],
+      "contrast": "adaptive_spatial_first_selective_vs_disabled",
+      "mean_difference": -17.33750956446886,
+      "metric": "logical_seal_delay_ms.mean",
+      "paired_recordings": 32,
+      "seed": 20261028704
+    },
+    {
+      "ci95": [
+        0.016418193614403314,
+        0.021975587773179397
+      ],
+      "contrast": "adaptive_semantic_first_selective_vs_disabled",
+      "mean_difference": 0.019187482145554737,
+      "metric": "retained_fraction",
+      "paired_recordings": 32,
+      "seed": 20261028705
+    },
+    {
+      "ci95": [
+        -0.019888000747243794,
+        -0.015251068713216758
+      ],
+      "contrast": "adaptive_semantic_first_selective_vs_disabled",
+      "mean_difference": -0.017497623866448306,
+      "metric": "full_input_J",
+      "paired_recordings": 32,
+      "seed": 20261028705
+    },
+    {
+      "ci95": [
+        -0.017940399485485533,
+        -0.011798496067708187
+      ],
+      "contrast": "adaptive_semantic_first_selective_vs_disabled",
+      "mean_difference": -0.014524884772901703,
+      "metric": "retained_semantic_loss",
+      "paired_recordings": 32,
+      "seed": 20261028705
+    },
+    {
+      "ci95": [
+        0.388065990810336,
+        0.574690043463994
+      ],
+      "contrast": "adaptive_semantic_first_selective_vs_disabled",
+      "mean_difference": 0.47965011971335625,
+      "metric": "mean_retained_cell_side_m",
+      "paired_recordings": 32,
+      "seed": 20261028705
+    },
+    {
+      "ci95": [
+        -17.961847729335474,
+        -9.422388861513356
+      ],
+      "contrast": "adaptive_semantic_first_selective_vs_disabled",
+      "mean_difference": -13.834188289527194,
+      "metric": "mean_retained_interval_ms",
+      "paired_recordings": 32,
+      "seed": 20261028705
+    },
+    {
+      "ci95": [
+        -8.601050773043152,
+        -4.3361741036300145
+      ],
+      "contrast": "adaptive_semantic_first_selective_vs_disabled",
+      "mean_difference": -6.566242234683566,
+      "metric": "logical_seal_delay_ms.mean",
+      "paired_recordings": 32,
+      "seed": 20261028705
+    },
+    {
+      "ci95": [
+        0.024045250804641902,
+        0.030743621135666893
+      ],
+      "contrast": "adaptive_semantic_wait_temporal_selective_vs_disabled",
+      "mean_difference": 0.027369728996490855,
+      "metric": "retained_fraction",
+      "paired_recordings": 32,
+      "seed": 20261028706
+    },
+    {
+      "ci95": [
+        -0.03828745549802751,
+        -0.031319363774079095
+      ],
+      "contrast": "adaptive_semantic_wait_temporal_selective_vs_disabled",
+      "mean_difference": -0.034745754257619,
+      "metric": "full_input_J",
+      "paired_recordings": 32,
+      "seed": 20261028706
+    },
+    {
+      "ci95": [
+        -0.038693582474868565,
+        -0.029078999097433174
+      ],
+      "contrast": "adaptive_semantic_wait_temporal_selective_vs_disabled",
+      "mean_difference": -0.0334782453521924,
+      "metric": "retained_semantic_loss",
+      "paired_recordings": 32,
+      "seed": 20261028706
+    },
+    {
+      "ci95": [
+        0.6801156661751131,
+        0.9284838802020459
+      ],
+      "contrast": "adaptive_semantic_wait_temporal_selective_vs_disabled",
+      "mean_difference": 0.7945523448495809,
+      "metric": "mean_retained_cell_side_m",
+      "paired_recordings": 32,
+      "seed": 20261028706
+    },
+    {
+      "ci95": [
+        -48.49425092691117,
+        -17.84401252070241
+      ],
+      "contrast": "adaptive_semantic_wait_temporal_selective_vs_disabled",
+      "mean_difference": -31.497953108814286,
+      "metric": "mean_retained_interval_ms",
+      "paired_recordings": 32,
+      "seed": 20261028706
+    },
+    {
+      "ci95": [
+        -25.63470746217935,
+        -10.141014047730645
+      ],
+      "contrast": "adaptive_semantic_wait_temporal_selective_vs_disabled",
+      "mean_difference": -17.190947630796806,
+      "metric": "logical_seal_delay_ms.mean",
+      "paired_recordings": 32,
+      "seed": 20261028706
+    },
+    {
+      "ci95": [
+        0.02453562872387702,
+        0.031024894225709383
+      ],
+      "contrast": "adaptive_semantic_wait_spatial_selective_vs_disabled",
+      "mean_difference": 0.027828964158016417,
+      "metric": "retained_fraction",
+      "paired_recordings": 32,
+      "seed": 20261028707
+    },
+    {
+      "ci95": [
+        -0.038410761192663734,
+        -0.03168168827817524
+      ],
+      "contrast": "adaptive_semantic_wait_spatial_selective_vs_disabled",
+      "mean_difference": -0.03497555588718508,
+      "metric": "full_input_J",
+      "paired_recordings": 32,
+      "seed": 20261028707
+    },
+    {
+      "ci95": [
+        -0.03823703390254986,
+        -0.029036755988677478
+      ],
+      "contrast": "adaptive_semantic_wait_spatial_selective_vs_disabled",
+      "mean_difference": -0.03342932181041519,
+      "metric": "retained_semantic_loss",
+      "paired_recordings": 32,
+      "seed": 20261028707
+    },
+    {
+      "ci95": [
+        0.6827475807646628,
+        0.9102128097979126
+      ],
+      "contrast": "adaptive_semantic_wait_spatial_selective_vs_disabled",
+      "mean_difference": 0.7933246256582763,
+      "metric": "mean_retained_cell_side_m",
+      "paired_recordings": 32,
+      "seed": 20261028707
+    },
+    {
+      "ci95": [
+        -44.28006684093235,
+        -12.118751728923643
+      ],
+      "contrast": "adaptive_semantic_wait_spatial_selective_vs_disabled",
+      "mean_difference": -26.769438550590095,
+      "metric": "mean_retained_interval_ms",
+      "paired_recordings": 32,
+      "seed": 20261028707
+    },
+    {
+      "ci95": [
+        -23.604333798259464,
+        -7.649935540243322
+      ],
+      "contrast": "adaptive_semantic_wait_spatial_selective_vs_disabled",
+      "mean_difference": -15.023251923151669,
+      "metric": "logical_seal_delay_ms.mean",
+      "paired_recordings": 32,
+      "seed": 20261028707
+    }
+  ],
+  "utility_implementation": "Independent available-pair IN differences with source-resampled means; one RNG reset per contrast/metric.",
+  "utility_intervals_verified": 42
+}
