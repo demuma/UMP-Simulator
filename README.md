@@ -5,6 +5,25 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
+**Selective-contribution suppression study — pre-execution, 28 October 2026.**
+All seven semantic-enabled methods will be paired with their historical references
+on the same 72 recordings, changing only permission for up to 10% selective omission
+per cell-window. All 632 tests and the excluded 18-native/two-regional CITY DEV
+gate pass. Six workers are frozen; full utility verification and a published
+TRAIN/CAL model lock precede new TEST scoring. No new outcome is claimed yet.
+Read the [protocol](docs/URBAN_SELECTIVE_SUPPRESSION_PROTOCOL_2026-10-28.md),
+[pre-execution evidence](docs/verification/urban-selective-suppression-2026-10-28-v1/preflight/README.md)
+and [test report](docs/URBAN_SELECTIVE_SUPPRESSION_TEST_REPORT_2026-10-28.md).
+
+**Six-worker evaluation infrastructure — verified, 28 October 2026.** Independent
+recordings can run in six spawned workers while each replay remains sequential.
+All 86 affected Python tests pass. A short excluded-DEV pilot takes 158.20 s with
+one worker versus 28.71 s with six; all 12 native results and decision hashes agree
+and pass independent audits. This is a single operational throughput comparison,
+not a hard real-time benchmark. The reusable scheduler and separate fresh-study
+adapter preserve completed studies; the proposed suppression-ON study has not
+started. Read the [implementation and test report](docs/PARALLEL_EVALUATION_2026-10-28.md).
+
 **Semantic-generalization ablation — completed, 28 October 2026.** Seven ON/OFF
 pairs reuse the same 72 recordings and hard policies. All 1,296 new native cases
 and 144 regional compositions verify. Fourteen new TRAIN/CAL attacks were checked

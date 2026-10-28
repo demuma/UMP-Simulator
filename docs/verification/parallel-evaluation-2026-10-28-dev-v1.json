@@ -1,0 +1,77 @@
+{
+  "arms": {
+    "1": {
+      "distinct_worker_pids": 1,
+      "elapsed_seconds": 158.2016515,
+      "maximum_native_peak_rss_bytes": 395952128,
+      "maximum_python_worker_peak_rss_bytes": 487342080,
+      "observed_maximum_active_jobs": 1,
+      "sum_separate_process_peak_rss_bytes_upper_bound": 5033115648,
+      "tasks": 6,
+      "workers": 1
+    },
+    "6": {
+      "distinct_worker_pids": 6,
+      "elapsed_seconds": 28.707432290999975,
+      "maximum_native_peak_rss_bytes": 392609792,
+      "maximum_python_worker_peak_rss_bytes": 425672704,
+      "observed_maximum_active_jobs": 6,
+      "sum_separate_process_peak_rss_bytes_upper_bound": 4793171968,
+      "tasks": 6,
+      "workers": 6
+    }
+  },
+  "date": "2026-10-28",
+  "default_workers": 6,
+  "derived_policy_sha256": "4f03e769b99f730bd842279c3357fd741c53bd5cc715b73f8c05e3bc32da1638",
+  "derived_prefix_sha256": "f14a2a77b0ee517f8d1f229a18e9e08c97d2e880b33c9833f640658f53a268ef",
+  "full_source_sha256": "31dd49c44ade2d1f829e75f8a7cf4eb82dcc6f0d4adf52e8688725f72549d34c",
+  "hardware": {
+    "logical_cpus": 12,
+    "physical_cpus": 12,
+    "ram_bytes": 25769803776
+  },
+  "historical_studies_modified": false,
+  "horizon_ms": 60000,
+  "implementation_files_sha256": {
+    "parallel_recordings.py": "62c612defc583a38b60f73ffd0df8cfd1528e53aab1654e2df333406d25c853d",
+    "run_urban_semantic_ablation_parallel.py": "a7f416523de953bde4188c85675500ce64b2a530959b41339e4703163c616ab8",
+    "test_parallel_recordings.py": "91b3f3f94543f57f6b2aba8e991ea3a0d0548bcb2cd49515441f86100afdb998",
+    "test_run_urban_semantic_ablation_parallel.py": "1eac91ebf21687494035d967e214ea1da274709090c684d2c009b2b141683303"
+  },
+  "limitations": [
+    "One serial-then-parallel timing pair; no repetitions, confidence interval or guaranteed speedup.",
+    "Ordinary background applications were active; final Python regression checks also overlapped part of the parallel pilot. These are operational throughput diagnostics, not isolated timings.",
+    "Native and Python peak RSS are separate process lifetime maxima; their sum is not a measured simultaneous total RAM value.",
+    "Whole-recording source import, query evaluation, compression and collection of the full 72-recording study were not benchmarked.",
+    "Concurrent timings cannot establish isolated strategy runtime or real-time deadlines.",
+    "The separate concrete adapter retains the existing exact-only ablation catalog; it does not implement or start the proposed semantic-ON/selective-ON study. Its reusable scheduler can be used by that new study."
+  ],
+  "local_pilot_receipt_sha256": "54e54ab93593a1e2bd8d7898fba095ece5149e07142b00e290b1c4c0a5bafba0",
+  "local_pilot_script_sha256": "ea91a42b46fd59b8c46683b54f55310e4b20694776cf5db03df885be63428dd7",
+  "native_binary_sha256": "243434319365755b776b2213ac344740cfeaea168f50a590b7164f86b3f596fc",
+  "native_scope": "Semantic First / wait / Spatial secondary; semantic generalization enabled, selective suppression cap 0.10, full diagnostics, decision digest enabled. No paced replay.",
+  "new_mia_fits": 0,
+  "new_source_simulations": 0,
+  "observations_per_task": 54161,
+  "observed_single_pair_throughput_ratio": 5.510825555429336,
+  "schema": "ump.parallel-evaluation-dev-summary.v1",
+  "source_recordings": 1,
+  "source_scope": "One existing excluded DEV recording, exact 60-second prefix; six repeated computational tasks per arm, not independent scientific samples.",
+  "status": "verified",
+  "test_attack_scoring": false,
+  "verification": {
+    "existing_regressions": 58,
+    "failures": 0,
+    "frozen_source_config_binary_and_helper_unchanged": true,
+    "identical_decision_audits": true,
+    "identical_scientific_payloads": 12,
+    "independent_native_audits": 12,
+    "native_replays": 12,
+    "new_adapter_tests": 16,
+    "new_scheduler_tests": 12,
+    "python_test_seconds": 5.606,
+    "skipped": 0,
+    "total_python_tests": 86
+  }
+}

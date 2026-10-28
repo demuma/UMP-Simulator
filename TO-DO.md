@@ -1,6 +1,48 @@
 # TO-DO — UMP-Simulator
 
 
+## In progress: P28 selective-contribution suppression study — 28 October 2026
+
+User authorized seven semantic-ON methods with selective suppression ON, paired
+with the seven immutable suppression-OFF references, on the same 72 recordings.
+Follow the [declared protocol](docs/URBAN_SELECTIVE_SUPPRESSION_PROTOCOL_2026-10-28.md)
+and [execution/test report](docs/URBAN_SELECTIVE_SUPPRESSION_TEST_REPORT_2026-10-28.md).
+
+- [x] P28.1: complete independent filtered utility/query/regional adapters,
+  runner/model gates, reporter and regression tests; preserve historical files.
+- [ ] P28.2: verify all eighteen new native cases and two regional compositions
+  on the excluded CITY DEV pair; freeze/publish code, contract and configurations.
+- [ ] P28.3: execute 72 complete groups with six workers; authenticate all 1296
+  native cases, 144 regional streams, retained accounting and old references.
+- [ ] P28.4: independently audit and publish the complete utility outcome before
+  fourteen new TRAIN/CAL fits; publish the model lock before TEST scoring.
+- [ ] P28.5: score and independently audit MIA, paired contrasts and controls;
+  verify figures, document interpretation and publish compact aggregates only.
+
+Semantic-OFF/selective-ON, another attack and policy tuning remain separate
+follow-ups. No favorable outcome is assumed and no failed source is replaced.
+
+## Completed: six-worker evaluation infrastructure — 28 October 2026
+
+User-authorized concurrency: six spawned workers for independent recordings.
+Read the [implementation and DEV test report](docs/PARALLEL_EVALUATION_2026-10-28.md).
+
+- [x] Add a reusable bounded process scheduler with parent-only admission/results,
+  manifest-order collection, cancellation/draining and explicit failures without retries.
+- [x] Add a separate fresh-study adapter and frozen six-worker execution plan;
+  retain the existing serial runner, completed protocols and results unchanged.
+- [x] Verify shared-lock exclusion, atomic receipts, central disk headroom and
+  full-success collection. All 86 new/affected Python tests pass.
+- [x] Run a local excluded-DEV one-versus-six-worker pilot: 158.20 s versus 28.71 s;
+  all 12 native outputs/decision hashes agree and pass independent source audits.
+- [ ] Integrate the reusable scheduler into the separately declared semantic-ON /
+  selective-suppression-ON study after its policy/query/audit adapters are ready.
+  The concrete adapter added here retains the existing exact-only ablation catalog.
+- [ ] Estimate the full-study runtime and peak memory from its first full recording
+  groups; the short DEV throughput result is not a guaranteed sixfold acceleration.
+- [ ] Keep isolated runtime and paced real-time benchmarks separate from concurrent
+  batch measurements. No new MIA fits or TEST attack scores were produced here.
+
 ## Completed: P27 controlled semantic-generalization ON/OFF study — 28 October 2026
 
 Authorized 27 October 2026. Follow the [declared protocol](docs/URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md).
