@@ -1,0 +1,13 @@
+{
+  "figures": {
+    "urban-selective-suppression-omission.png": "9f05a3c5a29f881dd9d0e0d1543c91f05edc7eb2cf949896b7b7eae09afc5dd5",
+    "urban-selective-suppression-utility.png": "d40edaa5e637a9aee1ec37bfee99ceb6dc77c9b3bc1193d0830bb364b70344d5"
+  },
+  "labels_and_markers_visible": true,
+  "metrics_match_verified_aggregates": true,
+  "omission_reading_note": "Numerical annotations are observed values. The right zero-centered scale can be gray for small valid changes; unavailable values would be explicitly labelled NA.",
+  "root_review": true,
+  "schema": "ump.selective-utility-figure-review.v1",
+  "source_type_count": 8,
+  "status": "verified"
+}

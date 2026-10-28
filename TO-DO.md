@@ -10,9 +10,9 @@ and [execution/test report](docs/URBAN_SELECTIVE_SUPPRESSION_TEST_REPORT_2026-10
 
 - [x] P28.1: complete independent filtered utility/query/regional adapters,
   runner/model gates, reporter and regression tests; preserve historical files.
-- [ ] P28.2: verify all eighteen new native cases and two regional compositions
+- [x] P28.2: verify all eighteen new native cases and two regional compositions
   on the excluded CITY DEV pair; freeze/publish code, contract and configurations.
-- [ ] P28.3: execute 72 complete groups with six workers; authenticate all 1296
+- [x] P28.3: execute 72 complete groups with six workers; authenticate all 1296
   native cases, 144 regional streams, retained accounting and old references.
 - [ ] P28.4: independently audit and publish the complete utility outcome before
   fourteen new TRAIN/CAL fits; publish the model lock before TEST scoring.

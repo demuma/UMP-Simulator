@@ -1,0 +1,59 @@
+{
+  "files": {
+    "README.md": {
+      "bytes": 1807,
+      "sha256": "9733e5e7e3f16dc4aeb385a40d94126df2c24d5bbfe9beffec5ee5c5a4c578bd"
+    },
+    "artifact-receipt.json": {
+      "bytes": 1344,
+      "sha256": "18c06042a79ab02762098b21ac97767b30dc16611c3a3e0cd44eccdb0e3c7eb7"
+    },
+    "figure-review.json": {
+      "bytes": 655,
+      "sha256": "5428c0801953333fb7d3e3cb8d2700c241494e6f6f58e213433655d859682d0e"
+    },
+    "independent-verification.json": {
+      "bytes": 1125,
+      "sha256": "5294fbbcd9312c3526de3509733c5560d70b39acc664c38870255beb5fef77f7"
+    },
+    "lineage-public.json": {
+      "bytes": 763,
+      "sha256": "10a4a5fe0e227e74eebeca3f9ed7a8369f247945d2bf2d3fb5fe85ed482c8735"
+    },
+    "report.md": {
+      "bytes": 6586,
+      "sha256": "085bcb5e796ad9c876d91a10349cc0723eea0f1922ab4f87c0d1537e556e0040"
+    },
+    "source-type-count-correction.md": {
+      "bytes": 894,
+      "sha256": "f48dc8d54ce1141ec0f45cf1bfe9667e4091b13569ba60675790a8609e56c713"
+    },
+    "summary.json": {
+      "bytes": 335705,
+      "sha256": "d91d4fc11628e29909feb958ba43ffb80592b3344921840ed7e9deaf070ea59e"
+    },
+    "urban-selective-suppression-omission.png": {
+      "bytes": 187146,
+      "sha256": "9f05a3c5a29f881dd9d0e0d1543c91f05edc7eb2cf949896b7b7eae09afc5dd5"
+    },
+    "urban-selective-suppression-omission.svg": {
+      "bytes": 139637,
+      "sha256": "c3449b8aaff6f24ea51d3bfd8e2bab65347d4d5dceadcff39af5dbdfb8e95ddc"
+    },
+    "urban-selective-suppression-utility.png": {
+      "bytes": 116426,
+      "sha256": "d40edaa5e637a9aee1ec37bfee99ceb6dc77c9b3bc1193d0830bb364b70344d5"
+    },
+    "urban-selective-suppression-utility.svg": {
+      "bytes": 107663,
+      "sha256": "dc5b877dccd6c3b5dfcf724e15be2e19399c3e1e3d3497b84899d84dcaccd1d8"
+    }
+  },
+  "independent_audit_sha256": "a419427ef2d37b121353fd2c2d20b244aa664a5c5ea66257cf35cc712cb2e357",
+  "new_TEST_scores": 0,
+  "new_model_fits": 0,
+  "root_figure_review_sha256": "5428c0801953333fb7d3e3cb8d2700c241494e6f6f58e213433655d859682d0e",
+  "schema": "ump.selective-utility-publication-view.v1",
+  "source_report_sha256": "7bd016ce9e884e3ef0a10967fa7651e70708aa03b004dc4b54c2197e97dec660",
+  "status": "verified_ready_for_publication"
+}

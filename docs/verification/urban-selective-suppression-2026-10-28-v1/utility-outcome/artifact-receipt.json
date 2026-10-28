@@ -1,0 +1,36 @@
+{
+  "files": {
+    "lineage-public.json": {
+      "bytes": 763,
+      "sha256": "10a4a5fe0e227e74eebeca3f9ed7a8369f247945d2bf2d3fb5fe85ed482c8735"
+    },
+    "report.md": {
+      "bytes": 6586,
+      "sha256": "085bcb5e796ad9c876d91a10349cc0723eea0f1922ab4f87c0d1537e556e0040"
+    },
+    "summary.json": {
+      "bytes": 335705,
+      "sha256": "d91d4fc11628e29909feb958ba43ffb80592b3344921840ed7e9deaf070ea59e"
+    },
+    "urban-selective-suppression-omission.png": {
+      "bytes": 187146,
+      "sha256": "9f05a3c5a29f881dd9d0e0d1543c91f05edc7eb2cf949896b7b7eae09afc5dd5"
+    },
+    "urban-selective-suppression-omission.svg": {
+      "bytes": 139637,
+      "sha256": "c3449b8aaff6f24ea51d3bfd8e2bab65347d4d5dceadcff39af5dbdfb8e95ddc"
+    },
+    "urban-selective-suppression-utility.png": {
+      "bytes": 116426,
+      "sha256": "d40edaa5e637a9aee1ec37bfee99ceb6dc77c9b3bc1193d0830bb364b70344d5"
+    },
+    "urban-selective-suppression-utility.svg": {
+      "bytes": 107663,
+      "sha256": "dc5b877dccd6c3b5dfcf724e15be2e19399c3e1e3d3497b84899d84dcaccd1d8"
+    }
+  },
+  "phase": "utility",
+  "reporter_code_sha256": "a6989ba306f6cb13dcceba8026f85493e6a0aac12e0e0e4a8889595826745411",
+  "schema": "ump.urban-selective-suppression-public-artifacts.v1",
+  "source_sha256": "7bd016ce9e884e3ef0a10967fa7651e70708aa03b004dc4b54c2197e97dec660"
+}

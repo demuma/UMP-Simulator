@@ -1,0 +1,27 @@
+{
+  "checks": {
+    "arithmetic_checks": 38880,
+    "auxiliary_rows": 432,
+    "headline_rows": 2016,
+    "models_fitted": 0,
+    "native_cases": 1296,
+    "original_rows_preserved": 1008,
+    "physical_source_audit_reexecutions": 0,
+    "recordings": 72,
+    "regional_compositions": 144,
+    "rows_sha256": "b6c1dd1884874f270667d318e167724a6359cf9f95f8343760253156221e8b7c"
+  },
+  "independent_audit_sha256": "a419427ef2d37b121353fd2c2d20b244aa664a5c5ea66257cf35cc712cb2e357",
+  "native_batch_seconds": 7260.164258207999,
+  "new_TEST_scores": 0,
+  "new_model_fits": 0,
+  "phase": "utility",
+  "protocol_sha256": "68bfd022f6f170dbe669ae03a9925f3b1444b4bb66fd406e4aacf7ee0a774bff",
+  "raw_movements_in_repository": false,
+  "schema": "ump.selective-utility-public-verification.v1",
+  "scope": "Independent source/public arithmetic and raw/GT/sensor binding checks; no new physical simulation or empirical privacy result at this stage.",
+  "source_type_count": 8,
+  "status": "verified",
+  "utility_gate_seconds": 1099.555383959,
+  "utility_report_sha256": "7bd016ce9e884e3ef0a10967fa7651e70708aa03b004dc4b54c2197e97dec660"
+}

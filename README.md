@@ -5,15 +5,18 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
-**Selective-contribution suppression study — pre-execution, 28 October 2026.**
-All seven semantic-enabled methods will be paired with their historical references
-on the same 72 recordings, changing only permission for up to 10% selective omission
-per cell-window. All 632 tests and the excluded 18-native/two-regional CITY DEV
-gate pass. Six workers are frozen; full utility verification and a published
-TRAIN/CAL model lock precede new TEST scoring. No new outcome is claimed yet.
-Read the [protocol](docs/URBAN_SELECTIVE_SUPPRESSION_PROTOCOL_2026-10-28.md),
-[pre-execution evidence](docs/verification/urban-selective-suppression-2026-10-28-v1/preflight/README.md)
-and [test report](docs/URBAN_SELECTIVE_SUPPRESSION_TEST_REPORT_2026-10-28.md).
+**Selective-contribution suppression study — utility verified, 28 October 2026.**
+All 72 recordings, 1,296 native cases and 144 regional compositions verify in the
+six-worker run (2 h 1 min). The 632 affected tests and independent utility audit
+pass. With semantics enabled throughout, selective permission improves retention
+and the declared J/taxonomy measures for all seven methods. Best retention rises
+from 70.33% to 73.11%; regional static20 rises from 60.60% to 68.39%. Adaptive
+retained cell means become coarser, and E-Scooter omission increases: benefits are
+not uniform across metrics or original types. Eight source types are accounted
+for; a declaration-time prose count is explicitly corrected. New MIA is pending.
+Read the [verified utility packet](docs/verification/urban-selective-suppression-2026-10-28-v1/utility-outcome/README.md),
+[protocol](docs/URBAN_SELECTIVE_SUPPRESSION_PROTOCOL_2026-10-28.md) and
+[test report](docs/URBAN_SELECTIVE_SUPPRESSION_TEST_REPORT_2026-10-28.md).
 
 **Six-worker evaluation infrastructure — verified, 28 October 2026.** Independent
 recordings can run in six spawned workers while each replay remains sequential.
