@@ -13,7 +13,7 @@ optional and separate.
   truthful leaf evidence and all support/ownership/publication checks.
 - [x] P27.2: native regressions, default-ON equivalence, helper tests and one
   excluded-city DEV pilot for all modes/composition; review before full execution.
-- [ ] P27.3: freeze code/binary/queries/import lineage and execute utility first:
+- [x] P27.3: freeze code/binary/queries/import lineage and execute utility first:
   1296 new native cases, 144 regional compositions, 2016 headline rows including
   imported ON references, plus 432 auxiliary fixed-window rows.
 - [ ] P27.4: independent utility/class/regional/query review and actual-figure QA;
@@ -22,6 +22,15 @@ optional and separate.
 - [ ] P27.5: independent final statistics/provenance/publication checks, English
   results/test report, README update and compact Git publication. All seven OFF
   configurations remain visible; observed duplicates are not independent proof.
+
+## Follow-up after the frozen P27 study
+
+- [ ] Replace the shared temporary analysis environment with a project-local,
+  version-locked environment for future studies. Preserve the current study's
+  historical interpreter/package authentication rather than weakening it.
+- [ ] Version the shared delay diagnostic collector so observation maxima ignore
+  zero-weight scheduled timestamps. P27 provides an independently verified
+  correction addendum; existing frozen rows and reports remain unchanged.
 
 ## Optional: regional execution preferences — review on 27 October 2026, evening
 

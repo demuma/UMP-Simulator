@@ -1,7 +1,8 @@
 # Semantic-generalization ablation: implementation and test report
 
-Prepared 27 October 2026. Status: pre-execution gates complete; actual study utility
-and MIA outcomes pending. This report will be extended after those separate stages.
+Prepared 27 October 2026; utility completed 28 October 2026. Status: all declared
+utility cases and independent checks pass; fourteen new MIA fits and TEST scoring
+remain pending. The original pre-execution freeze remains separately preserved.
 The frozen [scientific protocol](URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md)
 retains its declaration-time wording. Compact preflight hashes and validation are
 in [verification](verification/urban-semantic-ablation-2026-10-27-v1/pre-execution-freeze/validation.json).
@@ -68,7 +69,7 @@ Independent review also found that final historical raw reconstruction needed
 an explicit frozen capture-proof binding before trusting its file map. The
 narrow correction adds that source-authentication helper and call site; an AST
 comparison confirms all scientific case/model paths unchanged. Five negative
-fixtures and actual bindings for all72 sources pass. No changed raw input was
+fixtures and actual bindings for all 72 sources pass. No changed raw input was
 found. Full raw payload hashes, unchanged GT/sensor reconstruction and archive
 decompression remain final assessment gates, not a newly executed physical audit.
 
@@ -82,7 +83,7 @@ or an optimality theorem. Zero retained semantic loss with zero retained data
 must remain NA for conditional utility. Empty output cannot establish useful
 privacy preservation.
 
-Next execute all1296 declared new native cases and144 regional compositions,
+Next execute all1296 declared new native cases and 144 regional compositions,
 check source conservation and independent policy audits, archive losslessly and
 review complete utility before any new attack fit. The new 20 m/400 ms
 category-query workload counts observation contributions, retains missing or
@@ -97,3 +98,112 @@ on already inspected TEST sources; no new confirmatory sample or universal
 privacy guarantee is created. Raw trajectories, features, fitted parameters and
 individual scores stay local. Paper/presentation edits in the parallel chat
 remain outside this change.
+
+## Actual utility execution and independent verification
+
+The original serial native/utility phase completed with exit 0 on 28 October 2026
+at 04:26 UTC after 45,646.417 seconds (12.68 hours). All 72 sources retain their
+24 TRAIN / 16 CAL / 32 TEST roles. There are 1,296 new native cases and 144 regional
+compositions, 2,016 headline rows (1,008 imported ON + 1,008 new OFF) and 432 auxiliary
+fixed-window rows. Every native and regional case verifies; audited publication
+policy violations remain zero. No movements, targets, pairs or policies changed.
+
+The full independent V2 source/public audit passes all 72 groups and 1,129,452
+comparisons, including ownership, original terminal categories, contribution
+conservation, source-class/nonexclusive regional accounting, full-input J,
+aligned exact/estimated queries, macro means and actual Ns, recipient duplicates,
+native timing scopes and unchanged ON imports. These are arithmetic checks,
+not 1,129,452 independent scientific samples. TEST evaluation still has 32 sources.
+The auditor calls no maintained query/report aggregation functions and does not
+reexecute the physical simulator. Root visually inspected both actual utility
+PNGs; labels, zero markers, units and scope notes are legible.
+
+The 32 TEST IN macro means show 56.16–70.33% retained contributions ON and only
+0.09–0.16% OFF. Full-input J is 72.78–78.67% ON versus 99.84–99.91% OFF. OFF retained
+taxonomy loss is zero among survivors, but conditional metrics have only 6–15
+available recordings depending on method. Exact query error is zero where
+answered; OFF exact coverage is only 0.003–0.010%. Missing answers remain unknown.
+The source composition and policy therefore make truthful semantic coarsening
+an important release option. This result does not establish universal OFF
+infeasibility or a privacy gain. MIA remains the next separate stage.
+
+Observed OFF payload equality is structured: Temporal First, immediate Semantic
+First and semantic-wait/Temporal agree on all 144 source/world streams. Spatial
+First and semantic-wait/Spatial agree with each other; cross-family equality is
+99/144. All declared configurations remain visible; duplicates are not extra
+independent evidence or an algorithm-equivalence theorem.
+
+## Retained environment incident and exact restoration
+
+The native phase completed successfully. Its next report-only process failed
+before application import with ModuleNotFoundError for yaml. The temporary
+virtual environment lacked pyvenv.cfg and 2,908 original package payload files.
+Directory changes at 00:00 suggest temporary-file cleanup; the responsible
+process is not proven. The already-running original Python process completed
+all scientific cases using its loaded modules; no failed source/native case
+was retried or replaced.
+
+The damaged environment is preserved locally. The same Python 3.9.6 interpreter
+and path were recreated with the original 18 external package versions, entirely
+offline from original cached compatible wheels. All 3,048 signed payload records,
+including the fonttools man-page installation mapping, verify. An independent
+review compares all 140 surviving original payloads to both cached and restored
+bytes: 140 matches, zero mismatches. Frozen environment, source/code/binary/policy
+and historical 2,160 rows / 30 models authenticate unchanged. All 530 Python tests
+pass again (48.980 s; zero failures/errors/skips). The report-only resumption then
+completes in 240.186 s; it does not rerun the 1,296 cases or perform MIA fitting.
+
+Minor private verification failures are also retained: the initial payload
+verifier omitted the wheel's man-page data relocation; a post-restoration test
+harness replacement changed its historical fixture-list path before any tests
+could start. Their corrected verification-only versions pass. Scientific code,
+input data, outcomes and fitted objects were never altered by these repairs.
+
+## Maximum-delay diagnostic finding and authoritative correction
+
+The first actual independent audit stops after 13 complete groups on a genuine
+maximum-delay mismatch. The frozen collector inserts Counter keys even when a
+scheduled public-cell timestamp contains zero observations. Its max(keys) can
+therefore include an empty timestamp. The first affected case reports 3,100 ms,
+while the true maximum among its 21 retained observations is 1,700 ms. Mean,
+p50, p95 and p99 match exactly. This Python utility diagnostic is separate from native
+publication-policy checks; no policy bound is changed.
+
+The original V1 auditor, failure execution and diagnosis remain immutable. A new
+private V2 auditor independently reconstructs both definitions. It requires exact
+agreement with every stored legacy delay field, separately verifies positive-
+observation profiles, and rejects a wrong stored maximum or wrong regional nested
+profile. All 13 original fixture ASTs and comparison tolerances are unchanged;
+15 focused fixtures pass independently before the full V2 audit.
+
+Across all 2,448 rows, 28 maxima are inflated by 100–1,400 ms: 18 historical ON rows and
+10 new OFF rows; TRAIN 14, CAL 6, TEST 8. None of the 432 auxiliary rows or regional
+compositions is affected. Weighted means and the p50, p95 and p99 quantiles, together with independently
+derived nested positive-observation profiles, all pass. The separate public correction
+provides corrected mean recording maxima by method/world/split with unchanged
+available Ns. Original summary.json retains its frozen scheduled-key maximum;
+use retained-delay-maximum-correction.json for actual retained-observation maxima.
+The main tables and figures use unchanged mean delay.
+
+Full111 and Scalar31 predictors and public controls are constructed from public
+output and auxiliary knowledge before the utility diagnostic. No delay-field
+repair changes those predictors, source bytes, native outputs, old models or
+original primary result. No new native case or attack is run to obtain a more
+favorable outcome. New MIA fits remain gated on this verified utility publication.
+
+## Utility-stage evidence
+
+- [Complete utility report, actual figures and maximum-delay correction](verification/urban-semantic-ablation-2026-10-27-v1/utility-outcome/README.md)
+- [Public gate counts and bound private receipts](verification/urban-semantic-ablation-2026-10-27-v1/utility-outcome/completed-gates-public.json)
+- [Original pre-execution freeze](verification/urban-semantic-ablation-2026-10-27-v1/pre-execution-freeze/README.md)
+
+The private V2 audit receipt is SHA256
+20b80e7d9d451ff7444c61aa356edd9512182f4e2878ecc666981011234e590c.
+The first utility report remains SHA256
+d338ca513e636881ad4650d0e512710b705416990b503650e17fd99c5bb8a37c.
+All raw movement data, features, fitted parameters and individual scores stay local.
+
+Independent utility-publication review: SHA256
+6301049d8e31084cd90eba6e9515f7865dd28a80a134562e4b493c69b9910428.
+All 102 corrected aggregate scopes, actual Ns, original reporter bytes, unchanged
+rows/code and absence of private payloads verify before new MIA fitting.

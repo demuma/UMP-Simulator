@@ -1,0 +1,18 @@
+{
+  "files_sha256": {
+    "README.md": "65f296dea80cee67b9a0dc70ee9aba0cf19323b1587b6cbcaae8c1d145028612",
+    "ablation-lineage-public.json": "1e58f6fa56dda8a3fa66c5104847a14074d2fcc757b2d9dae9a65d5f296c69ee",
+    "artifact-receipt.json": "82a4d31317f06ca5e2afb44d81ad59bf8533500356706ae04348320da50d84bd",
+    "completed-gates-public.json": "501506882f011adf36aa8811854e56d3bb544737f49cee240a0bc5c96bd89fef",
+    "report.md": "6528a17a985011644a23a3ac59b3484607812c173a4181e0e20b278a4b33203f",
+    "retained-delay-maximum-correction.json": "1613479280f7a83bf829f413ddc627761dac66b823d134c4531e61e1de2519fb",
+    "summary.json": "61ea1e572158955edb4ea307a345f26093251856666fa2a0b87db5ef4e8b9c0e",
+    "urban-semantic-ablation-queries.png": "bdcebe417edeb54a9c55f1266af2801a9a8aef3b963ad987abbb3c493e5ef630",
+    "urban-semantic-ablation-queries.svg": "1c0a98b8e95ab4fca57e973e3b1423cc5738efc45b964cbefbcd62cde51527cc",
+    "urban-semantic-ablation-utility.png": "ee59a1ea63cf44a8fa8bf1769c07ffdc0a5bdd04df38365a8137061d2aab5754",
+    "urban-semantic-ablation-utility.svg": "89d3d461ed77cc00c3df3ad731c0faa8f2d6f70c41b27c5a4f42dd81848030e1"
+  },
+  "raw_movements_features_models_individual_scores_included": false,
+  "schema": "ump.semantic-ablation-utility-public-bundle.v1",
+  "utility_report_sha256": "d338ca513e636881ad4650d0e512710b705416990b503650e17fd99c5bb8a37c"
+}

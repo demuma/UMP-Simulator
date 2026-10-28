@@ -1,0 +1,37 @@
+{
+  "files": {
+    "ablation-lineage-public.json": {
+      "bytes": 2764,
+      "sha256": "1e58f6fa56dda8a3fa66c5104847a14074d2fcc757b2d9dae9a65d5f296c69ee"
+    },
+    "report.md": {
+      "bytes": 10361,
+      "sha256": "6528a17a985011644a23a3ac59b3484607812c173a4181e0e20b278a4b33203f"
+    },
+    "summary.json": {
+      "bytes": 2680064,
+      "sha256": "61ea1e572158955edb4ea307a345f26093251856666fa2a0b87db5ef4e8b9c0e"
+    },
+    "urban-semantic-ablation-queries.png": {
+      "bytes": 109403,
+      "sha256": "bdcebe417edeb54a9c55f1266af2801a9a8aef3b963ad987abbb3c493e5ef630"
+    },
+    "urban-semantic-ablation-queries.svg": {
+      "bytes": 85764,
+      "sha256": "1c0a98b8e95ab4fca57e973e3b1423cc5738efc45b964cbefbcd62cde51527cc"
+    },
+    "urban-semantic-ablation-utility.png": {
+      "bytes": 110602,
+      "sha256": "ee59a1ea63cf44a8fa8bf1769c07ffdc0a5bdd04df38365a8137061d2aab5754"
+    },
+    "urban-semantic-ablation-utility.svg": {
+      "bytes": 97018,
+      "sha256": "89d3d461ed77cc00c3df3ad731c0faa8f2d6f70c41b27c5a4f42dd81848030e1"
+    }
+  },
+  "phase": "utility",
+  "query_helper_code_sha256": "598cd394efc5d6ec012bb98f6649982628008dcb64c0c7ac34b2a327497c5a77",
+  "reporter_code_sha256": "e0dc4f3ec8133165118fd29dbd73b57b951dc25474d83fa52927ed2ef2e41216",
+  "schema": "ump.urban-semantic-ablation-public-artifacts.v1",
+  "source_sha256": "d338ca513e636881ad4650d0e512710b705416990b503650e17fd99c5bb8a37c"
+}

@@ -5,15 +5,20 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
-**Current work — controlled semantic-generalization ablation.** Seven fixed,
-regional-static and adaptive configurations are compared with their semantic
-coarsening action disabled, while preserving input classes, taxonomy and all
-hard local400 requirements. Native/helper/DEV gates precede utility and fourteen
-new MIA fits; the original sources, models and completed results remain separate.
-Read the [declared ON/OFF protocol](docs/URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md).
-The530 affected Python tests and22 native suites pass. The complete excluded-source
-DEV gate and independent reviews pass; actual utility and MIA outcomes remain
-pending. Read the [implementation and test report](docs/URBAN_SEMANTIC_ABLATION_TEST_REPORT_2026-10-27.md).
+**Semantic-generalization ablation — utility complete, 28 October 2026.** All
+1,296 new native cases and 144 regional compositions verify on the same 72
+recordings and unchanged hard policies. Independent source/public reconstruction
+checks all 2,016 headline and 432 auxiliary rows. Across the 32 TEST IN recordings,
+mean retained contributions fall from 56.16–70.33% with semantic generalization
+to 0.09–0.16% without it. Zero taxonomy loss among rare OFF survivors must be read
+with this omission cost. MIA fitting and TEST assessment remain pending.
+
+Read the [utility results and explicit maximum-delay diagnostic correction](docs/verification/urban-semantic-ablation-2026-10-27-v1/utility-outcome/README.md),
+[declared ON/OFF protocol](docs/URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md)
+and [detailed implementation/test report](docs/URBAN_SEMANTIC_ABLATION_TEST_REPORT_2026-10-27.md).
+Original results, models and source data remain unchanged. The 530 affected
+Python tests and 22 native suites pass; exact environment restoration after a
+report-import failure also passes independent verification and all 530 tests.
 
 **Supplementary strategy comparison — completed, 27 October 2026.** All four
 additional configurations reuse the same 72 recordings and unchanged hard
