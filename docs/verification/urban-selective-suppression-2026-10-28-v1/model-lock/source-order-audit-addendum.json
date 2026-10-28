@@ -1,0 +1,20 @@
+{
+  "addendum_auditor_sha256": "63ab8e21b9c1051df0d77a22ceb0ddc173baca219efc25a32a09fab5ce7a8bcc",
+  "fitted_objects_changed": false,
+  "independent_model_audit_v2_sha256": "bd142dd3c3fca1373bb510a2b9374f20ab22fe2b48ef641cd4c55b473ed01249",
+  "new_TEST_scoring": false,
+  "original_frozen_auditor_sha256": "9d19f2cdddb115ae378675a744f41280b93ff17d0bd794302f3e141061a5d28e",
+  "original_v1_audit_pass_claimed": false,
+  "protocol_changed": false,
+  "reason": "The original independent audit expected execution-order source metadata; the frozen fitter correctly stores sorted IDs within each split. Only a copied metadata list is canonicalized for the unchanged numerical checks.",
+  "refits_after_audit_failure": 0,
+  "retained_v1_failure_log_sha256": "1c38b4764312772ee5366b101606a6c3f4d43c8235ecc89888395af90d7b755e",
+  "role_counts": {
+    "calibration": 16,
+    "test": 32,
+    "train": 24
+  },
+  "schema": "ump.selective-model-lock-source-order-public-addendum.v1",
+  "source_membership_changed": false,
+  "source_roles_changed": false
+}

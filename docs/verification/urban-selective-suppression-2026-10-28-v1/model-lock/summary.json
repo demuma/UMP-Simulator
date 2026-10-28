@@ -1,0 +1,177 @@
+{
+  "CAL_recordings": 16,
+  "TEST_recordings": 32,
+  "TRAIN_recordings": 24,
+  "exported_at": "2026-10-28T14:10:31.674841+00:00",
+  "final_assessment_artifacts_absent_at_export": true,
+  "hashes": {
+    "independent_model_audit_sha256": "bd142dd3c3fca1373bb510a2b9374f20ab22fe2b48ef641cd4c55b473ed01249",
+    "model_lock_sha256": "17611b5a0a230564364ceecde4b89a92bf2d04bddbea1f2b6f7de83d2e63ade1",
+    "models_sha256": "bce44cbe1252e0c7a48bbe46ef853a5fca24931a618a3f1bf186b24c8135730b",
+    "old_model_lock_sha256": "dd769e1da7cabeb9647e4cf303f0b8fd2124be5faaeda2d594127dc19d99ccb8",
+    "old_models_sha256": "82e95ec2b81c2afcd4f00d7ec17c9e28f2423c1319ff59dc8efa4a8aa68f849d",
+    "protocol_sha256": "68bfd022f6f170dbe669ae03a9925f3b1444b4bb66fd406e4aacf7ee0a774bff",
+    "training_calibration_data_sha256": "8eb26973ba2e5d7f27c6f89aa93fa92a1d05a84dc96303b8f72394025ee76d08",
+    "utility_report_sha256": "7bd016ce9e884e3ef0a10967fa7651e70708aa03b004dc4b54c2197e97dec660"
+  },
+  "independent_model_audit_test_feature_rows_read": 0,
+  "new_TEST_scoring_performed_by_this_stage": false,
+  "new_model_diagnostics": {
+    "adaptive_semantic_first_selective": {
+      "scalar31": {
+        "converged": true,
+        "feature_count": 31,
+        "iterations": 46,
+        "status": "locked",
+        "training_rows": 48
+      },
+      "semantic111": {
+        "converged": true,
+        "feature_count": 111,
+        "iterations": 80,
+        "status": "locked",
+        "training_rows": 48
+      }
+    },
+    "adaptive_semantic_wait_spatial_selective": {
+      "scalar31": {
+        "converged": true,
+        "feature_count": 31,
+        "iterations": 44,
+        "status": "locked",
+        "training_rows": 48
+      },
+      "semantic111": {
+        "converged": true,
+        "feature_count": 111,
+        "iterations": 94,
+        "status": "locked",
+        "training_rows": 48
+      }
+    },
+    "adaptive_semantic_wait_temporal_selective": {
+      "scalar31": {
+        "converged": true,
+        "feature_count": 31,
+        "iterations": 45,
+        "status": "locked",
+        "training_rows": 48
+      },
+      "semantic111": {
+        "converged": true,
+        "feature_count": 111,
+        "iterations": 79,
+        "status": "locked",
+        "training_rows": 48
+      }
+    },
+    "adaptive_spatial_first_selective": {
+      "scalar31": {
+        "converged": true,
+        "feature_count": 31,
+        "iterations": 49,
+        "status": "locked",
+        "training_rows": 48
+      },
+      "semantic111": {
+        "converged": true,
+        "feature_count": 111,
+        "iterations": 67,
+        "status": "locked",
+        "training_rows": 48
+      }
+    },
+    "adaptive_temporal_first_selective": {
+      "scalar31": {
+        "converged": true,
+        "feature_count": 31,
+        "iterations": 45,
+        "status": "locked",
+        "training_rows": 48
+      },
+      "semantic111": {
+        "converged": true,
+        "feature_count": 111,
+        "iterations": 77,
+        "status": "locked",
+        "training_rows": 48
+      }
+    },
+    "fixed20_400ms_selective": {
+      "scalar31": {
+        "converged": true,
+        "feature_count": 31,
+        "iterations": 31,
+        "status": "locked",
+        "training_rows": 48
+      },
+      "semantic111": {
+        "converged": true,
+        "feature_count": 111,
+        "iterations": 121,
+        "status": "locked",
+        "training_rows": 48
+      }
+    },
+    "regional_static20_selective": {
+      "scalar31": {
+        "converged": true,
+        "feature_count": 31,
+        "iterations": 44,
+        "status": "locked",
+        "training_rows": 48
+      },
+      "semantic111": {
+        "converged": true,
+        "feature_count": 111,
+        "iterations": 94,
+        "status": "locked",
+        "training_rows": 48
+      }
+    }
+  },
+  "new_models": 14,
+  "reused_control_object_sha256": {
+    "auxiliary_only": "611cecac0672cfa6cd2d33927d668588a52810f3ac6110e5af31b800794d58c8",
+    "no_output": "9b84b3a72737a5c510851088e68f5456bd120f57cb35ea9abeee73cece0f4540",
+    "prior_only": "2124d22cace0082d104496e8b43a814f02f61e69e4fd493f47c23928883f074e",
+    "unprotected": "448ec4803942ffbae9bdc678f845dadd25e085ba5c597d5d6f5b7c6ce63bccdc"
+  },
+  "reused_controls": 4,
+  "reused_model_object_sha256": {
+    "adaptive_semantic_first": {
+      "scalar31": "e24e72077f060fd6bc6ab1a39cdfab2c30f98b63033b1a99d8413189652039e9",
+      "semantic111": "75f8bcd38ce11a8a70b20e90aea97bf167d17517a940711c975b8c11d568b24e"
+    },
+    "adaptive_semantic_wait_spatial": {
+      "scalar31": "07b59f217a13a6caef954931240805dfae3cae85e7fc7babb744158918ffc17b",
+      "semantic111": "30bbc3cc8e713b85a0f35f98c332134023347fb3396337b4edcb1e4ca52b77ab"
+    },
+    "adaptive_semantic_wait_temporal": {
+      "scalar31": "db744c559f37eeb62bde1b7eaf89e32aa121948327443e92fa7964a962b76527",
+      "semantic111": "98658b0693621e0a06d2733ef6278b2776bb3de407b30c3b0952717e2bebf01c"
+    },
+    "adaptive_spatial_first": {
+      "scalar31": "b6ba5e397f9299fa9a45b85cad6ba2170e29af1b191c479ddb894f32614d428e",
+      "semantic111": "29459b6bdb17646ff8ac314989e83cddb4bd303da596978ce592e27cfbad420f"
+    },
+    "adaptive_temporal_first": {
+      "scalar31": "608f59012c9c84043d4ee29b522cd565946cebf1f5fd9f726798328f6a3e3450",
+      "semantic111": "d118a14079569d58cc284d90fd9d771494301c5b553afc899ea4d43b72e90e5a"
+    },
+    "fixed20_400ms": {
+      "scalar31": "4f6fd8af37eb010c250bddb46ddd64900b4ff0b92736e4b3ff11a66c15192b91",
+      "semantic111": "7bc3cef50e572ace236ab5c4b7808d3fb4bc9ac7597d7da41639d9341cc4a452"
+    },
+    "regional_static20": {
+      "scalar31": "26579409e30ca74a9306c77b7b48c47aa15402f41149b5e5a259c388ec7fcb70",
+      "semantic111": "ee3b059f6f4ef603d64abc24e017448c80502912bb35475558d936dc86cdac34"
+    }
+  },
+  "reused_models": 14,
+  "schema": "ump.urban-selective-suppression-public-model-lock.v1",
+  "scope": "Exploratory reuse of previously exposed recordings. New classifier inputs use TRAIN only; operating choices use CAL only. This lock precedes new TEST scoring and establishes no privacy guarantee.",
+  "status": "locked_before_new_TEST_scoring",
+  "test_rows_seen_by_fitter": 0,
+  "training_calibration_rows": 1120
+}

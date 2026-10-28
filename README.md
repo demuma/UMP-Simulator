@@ -13,10 +13,13 @@ and the declared J/taxonomy measures for all seven methods. Best retention rises
 from 70.33% to 73.11%; regional static20 rises from 60.60% to 68.39%. Adaptive
 retained cell means become coarser, and E-Scooter omission increases: benefits are
 not uniform across metrics or original types. Eight source types are accounted
-for; a declaration-time prose count is explicitly corrected. New MIA is pending.
+for; a declaration-time prose count is explicitly corrected. Fourteen new TRAIN/CAL
+models are independently verified and locked; new TEST scoring is pending. The
+audit metadata-order correction is documented separately, with no refit.
 Read the [verified utility packet](docs/verification/urban-selective-suppression-2026-10-28-v1/utility-outcome/README.md),
 [protocol](docs/URBAN_SELECTIVE_SUPPRESSION_PROTOCOL_2026-10-28.md) and
-[test report](docs/URBAN_SELECTIVE_SUPPRESSION_TEST_REPORT_2026-10-28.md).
+[test report](docs/URBAN_SELECTIVE_SUPPRESSION_TEST_REPORT_2026-10-28.md) and
+[pre-TEST model lock](docs/verification/urban-selective-suppression-2026-10-28-v1/model-lock/README.md).
 
 **Six-worker evaluation infrastructure — verified, 28 October 2026.** Independent
 recordings can run in six spawned workers while each replay remains sequential.

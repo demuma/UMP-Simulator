@@ -1,0 +1,15 @@
+{
+  "files": {
+    "README.md": {
+      "bytes": 1950,
+      "sha256": "c74852edb07de51bc1ba0931072a3e642e49c2e1605debe9b928ebaec4763715"
+    },
+    "summary.json": {
+      "bytes": 6210,
+      "sha256": "9a01971bba9d780fa64c78fb249a7d89f559174b36563e84a81d3159535afe1c"
+    }
+  },
+  "independent_model_audit_sha256": "bd142dd3c3fca1373bb510a2b9374f20ab22fe2b48ef641cd4c55b473ed01249",
+  "model_lock_sha256": "17611b5a0a230564364ceecde4b89a92bf2d04bddbea1f2b6f7de83d2e63ade1",
+  "schema": "ump.urban-selective-suppression-public-model-lock-artifacts.v1"
+}

@@ -14,7 +14,7 @@ and [execution/test report](docs/URBAN_SELECTIVE_SUPPRESSION_TEST_REPORT_2026-10
   on the excluded CITY DEV pair; freeze/publish code, contract and configurations.
 - [x] P28.3: execute 72 complete groups with six workers; authenticate all 1296
   native cases, 144 regional streams, retained accounting and old references.
-- [ ] P28.4: independently audit and publish the complete utility outcome before
+- [x] P28.4: independently audit and publish the complete utility outcome before
   fourteen new TRAIN/CAL fits; publish the model lock before TEST scoring.
 - [ ] P28.5: score and independently audit MIA, paired contrasts and controls;
   verify figures, document interpretation and publish compact aggregates only.

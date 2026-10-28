@@ -1,6 +1,6 @@
 # Selective-contribution suppression — execution and test report
 
-Date: 28 October 2026. Status: complete utility verification; fourteen new fits preserved; model audit correction in progress before TEST scoring.
+Date: 28 October 2026. Status: utility and additive model verification complete; model lock ready for publication before new TEST scoring.
 The [declared protocol](URBAN_SELECTIVE_SUPPRESSION_PROTOCOL_2026-10-28.md)
 defines the new semantic-enabled permission comparison. Utility and attack evidence
 are reported separately. No new MIA result is claimed before model-lock and final
@@ -113,3 +113,20 @@ Its [compact pre-execution packet](verification/urban-selective-suppression-2026
 authenticates the correction and the preserved model/data/lock hashes. Corrective
 real-data verification is still pending at this publication boundary; no refit
 or TEST scoring was performed by this correction stage.
+
+
+## Verified model lock before new TEST scoring
+
+The audit-order correction was published and actual remote/file bytes verified
+at `436ff33c5146d6406ddb0bedd27fbe8e64e3d775` before corrective verification.
+The additive model audit now passes: 1,120 TRAIN/CAL rows, fourteen new and
+fourteen historical models, four unchanged controls, zero TEST feature rows read
+and zero refits. Its wall time is 0.628 s. All fourteen new fits converged, with
+31–121 iterations and 48 TRAIN examples each; CAL choices remain locked.
+
+This is a successful separate additive audit, not a claim that the original
+failed audit passed. All original model/data/lock/protocol hashes match those
+published before the correction. The [public model-lock packet](verification/urban-selective-suppression-2026-10-28-v1/model-lock/README.md)
+contains only convergence metadata, provenance and the explicit correction.
+Fitted arrays, operating thresholds, raw movement and individual scores stay
+local. New TEST scoring begins only after this packet is pushed and verified.
