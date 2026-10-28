@@ -1,9 +1,9 @@
 # Semantic-generalization ablation: implementation and test report
 
-Prepared 27 October 2026; utility completed 28 October 2026. Status: all declared
-utility cases and independent checks pass; fourteen new MIA fits are independently
-verified and locked before TEST. TEST scoring remains pending. The original pre-execution freeze remains separately preserved.
-The frozen [scientific protocol](URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md)
+Prepared 27 October 2026; completed 28 October 2026. Status: implementation,
+utility, TRAIN/CAL fitting, published model lock, fixed-model TEST assessment and
+independent final checks complete. Original pre-execution and pre-TEST evidence
+remain separately preserved. The frozen [scientific protocol](URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md)
 retains its declaration-time wording. Compact preflight hashes and validation are
 in [verification](verification/urban-semantic-ablation-2026-10-27-v1/pre-execution-freeze/validation.json).
 
@@ -73,7 +73,7 @@ fixtures and actual bindings for all 72 sources pass. No changed raw input was
 found. Full raw payload hashes, unchanged GT/sensor reconstruction and archive
 decompression remain final assessment gates, not a newly executed physical audit.
 
-## DEV interpretation and remaining gates
+## Pre-execution DEV interpretation and planned subsequent gates
 
 On the excluded DEV input, all observed OFF contributions retired without publication under
 the unchanged category-support requirements. Supported exact-class hand fixtures
@@ -125,7 +125,8 @@ available recordings depending on method. Exact query error is zero where
 answered; OFF exact coverage is only 0.003–0.010%. Missing answers remain unknown.
 The source composition and policy therefore make truthful semantic coarsening
 an important release option. This result does not establish universal OFF
-infeasibility or a privacy gain. MIA remains the next separate stage.
+infeasibility or a privacy gain. At that utility-stage gate, MIA was still the
+next separate stage.
 
 Observed OFF payload equality is structured: Temporal First, immediate Semantic
 First and semantic-wait/Temporal agree on all 144 source/world streams. Spatial
@@ -230,3 +231,104 @@ The [public lock](verification/urban-semantic-ablation-2026-10-27-v1/model-lock/
 is published before any new TEST scoring. Raw features, fitted parameters and
 individual scores remain local. CAL empirical FPR target 0.1 has resolution 1/16;
 neither that target nor a constant fitted classifier proves population privacy.
+
+## Completed TEST assessment and full payload verification
+
+The public model-lock commit is e8e9049efa1d88ca1f3fcb3cde3d205faf6092b6;
+its file bytes and remote main were verified before the first new TEST assessment.
+The utility publication was eae52516f0e76734f40ff92126ec141e66d03a87 and the
+pre-execution freeze 69a9f1280044d2a12f2add347260a3c4114373ed. Local once-only
+publication confirmations record zero prior new fits at the utility publication
+and zero prior new TEST scores at the model-lock publication.
+
+The official fixed-model assessment completes on 28 October at 08:55 UTC.
+Its source/model evaluation step takes 980.579 s and the assessment plus aggregate
+figure export takes 990.640 s. All 72 raw capture payloads and unchanged GT/sensor
+exporter reconstructions verify. Original, supplementary and new archives are
+checked for all 72 groups in each family. No physical/source audit is reexecuted,
+no source is regenerated and no native case is rerun. Changed current native code
+is never misrepresented as the archived historical producer.
+
+All 28 method/representation models and four controls are evaluated on 32 TEST
+recording pairs, with no TEST refitting, threshold retuning or score-direction
+flip. The original ON assessments, controls and primary paired result are exact.
+The overall interpretation gate is controls_pass. Negative prior-only, no-output
+and auxiliary-only controls pass; the positive control passes.
+
+An independently implemented final audit passes 4,920 checks in 2.901 s. It verifies
+1,120 TRAIN/CAL + 896 TEST rows, 1,792 method-model TEST scores and 256 control scores;
+all tie-aware AUCs, thresholds/rates, 64 exact binomial rate intervals and fourteen
+paired AUC intervals are recomputed without maintained evaluation calls. The
+bootstrap resamples the same 32 whole IN/OUT source pairs for each method contrast,
+uses 1,000 replicates and the seven frozen seeds, and takes linear percentile 95%
+limits. TRAIN fits and CAL thresholds remain fixed. These are conditional,
+marginal exploratory intervals on previously exposed sources; they are not
+simultaneous intervals or an equivalence/noninferiority test.
+
+Independent final-audit SHA256:
+5c7242faabf25af11d4d3e7df0ebad86a81ab2a4115d6d7da75f2568797e69f6.
+Original final private-report SHA256:
+9f0af0fc9396842f0779b764a95d52c51e90bdf9ae28fc7867b761382c6690aa.
+
+## Joint interpretation of privacy and utility
+
+Across the seven pairs, Full111 AUC is 0.565–0.605 ON and 0.500–0.514 OFF; Scalar31
+is 0.579–0.608 ON and 0.500–0.515 OFF. All fourteen predeclared paired OFF-minus-ON
+95% intervals lie below zero. Immediate Semantic First has Full111 difference
+−0.0693359375 with interval [−0.12990722656249998, −0.03271484375].
+
+This is lower measured membership discrimination for the frozen attack, paired
+with omission of more than 99.8% of input. It must not be described as a useful-
+data-preserving privacy improvement. Six OFF models have constant balanced
+TRAIN optima; a chance result for those classifiers is not a proof that their
+recipient streams contain no information. The privacy scope is membership of
+all observed contributions of one operational track in [0,300 s), with the same
+quarter-count exact position/time auxiliary sample. It is not identity protection,
+all visits by a person, an attribute-disclosure attack, or differential privacy.
+No second/differencing attack is introduced in this task.
+
+The original ON adaptive-versus-regional primary Full111 contrast remains
++0.0126953125, interval [−0.04396972656249998, +0.072265625]. Additional MIA benefit
+or equivalence of adaptive ON over regional-static ON is not established by this
+interval. The semantic-action ablation instead quantifies the coverage/risk cost
+of requiring all original category labels exact under the same hard policy.
+
+Root visually inspects all four actual final PNGs: utility, exact/estimated
+category queries, MIA AUC and paired contrasts. Labels, zero markers, chance/zero
+references and legends are legible; no clipping or overlapping text is found.
+Conditional Ns and the positive-observation maximum-delay addendum remain required
+when interpreting retained detail, error or delay. J includes omission plus
+taxonomy distortion and is not an independent privacy metric.
+
+## Final publication view and retained artifacts
+
+The final result package includes full by-method aggregate tables, four PNG/SVG
+figures, original lineage, completed gates and the byte-identical explicit
+maximum-delay correction from the utility gate. The original final export and
+all private reports remain unchanged locally. The publication view recursively
+omits 96 duplicate numeric classifier-threshold values so fitted parameters remain
+local; every other aggregate statistic, confidence interval and figure byte is
+unchanged. The original exporter manifest and a separate projection receipt bind
+both versions. This presentation-only omission changes neither evaluation nor
+model behavior.
+
+All raw movements, observations, features, fitted weights/scalers/intercepts/
+thresholds and individual scores stay local. Only owned source, tests, English
+documents, compact aggregates, figures and checksums are committed. The parallel
+paper/presentation working files remain outside this change. The declared
+pre-execution protocol and all historical source/model/result bytes remain frozen.
+
+- [Final results and interpretation](verification/urban-semantic-ablation-2026-10-27-v1/final-outcome/README.md)
+- [Final aggregate tables](verification/urban-semantic-ablation-2026-10-27-v1/final-outcome/report.md)
+- [All final gates and checksums](verification/urban-semantic-ablation-2026-10-27-v1/final-outcome/completed-gates-public.json)
+- [Publication projection](verification/urban-semantic-ablation-2026-10-27-v1/final-outcome/publication-projection.json)
+- [Authoritative retained-observation maximum correction](verification/urban-semantic-ablation-2026-10-27-v1/final-outcome/retained-delay-maximum-correction.json)
+
+Final independent publication review passes: exact 96-key threshold projection,
+all other aggregates/artifact bytes and manifests, unchanged 280 code files / 144
+row files/models, source/archive bindings and public-lock ancestry authenticate.
+No private payload or raw identifier is found. Its first metadata-only verifier
+counted absolute row paths while another receipt used repository-relative paths;
+that failure is preserved and the correction normalizes paths only. No packet
+or scientific result is changed. Review SHA256:
+22de34ab29c389dd769ef12a45de10dcc6998d385bf4f3475f19947c67e3e49e.

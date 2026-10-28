@@ -1,0 +1,1968 @@
+{
+  "TEST_attack_scoring": false,
+  "corrected_recording_maxima_by_role_split_method_world": [
+    {
+      "affected_recordings": 0,
+      "available_recordings": 0,
+      "corrected_mean_of_recording_maxima_ms": null,
+      "legacy_mean_of_recording_maxima_ms": null,
+      "method_id": "fixed20_1000ms_exact_only",
+      "recordings": 16,
+      "role": "auxiliary",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 0,
+      "corrected_mean_of_recording_maxima_ms": null,
+      "legacy_mean_of_recording_maxima_ms": null,
+      "method_id": "fixed20_1000ms_exact_only",
+      "recordings": 16,
+      "role": "auxiliary",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 0,
+      "corrected_mean_of_recording_maxima_ms": null,
+      "legacy_mean_of_recording_maxima_ms": null,
+      "method_id": "fixed20_2000ms_exact_only",
+      "recordings": 16,
+      "role": "auxiliary",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 0,
+      "corrected_mean_of_recording_maxima_ms": null,
+      "legacy_mean_of_recording_maxima_ms": null,
+      "method_id": "fixed20_2000ms_exact_only",
+      "recordings": 16,
+      "role": "auxiliary",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 0,
+      "corrected_mean_of_recording_maxima_ms": null,
+      "legacy_mean_of_recording_maxima_ms": null,
+      "method_id": "fixed20_4000ms_exact_only",
+      "recordings": 16,
+      "role": "auxiliary",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 0,
+      "corrected_mean_of_recording_maxima_ms": null,
+      "legacy_mean_of_recording_maxima_ms": null,
+      "method_id": "fixed20_4000ms_exact_only",
+      "recordings": 16,
+      "role": "auxiliary",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 5,
+      "corrected_mean_of_recording_maxima_ms": 1000.0,
+      "legacy_mean_of_recording_maxima_ms": 1000.0,
+      "method_id": "fixed20_1000ms_exact_only",
+      "recordings": 32,
+      "role": "auxiliary",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 4,
+      "corrected_mean_of_recording_maxima_ms": 1000.0,
+      "legacy_mean_of_recording_maxima_ms": 1000.0,
+      "method_id": "fixed20_1000ms_exact_only",
+      "recordings": 32,
+      "role": "auxiliary",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 4,
+      "corrected_mean_of_recording_maxima_ms": 2000.0,
+      "legacy_mean_of_recording_maxima_ms": 2000.0,
+      "method_id": "fixed20_2000ms_exact_only",
+      "recordings": 32,
+      "role": "auxiliary",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 4,
+      "corrected_mean_of_recording_maxima_ms": 2000.0,
+      "legacy_mean_of_recording_maxima_ms": 2000.0,
+      "method_id": "fixed20_2000ms_exact_only",
+      "recordings": 32,
+      "role": "auxiliary",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 5,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "fixed20_4000ms_exact_only",
+      "recordings": 32,
+      "role": "auxiliary",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 5,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "fixed20_4000ms_exact_only",
+      "recordings": 32,
+      "role": "auxiliary",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 1,
+      "corrected_mean_of_recording_maxima_ms": 1000.0,
+      "legacy_mean_of_recording_maxima_ms": 1000.0,
+      "method_id": "fixed20_1000ms_exact_only",
+      "recordings": 24,
+      "role": "auxiliary",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 1,
+      "corrected_mean_of_recording_maxima_ms": 1000.0,
+      "legacy_mean_of_recording_maxima_ms": 1000.0,
+      "method_id": "fixed20_1000ms_exact_only",
+      "recordings": 24,
+      "role": "auxiliary",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 2000.0,
+      "legacy_mean_of_recording_maxima_ms": 2000.0,
+      "method_id": "fixed20_2000ms_exact_only",
+      "recordings": 24,
+      "role": "auxiliary",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 2000.0,
+      "legacy_mean_of_recording_maxima_ms": 2000.0,
+      "method_id": "fixed20_2000ms_exact_only",
+      "recordings": 24,
+      "role": "auxiliary",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 2,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "fixed20_4000ms_exact_only",
+      "recordings": 24,
+      "role": "auxiliary",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 2,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "fixed20_4000ms_exact_only",
+      "recordings": 24,
+      "role": "auxiliary",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 3987.5,
+      "legacy_mean_of_recording_maxima_ms": 3993.75,
+      "method_id": "adaptive_semantic_first",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 2,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 3968.75,
+      "legacy_mean_of_recording_maxima_ms": 3981.25,
+      "method_id": "adaptive_semantic_first",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 1300.0,
+      "legacy_mean_of_recording_maxima_ms": 1300.0,
+      "method_id": "adaptive_semantic_first_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 1300.0,
+      "legacy_mean_of_recording_maxima_ms": 1300.0,
+      "method_id": "adaptive_semantic_first_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_spatial",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_spatial",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 1600.0,
+      "legacy_mean_of_recording_maxima_ms": 1600.0,
+      "method_id": "adaptive_semantic_wait_spatial_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 1600.0,
+      "legacy_mean_of_recording_maxima_ms": 1600.0,
+      "method_id": "adaptive_semantic_wait_spatial_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_temporal",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_temporal",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 1300.0,
+      "legacy_mean_of_recording_maxima_ms": 1300.0,
+      "method_id": "adaptive_semantic_wait_temporal_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 1300.0,
+      "legacy_mean_of_recording_maxima_ms": 1300.0,
+      "method_id": "adaptive_semantic_wait_temporal_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_spatial_first",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_spatial_first",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 1600.0,
+      "legacy_mean_of_recording_maxima_ms": 1600.0,
+      "method_id": "adaptive_spatial_first_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 1600.0,
+      "legacy_mean_of_recording_maxima_ms": 1600.0,
+      "method_id": "adaptive_spatial_first_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 3987.5,
+      "legacy_mean_of_recording_maxima_ms": 3993.75,
+      "method_id": "adaptive_temporal_first",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 2,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 3968.75,
+      "legacy_mean_of_recording_maxima_ms": 3981.25,
+      "method_id": "adaptive_temporal_first",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 1300.0,
+      "legacy_mean_of_recording_maxima_ms": 1300.0,
+      "method_id": "adaptive_temporal_first_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 1300.0,
+      "legacy_mean_of_recording_maxima_ms": 1300.0,
+      "method_id": "adaptive_temporal_first_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 1,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 1,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "regional_static20",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 16,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "regional_static20",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 1,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "regional_static20_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 1,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "regional_static20_exact_only",
+      "recordings": 16,
+      "role": "headline",
+      "split": "calibration",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 2,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 3984.375,
+      "legacy_mean_of_recording_maxima_ms": 3990.625,
+      "method_id": "adaptive_semantic_first",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 2,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 3981.25,
+      "legacy_mean_of_recording_maxima_ms": 3990.625,
+      "method_id": "adaptive_semantic_first",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 15,
+      "corrected_mean_of_recording_maxima_ms": 2393.3333333333335,
+      "legacy_mean_of_recording_maxima_ms": 2393.3333333333335,
+      "method_id": "adaptive_semantic_first_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 14,
+      "corrected_mean_of_recording_maxima_ms": 2442.8571428571427,
+      "legacy_mean_of_recording_maxima_ms": 2442.8571428571427,
+      "method_id": "adaptive_semantic_first_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_spatial",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_spatial",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 10,
+      "corrected_mean_of_recording_maxima_ms": 3640.0,
+      "legacy_mean_of_recording_maxima_ms": 3640.0,
+      "method_id": "adaptive_semantic_wait_spatial_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 10,
+      "corrected_mean_of_recording_maxima_ms": 3640.0,
+      "legacy_mean_of_recording_maxima_ms": 3640.0,
+      "method_id": "adaptive_semantic_wait_spatial_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_temporal",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_temporal",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 15,
+      "corrected_mean_of_recording_maxima_ms": 2393.3333333333335,
+      "legacy_mean_of_recording_maxima_ms": 2393.3333333333335,
+      "method_id": "adaptive_semantic_wait_temporal_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 14,
+      "corrected_mean_of_recording_maxima_ms": 2442.8571428571427,
+      "legacy_mean_of_recording_maxima_ms": 2442.8571428571427,
+      "method_id": "adaptive_semantic_wait_temporal_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_spatial_first",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_spatial_first",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 10,
+      "corrected_mean_of_recording_maxima_ms": 3640.0,
+      "legacy_mean_of_recording_maxima_ms": 3640.0,
+      "method_id": "adaptive_spatial_first_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 10,
+      "corrected_mean_of_recording_maxima_ms": 3640.0,
+      "legacy_mean_of_recording_maxima_ms": 3640.0,
+      "method_id": "adaptive_spatial_first_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 2,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 3984.375,
+      "legacy_mean_of_recording_maxima_ms": 3990.625,
+      "method_id": "adaptive_temporal_first",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 2,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 3981.25,
+      "legacy_mean_of_recording_maxima_ms": 3990.625,
+      "method_id": "adaptive_temporal_first",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 15,
+      "corrected_mean_of_recording_maxima_ms": 2393.3333333333335,
+      "legacy_mean_of_recording_maxima_ms": 2393.3333333333335,
+      "method_id": "adaptive_temporal_first_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 14,
+      "corrected_mean_of_recording_maxima_ms": 2442.8571428571427,
+      "legacy_mean_of_recording_maxima_ms": 2442.8571428571427,
+      "method_id": "adaptive_temporal_first_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 7,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 6,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "regional_static20",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 32,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "regional_static20",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 6,
+      "corrected_mean_of_recording_maxima_ms": 3400.0,
+      "legacy_mean_of_recording_maxima_ms": 3400.0,
+      "method_id": "regional_static20_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 6,
+      "corrected_mean_of_recording_maxima_ms": 3400.0,
+      "legacy_mean_of_recording_maxima_ms": 3400.0,
+      "method_id": "regional_static20_exact_only",
+      "recordings": 32,
+      "role": "headline",
+      "split": "test",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 3970.8333333333335,
+      "legacy_mean_of_recording_maxima_ms": 3975.0,
+      "method_id": "adaptive_semantic_first",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 3983.3333333333335,
+      "legacy_mean_of_recording_maxima_ms": 3987.5,
+      "method_id": "adaptive_semantic_first",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 8,
+      "corrected_mean_of_recording_maxima_ms": 2362.5,
+      "legacy_mean_of_recording_maxima_ms": 2537.5,
+      "method_id": "adaptive_semantic_first_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 8,
+      "corrected_mean_of_recording_maxima_ms": 2362.5,
+      "legacy_mean_of_recording_maxima_ms": 2537.5,
+      "method_id": "adaptive_semantic_first_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_spatial",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_spatial",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 6,
+      "corrected_mean_of_recording_maxima_ms": 3766.6666666666665,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_spatial_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 6,
+      "corrected_mean_of_recording_maxima_ms": 3766.6666666666665,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_spatial_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_temporal",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_semantic_wait_temporal",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 8,
+      "corrected_mean_of_recording_maxima_ms": 2362.5,
+      "legacy_mean_of_recording_maxima_ms": 2537.5,
+      "method_id": "adaptive_semantic_wait_temporal_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 8,
+      "corrected_mean_of_recording_maxima_ms": 2362.5,
+      "legacy_mean_of_recording_maxima_ms": 2537.5,
+      "method_id": "adaptive_semantic_wait_temporal_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_spatial_first",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_spatial_first",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 6,
+      "corrected_mean_of_recording_maxima_ms": 3766.6666666666665,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_spatial_first_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 6,
+      "corrected_mean_of_recording_maxima_ms": 3766.6666666666665,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "adaptive_spatial_first_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 3970.8333333333335,
+      "legacy_mean_of_recording_maxima_ms": 3975.0,
+      "method_id": "adaptive_temporal_first",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 3983.3333333333335,
+      "legacy_mean_of_recording_maxima_ms": 3987.5,
+      "method_id": "adaptive_temporal_first",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 8,
+      "corrected_mean_of_recording_maxima_ms": 2362.5,
+      "legacy_mean_of_recording_maxima_ms": 2537.5,
+      "method_id": "adaptive_temporal_first_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 1,
+      "available_recordings": 8,
+      "corrected_mean_of_recording_maxima_ms": 2362.5,
+      "legacy_mean_of_recording_maxima_ms": 2537.5,
+      "method_id": "adaptive_temporal_first_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 400.0,
+      "legacy_mean_of_recording_maxima_ms": 400.0,
+      "method_id": "fixed20_400ms_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "regional_static20",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 24,
+      "corrected_mean_of_recording_maxima_ms": 4000.0,
+      "legacy_mean_of_recording_maxima_ms": 4000.0,
+      "method_id": "regional_static20",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 2800.0,
+      "legacy_mean_of_recording_maxima_ms": 2800.0,
+      "method_id": "regional_static20_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "IN"
+    },
+    {
+      "affected_recordings": 0,
+      "available_recordings": 3,
+      "corrected_mean_of_recording_maxima_ms": 2800.0,
+      "legacy_mean_of_recording_maxima_ms": 2800.0,
+      "method_id": "regional_static20_exact_only",
+      "recordings": 24,
+      "role": "headline",
+      "split": "train",
+      "world": "OUT"
+    }
+  ],
+  "created_at": "2026-10-28T08:22:51.985210+00:00",
+  "independent_audit_sha256": "20b80e7d9d451ff7444c61aa356edd9512182f4e2878ecc666981011234e590c",
+  "interpretation": "summary.json retains the frozen scheduled-key maximum. For maximum delay among actual retained observations use this explicitly corrected addendum. Means and p50/p95/p99 match both conventions; tables/figures show unchanged means. Missing maxima remain null, not zero.",
+  "new_fits": 0,
+  "original_failed_audit_execution_sha256": "0d61fef22a48657cb53a8a71db740618a79f405330c85079352cef0a51757e0d",
+  "original_public_summary_sha256": "61ea1e572158955edb4ea307a345f26093251856666fa2a0b87db5ef4e8b9c0e",
+  "publication_adapter_sha256": "d31898b6f10a1c50f525586ff2d45c36cc2c92703cde50b2f1d495e0990c2b6b",
+  "schema": "ump.semantic-ablation-retained-delay-maximum-correction.v1",
+  "scientific_native_outputs_rows_features_and_original_reports_changed": false,
+  "scope": {
+    "affected_streams": 28,
+    "all_stored_delay_fields_reproduced_exactly": true,
+    "all_weighted_delay_fields_unchanged": true,
+    "audited_streams": 2448,
+    "by_role_method_world": [
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "fixed20_1000ms_exact_only",
+        "role": "auxiliary",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "fixed20_1000ms_exact_only",
+        "role": "auxiliary",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "fixed20_2000ms_exact_only",
+        "role": "auxiliary",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "fixed20_2000ms_exact_only",
+        "role": "auxiliary",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "fixed20_4000ms_exact_only",
+        "role": "auxiliary",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "fixed20_4000ms_exact_only",
+        "role": "auxiliary",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "fixed20_1000ms_exact_only",
+        "role": "auxiliary",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "fixed20_1000ms_exact_only",
+        "role": "auxiliary",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "fixed20_2000ms_exact_only",
+        "role": "auxiliary",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "fixed20_2000ms_exact_only",
+        "role": "auxiliary",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "fixed20_4000ms_exact_only",
+        "role": "auxiliary",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "fixed20_4000ms_exact_only",
+        "role": "auxiliary",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "fixed20_1000ms_exact_only",
+        "role": "auxiliary",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "fixed20_1000ms_exact_only",
+        "role": "auxiliary",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "fixed20_2000ms_exact_only",
+        "role": "auxiliary",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "fixed20_2000ms_exact_only",
+        "role": "auxiliary",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "fixed20_4000ms_exact_only",
+        "role": "auxiliary",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "fixed20_4000ms_exact_only",
+        "role": "auxiliary",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_first",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 2,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_first",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_first_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_first_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_wait_spatial",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_wait_spatial",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_wait_spatial_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_wait_spatial_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_wait_temporal",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_wait_temporal",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_wait_temporal_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_semantic_wait_temporal_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_spatial_first",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_spatial_first",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_spatial_first_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_spatial_first_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 16,
+        "method_id": "adaptive_temporal_first",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 2,
+        "audited_streams": 16,
+        "method_id": "adaptive_temporal_first",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_temporal_first_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "adaptive_temporal_first_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "fixed20_400ms",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "fixed20_400ms",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "fixed20_400ms_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "fixed20_400ms_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "regional_static20",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "regional_static20",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "regional_static20_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 16,
+        "method_id": "regional_static20_exact_only",
+        "role": "headline",
+        "split": "calibration",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 2,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_first",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 2,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_first",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_first_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_first_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_wait_spatial",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_wait_spatial",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_wait_spatial_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_wait_spatial_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_wait_temporal",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_wait_temporal",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_wait_temporal_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_semantic_wait_temporal_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_spatial_first",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_spatial_first",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_spatial_first_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_spatial_first_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 2,
+        "audited_streams": 32,
+        "method_id": "adaptive_temporal_first",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 2,
+        "audited_streams": 32,
+        "method_id": "adaptive_temporal_first",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_temporal_first_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "adaptive_temporal_first_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "fixed20_400ms",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "fixed20_400ms",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "fixed20_400ms_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "fixed20_400ms_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "regional_static20",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "regional_static20",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "regional_static20_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 32,
+        "method_id": "regional_static20_exact_only",
+        "role": "headline",
+        "split": "test",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_first",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_first",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_first_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_first_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_wait_spatial",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_wait_spatial",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_wait_spatial_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_wait_spatial_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_wait_temporal",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_wait_temporal",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_wait_temporal_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_semantic_wait_temporal_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "adaptive_spatial_first",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "adaptive_spatial_first",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_spatial_first_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_spatial_first_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_temporal_first",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_temporal_first",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_temporal_first_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 1,
+        "audited_streams": 24,
+        "method_id": "adaptive_temporal_first_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "fixed20_400ms",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "fixed20_400ms",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "fixed20_400ms_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "fixed20_400ms_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "regional_static20",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "regional_static20",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "regional_static20_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "IN"
+      },
+      {
+        "affected_streams": 0,
+        "audited_streams": 24,
+        "method_id": "regional_static20_exact_only",
+        "role": "headline",
+        "split": "train",
+        "world": "OUT"
+      }
+    ],
+    "corrected_definition": "Positive retained observations only; maximum is over positive-weight delays.",
+    "existing_rows_reports_features_unchanged": true,
+    "schema": "ump.semantic-ablation-delay-tail-diagnostic.v1",
+    "scope": "Maximum-tail diagnostic clarification only; no new Privacy or utility optimization claim.",
+    "stored_definition": "Scheduled public-cell timestamp keys, including zero-count keys; maximum is over all keys.",
+    "streams_with_zero_weight_legacy_keys": 38
+  },
+  "status": "independently_verified_diagnostic_correction",
+  "utility_report_sha256": "d338ca513e636881ad4650d0e512710b705416990b503650e17fd99c5bb8a37c"
+}

@@ -5,22 +5,25 @@ of Urban Mobility Data**. The mechanism aims to preserve road-user privacy while
 retaining application utility, using metrics and regional policies to guide
 adaptive spatial, temporal and semantic aggregation and assess its effects.
 
-**Semantic-generalization ablation — utility complete, 28 October 2026.** All
-1,296 new native cases and 144 regional compositions verify on the same 72
-recordings and unchanged hard policies. Independent source/public reconstruction
-checks all 2,016 headline and 432 auxiliary rows. Across the 32 TEST IN recordings,
-mean retained contributions fall from 56.16–70.33% with semantic generalization
-to 0.09–0.16% without it. Zero taxonomy loss among rare OFF survivors must be read
-with this omission cost. All fourteen new MIA models are independently checked
-and [locked before TEST](docs/verification/urban-semantic-ablation-2026-10-27-v1/model-lock/README.md);
-TEST assessment remains pending.
+**Semantic-generalization ablation — completed, 28 October 2026.** Seven ON/OFF
+pairs reuse the same 72 recordings and hard policies. All 1,296 new native cases
+and 144 regional compositions verify. Fourteen new TRAIN/CAL attacks were checked
+and publicly locked before TEST; all 28 method/representation models and original
+controls are independently assessed, preserving the original primary result.
 
-Read the [utility results and explicit maximum-delay diagnostic correction](docs/verification/urban-semantic-ablation-2026-10-27-v1/utility-outcome/README.md),
-[declared ON/OFF protocol](docs/URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md)
+On the 32 TEST IN recordings, semantic ON retains 56.16–70.33% of contributions;
+OFF retains 0.09–0.16%. Full111 MIA AUC is 0.565–0.605 ON and 0.500–0.514 OFF.
+All fourteen exploratory paired OFF-minus-ON AUC intervals lie below zero. This
+lower measured discrimination accompanies omission of more than 99.8% of input;
+it is not a utility-preserving privacy improvement or a universal guarantee.
+
+Read the [complete results and presentation evidence](docs/verification/urban-semantic-ablation-2026-10-27-v1/final-outcome/README.md),
+[declared protocol](docs/URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md)
 and [detailed implementation/test report](docs/URBAN_SEMANTIC_ABLATION_TEST_REPORT_2026-10-27.md).
-Original results, models and source data remain unchanged. The 530 affected
-Python tests and 22 native suites pass; exact environment restoration after a
-report-import failure also passes independent verification and all 530 tests.
+The 530 Python tests, 22 native suites and independent utility/model/score audits
+pass. An explicit correction distinguishes retained-observation maximum delay
+from the legacy scheduled-key diagnostic; all means, quantiles, features and
+native outputs remain unchanged. Raw movements and fitted parameters stay local.
 
 **Supplementary strategy comparison — completed, 27 October 2026.** All four
 additional configurations reuse the same 72 recordings and unchanged hard

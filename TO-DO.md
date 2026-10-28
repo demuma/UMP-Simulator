@@ -1,7 +1,7 @@
 # TO-DO — UMP-Simulator
 
 
-## Active: P27 controlled semantic-generalization ON/OFF study
+## Completed: P27 controlled semantic-generalization ON/OFF study — 28 October 2026
 
 Authorized 27 October 2026. Follow the [declared protocol](docs/URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md).
 Preserve paper/presentation edits and all frozen historical results. Compare seven
@@ -16,12 +16,21 @@ optional and separate.
 - [x] P27.3: freeze code/binary/queries/import lineage and execute utility first:
   1296 new native cases, 144 regional compositions, 2016 headline rows including
   imported ON references, plus 432 auxiliary fixed-window rows.
-- [ ] P27.4: independent utility/class/regional/query review and actual-figure QA;
+- [x] P27.4: independent utility/class/regional/query review and actual-figure QA;
   only then fourteen new TRAIN/CAL OFF fits, model-lock validation/publication,
   and matched TEST MIA. Reuse fourteen ON objects and the original controls.
-- [ ] P27.5: independent final statistics/provenance/publication checks, English
+- [x] P27.5: independent final statistics/provenance/publication checks, English
   results/test report, README update and compact Git publication. All seven OFF
   configurations remain visible; observed duplicates are not independent proof.
+
+Completion: all 1,296 native cases, 144 regional compositions, 2,016 headline
+and 432 auxiliary rows verify. Fourteen new OFF models were locked publicly
+before TEST. Independent utility, model-lock and final-score audits pass; old
+ON/control/primary outcomes are unchanged. See the
+[completed outcome](docs/verification/urban-semantic-ablation-2026-10-27-v1/final-outcome/README.md).
+Near-total OFF omission accompanies lower measured MIA AUC; there is no claim of
+utility-preserving privacy improvement. The maximum-delay diagnostic correction
+is explicit and does not alter frozen inputs or outputs.
 
 ## Follow-up after the frozen P27 study
 
