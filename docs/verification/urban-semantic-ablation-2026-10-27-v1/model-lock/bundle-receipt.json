@@ -1,0 +1,9 @@
+{
+  "files_sha256": {
+    "README.md": "1159f4fcaac0a967d2b26e39d05eb2764c4660ab8cc07aa928442380171ca722",
+    "completed-gates-public.json": "26315e838e584d82f68d7f96b022d05d9b48511b5ae6408a77b08c2c88a7f525",
+    "model-lock-public.json": "ce9b42e852473fb4b177e0dce3dbb50f1b0d4f89f71746abc5257189f1181c8e"
+  },
+  "fitted_parameters_features_individual_scores_included": false,
+  "schema": "ump.semantic-ablation-model-lock-public-bundle.v1"
+}

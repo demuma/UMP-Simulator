@@ -1,8 +1,8 @@
 # Semantic-generalization ablation: implementation and test report
 
 Prepared 27 October 2026; utility completed 28 October 2026. Status: all declared
-utility cases and independent checks pass; fourteen new MIA fits and TEST scoring
-remain pending. The original pre-execution freeze remains separately preserved.
+utility cases and independent checks pass; fourteen new MIA fits are independently
+verified and locked before TEST. TEST scoring remains pending. The original pre-execution freeze remains separately preserved.
 The frozen [scientific protocol](URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md)
 retains its declaration-time wording. Compact preflight hashes and validation are
 in [verification](verification/urban-semantic-ablation-2026-10-27-v1/pre-execution-freeze/validation.json).
@@ -207,3 +207,26 @@ Independent utility-publication review: SHA256
 6301049d8e31084cd90eba6e9515f7865dd28a80a134562e4b493c69b9910428.
 All 102 corrected aggregate scopes, actual Ns, original reporter bytes, unchanged
 rows/code and absence of private payloads verify before new MIA fitting.
+
+## TRAIN/CAL model lock before TEST
+
+All fourteen new OFF fits converge, using only 48 TRAIN rows per classifier and
+16 positive/16 negative CAL cases for thresholds. The immutable model view has
+1,120 TRAIN/CAL headline rows, 28 model objects (14 new OFF +14 imported ON) and four
+unchanged controls. No original threshold is retuned. Six new models converge
+at the constant balanced TRAIN optimum in iteration 1; other fits require 41–56
+iterations. No nonconvergence or fitting retry occurs.
+
+An independently implemented audit passes 2,254 comparisons in 0.893 s: TRAIN means,
+population scales, priors and regularized objectives; CAL threshold selection and
+metrics; exact imported objects and lock/data hashes. It reads zero TEST rows and
+performs no fit, retuning or maintained scoring/calibration/bootstrap calls.
+Model-lock audit SHA256:
+fc522f0ec9d6239e35c9674358c9a6ae833d4c53e628254aa5fe0272dce9c39d.
+Private model SHA256:
+aaa3e22305693a3a99b2a977146aae0e1262ae662e7cfda41cd2ca306577d208.
+
+The [public lock](verification/urban-semantic-ablation-2026-10-27-v1/model-lock/README.md)
+is published before any new TEST scoring. Raw features, fitted parameters and
+individual scores remain local. CAL empirical FPR target 0.1 has resolution 1/16;
+neither that target nor a constant fitted classifier proves population privacy.

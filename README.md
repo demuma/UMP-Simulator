@@ -11,7 +11,9 @@ recordings and unchanged hard policies. Independent source/public reconstruction
 checks all 2,016 headline and 432 auxiliary rows. Across the 32 TEST IN recordings,
 mean retained contributions fall from 56.16–70.33% with semantic generalization
 to 0.09–0.16% without it. Zero taxonomy loss among rare OFF survivors must be read
-with this omission cost. MIA fitting and TEST assessment remain pending.
+with this omission cost. All fourteen new MIA models are independently checked
+and [locked before TEST](docs/verification/urban-semantic-ablation-2026-10-27-v1/model-lock/README.md);
+TEST assessment remains pending.
 
 Read the [utility results and explicit maximum-delay diagnostic correction](docs/verification/urban-semantic-ablation-2026-10-27-v1/utility-outcome/README.md),
 [declared ON/OFF protocol](docs/URBAN_SEMANTIC_ABLATION_PROTOCOL_2026-10-27.md)
