@@ -35,11 +35,11 @@ Read the [implementation and DEV test report](docs/PARALLEL_EVALUATION_2026-10-2
   full-success collection. All 86 new/affected Python tests pass.
 - [x] Run a local excluded-DEV one-versus-six-worker pilot: 158.20 s versus 28.71 s;
   all 12 native outputs/decision hashes agree and pass independent source audits.
-- [ ] Integrate the reusable scheduler into the separately declared semantic-ON /
-  selective-suppression-ON study after its policy/query/audit adapters are ready.
-  The concrete adapter added here retains the existing exact-only ablation catalog.
-- [ ] Estimate the full-study runtime and peak memory from its first full recording
-  groups; the short DEV throughput result is not a guaranteed sixfold acceleration.
+- [x] Integrate the reusable scheduler into the separately declared semantic-ON /
+  selective-suppression-ON study with its own policy/query/audit adapters.
+- [x] Measure complete native-batch wall time: 7,260.164 s for 72 recordings.
+  The short DEV speedup is not a guaranteed full-study acceleration, and separate
+  process memory peaks are not a sampled simultaneous-RAM maximum.
 - [ ] Keep isolated runtime and paced real-time benchmarks separate from concurrent
   batch measurements. No new MIA fits or TEST attack scores were produced here.
 

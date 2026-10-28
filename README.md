@@ -24,8 +24,8 @@ All 86 affected Python tests pass. A short excluded-DEV pilot takes 158.20 s wit
 one worker versus 28.71 s with six; all 12 native results and decision hashes agree
 and pass independent audits. This is a single operational throughput comparison,
 not a hard real-time benchmark. The reusable scheduler and separate fresh-study
-adapter preserve completed studies; the proposed suppression-ON study has not
-started. Read the [implementation and test report](docs/PARALLEL_EVALUATION_2026-10-28.md).
+adapter preserve completed studies. The suppression-ON native/utility study has
+completed with the same six-worker design; new MIA verification is in progress. Read the [implementation and test report](docs/PARALLEL_EVALUATION_2026-10-28.md).
 
 **Semantic-generalization ablation — completed, 28 October 2026.** Seven ON/OFF
 pairs reuse the same 72 recordings and hard policies. All 1,296 new native cases

@@ -1,0 +1,36 @@
+{
+  "code_sha256": {
+    "tools/evaluation/audit_urban_selective_suppression_source_order_addendum.py": "63ab8e21b9c1051df0d77a22ceb0ddc173baca219efc25a32a09fab5ce7a8bcc",
+    "tools/evaluation/test_audit_urban_selective_suppression_source_order_addendum.py": "ce4ebf03bbef51d85311839e92db3b7efbd59c658a25ea8c5c9b0b69bc2c4707"
+  },
+  "corrective_real_model_audit_performed": false,
+  "frozen_auditor_sha256": "9d19f2cdddb115ae378675a744f41280b93ff17d0bd794302f3e141061a5d28e",
+  "independent_peer_review": "Read-only review agrees: canonical metadata order only, original mathematical/data guards unchanged. Nine new synthetic tests also passed independently.",
+  "models_refitted": 0,
+  "new_TEST_scoring": false,
+  "original_failed_audit_log_sha256": "1c38b4764312772ee5366b101606a6c3f4d43c8235ecc89888395af90d7b755e",
+  "original_model_audit_status": "failed_preserved",
+  "preserved_artifact_sha256": {
+    "mia-fit-attempt.json": "52cf8f58569ea0b1a25f4cf6245079a89cb7361a6567dd069b7ecbf455c9508f",
+    "models-lock.json": "17611b5a0a230564364ceecde4b89a92bf2d04bddbea1f2b6f7de83d2e63ade1",
+    "models.json": "bce44cbe1252e0c7a48bbe46ef853a5fca24931a618a3f1bf186b24c8135730b",
+    "protocol.json": "68bfd022f6f170dbe669ae03a9925f3b1444b4bb66fd406e4aacf7ee0a774bff",
+    "train-cal-rows.json": "8eb26973ba2e5d7f27c6f89aa93fa92a1d05a84dc96303b8f72394025ee76d08"
+  },
+  "schema": "ump.selective-source-order-correction-preexecution.v1",
+  "scope": "Frozen execution and fit objects unchanged. This publication precedes the additive model audit and new TEST scoring.",
+  "source_role_counts": {
+    "calibration": 16,
+    "test": 32,
+    "train": 24
+  },
+  "status": "verified_before_corrective_model_audit",
+  "validation": {
+    "errors": 0,
+    "failures": 0,
+    "log_sha256": "5b4b83e2552314a288fa5cbbb6cf0ea99836d730dd6628306a020bca5c56cf6a",
+    "new_regressions": 9,
+    "seconds": 0.152332917,
+    "tests": 23
+  }
+}

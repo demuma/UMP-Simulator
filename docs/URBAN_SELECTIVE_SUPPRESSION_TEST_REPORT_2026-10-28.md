@@ -1,9 +1,10 @@
 # Selective-contribution suppression — execution and test report
 
-Date: 28 October 2026. Status: complete utility verification; new model fitting and TEST scoring pending.
+Date: 28 October 2026. Status: complete utility verification; fourteen new fits preserved; model audit correction in progress before TEST scoring.
 The [declared protocol](URBAN_SELECTIVE_SUPPRESSION_PROTOCOL_2026-10-28.md)
-defines the new semantic-enabled permission comparison. No scientific outcome
-is claimed before all execution, utility, model-lock and final audit gates pass.
+defines the new semantic-enabled permission comparison. Utility and attack evidence
+are reported separately. No new MIA result is claimed before model-lock and final
+audit gates pass.
 
 New runners, retained-population/query adapters, regional composition, independent
 auditing and aggregate reporting are separate files. Existing source recordings,
@@ -39,7 +40,8 @@ same native binary SHA-256
 `243434319365755b776b2213ac344740cfeaea168f50a590b7164f86b3f596fc`.
 
 Read the [compact pre-execution evidence](verification/urban-selective-suppression-2026-10-28-v1/preflight/README.md).
-Actual study execution and fitting are still gated on publication of this freeze.
+At that pre-execution gate, actual study execution and fitting remained conditional
+on publication of the freeze.
 
 ## Actual execution started
 
@@ -53,13 +55,14 @@ The six-worker study started at 11:31 UTC / 12:31 Europe/Madrid on 28 October 20
 Idle sleep is inhibited for the batch; no display or application settings changed.
 At the first complete recording, both worlds and all dependency/audit/archive
 paths pass in 575.851 s. This single-group timing is preliminary batch telemetry,
-not an isolated mechanism benchmark. Full results and MIA remain pending.
+not an isolated mechanism benchmark. At that point, full results and MIA were pending.
 
 ## Complete verified utility outcome
 
 All 72 groups, 1,296 native executions and 144 regional compositions verify. The native/utility batch completed in 7260.164 s (2 h 1 min), with no failed case or retry. All 2,016 headline and 432 auxiliary rows pass collection and archive checks.
 
-The independent utility gate passes 38,880 arithmetic checks, preserves 1,008 old rows exactly and authenticates the raw/GT/sensor source bindings. The report step takes 56.794 s and its independent audit 1,041.555 s. No new simulation, fit or TEST scoring has occurred.
+The independent utility gate passes 38,880 arithmetic checks, preserves 1,008 old rows exactly and authenticates the raw/GT/sensor source bindings. The report step takes 56.794 s and its independent audit 1,041.555 s. This independent utility audit does not rerun the physical simulation, fit models
+or score new TEST predictions.
 
 | Method | Retention OFF → ON (%) | J OFF → ON (%) | Retained taxonomy loss OFF → ON (%) | Cell side OFF → ON (m) | Logical delay OFF → ON (ms) |
 |---|---:|---:|---:|---:|---:|
@@ -82,3 +85,31 @@ The best retained-input point estimate is Semantic First / wait / Spatial second
 Both actual utility PNGs were visually checked: markers, labels and numerical annotations are legible and agree with the verified data. The omission caption clarifies gray near-zero values versus explicit NA. SVG exports are available. Only compact aggregates are eligible for publication; no observations, fitted parameters or individual scores are copied.
 
 [Verified utility packet](verification/urban-selective-suppression-2026-10-28-v1/utility-outcome/README.md). New MIA remains gated on publication of this utility packet.
+
+
+## Pre-TEST audit-order correction
+
+The utility packet was published and its actual remote/file bytes authenticated
+at commit `2748d120d1787f054fd5288621728b67fd787d56` before the new fits.
+All fourteen new fits completed once in 13.252 s. The following independent model
+audit stopped before TEST scoring with `Model source assignments differ`.
+
+Two independent reviews found a metadata-order error in the auditor: the producer
+stores source IDs sorted within each split, while its checker reconstructs lists
+in manifest execution order. Membership is identical, unique and disjoint for all
+24 TRAIN, 16 CAL and 32 TEST sources. The training and calibration ID lists match
+exactly after canonical sorting. This is not evidence of a changed source split.
+
+The failed audit, fitted objects and original protocol/code remain preserved.
+No fit is repeated and no model, threshold, source or study parameter is changed.
+An additive verification correction will canonicalize only the expected metadata
+order, retain every other model/score check and be published before continuing.
+The new test predictions remain unscored at this stage.
+
+
+The separate [source-order verification addendum](URBAN_SELECTIVE_SUPPRESSION_AUDIT_ORDER_ADDENDUM_2026-10-28.md)
+is now reviewed and covered by 23 passing targeted tests (14 unchanged, nine new).
+Its [compact pre-execution packet](verification/urban-selective-suppression-2026-10-28-v1/source-order-addendum/README.md)
+authenticates the correction and the preserved model/data/lock hashes. Corrective
+real-data verification is still pending at this publication boundary; no refit
+or TEST scoring was performed by this correction stage.
